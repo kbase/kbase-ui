@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="bower_components/jquery/dist/jquery.js"></script>
+        <script src="bower_components/bluebird/js/browser/blubird.js"></script>
+        <script src="js/Dummy.js"></script>
+    </head>
+    <body>
+        <h1>Login</h2>
+        <p>Token: <span id="token"></token></p>
+        <hr>
+        <script>
+            function tryit() {
+                login({username: 'eapearson', password: 'Oc3an1cWhal3'})
+                    .then(function (token) {
+                        console.log('TOKEN');
+                        console.log(token);
+                        $('#token').html(token);
+                    })
+                    .catch(function (err) {
+                        console.log('ERROR');
+                        console.log(err);
+                })
+            }
+
+            tryit();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="/bower_components/requirejs/require.js"></script>
+        <script src="/js/require-config.js"></script>
+    </head>
+    <body>
+        <h1>Simple Taxon Test Page</h1>
+        <div id="status"></div>
+        <table border="1" cellpadding="4" cellspacing="0" id="testResults">
+            <tr>
+                <th>
+                    method
+                </th>
+                <th>
+                    start
+                </th>
+                <th>
+                    finish
+                </th>
+                <th>
+                    elapsed
+                </th>
+                <th>
+                    result
+                </th>
+            </tr>           
+        </table>
+        <script>
+            require(['jquery', 'bluebird', 'thrift', 'utils', 'taxon'], function ($, Promise, Thrift, utils, taxon) {
+                function test() {
+                    var transport = new Thrift.TXHRTransport('http://euk.kbase.us/taxon');
+                    var protocol = new Thrift.TJSONProtocol(transport);
+                    var client = new taxon.thrift_serviceClient(protocol);
+
+                    var ref = "811/Sbicolor.JGI-v2.1";
+
+                    function niceTime(date) {
+                        return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + '.' + date.getMilliseconds();
+                    }
+
+                    var stats = {};
+                    var tests = [
+                        {
+                            method: 'get_taxonomic_id',
+                            formatter: function (data) {
+                                return data;
+                            }
+                        },
+                        {
+                            method: 'get_scientific_name',
+                            formatter: function (data) {
+                                return data;
+                            }
+                        },
+                        {
+                            method: 'get_scientific_lineage',
+                            formatter: function (data) {
+                                return data;
+                            }
+                        },
+                        {
+                            method: 'get_kingdom',
+                            formatter: function (data) {
+                                return data;
+                            }
+                        },
+                        {
+                            method: 'get_domain',
+                            formatter: function (data) {
+                                return data;
+                            }
+                        },
+                        {
+                            method: 'get_parent',
+                            formatter: function (data) {
+                                return data;
+                            }
+                        },
+                        {
+                            method: 'get_children',
+                            formatter: function (data) {
+                                if (data.length > 0) {
+                                    return data.join(', ');
+                                } else {
+                                    return 'none';
+                                }
+                            }
+                        },
+                        {
+                            method: 'get_aliases',
+                            formatter: function (data) {
+                                if (data.length > 0) {
+                                    return data.join(', ');
+                                } else {
+                                    return 'none';
+                                }
+                            }
+                        },
+                        {
+                            method: 'get_genome_annotations',
+                            formatter: function (data) {
+                                if (data.length > 0) {
+                                    return data.join(', ');
+                                } else {
+                                    return 'none';
+                                }
+                            }
+                        }
+
+                    ];
+
+                    tests.forEach(function (test) {
+                        $('#testResults').append(
+                            '<tr>' +
+                            '<td>' +
+                            test.method +
+                            '</td>' +
+                            '<td id="' + test.method + '-start">' +
+                            '</td>' +
+                            '<td id="' + test.method + '-finish">' +
+                            '</td>' +
+                            '<td id="' + test.method + '-elapsed">' +
+                            '</td>' +
+                            '<td id="' + test.method + '-result">' +
+                            '</td>' +
+                            '</tr>');
+                    });
+                    $('#status').html('Logging in...');
+                    utils.login({username: 'eapearson', password: 'Oc3an1cWhal3'})
+                        .then(function (token) {
+                            $('#status').html('Logged in.');
+                            tests.forEach(function (test) {
+                                var startTime = new Date();
+                                stats[test.method] = {};
+                                stats[test.method].start = startTime;
+                                $('#' + test.method + '-start').html(niceTime(startTime));
+                                try {
+                                    Promise.resolve(client[test.method](token, ref))
+                                        .then(function (data) {
+                                            var finishTime = new Date();
+                                            var elapsedTime = finishTime.getTime() - startTime.getTime();
+                                            $('#' + test.method + '-finish').html(niceTime(finishTime));
+                                            $('#' + test.method + '-elapsed').html(elapsedTime);
+                                            $('#' + test.method + '-result').html(test.formatter(data));
+                                        })
+                                        .catch(function (err) {
+                                            $('#' + test.method + '-result').html('ERROR: ' + err);
+                                            console.log(err);
+                                        });
+                                } catch (ex) {
+                                    var finishTime = new Date();
+                                    var elapsedTime = finishTime.getTime() - startTime.getTime();
+                                    $('#' + test.method + '-finish').html(niceTime(finishTime));
+                                    $('#' + test.method + '-elapsed').html(elapsedTime);
+                                    $('#' + test.method + '-result').html('EXECPTION:  ' + ex);
+                                    console.log(ex);
+                                }
+                            });
+                        })
+                        .catch(function (err) {
+                            $('#status').html('Error');
+                            console.log(err);
+                        });
+
+
+                }
+                test();
+            });
+        </script>
+    </body>
+</html>
