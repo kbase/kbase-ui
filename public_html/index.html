@@ -15,6 +15,7 @@ and open the template in the editor.
     <body>
         <h1>Simple Taxon Test Page</h1>
         <div id="status"></div>
+        <div id="message"></div>
         <table border="1" cellpadding="4" cellspacing="0" id="testResults">
             <tr>
                 <th>
@@ -35,88 +36,84 @@ and open the template in the editor.
             </tr>           
         </table>
         <script>
-            require(['jquery', 'bluebird', 'thrift', 'utils', 'taxon'], function ($, Promise, Thrift, utils, taxon) {
-                function test() {
-                    var transport = new Thrift.TXHRTransport('http://euk.kbase.us/taxon');
-                    var protocol = new Thrift.TJSONProtocol(transport);
-                    var client = new taxon.thrift_serviceClient(protocol);
+            require(['jquery', 'utils', 'kb_taxon', 'app'], function ($, utils, Taxon, App) {
 
-                    var ref = "811/Sbicolor.JGI-v2.1";
-
-                    function niceTime(date) {
-                        return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + '.' + date.getMilliseconds();
-                    }
-
-                    var stats = {};
-                    var tests = [
-                        {
-                            method: 'get_taxonomic_id',
-                            formatter: function (data) {
-                                return data;
-                            }
-                        },
-                        {
-                            method: 'get_scientific_name',
-                            formatter: function (data) {
-                                return data;
-                            }
-                        },
-                        {
-                            method: 'get_scientific_lineage',
-                            formatter: function (data) {
-                                return data;
-                            }
-                        },
-                        {
-                            method: 'get_kingdom',
-                            formatter: function (data) {
-                                return data;
-                            }
-                        },
-                        {
-                            method: 'get_domain',
-                            formatter: function (data) {
-                                return data;
-                            }
-                        },
-                        {
-                            method: 'get_parent',
-                            formatter: function (data) {
-                                return data;
-                            }
-                        },
-                        {
-                            method: 'get_children',
-                            formatter: function (data) {
-                                if (data.length > 0) {
-                                    return data.join(', ');
-                                } else {
-                                    return 'none';
+                function test(runtime) {
+                    var stats = {},
+                        taxon = Taxon({
+                            ref: '811/Sbicolor.JGI-v2.1',
+                            runtime: runtime,
+                            serviceUrl: 'http://euk.kbase.us/taxon'
+                        }),
+                        tests = [
+                            {
+                                method: 'get_taxonomic_id',
+                                formatter: function (data) {
+                                    return data;
+                                }
+                            },
+                            {
+                                method: 'get_scientific_name',
+                                formatter: function (data) {
+                                    return data;
+                                }
+                            },
+                            {
+                                method: 'get_scientific_lineage',
+                                formatter: function (data) {
+                                    return data;
+                                }
+                            },
+                            {
+                                method: 'get_kingdom',
+                                formatter: function (data) {
+                                    return data;
+                                }
+                            },
+                            {
+                                method: 'get_domain',
+                                formatter: function (data) {
+                                    return data;
+                                }
+                            },
+                            {
+                                method: 'get_parent',
+                                formatter: function (data) {
+                                    return data;
+                                }
+                            },
+                            {
+                                method: 'get_children',
+                                formatter: function (data) {
+                                    if (data.length > 0) {
+                                        return data.join(', ');
+                                    } else {
+                                        return 'none';
+                                    }
+                                }
+                            },
+                            {
+                                method: 'get_aliases',
+                                formatter: function (data) {
+                                    if (data.length > 0) {
+                                        return data.join(', ');
+                                    } else {
+                                        return 'none';
+                                    }
+                                }
+                            },
+                            {
+                                method: 'get_genome_annotations',
+                                formatter: function (data) {
+                                    if (data.length > 0) {
+                                        return data.join(', ');
+                                    } else {
+                                        return 'none';
+                                    }
                                 }
                             }
-                        },
-                        {
-                            method: 'get_aliases',
-                            formatter: function (data) {
-                                if (data.length > 0) {
-                                    return data.join(', ');
-                                } else {
-                                    return 'none';
-                                }
-                            }
-                        },
-                        {
-                            method: 'get_genome_annotations',
-                            formatter: function (data) {
-                                if (data.length > 0) {
-                                    return data.join(', ');
-                                } else {
-                                    return 'none';
-                                }
-                            }
-                        }
 
-                    ];
+                        ];
 
                     tests.forEach(function (test) {
                         $('#testResults').append(
@@ -135,45 +132,46 @@ and open the template in the editor.
                             '</tr>');
                     });
                     $('#status').html('Logging in...');
-                    utils.login({username: 'eapearson', password: 'Oc3an1cWhal3'})
-                        .then(function (token) {
-                            $('#status').html('Logged in.');
-                            tests.forEach(function (test) {
-                                var startTime = new Date();
-                                stats[test.method] = {};
-                                stats[test.method].start = startTime;
-                                $('#' + test.method + '-start').html(niceTime(startTime));
-                                try {
-                                    Promise.resolve(client[test.method](token, ref))
-                                        .then(function (data) {
-                                            var finishTime = new Date();
-                                            var elapsedTime = finishTime.getTime() - startTime.getTime();
-                                            $('#' + test.method + '-finish').html(niceTime(finishTime));
-                                            $('#' + test.method + '-elapsed').html(elapsedTime);
-                                            $('#' + test.method + '-result').html(test.formatter(data));
-                                        })
-                                        .catch(function (err) {
-                                            $('#' + test.method + '-result').html('ERROR: ' + err);
-                                            console.log(err);
-                                        });
-                                } catch (ex) {
+
+                    $('#status').html('Logged in.');
+                    tests.forEach(function (test) {
+                        var startTime = new Date();
+                        stats[test.method] = {};
+                        stats[test.method].start = startTime;
+                        $('#' + test.method + '-start').html(utils.niceTime(startTime));
+                        try {
+                            taxon[test.method]()
+                                .then(function (data) {
                                     var finishTime = new Date();
                                     var elapsedTime = finishTime.getTime() - startTime.getTime();
-                                    $('#' + test.method + '-finish').html(niceTime(finishTime));
+                                    $('#' + test.method + '-finish').html(utils.niceTime(finishTime));
                                     $('#' + test.method + '-elapsed').html(elapsedTime);
-                                    $('#' + test.method + '-result').html('EXECPTION:  ' + ex);
-                                    console.log(ex);
-                                }
-                            });
-                        })
-                        .catch(function (err) {
-                            $('#status').html('Error');
-                            console.log(err);
-                        });
-
-
+                                    $('#' + test.method + '-result').html(test.formatter(data));
+                                    // console.log('done: ' + utils.niceTime(finishTime));
+                                })
+                                .catch(function (err) {
+                                    $('#' + test.method + '-result').html('ERROR: ' + err);
+                                    console.log(err);
+                                });
+                        } catch (ex) {
+                            var finishTime = new Date();
+                            var elapsedTime = finishTime.getTime() - startTime.getTime();
+                            $('#' + test.method + '-finish').html(utils.niceTime(finishTime));
+                            $('#' + test.method + '-elapsed').html(elapsedTime);
+                            $('#' + test.method + '-result').html('EXECPTION:  ' + ex);
+                            console.log(ex);
+                        }
+                    });
                 }
-                test();
+                App.runtime()
+                    .then(function (runtime) {
+                        test(runtime);
+                    })
+                    .catch(function (err) {
+                        $('#status').html('Error: ' + err.id + ':' + err.name);
+                        $('#message').html(err.message);
+                        console.log(err);
+                    });
             });
         </script>
     </body>

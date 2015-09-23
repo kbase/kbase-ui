@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Chartist Test</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="/bower_components/requirejs/require.js"></script>
+        <script src="/js/require-config.js"></script>
+    </head>
+    <body>
+        <h1>NVD3 Test</h1>
+        <p>A test of the NVd3 library.</p>
+        <style type="text/css">
+            #nvd3 svg {
+                width: 600px;
+                height: 400px;
+            }
+        </style>
+        <div id="nvd3"><svg></svg></div>
+        <script>
+            require([
+                'd3',
+                'nvd3',
+                'csv!iris.csv'
+            ], function (d3, nv, irisData) {
+
+                var data = [
+                    {
+                        key: 'Cumulative Return',
+                        values: [
+                            {
+                                label: 'jan',
+                                value: 50
+                            },
+                            {
+                                label: 'feb',
+                                value: 40
+                            },
+                            {
+                                label: 'mar',
+                                value: 60
+                            },
+                            {
+                                label: 'apr',
+                                value: 70
+                            },
+                            {
+                                label: 'may',
+                                value: 73
+                            },
+                            {
+                                label: 'jun',
+                                value: 75
+                            },
+                            {
+                                label: 'jul',
+                                value: 71
+                            },
+                            {
+                                label: 'aug',
+                                value: 68
+                            },
+                            {
+                                label: 'sep',
+                                value: 82
+                            },
+                            {
+                                label: 'oct',
+                                value: 54
+                            },
+                            {
+                                label: 'nov',
+                                value: 43
+                            },
+                            {
+                                label: 'dec',
+                                value: 47
+                            }
+                        ]
+                    }
+                ];
+
+
+                nv.addGraph(function () {
+                    var chart = nv.models.discreteBarChart()
+                        .x(function (d) {
+                            return d.label;
+                        })
+                        .y(function (d) {
+                            return d.value;
+                        })
+                        .staggerLabels(true)
+                        .tooltips(true)
+                        .showValues(true);
+
+                    d3.select('#nvd3 svg')
+                        .datum(data)
+                        .call(chart);
+                });
+
+            });
+        </script>
+    </body>
+</html>

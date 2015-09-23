@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Chartist Test</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="/bower_components/requirejs/require.js"></script>
+        <script src="/js/require-config.js"></script>
+    </head>
+    <body>
+        <h1>Vega Test</h1>
+        <p>A test of the Vega library.</p>
+        <div id="scatter"></div>
+        <script>
+            require([
+                'vega',
+                'csv!iris.csv'
+            ], function (Vega, irisData) {
+
+                
+
+                function makeScatter(options) {
+                    return {
+                        "width": options.width,
+                        "height": options.height,
+                        "data": [
+                            {
+                                name: 'scatter',
+                                values: options.data
+                            }
+                        ],
+                        "scales": [
+                            {
+                                "name": "x", "type": "linear",
+                                "range": "width", "zero": true,
+                                "domain": {data: 'scatter', field: 'x'}
+                            },
+                            {
+                                "name": "y", "type": "linear",
+                                "range": "height",
+                                "nice": true, "zero": true,
+                                "domain": {data: 'scatter', field: 'y'}
+                            }
+                        ],
+                        "axes": [
+                            {"type": "x", "scale": "x", "offset": 5, "ticks": 5, "title": options.xAxis.title},
+                            {"type": "y", "scale": "y", "offset": 5, "ticks": 5, "title": options.yAxis.title}
+                        ],
+                        "marks": [
+                            {
+                                "type": "symbol",
+                                "from": {"data": 'scatter'},
+                                "properties": {
+                                    "enter": {
+                                        "x": {"scale": "x", "field": "x"},
+                                        "y": {"scale": "y", "field": "y"},
+                                        "fillOpacity": {"value": 1},
+                                        "size": {"value": 20},
+                                        "fill": {"value": options.color}
+                                    }
+                                }
+                            }
+                        ]
+                    };
+                }
+                var data = (function () {
+                    var i, data = [];
+                    for (i = 0; i < 10000; i += 1) {
+                        data.push({
+                            x: Math.random() * 100,
+                            y: Math.random() * 100
+                        });
+                    }
+                    return data;
+                }());
+                var scatter = makeScatter({
+                    color: 'blue',
+                    data: data,
+                    height: 400,
+                    width: 700,
+                    xAxis: {
+                        title: 'X Axis'
+                    },
+                    yAxis: {
+                        title: 'Y Axis'
+                    }
+                });
+
+                Vega.parse.spec(scatter, function (chart) {
+                    console.log('here...');
+                    var result = chart({el: '#scatter'}).update();
+                    console.log(result);
+                    console.log('there...');
+                });
+            });
+        </script>
+    </body>
+</html>

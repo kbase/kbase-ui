@@ -198,15 +198,48 @@ define([], function () {
                     this.sessionObject = null;
                     this.error = {
                         message: errmsg
-                    }
+                    };
                     // options.error(errmsg);
                     reject(errmsg);
                 }.bind(this)
             });
         }.bind(this));
     }
+    
+    function lpad(s,c,l) {
+        var r = l - s.length;
+        if (r <= 0) {
+            return s;
+        }
+        var p = '';
+        for (var i=0; i < r; i += 1) {
+            p += c;
+        }
+        return p + s;
+    }
+    function rpad(s,c,l) {
+        var r = l - s.length;
+        if (r <= 0) {
+            return s;
+        }
+        var p = '';
+        for (var i=0; i < r; i += 1) {
+            p += c;
+        }
+        return s + p;
+    }
+    
+    function niceTime(date) {
+        return lpad(String(date.getHours()), '0', 2) + ':' + 
+               lpad(String(date.getMinutes()), '0', 2) + ':' + 
+               lpad(String(date.getSeconds()), '0', 2) + '.' + 
+               rpad(String(date.getMilliseconds()), '0', 3);
+    }
+    
+   
 
     return {
-        login: login
+        login: login,
+        niceTime: niceTime
     };
 });

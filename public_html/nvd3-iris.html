@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Chartist Test</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="/bower_components/requirejs/require.js"></script>
+        <script src="/js/require-config.js"></script>
+        <style type="text/css">
+            #nvd3 svg {
+                width: 600px;
+                height: 400px;
+                border: 1px red solid;
+                display: block;
+            };
+        </style>
+    </head>
+    <body>
+        <h1>NVD3 Test</h1>
+        <p>A test of the NVd3 library.</p>
+        
+        <div id="nvd3"><svg></svg></div>
+        <script>
+            require([
+                'd3',
+                'nvd3',
+                'csv!iris.csv'
+            ], function (d3, nv, irisData) {
+                
+                var data = [];
+                function getData(type) {
+                    return irisData.filter(function (d) {
+                        if (d[5] === type) {
+                            return true;
+                        }
+                        return false;
+                    }).map(function (d) {
+                       return {x: d[3], y: d[4]}; 
+                    });
+                }
+                data.push({
+                    key: 'Setosa',
+                    values: getData('setosa')
+                });
+                data.push({
+                    key: 'versicolor',
+                    values: getData('versicolor')
+                });
+                data.push({
+                    key: 'virginica',
+                    values: getData('virginica')
+                });
+                
+
+                nv.addGraph(function () {
+                    var chart = nv.models.scatter()
+                        .margin({top: 20, right: 20, bottom: 20, left: 20})
+                        .useVoronoi(false);
+                    
+                    d3.select('#nvd3 svg')
+                        .datum(data)
+                        .call(chart);
+                });
+
+            });
+        </script>
+    </body>
+</html>

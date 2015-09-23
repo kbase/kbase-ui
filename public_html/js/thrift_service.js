@@ -39,20 +39,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 1:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.token = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 2:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.ref = input.readString().value;
                     } else {
                         input.skip(ftype);
@@ -109,20 +109,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 0:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.success = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 1:
-                    if (ftype == Thrift.Type.STRUCT) {
+                    if (ftype === Thrift.Type.STRUCT) {
                         this.failure = new taxon.ServiceException();
                         this.failure.read(input);
                     } else {
@@ -176,20 +176,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 1:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.token = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 2:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.ref = input.readString().value;
                     } else {
                         input.skip(ftype);
@@ -246,13 +246,13 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 0:
-                    if (ftype == Thrift.Type.LIST) {
+                    if (ftype === Thrift.Type.LIST) {
                         var _size10 = 0;
                         var _rtmp314;
                         this.success = [];
@@ -272,7 +272,7 @@ define([
                     }
                     break;
                 case 1:
-                    if (ftype == Thrift.Type.STRUCT) {
+                    if (ftype === Thrift.Type.STRUCT) {
                         this.failure = new taxon.ServiceException();
                         this.failure.read(input);
                     } else {
@@ -335,20 +335,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 1:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.token = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 2:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.ref = input.readString().value;
                     } else {
                         input.skip(ftype);
@@ -405,13 +405,13 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 0:
-                    if (ftype == Thrift.Type.LIST) {
+                    if (ftype === Thrift.Type.LIST) {
                         var _size18 = 0;
                         var _rtmp322;
                         this.success = [];
@@ -431,7 +431,7 @@ define([
                     }
                     break;
                 case 1:
-                    if (ftype == Thrift.Type.STRUCT) {
+                    if (ftype === Thrift.Type.STRUCT) {
                         this.failure = new taxon.ServiceException();
                         this.failure.read(input);
                     } else {
@@ -494,20 +494,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 1:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.token = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 2:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.ref = input.readString().value;
                     } else {
                         input.skip(ftype);
@@ -564,20 +564,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 0:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.success = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 1:
-                    if (ftype == Thrift.Type.STRUCT) {
+                    if (ftype === Thrift.Type.STRUCT) {
                         this.failure = new taxon.ServiceException();
                         this.failure.read(input);
                     } else {
@@ -631,20 +631,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 1:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.token = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 2:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.ref = input.readString().value;
                     } else {
                         input.skip(ftype);
@@ -701,20 +701,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 0:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.success = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 1:
-                    if (ftype == Thrift.Type.STRUCT) {
+                    if (ftype === Thrift.Type.STRUCT) {
                         this.failure = new taxon.ServiceException();
                         this.failure.read(input);
                     } else {
@@ -768,20 +768,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 1:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.token = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 2:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.ref = input.readString().value;
                     } else {
                         input.skip(ftype);
@@ -838,20 +838,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 0:
-                    if (ftype == Thrift.Type.I32) {
+                    if (ftype === Thrift.Type.I32) {
                         this.success = input.readI32().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 1:
-                    if (ftype == Thrift.Type.STRUCT) {
+                    if (ftype === Thrift.Type.STRUCT) {
                         this.failure = new taxon.ServiceException();
                         this.failure.read(input);
                     } else {
@@ -905,20 +905,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 1:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.token = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 2:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.ref = input.readString().value;
                     } else {
                         input.skip(ftype);
@@ -975,20 +975,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 0:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.success = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 1:
-                    if (ftype == Thrift.Type.STRUCT) {
+                    if (ftype === Thrift.Type.STRUCT) {
                         this.failure = new taxon.ServiceException();
                         this.failure.read(input);
                     } else {
@@ -1042,20 +1042,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 1:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.token = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 2:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.ref = input.readString().value;
                     } else {
                         input.skip(ftype);
@@ -1112,20 +1112,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 0:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.success = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 1:
-                    if (ftype == Thrift.Type.STRUCT) {
+                    if (ftype === Thrift.Type.STRUCT) {
                         this.failure = new taxon.ServiceException();
                         this.failure.read(input);
                     } else {
@@ -1179,20 +1179,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 1:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.token = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 2:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.ref = input.readString().value;
                     } else {
                         input.skip(ftype);
@@ -1249,20 +1249,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 0:
-                    if (ftype == Thrift.Type.BYTE) {
+                    if (ftype === Thrift.Type.BYTE) {
                         this.success = input.readByte().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 1:
-                    if (ftype == Thrift.Type.STRUCT) {
+                    if (ftype === Thrift.Type.STRUCT) {
                         this.failure = new taxon.ServiceException();
                         this.failure.read(input);
                     } else {
@@ -1316,20 +1316,20 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 1:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.token = input.readString().value;
                     } else {
                         input.skip(ftype);
                     }
                     break;
                 case 2:
-                    if (ftype == Thrift.Type.STRING) {
+                    if (ftype === Thrift.Type.STRING) {
                         this.ref = input.readString().value;
                     } else {
                         input.skip(ftype);
@@ -1386,13 +1386,13 @@ define([
             var fname = ret.fname;
             var ftype = ret.ftype;
             var fid = ret.fid;
-            if (ftype == Thrift.Type.STOP) {
+            if (ftype === Thrift.Type.STOP) {
                 break;
             }
             switch (fid)
             {
                 case 0:
-                    if (ftype == Thrift.Type.LIST) {
+                    if (ftype === Thrift.Type.LIST) {
                         var _size26 = 0;
                         var _rtmp330;
                         this.success = [];
@@ -1412,7 +1412,7 @@ define([
                     }
                     break;
                 case 1:
-                    if (ftype == Thrift.Type.STRUCT) {
+                    if (ftype === Thrift.Type.STRUCT) {
                         this.failure = new taxon.ServiceException();
                         this.failure.read(input);
                     } else {
@@ -1486,7 +1486,7 @@ define([
         var fname = ret.fname;
         var mtype = ret.mtype;
         var rseqid = ret.rseqid;
-        if (mtype == Thrift.MessageType.EXCEPTION) {
+        if (mtype === Thrift.MessageType.EXCEPTION) {
             var x = new Thrift.TApplicationException();
             x.read(this.input);
             this.input.readMessageEnd();
@@ -1530,7 +1530,7 @@ define([
         var fname = ret.fname;
         var mtype = ret.mtype;
         var rseqid = ret.rseqid;
-        if (mtype == Thrift.MessageType.EXCEPTION) {
+        if (mtype === Thrift.MessageType.EXCEPTION) {
             var x = new Thrift.TApplicationException();
             x.read(this.input);
             this.input.readMessageEnd();
@@ -1574,7 +1574,7 @@ define([
         var fname = ret.fname;
         var mtype = ret.mtype;
         var rseqid = ret.rseqid;
-        if (mtype == Thrift.MessageType.EXCEPTION) {
+        if (mtype === Thrift.MessageType.EXCEPTION) {
             var x = new Thrift.TApplicationException();
             x.read(this.input);
             this.input.readMessageEnd();
@@ -1618,7 +1618,7 @@ define([
         var fname = ret.fname;
         var mtype = ret.mtype;
         var rseqid = ret.rseqid;
-        if (mtype == Thrift.MessageType.EXCEPTION) {
+        if (mtype === Thrift.MessageType.EXCEPTION) {
             var x = new Thrift.TApplicationException();
             x.read(this.input);
             this.input.readMessageEnd();
@@ -1662,7 +1662,7 @@ define([
         var fname = ret.fname;
         var mtype = ret.mtype;
         var rseqid = ret.rseqid;
-        if (mtype == Thrift.MessageType.EXCEPTION) {
+        if (mtype === Thrift.MessageType.EXCEPTION) {
             var x = new Thrift.TApplicationException();
             x.read(this.input);
             this.input.readMessageEnd();
@@ -1706,7 +1706,7 @@ define([
         var fname = ret.fname;
         var mtype = ret.mtype;
         var rseqid = ret.rseqid;
-        if (mtype == Thrift.MessageType.EXCEPTION) {
+        if (mtype === Thrift.MessageType.EXCEPTION) {
             var x = new Thrift.TApplicationException();
             x.read(this.input);
             this.input.readMessageEnd();
@@ -1750,7 +1750,7 @@ define([
         var fname = ret.fname;
         var mtype = ret.mtype;
         var rseqid = ret.rseqid;
-        if (mtype == Thrift.MessageType.EXCEPTION) {
+        if (mtype === Thrift.MessageType.EXCEPTION) {
             var x = new Thrift.TApplicationException();
             x.read(this.input);
             this.input.readMessageEnd();
@@ -1794,7 +1794,7 @@ define([
         var fname = ret.fname;
         var mtype = ret.mtype;
         var rseqid = ret.rseqid;
-        if (mtype == Thrift.MessageType.EXCEPTION) {
+        if (mtype === Thrift.MessageType.EXCEPTION) {
             var x = new Thrift.TApplicationException();
             x.read(this.input);
             this.input.readMessageEnd();
@@ -1838,7 +1838,7 @@ define([
         var fname = ret.fname;
         var mtype = ret.mtype;
         var rseqid = ret.rseqid;
-        if (mtype == Thrift.MessageType.EXCEPTION) {
+        if (mtype === Thrift.MessageType.EXCEPTION) {
             var x = new Thrift.TApplicationException();
             x.read(this.input);
             this.input.readMessageEnd();
@@ -1882,7 +1882,7 @@ define([
         var fname = ret.fname;
         var mtype = ret.mtype;
         var rseqid = ret.rseqid;
-        if (mtype == Thrift.MessageType.EXCEPTION) {
+        if (mtype === Thrift.MessageType.EXCEPTION) {
             var x = new Thrift.TApplicationException();
             x.read(this.input);
             this.input.readMessageEnd();

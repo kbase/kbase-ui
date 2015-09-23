@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Chartist Test</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="/bower_components/requirejs/require.js"></script>
+        <script src="/js/require-config.js"></script>
+    </head>
+    <body>
+        <h1>Vega Multi-Scatter Test</h1>
+        <a href="vega-histogram.html">histogram</a> - <a href="vega-multivariate.html">multivariate</a> - <a href="vega-regression.html">regression</a> - <a href="vega-scatter.html">scatter</a>
+        <div id="scatter"></div>
+        <script>
+            require([
+                'vega',
+                'csv!iris.csv'
+            ], function (Vega, irisData) {
+
+                var data = [];
+               function getData(type) {
+                    return irisData
+                        .filter(function (d) {
+                            if (d[5] === type) {
+                                return true;
+                            }
+                            return false;
+                        })
+                        .map(function (d) {
+                            return {
+                                sepalLength: d[1],
+                                sepalWidth: d[2],
+                                petalLength: d[3],
+                                petalWidth: d[4]
+                            };
+                        })
+                        .map(function (d) {
+                            return {x: d.petalLength, y: d.petalWidth};
+                        });
+                }
+                data.push({
+                    name: 'setosa',
+                    color: 'green',
+                    values: getData('setosa')
+                });
+                data.push({
+                    name: 'versicolor',
+                    color: 'orange',
+                    values: getData('versicolor')
+                });
+                data.push({
+                    name: 'virginica',
+                    color: 'blue',
+                    values: getData('virginica')
+                });
+
+
+
+                function makeScatter(options) {
+                    return {
+                        "width": options.width,
+                        "height": options.height,
+                        "data": data,
+                        "scales": [
+                            {
+                                "name": "x", "type": "linear",
+                                "range": "width", "zero": true,
+                                "domain": {
+                                    fields: options.data.map(function (d) {
+                                        return {
+                                            data: d.name,
+                                            field: 'x'
+                                        };
+                                    })
+                                }
+                            },
+                            {
+                                "name": "y", "type": "linear",
+                                "range": "height",
+                                "nice": true, "zero": true,
+                                "domain": {
+                                    fields: options.data.map(function (d) {
+                                        return {
+                                            data: d.name,
+                                            field: 'y'
+                                        };
+                                    })
+                                }
+                            }
+                        ],
+                        "axes": [
+                            {"type": "x", "scale": "x", "offset": 5, "ticks": 5, "title": options.xAxis.title},
+                            {"type": "y", "scale": "y", "offset": 5, "ticks": 5, "title": options.yAxis.title}
+                        ],
+                        "marks": options.data.map(function (d) {
+                            return {
+                                "type": "symbol",
+                                "from": {"data": d.name},
+                                "properties": {
+                                    "enter": {
+                                        "x": {"scale": "x", "field": "x"},
+                                        "y": {"scale": "y", "field": "y"},
+                                        "fillOpacity": {"value": 1},
+                                        "size": {"value": 100},
+                                        "fill": {"value": d.color}
+                                    }
+                                }
+                            }
+                        })
+                    };
+                }
+
+                var spec = {
+                    "width": 400,
+                    "height": 400,
+                    "data": data,
+                    "scales": [
+                        {
+                            "name": "x", "type": "linear",
+                            "range": "width", "zero": false,
+                            "domain": {
+                                fields: [
+                                    {"data": "setosa", "field": "x"},
+                                    {"data": "versicolor", "field": "x"},
+                                    {"data": "virginica", "field": "x"}
+                                ]
+                            }
+                        },
+                        {
+                            "name": "y", "type": "linear",
+                            "range": "height",
+                            "nice": true, "zero": false,
+                            "domain": {
+                                fields: [
+                                    {"data": "setosa", "field": "y"},
+                                    {"data": "versicolor", "field": "y"},
+                                    {"data": "virginica", "field": "y"}
+                                ]
+                            }
+                        }
+                    ],
+                    "axes": [
+                        {"type": "x", "scale": "x", "offset": 5, "ticks": 5, "title": "Sepal Width"},
+                        {"type": "y", "scale": "y", "offset": 5, "ticks": 5, "title": "Petal Length"}
+                    ],
+                    "marks": [
+                        {
+                            "type": "symbol",
+                            "from": {"data": "setosa"},
+                            "properties": {
+                                "enter": {
+                                    "x": {"scale": "x", "field": "x"},
+                                    "y": {"scale": "y", "field": "y"},
+                                    "fillOpacity": {"value": 1},
+                                    "size": {"value": 100},
+                                    "fill": {"value": "grey"}
+                                },
+                                "update": {
+                                    "fill":
+                                        {"value": "grey"}
+                                }
+                            }
+                        },
+                        {
+                            "type": "symbol",
+                            "from": {"data": "versicolor"},
+                            "properties": {
+                                "enter": {
+                                    "x": {"scale": "x", "field": "x"},
+                                    "y": {"scale": "y", "field": "y"},
+                                    "fillOpacity": {"value": 1},
+                                    "size": {"value": 100},
+                                    "fill": {"value": "orange"}
+                                }
+                            }
+                        },
+                        {
+                            "type": "symbol",
+                            "from": {"data": "virginica"},
+                            "properties": {
+                                "enter": {
+                                    "x": {"scale": "x", "field": "x"},
+                                    "y": {"scale": "y", "field": "y"},
+                                    "fillOpacity": {"value": 1},
+                                    "size": {"value": 100},
+                                    "fill": {"value": "blue"}
+                                }
+                            }
+                        }
+                    ]
+                };
+
+                var scatter = makeScatter({
+                    data: data,
+                    height: 400,
+                    width: 700,
+                    xAxis: {
+                        title: 'Sepal Width'
+                    },
+                    yAxis: {
+                        title: 'Petal Length'
+                    }
+                });
+
+                Vega.parse.spec(scatter, function (chart) {
+                    console.log('here...');
+                    var result = chart({el: '#scatter'}).update();
+                    console.log(result);
+                    console.log('there...');
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -42,7 +42,7 @@
 
 define([
     'jquery'
-], function ($) {
+], function (jQuery) {
     var Thrift = {
         /**
          * Thrift JavaScript library version.
@@ -382,14 +382,14 @@ define([
          * @throws {string} If the jQuery version is prior to 1.5 or if jQuery is not found.
          */
         jqRequest: function (client, postData, args, recv_method) {
-//            if (typeof jQuery === 'undefined' ||
-//                typeof jQuery.Deferred === 'undefined') {
-//                throw 'Thrift.js requires jQuery 1.5+ to use asynchronous requests';
-//            }
+            if (typeof jQuery === 'undefined' ||
+                typeof jQuery.Deferred === 'undefined') {
+                throw 'Thrift.js requires jQuery 1.5+ to use asynchronous requests';
+            }
 
             var thriftTransport = this;
 
-            var jqXHR = $.ajax({
+            var jqXHR = jQuery.ajax({
                 url: this.url,
                 data: postData,
                 type: 'POST',
@@ -404,7 +404,7 @@ define([
                     }
                 },
                 context: client,
-                success: $.makeArray(args).pop()
+                success: jQuery.makeArray(args).pop()
             });
 
             return jqXHR;
@@ -982,13 +982,13 @@ define([
             this.rstack = [];
             this.rpos = [];
 
-//            if (typeof JSON !== 'undefined' && typeof JSON.parse === 'function') {
-//                this.robj = JSON.parse(this.transport.readAll());
-//            } else if (typeof jQuery !== 'undefined') {
-                this.robj = $.parseJSON(this.transport.readAll());
-//            } else {
-//                this.robj = eval(this.transport.readAll());
-//            }
+            if (typeof JSON !== 'undefined' && typeof JSON.parse === 'function') {
+                this.robj = JSON.parse(this.transport.readAll());
+            } else if (typeof jQuery !== 'undefined') {
+                this.robj = jQuery.parseJSON(this.transport.readAll());
+            } else {
+                this.robj = eval(this.transport.readAll());
+            }
 
             var r = {};
             var version = this.robj.shift();
