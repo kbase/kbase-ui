@@ -5,8 +5,9 @@
 define([
    'bluebird',
    'utils',
-   'kb_common_session'
-], function (Promise, utils, sessionFactory) {
+   'kb_common_session',
+   'kb_common_pluginManager'
+], function (Promise, utils, sessionFactory, pluginManagerFactory) {
     'use strict';
     
     function factory() {
@@ -16,7 +17,8 @@ define([
                 cookieName: 'testSession',
                 loginUrl: 'https://kbase.us/services/authorization/Sessions/Login',
                 cookieMaxAge: 100000
-            });
+            }),
+            pluginManager = pluginManagerFactory.make();
 
         function getConfig(prop, defaultValue) {
             return null;
@@ -30,6 +32,9 @@ define([
         function login(arg) {
             return session.login(arg);
         }
+        function installPlugins(plugins) {
+            return pluginManager.installPlugins(plugins);
+        }
         
         // Creation tasks
         
@@ -37,7 +42,8 @@ define([
             getConfig: getConfig,
             getAuthToken: getAuthToken,
             isLoggedIn: isLoggedIn,
-            login: login
+            login: login,
+            installPlugins: installPlugins
         };
         function begin() {
             var loginOptions = {
@@ -69,7 +75,7 @@ define([
         };
     }
     return {
-        runtime: function () {
+        run: function () {
             var runtime = factory();
             return runtime.begin();
         }

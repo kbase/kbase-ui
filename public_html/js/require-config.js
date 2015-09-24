@@ -10,6 +10,8 @@ require.config({
         // ----------------------
         text: 'bower_components/requirejs-text/text',
         json: 'bower_components/requirejs-json/json',
+        yaml: 'bower_components/require-yaml/yaml',
+        'js-yaml': 'bower_components/js-yaml/dist/js-yaml',
         csv: 'js/requirejs-csv',
         jquery: 'bower_components/jquery/dist/jquery',
         bluebird: 'bower_components/bluebird/js/browser/bluebird',
@@ -28,6 +30,7 @@ require.config({
         kb_common_cookie: 'bower_components/kbase-common-js/src/js/cookie',
         kb_common_config: 'bower_components/kbase-common-js/src/js/config',
         kb_common_logger: 'bower_components/kbase-common-js/src/js/logger',
+        kb_common_pluginManager: 'js/pluginManager',
         thrift: 'js/kb-thrift',
         utils: 'js/Utils',
         error: 'js/Error', 

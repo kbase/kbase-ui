@@ -36,13 +36,17 @@ and open the template in the editor.
             </tr>           
         </table>
         <script>
-            require(['jquery', 'utils', 'kb_taxon', 'app'], function ($, utils, Taxon, App) {
-
+            require([
+                'jquery',
+                'utils',
+                'kb_taxon',
+                'app'
+            ], function ($, utils, Taxon, App) {
                 function test(runtime) {
                     var stats = {},
                         taxon = Taxon({
                             ref: '811/Sbicolor.JGI-v2.1',
-                            runtime: runtime,
+                            token: runtime.getAuthToken(),
                             serviceUrl: 'http://euk.kbase.us/taxon'
                         }),
                         tests = [
@@ -163,8 +167,15 @@ and open the template in the editor.
                         }
                     });
                 }
-                App.runtime()
+                App.run()
                     .then(function (runtime) {
+                        if (!runtime.isLoggedIn()) {
+                            throw error.getErrorObject({
+                                name: 'NoAuth',
+                                message: 'No Authorization found; Authorization is required for the data api',
+                                suggestion: 'Umm, there should be a way for the user to log in...'
+                            });
+                        }
                         test(runtime);
                     })
                     .catch(function (err) {

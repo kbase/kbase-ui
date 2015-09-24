@@ -1,0 +1,28 @@
+## YAML Template.
+---
+package:
+    author: Erik Pearson
+    name: test
+    description: A test plugin
+    date: September 24, 2015
+    version: 0.0.1
+source:
+    modules:
+        -
+            module: kb_test_test
+            file: test
+    styles:
+        -
+            file: styles.css
+install:
+    routes:
+        -
+            path: ['dashboard']
+            panelFactory: kb_panel_dashboard
+    menu:
+        -
+            name: dashboard
+            definition:
+                path: ['dashboard']
+                label: Dashbaord
+                icon: dashboard
