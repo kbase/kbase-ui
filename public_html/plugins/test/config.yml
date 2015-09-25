@@ -11,18 +11,24 @@ source:
         -
             module: kb_test_test
             file: test
-    styles:
-        -
-            file: styles.css
+    #styles:
+    #    -
+    #        file: styles.css
 install:
+    widgets:
+        -
+            module: kb_test_test
+            id: test
+            type: factory
     routes:
         -
-            path: ['dashboard']
-            panelFactory: kb_panel_dashboard
+            path: ['test']
+            widget: test
     menu:
         -
-            name: dashboard
+            name: test
+            menus: ['authenticated']
             definition:
-                path: ['dashboard']
-                label: Dashbaord
-                icon: dashboard
+                path: ['test']
+                label: Test
+                icon: fire

@@ -1,0 +1,41 @@
+## YAML Template.
+---
+package:
+    author: Erik Pearson
+    name: taxontest
+    description: A test of the taxon api
+    date: September 24, 2015
+    version: 0.0.1
+source:
+    modules:
+        -
+            module: kb_taxontest_panel
+            file: panel
+        -
+            module: kb_taxontest_widget_lineage
+            file: lineageWidget
+install:
+    widgets:
+        -
+            module: kb_taxontest_panel
+            id: taxontestPanel
+            type: factory
+        -
+            module: kb_taxontest_widget_lineage
+            id: lineageWidget
+            type: factory
+                
+    routes:
+        -
+            path: ['taxontest', 'lineage', 
+                    {type: 'param', name: 'workspace'},
+                    {type: 'param', name: 'object'}]
+            widget: lineageWidget
+    menu:
+        -
+            name: taxonlineage
+            menus: ['authenticated']
+            definition:
+                path: ['taxontest', 'lineage', '811', 'Sbicolor.JGI-v2.1']
+                label: Taxon Lineage
+                icon: tree

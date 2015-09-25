@@ -60,7 +60,7 @@ and open the template in the editor.
                                         "x": {"scale": "x", "field": "x"},
                                         "y": {"scale": "y", "field": "y"},
                                         "fillOpacity": {"value": 1},
-                                        "size": {"value": 20},
+                                        "size": {"value": options.size},
                                         "fill": {"value": options.color}
                                     }
                                 }
@@ -80,6 +80,7 @@ and open the template in the editor.
                 }());
                 var scatter = makeScatter({
                     color: 'blue',
+                    size: 20,
                     data: data,
                     height: 400,
                     width: 700,

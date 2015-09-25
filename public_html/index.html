@@ -1,174 +1,126 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
+<html lang="en">
     <head>
-        <title>TODO supply a title</title>
+        <title>Taxon Data API Test - Widget</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="/bower_components/requirejs/require.js"></script>
         <script src="/js/require-config.js"></script>
+        <style type="text/css">
+            .errorWidget {
+                border: 1px red solid;
+                border-radius: 4px;
+                padding: 4px;
+                margin: 4px;
+            }
+            .label {
+                font-weight: bold;
+                color: gray;
+                width: 100px;
+                display: inline-block;
+            }
+        </style>
+        
+        
+        
+                <!-- external css -->
+        <link rel="stylesheet" type="text/css" href="/bower_components/font-awesome/css/font-awesome.css" />
+        <link rel="stylesheet" type="text/css" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
+
+        <!-- TODO: all into require! -->
+        <!-- kbase enhancements or overrides for bootstrap -->
+        <link rel="stylesheet" type="text/css" href="/css/kb-bootstrap.css" />
+        <link rel="stylesheet" type="text/css" href="/css/kb-icons.css" />
+
+        <!-- need to rethink these styles... fold into main -->
+        <!-- but for now ... keep here -->
+        <link rel="stylesheet" type="text/css" href="/css/kb-ui.css" />
+
+        
+        
     </head>
     <body>
-        <h1>Simple Taxon Test Page</h1>
+        <div id="root"></div>
+        <!--
         <div id="status"></div>
-        <div id="message"></div>
-        <table border="1" cellpadding="4" cellspacing="0" id="testResults">
-            <tr>
-                <th>
-                    method
-                </th>
-                <th>
-                    start
-                </th>
-                <th>
-                    finish
-                </th>
-                <th>
-                    elapsed
-                </th>
-                <th>
-                    result
-                </th>
-            </tr>           
-        </table>
+        <div id="error" class="errorWidget" style="display: none; border: 1px red solid;">
+            <div data-field="name">
+                <span data-name="label" class="label">Name</span>
+                <span data-name="value" class="value"></span>
+            </div>
+            <div data-field="subject">
+                <span data-name="label" class="label">Subject</span>
+                <span data-name="value" class="value"></span>
+            </div>
+            <div data-field="type">
+                <span data-name="label" class="label">Type</span>
+                <span data-name="value" class="value"></span>
+            </div>
+            <div data-field="message">
+                <span data-name="label" class="label">Message</span>
+                <span data-name="value" class="value"></span>
+            </div>
+            <div data-field="suggestion">
+                <span data-name="label" class="label">Suggestion</span>
+                <span data-name="value" class="value"></span>
+            </div>
+            <div data-field="infoUrl">
+                <span data-name="label" class="label">Info</span>
+                <span data-name="value" class="value"></span>
+            </div>
+            <div data-field="stack">
+                <span data-name="label" class="label">Stack trace</span>
+                <span data-name="value" class="value"></span>
+            </div>
+        </div>
+        -->
         <script>
             require([
-                'jquery',
-                'utils',
-                'kb_taxon',
-                'app'
-            ], function ($, utils, Taxon, App) {
-                function test(runtime) {
-                    var stats = {},
-                        taxon = Taxon({
-                            ref: '811/Sbicolor.JGI-v2.1',
-                            token: runtime.getAuthToken(),
-                            serviceUrl: 'http://euk.kbase.us/taxon'
-                        }),
-                        tests = [
-                            {
-                                method: 'get_taxonomic_id',
-                                formatter: function (data) {
-                                    return data;
-                                }
-                            },
-                            {
-                                method: 'get_scientific_name',
-                                formatter: function (data) {
-                                    return data;
-                                }
-                            },
-                            {
-                                method: 'get_scientific_lineage',
-                                formatter: function (data) {
-                                    return data;
-                                }
-                            },
-                            {
-                                method: 'get_kingdom',
-                                formatter: function (data) {
-                                    return data;
-                                }
-                            },
-                            {
-                                method: 'get_domain',
-                                formatter: function (data) {
-                                    return data;
-                                }
-                            },
-                            {
-                                method: 'get_parent',
-                                formatter: function (data) {
-                                    return data;
-                                }
-                            },
-                            {
-                                method: 'get_children',
-                                formatter: function (data) {
-                                    if (data.length > 0) {
-                                        return data.join(', ');
-                                    } else {
-                                        return 'none';
-                                    }
-                                }
-                            },
-                            {
-                                method: 'get_aliases',
-                                formatter: function (data) {
-                                    if (data.length > 0) {
-                                        return data.join(', ');
-                                    } else {
-                                        return 'none';
-                                    }
-                                }
-                            },
-                            {
-                                method: 'get_genome_annotations',
-                                formatter: function (data) {
-                                    if (data.length > 0) {
-                                        return data.join(', ');
-                                    } else {
-                                        return 'none';
-                                    }
-                                }
-                            }
-
-                        ];
-
-                    tests.forEach(function (test) {
-                        $('#testResults').append(
-                            '<tr>' +
-                            '<td>' +
-                            test.method +
-                            '</td>' +
-                            '<td id="' + test.method + '-start">' +
-                            '</td>' +
-                            '<td id="' + test.method + '-finish">' +
-                            '</td>' +
-                            '<td id="' + test.method + '-elapsed">' +
-                            '</td>' +
-                            '<td id="' + test.method + '-result">' +
-                            '</td>' +
-                            '</tr>');
-                    });
-                    $('#status').html('Logging in...');
-
-                    $('#status').html('Logged in.');
-                    tests.forEach(function (test) {
-                        var startTime = new Date();
-                        stats[test.method] = {};
-                        stats[test.method].start = startTime;
-                        $('#' + test.method + '-start').html(utils.niceTime(startTime));
-                        try {
-                            taxon[test.method]()
-                                .then(function (data) {
-                                    var finishTime = new Date();
-                                    var elapsedTime = finishTime.getTime() - startTime.getTime();
-                                    $('#' + test.method + '-finish').html(utils.niceTime(finishTime));
-                                    $('#' + test.method + '-elapsed').html(elapsedTime);
-                                    $('#' + test.method + '-result').html(test.formatter(data));
-                                    // console.log('done: ' + utils.niceTime(finishTime));
-                                })
-                                .catch(function (err) {
-                                    $('#' + test.method + '-result').html('ERROR: ' + err);
-                                    console.log(err);
-                                });
-                        } catch (ex) {
-                            var finishTime = new Date();
-                            var elapsedTime = finishTime.getTime() - startTime.getTime();
-                            $('#' + test.method + '-finish').html(utils.niceTime(finishTime));
-                            $('#' + test.method + '-elapsed').html(elapsedTime);
-                            $('#' + test.method + '-result').html('EXECPTION:  ' + ex);
-                            console.log(ex);
-                        }
-                    });
+                'app',
+                'bluebird',
+                'kb_common_html',
+                'kb_common_dom',
+                'error'
+            ], function (App, Promise, html, dom, error) {
+                
+                function makeSymbol(s) {
+                    return s.trim(' ').replace(/ /, '_');
                 }
-                App.run()
+                function setErrorField(name, ex) {
+                    var selector = '[data-field="' + name + '"] > span[data-name="value"]';
+                    dom.setHtml(selector, ex[name]);
+                }
+                function displayStatus(msg) {
+                    return;
+                    // dom.setHtml(dom.qs('#status'), 'started');
+                }
+                function displayError(ex) {
+                    return;
+                    // for now...
+                    ['name', 'subject', 'type', 'message', 'suggestion', 'infoUrl', 'stack'].forEach(function (name) {
+                        setErrorField(name, ex);
+                    });
+                    dom.qs('#error').style.display = 'block';
+                }
+                displayStatus('running');
+                // dom.qs('#status').innerHTML = 'running...';
+                var R;
+                App.run({
+                    nodes: {
+                        root: {
+                            selector: '#root'
+                        },
+                        error: {
+                            selector: '#error'
+                        },
+                        status: {
+                            selector: '#status'
+                        }
+                    },
+                    plugins: ['mainwindow', 'message', 'test', 'taxontest', 'vegatest']
+                })
                     .then(function (runtime) {
+                        R = runtime;
                         if (!runtime.isLoggedIn()) {
                             throw error.getErrorObject({
                                 name: 'NoAuth',
@@ -176,11 +128,14 @@ and open the template in the editor.
                                 suggestion: 'Umm, there should be a way for the user to log in...'
                             });
                         }
-                        test(runtime);
+                        runtime.send('menuService', 'debug');
+                        displayStatus('started');
+                    })
+                    .then(function () {
+                        R.send('ui', 'setTitle', 'It is ALIVE!');                       
                     })
                     .catch(function (err) {
-                        $('#status').html('Error: ' + err.id + ':' + err.name);
-                        $('#message').html(err.message);
+                        displayError(err);
                         console.log(err);
                     });
             });

@@ -1,0 +1,37 @@
+## Welcome Panel
+---
+package:
+    name: welcome
+    description: A welcome page
+    author: Erik Pearson
+    date: September 14, 2015
+    version: 0.0.1
+source:
+    modules:
+        -
+            module: kb_widget_welcome
+            file: panel
+install:
+    # Register the welcome widget
+    widgets:
+        - 
+            module: kb_widget_welcome
+            id: welcome
+            type: factory
+    # Set up a route to install that widget in the main body view
+    routes:
+        -
+            path: ['welcome']
+            widget: welcome
+        -
+            path: []
+            widget: welcome            
+    # Set up a menu item to invoke the path above
+    menu:
+        -
+            name: welcome
+            definition:
+                path: welcome
+                label: Welcome!
+                icon: hand-peace-o
+            

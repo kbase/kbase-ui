@@ -12,45 +12,143 @@ define([
                 padding: {top: 10, left: 30, bottom: 30, right: 10},
                 data: [
                     {
-                        name: "columnData",
+                        name: 'columnData',
                         values: options.data
                     }
                 ],
                 scales: [
                     {
-                        name: "x",
-                        type: "ordinal",
-                        range: "width",
-                        domain: {data: "columnData", field: "label"}
+                        name: 'x',
+                        type: 'ordinal',
+                        range: 'width',
+                        domain: {data: 'columnData', field: 'label'}
                     },
                     {
-                        name: "y",
-                        type: "linear",
-                        range: "height",
-                        domain: {data: "columnData", field: "value"},
+                        name: 'y',
+                        type: 'linear',
+                        range: 'height',
+                        domain: {data: 'columnData', field: 'value'},
                         nice: true
                     }
                 ],
                 axes: [
-                    {type: "x", scale: "x"},
-                    {type: "y", scale: "y"}
+                    {type: 'x', scale: 'x'},
+                    {type: 'y', scale: 'y'}
                 ],
                 marks: [
                     {
-                        type: "rect",
-                        from: {data: "columnData"},
+                        type: 'rect',
+                        from: {data: 'columnData'},
                         properties: {
                             enter: {
-                                x: {scale: "x", field: "label"},
-                                width: {scale: "x", band: true, offset: -1},
-                                y: {scale: "y", field: "value"},
-                                y2: {scale: "y", value: 0}
+                                x: {scale: 'x', field: 'label'},
+                                width: {scale: 'x', band: true, offset: -1},
+                                y: {scale: 'y', field: 'value'},
+                                y2: {scale: 'y', value: 0}
                             },
                             update: {
                                 fill: {value: options.color}
                             },
                             hover: {
                                 fill: {value: options.hover.color}
+                            }
+                        }
+                    }
+                ]
+            };
+        }
+
+        function makeScatterSetSpec(options) {
+            return {
+                width: options.width,
+                height: options.height,
+                data: options.data,
+                scales: [
+                    {
+                        name: 'x', type: 'linear',
+                        range: 'width', zero: true,
+                        domain: {
+                            fields: options.data.map(function (d) {
+                                return {
+                                    data: d.name,
+                                    field: 'x'
+                                };
+                            })
+                        }
+                    },
+                    {
+                        name: 'y', type: 'linear',
+                        range: 'height',
+                        nice: true, zero: true,
+                        domain: {
+                            fields: options.data.map(function (d) {
+                                return {
+                                    data: d.name,
+                                    field: 'y'
+                                };
+                            })
+                        }
+                    }
+                ],
+                axes: [
+                    {type: 'x', scale: 'x', offset: 5, ticks: 5, title: options.xAxis.title},
+                    {type: 'y', scale: 'y', offset: 5, ticks: 5, title: options.yAxis.title}
+                ],
+                marks: options.data.map(function (d) {
+                    return {
+                        type: 'symbol',
+                        from: {'data': d.name},
+                        properties: {
+                            enter: {
+                                x: {scale: 'x', field: 'x'},
+                                y: {scale: 'y', field: 'y'},
+                                fillOpacity: {value: 1},
+                                size: {value: 100},
+                                fill: {value: d.color}
+                            }
+                        }
+                    };
+                })
+            };
+        }
+        function makeScatterSpec(options) {
+            return {
+                "width": options.width,
+                "height": options.height,
+                "data": [
+                    {
+                        name: 'scatter',
+                        values: options.data
+                    }
+                ],
+                "scales": [
+                    {
+                        "name": "x", "type": "linear",
+                        "range": "width", "zero": true,
+                        "domain": {data: 'scatter', field: 'x'}
+                    },
+                    {
+                        "name": "y", "type": "linear",
+                        "range": "height",
+                        "nice": true, "zero": true,
+                        "domain": {data: 'scatter', field: 'y'}
+                    }
+                ],
+                "axes": [
+                    {"type": "x", "scale": "x", "offset": 5, "ticks": 5, "title": options.xAxis.title},
+                    {"type": "y", "scale": "y", "offset": 5, "ticks": 5, "title": options.yAxis.title}
+                ],
+                "marks": [
+                    {
+                        "type": "symbol",
+                        "from": {"data": 'scatter'},
+                        "properties": {
+                            "enter": {
+                                "x": {"scale": "x", "field": "x"},
+                                "y": {"scale": "y", "field": "y"},
+                                "fillOpacity": {"value": 1},
+                                "size": {"value": options.size},
+                                "fill": {"value": options.color}
                             }
                         }
                     }
@@ -120,9 +218,12 @@ define([
             };
         }
 
+
         return {
             spec: {
-                column: makeColumnSpec
+                column: makeColumnSpec,
+                scatter: makeScatterSpec,
+                scatterSet: makeScatterSetSpec
             },
             stat: {
                 binData: binData

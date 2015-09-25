@@ -1,0 +1,67 @@
+## Welcome Panel
+---
+package:
+    name: vegatest
+    description: Testing the vega graphics library
+    author: Erik Pearson
+    date: September 25, 2015
+    version: 0.0.1
+source:
+    modules:
+        -
+            module: kb_eap_vegatest_histogram
+            file: histogramWidget
+        -
+            module: kb_eap_vegatest_scatterplot
+            file: scatterplotWidget
+        -
+            module: kb_eap_vegatest_bigScatterplot
+            file: bigScatterplotWidget
+install:
+    # Register the welcome widget
+    widgets:
+        - 
+            module: kb_eap_vegatest_histogram
+            id: kb_vegatest_histogram
+            type: factory
+        - 
+            module: kb_eap_vegatest_scatterplot
+            id: kb_vegatest_scatterplot
+            type: factory            
+        - 
+            module: kb_eap_vegatest_bigScatterplot
+            id: kb_vegatest_bigScatterplot
+            type: factory            
+    # Set up a route to install that widget in the main body view
+    routes:
+        -
+            path: ['vegatest', 'histogram']
+            widget: kb_vegatest_histogram
+        -
+            path: ['vegatest', 'scatterplot']
+            widget: kb_vegatest_scatterplot         
+        -
+            path: ['vegatest', 'bigscatterplot']
+            widget: kb_vegatest_bigScatterplot         
+    menu:
+        -
+            name: vegatest_histogram
+            menus: ['authenticated']
+            definition:
+                path: ['vegatest', 'histogram']
+                label: Vegatest - Histogram
+                icon: bar-chart 
+        -
+            name: vegatest_scatterplot
+            menus: ['authenticated']
+            definition:
+                path: ['vegatest', 'scatterplot']
+                label: Vegatest - Scatterplot
+                icon: bar-chart                
+        -
+            name: vegatest_bigScatterplot
+            menus: ['authenticated']
+            definition:
+                path: ['vegatest', 'bigscatterplot']
+                label: Vegatest - Big Scatterplot
+                icon: bar-chart                

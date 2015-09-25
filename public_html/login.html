@@ -97,7 +97,7 @@ and open the template in the editor.
     <script>
         require([
             'kb_taxon',
-            'app',
+            'simpleApp',
             'bluebird',
             'kb_common_html',
             'kb_common_dom',
@@ -144,7 +144,7 @@ and open the template in the editor.
             var ol = html.tag('ol'),
                 li = html.tag('li'),
                 a = html.tag('a');
-            App.runtime()
+            App.run({})
                 .then(function (runtime) {
                     if (runtime.isLoggedIn()) {
                         showTemplate('#logout-form-template', '#login-widget');
