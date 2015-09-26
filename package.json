@@ -1,8 +1,19 @@
 {
-    "name": "HTML5Application",
-    "version": "1.0.0",
-    "keywords": ["util", "functional", "server", "client", "browser"],
-    "author": "erik",
-    "contributors": [],
-    "dependencies": {}
+  "name": "Thrift Test",
+  "version": "0.0.1",
+  "keywords": [
+    "util",
+    "functional",
+    "server",
+    "client",
+    "browser"
+  ],
+  "author": "erik",
+  "contributors": [],
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-copy": "^0.8.0"
+  }
 }

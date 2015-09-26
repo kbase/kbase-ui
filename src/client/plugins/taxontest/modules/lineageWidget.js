@@ -39,21 +39,28 @@ define([
                             ref: w.getState('objectRef'),
                             token: config.runtime.getAuthToken(),
                             serviceUrl: 'http://euk.kbase.us/taxon'
-                        });
-                        return taxonClient.get_scientific_lineage()
+                        }),
+                            content,
+                            ol = html.tag('ol'),
+                            li = html.tag('li'),
+                            a = html.tag('a'),
+                            div = html.tag('div');
+                        return taxonClient.get_scientific_name()
+                            .then(function (name) {
+                                content = div(['Scientific name: ', name]);
+                                return taxonClient.get_scientific_lineage();
+                            })
                             .then(function (lineage) {
                                 var pad = 0,
-                                    ol = html.tag('ol'),
-                                    li = html.tag('li'),
-                                    a = html.tag('a'),
+                                    
                                     items = lineage.map(function (item) {
                                         var id = 'lineage_item_' + makeSymbol(item),
                                             url = 'http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name=' + item.trim(' ');
                                         pad += 10;
                                         return li({style: {paddingLeft: String(pad) + 'px'}, id: id}, [
                                             a({href: url, target: '_blank'}, item.trim(' '))]);
-                                    }),
-                                    content = ol(items);
+                                    });
+                                    content += ol(items);
                                 return {
                                     title: 'Taxon Lineage Widget',
                                     content: content

@@ -52,7 +52,7 @@ require.config({
         
         // widget support should move out into a plugin.
         kb_common_widgetManager: 'bower_components/kbase-common-js/src/js/widgetManager',
-        kb_common_widgetMount: 'bower_components/kbase-common-js/src/js/widgetMount',
+        kb_common_widgetMount: 'js/widgetMount',
         kb_common_widgetSet: 'bower_components/kbase-common-js/src/js/widgetSet',
         kb_widgetBases_standardWidget: 'bower_components/kbase-common-js/src/js/widgetBases/standardWidget',
         kb_widgetBases_panelWidget: 'js/panelWidget',

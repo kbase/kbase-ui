@@ -1,13 +1,13 @@
 {
-  "name": "HTML5Application",
-  "version": "1.0.0",
+  "name": "Thrift Test",
+  "version": "0.0.1",
   "main": "path/to/main.css",
   "ignore": [
     ".jshintrc",
     "**/*.txt"
   ],
   "dependencies": {
-    "bluebird": "2.10.0",
+    "bluebird": "^2.10.1",
     "chartist": "0.9.4",
     "comma-separated-values": "3.6.3",
     "d3": "3.5.6",

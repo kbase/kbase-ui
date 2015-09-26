@@ -1,3 +1,4 @@
 {
-    "directory": "public_html/bower_components"
+    "analytics": true,
+    "directory": "bower_components"
 }

@@ -53,11 +53,6 @@ define([
             var mount, container, scatterNode,
                 species = ['setosa', 'versicolor', 'virginica'];
 
-            function init(config) {
-                return Promise.try(function () {
-                    return true;
-                });
-            }
             function attach(node) {
                 return Promise.try(function () {
                     mount = node;
@@ -104,18 +99,11 @@ define([
                     mount.removeChild(container);
                 });
             }
-            function destroy() {
-                return Promise.try(function () {
-                    return true;
-                });
-            }
             return {
-                init: init,
                 attach: attach,
                 start: start,
                 stop: stop,
-                detach: detach,
-                destroy: destroy
+                detach: detach
             };
         }
 
