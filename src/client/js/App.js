@@ -101,6 +101,8 @@ define([
 
         var router = routerFactory.make();
         function installRoute(route) {
+            console.log('installing route ...');
+            console.log(route);
             return Promise.try(function () {
                 if (route.widget) {
                     // ADD ROUTE WIDGET HERE...

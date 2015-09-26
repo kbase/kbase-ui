@@ -1,36 +1,35 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/*global require, module */
+/*jslint white: true */
+var path = require('path');
+var fs = require('fs');
 module.exports = function (grunt) {
     'use strict';
-    
+
     // The runtime directory holds a build and dist directory and other files
     // required to actually run the build client and server.
     var runtimeDir = 'runtime';
-    
+
     // The build directory is the destination for the KBase source, messaged
     // external dependencies, and other files needed to run the client and server
     // components. The build directory can be used directly in development mode,
     // since it contains normal, un-minified javascript.
     var buildDir = runtimeDir + '/build';
-    
+
     var distDir = runtimeDir + '/dist';
-    
+
     var testDir = runtimeDir + '/test';
-    
-    function buildDir(subdir) {
+
+    function makeBuildDir(subdir) {
         if (subdir) {
-            return path.normalize(BUILD_DIR + '/' + subdir);
+            return path.normalize(buildDir + '/' + subdir);
         }
-        return path.normalize(BUILD_DIR);
+        return path.normalize(buildDir);
     }
-    
+
     // Load grunt npm tasks..
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
-    
+
     // Bower magic.
     /* 
      * This section sets up a mapping for bower packages.
@@ -42,11 +41,13 @@ module.exports = function (grunt) {
     var bowerFiles = [
         {
             name: 'bluebird',
-            src: ['js/browser/bluebird.js']
+            cwd: 'js/browser',
+            src: ['bluebird.js'],
         },
         {
             name: 'bootstrap',
-            src: 'dist/**/*'
+            cwd: 'dist',
+            src: '**/*',
         },
         {
             name: 'd3'
@@ -57,22 +58,24 @@ module.exports = function (grunt) {
         },
         {
             name: 'jquery',
-            src: ['dist/jquery.js']
+            cwd: 'dist',
+            src: ['jquery.js'],
         },
         {
             name: 'js-yaml',
-            path: 'dist'
+            cwd: 'dist'
         },
         {
             name: 'kbase-common-js',
-            src: ['js/**/*']
+            cwd: 'src/js',
+            src: ['**/*']
         },
         {
             name: 'lodash'
         },
         {
             dir: 'postal.js',
-            path: 'lib',
+            cwd: 'lib',
             name: 'postal'
         },
         {
@@ -89,7 +92,7 @@ module.exports = function (grunt) {
         },
         {
             dir: 'requirejs-domready',
-            name: 'domReady'            
+            name: 'domReady'
         },
         {
             dir: 'requirejs-json',
@@ -125,16 +128,17 @@ module.exports = function (grunt) {
                 })
                 .join('/');
 
-            var srcs;
-            if (cfg.src === undefined) {
-                srcs = [cfg.name + '.js'];
-            } else {
-                if (typeof cfg.src === 'string') {
-                    srcs = [cfg.src];
+            var srcs = (function () {
+                if (cfg.src === undefined) {
+                    return [cfg.name + '.js'];
                 } else {
-                    srcs = cfg.src;
+                    if (typeof cfg.src === 'string') {
+                        return [cfg.src];
+                    } else {
+                        return cfg.src;
+                    }
                 }
-            }
+            }());
 
             var sources = srcs.map(function (s) {
                 return [pathString, s]
@@ -147,30 +151,38 @@ module.exports = function (grunt) {
                     .join('/');
             });
 
-            var cd = cfg.cd;
-            var entry = {
+            var cwd = cfg.cwd;
+            return {
                 nonull: true,
                 expand: true,
-                cwd: 'bower_components/' + (cfg.dir || cfg.name) + (cd ? '/' + cd : ''),
+                cwd: 'bower_components/' + (cfg.dir || cfg.name) + (cwd ? '/' + cwd : ''),
                 src: sources,
-                dest: buildDir('client/bower_components') + '/' + (cfg.dir || cfg.name)
+                dest: makeBuildDir('client/bower_components') + '/' + (cfg.dir || cfg.name)
             };
-            // console.log(entry);
-            return entry;
         });
 
-    
+
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         copy: {
-             bower: {
+            bower: {
                 files: bowerCopy
-            }
-        }, 
+            },
+            build: {
+                files: [
+                    {
+                        cwd: 'src/client',
+                        src: '**/*',
+                        dest: makeBuildDir('client'),
+                        expand: true
+                    }
+                ]
+            }                        
+        },
         clean: {
             build: {
-                src: [buildDir()],
+                src: [makeBuildDir()],
                 // We force, because our build directory may be up a level 
                 // in the runtime directory.
                 options: {
@@ -179,8 +191,9 @@ module.exports = function (grunt) {
             }
         },
     });
-    
+
     grunt.registerTask('build', [
-        'copy:bower'
+        'copy:bower',
+        'copy:build'
     ]);
 };

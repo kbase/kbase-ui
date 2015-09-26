@@ -6,7 +6,7 @@
  white: true
  */
 define([
-    'kb.html', 
+    'kb_common_html', 
     'bluebird'
 ], 
 function (html, Promise) {

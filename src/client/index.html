@@ -23,9 +23,9 @@
         
         
         
-                <!-- external css -->
+        <!-- external css -->
         <link rel="stylesheet" type="text/css" href="/bower_components/font-awesome/css/font-awesome.css" />
-        <link rel="stylesheet" type="text/css" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
+        <!-- <link rel="stylesheet" type="text/css" href="/bower_components/bootstrap/dist/css/bootstrap.css" /> -->
 
         <!-- TODO: all into require! -->
         <!-- kbase enhancements or overrides for bootstrap -->
@@ -95,6 +95,7 @@
                     // dom.setHtml(dom.qs('#status'), 'started');
                 }
                 function displayError(ex) {
+                    alert('Error: ' + ex.message);
                     return;
                     // for now...
                     ['name', 'subject', 'type', 'message', 'suggestion', 'infoUrl', 'stack'].forEach(function (name) {
@@ -117,19 +118,19 @@
                             selector: '#status'
                         }
                     },
-                    plugins: ['mainwindow', 'message', 'test', 'taxontest', 'vegatest']
+                    plugins: ['mainwindow', 'message', 'welcome', 'test', 'taxontest', 'vegatest']
                 })
                     .then(function (runtime) {
                         R = runtime;
-                        if (!runtime.isLoggedIn()) {
-                            throw error.getErrorObject({
-                                name: 'NoAuth',
-                                message: 'No Authorization found; Authorization is required for the data api',
-                                suggestion: 'Umm, there should be a way for the user to log in...'
-                            });
-                        }
-                        runtime.send('menuService', 'debug');
-                        displayStatus('started');
+//                        if (!runtime.isLoggedIn()) {
+//                            throw error.getErrorObject({
+//                                name: 'NoAuth',
+//                                message: 'No Authorization found; Authorization is required for the data api',
+//                                suggestion: 'Umm, there should be a way for the user to log in...'
+//                            });
+//                        }
+//                        runtime.send('menuService', 'debug');
+//                        displayStatus('started');
                     })
                     .then(function () {
                         R.send('ui', 'setTitle', 'It is ALIVE!');                       

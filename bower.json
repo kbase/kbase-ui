@@ -32,7 +32,8 @@
     "font-awesome": "4.3.0",
     "oxygen-googlefont": "*",
     "roboto-googlefont": "*",
-    "oxygenmono-googlefont": "*"
+    "oxygenmono-googlefont": "*",
+    "requirejs-domready": "2.0.1"
   },
   "devDependencies": {}
 }
