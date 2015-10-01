@@ -1,14 +1,15 @@
 /*global define */
 /*jslint white: true, browser: true */
 define([
-    'bluebird',
+    'promise',
     'kb_common_html',
     'kb_common_dom',
     'vega',
-    'vegaChartHelper',
-    'csv!iris.csv'
+    'kb_vegaChartHelper',
+    'kb_common_csv',
+    'kb_plugin_vegatest'
 ],
-    function (Promise, html, dom, vega, vegaChartHelper, irisData) {
+    function (Promise, html, dom, vega, vegaChartHelper, csv, plugin) {
         'use strict';
 
         function getIrisData(table, species, measure) {
@@ -56,23 +57,24 @@ define([
                 });
             }
             function start(params) {
-                return Promise.try(function () {
-                    // build up the specs synchronously.
-                    species.forEach(function (specie) {
-                        var data = vegaChartHelper.stat.binData(getIrisData(irisData, specie, 'Petal.Length'), 20),
-                            spec = vegaChartHelper.spec.column({
-                                width: 600, height: 300,
-                                data: data.table,
-                                color: 'orange',
-                                hover: {color: 'red'}
-                            });
-                        console.log(data);
+                csv.load(plugin.plugin.path + '/data/iris.csv')
+                    .then(function (irisData) {
+                        // build up the specs synchronously.
+                        species.forEach(function (specie) {
+                            var data = vegaChartHelper.stat.binData(getIrisData(irisData, specie, 'Petal.Length'), 20),
+                                spec = vegaChartHelper.spec.column({
+                                    width: 600, height: 300,
+                                    data: data.table,
+                                    color: 'orange',
+                                    hover: {color: 'red'}
+                                });
+                            console.log(data);
 
-                        vega.parse.spec(spec, function (chart) {
-                            chart({el: '#species_' + specie}).update();
+                            vega.parse.spec(spec, function (chart) {
+                                chart({el: '#species_' + specie}).update();
+                            });
                         });
                     });
-                });
             }
             function stop() {
                 return Promise.try(function () {

@@ -12,30 +12,30 @@
 /* Top bar nav buttons
    --------------------------
 */
-.kb-nav-btn {
+.btn.kb-nav-btn {
     background-color: #FFF;
     padding: 1px 7px;
     font-size: 24px;
     border: none;
     text-shadow: none !important;
     margin: 0;
-    box-shadow: 0 0 3px #CECECE;
+    /* box-shadow: 0 0 3px #CECECE; */
     margin-right: 5px;
 }
 #kb-nav-menu { /* don't add shadows here */
   box-shadow: none;
 }
-.kb-nav-btn > div {
+.btn.kb-nav-btn > div {
     color: #666 !important;
 }
-.kb-nav-btn .kb-nav-btn-txt {
+.btn.kb-nav-btn .kb-nav-btn-txt {
     font-size: 10pt;
     margin-top: -5px;
 }
 .navbar-right .fa::before { /* color nav icons */
   color: #2196F3;
 }
-.navbar-right .kb-nav-btn:hover {
+.navbar-right .btn.kb-nav-btn:hover {
   background-color: #F5F5F5;
 }
 #kb-ipy-menu { /* restore rounded corners */

@@ -1,17 +1,19 @@
 /*global define */
 /*jslint white: true, browser: true */
 define([
-    'bluebird',
+    'promise',
     'kb_common_html',
     'kb_common_dom',
     'vega',
-    'vegaChartHelper',
-    'csv!iris.csv'
+    'kb_vegaChartHelper',
+    'kb_plugin_vegatest',
+    'kb_common_csv'
 ],
-    function (Promise, html, dom, vega, vegaChartHelper, irisData) {
+    function (Promise, html, dom, vega, vegaChartHelper, plugin, csv) {
         'use strict';
 
-        function getData(type) {
+
+        function getData(irisData, type) {
             return irisData
                 .filter(function (d) {
                     if (d[5] === type) {
@@ -31,21 +33,21 @@ define([
                     return {x: d.petalLength, y: d.petalWidth};
                 });
         }
-        function getIrisData() {
+        function getIrisData(irisData) {
             return [{
                     name: 'setosa',
                     color: 'green',
-                    values: getData('setosa')
+                    values: getData(irisData, 'setosa')
                 },
                 {
                     name: 'versicolor',
                     color: 'orange',
-                    values: getData('versicolor')
+                    values: getData(irisData, 'versicolor')
                 },
                 {
                     name: 'virginica',
                     color: 'blue',
-                    values: getData('virginica')
+                    values: getData(irisData, 'virginica')
                 }];
         }
 
@@ -70,24 +72,25 @@ define([
                 });
             }
             function start(params) {
-                return Promise.try(function () {
-                    // build up the specs synchronously.
-                    var scatter = vegaChartHelper.spec.scatterSet({
-                        data: getIrisData(),
-                        height: 400,
-                        width: 700,
-                        xAxis: {
-                            title: 'Sepal Width'
-                        },
-                        yAxis: {
-                            title: 'Petal Length'
-                        }
-                    });
+                console.log(csv);
+                return csv.load(plugin.plugin.path + '/data/iris.csv')
+                    .then(function (irisData) {
+                        var scatter = vegaChartHelper.spec.scatterSet({
+                            data: getIrisData(irisData),
+                            height: 400,
+                            width: 700,
+                            xAxis: {
+                                title: 'Sepal Width'
+                            },
+                            yAxis: {
+                                title: 'Petal Length'
+                            }
+                        });
 
-                    vega.parse.spec(scatter, function (chart) {
-                        chart({el: scatterNode}).update();
+                        vega.parse.spec(scatter, function (chart) {
+                            chart({el: scatterNode}).update();
+                        });
                     });
-                });
             }
             function stop() {
                 return Promise.try(function () {

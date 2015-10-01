@@ -10,7 +10,13 @@ source:
     modules:
         -
             module: kb_widget_welcome
-            file: panel
+            file: welcomePanelWidget
+        -
+            module: kb_widget_hello
+            file: helloPanelWidget
+        -
+            module: kb_widget_goodbye
+            file: goodbyePanelWidget
 install:
     # Register the welcome widget
     widgets:
@@ -18,14 +24,25 @@ install:
             module: kb_widget_welcome
             id: welcome
             type: factory
+        -
+            module: kb_widget_hello
+            id: hello
+            type: factory
+        -
+            module: kb_widget_goodbye
+            id: goodbye
+            type: factory
     # Set up a route to install that widget in the main body view
     routes:
         -
             path: ['welcome']
             widget: welcome
         -
-            path: []
-            widget: welcome            
+            path: ['hello']
+            widget: hello
+        -
+            path: ['goodbye']
+            widget: goodbye              
     # Set up a menu item to invoke the path above
     menu:
         -

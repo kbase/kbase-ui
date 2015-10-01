@@ -33,6 +33,11 @@ require.config({
         // For the ui
         bootstrap: 'bower_components/bootstrap/js/bootstrap',
         bootstrap_css: 'bower_components/bootstrap/css/bootstrap',
+        datatables: 'bower_components/datatables/js/jquery.dataTables',
+        datatables_css: 'bower_components/datatables/css/jquery.dataTables',
+        datatables_bootstrap: 'bower_components/datatables-bootstrap3-plugin/js/datatables-bootstrap3',
+        datatables_bootstrap_css: 'bower_components/datatables-bootstrap3-plugin/css/datatables-bootstrap3',
+
 
         
         kb_common_html: 'bower_components/kbase-common-js/html',
@@ -42,11 +47,12 @@ require.config({
         kb_common_config: 'bower_components/kbase-common-js/config',
         kb_common_logger: 'bower_components/kbase-common-js/logger',
         kb_common_pluginManager: 'bower_components/kbase-common-js/pluginManager',
-        kb_common_router: 'bower_components/kbase-common-js/router',
+        kb_common_router: 'js/router',
         kb_common_state: 'bower_components/kbase-common-js/state',
         kb_common_props: 'bower_components/kbase-common-js/props',
         kb_common_asyncQueue: 'bower_components/kbase-common-js/asyncQueue',
         kb_common_utils: 'bower_components/kbase-common-js/utils',
+        kb_common_apiUtils: 'bower_components/kbase-common-js/apiUtils',
         kb_common_messenger: 'bower_components/kbase-common-js/messenger',
         kb_common_observed: 'bower_components/kbase-common-js/observed',
         
@@ -54,8 +60,14 @@ require.config({
         kb_common_widgetManager: 'bower_components/kbase-common-js/widgetManager',
         kb_common_widgetMount: 'js/widgetMount',
         kb_common_widgetSet: 'bower_components/kbase-common-js/widgetSet',
-        kb_widgetBases_standardWidget: 'bower_components/kbase-common-js/widgetBases/standardWidget',
+        kb_widgetBases_standardWidget: 'js/standardWidget',
         kb_widgetBases_panelWidget: 'js/panelWidget',
+        kb_widgetAdapters_objectWidget: 'js/widgetAdapters/widgetAdapter',
+        
+        // Just for testing vega
+        kb_common_csv: 'js/csv',
+        vega: 'bower_components/vega/vega',
+        kb_vegaChartHelper: 'js/vegaChartHelper',
         
         thrift: 'js/kb-thrift',
         utils: 'js/Utils',
@@ -65,7 +77,15 @@ require.config({
         taxontypes: 'js/taxon_types',
         taxon: 'js/thrift_service',
         kb_taxon: 'js/TaxonAPI',
+        // TODO: move into separate repo
         kb_api: 'lib/kbase-client-api',
+        
+        // kbase service client support -- should be refactored.
+        kb_narrative: 'js/narrative',
+        kb_types: 'js/types',
+        
+        kb_service_router: 'js/services/router',
+        kb_service_menu: 'js/services/menu'
     },
     shim: {
         chartist: {
@@ -85,7 +105,8 @@ require.config({
     },
     map: {
         '*': {
-            'css': 'bower_components/require-css/css'
+            'css': 'bower_components/require-css/css',
+            'promise': 'bluebird'
         }
     }
 });

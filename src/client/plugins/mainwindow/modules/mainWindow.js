@@ -57,7 +57,7 @@ define([
                         div({style: {borderLeft: '1px silver solid', 'border-right': '1px silver solid', 'border-right': '1px silver solid',padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top', width: '100px'}}, [
                             div({id: widgetSet.addWidget('notification')})
                         ]),
-                        div({style: {padding: '4px', display: 'inline-block', height: '100%', width: '100px'}, class: 'navbar-right'}, [
+                        div({style: {padding: '4px', display: 'inline-block', height: '100%'}, class: 'navbar-right'}, [
                             div({id: widgetSet.addWidget('login')})
                         ])
                     ])
@@ -104,7 +104,7 @@ define([
                                 data: 'HAL, this is Dave.'
                             })
                             */
-                            runtime.send('ui', 'setTitle', 'HAL, this is ... Dave.');
+                            // runtime.send('ui', 'setTitle', 'HAL, this is ... Dave.');
                             /*
                              * no, the app should set any default menu items and menus
                             runtime.getConfig('navbar.menu.available_items').forEach(function (item) {

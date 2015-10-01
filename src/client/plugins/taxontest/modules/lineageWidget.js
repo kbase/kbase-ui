@@ -15,6 +15,7 @@ define([
                 runtime: config.runtime,
                 on: {
                     initialContent: function (w, params) {
+                        w.send('ui', 'setTitle', 'Loading Lineage ...');
                         return {
                             title: 'Loading Lineage ...',
                             content: html.loading('Loading...')
@@ -25,6 +26,7 @@ define([
                         // We use the widget convenience function in order to 
                         // get automatic event listener cleanup. We could almost
                         // as easily do this ourselves.
+                        w.send('ui', 'setTitle', 'Rendering Lineage...');
                         var ref = params.workspace + '/' + params.object;
                         w.setState('objectRef', ref);
                     },
@@ -37,7 +39,7 @@ define([
                         // '811/Sbicolor.JGI-v2.1'
                         var taxonClient = taxonClientFactory({
                             ref: w.getState('objectRef'),
-                            token: config.runtime.getAuthToken(),
+                            token: config.runtime.getService('session').getAuthToken(),
                             serviceUrl: 'http://euk.kbase.us/taxon'
                         }),
                             content,
@@ -48,11 +50,11 @@ define([
                         return taxonClient.get_scientific_name()
                             .then(function (name) {
                                 content = div(['Scientific name: ', name]);
+                                w.send('ui', 'setTitle', 'Lineage of ' + name);
                                 return taxonClient.get_scientific_lineage();
                             })
                             .then(function (lineage) {
                                 var pad = 0,
-                                    
                                     items = lineage.map(function (item) {
                                         var id = 'lineage_item_' + makeSymbol(item),
                                             url = 'http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name=' + item.trim(' ');

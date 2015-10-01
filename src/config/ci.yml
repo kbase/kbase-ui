@@ -1,0 +1,101 @@
+## KBase UI Configuration
+## production environment
+---
+# TODO: ensure that this list includes all supported services
+# TODO: ensure that all services represented are also defined as amd modules
+services:
+    workspace:
+        url: https://ci.kbase.us/services/ws/
+        name: Workspace
+    fba:
+        url: https://ci.kbase.us/services/KBaseFBAModeling/
+        name: FBA
+    user_job_state:
+        url: https://ci.kbase.us/services/userandjobstate
+        name: User and Job State
+    search:
+        # note that search is not a ci service
+        url: https://kbase.us/services/search/
+        name: Data Search
+    user_profile:
+        url: https://ci.kbase.us/services/user_profile/rpc
+        name: User Profile
+    login:
+        url: https://ci.kbase.us/services/authorization/Sessions/Login
+        name: Login
+    narrative_method_store:
+        url: https://ci.kbase.us/services/narrative_method_store/rpc
+        name: Narrative Method Store
+    awe:
+        url: https://ci.kbase.us/services/awe-api
+        name: AWE
+    data_import_export:
+        url: https://ci.kbase.us/services/data_import_export
+        name: Data Import Export
+    gene_families:
+        url: https://ci.kbase.us/services/gene_families
+        name: Gene Families
+    genome_comparison:
+        url: https://ci.kbase.us/services/genome_comparison/jsonrpc
+        name: Genome Comparison
+    shock: 
+        url: https://ci.kbase.us/services/shock-api
+        name: Shock
+    transform:
+        url: https://ci.kbase.us/services/transform
+        name: Transform
+    trees:
+        url: https://ci.kbase.us/services/trees
+        name: Trees
+    cdmi:
+        url: https://kbase.us/services/cdmi_api
+        name: CDMI
+    protein_info:
+        url: https://kbase.us/services/protein_info_service
+        name: Protein Info
+    # Note: job service is not defined in the production config atm because has
+    # not been defined in ui-common at all.
+    job_service:
+        url: https://ci.kbase.us/services/njs_wrapper
+        name: Job Service
+        
+# Settings in support of the user interface
+ui:
+    images:
+        spinner:
+            url: /ui-common/assets/img/ajax-loader.gif
+    constants:
+        client_timeout: 900000,
+        session_max_age: 5184000
+    internal_links:
+        landing_pages: #dataview/
+        ws_browser: /functional-site/#/ws
+        version_check: /narrative_version        
+        dashboard_metrics: /userMetrics
+    outbound_links:
+        reset_password: https://gologin.kbase.us/ResetPassword
+        status_page: http://kbase.us/internal/status
+        submit_jira_ticket: https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%20version
+        update_profile: https://gologin.kbase.us/account/UpdateProfile
+        
+# Primarily for output links for the docsite. 
+# TODO: merge with ui.outbound_links?
+docsite:
+    base_url: http://kbase.us
+    host: kbase.us
+    paths:
+        about: /what-is-kbase
+        contact: /contact-us
+        browser_support: /supported-browsers
+
+# Settings just for the Narrative Interface
+narrative:
+    log_proxy_host: 172.17.42.1 
+    log_proxy_port: 32001 
+    narrative_job_proxy: http://localhost:7068 
+    
+        
+# stragglers - why are they blank?
+#     "invocation": "", 
+#      "protein_info": "", 
+#      "uploader": "", 

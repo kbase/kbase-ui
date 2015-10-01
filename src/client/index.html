@@ -118,10 +118,16 @@
                             selector: '#status'
                         }
                     },
-                    plugins: ['mainwindow', 'message', 'welcome', 'test', 'taxontest', 'vegatest']
+                    plugins: ['mainwindow', 'message', 'welcome', 'login', 'test', 'taxontest', 'vegatest',
+                        {
+                            name: 'kbase-ui-plugin-databrowser',
+                            directory: 'bower_components/kbase-ui-plugin-databrowser'
+                        },
+                        'dataview'
+                    ]
                 })
                     .then(function (runtime) {
-                        R = runtime;
+                        // R = runtime;
 //                        if (!runtime.isLoggedIn()) {
 //                            throw error.getErrorObject({
 //                                name: 'NoAuth',
@@ -133,7 +139,7 @@
 //                        displayStatus('started');
                     })
                     .then(function () {
-                        R.send('ui', 'setTitle', 'It is ALIVE!');                       
+                        // R.send('ui', 'setTitle', 'KBase Single Page App Demo Site');                       
                     })
                     .catch(function (err) {
                         displayError(err);

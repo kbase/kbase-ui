@@ -33,8 +33,8 @@ define([
                                 w.setState('params', null);
                             }
                         });
-                        w.setState('widget', null);
-                        w.setState('params', null);
+                        //w.setState('widget', null);
+                       // w.setState('params', null);
                     },
                     render: function (w) {
                         var widget = w.getState('widget');

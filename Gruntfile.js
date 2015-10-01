@@ -104,6 +104,25 @@ module.exports = function (grunt) {
         },
         {
             name: 'underscore'
+        },
+        {
+            name: 'kbase-ui-plugin-databrowser',
+            cwd: 'src/plugin',
+            src: ['**/*']
+        },
+        {
+            name: 'datatables',
+            cwd: 'media',
+            src: ['css/jquery.dataTables.css', 'images/*', 'js/jquery.dataTables.js']
+        },
+        {
+            name: 'datatables-bootstrap3',
+            dir: 'datatables-bootstrap3-plugin',
+            cwd: 'media',
+            src: ['css/datatables-bootstrap3.css', 'js/datatables-bootstrap3.js']
+        },
+        {
+            name: 'vega'
         }
 
     ],
@@ -176,9 +195,24 @@ module.exports = function (grunt) {
                         src: '**/*',
                         dest: makeBuildDir('client'),
                         expand: true
+                    },
+                    {
+                        cwd: 'src/data',
+                        src: '**/*',
+                        dest: makeBuildDir('client/data'),
+                        expand: true
+                    },
+                    {
+                        src: 'src/config/ci.yml',
+                        dest: makeBuildDir('client/config/client.yml')
+                    },
+                    {
+                        src: 'lib/kbase-client-api.js',
+                        dest: makeBuildDir('client'),
+                        expand: true
                     }
                 ]
-            }                        
+            }
         },
         clean: {
             build: {

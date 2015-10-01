@@ -1,0 +1,63 @@
+## YAML Template.
+---
+package:
+    author: Erik Pearson
+    name: dataview
+    description: Viewers for data object (aka Landing Pages)
+    date: August 6, 2015
+    version: 0.0.1
+source:
+    ## sources are relative to build/plugins/PACKAGE/source/javascript
+    ## NB: need to quote file names, otherwise 
+    modules:
+        -
+            module: kb_widget_dataview_panelWidget
+            file: dataviewPanel
+            widget: kb_dataview_panelWidget
+        -
+            module: kb_widget_dataview_provenance
+            file: widgets/kbaseWSObjGraphCenteredView
+            widget: kb_dataview_provenance
+        #-
+        #    module: kb_widget_dataview_download
+       #     file: widgets/kbaseDownloadPanel
+        #    widget: kb_dataview_download
+        #-
+        #    module: kb_widget_dataview_base
+        #    file: widgets/DataviewWidget
+        -
+            module: kb_widget_dataview_overview
+            file: widgets/OverviewWidget
+            widget: kb_dataview_overview
+install:
+    widgets:
+        -
+            module: kb_widget_dataview_panelWidget
+            id: kb_dataview_panelWidget
+            type: factory
+        -
+            module: kb_widget_dataview_overview
+            id: kb_dataview_overview
+            type: factory
+    routes:
+        -
+            path: 
+                - 
+                    dataview
+                -
+                    type: param
+                    name: workspaceId
+                -
+                    type: param
+                    name: objectId
+            queryParams:
+                sub: {}
+                subid: {}            
+            widget: kb_dataview_panelWidget
+        -
+            path: ['dataview', {type: param, name: workspaceId}, {type: param, name: objectId}, {type: param, name: objectVersion}]
+            queryParams:
+                sub: {}
+                subid: {}            
+            widget: kb_dataview_panelWidget
+    

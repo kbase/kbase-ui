@@ -1,0 +1,9 @@
+<p>{{state.error.shortMessage}}</p>
+
+{% if state.error.originalMessage %}
+
+<p style="font-weight: bold; color: gray;margin-top: 2em">Original Service Error Message:</p>
+
+{{state.error.originalMessage}}
+
+{% endif %}

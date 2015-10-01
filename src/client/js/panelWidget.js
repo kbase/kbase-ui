@@ -1,7 +1,7 @@
 /*global define */
 /*jslint white: true, browser: true */
 define([
-    'bluebird',
+    'promise',
     'underscore',
     'kb_common_dom',
     'kb_common_state',
@@ -16,7 +16,8 @@ define([
                 runtime = config.runtime,
                 internalApi = {}, externalApi = {},
                 locations = {},
-                domEvents = [];
+                eventsPendingAttachment = [],
+                eventsAttached = [];
 
             if (config && config.on) {
                 Object.keys(config.on).forEach(function (hookName) {
@@ -87,17 +88,20 @@ define([
                 if (!id) {
                     id = html.genId();
                 }
-                domEvents.push({
+                var event = {
                     type: type,
                     selector: '#' + id,
+                    nodeId: id,
                     handler: handler
-                });
+                };
+                eventsPendingAttachment.push(event);
                 return id;
             }
             function attachDomEvents() {
-                domEvents.forEach(function (event) {
-                    event.node = dom.nodeForId(event.id);
+                eventsPendingAttachment.forEach(function (event) {
+                    event.node = dom.nodeForId(event.nodeId);
                     event.listener = event.node.addEventListener(event.type, event.handler);
+                    eventsAttached.push(event);
 
                     // $container.on(event.type, event.selector, event.data, event.handler);
                     /*var fun = function (e) {
@@ -113,9 +117,10 @@ define([
                      $container.get(0).addEventListener(event.type, fun);
                      */
                 });
+                eventsPendingAttachment = [];
             }
             function detachDomEvents() {
-                domEvents.forEach(function (event) {
+                eventsAttached.forEach(function (event) {
                     if (event.listener) {
                         event.node.removeEventListener(event.type, event.handler);
                         delete event.listener;
@@ -123,6 +128,7 @@ define([
                         // $container.get(0).removeEventListener(event.type, event.actualHandler);
                     }
                 });
+                eventsAttached = [];
             }
 
             // INTERNAL API
@@ -216,6 +222,8 @@ define([
             }
             function start(params) {
                 return Promise.try(function () {
+                    // Start the heartbeat listener, which presently just 
+                    // renders.
                     listeners.push(runtime.recv('app', 'heartbeat', function () {
                         render()
                             .then(function () {
@@ -227,24 +235,31 @@ define([
                                 console.log(err);
                             });
                     }));
-                    var promises = [];
-                    if (hasHook('start')) {
-                        getHook('start').forEach(function (fun) {
-                            promises.push(Promise.try(fun, [internalApi, params]));
-                        });
-                    }
-                    if (hasHook('initialContent')) {
-                        getHook('initialContent').forEach(function (fun) {
-                            promises.push(
-                                Promise.try(fun, [internalApi, params])
-                                .then(function (data) {
-                                    setHtml(data);
-                                }));
-                        });
-                    }
-                    if (promises.length) {
-                        return Promise.settle(promises);
-                    }
+                    return Promise.try(function () {
+                        var promises = [];
+                        if (hasHook('initialContent')) {
+                            getHook('initialContent').forEach(function (fun) {
+                                console.log('FUN');
+                                console.log(fun);
+                                promises.push(
+                                    Promise.try(fun, [internalApi, params])
+                                    .then(function (data) {
+                                        setHtml(data);
+                                    }));
+                            });
+                        }
+                        if (hasHook('start')) {
+                            getHook('start').forEach(function (fun) {
+                                console.log('FUN');
+                                console.log(fun);
+                                promises.push(Promise.try(fun, [internalApi, params]));
+                            });
+                        }
+                        return promises;
+                    })
+                    .each(function (item, index, value) {
+                        // what to do? Check value for error and log it.
+                    });
                 });
             }
             function stop() {

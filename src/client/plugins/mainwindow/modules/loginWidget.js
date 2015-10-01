@@ -10,7 +10,7 @@ define([
         'use strict';
 
         function myWidget(config) {
-            
+
             var runtime = config.runtime;
             if (!runtime) {
                 throw {
@@ -19,7 +19,7 @@ define([
                     suggestion: 'This is an application error, and no fault of yours.'
                 }
             }
-            
+
             var button = html.tag('button'),
                 div = html.tag('div'),
                 a = html.tag('a'),
@@ -29,30 +29,31 @@ define([
                 br = html.tag('br', {close: false}),
                 i = html.tag('i'),
                 img = html.tag('img');
-            function handleSignout() {
-                runtime.logout()
+
+            function handleSignout(e) {
+                e.preventDefault();
+                runtime.getService('session').logout()
                     .then(function () {
-                        runtime.send('app', 'loggedout');
-                        runtime.send('app', 'navigate', 'welcome');
+                        // w.setState('updated', new Date());
                     })
                     .catch(function (err) {
                         console.log('ERROR');
                         console.log(err);
                         alert('Error signing out (check console for details)');
                     });
-            }    
+            }
             function renderAvatar(w) {
-                var profile = w.getState('userProfile');                
+                var profile = w.getState('userProfile');
                 if (profile) {
                     return img({src: profile.getAvatarURL(), style: 'width: 40px;', class: 'login-button-avatar', 'data-element': 'avatar'});
                 }
                 return img({src: Plugin.plugin.path + '/images/nouserpic.png', style: 'width: 40px;', class: 'login-button-avatar', 'data-element': 'avatar'});
             }
             function renderLogin(w) {
-                if (runtime.isLoggedIn()) {
+                if (runtime.getService('session').isLoggedIn()) {
                     /* TODO: fix dependencies like this -- realname is not available until, and unless, the                     
-                      profile is loaded, which happens asynchronously.            
-                    */
+                     profile is loaded, which happens asynchronously.            
+                     */
                     var profile = w.getState('userProfile'),
                         realname = profile ? profile.getProp('user.realname') : '?';
                     return div({class: 'dropdown', style: 'display:inline-block'}, [
@@ -62,14 +63,14 @@ define([
                         ]),
                         ul({class: 'dropdown-menu', role: 'menu'}, [
                             li({}, [
-                                a({href: '#people/' + R.getUsername(), 'data-menu-item': 'userlabel'}, [
+                                a({href: '#people/' + runtime.getService('session').getUsername(), 'data-menu-item': 'userlabel'}, [
                                     div({style: 'display:inline-block; width: 34px; vertical-align: top;'}, [
                                         span({class: 'fa fa-user', style: 'font-size: 150%; margin-right: 10px;'})
                                     ]),
                                     div({style: 'display: inline-block', 'data-element': 'user-label'}, [
                                         realname,
                                         br(),
-                                        i({}, runtime.getUsername())
+                                        i({}, runtime.getService('session').getUsername())
                                     ])
                                 ])
                             ]),
@@ -90,36 +91,43 @@ define([
                     div({class: 'kb-nav-btn-txt'}, ['Sign In'])
                 ]);
             }
-            
+
             return StandardWidget.make({
                 runtime: runtime,
                 on: {
                     start: function (w, params) {
-                        AppState.listenForItem('userprofile', {
-                            onSet: function (data) {
-                                w.setState('userProfile', data);
-                            }
-                        });
-                        /*if (R.isLoggedIn()) {
-                            
-                            return R.whenItem('userprofile', 10000)
-                                .then(function (data) {
-                                    console.log('GOT IT!');
-                                console.log(data);
-                                    w.setState('userProfile', data[0]);
-                                });
-                        } else {
+                        w.recv('session', 'loggedout', function () {
                             w.setState('updated', new Date());
-                        }
-                        */
-                       w.setState('tickleme', 'elmo');
+                        });
+                        w.recv('session', 'loggedin', function () {
+                            w.setState('updated', new Date());
+                        });
+//                        AppState.listenForItem('userprofile', {
+//                            onSet: function (data) {
+//                                w.setState('userProfile', data);
+//                            }
+//                        });
+//                        
+                        /*if (R.isLoggedIn()) {
+                         
+                         return R.whenItem('userprofile', 10000)
+                         .then(function (data) {
+                         console.log('GOT IT!');
+                         console.log(data);
+                         w.setState('userProfile', data[0]);
+                         });
+                         } else {
+                         w.setState('updated', new Date());
+                         }
+                         */
+                        w.setState('updated', new Date());
                     },
                     render: function (w) {
                         return div({class: 'kb-widget-login'}, [
                             span({id: 'signin-button', 'data-element': 'signin-button'}, [
                                 renderLogin(w)
                             ])
-                        ]);    
+                        ]);
                     }
                 }
             });

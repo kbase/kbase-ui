@@ -69,6 +69,8 @@ define([
                 on: {
                     start: function (w, params) {
                         runtime.getService('menu').onChange(function (value) {
+                            //console.log('changed...');
+                            //console.log(value);
                             w.setState('menu', value);
                         });
                     },

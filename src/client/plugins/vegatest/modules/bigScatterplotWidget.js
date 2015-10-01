@@ -5,10 +5,9 @@ define([
     'kb_common_html',
     'kb_common_dom',
     'vega',
-    'vegaChartHelper',
-    'csv!iris.csv'
+    'kb_vegaChartHelper'
 ],
-    function (Promise, html, dom, vega, vegaChartHelper, irisData) {
+    function (Promise, html, dom, vega, vegaChartHelper) {
         'use strict';
 
         function getData(type) {
@@ -50,8 +49,7 @@ define([
         }
 
         function widget(config) {
-            var mount, container, scatterNode,
-                species = ['setosa', 'versicolor', 'virginica'];
+            var mount, container, scatterNode;
 
             function init(config) {
                 return Promise.try(function () {
