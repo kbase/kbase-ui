@@ -29,6 +29,35 @@ module.exports = function (grunt) {
     // Load grunt npm tasks..
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-shell');
+    grunt.loadNpmTasks('grunt-mkdir');
+    
+    function fixThrift1 (content) {
+        var namespaceRe = /^if \(typeof ([^\s\+]+)/m,
+            namespace = content.match(namespaceRe)[1],
+            lintDecls = '/*global define */\n/*jslint white:true */',
+            requireJsStart = 'define(["thrift"], function (Thrift) {\n"use strict";',
+            requireJsEnd = 'return '+namespace+';\n});',
+            fixDeclRe = /if \(typeof ([^\s]+) === 'undefined'\) {\n[\s]*([^\s]+) = {};\n}/,
+            repairedContent = content
+                .replace(fixDeclRe, 'var $1 = {};\n')
+                .replace(/([^=!])==([^=])/g, '$1===$2')
+                .replace(/!=([^=])/g, '!==$1');
+            
+        return [lintDecls, requireJsStart, repairedContent, requireJsEnd].join('\n');
+    }
+     function fixThrift2 (content) {
+        var lintDecls = '/*global define */\n/*jslint white:true */',
+            namespaceRe = /^([^\/\s\.]+)/m,
+            namespace = content.match(namespaceRe)[1],
+            requireJsStart = 'define(["thrift", "'+namespace+'_types"], function (Thrift, '+namespace+') {\n"use strict";',
+            requireJsEnd = 'return '+namespace+';\n});',
+            repairedContent = content
+                .replace(/([^=!])==([^=])/g, '$1===$2')
+                .replace(/!=([^=])/g, '!==$1');
+            
+        return [lintDecls, requireJsStart, repairedContent, requireJsEnd].join('\n');
+    }
 
     // Bower magic.
     /* 
@@ -212,6 +241,36 @@ module.exports = function (grunt) {
                         expand: true
                     }
                 ]
+            },
+            taxonLib1: {
+                files: [
+                    {
+                        cwd: 'temp/gen-js',
+                        src: 'taxon_types.js',
+                        dest: makeBuildDir('client/lib/thrift'),
+                        expand: true
+                    }
+                ],
+                options: {
+                    process: function (content) {
+                        return fixThrift1(content);
+                    }
+                }
+            },
+            taxonLib2: {
+                files: [
+                    {
+                        cwd: 'temp/gen-js',
+                        src: 'TaxonService.js',
+                        dest: makeBuildDir('client/lib/thrift'),
+                        expand: true
+                    }
+                ],
+                options: {
+                    process: function (content) {
+                        return fixThrift2(content);
+                    }
+                }
             }
         },
         clean: {
@@ -222,12 +281,44 @@ module.exports = function (grunt) {
                 options: {
                     force: true
                 }
+            },
+            temp: {
+                src: 'temp'
             }
         },
+        shell: {
+            makeTaxonLib: {
+                command: [
+                    'thrift',
+                    '-gen js:jquery',
+                    '-o temp',
+                    'bower_components/data-api/thrift/specs/taxonomy/taxon/taxon.thrift'
+                ].join(' '),
+                options: {
+                    stderr: false
+                }
+            }
+        },
+        mkdir: {
+            temp: {
+                options: {
+                    create: ['temp']
+                }
+            }
+        }
     });
 
     grunt.registerTask('build', [
         'copy:bower',
-        'copy:build'
+        'copy:build',
+        'build-thrift-libs'
+    ]);
+
+    grunt.registerTask('build-thrift-libs', [
+        'clean:temp',
+        'mkdir:temp',
+        'shell:makeTaxonLib',
+        'copy:taxonLib1',
+        'copy:taxonLib2'
     ]);
 };

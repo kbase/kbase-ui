@@ -31,6 +31,12 @@ install:
                     {type: 'param', name: 'workspace'},
                     {type: 'param', name: 'object'}]
             widget: lineageWidget
+        -
+            path: ['taxontest', 'lineage', 
+                    {type: 'param', name: 'workspace'},
+                    {type: 'param', name: 'object'},
+                    {type: 'param', name: 'version'}]
+            widget: lineageWidget
     menu:
         -
             name: taxonlineage

@@ -64,7 +64,7 @@ define([
 
         transport = new Thrift.TXHRTransport(dataAPIUrl);
         protocol = new Thrift.TJSONProtocol(transport);
-        client = new taxon.thrift_serviceClient(protocol);
+        client = new taxon.TaxonServiceClient(protocol);
 
 
         function get_parent() {

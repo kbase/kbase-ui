@@ -1,5 +1,5 @@
 {
-  "name": "Thrift Test",
+  "name": "ThriftTest",
   "version": "0.0.1",
   "keywords": [
     "util",
@@ -14,6 +14,8 @@
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-copy": "^0.8.0"
+    "grunt-contrib-copy": "^0.8.0",
+    "grunt-mkdir": "0.1.2",
+    "grunt-shell": "1.1.2"
   }
 }

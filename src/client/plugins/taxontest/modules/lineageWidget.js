@@ -27,7 +27,12 @@ define([
                         // get automatic event listener cleanup. We could almost
                         // as easily do this ourselves.
                         w.send('ui', 'setTitle', 'Rendering Lineage...');
-                        var ref = params.workspace + '/' + params.object;
+                        var ref;
+                        if (params.version) {
+                            ref = params.workspace + '/' + params.object + '/' + params.version;
+                        } else {
+                            ref = params.workspace + '/' + params.object;
+                        }
                         w.setState('objectRef', ref);
                     },
                     render: function (w) {

@@ -35,7 +35,8 @@
     "oxygenmono-googlefont": "*",
     "requirejs-domready": "2.0.1",
     "kbase-ui-plugin-databrowser": "eapearson/kbase-ui-plugin-databrowser#master",
-    "datatables-bootstrap3-plugin": "0.4.0"
+    "datatables-bootstrap3-plugin": "0.4.0",
+    "data-api": "eapearson/data_api#develop-eap"
   },
   "devDependencies": {}
 }
