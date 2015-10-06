@@ -30,11 +30,10 @@ define([
         /* Menu */
 
         function factory(config) {
-            var mount, container, runtime = config.runtime;
-
-            var widgetSet = WidgetSet.make({
-                runtime: runtime
-            });
+            var mount, container, runtime = config.runtime,
+                widgetSet = WidgetSet.make({
+                    runtime: runtime
+                });
             // widgetSet.addWidgets(['hamburgerMenu']);
 
             function init(config) {

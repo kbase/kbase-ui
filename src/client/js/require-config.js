@@ -29,7 +29,6 @@ require.config({
         //regression: 'js/regression',
         lodash: 'bower_components/lodash/lodash',
         postal: 'bower_components/postal.js/postal',
-        
         // For the ui
         bootstrap: 'bower_components/bootstrap/js/bootstrap',
         bootstrap_css: 'bower_components/bootstrap/css/bootstrap',
@@ -37,11 +36,14 @@ require.config({
         datatables_css: 'bower_components/datatables/css/jquery.dataTables',
         datatables_bootstrap: 'bower_components/datatables-bootstrap3-plugin/js/datatables-bootstrap3',
         datatables_bootstrap_css: 'bower_components/datatables-bootstrap3-plugin/css/datatables-bootstrap3',
-
+        md5: 'bower_components/SparkMD5/spark-md5',
+        'google-code-prettify': 'bower_components/google-code-prettify/prettify',        
+        'google-code-prettify-style': 'bower_components/google-code-prettify/prettify',
 
         
         kb_common_html: 'bower_components/kbase-common-js/html',
         kb_common_dom: 'bower_components/kbase-common-js/dom',
+        kb_common_domEvent: 'bower_components/kbase-common-js/domEvent',
         kb_common_session: 'bower_components/kbase-common-js/session',
         kb_common_cookie: 'bower_components/kbase-common-js/cookie',
         kb_common_config: 'bower_components/kbase-common-js/config',
@@ -55,23 +57,21 @@ require.config({
         kb_common_apiUtils: 'bower_components/kbase-common-js/apiUtils',
         kb_common_messenger: 'bower_components/kbase-common-js/messenger',
         kb_common_observed: 'bower_components/kbase-common-js/observed',
-        
+        kb_common_format: 'bower_components/kbase-common-js/format',
         // widget support should move out into a plugin.
         kb_common_widgetManager: 'bower_components/kbase-common-js/widgetManager',
-        kb_common_widgetMount: 'js/widgetMount',
+        kb_common_widgetMount: 'bower_components/kbase-common-js/widgetMount',
         kb_common_widgetSet: 'bower_components/kbase-common-js/widgetSet',
-        kb_widgetBases_standardWidget: 'js/standardWidget',
-        kb_widgetBases_panelWidget: 'js/panelWidget',
-        kb_widgetAdapters_objectWidget: 'js/widgetAdapters/widgetAdapter',
-        
+        kb_widgetBases_standardWidget: 'bower_components/kbase-common-js/standardWidget',
+        kb_widgetBases_panelWidget: 'bower_components/kbase-common-js/panelWidget',
+        kb_widgetAdapters_objectWidget: 'bower_components/kbase-common-js/widgetAdapters/widgetAdapter',
         // Just for testing vega
-        kb_common_csv: 'js/csv',
+        kb_common_csv: 'bower_components/kbase-common-js/csv',
         vega: 'bower_components/vega/vega',
         kb_vegaChartHelper: 'js/vegaChartHelper',
-        
         thrift: 'js/kb-thrift',
         utils: 'js/Utils',
-        error: 'js/Error',
+        // error: 'js/Error',
         app: 'js/App',
         simpleApp: 'js/simpleApp',
         taxon_types: 'lib/thrift/taxon_types',
@@ -79,13 +79,14 @@ require.config({
         kb_taxon: 'js/TaxonAPI',
         // TODO: move into separate repo
         kb_api: 'lib/kbase-client-api',
-        
         // kbase service client support -- should be refactored.
-        kb_narrative: 'js/narrative',
-        kb_types: 'js/types',
-        
-        kb_service_router: 'js/services/router',
-        kb_service_menu: 'js/services/menu'
+        kb_narrative: 'js/clients/narrative',
+        kb_types: 'js/clients/types',
+        kb_appService_router: 'js/services/router',
+        kb_appService_menu: 'js/services/menu',
+        kb_appService_heartbeat: 'js/services/heartbeat',
+        kb_appService_widget: 'js/services/widget',
+        kb_appService_session: 'js/services/session'
     },
     shim: {
         chartist: {
@@ -102,6 +103,9 @@ require.config({
         bootstrap: {
             deps: ['jquery', 'css!bootstrap_css']
         },
+        'google-code-prettify': {
+            deps: ['css!google-code-prettify-style']
+        }
     },
     map: {
         '*': {
@@ -114,7 +118,7 @@ require.config({
 (function () {
     var kbClients = [
         ['narrative_method_store', 'NarrativeMethodStore'],
-        ['user_profile', 'UserProfile'],
+        ['userProfile', 'UserProfile'],
         ['workspace', 'Workspace'],
         ['cdmi', 'CDMI_API'],
         ['cdmi-entity', 'CDMI_EntityAPI'],

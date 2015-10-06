@@ -19,7 +19,8 @@ define([
                         // get automatic event listener cleanup. We could almost
                         // as easily do this ourselves.
                         w.recv('ui', 'setTitle', function (data) {
-                            w.setState('title', data);
+                            // w.setState('title', data);
+                            w.setHml(data);
                         });
                         w.recv('app', 'heartbeat', function () {
                             var now = new Date(),

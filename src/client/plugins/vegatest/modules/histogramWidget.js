@@ -29,7 +29,7 @@ define([
         }
 
         function widget(config) {
-            var mount, container;
+            var mount, container, runtime = config.runtime;
             var species = ['setosa', 'versicolor', 'virginica'];
             
             function init(config) {
@@ -39,8 +39,6 @@ define([
             }
             function attach(node) {
                 return Promise.try(function () {
-                    mount = node;
-                    
                     var div = html.tag('div'),
                         content = html.makePanel({
                             title: ' Vega Histogram Test',
@@ -50,7 +48,9 @@ define([
                                 })
                             ])
                         });
-                    
+                    mount = node;
+
+                    runtime.send('ui', 'setTitle', 'Histogram test with vega');
                     container = dom.createElement('div');
                     container.innerHTML = content;
                     dom.append(mount, container);

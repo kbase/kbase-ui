@@ -1,0 +1,25 @@
+## YAML Template.
+---
+package:
+    author: Erik Pearson
+    name: userprofile
+    description: A user profile plugin
+    date: October 2, 2015
+    version: 0.0.1
+source:
+    modules:
+        -
+            module: kb_userprofile_userProfileService
+            file: userProfileService
+        -
+            module: kb_userprofile_userProfile
+            file: userProfile
+        -
+            module: kb_userprofile_appService_userProfile
+            file: userProfileAppService
+install:
+    services:
+        -
+            module: kb_userprofile_appService_userProfile
+            name: userprofile
+

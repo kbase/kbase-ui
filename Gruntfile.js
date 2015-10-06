@@ -132,6 +132,10 @@ module.exports = function (grunt) {
             name: 'text'
         },
         {
+            dir: 'SparkMD5',
+            name: 'spark-md5'
+        },
+        {
             name: 'underscore'
         },
         {
@@ -139,6 +143,17 @@ module.exports = function (grunt) {
             cwd: 'src/plugin',
             src: ['**/*']
         },
+        {
+            name: 'kbase-ui-plugin-typeview',
+            cwd: '/Users/erik/work/kbase/projects/Ease Dev Campaign/dev/repos/typeview/src/plugin',
+            src: ['**/*']
+        },
+        
+//        {
+//            name: 'kbase-ui-plugin-typeview',
+//            cwd: 'src/plugin',
+//            src: ['**/*']
+//        },
         {
             name: 'datatables',
             cwd: 'media',
@@ -152,6 +167,12 @@ module.exports = function (grunt) {
         },
         {
             name: 'vega'
+        },
+        {
+            name: 'google-code-prettify',
+            dir: 'google-code-prettify',
+            cwd: 'src',
+            src: ['prettify.js', 'prettify.css']
         }
 
     ],
@@ -200,10 +221,14 @@ module.exports = function (grunt) {
             });
 
             var cwd = cfg.cwd;
+            if (cwd && cwd.charAt(0) === '/') {
+            } else {
+                cwd = 'bower_components/' + (cfg.dir || cfg.name) + (cwd ? '/' + cwd : '')
+            }
             return {
                 nonull: true,
                 expand: true,
-                cwd: 'bower_components/' + (cfg.dir || cfg.name) + (cwd ? '/' + cwd : ''),
+                cwd: cwd,
                 src: sources,
                 dest: makeBuildDir('client/bower_components') + '/' + (cfg.dir || cfg.name)
             };

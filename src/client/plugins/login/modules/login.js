@@ -85,17 +85,19 @@ define([
                 element('error').hide();
                 element('sign-in').hide();
                 element('signing-in').show();
+                runtime.send('ui', 'setTitle', 'Signing in ...');
                 runtime.getService('session').login({
                     username: username,
                     password: password
                 })
-                    .then(function (session) {
+                    .then(function () {
+                        runtime.send('ui', 'setTitle', 'Successful Sign In!');
                         runtime.send('app', 'loggedin');
                         /* TODO should be configurable default login location */
                         runtime.send('app', 'navigate', 'hello'); 
-                        // App.navigateTo('about');
                     })
                     .catch(function (errorMsg) {
+                        runtime.send('ui', 'setTitle', 'Sign In Error');
                         element('running').hide();
                         if (errorMsg === "LoginFailure: Authentication failed.") {
                             errorMsg = "Login Failed: your username/password is incorrect.";
@@ -177,46 +179,39 @@ define([
 
             // API
             
-            function init(config) {
-                return new Promise(function (resolve) {
-                    resolve();
-                });
-            }
-
             function attach(node) {
-                return new Promise(function (resolve) {
+                return Promise.try(function () {
                     mount = node;
                     container = document.createElement('div');
                     $container = $(container);
-                    mount.appendChild(container);
-                    container.innerHTML = renderForm();
-                    eventMan.attach($container);
-                    resolve();
+                    mount.appendChild(container);                   
                 });
             }
 
             function start(params) {
-                return new Promise(function (resolve) {
-                    resolve();
+                return Promise.try(function () {
+                    runtime.send('ui', 'setTitle', 'Sign in to KBase');
+                    runtime.send('ui', 'render', {
+                        node: container,
+                        content: renderForm()
+                    });
+                    eventMan.attach($container);
                 });
             }
 
             function stop() {
-                return new Promise(function (resolve) {
-                    resolve();
-                });
+                 return Promise.try(function () {
+                    eventMan.reset($container);
+                 });
             }
 
             function detach() {
-                return new Promise(function (resolve) {
-                    eventMan.reset($container);
+                 return Promise.try(function () {
                     mount.removeChild(container);
-                    resolve();
                 });
             }
 
             return {
-                init: init,
                 attach: attach,
                 detach: detach,
                 start: start,

@@ -15,6 +15,7 @@ define([
                 runtime: config.runtime,
                 on: {
                     start: function (w) {
+                        w.send('ui', 'setTitle', 'Test Panel Widget');
                         w.setState('updated', new Date());
                     },
                     render: function (w) {

@@ -56,6 +56,7 @@ define([
                      */
                     var profile = w.getState('userProfile'),
                         realname = profile ? profile.getProp('user.realname') : '?';
+                    console.log('PROFILE'); console.log(profile);
                     return div({class: 'dropdown', style: 'display:inline-block'}, [
                         button({type: 'button', class: 'btn btn-default dropdown-toggle', 'data-toggle': 'dropdown', 'aria-expanded': 'false'}, [
                             renderAvatar(w),
@@ -96,11 +97,15 @@ define([
                 runtime: runtime,
                 on: {
                     start: function (w, params) {
-                        w.recv('session', 'loggedout', function () {
-                            w.setState('updated', new Date());
-                        });
-                        w.recv('session', 'loggedin', function () {
-                            w.setState('updated', new Date());
+                        w.setState('loggedin', runtime.getService('session').isLoggedIn());
+//                        w.recv('session', 'loggedout', function () {
+//                            w.setState('loggedin', false);
+//                        });
+//                        w.recv('session', 'loggedin', function () {
+//                            w.setState('loggedin', true);
+//                        });
+                        runtime.getService('userprofile').onChange(function (data) {
+                            w.setState('userProfile', data);
                         });
 //                        AppState.listenForItem('userprofile', {
 //                            onSet: function (data) {
@@ -120,7 +125,6 @@ define([
                          w.setState('updated', new Date());
                          }
                          */
-                        w.setState('updated', new Date());
                     },
                     render: function (w) {
                         return div({class: 'kb-widget-login'}, [

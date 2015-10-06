@@ -7,6 +7,7 @@
     "**/*.txt"
   ],
   "dependencies": {
+    "spark-md5": "1.0.0",
     "bluebird": "^2.10.1",
     "chartist": "0.9.4",
     "comma-separated-values": "3.6.3",
@@ -36,7 +37,10 @@
     "requirejs-domready": "2.0.1",
     "kbase-ui-plugin-databrowser": "eapearson/kbase-ui-plugin-databrowser#master",
     "datatables-bootstrap3-plugin": "0.4.0",
-    "data-api": "eapearson/data_api#develop-eap"
+    "data-api": "eapearson/data_api#develop-eap",
+    "SparkMD5": "spark-md5#1.0.0",
+    "google-code-prettify": "1.0.4",
+    "kbase-ui-plugin-typeview": "eapearson/kbase-ui-plugin-typeview#master"
   },
   "devDependencies": {}
 }

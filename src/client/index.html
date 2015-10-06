@@ -77,11 +77,8 @@
         <script>
             require([
                 'app',
-                'bluebird',
-                'kb_common_html',
-                'kb_common_dom',
-                'error'
-            ], function (App, Promise, html, dom, error) {
+                'kb_common_dom'
+            ], function (App, dom) {
                 
                 function makeSymbol(s) {
                     return s.trim(' ').replace(/ /, '_');
@@ -123,7 +120,11 @@
                             name: 'kbase-ui-plugin-databrowser',
                             directory: 'bower_components/kbase-ui-plugin-databrowser'
                         },
-                        'dataview'
+                        'dataview', 'userprofile', 'about', 
+                        {
+                            name: 'kbase-ui-plugin-typeview',
+                            directory: 'bower_components/kbase-ui-plugin-typeview'
+                        }
                     ]
                 })
                     .then(function (runtime) {

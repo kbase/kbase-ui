@@ -6,7 +6,13 @@ define([
 ],
     function (standardWidgetFactory, html) {
         'use strict';
-        function myWidget(config) {           
+        function myWidget(config) {
+            function render(title) {
+                var div = html.tag('div');
+                return div({style: {fontWeight: 'bold', fontSize: '150%', margin: '15px 0 0 15px'}}, [
+                    title
+                ]);
+            }
             return standardWidgetFactory.make({
                 runtime: config.runtime,
                 on: {
@@ -15,8 +21,11 @@ define([
                         // We use the widget convenience function in order to 
                         // get automatic event listener cleanup. We could almost
                         // as easily do this ourselves.
+//                        w.recv('title', 'set', function (data) {
+//                            w.setHtml(render(data));
+//                        });
                         w.recv('ui', 'setTitle', function (data) {
-                            w.setState('title', data);
+                            w.set('title', data);
                         });
                     },
                     render: function (w) {
@@ -25,10 +34,7 @@ define([
                         // to re-render the title, which is essentially when the 
                         // state is dirty (has been changed) and a heartbeat
                         // event is captured.
-                        var div = html.tag('div');
-                        return div({style: {fontWeight: 'bold', fontSize: '150%', margin: '15px 0 0 15px'}}, [
-                            w.getState('title')
-                        ]);
+                        return render(w.get('title'));
                     }
                 }
             });

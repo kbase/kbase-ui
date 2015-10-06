@@ -36,17 +36,25 @@ define([
                 }
                 switch (type) {
                     case 'button':
-                        if (item.uri) {
-                            return li({}, a({href: item.uri}, [
-                                icon,
-                                item.label
-                            ]));
-                        } else if (path !== undefined) {
+                        if (item.uri) {                            
+                            return (function () {
+                                var linkAttribs = {href: item.uri};
+                                if (item.newWindow) {
+                                    linkAttribs.target = '_blank';
+                                }
+                                return li({}, a(linkAttribs, [
+                                    icon,
+                                    item.label
+                                ]));
+                            }());
+                        } 
+                        if (path !== undefined) {
                             return li({}, a({href: '#' + path}, [
                                 icon,
                                 item.label
                             ]));
                         }
+                        break;
                     case 'divider':
                         return li({role: 'presentation', class: 'divider'});
                 }
@@ -57,7 +65,7 @@ define([
                     menu = w.getState('menu');
                 return ul({class: 'dropdown-menu', role: 'menu', 'aria-labeledby': 'kb-nav-menu'}, menu.map(function (item) {
                     if (!item) {
-                        console.log('item ' + id + ' not defined');
+                        console.log('Menu item not defined');
                     } else {
                         return renderMenuItem(item);
                     }

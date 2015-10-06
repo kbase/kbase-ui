@@ -4,88 +4,64 @@ define([
     'bluebird',
     'kb_common_html',
     'kb_common_dom',
+    'kb_common_domEvent',
     'vega',
     'kb_vegaChartHelper'
 ],
-    function (Promise, html, dom, vega, vegaChartHelper) {
+    function (Promise, html, dom, domEvent, vega, vegaChartHelper) {
         'use strict';
 
-        function getData(type) {
-            return irisData
-                .filter(function (d) {
-                    if (d[5] === type) {
-                        return true;
-                    }
-                    return false;
-                })
-                .map(function (d) {
-                    return {
-                        sepalLength: d[1],
-                        sepalWidth: d[2],
-                        petalLength: d[3],
-                        petalWidth: d[4]
-                    };
-                })
-                .map(function (d) {
-                    return {x: d.petalLength, y: d.petalWidth};
-                });
-        }
-        function getIrisData() {
-            return [{
-                    name: 'setosa',
-                    color: 'green',
-                    values: getData('setosa')
-                },
-                {
-                    name: 'versicolor',
-                    color: 'orange',
-                    values: getData('versicolor')
-                },
-                {
-                    name: 'virginica',
-                    color: 'blue',
-                    values: getData('virginica')
-                }];
-        }
 
         function widget(config) {
-            var mount, container, scatterNode;
-
-            function init(config) {
-                return Promise.try(function () {
-                    return true;
-                });
+            var mount, container, scatterNode, runtime = config.runtime,
+                domEventManager = domEvent.make();
+            function getData() {
+                var i, data = [];
+                for (i = 0; i < 10000; i += 1) {
+                    data.push({
+                        x: Math.random() * 100,
+                        y: Math.random() * 100
+                    });
+                }
+                return data;
+            }
+            function clickButton() {
+                run()
+                    .then(function () {
+                        // nothing;
+                    });
             }
             function attach(node) {
                 return Promise.try(function () {
-                    mount = node;
-
                     var div = html.tag('div'),
                         id = html.genId(),
+                        button = html.tag('button'),
                         content = html.makePanel({
                             title: 'Vega Big Scatterplot Test',
-                            content: div({id: id})
+                            content: div([
+                                div({style: {borderBottom: '1px red solid'}}, [
+                                    button({id: domEventManager.addEvent('click', clickButton)}, 'Re-Run')
+                                ]),
+                                div({id: id})
+                            ])
                         });
+                    mount = node;
                     container = dom.createElement('div');
                     container.innerHTML = content;
                     dom.append(mount, container);
                     scatterNode = dom.nodeForId(id);
+                    // runtime.getService('ui').setTitle('Big Scatterplot with vega');
+                    runtime.send('ui', 'setTitle', 'Big Scatterplot with vega');
                 });
             }
             function start(params) {
                 return Promise.try(function () {
-                    // build up the specs synchronously.
-                    var data = (function () {
-                        var i, data = [];
-                        for (i = 0; i < 10000; i += 1) {
-                            data.push({
-                                x: Math.random() * 100,
-                                y: Math.random() * 100
-                            });
-                        }
-                        return data;
-                    }());
-                    console.log(data);
+                    domEventManager.attachEvents();                    
+                });
+            }
+            function run(params) {
+                return Promise.try(function () {
+                    var data = getData();
                     var scatter = vegaChartHelper.spec.scatter({
                         color: 'blue',
                         size: 20,
@@ -107,7 +83,7 @@ define([
             }
             function stop() {
                 return Promise.try(function () {
-                    return true;
+                    domEventManager.detachEvents();
                 });
             }
             function detach() {
@@ -115,18 +91,13 @@ define([
                     mount.removeChild(container);
                 });
             }
-            function destroy() {
-                return Promise.try(function () {
-                    return true;
-                });
-            }
+
             return {
-                init: init,
                 attach: attach,
                 start: start,
+                run: run,
                 stop: stop,
-                detach: detach,
-                destroy: destroy
+                detach: detach
             };
         }
 
