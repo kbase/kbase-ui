@@ -17,6 +17,7 @@ define([
                 on: {
                     attach: function (w, node) {
                         // create a widget mount on the node.
+                        console.log('hmm, body widget attaching');
                         widgetMount = WidgetMount.make({
                             runtime: config.runtime,
                             node: node
@@ -33,8 +34,6 @@ define([
                                 w.setState('params', null);
                             }
                         });
-                        //w.setState('widget', null);
-                       // w.setState('params', null);
                     },
                     render: function (w) {
                         var widget = w.getState('widget');
@@ -44,8 +43,17 @@ define([
                                 'No widget is set'
                             ]);
                         }
-                        
-                        widgetMount.mountWidget(widget, w.getState('params'));
+                        console.log('hmm, mounting widget: ' + widget);
+                        widgetMount.mountWidget(widget, w.getState('params'))
+                            .catch(function (err) {
+                                // need a catch-all widget to mount here??
+                                console.log('ERROR mounting widget');
+                                console.log(err);
+                                widgetMount.mountWidget('error', {
+                                    title: 'ERROR',
+                                    error: err
+                                });
+                            });
                         return null;
                     }
                 }

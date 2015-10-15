@@ -84,7 +84,15 @@ define([
 
         // Plugins
         function installPlugins(plugins) {
-            return pluginManager.installPlugins(plugins);
+//            var i = 0;
+//            return Promise.each(plugins.map(function (pluginSet) {
+//                i += 1;
+//                return Promise.try(function () {
+//                    console.log('x: SET ' + i);
+//                    return pluginManager.installPlugins(pluginSet);
+//                });
+//            }), function () {});
+            return pluginManager.installPluginSets(plugins);
         }
 
         // Services for plugins
@@ -200,6 +208,7 @@ define([
 
         var api = {
             getConfig: getConfig,
+            config: getConfig,
             hasConfig: hasConfig,
             // Session
             installPlugins: installPlugins,
@@ -211,6 +220,7 @@ define([
             urcv: urcv,
             // Services
             getService: getService,
+            service: getService,
             hasService: hasService
         };
 

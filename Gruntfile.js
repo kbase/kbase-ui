@@ -18,12 +18,20 @@ module.exports = function (grunt) {
     var distDir = runtimeDir + '/dist';
 
     var testDir = runtimeDir + '/test';
+    
+    var repoDir = '../repos';
 
     function makeBuildDir(subdir) {
         if (subdir) {
             return path.normalize(buildDir + '/' + subdir);
         }
         return path.normalize(buildDir);
+    }
+    function makeRepoDir(subdir) {
+        if (subdir) {
+            return path.normalize(repoDir + '/' + subdir);
+        }
+        return path.normalize(repoDir);
     }
 
     // Load grunt npm tasks..
@@ -32,33 +40,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-shell');
     grunt.loadNpmTasks('grunt-mkdir');
     
-    function fixThrift1 (content) {
-        var namespaceRe = /^if \(typeof ([^\s\+]+)/m,
-            namespace = content.match(namespaceRe)[1],
-            lintDecls = '/*global define */\n/*jslint white:true */',
-            requireJsStart = 'define(["thrift"], function (Thrift) {\n"use strict";',
-            requireJsEnd = 'return '+namespace+';\n});',
-            fixDeclRe = /if \(typeof ([^\s]+) === 'undefined'\) {\n[\s]*([^\s]+) = {};\n}/,
-            repairedContent = content
-                .replace(fixDeclRe, 'var $1 = {};\n')
-                .replace(/([^=!])==([^=])/g, '$1===$2')
-                .replace(/!=([^=])/g, '!==$1');
-            
-        return [lintDecls, requireJsStart, repairedContent, requireJsEnd].join('\n');
-    }
-     function fixThrift2 (content) {
-        var lintDecls = '/*global define */\n/*jslint white:true */',
-            namespaceRe = /^([^\/\s\.]+)/m,
-            namespace = content.match(namespaceRe)[1],
-            requireJsStart = 'define(["thrift", "'+namespace+'_types"], function (Thrift, '+namespace+') {\n"use strict";',
-            requireJsEnd = 'return '+namespace+';\n});',
-            repairedContent = content
-                .replace(/([^=!])==([^=])/g, '$1===$2')
-                .replace(/!=([^=])/g, '!==$1');
-            
-        return [lintDecls, requireJsStart, repairedContent, requireJsEnd].join('\n');
-    }
-
+ 
     // Bower magic.
     /* 
      * This section sets up a mapping for bower packages.
@@ -173,6 +155,18 @@ module.exports = function (grunt) {
             dir: 'google-code-prettify',
             cwd: 'src',
             src: ['prettify.js', 'prettify.css']
+        },
+        {
+            dir: 'kbase-data-api-js-wrappers',
+            cwd: 'dist/bower/pkg/js',
+            src: '**/*'
+        },
+        {
+            dir: 'd3-plugins-sankey',
+            src: ['sankey.js', 'sankey.css']
+        },
+        {
+            name: 'handlebars'
         }
 
     ],
@@ -267,35 +261,21 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-            taxonLib1: {
+            dev: {
                 files: [
                     {
-                        cwd: 'temp/gen-js',
-                        src: 'taxon_types.js',
-                        dest: makeBuildDir('client/lib/thrift'),
+                        cwd: makeRepoDir('dataview/src/plugin'),
+                        src: '**/*',
+                        dest: makeBuildDir('client/plugins/dataview'),
                         expand: true
-                    }
-                ],
-                options: {
-                    process: function (content) {
-                        return fixThrift1(content);
-                    }
-                }
-            },
-            taxonLib2: {
-                files: [
+                    },
                     {
-                        cwd: 'temp/gen-js',
-                        src: 'TaxonService.js',
-                        dest: makeBuildDir('client/lib/thrift'),
+                        cwd: makeRepoDir('dashboard/src/plugin'),
+                        src: '**/*',
+                        dest: makeBuildDir('client/plugins/dashboard'),
                         expand: true
                     }
-                ],
-                options: {
-                    process: function (content) {
-                        return fixThrift2(content);
-                    }
-                }
+                ]
             }
         },
         clean: {
@@ -336,14 +316,15 @@ module.exports = function (grunt) {
     grunt.registerTask('build', [
         'copy:bower',
         'copy:build',
-        'build-thrift-libs'
+        'copy:dev'
     ]);
 
-    grunt.registerTask('build-thrift-libs', [
-        'clean:temp',
-        'mkdir:temp',
-        'shell:makeTaxonLib',
-        'copy:taxonLib1',
-        'copy:taxonLib2'
-    ]);
+//    grunt.registerTask('build-thrift-libs', [
+//        'clean:temp',
+//        'mkdir:temp',
+//        'shell:makeTaxonLib',
+//        'copy:taxonLib1',
+//        'copy:taxonLib2',
+//        'copy:thriftLib'
+//    ]);
 };

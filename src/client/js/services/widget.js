@@ -18,7 +18,8 @@ define([
     }
 
     function factory(config) {
-        var widgetManager = widgetManagerFactory.make();
+        var widgetManager = widgetManagerFactory.make({runtime: config.runtime}),
+            runtime = config.runtime;
 
         function start() {
             return true;
@@ -39,9 +40,9 @@ define([
             stop: stop,
             // plugin interface
             pluginHandler: installWidgets,
-            makeWidget: function () {
+            makeWidget: function () {                
                 return proxyMethod(widgetManager, 'makeWidget', arguments);
-            } 
+            }
         };
     }
     return {

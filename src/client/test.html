@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Taxon Data API Test - Widget</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="/bower_components/requirejs/require.js"></script>
+        <script src="/js/require-config.js"></script>
+    </head>
+    <body>
+        <div id="root"></div>
+        <h1>Testing</h1>
+        <script>
+            require([
+                'bluebird'
+            ], function (Promise) {
+                'use strict';
+                function test1() {
+                    var data = [1, 2, 3, 4, 5];
+                    function makePromise(data) {
+                        return data.map(function (item) {
+                            return new Promise(function (resolve) {
+                                window.setTimeout(function () {
+                                    console.log('I tried: ' + item);
+                                    resolve('Indeed? ' + item);
+                                }, (5 - item) * 1000);
+                            });
+                        });
+                    }
+                    var promises = makePromise(data);
+
+                    Promise.each(promises, function (result) {
+                        console.log(result);
+                    })
+                        .then(function () {
+                            console.log('DONE');
+                        })
+                        .catch(function (err) {
+                            console.log('ERROR');
+                            console.log(err);
+                        })
+                }
+
+                function test2() {
+                    var data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+
+                    function makeActions(data) {
+                        return data.map(function (item) {
+                            return function (resolve, reject, notify) {
+                                window.setTimeout(function () {
+                                    console.log('I tried: ' + item);
+                                    resolve('Indeed? ' + item);
+                                }, Math.random() * 1000);
+                            }
+                        });
+                    }
+
+                    var actions = makeActions(data);
+
+                    function makePromiseIterator(actions) {
+                        return new Promise(function (topResolve, topReject) {
+                            function promiseIterator(actions) {
+                                if (actions === undefined || actions.length === 0) {
+                                    topResolve('DONE');
+                                }
+                                var next = actions[0],
+                                    rest = actions.slice(1);
+
+                                Promise.try(function () {
+                                    return new Promise(function (resolve, reject, notify) {
+                                        next(resolve, reject, notify);
+                                    });
+                                }).then(function (result) {
+                                    console.log(result);
+                                    promiseIterator(rest);
+                                }).catch(function (err) {
+                                    topReject(err);
+                                });
+                            }
+                            promiseIterator(actions);
+                        });
+                    }
+
+                    makePromiseIterator(actions)
+                        .then(function (result) {
+                            console.log(result);
+                        })
+                        .catch(function (err) {
+                            console.log('ERROR');
+                            console.log(err);
+                        });
+
+
+                }
+                test2();
+            });
+        </script>
+    </body>
+</html>

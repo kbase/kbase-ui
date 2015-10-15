@@ -22,10 +22,10 @@ define([
         
         runtime.recv('session', 'loggedin', function () {
             state.setItem('menu', state.getItem('menus').authenticated);
-        })
+        });
         runtime.recv('session', 'loggedout', function () {
             state.setItem('menu', state.getItem('menus').unauthenticated);
-        })
+        });
 
         function clearMenu() {
             state.setItem('menu', []);

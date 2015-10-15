@@ -5,7 +5,7 @@ define([
     'kb_common_html',
     'kb_taxon'
 ],
-    function (standardWidgetFactory, html, taxonClientFactory) {
+    function (standardWidgetFactory, html, Taxon) {
         'use strict';
         function makeSymbol(s) {
             return s.trim(' ').replace(/ /, '_');
@@ -42,21 +42,21 @@ define([
                         // state is dirty (has been changed) and a heartbeat
                         // event is captured.
                         // '811/Sbicolor.JGI-v2.1'
-                        var taxonClient = taxonClientFactory({
+                        var taxonClient = Taxon({
                             ref: w.getState('objectRef'),
                             token: config.runtime.getService('session').getAuthToken(),
-                            serviceUrl: 'http://euk.kbase.us/taxon'
+                            url: 'http://euk.kbase.us/taxon'
                         }),
                             content,
                             ol = html.tag('ol'),
                             li = html.tag('li'),
                             a = html.tag('a'),
                             div = html.tag('div');
-                        return taxonClient.get_scientific_name()
+                        return taxonClient.getScientificName()
                             .then(function (name) {
                                 content = div(['Scientific name: ', name]);
                                 w.send('ui', 'setTitle', 'Lineage of ' + name);
-                                return taxonClient.get_scientific_lineage();
+                                return taxonClient.getScientificLineage();
                             })
                             .then(function (lineage) {
                                 var pad = 0,

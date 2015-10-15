@@ -39,6 +39,10 @@ source:
             module: kb_widget_notification
             file: notificationWidget
             css: false
+        -
+            module: kb_widget_error
+            file: widgets/error
+            css: false
     styles:
         -
             file: navbar
@@ -77,4 +81,8 @@ install:
         -
             module: kb_widget_notification
             id: notification
+            type: factory
+        -
+            module: kb_widget_error
+            id: error
             type: factory

@@ -25,6 +25,9 @@ define([
         function isLoggedIn() {
             return session.isLoggedIn();
         }
+        function getKbaseSession() {
+            return session.getKbaseSession();
+        }
         function login(arg) {
             return session.login(arg)
                 .then(function () {
@@ -70,6 +73,7 @@ define([
             getAuthToken: getAuthToken,
             getUsername: getUsername,
             isLoggedIn: isLoggedIn,
+            getKbaseSession: getKbaseSession,
             login: login,
             logout: logout
         };

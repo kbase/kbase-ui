@@ -91,7 +91,7 @@ define([
                     container.innerHTML = renderLayout();
                     widgetSet.init()
                         .then(function () {
-                            return widgetSet.attach();
+                            return widgetSet.attach(container);
                         })
                         .then(function () {
                             return widgetSet.start(params);
@@ -122,8 +122,7 @@ define([
                         .then(function () {
                             resolve();
                         })
-                        .catch(function (err) {
-                            
+                        .catch(function (err) {                            
                             reject(err);
                         });
                 });

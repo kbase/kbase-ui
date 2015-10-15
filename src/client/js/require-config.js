@@ -21,6 +21,8 @@ require.config({
         underscore: 'bower_components/underscore/underscore',
         knockout: 'bower_components/knockout/knockout',
         d3: 'bower_components/d3/d3',
+        d3_sankey: 'bower_components/d3-plugins-sankey/sankey',
+        d3_sankey_css: 'bower_components/d3-plugins-sankey/sankey',
         //nvd3: 'bower_components/nvd3/build/nv.d3',
         //chartist: 'bower_components/chartist/dist/chartist',
         //chartist_css: 'bower_components/chartist/dist/chartist.min',
@@ -39,16 +41,17 @@ require.config({
         md5: 'bower_components/SparkMD5/spark-md5',
         'google-code-prettify': 'bower_components/google-code-prettify/prettify',        
         'google-code-prettify-style': 'bower_components/google-code-prettify/prettify',
+        handlebars: 'bower_components/handlebars/handlebars',
 
         
-        kb_common_html: 'bower_components/kbase-common-js/html',
+        kb_common_html: 'js/html',
         kb_common_dom: 'bower_components/kbase-common-js/dom',
-        kb_common_domEvent: 'bower_components/kbase-common-js/domEvent',
+        kb_common_domEvent: 'js/domEvent',
         kb_common_session: 'bower_components/kbase-common-js/session',
         kb_common_cookie: 'bower_components/kbase-common-js/cookie',
         kb_common_config: 'bower_components/kbase-common-js/config',
         kb_common_logger: 'bower_components/kbase-common-js/logger',
-        kb_common_pluginManager: 'bower_components/kbase-common-js/pluginManager',
+        kb_common_pluginManager: 'js/pluginManager',
         kb_common_router: 'bower_components/kbase-common-js/router',
         kb_common_state: 'bower_components/kbase-common-js/state',
         kb_common_props: 'bower_components/kbase-common-js/props',
@@ -59,28 +62,44 @@ require.config({
         kb_common_observed: 'bower_components/kbase-common-js/observed',
         kb_common_format: 'bower_components/kbase-common-js/format',
         // widget support should move out into a plugin.
-        kb_common_widgetManager: 'bower_components/kbase-common-js/widgetManager',
-        kb_common_widgetMount: 'bower_components/kbase-common-js/widgetMount',
-        kb_common_widgetSet: 'bower_components/kbase-common-js/widgetSet',
-        kb_widgetBases_standardWidget: 'bower_components/kbase-common-js/standardWidget',
+        kb_common_widgetManager: 'js/widgetManager',
+        kb_common_widgetMount: 'js/widgetMount',
+        kb_common_widgetSet: 'js/widgetSet',
+        kb_common_gravatar: 'js/gravatar',
+        kb_common_data: 'js/data',
+        kb_common_buttonBar: 'js/widgets/buttonBar',
+        
+        kb_widgetBases_standardWidget: 'js/standardWidget',
         kb_widgetBases_panelWidget: 'bower_components/kbase-common-js/panelWidget',
         kb_widgetAdapters_objectWidget: 'bower_components/kbase-common-js/widgetAdapters/widgetAdapter',
+        kb_widgetAdapters_kbWidget: 'js/widgetAdapters/kbWidgetAdapter',
+        
+        kb_widgetBases_kbWidget: 'js/widgetLegacy/kbaseWidget',
+        kb_widgetBases_kbAuthenticatedWidget: 'js/widgetLegacy/kbaseAuthenticatedWidget',
+        kb_widget_kbTabs: 'js/widgetLegacy/kbTabs',
+        kb_widget_helpers: 'js/widgetLegacy/kbHelperPlugins',
+        kb_widget_tabs: 'js/widgetLegacy/kbaseTabs',
+        
         // Just for testing vega
         kb_common_csv: 'bower_components/kbase-common-js/csv',
         vega: 'bower_components/vega/vega',
         kb_vegaChartHelper: 'js/vegaChartHelper',
-        thrift: 'js/kb-thrift',
         utils: 'js/Utils',
         // error: 'js/Error',
-        app: 'js/App',
+        app: 'js/App',        
         simpleApp: 'js/simpleApp',
-        taxon_types: 'lib/thrift/taxon_types',
-        taxon: 'lib/thrift/TaxonService',
-        kb_taxon: 'js/TaxonAPI',
+        
+        thrift: 'bower_components/kbase-data-api-js-wrappers/thrift/thrift',
+        thrift_binary_protocol: 'bower_components/kbase-data-api-js-wrappers/thrift/thrift-js-binary-protocol',
+        taxon_types: 'bower_components/kbase-data-api-js-wrappers/thrift/taxon/taxon_types',
+        taxon_service: 'bower_components/kbase-data-api-js-wrappers/thrift/taxon/thrift_service',        
+        kb_taxon: 'bower_components/kbase-data-api-js-wrappers/Taxon',
+        
         // TODO: move into separate repo
         kb_api: 'lib/kbase-client-api',
         // kbase service client support -- should be refactored.
         kb_narrative: 'js/clients/narrative',
+        kb_serviceApi: 'js/clients/serviceApi',
         kb_types: 'js/clients/types',
         kb_appService_router: 'js/services/router',
         kb_appService_menu: 'js/services/menu',
@@ -89,15 +108,8 @@ require.config({
         kb_appService_session: 'js/services/session'
     },
     shim: {
-        chartist: {
-            deps: ['css!chartist_css']
-        },
         vega: {
             exports: 'vg',
-            deps: ['d3']
-        },
-        nvd3: {
-            exports: 'nv',
             deps: ['d3']
         },
         bootstrap: {
@@ -105,7 +117,11 @@ require.config({
         },
         'google-code-prettify': {
             deps: ['css!google-code-prettify-style']
-        }
+        },
+        d3_sankey: {
+            deps: ['d3', 'css!d3_sankey_css']
+            // deps: ['d3', 'css!d3_sankey_css', 'css!kb/style/sankey']
+        },
     },
     map: {
         '*': {
@@ -117,11 +133,11 @@ require.config({
 
 (function () {
     var kbClients = [
-        ['narrative_method_store', 'NarrativeMethodStore'],
+        ['narrativeMethodStore', 'NarrativeMethodStore'],
         ['userProfile', 'UserProfile'],
         ['workspace', 'Workspace'],
         ['cdmi', 'CDMI_API'],
-        ['cdmi-entity', 'CDMI_EntityAPI'],
+        ['cdmiEntity', 'CDMI_EntityAPI'],
         ['trees', 'KBaseTrees'],
         ['fba', 'fbaModelServices'],
         ['ujs', 'UserAndJobState'],
