@@ -157,8 +157,18 @@ module.exports = function (grunt) {
             src: ['prettify.js', 'prettify.css']
         },
         {
-            dir: 'kbase-data-api-js-wrappers',
-            cwd: 'dist/bower/pkg/js',
+            dir: 'data-api',
+            cwd: 'bower',
+            src: '**/*'
+        },
+//        {
+//            dir: 'kbase-data-api-js-wrappers',
+//            cwd: 'bower',
+//            src: '**/*'
+//        },
+        {
+            dir: 'thrift-binary-protocol',
+            cwd: 'src',
             src: '**/*'
         },
         {
@@ -167,7 +177,17 @@ module.exports = function (grunt) {
         },
         {
             name: 'handlebars'
-        }
+        },
+        {
+            name: 'nunjucks',
+            cwd: 'browser',
+            src: 'nunjucks.js'
+        },
+         {
+            name: 'kbase-service-clients-js',
+            cwd: 'dist/plugin',
+            src: ['**/*']
+        },
 
     ],
         bowerCopy = bowerFiles.map(function (cfg) {

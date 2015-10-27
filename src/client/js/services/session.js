@@ -8,8 +8,9 @@ define([
     function factory(config) {
         var runtime = config.runtime,
             session = sessionFactory.make({
-                cookieName: config.cookieName || 'testSession',
-                loginUrl: config.loginUrl || 'https://kbase.us/services/authorization/Sessions/Login',
+                cookieName: config.cookieName,
+                extraCookieNames: config.extraCookieNames,
+                loginUrl: config.loginUrl,
                 cookieMaxAge: config.cookieMaxAge || 100000
             }),
             state = observed.make();

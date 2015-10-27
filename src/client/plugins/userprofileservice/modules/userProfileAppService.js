@@ -61,18 +61,30 @@ define([
         //});
 
         // send out message when the profile has been received
-        function onChange(fun) {
+        function onChange(fun, errFun) {
             state.listen('userprofile', {
                 onSet: function (value) {
                     fun(value);
+                },
+                onError: function (err) {
+                    console.log('ERROR in user profile service');
+                    console.log(err);
+                    if (errFun) {
+                        errFun(err);
+                    } 
                 }
             });
+        }
+        
+        function whenChange() {
+            return state.whenItem('userprofile')
         }
 
         return {
             start: start,
             stop: stop,
             onChange: onChange,
+            whenChange: whenChange,
             getRealname: getRealname
         };
     }

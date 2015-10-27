@@ -42,6 +42,9 @@ define([
             pluginHandler: installWidgets,
             makeWidget: function () {                
                 return proxyMethod(widgetManager, 'makeWidget', arguments);
+            },
+            getWidget: function () {
+                return proxyMethod(widgetManager, 'getWidget', arguments);
             }
         };
     }

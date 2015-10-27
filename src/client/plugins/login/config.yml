@@ -22,3 +22,5 @@ install:
         -
             path: ['login']
             widget: loginPanelWidget
+            queryParams:
+                nextrequest: {}

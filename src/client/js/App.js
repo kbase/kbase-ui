@@ -12,6 +12,7 @@ define([
     'kb_appService_heartbeat',
     'kb_appService_widget',
     'kb_appService_session',
+    'kb_appService_data',
     'kb_common_props',
     'kb_common_asyncQueue',
     'promise',
@@ -20,6 +21,7 @@ define([
     dom, messengerFactory,
     widgetMountFactory, routerServiceFactory, menuServiceFactory,
     heartbeatServiceFactory, widgetServiceFactory, sessionServiceFactory,
+    dataServiceFactory,
     props, asyncQueue, Promise, clientConfig) {
     'use strict';
 
@@ -230,7 +232,8 @@ define([
             // Register service handlers.
             addService(['session'], sessionServiceFactory.make({
                 runtime: api,
-                cookieName: 'testSession',
+                cookieName: 'kbase_session',
+                extraCookieNames: ['kbase_narr_session'],
                 loginUrl: 'https://kbase.us/services/authorization/Sessions/Login',
                 cookieMaxAge: 100000
 
@@ -241,7 +244,7 @@ define([
             addService(['routes', 'route', 'routing'], routerServiceFactory.make({
                 runtime: api,
                 notFoundRoute: {redirect: {path: 'message/notfound'}},
-                defaultRoute: {redirect: {path: 'hello'}}
+                defaultRoute: {redirect: {path: 'dashboard'}}
             }));
             addService(['menu', 'menus'], menuServiceFactory.make({
                 runtime: api
@@ -250,6 +253,9 @@ define([
                 runtime: api
             }));           
             addService(['service', 'services'], serviceServiceFactory({
+                runtime: api
+            }));
+            addService(['data'], dataServiceFactory.make({
                 runtime: api
             }));
 //            addService(['userprofile'], userProfileServiceFactory.make({

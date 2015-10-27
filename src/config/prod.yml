@@ -28,6 +28,7 @@ services:
         name: Login
     narrative_method_store:
         url: https://kbase.us/services/narrative_method_store/rpc
+        image_url: https://kbase.us/services/narrative_method_store/
         name: Narrative Method Store
     protein_info:
         url: https://kbase.us/services/protein_info_service
@@ -53,6 +54,9 @@ services:
     workspace:
         url: https://kbase.us/services/ws/
         name: Workspace
+    narrative:
+        url: https://narrative.kbase.us
+        name: Narrative Interface        
 
 # Settings in support of the user interface
 ui:

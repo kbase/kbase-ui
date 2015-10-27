@@ -11,6 +11,20 @@ define([
             if (!handler) {
                 runtime.send('app', 'route-not-found');
             }
+            if (handler.route.authorization) {
+                if (!runtime.getService('session').isLoggedIn()) {
+                    var loginParams = {}
+                    if (handler.request.path) {
+                        loginParams.nextrequest = JSON.stringify(handler.request);
+                    }
+                    runtime.send('app', 'navigate', {
+                        path: 'login',
+                        // TODO: path needs to be the path + params
+                        params: loginParams
+                    });
+                    return;
+                }
+            }
             var route = {
                 routeHandler: handler
             };
@@ -18,6 +32,8 @@ define([
                 runtime.send('app', 'route-redirect', route);
             } else if (handler.route.widget) {
                 runtime.send('app', 'route-widget', route);
+            } else if (data.routeHandler.route.handler) {
+                runtime.send('app', 'route-handler', route);
             }
             //runtime.send('app', 'new-route', {
             //    routeHandler: handler
@@ -27,13 +43,14 @@ define([
             return Promise.try(function () {
                 if (route.widget) {
                     // ADD ROUTE WIDGET HERE...
-                    router.addRoute({
-                        path: route.path,
-                        queryParams: route.queryParams,
-                        config: {
-                        },
-                        widget: route.widget
-                    });
+                    router.addRoute(route);
+//                    router.addRoute({
+//                        path: route.path,
+//                        queryParams: route.queryParams,
+//                        config: {
+//                        },
+//                        widget: route.widget
+//                    });
                 } else if (route.redirectHandler) {
                     router.addRoute(route);
                 } else {
@@ -69,6 +86,8 @@ define([
                 send('app', 'route-redirect', data);
             } else if (data.routeHandler.route.widget) {
                 send('app', 'route-widget', data);
+            } else if (data.routeHandler.route.handler) {
+                send('app', 'route-handler', data);
             }
         });
 
@@ -78,6 +97,10 @@ define([
                 params: data.routeHandler.route.redirect.params
             });
         });
+        
+        //runtime.recv('app', 'route-handler', function (data) {
+        //    
+        //})
 
         runtime.recv('app', 'navigate', function (data) {
             router.navigateTo(data);

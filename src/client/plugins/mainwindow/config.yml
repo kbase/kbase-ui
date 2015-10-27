@@ -21,6 +21,9 @@ source:
             module: kb_widget_title
             file: titleWidget
         -
+            module: kb_widget_buttonbar
+            file: buttonbarWidget
+        -
             module: kb_widget_logo
             file: logoWidget
         -
@@ -61,6 +64,10 @@ install:
         -
             module: kb_widget_title
             id: title
+            type: factory
+        -
+            module: kb_widget_buttonbar
+            id: buttonbar
             type: factory
         -
             module: kb_widget_logo

@@ -102,7 +102,6 @@
                 }
                 displayStatus('running');
                 // dom.qs('#status').innerHTML = 'running...';
-                var R;
                 App.run({
                     nodes: {
                         root: {
@@ -116,19 +115,29 @@
                         }
                     },
                     plugins: [
-                        ['mainwindow', 'message', 'welcome', 'login', 'types'],
-                        ['test', 'taxontest', 'vegatest',
+                        ['mainwindow', 'message', 'welcome', 'login', 'types', {
+                            name: 'serviceclients',
+                            directory: 'bower_components/kbase-service-clients-js'
+                        }, 'userprofileservice'],
+                        [
+                            //'test', 
+                            //'taxontest', 
+                            //'vegatest',
                             {
                                 name: 'kbase-ui-plugin-databrowser',
                                 directory: 'bower_components/kbase-ui-plugin-databrowser'
                             },
-                            'userprofile', 'about',
-                            {
-                                name: 'kbase-ui-plugin-typeview',
-                                directory: 'bower_components/kbase-ui-plugin-typeview'
-                            },
+                            //'about',
+                            // {
+                            //     name: 'kbase-ui-plugin-typeview',
+                            //     directory: 'bower_components/kbase-ui-plugin-typeview'
+                            // },
                             'dataview',
-                            'dashboard'
+                            'dashboard',
+                            'userprofile',
+                            'datasearch',
+                            'narrativemanager',
+                            'narrativestore'
                         ]
                     ]
                 })

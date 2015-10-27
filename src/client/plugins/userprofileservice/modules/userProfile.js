@@ -6,21 +6,22 @@ define([
     'kb_common_utils',
     'md5',
     'kb_userprofile_userProfileService',
-    'kb_plugin_userprofile'
+    'kb_plugin_userprofileservice'
 ],
     function (Promise, Utils, md5, UserProfileService, Plugin) {
         "use strict";
         var UserProfile = Object.create({}, {
             init: {
                 value: function (cfg) {
-                    if (!cfg.username) {
-                        throw 'Cannot create a profile object without a username';
-                    }
-                    this.username = cfg.username;
                     if (!cfg.runtime) {
                         throw 'Cannot create a profile object without a runtime';
                     }
                     this.runtime = cfg.runtime;
+
+                    if (!cfg.username) {
+                        throw 'Cannot create a profile object without a username';
+                    }
+                    this.username = cfg.username;
 
                     if (this.runtime.getService('session').isLoggedIn()) {
                         if (this.runtime.hasConfig('services.user_profile.url')) {

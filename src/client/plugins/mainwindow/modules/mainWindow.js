@@ -53,6 +53,9 @@ define([
                         div({id: widgetSet.addWidget('title')})
                     ]),
                     div({style: {border: '0px dashed blue', position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top', verticalAlign: 'top'}}, [
+                        div({style: {borderLeft: '1px silver solid', display: 'inline-block', padding: '4px', height: '100%', verticalAlign: 'top'}}, [
+                            div({id: widgetSet.addWidget('buttonbar')})
+                        ]),
                         div({style: {borderLeft: '1px silver solid', 'border-right': '1px silver solid', 'border-right': '1px silver solid',padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top', width: '100px'}}, [
                             div({id: widgetSet.addWidget('notification')})
                         ]),

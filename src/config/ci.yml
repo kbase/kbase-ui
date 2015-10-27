@@ -25,6 +25,7 @@ services:
         name: Login
     narrative_method_store:
         url: https://ci.kbase.us/services/narrative_method_store/rpc
+        image_url: https://ci.kbase.us/services/narrative_method_store/        
         name: Narrative Method Store
     awe:
         url: https://ci.kbase.us/services/awe-api
@@ -58,6 +59,9 @@ services:
     job_service:
         url: https://ci.kbase.us/services/njs_wrapper
         name: Job Service
+    narrative:
+        url: https://narrative-ci.kbase.us
+        name: Narrative Interface
         
 # Settings in support of the user interface
 ui:

@@ -255,9 +255,8 @@ types:
             viewers:
                 -
                     title: Data View
-                    module: kb_widget_dataview_modeling_tabTable
-                    widget: 
-                        name: 
+                    widget:
+                        name: kb_dataview_biochem_media
                         config:
                             jqueryName: kbaseTabTable
                     panel: true
@@ -320,8 +319,10 @@ types:
             viewers:
                 -
                     title: Data View
-                    module: kb_widget_dataview_modeling_tabTable
-                    widget: kbaseTabTable
+                    widget:
+                        name: kb_dataview_fba
+                        config:
+                            jqueryName: kbaseTabTable
                     panel: true
                     options: 
                         -
@@ -341,8 +342,10 @@ types:
             viewers:
                 -
                     title: Data View
-                    module: kb_widget_dataview_modeling_tabTable
-                    widget: kbaseTabTable
+                    widget:
+                        name: kb_dataview_fbaModel
+                        config:
+                            jqueryName: kbaseTabTable
                     panel: true
                     options: 
                         -

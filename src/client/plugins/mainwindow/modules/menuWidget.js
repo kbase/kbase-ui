@@ -59,17 +59,40 @@ define([
                         return li({role: 'presentation', class: 'divider'});
                 }
             }
-
-            function renderMenu(w) {
-                var ul = html.tag('ul'),
-                    menu = w.getState('menu');
-                return ul({class: 'dropdown-menu', role: 'menu', 'aria-labeledby': 'kb-nav-menu'}, menu.map(function (item) {
+            
+            function renderMenuSection(section) {
+                var content = [];
+                if (!section && section.length === 0) {
+                    return;
+                }
+                section.forEach(function (item) {
                     if (!item) {
                         console.log('Menu item not defined');
                     } else {
-                        return renderMenuItem(item);
+                        content.push(renderMenuItem(item));
                     }
-                }));
+                });
+                return content;
+            }
+
+            function renderMenu(w) {
+                var ul = html.tag('ul'),
+                    menu = w.getState('menu'),
+                    items = [
+                        renderMenuSection(menu.main),
+                        renderMenuSection(menu.developer),
+                        renderMenuSection(menu.help)
+                    ].filter(function (items) {
+                        if (!items || items.length > 0) {
+                            return true;
+                        }
+                        return false;
+                    }).map(function (items) {
+                        return items.join('');
+                    }).join(renderMenuItem({type: 'divider'}));
+                
+                
+                return ul({class: 'dropdown-menu', role: 'menu', 'aria-labeledby': 'kb-nav-menu'}, items);
             }
 
             return StandardWidget.make({

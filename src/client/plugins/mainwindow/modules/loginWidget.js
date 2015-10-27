@@ -56,7 +56,6 @@ define([
                      */
                     var profile = w.getState('userProfile'),
                         realname = profile ? profile.getProp('user.realname') : '?';
-                    console.log('PROFILE'); console.log(profile);
                     return div({class: 'dropdown', style: 'display:inline-block'}, [
                         button({type: 'button', class: 'btn btn-default dropdown-toggle', 'data-toggle': 'dropdown', 'aria-expanded': 'false'}, [
                             renderAvatar(w),

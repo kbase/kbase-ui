@@ -55,10 +55,13 @@ define([
 
         function addWidget(widgetId, config) {
             config = config || {};
-            var widgetMaker = runtime.getService('widget').makeWidget(widgetId, config),
+            var widgetDef = runtime.getService('widget').getWidget(widgetId),
+                widgetMaker = runtime.getService('widget').makeWidget(widgetId, config),
                 id = html.genId(),
                 rec = {
                     id: id,
+                    name: widgetDef.name || widgetDef.id,
+                    title: widgetDef.title,
                     widgetMaker: widgetMaker
                 };
             widgets.push(rec);
@@ -72,13 +75,21 @@ define([
         }
 
         function makeWidgets() {
-            return Promise.all(widgets.map(function (rec) {
+            return Promise.settle(widgets.map(function (rec) {
                 return rec.widgetMaker;
             }))
                 .then(function (ws) {
                     // now we have the widget instance list.
                     eachArrays([widgets, ws], function (recs) {
-                        recs[0].widget = recs[1];
+                        var res = recs[1];
+                        if (res.isFulfilled()) {                        
+                            recs[0].widget = res.value();
+                        } else if (res.isRejected()) {
+                            console.log('ERROR making widget');
+                            console.log(res.reason());
+                            recs[0].widget = null;
+                            recs[0].error = res.reason();
+                        }
                     });
                 });
         }
@@ -109,7 +120,7 @@ define([
                     throw {
                         type: 'WidgetError',
                         reason: 'MissingAttachmentNode',
-                        message: ' The widget ' + rec.title + ' does not have a valid node at ' + rec.id
+                        message: 'The widget ' + rec.title + ' does not have a valid node at ' + rec.id
                     };
                 }
                 return rec.widget.attach(rec.node);
@@ -121,7 +132,18 @@ define([
                 if (rec.widget && rec.widget.start) {
                     return rec.widget.start(params);
                 }
-            }));
+            }))
+                .then(function (results) {
+                    results.forEach(function (result) {
+                        if (result.isRejected()) {
+                            console.log('START ERROR');
+                            console.log(result.reason());
+                        } else {
+                            console.log('START OK');
+                            console.log(result.value());
+                        }
+                    });
+                });
         }
 
         function run(params) {
@@ -160,7 +182,9 @@ define([
 
         function destroy() {
             return Promise.settle(widgets.map(function (rec) {
-                return rec.widget.destroy();
+                if (rec.widget && rec.widget.destroy) {
+                    return rec.widget.destroy();
+                }
             }));
         }
 

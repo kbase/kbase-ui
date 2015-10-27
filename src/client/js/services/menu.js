@@ -8,25 +8,43 @@ define([
     function factory(config) {
         var state = observed.make(),
             runtime = config.runtime;
+            state.setItem('menu', []);
+//        state.setItem('menus', {
+//            authenticated: [],
+//            unauthenticated: []
+//        });
 
-        state.setItem('menu', []);
         state.setItem('menus', {
-            authenticated: [],
-            unauthenticated: []
+            authenticated: {
+                main: [
+                ],
+                developer: [
+                ],
+                help: [
+                ]
+            },
+            unauthenticated: {
+                main: [
+                ],
+                developer: [
+                ],
+                help: [
+                ]
+            }
         });
+
         state.setItem('menuItems', {
             divider: {
                 type: 'divider'
             }
         });
-        
+
         runtime.recv('session', 'loggedin', function () {
             state.setItem('menu', state.getItem('menus').authenticated);
         });
         runtime.recv('session', 'loggedout', function () {
             state.setItem('menu', state.getItem('menus').unauthenticated);
         });
-
         function clearMenu() {
             state.setItem('menu', []);
         }
@@ -54,26 +72,37 @@ define([
         /*
          * TODO: support menu sections. For now, just a simple menu.
          */
-        function addToMenu(id, item) {
+        function addToMenu(menuEntry, item) {
+            var id, section, position,
+                menuItems = state.getItem('menuItems');
+            if (typeof menuEntry === 'object') {
+                id = menuEntry.name;
+                section = menuEntry.section;
+                position = menuEntry.position || 'bottom';
+            } else {
+                id = menuEntry;
+                section = 'main';
+                position = 'bottom';
+            }
             state.modifyItem('menus', function (menus) {
-                menus[id].push(item);
+                if (position === 'top') {
+                    menus[id][section].push(menuItems[item]);
+                } else {
+                    menus[id][section].unshift(menuItems[item]);                    
+                }
                 return menus;
             });
         }
 
         function getCurrentMenu() {
             var menu,
-                menus = state.getItem('menus'),
-                menuItems = state.getItem('menuItems');
-
+                menus = state.getItem('menus');
             if (runtime.getService('session').isLoggedIn()) {
                 menu = menus['authenticated'];
             } else {
                 menu = menus['unauthenticated'];
             }
-            return menu.map(function (item) {
-                return menuItems[item];
-            });
+            return menu;
         }
 
 
@@ -81,8 +110,8 @@ define([
         function installMenu(menu) {
             addMenuItem(menu.name, menu.definition);
             if (menu.menus) {
-                menu.menus.forEach(function (menuId) {
-                    addToMenu(menuId, menu.name);
+                menu.menus.forEach(function (menuEntry) {
+                    addToMenu(menuEntry, menu.name);
                 });
             }
         }
@@ -113,7 +142,7 @@ define([
             onChange: onChange
         };
     }
-    
+
     return {
         make: function (config) {
             return factory(config);
