@@ -172,22 +172,26 @@ module.exports = function (grunt) {
         {
             name: 'underscore'
         },
-        //{
-        //    name: 'kbase-ui-plugin-databrowser',
-        //    cwd: 'src/plugin',
-        //    src: ['**/*']
-        //},
         {
-            name: 'kbase-ui-plugin-typeview',
-            cwd: '/Users/erik/work/kbase/projects/Ease Dev Campaign/dev/repos/typeview/src/plugin',
+            name: 'kbase-ui-plugin-databrowser',
+            cwd: 'src/plugin',
             src: ['**/*']
         },
-        
-//        {
-//            name: 'kbase-ui-plugin-typeview',
-//            cwd: 'src/plugin',
-//            src: ['**/*']
-//        },
+        {
+            name: 'kbase-ui-plugin-dataview',
+            cwd: 'src/plugin',
+            src: ['**/*']
+        },        
+        {
+            name: 'kbase-ui-plugin-typeview',
+            cwd: 'src/plugin',
+            src: ['**/*']
+        },
+        {
+            name: 'kbase-ui-plugin-dashboard',
+            cwd: 'src/plugin',
+            src: ['**/*']
+        },
         {
             name: 'datatables',
             cwd: 'media',
@@ -331,28 +335,28 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-            dev: {
-                files: [
-                    {
-                        cwd: makeRepoDir('dataview/src/plugin'),
-                        src: '**/*',
-                        dest: buildDir('client/plugins/dataview'),
-                        expand: true
-                    },
-                    {
-                        cwd: makeRepoDir('dashboard/src/plugin'),
-                        src: '**/*',
-                        dest: buildDir('client/plugins/dashboard'),
-                        expand: true
-                    },
-                    {
-                        cwd: makeRepoDir('databrowser/src/plugin'),
-                        src: '**/*',
-                        dest: buildDir('client/plugins/databrowser'),
-                        expand: true
-                    }
-                ]
-            },
+//            dev: {
+//                files: [
+//                    {
+//                        cwd: makeRepoDir('dataview/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/plugins/dataview'),
+//                        expand: true
+//                    },
+//                    {
+//                        cwd: makeRepoDir('dashboard/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/plugins/dashboard'),
+//                        expand: true
+//                    },
+//                    {
+//                        cwd: makeRepoDir('databrowser/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/plugins/databrowser'),
+//                        expand: true
+//                    }
+//                ]
+//            },
             deploy: {
                 files: [
                     {
@@ -460,7 +464,7 @@ module.exports = function (grunt) {
         'bower:install',
         'copy:bower',
         'copy:build',
-        'copy:dev',
+        // 'copy:dev',
         'copy:config',
         'build-config'
         // 'copy:config-prod'

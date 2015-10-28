@@ -17,11 +17,14 @@ plugins:
             userprofileservice
     -
         -
-            databrowser
+            name: dataview
+            directory: bower_components/kbase-ui-plugin-dataview
         -
-            dataview
+            name: typeview
+            directory: bower_components/kbase-ui-plugin-typeview
         -
-            dashboard
+            name: dashboard
+            directory: bower_components/kbase-ui-plugin-dashboard
         -
             userprofile
         -
@@ -30,8 +33,6 @@ plugins:
             narrativemanager
         -
             narrativestore
-        -
-            typeview
             
 #        -
 #            name: viswidgets
