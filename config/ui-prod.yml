@@ -33,14 +33,9 @@ plugins:
             narrativemanager
         -
             narrativestore
-#        -
-#            name: viswidgets
-#            directory: bower_components/kbase-ui-plugin-vis-widgets/src/plugin
-#    -
-#        name: viswidgetsdemo
-#        directory: bower_components/kbase-ui-plugin-demo-vis-widget/src/plugin
-#-
-#    visWidgets
+        -
+            name: viswidgets
+            directory: bower_components/kbase-ui-plugin-vis-widgets
 menu:
     available_items:
 #            search: 

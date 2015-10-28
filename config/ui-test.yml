@@ -1,4 +1,4 @@
-## YAML Template.
+## UI Configuration File - Test
 ---
 plugins:
     -
@@ -32,16 +32,10 @@ plugins:
         -
             narrativemanager
         -
-            narrativestore
-            
-#        -
-#            name: viswidgets
-#            directory: bower_components/kbase-ui-plugin-vis-widgets/src/plugin
-#    -
-#        name: viswidgetsdemo
-#        directory: bower_components/kbase-ui-plugin-demo-vis-widget/src/plugin
-#-
-#    visWidgets
+            narrativestore            
+        -
+            name: viswidgets
+            directory: bower_components/kbase-ui-plugin-vis-widgets
 menu:
     available_items:
 #            search: 
@@ -72,8 +66,9 @@ menu:
     menus:
         authenticated: 
             main: [narrative, search, dashboard]
-            developer: [databrowser]
+            developer: []
             help: [about-kbase, contact-kbase]
         unauthenticated: 
             main: [search]
+            developer: []
             help: [about-kbase, contact-kbase]

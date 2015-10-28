@@ -217,6 +217,11 @@ module.exports = function (grunt) {
             src: ['**/*']
         },
         {
+            name: 'kbase-ui-plugin-vis-widgets',
+            cwd: 'src/plugin',
+            src: ['**/*']
+        },
+        {
             name: 'datatables',
             cwd: 'media',
             src: ['css/jquery.dataTables.css', 'images/*', 'js/jquery.dataTables.js']
