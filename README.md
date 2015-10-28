@@ -68,6 +68,8 @@ In general:
     make
     ```
 
+    Note: Depending on your platform and installed browsers, you may need to hand-tweak the browsers used for testing; phantomjs is by default the sole browser tested.
+
 3. Run tests
 
     The tests can be run directly with karma, or through the make process
