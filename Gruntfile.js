@@ -28,7 +28,7 @@ function cancelTask() {
 module.exports = function (grunt) {
    
     var servicesTarget = 'ci', 
-        uiTarget = 'test';
+        uiTarget = 'prod';
     
     // Config
     // TODO: maybe read something from the runtime/config directory so we don't 
