@@ -90,8 +90,8 @@ module.exports = function (grunt) {
     //grunt.loadNpmTasks('grunt-contrib-requirejs');
     //grunt.loadNpmTasks('grunt-karma');
     //grunt.loadNpmTasks('grunt-coveralls');
-    //grunt.loadNpmTasks('grunt-connect');
-    //grunt.loadNpmTasks('grunt-open');
+    grunt.loadNpmTasks('grunt-connect');
+    grunt.loadNpmTasks('grunt-open');
     //grunt.loadNpmTasks('grunt-http-server');
     //grunt.loadNpmTasks('grunt-markdown');
 
@@ -496,10 +496,10 @@ module.exports = function (grunt) {
     grunt.registerTask('develop', [
         'karma:dev',
     ]);
-
+*/
     grunt.registerTask('preview', [
         'open:dev',
         'connect'
     ]);
-    */
+    
 };
