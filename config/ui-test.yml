@@ -2,88 +2,77 @@
 ---
 plugins:
     -
-        login
+        -
+            mainwindow
+        -
+            message
+        -
+            welcome
+        -
+            login
+        -
+            name: serviceClients
+            directory: bower_components/kbase-service-clients-js
+        -
+            userprofileservice
     -
-        name: sample
-        directory: bower_components/kbase-ui-plugin-sample/src/plugin
-    -
-        eg_plugin
-    -
-        about
-    -
-        databrowser
-    -
-        userprofile
-    -
-        narrativestore
-    -
-        dashboard
-    -
-        dataview
-    -
-        typeview
-    -
-        contact
-    -
-        typebrowser
-    -
-        narrativemanager
-    -
-        egPluginJustPanel
-    -
-        eg_ezPlugin
-    -
-        name: kb_ui_plugin_demo
-        directory: bower_components/kb-ui-plugin-demo/src/plugin
-    -
-        visWidgets
-    -
-        demo_visWidgets
-navbar:
-    menu:
-        available_items:
-            search: 
-                path: search/?q=*
-                label: Search Data
-                icon: search
-            narrative: 
-                uri: #narrativemanager/start
-                label: Narrative
-                icon: file
-            narrativeTutorial: 
-                uri: https://kbase.us/narrative-guide
-                label: Narrative Tutorial
-                icon: info-circle
-
-            about_kbase: 
-                uri: https://kbase.us/about
-                label: About KBase
-                icon: info-circle
-            contact_kbase: 
-                uri: https://kbase.us/contact-us
-                label: Contact KBase
-                icon: envelope-o
-            test: 
-                path: test
-                label: Testing Panel
-                icon: flask
-            linechart:
-                path: linechart
-                label: Line Chart
-                icon: line-chart
-            barchart:
-                path: barchart
-                label: Bar Chart
-                icon: bar-chart
-            heatmap:
-                path: heatmap
-                label: Heat Map
-                icon: barcode
-            scatterplot:
-                path: scatterplot
-                label: Scatter Plot
-                icon: ellipsis-h
-        menus:
-            authenticated: [search, narrative, test, divider, divider]                
-            unauthenticated: [about, divider, about_kbase, contact_kbase]
-        
+        -
+            databrowser
+        -
+            dataview
+        -
+            dashboard
+        -
+            userprofile
+        -
+            datasearch
+        -
+            narrativemanager
+        -
+            narrativestore
+        -
+            typeview
+            
+#        -
+#            name: viswidgets
+#            directory: bower_components/kbase-ui-plugin-vis-widgets/src/plugin
+#    -
+#        name: viswidgetsdemo
+#        directory: bower_components/kbase-ui-plugin-demo-vis-widget/src/plugin
+#-
+#    visWidgets
+menu:
+    available_items:
+#            search: 
+#                path: search/?q=*
+#                label: Search Data
+#                icon: search
+#            narrative: 
+#                uri: "#narrativemanager/start"
+#                label: Narrative
+#                icon: file
+#            narrativeTutorial: 
+#                uri: https://kbase.us/narrative-guide
+#                label: Narrative Tutorial
+#                icon: info-circle
+#
+#            about_kbase: 
+#                uri: https://kbase.us/about
+#                label: About KBase
+#                icon: info-circle
+#            contact_kbase: 
+#                uri: https://kbase.us/contact-us
+#                label: Contact KBase
+#                icon: envelope-o
+#            dashboard:
+#                uri: "#dashboard"
+#                label: Dashboard
+#                icon: dashboard
+    menus:
+        authenticated: 
+            main: [narrative, search, dashboard]
+            developer: [databrowser]
+            help: [about-kbase, contact-kbase]
+        unauthenticated: 
+            main: [search]
+            help: [about-kbase, contact-kbase]

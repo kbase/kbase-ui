@@ -125,9 +125,12 @@ require.config({
             exports: 'vg',
             deps: ['d3']
         },
-        kb_bootstrap: {
-            deps: ['bootstrap']
-        },
+//        kb_ui: {
+//            deps: ['css!kb_bootstrap']
+//        },
+//        kb_bootstrap: {
+//            deps: ['bootstrap']
+//        },
         bootstrap: {
             deps: ['jquery', 'css!bootstrap_css']
         },

@@ -3,11 +3,13 @@
 define([
     'app',
     'kb_common_dom',
+    'yaml!ui.yml',
+    'bootstrap',
     'css!font_awesome',
     'css!kb_bootstrap',
     'css!kb_icons',
     'css!kb_ui'
-], function (App, dom) {
+], function (App, dom, uiConfig) {
     'use strict';
     function makeSymbol(s) {
         return s.trim(' ').replace(/ /, '_');
@@ -43,24 +45,23 @@ define([
                 selector: '#status'
             }
         },
-        plugins: [
-            ['mainwindow', 'message', 'welcome', 'login', {
-                    name: 'serviceclients',
-                    directory: 'bower_components/kbase-service-clients-js'
-                }, 'userprofileservice'],
-            [
-                'databrowser',
-                'dataview',
-                'dashboard',
-                'userprofile',
-                'datasearch',
-                'narrativemanager',
-                'narrativestore'
-            ]
-        ]
+        plugins: uiConfig.plugins
     })
-        .then(function () {
-            // R.send('ui', 'setTitle', 'KBase Single Page App Demo Site');                       
+        .then(function (runtime) {
+            // R.send('ui', 'setTitle', 'KBase Single Page App Demo Site');
+            var menus = uiConfig.menu.menus;
+            Object.keys(menus).forEach(function (menuSet) {
+                Object.keys(menus[menuSet]).forEach(function (menuSection) {
+                    menus[menuSet][menuSection].forEach(function (menuItem) {
+                        runtime.service('menu').addToMenu({
+                            name: menuSet,
+                            section: menuSection,
+                            position: 'bottom'
+                        }, menuItem);
+                    });
+                });
+            });
+            //runtime.service('menu').setMenus(uiConfig.menu.menus);
         })
         .catch(function (err) {
             console.log('ERROR in index.html');

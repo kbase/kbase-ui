@@ -91,7 +91,6 @@ define([
                         return items.join('');
                     }).join(renderMenuItem({type: 'divider'}));
                 
-                
                 return ul({class: 'dropdown-menu', role: 'menu', 'aria-labeledby': 'kb-nav-menu'}, items);
             }
 

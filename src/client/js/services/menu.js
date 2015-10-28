@@ -8,30 +8,61 @@ define([
     function factory(config) {
         var state = observed.make(),
             runtime = config.runtime;
-            state.setItem('menu', []);
+        state.setItem('menu', []);
 //        state.setItem('menus', {
 //            authenticated: [],
 //            unauthenticated: []
 //        });
 
-        state.setItem('menus', {
-            authenticated: {
-                main: [
-                ],
-                developer: [
-                ],
-                help: [
-                ]
-            },
-            unauthenticated: {
-                main: [
-                ],
-                developer: [
-                ],
-                help: [
-                ]
+        function setMenus(from) {
+            from = from || {};
+            var menu = {
+                authenticated: {
+                    main: [
+                    ],
+                    developer: [
+                    ],
+                    help: [
+                    ]
+                },
+                unauthenticated: {
+                    main: [
+                    ],
+                    developer: [
+                    ],
+                    help: [
+                    ]
+                }
             }
-        });
+            Object.keys(from).forEach(function (menuSet) {
+                Object.keys(from[menuSet]).forEach(function (menuSection) {
+                    menu[menuSet][menuSection] = from[menuSet][menuSection];
+                });
+            });
+            state.setItem('menus', menu);
+        }
+        function setupMenus() {
+            var menu = {
+                authenticated: {
+                    main: [
+                    ],
+                    developer: [
+                    ],
+                    help: [
+                    ]
+                },
+                unauthenticated: {
+                    main: [
+                    ],
+                    developer: [
+                    ],
+                    help: [
+                    ]
+                }
+            }
+            state.setItem('menus', menu);
+        }
+        setupMenus();
 
         state.setItem('menuItems', {
             divider: {
@@ -56,25 +87,23 @@ define([
         }
 
         /*
-         function deleteMenuItem(id) {
-         delete menu[id];
-         }
-         function insertMenuItem(id, beforeItem) {
-         }
-         */
-        function setMenu(ids) {
-            clearMenu();
-            state.setItem('menu', ids.map(function (id) {
-                return id;
-            }));
-        }
-
-        /*
          * TODO: support menu sections. For now, just a simple menu.
          */
-        function addToMenu(menuEntry, item) {
+        function addToMenu(menuEntry, item) {            
             var id, section, position,
-                menuItems = state.getItem('menuItems');
+                menuItems = state.getItem('menuItems'),
+                menuItem = menuItems[item];
+            
+            if (!menuItem) {
+                throw {
+                    type: 'InvalidKey',
+                    reason: 'MenuItemNotFound',
+                    message: 'The menu item key provided, ' + item + ', is not registered'
+                };
+            }
+            console.log('adding to menu...');
+            console.log(menuEntry);
+            console.log(item);
             if (typeof menuEntry === 'object') {
                 id = menuEntry.name;
                 section = menuEntry.section;
@@ -85,10 +114,12 @@ define([
                 position = 'bottom';
             }
             state.modifyItem('menus', function (menus) {
+                console.log('MENUS???');
+                console.log(menus);
                 if (position === 'top') {
                     menus[id][section].push(menuItems[item]);
                 } else {
-                    menus[id][section].unshift(menuItems[item]);                    
+                    menus[id][section].unshift(menuItems[item]);
                 }
                 return menus;
             });
@@ -107,22 +138,19 @@ define([
 
 
         // Plugin interface
-        function installMenu(menu) {
-            addMenuItem(menu.name, menu.definition);
-            if (menu.menus) {
-                menu.menus.forEach(function (menuEntry) {
-                    addToMenu(menuEntry, menu.name);
-                });
-            }
-        }
-
         function pluginHandler(newMenus) {
             if (!newMenus) {
                 return;
             }
             return Promise.try(function () {
                 newMenus.forEach(function (menu) {
-                    installMenu(menu);
+                    addMenuItem(menu.name, menu.definition);
+//                    if (menu.menus) {
+//                        menu.menus.forEach(function (menuEntry) {
+//                            
+//                            addToMenu(menuEntry, menu.name);
+//                        });
+//                    }
                 });
             });
         }
@@ -139,7 +167,9 @@ define([
         return {
             getCurrentMenu: getCurrentMenu,
             pluginHandler: pluginHandler,
-            onChange: onChange
+            onChange: onChange,
+            setMenus: setMenus,
+            addToMenu: addToMenu
         };
     }
 
