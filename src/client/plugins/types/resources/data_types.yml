@@ -17,30 +17,6 @@ types:
         BiomMetagenome:
         BiomMetagenomeEntry:        
         Collection:
-            icon: 
-                type: fontAwesome
-                classes: ['fa-list-ul']
-            viewers:
-                -              
-                    default: true
-                    # This the title for the widget
-                    title: 'Data View'                
-                    # This is the widget id
-                    widget: 
-                        name: kb_dataview_communities_collection
-                        config: 
-                            jqueryName: CollectionView
-                    # If a bootstrap panel is requested to wrap this widget.
-                    panel: true
-                    # Mapping of standard options to the widget option properties.
-                    # By standard, I mean those defined in the GenericVisualizer widget.
-                    options:
-                        -
-                            from: workspaceId
-                            to: ws
-                        -
-                            from: objectId
-                            to: id
         Data:
         DataHandle:
         Drisee:
@@ -417,29 +393,7 @@ types:
         DomainLibrary:
         DomainModelSet:
     KBaseGenomes:
-        ContigSet: 
-            icon: 
-                type: fontAwesome
-                classes: ['fa-align-justify']
-            viewers:
-                -
-                    title: Data View
-                    widget: 
-                        name: kb_dataview_contigSet
-                        config:
-                            jqueryName: kbaseContigSetView
-                    panel: true
-                    options: 
-                        -
-                            from: workspaceId 
-                            to: ws_name
-                        -
-                            from: objectId
-                            to: ws_id
-                        -
-                            from: objectVersion
-                            to: ver 
-                            optional: true
+        ContigSet:
         Feature:
         Genome: 
             icon:   
@@ -575,25 +529,6 @@ types:
                             from: objectType 
                             to: type
         PhenotypeSimulationSet:
-            icon:   
-                type: fontAwesome
-                classes: ['fa-list-ul']
-            viewers:
-                -
-                    title: Data View
-                    module: kb_widget_dataview_modeling_tabTable
-                    widget: kbaseTabTable
-                    panel: true
-                    options: 
-                        -
-                            from: workspaceName 
-                            to: ws
-                        -
-                            from: objectName 
-                            to: obj
-                        -
-                            from: objectType 
-                            to: type
     KbasePPI:
         Interaction:
         InteractionDataset:

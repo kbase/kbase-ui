@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Taxon Data API Test - Widget</title>
+        <title>KBase | User Interface ALPHA</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="/bower_components/requirejs/require.js"></script>
@@ -20,24 +20,6 @@
                 display: inline-block;
             }
         </style>
-
-
-
-        <!-- external css -->
-        <link rel="stylesheet" type="text/css" href="/bower_components/font-awesome/css/font-awesome.css" />
-        <!-- <link rel="stylesheet" type="text/css" href="/bower_components/bootstrap/dist/css/bootstrap.css" /> -->
-
-        <!-- TODO: all into require! -->
-        <!-- kbase enhancements or overrides for bootstrap -->
-        <link rel="stylesheet" type="text/css" href="/css/kb-bootstrap.css" />
-        <link rel="stylesheet" type="text/css" href="/css/kb-icons.css" />
-
-        <!-- need to rethink these styles... fold into main -->
-        <!-- but for now ... keep here -->
-        <link rel="stylesheet" type="text/css" href="/css/kb-ui.css" />
-
-
-
     </head>
     <body>
         <div id="root"></div>
@@ -75,93 +57,16 @@
         </div>
         -->
         <script>
-            require([
-                'app',
-                'kb_common_dom'
-            ], function (App, dom) {
-
-                function makeSymbol(s) {
-                    return s.trim(' ').replace(/ /, '_');
-                }
-                function setErrorField(name, ex) {
-                    var selector = '[data-field="' + name + '"] > span[data-name="value"]';
-                    dom.setHtml(selector, ex[name]);
-                }
-                function displayStatus(msg) {
-                    return;
-                    // dom.setHtml(dom.qs('#status'), 'started');
-                }
-                function displayError(ex) {
-                    alert('Error: ' + ex.message);
-                    return;
-                    // for now...
-                    ['name', 'subject', 'type', 'message', 'suggestion', 'infoUrl', 'stack'].forEach(function (name) {
-                        setErrorField(name, ex);
-                    });
-                    dom.qs('#error').style.display = 'block';
-                }
-                displayStatus('running');
-                // dom.qs('#status').innerHTML = 'running...';
-                App.run({
-                    nodes: {
-                        root: {
-                            selector: '#root'
-                        },
-                        error: {
-                            selector: '#error'
-                        },
-                        status: {
-                            selector: '#status'
-                        }
-                    },
-                    plugins: [
-                        ['mainwindow', 'message', 'welcome', 'login', 'types', {
-                            name: 'serviceclients',
-                            directory: 'bower_components/kbase-service-clients-js'
-                        }, 'userprofileservice'],
-                        [
-                            //'test', 
-                            //'taxontest', 
-                            //'vegatest',
-                            {
-                                name: 'kbase-ui-plugin-databrowser',
-                                directory: 'bower_components/kbase-ui-plugin-databrowser'
-                            },
-                            //'about',
-                            // {
-                            //     name: 'kbase-ui-plugin-typeview',
-                            //     directory: 'bower_components/kbase-ui-plugin-typeview'
-                            // },
-                            'dataview',
-                            'dashboard',
-                            'userprofile',
-                            'datasearch',
-                            'narrativemanager',
-                            'narrativestore'
-                        ]
-                    ]
-                })
-                    .then(function (runtime) {
-                        // R = runtime;
-//                        if (!runtime.isLoggedIn()) {
-//                            throw error.getErrorObject({
-//                                name: 'NoAuth',
-//                                message: 'No Authorization found; Authorization is required for the data api',
-//                                suggestion: 'Umm, there should be a way for the user to log in...'
-//                            });
-//                        }
-//                        runtime.send('menuService', 'debug');
-//                        displayStatus('started');
-                    })
+            require(['kb_main'], function (main) {
+                main.start()
                     .then(function () {
-                        // R.send('ui', 'setTitle', 'KBase Single Page App Demo Site');                       
+                        console.log('app has started!');
                     })
                     .catch(function (err) {
-                        console.log('ERROR in index.html');
-                        console.log(err);
-                        displayError(err);
+                        document.getElementById('app').innerHTML = 'My gosh, I am not a happy camper';
+                        console.log('app is unhappy :(');
                     });
-            });
+            });            
         </script>
     </body>
 </html>

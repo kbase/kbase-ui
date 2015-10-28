@@ -1,0 +1,65 @@
+## YAML Template.
+---
+plugins:
+    -
+        login
+    -
+        about
+    #-
+    #    name: databrowser
+    #    directory: bower_components/kbase-ui-plugin-databrowser/src/plugin
+    -
+        userprofile
+    -
+        narrativestore
+    -
+        dashboard
+    -
+        dataview
+    -
+        typeview
+    -
+        contact
+    #-
+    #    typebrowser
+    -
+        narrativemanager
+    -
+        name: viswidgets
+        directory: bower_components/kbase-ui-plugin-vis-widgets/src/plugin
+#    -
+#        name: viswidgetsdemo
+#        directory: bower_components/kbase-ui-plugin-demo-vis-widget/src/plugin
+    #-
+    #    visWidgets
+navbar:
+    menu:
+        available_items:
+            search: 
+                path: search/?q=*
+                label: Search Data
+                icon: search
+            narrative: 
+                uri: "#narrativemanager/start"
+                label: Narrative
+                icon: file
+            narrativeTutorial: 
+                uri: https://kbase.us/narrative-guide
+                label: Narrative Tutorial
+                icon: info-circle
+
+            about_kbase: 
+                uri: https://kbase.us/about
+                label: About KBase
+                icon: info-circle
+            contact_kbase: 
+                uri: https://kbase.us/contact-us
+                label: Contact KBase
+                icon: envelope-o
+            dashboard:
+                uri: "#dashboard"
+                label: Dashboard
+                icon: dashboard
+        menus:
+            authenticated: [search, narrative, dashboard, divider, about_kbase]
+            unauthenticated: [search, divider, about_kbase, contact_kbase]

@@ -1,104 +1,52 @@
-'use strict';
-var path = require('path'),
-    iniParser = require('node-ini'),
-    fs = require('fs'),
-    _ = require('lodash'),
-    deployServices = 'ci',
-    deployUi = 'prod';
-
-// Here we switch to the deployment environment.
-// prod = production
-// ci = continuous integration
-
-
-
- //if (grunt.option('kb_deployment_config')) {
- //           deployCfgFile = grunt.option('kb_deployment_config');        
- //       } else if (process.env.KB_DEPLOYMENT_CONFIG) {
- //           deployCfgFile = process.env.KB_DEPLOYMENT_CONFIG;
- //       }
-
-
+/*global require, module */
+/*jslint white: true */
+var path = require('path');
+var fs = require('fs');
 module.exports = function (grunt) {
-    // Config
-    // TODO: maybe read something from the runtime/config directory so we don't 
-    // need to tweak this and accidentally check it in...
-    var BUILD_DIR = 'build';
+    'use strict';
 
-    function buildDir(subdir) {
-        if (subdir) {
-            return path.normalize(BUILD_DIR + '/' + subdir);
-        }
-        return path.normalize(BUILD_DIR);
-    }
+    // The runtime directory holds a build and dist directory and other files
+    // required to actually run the build client and server.
+    var runtimeDir = 'runtime';
+
+    // The build directory is the destination for the KBase source, messaged
+    // external dependencies, and other files needed to run the client and server
+    // components. The build directory can be used directly in development mode,
+    // since it contains normal, un-minified javascript.
+    var buildDir = runtimeDir + '/build';
+
+    var distDir = runtimeDir + '/dist';
+
+    var testDir = runtimeDir + '/test';
     
-    var REPO_DIR = '../repos';
+    var repoDir = '../repos';
 
+    function makeBuildDir(subdir) {
+        if (subdir) {
+            return path.normalize(buildDir + '/' + subdir);
+        }
+        return path.normalize(buildDir);
+    }
     function makeRepoDir(subdir) {
         if (subdir) {
-            return path.normalize(REPO_DIR + '/' + subdir);
+            return path.normalize(repoDir + '/' + subdir);
         }
-        return path.normalize(REPO_DIR);
-    }
-    
-    function getConfig() {
-        var deployCfgFile = 'deploy-' + deployServices + '.cfg';
-        return iniParser.parseSync(deployCfgFile);
-    }
-    
-    var deployCfg = getConfig();
-    
-    function buildConfigFile() {
-        'use strict';
-        
-        var serviceTemplateFile = 'config/service-config-template.yml',
-            settingsCfg = 'config/settings.yml',
-            outFile = buildDir('client/config.yml'),
-            done = this.async();
-        fs.readFile(serviceTemplateFile, 'utf8', function (err, serviceTemplate) {
-            if (err) {
-                console.log(err);
-                throw 'Error reading service template';
-            }
-
-            var compiled = _.template(serviceTemplate),
-                services = compiled(deployCfg['ui-common']);
-
-            fs.readFile(settingsCfg, 'utf8', function (err, settings) {
-                if (err) {
-                    console.log(err);
-                    throw 'Error reading UI settings file';
-                }
-
-                fs.writeFile(outFile, services + '\n\n' + settings, function (err) {
-                    if (err) {
-                        console.log(err);
-                        throw 'Error writing compiled configuration';
-                    }
-                    done();                    
-                });
-            });
-        });
+        return path.normalize(repoDir);
     }
 
-    // Project configuration
-    grunt.loadNpmTasks('grunt-bower-task');
+    // Load grunt npm tasks..
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-mkdir');
     grunt.loadNpmTasks('grunt-shell');
-    //grunt.loadNpmTasks('grunt-contrib-requirejs');
-    //grunt.loadNpmTasks('grunt-karma');
-    //grunt.loadNpmTasks('grunt-coveralls');
-    //grunt.loadNpmTasks('grunt-connect');
-    //grunt.loadNpmTasks('grunt-open');
-    //grunt.loadNpmTasks('grunt-http-server');
-    //grunt.loadNpmTasks('grunt-markdown');
-
+    grunt.loadNpmTasks('grunt-mkdir');
+    
+ 
+    // Bower magic.
     /* 
      * This section sets up a mapping for bower packages.
      * Believe it or not this is shorter and easier to maintain 
-     * than plain grunt-contrib-copy
+     * than plain grunt-contrib-copy.
+     * NB: please keep this list in alpha order by dir and then name.
      * 
      */
     var bowerFiles = [
@@ -296,10 +244,12 @@ module.exports = function (grunt) {
                 expand: true,
                 cwd: cwd,
                 src: sources,
-                dest: buildDir('client/bower_components') + '/' + (cfg.dir || cfg.name)
+                dest: makeBuildDir('client/bower_components') + '/' + (cfg.dir || cfg.name)
             };
         });
 
+
+    // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         copy: {
@@ -311,22 +261,22 @@ module.exports = function (grunt) {
                     {
                         cwd: 'src/client',
                         src: '**/*',
-                        dest: buildDir('client'),
+                        dest: makeBuildDir('client'),
                         expand: true
                     },
                     {
                         cwd: 'src/data',
                         src: '**/*',
-                        dest: buildDir('client/data'),
+                        dest: makeBuildDir('client/data'),
                         expand: true
                     },
-                    //{
-                    //    src: 'src/config/ci.yml',
-                    //    dest: buildDir('client/config/client.yml')
-                    //},
+                    {
+                        src: 'src/config/ci.yml',
+                        dest: makeBuildDir('client/config/client.yml')
+                    },
                     {
                         src: 'lib/kbase-client-api.js',
-                        dest: buildDir('client'),
+                        dest: makeBuildDir('client'),
                         expand: true
                     }
                 ]
@@ -336,170 +286,71 @@ module.exports = function (grunt) {
                     {
                         cwd: makeRepoDir('dataview/src/plugin'),
                         src: '**/*',
-                        dest: buildDir('client/plugins/dataview'),
+                        dest: makeBuildDir('client/plugins/dataview'),
                         expand: true
                     },
                     {
                         cwd: makeRepoDir('dashboard/src/plugin'),
                         src: '**/*',
-                        dest: buildDir('client/plugins/dashboard'),
+                        dest: makeBuildDir('client/plugins/dashboard'),
                         expand: true
                     },
                     {
                         cwd: makeRepoDir('databrowser/src/plugin'),
                         src: '**/*',
-                        dest: buildDir('client/plugins/databrowser'),
+                        dest: makeBuildDir('client/plugins/databrowser'),
                         expand: true
                     }
                 ]
-            },
-            deploy: {
-                files: [
-                    {
-                        cwd: 'build/client',
-                        src: '**/*',
-                        dest: deployCfg['ui-common']['deploy_target'],
-                        expand: true
-                    }
-                ]
-            },
-            config: {
-                files: [
-                    {
-                        src: 'config/ui-' + deployUi + '.yml',
-                        dest: buildDir('client/ui.yml')
-                    }
-                ]
-            },
+            }
         },
         clean: {
             build: {
-                src: [buildDir()]
+                src: [makeBuildDir()],
+                // We force, because our build directory may be up a level 
+                // in the runtime directory.
+                options: {
+                    force: true
+                }
+            },
+            temp: {
+                src: 'temp'
             }
         },
-        connect: {
-            server: {
-                port: 8887,
-                base: 'build/client',
-                keepalive: false,
-                onCreateServer: function (server, connect, options) {
-                    console.log('created...');
+        shell: {
+            makeTaxonLib: {
+                command: [
+                    'thrift',
+                    '-gen js:jquery',
+                    '-o temp',
+                    'bower_components/data-api/thrift/specs/taxonomy/taxon/taxon.thrift'
+                ].join(' '),
+                options: {
+                    stderr: false
                 }
             }
         },
-        'http-server': {
-            dev: {
-                root: buildDir('client'),
-                port: 8887,
-                host: '0.0.0.0',
-                autoIndex: true,
-                runInBackground: true
-            }
-        },
-        open: {
-            dev: {
-                path: 'http://localhost:8887'
-            }
-        },
-
-        // Testing with Karma!
-        'karma': {
-            unit: {
-                configFile: 'test/karma.conf.js'
-            },
-            dev: {
-                // to do - add watch here
-                configFile: 'test/karma.conf.js',
-                reporters: ['progress', 'coverage'],
-                coverageReporter: {
-                    dir: 'build/test-coverage/',
-                    reporters: [
-                        {type: 'html', subdir: 'html'}
-                    ]
-                },
-                autoWatch: true,
-                singleRun: false
-            }
-        },
-        // Run coveralls and send the info.
-        'coveralls': {
-            options: {
-                force: true
-            },
-            'ui-common': {
-                src: 'build/test-coverage/lcov/**/*.info'
-            }
-        },
-        bower: {
-            install: {
+        mkdir: {
+            temp: {
                 options: {
-                    copy: false
-                }
-            }
-        },
-        markdown: {
-            build: {
-                files: [
-                    {
-                        expand: true,
-                        src: 'src/docs/**/*.md',
-                        dest: buildDir('docs'),
-                        ext: '.html'
-                    }
-                ],
-                options: {
+                    create: ['temp']
                 }
             }
         }
     });
-    
-    grunt.registerTask('build-config', 'Build the config file', buildConfigFile);
 
-    // Does the whole building task
     grunt.registerTask('build', [
-        'bower:install',
         'copy:bower',
         'copy:build',
-        'copy:dev',
-        'copy:config',
-        'build-config'
-        // 'copy:config-prod'
+        'copy:dev'
     ]);
 
-/*
-    grunt.registerTask('build-test', [
-        'bower:install',
-        'copy:build',
-        'copy:bower',
-        'copy:config-test'
-    ]);
-
-    grunt.registerTask('deploy', [
-        'copy:deploy'
-    ]);
-
-    // Does a single, local, unit test run.
-    grunt.registerTask('test', [
-        'karma:unit',
-    ]);
-
-    // Does a single unit test run, then sends 
-    // the lcov results to coveralls. Intended for running
-    // from travis-ci.
-    grunt.registerTask('test-travis', [
-        'karma:unit',
-        'coveralls'
-    ]);
-
-    // Does an ongoing test run in a watching development
-    // mode.
-    grunt.registerTask('develop', [
-        'karma:dev',
-    ]);
-
-    grunt.registerTask('preview', [
-        'open:dev',
-        'connect'
-    ]);
-    */
+//    grunt.registerTask('build-thrift-libs', [
+//        'clean:temp',
+//        'mkdir:temp',
+//        'shell:makeTaxonLib',
+//        'copy:taxonLib1',
+//        'copy:taxonLib2',
+//        'copy:thriftLib'
+//    ]);
 };

@@ -87,7 +87,7 @@ define([
                 var div = html.tag('div'),
                     label = html.tag('label'),
                     input = html.tag('input'),
-                    button, class,
+                    button, klass,
                     group = div({class: 'btn-group', dataToggle: 'buttons'}),
                     buttons = cfg.buttons.map(function (button) {
                         var klass = [

@@ -1,14 +1,17 @@
-'use strict';
+var tests = [];
+for (var file in window.__karma__.files) {
+  if (window.__karma__.files.hasOwnProperty(file)) {
+    if (/Spec\.js$/.test(file)) {
+      tests.push(file);
+    }
+  }
+}
 
+requirejs.config({
+    // Karma serves files from '/base'
+    baseUrl: '/base/build/client',
 
-
-require.config({
-    baseUrl: '/',
-    catchError: true,
-    onError: function (err) {
-        alert("RequireJS Error:" + err);
-    },
-    paths: {
+   paths: {
         // External Dependencies
         // ----------------------
         text: 'bower_components/requirejs-text/text',
@@ -146,28 +149,11 @@ require.config({
             'css': 'bower_components/require-css/css',
             'promise': 'bluebird'
         }
-    }
-});
+    },
 
-//(function () {
-//    var kbClients = [
-//        ['narrativeMethodStore', 'NarrativeMethodStore'],
-//        ['userProfile', 'UserProfile'],
-//        ['workspace', 'Workspace'],
-//        ['cdmi', 'CDMI_API'],
-//        ['cdmiEntity', 'CDMI_EntityAPI'],
-//        ['trees', 'KBaseTrees'],
-//        ['fba', 'fbaModelServices'],
-//        ['ujs', 'UserAndJobState'],
-//        ['networks', 'KBaseNetworks']
-//    ];
-//    // NB need the immediate function exec below in order to avoid
-//    // variable capture problem with anon funcs.
-//    kbClients.forEach(function (client) {
-//        define('kb_service_' + client[0], ['kb_api'], function () {
-//            return (function (c) {
-//                return c;
-//            }(window[client[1]]));
-//        });
-//    });
-//}());
+    // ask Require.js to load these files (all our tests)
+    deps: tests,
+
+    // start test run, once Require.js is done
+    callback: window.__karma__.start
+});

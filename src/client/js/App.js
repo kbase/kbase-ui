@@ -13,17 +13,20 @@ define([
     'kb_appService_widget',
     'kb_appService_session',
     'kb_appService_data',
+    'kb_appService_type',
     'kb_common_props',
     'kb_common_asyncQueue',
     'promise',
-    'yaml!config/client.yml'
+    'yaml!config.yml'
 ], function (pluginManagerFactory,
     dom, messengerFactory,
     widgetMountFactory, routerServiceFactory, menuServiceFactory,
     heartbeatServiceFactory, widgetServiceFactory, sessionServiceFactory,
-    dataServiceFactory,
+    dataServiceFactory, typeServiceFactory,
     props, asyncQueue, Promise, clientConfig) {
     'use strict';
+    
+    var moduleVersion = '0.0.1';
 
     function factory(cfg) {
         var config = cfg,
@@ -148,20 +151,30 @@ define([
             });
         }
         function startServices() {
-            Object.keys(services).forEach(function (name) {
-                var service = services[name];
-                if (service.start) {
-                    try {
-                        service.start();
-                    } catch (ex) {
-                        console.log('ERROR starting service: ' + name);
-                        console.log(ex);
-                    }   
-                }
-            })
+            var all = Object.keys(services).map(function (name) {
+                return new Promise(function (resolve, reject) {
+                    var service = services[name];
+                    if (service.start) {
+                        service.start()
+                            .then(function (result) {
+                                resolve(result);
+                            })
+                            .reject(function (err) {
+                                console.error('Error starting service ' + name);
+                                console.error('err');
+                                reject(err);
+                            });
+                    } else {
+                        console.log('Warning: no start method for ' + name);
+                        resolve();
+                    }
+                });
+            });
+            console.log('V: about to start services ' + all.length);
+            return Promise.settle(all);
         }
         function stopServices() {
-            
+
         }
         function hasService(name) {
             if (services[name] === undefined) {
@@ -175,20 +188,20 @@ define([
             if (service === undefined) {
                 throw {
                     name: 'UndefinedService',
-                    message: 'The requested service "' + name +'" has not been registered.',
+                    message: 'The requested service "' + name + '" has not been registered.',
                     suggestion: 'This is a system configuration issue. The requested service should be installed or the client code programmed to check for its existence first (with hasService)'
                 }
             }
             return service;
         }
-        
+
         // Installs a new app service!
         /*
          * given a module, which defines the service, and a name, add the service.
          */
-        function serviceServiceFactory (config) {
+        function serviceServiceFactory(config) {
             var runtime = config.runtime;
-            
+
             function pluginHandler(serviceConfigs) {
                 var services = serviceConfigs.map(function (serviceConfig) {
                     return new Promise(function (resolve) {
@@ -202,7 +215,7 @@ define([
                 });
                 return Promise.settle(services);
             }
-            
+
             return {
                 pluginHandler: pluginHandler
             };
@@ -251,18 +264,21 @@ define([
             }));
             addService(['widgets', 'widget'], widgetServiceFactory.make({
                 runtime: api
-            }));           
+            }));
             addService(['service', 'services'], serviceServiceFactory({
                 runtime: api
             }));
             addService(['data'], dataServiceFactory.make({
                 runtime: api
             }));
+            addService(['type', 'types'], typeServiceFactory.make({
+                runtime: api
+            }));
 //            addService(['userprofile'], userProfileServiceFactory.make({
 //                runtime: api                
 //            }));
 
-            
+
 
             pluginManager = pluginManagerFactory.make({
                 runtime: api
@@ -273,10 +289,10 @@ define([
             receive('session', 'loggedout', function () {
                 send('app', 'navigate', 'goodbye');
             });
-            
+
             // UI should be a service...
-            
-            
+
+
             receive('ui', 'render', function (arg) {
                 renderQueue.addItem({
                     onRun: function () {
@@ -288,7 +304,7 @@ define([
                         }
                     }
                 });
-               
+
             });
 //            receive('ui', 'setTitle', function (title) {
 //                renderQueue.addItem({
@@ -303,8 +319,14 @@ define([
                     return mountRootWidget('root', api);
                 })
                 .then(function () {
-                    startServices();
+                    console.log('really, about to start services.');
+                    return startServices();
+                })
+                .then(function (services) {
+                    console.log('started services: ');
+                    console.log(services);
                     // getService('heartbeat').start();
+                    console.log('about to do route');
                     send('app', 'do-route');
                     return api;
                 });
@@ -317,6 +339,9 @@ define([
         run: function (config) {
             var runtime = factory(config);
             return runtime.begin();
+        },
+        version: function () {
+            return moduleVersion;
         }
     };
 });

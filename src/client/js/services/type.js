@@ -2,10 +2,9 @@
 /*jslint white: true */
 define([
     'promise',
-    'kb_types_typeManager',
-    'kb_plugin_types',
+    'kb_common_typeManager',
     'require'
-], function (Promise, TypeManager, Plugin, require) {
+], function (Promise, TypeManager, require) {
     'use strict';
 
     function proxyMethod(obj, method, args) {
@@ -20,19 +19,23 @@ define([
     }
 
     function factory(config) {
-        var typeManager,
-            runtime = config.runtime;
+        var runtime = config.runtime,
+            typeManager = TypeManager.make({
+                runtime: runtime,
+                typeDefs: {}
+            });
 
         function start() {
             return new Promise(function (resolve) {
-                require(['yaml!' + Plugin.plugin.path + '/data_types.yml'], function (typeDefs) {
-                    typeManager = TypeManager.make({
-                        runtime: config.runtime,
-                        typeDefs: typeDefs
-                    });
-                    console.log('created type manager');
-                    resolve();
-                });
+//                require(['yaml!' + Plugin.plugin.path + '/data_types.yml'], function (typeDefs) {
+//                    typeManager = TypeManager.make({
+//                        runtime: config.runtime,
+//                        typeDefs: typeDefs
+//                    });
+//                    console.log('created type manager');
+//                    resolve();
+//                });
+                resolve();
             });
         }
         function stop() {
@@ -42,8 +45,11 @@ define([
             if (!pluginConfig) {
                 return;
             }
-            console.log()
+            console.log('TYPES: plugin config');
+            console.log(pluginConfig);
             return Promise.all(pluginConfig.map(function (typeDef) {
+                console.log('TYPES: adding');
+                console.log(typeDef);
                 var type = typeDef.type,
                     viewers = typeDef.viewers,
                     icon = typeDef.icon;
