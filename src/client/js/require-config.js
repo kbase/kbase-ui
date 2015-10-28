@@ -62,8 +62,8 @@ require.config({
         // widget support should move out into a plugin.
         kb_common_widgetManager: 'bower_components/kbase-common-js/widgetManager',
         kb_common_widgetMount: 'bower_components/kbase-common-js/widgetMount',
-        kb_common_widgetSet: 'bower_components/kbase-common-js/dev/widgetSet',
-        kb_common_gravatar: 'bower_components/kbase-common-js/dev/gravatar',
+        kb_common_widgetSet: 'bower_components/kbase-common-js/widgetSet',
+        kb_common_gravatar: 'bower_components/kbase-common-js/gravatar',
         kb_common_data: 'js/dev/data',
         
         kb_widget_buttonBar: 'js/dev/widgets/buttonBar',
@@ -71,7 +71,7 @@ require.config({
         kb_widgetBases_standardWidget: 'bower_components/kbase-common-js/standardWidget',
         kb_widgetBases_panelWidget: 'bower_components/kbase-common-js/panelWidget',
         kb_widgetAdapters_objectWidget: 'bower_components/kbase-common-js/widgetAdapters/widgetAdapter',
-        kb_widgetAdapters_kbWidget: 'js/dev/widgetAdapters/kbWidgetAdapter',
+        kb_widgetAdapters_kbWidget: 'bower_components/kbase-common-js/widgetAdapters/kbWidgetAdapter',
         
         kb_widgetBases_kbWidget: 'bower_components/kbase-common-js/widgetLegacy/kbaseWidget',
         kb_widgetBases_kbAuthenticatedWidget: 'bower_components/kbase-common-js/widgetLegacy/kbaseAuthenticatedWidget',
