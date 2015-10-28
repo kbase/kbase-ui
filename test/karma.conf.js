@@ -14,6 +14,7 @@ module.exports = function (config) {
         plugins: [
             'karma-jasmine',
             'karma-chrome-launcher',
+            'karma-phantomjs-launcher',
             'karma-coverage',
             'karma-requirejs'
         ],
@@ -68,7 +69,7 @@ module.exports = function (config) {
         autoWatch: false,
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['Chrome'],
+        browsers: ['PhantomJS', 'Chrome'],
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
         singleRun: true
