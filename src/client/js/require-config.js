@@ -12,7 +12,7 @@ require.config({
         json: 'bower_components/requirejs-json/json',
         yaml: 'bower_components/require-yaml/yaml',
         'js-yaml': 'bower_components/js-yaml/js-yaml',
-        csv: 'js/dev/requirejs-csv',
+        csv: 'bower_components/kbase-common-js/requirejs-csv',
         jquery: 'bower_components/jquery/jquery',
         bluebird: 'bower_components/bluebird/bluebird',
         underscore: 'bower_components/underscore/underscore',
@@ -50,7 +50,7 @@ require.config({
         kb_common_cookie: 'bower_components/kbase-common-js/cookie',
         kb_common_config: 'bower_components/kbase-common-js/config',
         kb_common_logger: 'bower_components/kbase-common-js/logger',
-        kb_common_pluginManager: 'js/dev/pluginManager',
+        kb_common_pluginManager: 'bower_components/kbase-common-js/pluginManager',
         kb_common_router: 'bower_components/kbase-common-js/router',
         kb_common_state: 'bower_components/kbase-common-js/state',
         kb_common_props: 'bower_components/kbase-common-js/props',
@@ -62,8 +62,8 @@ require.config({
         // widget support should move out into a plugin.
         kb_common_widgetManager: 'bower_components/kbase-common-js/widgetManager',
         kb_common_widgetMount: 'bower_components/kbase-common-js/widgetMount',
-        kb_common_widgetSet: 'js/dev/widgetSet',
-        kb_common_gravatar: 'js/dev/gravatar',
+        kb_common_widgetSet: 'bower_components/kbase-common-js/dev/widgetSet',
+        kb_common_gravatar: 'bower_components/kbase-common-js/dev/gravatar',
         kb_common_data: 'js/dev/data',
         
         kb_widget_buttonBar: 'js/dev/widgets/buttonBar',
@@ -73,11 +73,11 @@ require.config({
         kb_widgetAdapters_objectWidget: 'bower_components/kbase-common-js/widgetAdapters/widgetAdapter',
         kb_widgetAdapters_kbWidget: 'js/dev/widgetAdapters/kbWidgetAdapter',
         
-        kb_widgetBases_kbWidget: 'js/dev/widgetLegacy/kbaseWidget',
-        kb_widgetBases_kbAuthenticatedWidget: 'js/dev/widgetLegacy/kbaseAuthenticatedWidget',
-        kb_widget_kbTabs: 'js/dev/widgetLegacy/kbTabs',
-        kb_widget_helpers: 'js/dev/widgetLegacy/kbaseHelperPlugins',
-        kb_widget_tabs: 'js/dev/widgetLegacy/kbaseTabs',
+        kb_widgetBases_kbWidget: 'bower_components/kbase-common-js/widgetLegacy/kbaseWidget',
+        kb_widgetBases_kbAuthenticatedWidget: 'bower_components/kbase-common-js/widgetLegacy/kbaseAuthenticatedWidget',
+        kb_widget_kbTabs: 'bower_components/kbase-common-js/widgetLegacy/kbTabs',
+        kb_widget_helpers: 'bower_components/kbase-common-js/widgetLegacy/kbaseHelperPlugins',
+        kb_widget_tabs: 'bower_components/kbase-common-js/widgetLegacy/kbaseTabs',
         
         // Just for testing vega
         kb_common_csv: 'bower_components/kbase-common-js/csv',
@@ -113,7 +113,7 @@ require.config({
         kb_appService_data: 'js/services/data',
         kb_appService_type: 'js/services/type',
 
-        kb_common_typeManager: 'js/dev/typeManager',
+        kb_common_typeManager: 'bower_components/kbase-common-js/typeManager',
 
         kb_ui: 'css/kb-ui',
         kb_bootstrap: 'css/kb-bootstrap',
