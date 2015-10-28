@@ -21,6 +21,24 @@ In general:
 
 ### Linux
 
+### Vagrant on Mac
+
+    vagrant init ubuntu/trusty64
+    vagrant up
+    vagrant ssh
+    sudo apt-get update
+    sudo apt-get upgrade
+    sudo apt-get dist-upgrade
+    exit
+    vagrant reload
+    vagrant ssh
+    sudo apt-get -y install git npm nodejs-legacy phantomjs
+    # weird I had to do the following - be a vagrant thing.
+    sudo chown vagrant /home/vagrant/tmp 
+    sudo npm install -g bower
+    sudo npm install -g grunt-cli
+    sudo npm install -g karma-cli
+
 ## Installation
 
 
