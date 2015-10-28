@@ -2,13 +2,12 @@
 var path = require('path'),
     iniParser = require('node-ini'),
     fs = require('fs'),
-    _ = require('lodash'),
-    deployServices = 'ci',
-    deployUi = 'prod';
+    _ = require('lodash');
 
 // Here we switch to the deployment environment.
 // prod = production
 // ci = continuous integration
+
 
 
 
@@ -18,8 +17,19 @@ var path = require('path'),
  //           deployCfgFile = process.env.KB_DEPLOYMENT_CONFIG;
  //       }
 
+function cancelTask() {
+    var message = Array.prototype.slice.call(arguments).map(function (message) {
+        return String(message);
+    }).join(' ');
+    console.error(message);
+    process.exit(1);
+}
 
 module.exports = function (grunt) {
+   
+    var servicesTarget = 'ci', 
+        uiTarget = 'test';
+    
     // Config
     // TODO: maybe read something from the runtime/config directory so we don't 
     // need to tweak this and accidentally check it in...
@@ -42,11 +52,25 @@ module.exports = function (grunt) {
     }
     
     function getConfig() {
-        var deployCfgFile = 'deploy-' + deployServices + '.cfg';
+        var deployCfgFile = 'deploy-' + servicesTarget + '.cfg';
         return iniParser.parseSync(deployCfgFile);
     }
     
     var deployCfg = getConfig();
+
+    // not using this yet.
+    function getBuildOptions() {
+        servicesTarget = grunt.option('servicesTarget'); // prod or ci
+        uiTarget = grunt.option('uiTarget'); // prod or test
+
+        if (!servicesTarget || ['prod', 'ci'].indexOf(servicesTarget) === -1) {
+            cancelTask(' Invalid value for required option "servicesTarget":', servicesTarget);
+        }
+
+        if (!uiTarget || ['prod', 'test'].indexOf(uiTarget) === -1) {
+            cancelTask('Invalid value for required option "uiTarget":', uiTarget);
+        }
+    }
     
     function buildConfigFile() {
         'use strict';
@@ -370,7 +394,7 @@ module.exports = function (grunt) {
             config: {
                 files: [
                     {
-                        src: 'config/ui-' + deployUi + '.yml',
+                        src: 'config/ui-' + uiTarget + '.yml',
                         dest: buildDir('client/ui.yml')
                     }
                 ]
@@ -457,10 +481,12 @@ module.exports = function (grunt) {
         }
     });
     
+    grunt.registerTask('get-build-options', 'Set build options from command line or environment', getBuildOptions);
     grunt.registerTask('build-config', 'Build the config file', buildConfigFile);
 
     // Does the whole building task
     grunt.registerTask('build', [
+        // 'get-build-options', 
         'bower:install',
         'copy:bower',
         'copy:build',
