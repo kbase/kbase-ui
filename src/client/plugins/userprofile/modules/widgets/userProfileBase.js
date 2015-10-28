@@ -57,16 +57,15 @@ define([
                     // This allows creating links to social widgets in some contexts in which the username can't be
                     // placed onto the url.
                     if (Utils.isBlank(cfg.params.username)) {
-                        //if (this.runtime.service('session').isLoggedIn()) {
-                        //    this.params.userId = this.runtime.service('session').getUsername();
-                        //}
-                        console.log('cfg');
-                        console.log(cfg);
-                        throw {
-                            type: 'ArgumentError',
-                            reason: 'username missing',
-                            message: 'The username is required for a user profile widget'
-                        };
+                        if (this.runtime.service('session').isLoggedIn()) {
+                            this.params.userId = this.runtime.service('session').getUsername();
+                        } else {
+                            throw {
+                                type: 'ArgumentError',
+                                reason: 'username missing',
+                                message: 'The username is required for a user profile widget'
+                            };
+                        }
                     } else {
                         this.params.userId = cfg.params.username;
                     }

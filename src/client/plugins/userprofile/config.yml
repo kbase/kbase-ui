@@ -55,3 +55,7 @@ install:
             path: ['people', {type: param, name: username}]
             widget: kb_userProfile_panel
             authorization: true
+        -
+            path: ['people']
+            widget: kb_userProfile_panel
+            authorization: true            

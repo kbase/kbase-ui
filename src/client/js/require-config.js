@@ -1,7 +1,4 @@
 'use strict';
-
-
-
 require.config({
     baseUrl: '/',
     catchError: true,
@@ -15,7 +12,7 @@ require.config({
         json: 'bower_components/requirejs-json/json',
         yaml: 'bower_components/require-yaml/yaml',
         'js-yaml': 'bower_components/js-yaml/js-yaml',
-        csv: 'js/requirejs-csv',
+        csv: 'js/dev/requirejs-csv',
         jquery: 'bower_components/jquery/jquery',
         bluebird: 'bower_components/bluebird/bluebird',
         underscore: 'bower_components/underscore/underscore',
@@ -53,7 +50,7 @@ require.config({
         kb_common_cookie: 'bower_components/kbase-common-js/cookie',
         kb_common_config: 'bower_components/kbase-common-js/config',
         kb_common_logger: 'bower_components/kbase-common-js/logger',
-        kb_common_pluginManager: 'js/pluginManager',
+        kb_common_pluginManager: 'js/dev/pluginManager',
         kb_common_router: 'bower_components/kbase-common-js/router',
         kb_common_state: 'bower_components/kbase-common-js/state',
         kb_common_props: 'bower_components/kbase-common-js/props',
@@ -65,31 +62,31 @@ require.config({
         // widget support should move out into a plugin.
         kb_common_widgetManager: 'bower_components/kbase-common-js/widgetManager',
         kb_common_widgetMount: 'bower_components/kbase-common-js/widgetMount',
-        kb_common_widgetSet: 'js/widgetSet',
-        kb_common_gravatar: 'js/gravatar',
-        kb_common_data: 'js/data',
+        kb_common_widgetSet: 'js/dev/widgetSet',
+        kb_common_gravatar: 'js/dev/gravatar',
+        kb_common_data: 'js/dev/data',
         
-        kb_widget_buttonBar: 'js/widgets/buttonBar',
+        kb_widget_buttonBar: 'js/dev/widgets/buttonBar',
         
         kb_widgetBases_standardWidget: 'bower_components/kbase-common-js/standardWidget',
         kb_widgetBases_panelWidget: 'bower_components/kbase-common-js/panelWidget',
         kb_widgetAdapters_objectWidget: 'bower_components/kbase-common-js/widgetAdapters/widgetAdapter',
-        kb_widgetAdapters_kbWidget: 'js/widgetAdapters/kbWidgetAdapter',
+        kb_widgetAdapters_kbWidget: 'js/dev/widgetAdapters/kbWidgetAdapter',
         
-        kb_widgetBases_kbWidget: 'js/widgetLegacy/kbaseWidget',
-        kb_widgetBases_kbAuthenticatedWidget: 'js/widgetLegacy/kbaseAuthenticatedWidget',
-        kb_widget_kbTabs: 'js/widgetLegacy/kbTabs',
-        kb_widget_helpers: 'js/widgetLegacy/kbaseHelperPlugins',
-        kb_widget_tabs: 'js/widgetLegacy/kbaseTabs',
+        kb_widgetBases_kbWidget: 'js/dev/widgetLegacy/kbaseWidget',
+        kb_widgetBases_kbAuthenticatedWidget: 'js/dev/widgetLegacy/kbaseAuthenticatedWidget',
+        kb_widget_kbTabs: 'js/dev/widgetLegacy/kbTabs',
+        kb_widget_helpers: 'js/dev/widgetLegacy/kbaseHelperPlugins',
+        kb_widget_tabs: 'js/dev/widgetLegacy/kbaseTabs',
         
         // Just for testing vega
         kb_common_csv: 'bower_components/kbase-common-js/csv',
         vega: 'bower_components/vega/vega',
-        kb_vegaChartHelper: 'js/vegaChartHelper',
+        // kb_vegaChartHelper: 'js/vegaChartHelper',
         // utils: 'js/Utils',
         // error: 'js/Error',
         app: 'js/App',        
-        simpleApp: 'js/simpleApp',
+        // simpleApp: 'js/simpleApp',
         
         thrift: 'bower_components/thrift-binary-protocol/thrift-core',
         thrift_transport_xhr: 'bower_components/thrift-binary-protocol/thrift-transport-xhr',
@@ -114,9 +111,10 @@ require.config({
         kb_appService_widget: 'js/services/widget',
         kb_appService_session: 'js/services/session',
         kb_appService_data: 'js/services/data',
-        kb_common_typeManager: 'js/typeManager',
         kb_appService_type: 'js/services/type',
-        
+
+        kb_common_typeManager: 'js/dev/typeManager',
+
         kb_ui: 'css/kb-ui',
         kb_bootstrap: 'css/kb-bootstrap',
         kb_icons: 'css/kb-icons',
@@ -139,7 +137,7 @@ require.config({
         d3_sankey: {
             deps: ['d3', 'css!d3_sankey_css']
             // deps: ['d3', 'css!d3_sankey_css', 'css!kb/style/sankey']
-        },
+        }
     },
     map: {
         '*': {
@@ -148,26 +146,3 @@ require.config({
         }
     }
 });
-
-//(function () {
-//    var kbClients = [
-//        ['narrativeMethodStore', 'NarrativeMethodStore'],
-//        ['userProfile', 'UserProfile'],
-//        ['workspace', 'Workspace'],
-//        ['cdmi', 'CDMI_API'],
-//        ['cdmiEntity', 'CDMI_EntityAPI'],
-//        ['trees', 'KBaseTrees'],
-//        ['fba', 'fbaModelServices'],
-//        ['ujs', 'UserAndJobState'],
-//        ['networks', 'KBaseNetworks']
-//    ];
-//    // NB need the immediate function exec below in order to avoid
-//    // variable capture problem with anon funcs.
-//    kbClients.forEach(function (client) {
-//        define('kb_service_' + client[0], ['kb_api'], function () {
-//            return (function (c) {
-//                return c;
-//            }(window[client[1]]));
-//        });
-//    });
-//}());
