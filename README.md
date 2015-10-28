@@ -1,47 +1,73 @@
-# A single page app for testing work on the Euk Support Sprint
+# KBase User Interface
 
-This work is actually developing into a new KBase SPA.
+## Contents
 
-## Milestones, past, present, future.
+- Prerequisites
+- Installation
 
-### 0.1.0
 
-Build the system. The system may operate in a partial manner. For instance, it may operate directly from the source directory, or not render the entire UI.
+## Prerequisites
 
-### 0.2.0
+In general:
 
-Operational system. The system will be more-or-less in its final shape, as far as physical structure (files and directories) and the UI (all built-in components displaying and working).
+- git
+- nodejs
+- bower
+- karma
 
-In addition, system building tools, such as Bower and NPM will be fully configured and happy (all required and recommended components in place, such as readme, repository, license, etc. files and settings.)
+### Macintosh
 
-### 0.3.0
+### Windows
 
-Dev environment operational. The dev environment allows a user to clone the repo, and with simple instructions build an environment suitable for hacking.
+### Linux
 
-### 0.4.0
+## Installation
 
-Production environment operational. Similar to the dev environment, the production environment can be built with simple instructions and started up without failure.
 
-### 0.5.0
+1. Clone the kbase-ui repo
 
-Documentation and testing to 50% coverage.
+    Make yourself a nice cozy home in which to place kbase-ui. For testing and development you just need a single directory owned by you.
 
-### 0.6.0
+    ```
+    mkdir -p work/kbase-ui-work
+    cd work/kbase-ui-work
+    git clone https://github.com/eapearson/kbase-ui.git
+    cd kbase-ui
+    ```
 
-Documentation and testing to 100% coverage. 
+2. Build it
 
-### 0.7.0
+    The kbase-ui can build with a couple of lines typed at the console, or a single invocation of ```make```.
 
-Code review and release to CI
+    ```
+    npm install
+    grunt build
+    ```
 
-### 0.8.0
+    or 
 
-Beta level code cycle
+    ```
+    make
+    ```
 
-### 0.9.0
+3. Run tests
 
-Preview release level code cycle
+    The tests can be run directly with karma, or through the make process
 
-### 1.0.0
+    ```
+    karma start test/karma.conf.js
+    ```
 
-Production release level code cycle.
+4. Local Deploy for development and testing
+
+    The build process creates build directory which can be used directly as a web site root. 
+
+    You may use the server of your choice, or use the built-in mini-web-server via
+
+    ```
+    grunt preview
+    ```
+
+5. Production Deploy
+
+    The production deploy just copies the build directory to the appropriate location.
