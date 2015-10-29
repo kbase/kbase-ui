@@ -14,7 +14,7 @@
     "type": "git",
     "url": "https://github.com/eapearson/kbase-ui.git"
   },
-  "contributors": ["eapearson", "brhiel"],
+  "contributors": ["eapearson", "briehl"],
   "dependencies": {},
   "devDependencies": {
     "grunt": "^0.4.5",
