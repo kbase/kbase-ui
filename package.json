@@ -1,5 +1,5 @@
 {
-  "name": "ThriftTest",
+  "name": "KBase UI",
   "version": "0.0.1",
   "keywords": [
     "util",
@@ -8,8 +8,13 @@
     "client",
     "browser"
   ],
-  "author": "erik",
-  "contributors": [],
+  "author": "KBase",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eapearson/kbase-ui.git"
+  },
+  "contributors": ["eapearson", "brhiel"],
   "dependencies": {},
   "devDependencies": {
     "grunt": "^0.4.5",
