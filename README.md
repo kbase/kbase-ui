@@ -21,13 +21,13 @@ can probably just use installable nodejs and git, but these instructions are for
 
 #### Macports
 
-1) install macports: 
+##### 1) install macports: 
 
 Download and follow the instructions at https://www.macports.org/install.php.
 
 As part of the macports install, you will need to also install xcode and/or xcode command line utils. This can take up to an hour.
 
-2) Use the terminal to install the dependencies using Macports.
+##### 2) Use the terminal to install the dependencies using Macports.
 
 open terminal and issue the following commands:
 
@@ -37,7 +37,6 @@ sudo npm install -g bower
 sudo npm install -g grunt-cli
 sudo npm install -g karma-cli
 > ```
-
 
 
 ### Windows
@@ -67,52 +66,52 @@ sudo npm install -g karma-cli
 ## Installation
 
 
-1. **Clone the kbase-ui repo**
+#### 1) Clone the kbase-ui repo
 
-    Make yourself a nice cozy home in which to place kbase-ui. For testing and development you just need a single directory owned by you.
+Make yourself a nice cozy home in which to place kbase-ui. For testing and development you just need a single directory owned by you.
 
-    ```
-    mkdir -p work/kbase-ui-work
-    cd work/kbase-ui-work
-    git clone https://github.com/eapearson/kbase-ui.git
-    cd kbase-ui
-    ```
+> ```
+mkdir -p work/kbase-ui-work
+cd work/kbase-ui-work
+git clone https://github.com/eapearson/kbase-ui.git
+cd kbase-ui
+> ```
 
-2. **Build it**
+##### 2) Build it
 
-    The kbase-ui can build with a couple of lines typed at the console, or a single invocation of ```make```.
+The kbase-ui can build with a couple of lines typed at the console, or a single invocation of ```make```.
 
-    ```
-    npm install
-    grunt build
-    ```
+> ```
+npm install
+grunt build
+> ```
 
-    or 
+or 
 
-    ```
-    make
-    ```
+> ```
+make
+> ```
 
-    Note: Depending on your platform and installed browsers, you may need to hand-tweak the browsers used for testing; phantomjs is by default the sole browser tested.
+Note: Depending on your platform and installed browsers, you may need to hand-tweak the browsers used for testing; phantomjs is by default the sole browser tested.
 
-3. **Run tests**
+##### 3) Run tests
 
-    The tests can be run directly with karma, or through the make process
+The tests can be run directly with karma, or through the make process
 
-    ```
-    karma start test/karma.conf.js
-    ```
+> ```
+karma start test/karma.conf.js
+> ```
 
-4. **Local Deploy for development and testing**
+##### 4) Local Deploy for development and testing
 
-    The build process creates build directory which can be used directly as a web site root. 
+The build process creates build directory which can be used directly as a web site root. 
 
-    You may use the server of your choice, or use the built-in mini-web-server via
+You may use the server of your choice, or use the built-in mini-web-server via
 
-    ```
-    grunt preview
-    ```
+> ```
+grunt preview
+> ```
 
-5. **Production Deploy**
+##### 5) Production Deploy
 
-    The production deploy just copies the build directory to the appropriate location.
+The production deploy just copies the build directory to the appropriate location.
