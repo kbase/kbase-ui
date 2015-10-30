@@ -384,24 +384,24 @@ module.exports = function (grunt) {
                         dest: buildDir('client/plugins/dataview'),
                         expand: true
                     },
-                    {
-                        cwd: makeRepoDir('kbase-ui-plugin-typebrowser/src/plugin'),
-                        src: '**/*',
-                        dest: buildDir('client/plugins/typebrowser'),
-                        expand: true
-                    },
+//                    {
+//                        cwd: makeRepoDir('kbase-ui-plugin-typebrowser/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/plugins/typebrowser'),
+//                        expand: true
+//                    },
 //                    {
 //                        cwd: makeRepoDir('dashboard/src/plugin'),
 //                        src: '**/*',
 //                        dest: buildDir('client/plugins/dashboard'),
 //                        expand: true
 //                    },
-                    {
-                        cwd: makeRepoDir('kbase-ui-plugin-databrowser/src/plugin'),
-                        src: '**/*',
-                        dest: buildDir('client/plugins/databrowser'),
-                        expand: true
-                    },
+//                    {
+//                        cwd: makeRepoDir('kbase-ui-plugin-databrowser/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/plugins/databrowser'),
+//                        expand: true
+//                    },
                 ]
             },
             deploy: {

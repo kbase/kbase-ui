@@ -24,7 +24,8 @@ plugins:
         -
             name: serviceClients
             directory: bower_components/kbase-service-clients-js
-    -
+        #-
+        #    dataview
         #-
         #    name: dataview
         #    directory: ../../../kbase-ui-plugin-dataview/src/plugin
