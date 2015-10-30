@@ -19,6 +19,8 @@ plugins:
             welcome
         -
             login
+        #-
+        #    serviceclients
         -
             name: serviceClients
             directory: bower_components/kbase-service-clients-js
@@ -26,13 +28,14 @@ plugins:
         #-
         #    name: dataview
         #    directory: ../../../kbase-ui-plugin-dataview/src/plugin
+        -
+            name: dataview
+            directory: bower_components/kbase-ui-plugin-dataview
         #-
-        #    name: dataview
-        #    directory: bower_components/kbase-ui-plugin-dataview
+        #    dataview
         -
-            dataview
-        -
-            typebrowser
+            name: typebrowser
+            directory: bower_components/kbase-ui-plugin-typebrowser
         -
             name: typeview
             directory: bower_components/kbase-ui-plugin-typeview
@@ -50,11 +53,11 @@ plugins:
         -
             name: viswidgets
             directory: bower_components/kbase-ui-plugin-vis-widgets
-        -
-            databrowser
         #-
-        #    name: databrowser
-       #     directory: bower_components/kbase-ui-plugin-databrowser        
+        #    databrowser
+        -
+            name: databrowser
+            directory: bower_components/kbase-ui-plugin-databrowser        
 menu:
     available_items:
 #            search: 
