@@ -1,3 +1,11 @@
+/*global define */
+/*jslint
+ white: true, browser: true
+ */
+
+/**
+ * Gruntfile for kbase-ui
+ */
 'use strict';
 var path = require('path'),
     iniParser = require('node-ini'),
@@ -8,15 +16,15 @@ var path = require('path'),
 // prod = production
 // ci = continuous integration
 
-
-
-
 //if (grunt.option('kb_deployment_config')) {
-//           deployCfgFile = grunt.option('kb_deployment_config');        
+//           deployCfgFile = grunt.option('kb_deployment_config');
 //       } else if (process.env.KB_DEPLOYMENT_CONFIG) {
 //           deployCfgFile = process.env.KB_DEPLOYMENT_CONFIG;
 //       }
 
+/**
+ * Cancels a task
+ */
 function cancelTask() {
     var message = Array.prototype.slice.call(arguments).map(function (message) {
         return String(message);
@@ -26,7 +34,6 @@ function cancelTask() {
 }
 
 module.exports = function (grunt) {
-
     var servicesTarget = 'prod',
         // set to 'test' for switching to dev menus, 'prod' for normal ones.
         uiTarget = 'test';
@@ -112,9 +119,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-mkdir');
     grunt.loadNpmTasks('grunt-shell');
-    //grunt.loadNpmTasks('grunt-contrib-requirejs');
-    //grunt.loadNpmTasks('grunt-karma');
-    //grunt.loadNpmTasks('grunt-coveralls');
+    grunt.loadNpmTasks('grunt-contrib-requirejs');
+    grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-coveralls');
     grunt.loadNpmTasks('grunt-connect');
     grunt.loadNpmTasks('grunt-open');
     //grunt.loadNpmTasks('grunt-http-server');
@@ -130,12 +137,12 @@ module.exports = function (grunt) {
         {
             name: 'bluebird',
             cwd: 'js/browser',
-            src: ['bluebird.js'],
+            src: ['bluebird.js']
         },
         {
             name: 'bootstrap',
             cwd: 'dist',
-            src: '**/*',
+            src: '**/*'
         },
         {
             name: 'd3'
@@ -147,7 +154,7 @@ module.exports = function (grunt) {
         {
             name: 'jquery',
             cwd: 'dist',
-            src: ['jquery.js'],
+            src: ['jquery.js']
         },
         {
             name: 'js-yaml',
@@ -233,6 +240,7 @@ module.exports = function (grunt) {
             cwd: 'browser',
             src: 'nunjucks.js'
         },
+
         // PLUGINS
         {
             name: 'kbase-ui-plugin-databrowser',
@@ -289,17 +297,17 @@ module.exports = function (grunt) {
     ],
         bowerCopy = bowerFiles.map(function (cfg) {
             // path is like dir/path/name
-            var path = [];
+            var filePaths = [];
             // dir either dir or name is the first level directory.
             // path.unshift(cfg.dir || cfg.name);
 
             // If there is a path (subdir) we add that too.
             if (cfg.path) {
-                path.unshift(cfg.path);
+                filePaths.unshift(cfg.path);
             }
 
             // Until we get a path which we use as a prefix to the src.
-            var pathString = path
+            var pathString = filePaths
                 .filter(function (el) {
                     if (el === null || el === undefined || el === '') {
                         return false;
@@ -333,8 +341,9 @@ module.exports = function (grunt) {
 
             var cwd = cfg.cwd;
             if (cwd && cwd.charAt(0) === '/') {
+                // ignore and move on
             } else {
-                cwd = 'bower_components/' + (cfg.dir || cfg.name) + (cwd ? '/' + cwd : '')
+                cwd = 'bower_components/' + (cfg.dir || cfg.name) + (cwd ? '/' + cwd : '');
             }
             return {
                 nonull: true,
@@ -401,7 +410,7 @@ module.exports = function (grunt) {
                         src: '**/*',
                         dest: buildDir('client/plugins/databrowser'),
                         expand: true
-                    },
+                    }
                 ]
             },
             deploy: {
@@ -421,7 +430,7 @@ module.exports = function (grunt) {
                         dest: buildDir('client/ui.yml')
                     }
                 ]
-            },
+            }
         },
         clean: {
             build: {
@@ -453,7 +462,7 @@ module.exports = function (grunt) {
             }
         },
         // Testing with Karma!
-        'karma': {
+        karma: {
             unit: {
                 configFile: 'test/karma.conf.js'
             },
@@ -472,7 +481,7 @@ module.exports = function (grunt) {
             }
         },
         // Run coveralls and send the info.
-        'coveralls': {
+        coveralls: {
             options: {
                 force: true
             },
@@ -518,7 +527,7 @@ module.exports = function (grunt) {
             // 'copy:config-prod'
     ]);
 
-    /*
+    
      grunt.registerTask('build-test', [
      'bower:install',
      'copy:build',
@@ -548,7 +557,7 @@ module.exports = function (grunt) {
      grunt.registerTask('develop', [
      'karma:dev',
      ]);
-     */
+     
     grunt.registerTask('preview', [
         'open:dev',
         'connect'

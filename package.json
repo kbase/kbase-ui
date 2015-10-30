@@ -14,7 +14,10 @@
     "type": "git",
     "url": "https://github.com/eapearson/kbase-ui.git"
   },
-  "contributors": ["eapearson", "briehl"],
+  "contributors": [
+    "eapearson",
+    "briehl"
+  ],
   "dependencies": {},
   "devDependencies": {
     "grunt": "^0.4.5",
@@ -22,6 +25,9 @@
     "grunt-connect": "0.2.0",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-copy": "^0.8.0",
+    "grunt-contrib-requirejs": "^0.4.4",
+    "grunt-coveralls": "^1.0.0",
+    "grunt-karma": "^0.12.1",
     "grunt-mkdir": "0.1.2",
     "grunt-open": "0.2.3",
     "grunt-shell": "1.1.2",
