@@ -15,7 +15,7 @@ init:
 
 build:
 	@ grunt build
-	@ node tools/process_config.js
+	@ node tools/process_config.js deploy-ci.cfg
 
 deploy:
 	@ grunt deploy
