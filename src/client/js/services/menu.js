@@ -101,9 +101,6 @@ define([
                     message: 'The menu item key provided, ' + item + ', is not registered'
                 };
             }
-            console.log('adding to menu...');
-            console.log(menuEntry);
-            console.log(item);
             if (typeof menuEntry === 'object') {
                 id = menuEntry.name;
                 section = menuEntry.section;
@@ -114,8 +111,6 @@ define([
                 position = 'bottom';
             }
             state.modifyItem('menus', function (menus) {
-                console.log('MENUS???');
-                console.log(menus);
                 if (position === 'top') {
                     menus[id][section].push(menuItems[item]);
                 } else {

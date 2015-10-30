@@ -15,10 +15,15 @@ define([
         function factory(config) {
             var types = props.make({
                 data: config.typeDefs
-            });
+            }),
+                defaultIcon = {
+                    type: 'fontAwesome',
+                    classes: ['fa-file-o']
+                };
+           
 
             function getIcon(arg) {
-                var icon = types.getItem(['types', arg.type.module, arg.type.name, 'icon']) || getDefault('icon'),
+                var icon = types.getItem(['types', arg.type.module, arg.type.name, 'icon']) || defaultIcon,
                     classes = icon.classes.map(function (x) {
                         return x;
                     });
@@ -199,6 +204,7 @@ define([
 
             return {
                 getIcon: getIcon,
+                setIcon: setIcon,
                 getViewer: getViewer,
                 getDefault: getDefault,
                 makeTypeId: makeTypeId,

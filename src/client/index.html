@@ -63,8 +63,9 @@
                         console.log('app has started!');
                     })
                     .catch(function (err) {
-                        document.getElementById('app').innerHTML = 'My gosh, I am not a happy camper';
+                        document.getElementById('root').innerHTML = 'My gosh, I am not a happy camper. Please check the browser console.';
                         console.log('app is unhappy :(');
+                        console.log(err);
                     });
             });            
         </script>
