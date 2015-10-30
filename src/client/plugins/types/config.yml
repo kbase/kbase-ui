@@ -13,7 +13,10 @@ source:
             file: typeManager
         -
             module: kb_types_typeService
-            file: typeService
+            file: type
+    styles:
+        -
+            file: icons
     resources:
         -
             module: kb_types_dataTypes
@@ -22,5 +25,4 @@ install:
     services:
         -
             module: kb_types_typeService
-            name: types
-
+            name: type

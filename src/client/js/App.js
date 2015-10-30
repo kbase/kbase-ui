@@ -6,24 +6,17 @@ define([
     'kb_common_pluginManager',
     'kb_common_dom',
     'kb_common_messenger',
-    'kb_common_widgetMount',
-    'kb_appService_router',
-    'kb_appService_menu',
-    'kb_appService_heartbeat',
-    'kb_appService_widget',
-    'kb_appService_session',
-    'kb_appService_data',
-    'kb_appService_type',
+    'kb_common_widgetMount',    
     'kb_common_props',
     'kb_common_asyncQueue',
+    'kb_common_appServiceManager',
     'promise',
-    'yaml!config.yml'
+    'yaml!config.yml',
+    'require'
 ], function (pluginManagerFactory,
     dom, messengerFactory,
-    widgetMountFactory, routerServiceFactory, menuServiceFactory,
-    heartbeatServiceFactory, widgetServiceFactory, sessionServiceFactory,
-    dataServiceFactory, typeServiceFactory,
-    props, asyncQueue, Promise, clientConfig) {
+    widgetMountFactory, 
+    props, asyncQueue, AppServiceManager, Promise, clientConfig, req) {
     'use strict';
     
     var moduleVersion = '0.0.1';
@@ -133,94 +126,21 @@ define([
             return rootMount.mountWidget(widgetId);
         }
 
-
-
-        // Service registration
-
-
-
-        // SEssion service:
-
-
-
-        // Service proxy
-        var services = {};
-        function addService(serviceNames, serviceDef) {
-            serviceNames.forEach(function (name) {
-                services[name] = serviceDef;
-            });
-        }
-        function startServices() {
-            var all = Object.keys(services).map(function (name) {
-                return new Promise(function (resolve, reject) {
-                    var service = services[name];
-                    if (service.start) {
-                        service.start()
-                            .then(function (result) {
-                                resolve(result);
-                            })
-                            .reject(function (err) {
-                                console.error('Error starting service ' + name);
-                                console.error('err');
-                                reject(err);
-                            });
-                    } else {
-                        console.log('Warning: no start method for ' + name);
-                        resolve();
-                    }
-                });
-            });
-            console.log('V: about to start services ' + all.length);
-            return Promise.settle(all);
-        }
-        function stopServices() {
-
-        }
-        function hasService(name) {
-            if (services[name] === undefined) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-        function getService(name) {
-            var service = services[name];
-            if (service === undefined) {
-                throw {
-                    name: 'UndefinedService',
-                    message: 'The requested service "' + name + '" has not been registered.',
-                    suggestion: 'This is a system configuration issue. The requested service should be installed or the client code programmed to check for its existence first (with hasService)'
-                }
-            }
-            return service;
-        }
-
-        // Installs a new app service!
-        /*
-         * given a module, which defines the service, and a name, add the service.
-         */
-        function serviceServiceFactory(config) {
-            var runtime = config.runtime;
-
-            function pluginHandler(serviceConfigs) {
-                var services = serviceConfigs.map(function (serviceConfig) {
-                    return new Promise(function (resolve) {
-                        require([serviceConfig.module], function (serviceFactory) {
-                            addService([serviceConfig.name], serviceFactory.make({
-                                runtime: runtime
-                            }));
-                            resolve();
-                        });
-                    });
-                });
-                return Promise.settle(services);
-            }
-
-            return {
-                pluginHandler: pluginHandler
+        var renderQueue = asyncQueue.make();
+        
+        var appServiceManager = AppServiceManager.make();
+        
+        function proxyMethod(obj, method, args) {
+        if (!obj[method]) {
+            throw {
+                name: 'UndefinedMethod',
+                message: 'The requested method "' + method + '" does not exist on this object',
+                suggestion: 'This is a developer problem, not your fault'
             };
         }
-
+        return obj[method].apply(obj, args);
+    }
+        
         var api = {
             getConfig: getConfig,
             config: getConfig,
@@ -234,46 +154,93 @@ define([
             rcv: rcv,
             urcv: urcv,
             // Services
-            getService: getService,
-            service: getService,
-            hasService: hasService
+            addService: function () {
+                 return proxyMethod(appServiceManager, 'addService', arguments);
+            },
+            loadService: function () {
+                return proxyMethod(appServiceManager, 'loadService', arguments);
+            },
+            getService: function () {
+                return proxyMethod(appServiceManager, 'getService', arguments);
+            },
+            service: function () {
+                return proxyMethod(appServiceManager, 'getService', arguments);
+            },
+            hasService: function () {
+                return proxyMethod(appServiceManager, 'hasService', arguments);
+            },
+            dumpServices: function () {
+                return proxyMethod(appServiceManager, 'dumpServices', arguments);
+            }
         };
-
-        var renderQueue = asyncQueue.make();
+        
 
         function begin() {
             // Register service handlers.
-            addService(['session'], sessionServiceFactory.make({
+            appServiceManager.addService('session', {
                 runtime: api,
                 cookieName: 'kbase_session',
                 extraCookieNames: ['kbase_narr_session'],
                 loginUrl: 'https://kbase.us/services/authorization/Sessions/Login',
                 cookieMaxAge: 100000
 
-            }));
-            addService(['heartbeat'], heartbeatServiceFactory.make({
+            });
+            appServiceManager.addService('heartbeat', {
                 runtime: api
-            }));
-            addService(['routes', 'route', 'routing'], routerServiceFactory.make({
+            });
+            appServiceManager.addService('route', {
                 runtime: api,
                 notFoundRoute: {redirect: {path: 'message/notfound'}},
                 defaultRoute: {redirect: {path: 'dashboard'}}
-            }));
-            addService(['menu', 'menus'], menuServiceFactory.make({
+            });
+            appServiceManager.addService('menu', {
                 runtime: api
-            }));
-            addService(['widgets', 'widget'], widgetServiceFactory.make({
+            });
+            appServiceManager.addService('widget', {
                 runtime: api
-            }));
-            addService(['service', 'services'], serviceServiceFactory({
+            });
+            appServiceManager.addService('service', {
                 runtime: api
-            }));
-            addService(['data'], dataServiceFactory.make({
+            });
+            appServiceManager.addService('data', {
                 runtime: api
-            }));
-            addService(['type', 'types'], typeServiceFactory.make({
-                runtime: api
-            }));
+            });
+//            appServiceManager.addService('type', {
+//                runtime: api
+//            });
+            
+            
+//            addService(['session'], sessionServiceFactory.make({
+//                runtime: api,
+//                cookieName: 'kbase_session',
+//                extraCookieNames: ['kbase_narr_session'],
+//                loginUrl: 'https://kbase.us/services/authorization/Sessions/Login',
+//                cookieMaxAge: 100000
+//
+//            }));
+//            addService(['heartbeat'], heartbeatServiceFactory.make({
+//                runtime: api
+//            }));
+//            addService(['routes', 'route', 'routing'], routerServiceFactory.make({
+//                runtime: api,
+//                notFoundRoute: {redirect: {path: 'message/notfound'}},
+//                defaultRoute: {redirect: {path: 'dashboard'}}
+//            }));
+//            addService(['menu', 'menus'], menuServiceFactory.make({
+//                runtime: api
+//            }));
+//            addService(['widgets', 'widget'], widgetServiceFactory.make({
+//                runtime: api
+//            }));
+//            addService(['service', 'services'], serviceServiceFactory({
+//                runtime: api
+//            }));
+//            addService(['data'], dataServiceFactory.make({
+//                runtime: api
+//            }));
+//            addService(['type', 'types'], typeServiceFactory.make({
+//                runtime: api
+//            }));
 //            addService(['userprofile'], userProfileServiceFactory.make({
 //                runtime: api                
 //            }));
@@ -314,19 +281,22 @@ define([
 
             // ROUTING
 
-            return installPlugins(config.plugins)
+            return appServiceManager.loadServices()
                 .then(function () {
+                    console.log('Services loaded');
+                    return installPlugins(config.plugins);
+                })
+                .then(function () {
+                   console.log('Root widget mounted');
+                    return appServiceManager.startServices();
+                })
+                .then(function () {
+                    console.log('Plugins installed');
                     return mountRootWidget('root', api);
                 })
                 .then(function () {
-                    console.log('really, about to start services.');
-                    return startServices();
-                })
-                .then(function (services) {
-                    console.log('started services: ');
-                    console.log(services);
                     // getService('heartbeat').start();
-                    console.log('about to do route');
+                    console.log('Services started.');
                     send('app', 'do-route');
                     return api;
                 });

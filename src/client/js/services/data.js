@@ -10,9 +10,15 @@ define([
 
         function start() {
             // nothing to do?
+            return Promise.try(function () {
+                return true;
+            });
         }
         function stop() {
             // nothing to do?
+            return Promise.try(function () {
+                return true;
+            });
         }
         function getJson(arg) {
             if (arg.sync) {

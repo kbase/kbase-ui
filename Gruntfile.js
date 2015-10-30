@@ -42,7 +42,7 @@ module.exports = function (grunt) {
         return path.normalize(BUILD_DIR);
     }
     
-    var REPO_DIR = '../repos';
+    var REPO_DIR = '..';
 
     function makeRepoDir(subdir) {
         if (subdir) {
@@ -161,6 +161,10 @@ module.exports = function (grunt) {
             name: 'lodash'
         },
         {
+            dir: 'node-uuid',
+            src: ['uuid.js']
+        },
+        {
             dir: 'postal.js',
             cwd: 'lib',
             name: 'postal'
@@ -201,11 +205,12 @@ module.exports = function (grunt) {
             cwd: 'src/plugin',
             src: ['**/*']
         },
-        {
-            name: 'kbase-ui-plugin-dataview',
-            cwd: 'src/plugin',
-            src: ['**/*']
-        },        
+//        {
+//            name: 'kbase-ui-plugin-dataview',
+//            cwd: 'src/plugin',
+//            src: ['**/*']
+//        },   
+        
         {
             name: 'kbase-ui-plugin-typeview',
             cwd: 'src/plugin',
@@ -272,7 +277,7 @@ module.exports = function (grunt) {
             name: 'kbase-service-clients-js',
             cwd: 'dist/plugin',
             src: ['**/*']
-        },
+        }
 
     ],
         bowerCopy = bowerFiles.map(function (cfg) {
@@ -364,28 +369,34 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-//            dev: {
-//                files: [
-//                    {
-//                        cwd: makeRepoDir('dataview/src/plugin'),
-//                        src: '**/*',
-//                        dest: buildDir('client/plugins/dataview'),
-//                        expand: true
-//                    },
+            dev: {
+                files: [
+                    {
+                        cwd: makeRepoDir('kbase-ui-plugin-dataview/src/plugin'),
+                        src: '**/*',
+                        dest: buildDir('client/plugins/dataview'),
+                        expand: true
+                    },
+                    {
+                        cwd: makeRepoDir('kbase-ui-plugin-typebrowser/src/plugin'),
+                        src: '**/*',
+                        dest: buildDir('client/plugins/typebrowser'),
+                        expand: true
+                    },
 //                    {
 //                        cwd: makeRepoDir('dashboard/src/plugin'),
 //                        src: '**/*',
 //                        dest: buildDir('client/plugins/dashboard'),
 //                        expand: true
 //                    },
-//                    {
-//                        cwd: makeRepoDir('databrowser/src/plugin'),
-//                        src: '**/*',
-//                        dest: buildDir('client/plugins/databrowser'),
-//                        expand: true
-//                    }
-//                ]
-//            },
+                     {
+                        cwd: makeRepoDir('kbase-ui-plugin-databrowser/src/plugin'),
+                        src: '**/*',
+                        dest: buildDir('client/plugins/databrowser'),
+                        expand: true
+                    },
+                ]
+            },
             deploy: {
                 files: [
                     {
@@ -495,7 +506,7 @@ module.exports = function (grunt) {
         'bower:install',
         'copy:bower',
         'copy:build',
-        // 'copy:dev',
+        'copy:dev',
         'copy:config',
         'build-config'
         // 'copy:config-prod'

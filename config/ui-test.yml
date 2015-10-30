@@ -1,6 +1,15 @@
 ## UI Configuration File - Test
 ---
 plugins:
+    # NB: at the moment, but hopefully to be disentagled within a few days,
+    # the plugins need to be loaded in this sequence of top level sections.
+    # THis is because there are dependencies from later plugins to these.
+    # Esp. type, which introduces a service for plugins (registering types)
+    -
+        -
+            types
+        -
+            userprofileservice
     -
         -
             mainwindow
@@ -13,12 +22,17 @@ plugins:
         -
             name: serviceClients
             directory: bower_components/kbase-service-clients-js
-        -
-            userprofileservice
     -
+        #-
+        #    name: dataview
+        #    directory: ../../../kbase-ui-plugin-dataview/src/plugin
+        #-
+        #    name: dataview
+        #    directory: bower_components/kbase-ui-plugin-dataview
         -
-            name: dataview
-            directory: bower_components/kbase-ui-plugin-dataview
+            dataview
+        -
+            typebrowser
         -
             name: typeview
             directory: bower_components/kbase-ui-plugin-typeview
@@ -36,6 +50,11 @@ plugins:
         -
             name: viswidgets
             directory: bower_components/kbase-ui-plugin-vis-widgets
+        -
+            databrowser
+        #-
+        #    name: databrowser
+       #     directory: bower_components/kbase-ui-plugin-databrowser        
 menu:
     available_items:
 #            search: 
@@ -66,7 +85,7 @@ menu:
     menus:
         authenticated: 
             main: [narrative, search, dashboard]
-            developer: []
+            developer: [databrowser, typebrowser]
             help: [about-kbase, contact-kbase]
         unauthenticated: 
             main: [search]

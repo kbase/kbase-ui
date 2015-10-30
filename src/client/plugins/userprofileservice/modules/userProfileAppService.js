@@ -16,7 +16,6 @@ define([
             return Promise.try(function () {
                 var username = runtime.getService('session').getUsername();
                 if (username) {
-                    console.log('Loading profile...');
                     return Object.create(userProfile).init({
                         username: username,
                         runtime: runtime
@@ -27,35 +26,36 @@ define([
 
         // list for request fetch the user profile
         function start() {
-            runtime.getService('session').onChange(function (loggedIn) {
-                console.log('login change detected...');
-                console.log(loggedIn);
-                if (loggedIn) {
-                    loadProfile()
-                        .then(function (profile) {
-                            console.log('Loaded!');
-                            state.setItem('userprofile', profile);
-                        })
-                        .catch(function (err) {
-                            console.log('ERROR starting profile app service');
-                            console.log(err);
-                        });
-                } else {
-                    state.setItem('userprofile', null);
-                }
+            return Promise.try(function () {
+                runtime.getService('session').onChange(function (loggedIn) {
+                    if (loggedIn) {
+                        loadProfile()
+                            .then(function (profile) {
+                                state.setItem('userprofile', profile);
+                            })
+                            .catch(function (err) {
+                                console.log('ERROR starting profile app service');
+                                console.log(err);
+                            });
+                    } else {
+                        state.setItem('userprofile', null);
+                    }
+                });
             });
         }
         function stop() {
-            state.setItem('userprofile', null);
+            return Promise.try(function () {
+                state.setItem('userprofile', null);
+            });
         }
-        
+
         function getRealname() {
             var profile = state.getItem('userprofile');
             if (profile) {
                 return profile.getProp('user.realname');
             }
         }
-        
+
         //runtime.recv('session', 'loggedin', function () {
         //    loadSession();
         //});
@@ -71,18 +71,20 @@ define([
                     console.log(err);
                     if (errFun) {
                         errFun(err);
-                    } 
+                    }
                 }
             });
         }
-        
+
         function whenChange() {
             return state.whenItem('userprofile')
         }
 
         return {
+            // lifecycle api
             start: start,
             stop: stop,
+            // useful api
             onChange: onChange,
             whenChange: whenChange,
             getRealname: getRealname

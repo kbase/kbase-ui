@@ -41,6 +41,16 @@ require.config({
         handlebars: 'bower_components/handlebars/handlebars',
         nunjucks: 'bower_components/nunjucks/nunjucks',
         font_awesome: 'bower_components/font-awesome/css/font-awesome',
+        uuid: 'bower_components/node-uuid/uuid',
+        
+        'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
+            //'jquery-svg-anim': 'bower_components/jquery.svg/jquery.svganim.min',
+            //'jquery-svg-dom': 'bower_components/jquery.svg/jquery.svgdom.min',
+            //'jquery-svg-filter': 'bower_components/jquery.svg/jquery.svgfilter.min',
+            //'jquery-svg-graph': 'bower_components/jquery.svg/jquery.svggraph.min',
+            // 'jquery-svg-plot': 'bower_components/jquery.svg/jquery.svgplot.min',
+            //'jquery-svg-plot': 'js/lib/widgets/jquery/communities/jquery.svg.plot',
+            //'jquery-svg-graph-deviation': 'js/lib/etc/jquery-svg-graph-deviation',
 
         
         kb_common_html: 'bower_components/kbase-common-js/html',
@@ -65,6 +75,8 @@ require.config({
         kb_common_widgetSet: 'bower_components/kbase-common-js/widgetSet',
         kb_common_gravatar: 'bower_components/kbase-common-js/gravatar',
         kb_common_data: 'js/dev/data',
+        
+        kb_common_appServiceManager: 'bower_components/kbase-common-js/appServiceManager',
         
         kb_widget_buttonBar: 'js/dev/widgets/buttonBar',
         
@@ -103,15 +115,16 @@ require.config({
         // TODO: move into separate repo
         // kb_api: 'lib/kbase-client-api',
         // kbase service client support -- should be refactored.
-        kb_narrative: 'js/clients/narrative',
-        kb_types: 'js/clients/types',
-        kb_appService_router: 'js/services/router',
-        kb_appService_menu: 'js/services/menu',
-        kb_appService_heartbeat: 'js/services/heartbeat',
-        kb_appService_widget: 'js/services/widget',
-        kb_appService_session: 'js/services/session',
-        kb_appService_data: 'js/services/data',
-        kb_appService_type: 'js/services/type',
+        // kb_narrative: 'js/clients/narrative',
+        // kb_types: 'js/clients/types',
+        
+//        kb_appService_router: 'js/services/router',
+//        kb_appService_menu: 'js/services/menu',
+//        kb_appService_heartbeat: 'js/services/heartbeat',
+//        kb_appService_widget: 'js/services/widget',
+//        kb_appService_session: 'js/services/session',
+//        kb_appService_data: 'js/services/data',
+//        kb_appService_type: 'js/services/type',
 
         kb_common_typeManager: 'bower_components/kbase-common-js/typeManager',
 

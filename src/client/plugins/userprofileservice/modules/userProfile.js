@@ -23,10 +23,10 @@ define([
                     }
                     this.username = cfg.username;
 
-                    if (this.runtime.getService('session').isLoggedIn()) {
+                    if (this.runtime.service('session').isLoggedIn()) {
                         if (this.runtime.hasConfig('services.user_profile.url')) {
                             this.userProfileClient = new UserProfileService(this.runtime.getConfig('services.user_profile.url'), {
-                                token: this.runtime.getService('session').getAuthToken()
+                                token: this.runtime.service('session').getAuthToken()
                             });
                         } else {
                             throw 'The user profile client url is not defined';
