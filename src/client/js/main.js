@@ -7,7 +7,7 @@ define([
     'bootstrap',
     'css!font_awesome',
     'css!kb_bootstrap',
-    'css!kb_icons',
+    // 'css!kb_icons',
     'css!kb_ui'
 ], function (App, dom, uiConfig) {
     'use strict';
@@ -32,40 +32,39 @@ define([
         dom.qs('#error').style.display = 'block';
     }
     displayStatus('running');
-    // dom.qs('#status').innerHTML = 'running...';
-    App.run({
-        nodes: {
-            root: {
-                selector: '#root'
-            },
-            error: {
-                selector: '#error'
-            },
-            status: {
-                selector: '#status'
-            }
-        },
-        plugins: uiConfig.plugins
-    })
-        .then(function (runtime) {
-            // R.send('ui', 'setTitle', 'KBase Single Page App Demo Site');
-            var menus = uiConfig.menu.menus;
-            Object.keys(menus).forEach(function (menuSet) {
-                Object.keys(menus[menuSet]).forEach(function (menuSection) {
-                    menus[menuSet][menuSection].forEach(function (menuItem) {
-                        runtime.service('menu').addToMenu({
-                            name: menuSet,
-                            section: menuSection,
-                            position: 'bottom'
-                        }, menuItem);
+    
+    return {
+        start: function () {
+            return App.run({
+                nodes: {
+                    root: {
+                        selector: '#root'
+                    },
+                    error: {
+                        selector: '#error'
+                    },
+                    status: {
+                        selector: '#status'
+                    }
+                },
+                plugins: uiConfig.plugins
+            })
+                .then(function (runtime) {
+                    // R.send('ui', 'setTitle', 'KBase Single Page App Demo Site');
+                    var menus = uiConfig.menu.menus;
+                    Object.keys(menus).forEach(function (menuSet) {
+                        Object.keys(menus[menuSet]).forEach(function (menuSection) {
+                            menus[menuSet][menuSection].forEach(function (menuItem) {
+                                runtime.service('menu').addToMenu({
+                                    name: menuSet,
+                                    section: menuSection,
+                                    position: 'bottom'
+                                }, menuItem);
+                            });
+                        });
                     });
+                    //runtime.service('menu').setMenus(uiConfig.menu.menus);
                 });
-            });
-            //runtime.service('menu').setMenus(uiConfig.menu.menus);
-        })
-        .catch(function (err) {
-            console.log('ERROR in index.html');
-            console.log(err);
-            displayError(err);
-        });
+        }
+    };
 });

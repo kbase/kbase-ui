@@ -17,7 +17,6 @@ define([
                 on: {
                     attach: function (w, node) {
                         // create a widget mount on the node.
-                        console.log('hmm, body widget attaching');
                         widgetMount = WidgetMount.make({
                             runtime: config.runtime,
                             node: node
@@ -43,7 +42,6 @@ define([
                                 'No widget is set'
                             ]);
                         }
-                        console.log('hmm, mounting widget: ' + widget);
                         widgetMount.mountWidget(widget, w.getState('params'))
                             .catch(function (err) {
                                 // need a catch-all widget to mount here??

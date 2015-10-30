@@ -11,11 +11,11 @@ var path = require('path'),
 
 
 
- //if (grunt.option('kb_deployment_config')) {
- //           deployCfgFile = grunt.option('kb_deployment_config');        
- //       } else if (process.env.KB_DEPLOYMENT_CONFIG) {
- //           deployCfgFile = process.env.KB_DEPLOYMENT_CONFIG;
- //       }
+//if (grunt.option('kb_deployment_config')) {
+//           deployCfgFile = grunt.option('kb_deployment_config');        
+//       } else if (process.env.KB_DEPLOYMENT_CONFIG) {
+//           deployCfgFile = process.env.KB_DEPLOYMENT_CONFIG;
+//       }
 
 function cancelTask() {
     var message = Array.prototype.slice.call(arguments).map(function (message) {
@@ -26,10 +26,11 @@ function cancelTask() {
 }
 
 module.exports = function (grunt) {
-   
-    var servicesTarget = 'ci', 
-        uiTarget = 'prod';
-    
+
+    var servicesTarget = 'prod',
+        // set to 'test' for switching to dev menus, 'prod' for normal ones.
+        uiTarget = 'test';
+
     // Config
     // TODO: maybe read something from the runtime/config directory so we don't 
     // need to tweak this and accidentally check it in...
@@ -41,8 +42,8 @@ module.exports = function (grunt) {
         }
         return path.normalize(BUILD_DIR);
     }
-    
-    var REPO_DIR = '../repos';
+
+    var REPO_DIR = '..';
 
     function makeRepoDir(subdir) {
         if (subdir) {
@@ -50,12 +51,12 @@ module.exports = function (grunt) {
         }
         return path.normalize(REPO_DIR);
     }
-    
+
     function getConfig() {
         var deployCfgFile = 'deploy-' + servicesTarget + '.cfg';
         return iniParser.parseSync(deployCfgFile);
     }
-    
+
     var deployCfg = getConfig();
 
     // not using this yet.
@@ -71,10 +72,10 @@ module.exports = function (grunt) {
             cancelTask('Invalid value for required option "uiTarget":', uiTarget);
         }
     }
-    
+
     function buildConfigFile() {
         'use strict';
-        
+
         var serviceTemplateFile = 'config/service-config-template.yml',
             settingsCfg = 'config/settings.yml',
             outFile = buildDir('client/config.yml'),
@@ -99,7 +100,7 @@ module.exports = function (grunt) {
                         console.log(err);
                         throw 'Error writing compiled configuration';
                     }
-                    done();                    
+                    done();
                 });
             });
         });
@@ -161,6 +162,10 @@ module.exports = function (grunt) {
             name: 'lodash'
         },
         {
+            dir: 'node-uuid',
+            src: ['uuid.js']
+        },
+        {
             dir: 'postal.js',
             cwd: 'lib',
             name: 'postal'
@@ -197,31 +202,6 @@ module.exports = function (grunt) {
             name: 'underscore'
         },
         {
-            name: 'kbase-ui-plugin-databrowser',
-            cwd: 'src/plugin',
-            src: ['**/*']
-        },
-        {
-            name: 'kbase-ui-plugin-dataview',
-            cwd: 'src/plugin',
-            src: ['**/*']
-        },        
-        {
-            name: 'kbase-ui-plugin-typeview',
-            cwd: 'src/plugin',
-            src: ['**/*']
-        },
-        {
-            name: 'kbase-ui-plugin-dashboard',
-            cwd: 'src/plugin',
-            src: ['**/*']
-        },
-        {
-            name: 'kbase-ui-plugin-vis-widgets',
-            cwd: 'src/plugin',
-            src: ['**/*']
-        },
-        {
             name: 'datatables',
             cwd: 'media',
             src: ['css/jquery.dataTables.css', 'images/*', 'js/jquery.dataTables.js']
@@ -242,6 +222,50 @@ module.exports = function (grunt) {
             src: ['prettify.js', 'prettify.css']
         },
         {
+            dir: 'd3-plugins-sankey',
+            src: ['sankey.js', 'sankey.css']
+        },
+        {
+            name: 'handlebars'
+        },
+        {
+            name: 'nunjucks',
+            cwd: 'browser',
+            src: 'nunjucks.js'
+        },
+        // PLUGINS
+        {
+            name: 'kbase-ui-plugin-databrowser',
+            cwd: 'src/plugin',
+            src: ['**/*']
+        },
+        {
+            name: 'kbase-ui-plugin-typebrowser',
+            cwd: 'src/plugin',
+            src: ['**/*']
+        },
+        {
+            name: 'kbase-ui-plugin-dataview',
+            cwd: 'src/plugin',
+            src: ['**/*']
+        },   
+
+        {
+            name: 'kbase-ui-plugin-typeview',
+            cwd: 'src/plugin',
+            src: ['**/*']
+        },
+        {
+            name: 'kbase-ui-plugin-dashboard',
+            cwd: 'src/plugin',
+            src: ['**/*']
+        },
+        {
+            name: 'kbase-ui-plugin-vis-widgets',
+            cwd: 'src/plugin',
+            src: ['**/*']
+        },
+        {
             dir: 'data-api',
             cwd: 'bower',
             src: '**/*'
@@ -257,22 +281,10 @@ module.exports = function (grunt) {
             src: '**/*'
         },
         {
-            dir: 'd3-plugins-sankey',
-            src: ['sankey.js', 'sankey.css']
-        },
-        {
-            name: 'handlebars'
-        },
-        {
-            name: 'nunjucks',
-            cwd: 'browser',
-            src: 'nunjucks.js'
-        },
-         {
             name: 'kbase-service-clients-js',
             cwd: 'dist/plugin',
             src: ['**/*']
-        },
+        }
 
     ],
         bowerCopy = bowerFiles.map(function (cfg) {
@@ -364,28 +376,34 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-//            dev: {
-//                files: [
-//                    {
-//                        cwd: makeRepoDir('dataview/src/plugin'),
-//                        src: '**/*',
-//                        dest: buildDir('client/plugins/dataview'),
-//                        expand: true
-//                    },
+            dev: {
+                files: [
+                    {
+                        cwd: makeRepoDir('kbase-ui-plugin-dataview/src/plugin'),
+                        src: '**/*',
+                        dest: buildDir('client/plugins/dataview'),
+                        expand: true
+                    },
+                    {
+                        cwd: makeRepoDir('kbase-ui-plugin-typebrowser/src/plugin'),
+                        src: '**/*',
+                        dest: buildDir('client/plugins/typebrowser'),
+                        expand: true
+                    },
 //                    {
 //                        cwd: makeRepoDir('dashboard/src/plugin'),
 //                        src: '**/*',
 //                        dest: buildDir('client/plugins/dashboard'),
 //                        expand: true
 //                    },
-//                    {
-//                        cwd: makeRepoDir('databrowser/src/plugin'),
-//                        src: '**/*',
-//                        dest: buildDir('client/plugins/databrowser'),
-//                        expand: true
-//                    }
-//                ]
-//            },
+                    {
+                        cwd: makeRepoDir('kbase-ui-plugin-databrowser/src/plugin'),
+                        src: '**/*',
+                        dest: buildDir('client/plugins/databrowser'),
+                        expand: true
+                    },
+                ]
+            },
             deploy: {
                 files: [
                     {
@@ -434,7 +452,6 @@ module.exports = function (grunt) {
                 path: 'http://localhost:8887'
             }
         },
-
         // Testing with Karma!
         'karma': {
             unit: {
@@ -485,7 +502,7 @@ module.exports = function (grunt) {
             }
         }
     });
-    
+
     grunt.registerTask('get-build-options', 'Set build options from command line or environment', getBuildOptions);
     grunt.registerTask('build-config', 'Build the config file', buildConfigFile);
 
@@ -498,43 +515,43 @@ module.exports = function (grunt) {
         // 'copy:dev',
         'copy:config',
         'build-config'
-        // 'copy:config-prod'
+            // 'copy:config-prod'
     ]);
 
-/*
-    grunt.registerTask('build-test', [
-        'bower:install',
-        'copy:build',
-        'copy:bower',
-        'copy:config-test'
-    ]);
-
-    grunt.registerTask('deploy', [
-        'copy:deploy'
-    ]);
-
-    // Does a single, local, unit test run.
-    grunt.registerTask('test', [
-        'karma:unit',
-    ]);
-
-    // Does a single unit test run, then sends 
-    // the lcov results to coveralls. Intended for running
-    // from travis-ci.
-    grunt.registerTask('test-travis', [
-        'karma:unit',
-        'coveralls'
-    ]);
-
-    // Does an ongoing test run in a watching development
-    // mode.
-    grunt.registerTask('develop', [
-        'karma:dev',
-    ]);
-*/
+    /*
+     grunt.registerTask('build-test', [
+     'bower:install',
+     'copy:build',
+     'copy:bower',
+     'copy:config-test'
+     ]);
+     
+     grunt.registerTask('deploy', [
+     'copy:deploy'
+     ]);
+     
+     // Does a single, local, unit test run.
+     grunt.registerTask('test', [
+     'karma:unit',
+     ]);
+     
+     // Does a single unit test run, then sends 
+     // the lcov results to coveralls. Intended for running
+     // from travis-ci.
+     grunt.registerTask('test-travis', [
+     'karma:unit',
+     'coveralls'
+     ]);
+     
+     // Does an ongoing test run in a watching development
+     // mode.
+     grunt.registerTask('develop', [
+     'karma:dev',
+     ]);
+     */
     grunt.registerTask('preview', [
         'open:dev',
         'connect'
     ]);
-    
+
 };
