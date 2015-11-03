@@ -109,6 +109,10 @@ define([
             },
             makeType: function () {
                 return proxyMethod(typeManager, 'makeType', arguments);
+            },
+            
+            hasType: function () {
+                return proxyMethod(typeManager, 'hasType', arguments);                
             }
         };
     }

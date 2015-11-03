@@ -47,15 +47,6 @@ install:
     menu:
         -
             name: welcome
-            menus:
-                - 
-                    name: authenticated
-                    section: help
-                    position: top
-                - 
-                    name: unauthenticated
-                    section: help
-                    position: top
             definition:
                 path: welcome
                 label: Welcome!
@@ -67,15 +58,6 @@ install:
                 newWindow: true
                 label: About KBase
                 icon: info-circle
-            menus:
-                -
-                    name: authenticated
-                    section: help
-                    position: top
-                -
-                    name: unauthenticated
-                    section: help
-                    position: top
         -
             name: contact-kbase
             definition:
@@ -83,22 +65,8 @@ install:
                 newWindow: true
                 label: Contact KBase
                 icon: envelope-o
-            menus:
-                -
-                    name: authenticated
-                    section: help
-                    position: bottom
-                -
-                    name: unauthenticated
-                    section: help
-                    position: bottom
         -
             name: narrative
-            menus:
-                - 
-                    name: authenticated
-                    section: main
-                    position: bottom
             definition:
                 path: narrativemanager/start
                 label: Narrative

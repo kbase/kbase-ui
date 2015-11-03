@@ -56,41 +56,50 @@ define([
                     };
                 }
             }
+            function hasType(typeQuery) {
+                if (types.hasItem(['types', typeQuery.module, typeQuery.name])) {
+                    return true;
+                }
+                return false;
+            }
             function getViewer(arg) {
-                if (!types.hasItem(['types', arg.type.module, arg.type.name])) {
-                    throw {
-                        type: 'ArgumentError',
-                        reason: 'TypeNotRegistered',
-                        message: 'The type identified by module ' + arg.type.module + ', name ' + arg.type.name + ' is not registered'
-                    };
-                }
-                if (!types.hasItem(['types', arg.type.module, arg.type.name, 'viewers'])) {
-                    throw {
-                        type: 'ArgumentError',
-                        reason: 'NoViewersFound',
-                        message: 'No viewers registered for the type identified by module ' + arg.type.module + ', name ' + arg.type.name + '.'
-                    };
-                }
+//                if (!types.hasItem(['types', arg.type.module, arg.type.name])) {
+//                    throw {
+//                        type: 'ArgumentError',
+//                        reason: 'TypeNotRegistered',
+//                        message: 'The type identified by module ' + arg.type.module + ', name ' + arg.type.name + ' is not registered'
+//                    };
+//                }
+//                if (!types.hasItem(['types', arg.type.module, arg.type.name, 'viewers'])) {
+//                    throw {
+//                        type: 'ArgumentError',
+//                        reason: 'NoViewersFound',
+//                        message: 'No viewers registered for the type identified by module ' + arg.type.module + ', name ' + arg.type.name + '.'
+//                    };
+//                }
                 var viewers = types.getItem(['types', arg.type.module, arg.type.name, 'viewers']);
+                if (!viewers) {
+                    return;
+                }
                 if (viewers.length === 1) {
                     return viewers[0];
-                } else {
-                    var defaults = viewers.filter(function (viewer) {
-                        if (viewer.default) {
-                            return true;
-                        }
-                        return false;
-                    });
-                    if (defaults.length === 1) {
-                        var copy = _.extend({}, defaults[0]);
-                        delete copy.default;
-                        return copy;
-                    } else if (defaults.length === 0) {
-                        throw new Error('No viewer defined for this type');
-                    } else {
-                        throw new Error('Multiple default viewers defined for this widget');
-                    }
                 }
+                var defaults = viewers.filter(function (viewer) {
+                    if (viewer.default) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (defaults.length === 1) {
+                    var copy = _.extend({}, defaults[0]);
+                    delete copy.default;
+                    return copy;
+                }
+                if (defaults.length === 0) {
+                    // throw new Error('No viewer defined for this type');
+                    return;
+                }
+                throw new Error('Multiple default viewers defined for this widget');
             }
 
             /**
@@ -211,7 +220,8 @@ define([
                 parseTypeId: parseTypeId,
                 makeType: makeType,
                 makeVersion: makeVersion,
-                addViewer: addViewer
+                addViewer: addViewer,
+                hasType: hasType
             };
         }
 
