@@ -32,8 +32,10 @@ plugins:
         -
             name: dataview
             directory: bower_components/kbase-ui-plugin-dataview
-        #-
-        #    dataview
+        -
+            dataview
+        -
+            typebrowser
         -
             name: typebrowser
             directory: bower_components/kbase-ui-plugin-typebrowser
@@ -58,7 +60,9 @@ plugins:
         #    databrowser
         -
             name: databrowser
-            directory: bower_components/kbase-ui-plugin-databrowser        
+            directory: bower_components/kbase-ui-plugin-databrowser      
+        -
+            datawidgetdemo
 menu:
     available_items:
 #            search: 
@@ -89,7 +93,7 @@ menu:
     menus:
         authenticated: 
             main: [narrative, search, dashboard]
-            developer: [databrowser, typebrowser]
+            developer: [databrowser, typebrowser, datawidgetdemo]
             help: [about-kbase, contact-kbase]
         unauthenticated: 
             main: [search]
