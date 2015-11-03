@@ -4,8 +4,6 @@
         <title>KBase | User Interface ALPHA</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="/bower_components/requirejs/require.js"></script>
-        <script src="/js/require-config.js"></script>
         <style type="text/css">
             .errorWidget {
                 border: 1px red solid;
@@ -56,18 +54,7 @@
             </div>
         </div>
         -->
-        <script>
-            require(['kb_main'], function (main) {
-                main.start()
-                    .then(function () {
-                        console.log('app has started!');
-                    })
-                    .catch(function (err) {
-                        document.getElementById('root').innerHTML = 'My gosh, I am not a happy camper. Please check the browser console.';
-                        console.log('app is unhappy :(');
-                        console.log(err);
-                    });
-            });            
-        </script>
+
+        <script src="/bower_components/requirejs/require.js" data-main="/js/startup"></script>
     </body>
 </html>

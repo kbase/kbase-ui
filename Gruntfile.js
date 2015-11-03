@@ -124,6 +124,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-coveralls');
     grunt.loadNpmTasks('grunt-connect');
     grunt.loadNpmTasks('grunt-open');
+    grunt.loadNpmTasks('grunt-filerev');
+    grunt.loadNpmTasks('grunt-regex-replace');
     //grunt.loadNpmTasks('grunt-http-server');
     //grunt.loadNpmTasks('grunt-markdown');
 
@@ -179,7 +181,7 @@ module.exports = function (grunt) {
         },
         {
             name: 'require-css',
-            src: 'css.js'
+            src: ['css.js', 'css-builder.js', 'normalize.js']
         },
         {
             dir: 'require-yaml',
@@ -509,7 +511,67 @@ module.exports = function (grunt) {
                 options: {
                 }
             }
+        },
+        requirejs: {
+            compile: {
+                options: {
+                    baseUrl: "build/client",
+                    mainConfigFile: "build/client/js/require-config.js",
+                    findNestedDependencies: true,
+                    optimize: "uglify2",
+                    generateSourceMaps: true,
+                    preserveLicenseComments: false,
+                    name: "kb_startup",
+                    out: "build/client/dist/kbase-min.js",
+                    // paths : {
+                    //     "IPythonMain": "empty:",
+                    //     "ipythonCellMenu": "empty:",
+                    //     "narrativeConfig": "empty:",
+                    // },
+                }
+            }
+        },
+        // Put a 'revision' stamp on the output file. This attaches an 8-character 
+        // md5 hash to the end of the requirejs built file.
+        filerev: {
+            options: {
+                algorithm: 'md5',
+                length: 8
+            },
+            source: {
+                files: [{
+                    src: [
+                        'build/client/dist/kbase-min.js',
+                    ],
+                    dest: 'build/client/dist/'
+                }]
+            }
+        },
+
+        // Once we have a revved file, this inserts that reference into page.html at
+        // the right spot (near the top, the narrative_paths reference)
+        'regex-replace': {
+            dist: {
+                src: ['build/client/index.html'],
+                actions: [
+                    {
+                        name: 'requirejs-onefile',
+                        search: '/js/startup',
+                        replace: function(match) {
+                            // do a little sneakiness here. we just did the filerev thing, so get that mapping
+                            // and return that (minus the .js on the end)
+                            var revvedFile = grunt.filerev.summary['build/client/dist/kbase-min.js'];
+                            // starts with 'static/' and ends with '.js' so return all but the first 7 and last 3 characters
+                            return revvedFile.substr(12, revvedFile.length - 10);
+                        },
+                        flags: ''
+                    }
+                ]
+            }
         }
+
+
+
     });
 
     grunt.registerTask('get-build-options', 'Set build options from command line or environment', getBuildOptions);
@@ -523,7 +585,10 @@ module.exports = function (grunt) {
         'copy:build',
         // 'copy:dev',
         'copy:config',
-        'build-config'
+        'build-config',
+        'requirejs',
+        'filerev',
+        'regex-replace'
             // 'copy:config-prod'
     ]);
 

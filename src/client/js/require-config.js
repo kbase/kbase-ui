@@ -131,7 +131,8 @@ require.config({
         kb_ui: 'css/kb-ui',
         kb_bootstrap: 'css/kb-bootstrap',
         kb_icons: 'css/kb-icons',
-        kb_main: 'js/main'
+        kb_main: 'js/main',
+        kb_startup: 'js/startup'
     },
     shim: {
         vega: {
