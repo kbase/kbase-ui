@@ -70,9 +70,13 @@ define([
         function proxyMethod(obj, method, args) {
             if (!obj[method]) {
                 throw {
-                    name: 'UndefinedMethod',
+                    type: 'UndefinedMethod',
+                    reason: 'MethodUndefinedOnObject',
                     message: 'The requested method "' + method + '" does not exist on this object',
-                    suggestion: 'This is a developer problem, not your fault'
+                    suggestion: 'This is a developer problem, not your fault',
+                    data: {
+                        methodName: method
+                    }
                 };
             }
             return obj[method].apply(obj, args);
@@ -98,6 +102,9 @@ define([
             },
             makeTypeId: function () {
                 return proxyMethod(typeManager, 'makeTypeId', arguments);
+            },
+            hasType: function () {
+                return proxyMethod(typeManager, 'hasType', arguments);                
             }
         };
     }
