@@ -233,6 +233,10 @@ module.exports = function (grunt) {
             cwd: 'browser',
             src: 'nunjucks.js'
         },
+        {
+            dir: 'numeral',
+            src: ['numeral.js', 'languages/*.js']
+        },
         // PLUGINS
         {
             name: 'kbase-ui-plugin-databrowser',
@@ -384,12 +388,12 @@ module.exports = function (grunt) {
                         dest: buildDir('client/plugins/dataview'),
                         expand: true
                     },
-//                    {
-//                        cwd: makeRepoDir('kbase-ui-plugin-typebrowser/src/plugin'),
-//                        src: '**/*',
-//                        dest: buildDir('client/plugins/typebrowser'),
-//                        expand: true
-//                    },
+                    {
+                        cwd: makeRepoDir('kbase-ui-plugin-typebrowser/src/plugin'),
+                        src: '**/*',
+                        dest: buildDir('client/plugins/typebrowser'),
+                        expand: true
+                    }
 //                    {
 //                        cwd: makeRepoDir('dashboard/src/plugin'),
 //                        src: '**/*',
@@ -512,7 +516,7 @@ module.exports = function (grunt) {
         'bower:install',
         'copy:bower',
         'copy:build',
-        // 'copy:dev',
+        'copy:dev',
         'copy:config',
         'build-config'
             // 'copy:config-prod'
