@@ -515,14 +515,31 @@ module.exports = function (grunt) {
         requirejs: {
             compile: {
                 options: {
+                    buildCSS: false,
                     baseUrl: "build/client",
                     mainConfigFile: "build/client/js/require-config.js",
                     findNestedDependencies: true,
-                    optimize: "uglify2",
+                    optimize: "none",
                     generateSourceMaps: true,
                     preserveLicenseComments: false,
                     name: "kb_startup",
                     out: "build/client/dist/kbase-min.js",
+                    // exclude: ['normalize'],
+                    paths: {
+                        'css-builder': 'bower_components/require-css/css-builder',
+                        normalize: 'bower_components/require-css/normalize',
+                    }
+                    // exclude: [
+                    //     'kb_bootstrap',
+                    //     'kb_ui',
+                    //     'kb_icons'
+                    // ],
+                    // paths : {
+                    //     "IPythonMain": "empty:",
+                    //     "ipythonCellMenu": "empty:",
+                    //     "narrativeConfig": "empty:",
+                    // },
+
                 }
             }
         },

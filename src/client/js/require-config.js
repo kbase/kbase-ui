@@ -8,6 +8,7 @@ require.config({
     paths: {
         // External Dependencies
         // ----------------------
+        css: 'bower_components/require-css/css',
         text: 'bower_components/requirejs-text/text',
         json: 'bower_components/requirejs-json/json',
         yaml: 'bower_components/require-yaml/yaml',
@@ -142,9 +143,9 @@ require.config({
 //        kb_ui: {
 //            deps: ['css!kb_bootstrap']
 //        },
-//        kb_bootstrap: {
-//            deps: ['bootstrap']
-//        },
+        // kb_bootstrap: {
+        //     deps: ['css!bootstrap_css']
+        // },
         bootstrap: {
             deps: ['jquery', 'css!bootstrap_css']
         },
@@ -158,7 +159,7 @@ require.config({
     },
     map: {
         '*': {
-            'css': 'bower_components/require-css/css',
+            // 'css': 'bower_components/require-css/css',
             'promise': 'bluebird'
         }
     }
