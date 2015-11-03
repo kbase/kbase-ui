@@ -13,39 +13,44 @@ div.DTCR_pointer {
     background-color: #0259C4;
     z-index: 201;
 }
-.dataTables_filter {
+.kbase-ui .dataTables_filter {
     text-align: right;
 }
-.dataTables_length label, .dataTables_filter label {
-    margin: 8px 0 4px 0;
+.kbase-ui .dataTables_length label, 
+.kbase-ui .dataTables_filter label {
+    margin: 6px 0 6px 0;
 }
-.dataTables_filter input {
+.kbase-ui .dataTables_filter input {
     margin-left: 4px;
 }
-.dataTables_info {
+.kbase-ui .dataTables_info {
     margin: 0 10px 0 0;
 }
  
-.dataTables_length, .dataTables_info {
+.kbase-ui .dataTables_length, .dataTables_info {
     float: left;
 }
 
-table.dataTable thead .sorting,
-table.dataTable thead .sorting_asc,
-table.dataTable thead .sorting_desc,
-table.dataTable thead .sorting_asc_disabled,
-table.dataTable thead .sorting_desc_disabled {
+.kbase-ui .dataTables_wrapper {
+    margin: 0.6em 0 0 0;
+}
+
+.kbase-ui table.dataTable thead .sorting,
+.kbase-ui table.dataTable thead .sorting_asc,
+.kbase-ui table.dataTable thead .sorting_desc,
+.kbase-ui table.dataTable thead .sorting_asc_disabled,
+.kbase-ui table.dataTable thead .sorting_desc_disabled {
     background: 0 0;
 }
 
-table.dataTable thead .sorting_asc:after {
+.kbase-ui table.dataTable thead .sorting_asc:after {
     content: "\f0de";
     xfloat: right;
     font-family: fontawesome;
     margin-left: 4px;
 }
 
-table.dataTable thead .sorting_desc:after {
+.kbase-ui table.dataTable thead .sorting_desc:after {
     content: "\f0dd";
     xfloat: right;
     font-family: fontawesome;
@@ -53,7 +58,7 @@ table.dataTable thead .sorting_desc:after {
 
 }
 
-table.dataTable thead .sorting:after {
+.kbase-ui table.dataTable thead .sorting:after {
     content: "\f0dc";
     xfloat: right;
     font-family: fontawesome;
