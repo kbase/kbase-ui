@@ -29,7 +29,7 @@ module.exports = function (grunt) {
 
     var servicesTarget = 'prod',
         // set to 'test' for switching to dev menus, 'prod' for normal ones.
-        uiTarget = 'test';
+        uiTarget = 'prod';
 
     // Config
     // TODO: maybe read something from the runtime/config directory so we don't 
@@ -382,18 +382,22 @@ module.exports = function (grunt) {
             },
             dev: {
                 files: [
-                    {
-                        cwd: makeRepoDir('kbase-ui-plugin-dataview/src/plugin'),
-                        src: '**/*',
-                        dest: buildDir('client/plugins/dataview'),
-                        expand: true
-                    },
-                    {
-                        cwd: makeRepoDir('kbase-ui-plugin-typebrowser/src/plugin'),
-                        src: '**/*',
-                        dest: buildDir('client/plugins/typebrowser'),
-                        expand: true
-                    }
+// Uncomment to have these built into kbase-ui directly from a local repo.
+// plugins as defined in ui-test.yml also need to be adjusted.
+//                    {
+//                        cwd: makeRepoDir('kbase-ui-plugin-dataview/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/plugins/dataview'),
+//                        expand: true
+//                    },
+//                    {
+//                        cwd: makeRepoDir('kbase-ui-plugin-typebrowser/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/plugins/typebrowser'),
+//                        expand: true
+//                    }
+                    
+                    
 //                    {
 //                        cwd: makeRepoDir('dashboard/src/plugin'),
 //                        src: '**/*',
