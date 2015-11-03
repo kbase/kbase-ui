@@ -45,18 +45,18 @@ define([
             function renderNavbar() {
                 var div = html.tag('div');
                 var content = div({style: {position: 'relative', height: '100%'}, class: 'kb-widget-mainWindow'}, [
-                    div({style: {'border-right': '1px silver solid', padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top'}}, [
+                    div({style: {'border-right': '0px #EEE solid', padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top'}}, [
                         div({id: widgetSet.addWidget('menu')})
                     ]),
-                    div({style: {'border-right': '1px silver solid', padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top'}}, div({id: widgetSet.addWidget('logo')})),
+                    div({style: {'border-right': '0px #EEE solid', padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top'}}, div({id: widgetSet.addWidget('logo')})),
                     div({style: {display: 'inline-block', padding: '4px', height: '100%', verticalAlign: 'top'}}, [
                         div({id: widgetSet.addWidget('title')})
                     ]),
-                    div({style: {border: '0px dashed blue', position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top', verticalAlign: 'top'}}, [
-                        div({style: {borderLeft: '1px silver solid', display: 'inline-block', padding: '4px', height: '100%', verticalAlign: 'top'}}, [
+                    div({style: {border: '0px dashed blue', position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top'}}, [
+                        div({style: {borderLeft: '0px #EEE solid', display: 'inline-block', padding: '4px', height: '100%', verticalAlign: 'top'}}, [
                             div({id: widgetSet.addWidget('buttonbar')})
                         ]),
-                        div({style: {borderLeft: '1px silver solid', 'border-right': '1px silver solid', 'border-right': '1px silver solid',padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top', width: '100px'}}, [
+                        div({style: {borderLeft: '0px #EEE solid', borderRight: '0px #EEE solid', padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top', width: '100px'}}, [
                             div({id: widgetSet.addWidget('notification')})
                         ]),
                         div({style: {padding: '4px', display: 'inline-block', height: '100%'}, class: 'navbar-right'}, [
@@ -72,7 +72,7 @@ define([
                 return div({id: 'wrap'}, [
                     div({id: 'content'}, [
                         div({class: 'navbar navbar-kbase navbar-fixed-top', id: 'kbase-navbar', style: 'padding: 0'}, renderNavbar()),
-                        div({class: 'container-fluid', style: {'padding-top': '1em'}}, [
+                        div({class: 'kb-mainwindow-body', style: {'padding-top': '1em'}}, [
                             div({id: widgetSet.addWidget('body')})
                         ])
                     ])

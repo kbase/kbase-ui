@@ -43,6 +43,7 @@ require.config({
         nunjucks: 'bower_components/nunjucks/nunjucks',
         font_awesome: 'bower_components/font-awesome/css/font-awesome',
         uuid: 'bower_components/node-uuid/uuid',
+        numeral: 'bower_components/numeral/numeral',
         
         'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
             //'jquery-svg-anim': 'bower_components/jquery.svg/jquery.svganim.min',
@@ -70,27 +71,29 @@ require.config({
         kb_common_messenger: 'bower_components/kbase-common-js/messenger',
         kb_common_observed: 'bower_components/kbase-common-js/observed',
         kb_common_format: 'bower_components/kbase-common-js/format',
-        // widget support should move out into a plugin.
-        kb_common_widgetManager: 'bower_components/kbase-common-js/widgetManager',
-        kb_common_widgetMount: 'bower_components/kbase-common-js/widgetMount',
-        kb_common_widgetSet: 'bower_components/kbase-common-js/widgetSet',
         kb_common_gravatar: 'bower_components/kbase-common-js/gravatar',
-        kb_common_data: 'js/dev/data',
-        
         kb_common_appServiceManager: 'bower_components/kbase-common-js/appServiceManager',
         
-        kb_widget_buttonBar: 'js/dev/widgets/buttonBar',
-        
-        kb_widgetBases_standardWidget: 'bower_components/kbase-common-js/standardWidget',
-        kb_widgetBases_panelWidget: 'bower_components/kbase-common-js/panelWidget',
+        // widget support should move out into a plugin.
+        kb_common_widgetManager: 'bower_components/kbase-common-js/widgets/widgetManager',
+        kb_common_widgetMount: 'bower_components/kbase-common-js/widgets/widgetMount',
+        kb_common_widgetSet: 'bower_components/kbase-common-js/widgets/widgetSet',
+
+        kb_widgetBases_standardWidget: 'bower_components/kbase-common-js/widgets/standardWidget',
+        kb_widgetBases_panelWidget: 'bower_components/kbase-common-js/widgets/panelWidget',
         kb_widgetAdapters_objectWidget: 'bower_components/kbase-common-js/widgetAdapters/widgetAdapter',
         kb_widgetAdapters_kbWidget: 'bower_components/kbase-common-js/widgetAdapters/kbWidgetAdapter',
         
-        kb_widgetBases_kbWidget: 'bower_components/kbase-common-js/widgetLegacy/kbaseWidget',
+        kb_widgetBases_kbWidget: 'bower_components/kbase-common-js/widgetLegacy/kbaseWidget',        
         kb_widgetBases_kbAuthenticatedWidget: 'bower_components/kbase-common-js/widgetLegacy/kbaseAuthenticatedWidget',
         kb_widget_kbTabs: 'bower_components/kbase-common-js/widgetLegacy/kbTabs',
         kb_widget_helpers: 'bower_components/kbase-common-js/widgetLegacy/kbaseHelperPlugins',
         kb_widget_tabs: 'bower_components/kbase-common-js/widgetLegacy/kbaseTabs',
+
+        kb_common_data: 'js/dev/data',
+        kb_widget_buttonBar: 'js/dev/widgets/buttonBar',
+        kb_widgetBases_dataWidget: 'js/dev/dataWidget',
+        
         
         // Just for testing vega
         kb_common_csv: 'bower_components/kbase-common-js/csv',
@@ -130,6 +133,7 @@ require.config({
         kb_common_typeManager: 'bower_components/kbase-common-js/typeManager',
 
         kb_ui: 'css/kb-ui',
+        kb_datatables: 'css/kb-datatables',
         kb_bootstrap: 'css/kb-bootstrap',
         kb_icons: 'css/kb-icons',
         kb_main: 'js/main',
@@ -143,9 +147,10 @@ require.config({
 //        kb_ui: {
 //            deps: ['css!kb_bootstrap']
 //        },
-        // kb_bootstrap: {
-        //     deps: ['css!bootstrap_css']
-        // },
+//        kb_bootstrap: {
+//            deps: ['bootstrap']
+//        },
+        
         bootstrap: {
             deps: ['jquery', 'css!bootstrap_css']
         },

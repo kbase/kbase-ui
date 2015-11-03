@@ -22,7 +22,7 @@ define([
                 return new Promise(function (resolve) {
                     // Render panel
                     var div = html.tag('div');
-                    var panel = div({class: 'kbase-view kbase-user-page-view container-flud', 'data-kbase-view': 'social'}, [
+                    var panel = div({class: 'kbase-view kbase-user-page-view container-fluid', 'data-kbase-view': 'social'}, [
                         div({class: 'row'}, [
                             div({class: 'col-sm-9'}, [
                                 div({id: widgetSet.addWidget('kb_userProfile_profileEditor')})
