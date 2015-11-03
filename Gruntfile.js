@@ -523,11 +523,6 @@ module.exports = function (grunt) {
                     preserveLicenseComments: false,
                     name: "kb_startup",
                     out: "build/client/dist/kbase-min.js",
-                    // paths : {
-                    //     "IPythonMain": "empty:",
-                    //     "ipythonCellMenu": "empty:",
-                    //     "narrativeConfig": "empty:",
-                    // },
                 }
             }
         },
@@ -569,60 +564,50 @@ module.exports = function (grunt) {
                 ]
             }
         }
-
-
-
     });
 
     grunt.registerTask('get-build-options', 'Set build options from command line or environment', getBuildOptions);
     grunt.registerTask('build-config', 'Build the config file', buildConfigFile);
 
-    // Does the whole building task
+    // Does the whole building task. Installs everything needed
+    // from Bower, builds and optimizes things, and tweaks the 
+    // distributable index.html to use the compiled product.
     grunt.registerTask('build', [
-        // 'get-build-options', 
         'bower:install',
         'copy:bower',
         'copy:build',
-        // 'copy:dev',
         'copy:config',
         'build-config',
         'requirejs',
         'filerev',
         'regex-replace'
-            // 'copy:config-prod'
     ]);
 
+    grunt.registerTask('deploy', [
+        'copy:deploy'
+    ]);
+     
+    // Does a single, local, unit test run.
+    grunt.registerTask('test', [
+        'karma:unit',
+    ]);
+     
+    // Does a single unit test run, then sends 
+    // the lcov results to coveralls. Intended for running
+    // from travis-ci.
+    grunt.registerTask('test-travis', [
+        'karma:unit',
+        'coveralls'
+    ]);
+     
+    // Does an ongoing test run in a watching development
+    // mode.
+    grunt.registerTask('develop', [
+        'karma:dev',
+    ]);
     
-     grunt.registerTask('build-test', [
-     'bower:install',
-     'copy:build',
-     'copy:bower',
-     'copy:config-test'
-     ]);
-     
-     grunt.registerTask('deploy', [
-     'copy:deploy'
-     ]);
-     
-     // Does a single, local, unit test run.
-     grunt.registerTask('test', [
-     'karma:unit',
-     ]);
-     
-     // Does a single unit test run, then sends 
-     // the lcov results to coveralls. Intended for running
-     // from travis-ci.
-     grunt.registerTask('test-travis', [
-     'karma:unit',
-     'coveralls'
-     ]);
-     
-     // Does an ongoing test run in a watching development
-     // mode.
-     grunt.registerTask('develop', [
-     'karma:dev',
-     ]);
-     
+    // Starts a little server and runs the app in a page. 
+    // Should be run after 'grunt build'.
     grunt.registerTask('preview', [
         'open:dev',
         'connect'
