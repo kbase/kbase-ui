@@ -1,0 +1,211 @@
+
+
+
+/* sidebar list */
+
+.app-list,
+.method-list {
+	padding: 5px 0 7px 5px;
+	list-style: none;
+}
+
+.obj-filter,
+.meth-filter {
+	margin: 7px 0;
+}
+
+.analysis-methods .panel-body {
+	padding: 0 0 5px 10px;
+}
+.analysis-methods .panel-heading {
+	padding: 5px;
+}
+
+.default-ws-container {
+	/*background: #222;*/
+}
+
+.ws-toolbar .nav-pills {
+	margin: 5px 0 0 0;
+}
+
+.ws-toolbar .nav-pills a {
+	border-radius: 0px;
+}
+
+.ws-toolbar .nav-pills li a{
+	margin: 0;
+}
+
+.mini-obj-table {
+	background: #fff;
+}
+
+
+/* 
+ * task pages 
+*/ 
+.task-table {
+	margin: 200px 0 0 0;
+}
+
+
+/* 
+ * App Builder Cells
+*/ 
+.analysis-view ul {
+	padding: 0;
+	list-style: none;
+}
+
+
+.narrative-cell-container { 
+	height: 100%;
+	perspective: 800;
+}
+
+.narrative-cell {
+	height: 100%; 
+	position: relative;
+
+	transform-style: preserve-3d;
+	-webkit-transform-style: preserve-3d;
+	-moz-transform-style: preserve-3d;	
+
+	-o-transition: transform 1s;
+	-ms-transition: transform 1s;
+	-moz-transition: transform 1s;
+	-webkit-transition: transform 1s;
+	transition: transform 1s;
+}
+
+.narrative-cell figure {
+	display: block;
+	position: relative;
+
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+}
+
+.narrative-cell .front {
+	z-index: 1;
+	background: white;
+}
+.narrative-cell .back {
+	z-index: 20;
+	position:absolute;
+	top:0;
+	right:0;
+	background: white;
+	transform: rotateY( 180deg );
+
+	margin: 20px;
+}
+
+.narrative-cell.flipped {
+  transform: rotateY( 180deg );
+}
+
+
+.info-box {
+	min-height: 140px;
+	border: 1px solid black;
+	margin-bottom: 30px;
+	padding: 20px;
+	color: white;
+	-webkit-box-shadow: 0px 0px 3px 0px rgba(50, 50, 50, 0.75);
+	-moz-box-shadow:    0px 0px 3px 0px rgba(50, 50, 50, 0.75);
+	box-shadow:         0px 0px 3px 0px rgba(50, 50, 50, 0.75);
+}
+
+
+
+
+
+
+/*
+ *  Common
+*/ 
+.dashboard-info {
+	color: #888;
+	padding: 0 0 0 20px;
+}
+
+.dashboard-info.red {
+	border-left: 5px solid #ff2121;
+}
+
+.dashboard-info.blue {
+	border-left: 5px solid #39afea;
+}
+.dashboard-info.yellow {
+	border-left: 5px solid #f9aa0b;
+}
+.dashboard-info.green {
+	border-left: 5px solid #61a434;
+}
+
+
+.info-box.info {
+	background: #67c2ef;
+	border: 1px solid #39afea;
+}
+
+.info-box.warning {
+	background: #fabb3d;
+	border: 1px solid #f9aa0b;
+}
+
+.info-box.success {
+	background: #79c447;
+	border: 1px solid #61a434;
+}
+
+.info-box.danger {
+	background: #ff5454;
+	border: 1px solid #ff2121;
+}
+
+
+
+
+/* animations */
+
+.change {
+    background-color: red;
+}
+.change-add,.change-remove {
+  background-color: white;
+  transition: all 1s;
+  -webkit-transition: all 1s ease-in-out;
+}
+.change-add-active {
+  background-color: red;
+}
+.change-remove {
+    background-color: red;
+
+}
+.change-remove-active {
+  background-color: white;
+}
+
+.change-up {
+    background-color: green;
+}
+.change-up-add,.change-up-remove {
+  background-color: white;
+  transition: all 1s;
+  -webkit-transition: all 1s ease-in-out;
+}
+.change-up-add-active {
+  background-color: green;
+}
+.change-up-remove {
+    background-color: green;
+
+}
+.change-up-remove-active {
+  background-color: white;
+}
+

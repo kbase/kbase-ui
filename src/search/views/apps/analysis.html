@@ -1,0 +1,137 @@
+
+<div class="row">
+    <div class="col-sm-3 col-md-3 sidebar">
+        <!--<div class="pull-right" show-hide-sidebar></div>-->
+
+        <div class="btn-toolbar ws-toolbar">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="default-ws-container">
+
+                        <span class="text-muted">Default Workspace</span>
+                        <a class="pull-right" ui-sref="analysis.objects({ws: ddSelected})">Data 
+                            (<span>{{narrative.ws_objects.length}}</span>)
+                        </a>    
+                        <div dd-selector 
+                             dd-selected="selectedWS" 
+                             dd-data="narrative.ws_list" 
+                             on-change="wsSelected(value)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--<div ws="ws" class="" ws-selector></div>-->
+            <ul class="nav nav-pills">
+                <li ng-class="{ active: $state.includes('analysis.upload') }">
+                    <a ui-sref="analysis.upload">Upload</a>
+                </li>
+                <!--
+                <li ng-class="{ active: $state.includes('analysis.objects') }">
+                    <a  ui-sref="analysis.objects({ws: ddSelected})">Data 
+                        (<span>{{narrative.ws_objects.length}}</span>)
+                    </a>              
+                </li>-->
+
+                <li ng-class="{ active: $state.includes('analysis.apps')}" >
+                    <a ui-sref="analysis.apps">Apps</a>
+                </li>                
+                <li ng-class="{ active: $state.includes('analysis.tasks') }" >
+                    <a ui-sref="analysis.tasks" >
+                        Tasks 
+                        <span animate-on-change="narrative.tasks.length">({{narrative.tasks.length}})</span>
+                    </a>
+                </li>
+            </ul>
+
+
+            <br>
+
+            <!--
+            <ul class="nav nav-tabs">
+                <li ng-class="{ active: $state.includes('analysis.apps')}" >
+                    <a ui-sref="analysis.apps">Apps</a>
+                </li>
+
+                <li ng-class="{ active: $state.includes('analysis.builder')}" >
+                    <a ui-sref="analysis.builder">App Builder</a>
+                </li>
+            </ul>-->
+
+
+            <!--  ng-click="showData = !showData" ng-class="{active: showData}" class="data-tab" -->
+
+            <div ng-if="$state.includes('analysis.apps')">
+                <h3>Apps</h3>
+                 <ul class="app-list list-group">
+                    <li><a class="text-muted" >Assemble</a></li>
+                    <li><a ng-click="narrative.setApp('Annotate ContigSet')">Annotate</a></li>
+                    <li><a ng-click="narrative.setApp('Build a Metabolic Model')">Generate Initial Model</a></li>
+                    <li><a ng-click="narrative.setApp('Gapfill a Metabolic Model')">Gapfill Model</a></li>
+                    <li><a ng-click="narrative.setApp('Run Flux Balance Analysis')">Run Model</a></li>
+                    <li><a ng-click="narrative.setApp('Assemble Genome from Fasta')">Genome</a></li>
+                    <li><a ng-click="narrative.setApp('Import NCBI Genome')">Genome Import</a></li>
+                    <li><a ng-click="narrative.setApp('Build a Metabolic Model')">Reconcile Giving New Model</a></li>
+                    <li><a class="text-muted" >Model Input</a></li>
+                    <li><a class="text-muted" >Model Translation</a></li>
+                    <li><a class="text-muted" >Comparative Genomes</a></li>
+                </ul>
+            </div>
+
+
+
+
+            <div ng-if="$state.includes('analysis.builder')">
+
+                <input type="text" ng-model="query" class="form-control meth-filter" placeholder="Search methods">
+
+                <div ng-if="!query" class="analysis-methods">
+                    <accordion close-others="oneAtATime">
+                        <accordion-group heading="{{group.name}}" ng-repeat="group in narrative.methods">
+                            <ul class="method-list">
+                                <li ng-repeat="method in group.methods">
+                                    <a ng-click="narrative.addCell(method.title)">{{method.title}}</a>
+                                </li>
+                            </ul>
+                        </accordion-group>
+                    </accordion>
+                </div>
+
+                <!-- method search --> 
+                <div ng-hide="!query">
+                    <ul class="method-list">
+                        <div ng-repeat="group in narrative.methods" 
+                             ng-show="(group.methods | filter: query).length > 0">
+                            <b>{{group.name}}</b>
+                            <ul class="method-list">
+                                <li ng-repeat="method in group.methods | filter:query">
+                                    <a ng-click="narrative.addCell(method.title)">{{method.title}}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </ul>
+                </div>
+            </div>
+
+            <div ng-if="showData">
+                <input ng-model="query" type="text" class="form-control obj-filter" placeholder="Search objects">
+
+                <div class="mini-obj-table overflow-y">
+                    <table class="table">
+                        <tr ng-repeat="obj in narrative.ws_objects | filter:query">
+                            <td>{{obj.1}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        </div> <!-- end tool bar -->
+
+    </div> <!-- end container -->
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 main" >
+        <div ui-view></div>
+    </div>
+</div>
+
+

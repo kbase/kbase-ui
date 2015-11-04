@@ -297,7 +297,18 @@ module.exports = function (grunt) {
             name: 'kbase-service-clients-js',
             cwd: 'dist/plugin',
             src: ['**/*']
+        },
+
+        // Dependencies needed for Search (for now)
+        {
+            name: 'blockUI',
+            src: ['jquery.blockUI.js']
+        },
+        {
+            name: 'q',
+            src: ['q.js']
         }
+
 
     ],
         bowerCopy = bowerFiles.map(function (cfg) {
@@ -439,7 +450,17 @@ module.exports = function (grunt) {
                         dest: buildDir('client/ui.yml')
                     }
                 ]
-            }
+            },
+            'build-search': {
+                files: [
+                    {
+                        cwd: 'src/search',
+                        src: '**/*',
+                        dest: 'build/client/search',
+                        expand: true
+                    }
+                ]
+            },
         },
         clean: {
             build: {
@@ -602,10 +623,12 @@ module.exports = function (grunt) {
         'copy:build',
         'copy:dev',
         'copy:config',
+        'copy:build-search',
         'build-config',
         'requirejs',
         'filerev',
-        'regex-replace'
+        'regex-replace',
+
     ]);
 
     grunt.registerTask('deploy', [
