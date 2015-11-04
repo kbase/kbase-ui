@@ -37,6 +37,7 @@ install:
                     section: main
                     position: top
             definition:
+                uri: "/search/#/search/?q=*"
                 path: search
                 label: Search
                 icon: search

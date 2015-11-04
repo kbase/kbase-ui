@@ -8,6 +8,7 @@ require.config({
     paths: {
         // External Dependencies
         // ----------------------
+        css: 'bower_components/require-css/css',
         text: 'bower_components/requirejs-text/text',
         json: 'bower_components/requirejs-json/json',
         yaml: 'bower_components/require-yaml/yaml',
@@ -135,7 +136,8 @@ require.config({
         kb_datatables: 'css/kb-datatables',
         kb_bootstrap: 'css/kb-bootstrap',
         kb_icons: 'css/kb-icons',
-        kb_main: 'js/main'
+        kb_main: 'js/main',
+        kb_startup: 'js/startup'
     },
     shim: {
         vega: {
@@ -162,7 +164,7 @@ require.config({
     },
     map: {
         '*': {
-            'css': 'bower_components/require-css/css',
+            // 'css': 'bower_components/require-css/css',
             'promise': 'bluebird'
         }
     }

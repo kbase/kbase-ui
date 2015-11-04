@@ -1,0 +1,107 @@
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="dashboard-info blue">
+            <i class="fa fa-cloud-upload fa-5x pull-left"></i>
+            <div class="h1" upload-count>0</div>
+            <div class="h4">Uploading</div>
+        </div>
+    </div>
+    <div class="col-md-5 col-md-offset-1">
+        <div class="dashboard-info green">
+            <i class="fa fa-check-square fa-5x pull-left"></i>
+            <div class="h1">{{uploads.data.length}}</div>
+            <span class="h4">Completed</span>
+        </div>
+    </div>
+</div>
+
+
+<br>
+<!-- onchange="angular.element(this).scope().uploadFile(this.files)" -->
+
+<form enctype="multipart/form-data">
+    <input name="upload" type="file" onchange="angular.element(this).scope().uploadFile(this.files)"/>
+</form>
+
+<div ng-if="uploadProgress" class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{uploadProgress}}%;">
+    <span>{{uploadProgress}}% Complete</span>
+  </div>
+</div>
+
+<div ng-if="uploadComplete">
+    Upload complete. :)  Now I will run an AWE job to add your data to <b><i>{{ddSelected}}</i></b>... or something like that. 
+</div>
+
+<br><br>
+
+
+<!--
+<div ng-controller="MyCtrl">
+    <input type="text" ng-model="myModelObj">
+    <input type="file" ng-file-select="onFileSelect($files)">
+    <div class="button" ng-file-select="onFileSelect($files)" data-multiple="true"></div>
+    <div ng-file-drop="onFileSelect($files)" 
+         ng-file-drag-over-class="optional-css-class-name-or-function"
+         ng-show="dropSupported">drop files here</div>
+    <div ng-file-drop-available="dropSupported=true" 
+         ng-show="!dropSupported">HTML5 Drop File is not supported!</div>
+    <button ng-click="upload.abort()">Cancel Upload</button>
+</div>    
+-->            
+<!--
+<div class="row">
+    <div class="col-md-5">
+
+        <div flow-init="{target: 'http://localhost:5000/upload'}"
+             flow-files-submitted="$flow.upload()"
+             flow-file-success="$file.msg = $message">
+
+            <div class="text-center">
+                <div class="alert" flow-drop flow-drag-enter="class='alert-success'" flow-drag-leave="class=''" ng-class="class">
+                    Drag and Drop your file here
+                </div>
+                <b>or</b><br>
+                <br>
+                <span class="btn btn-primary btn-sm" flow-btn>Upload File</span>
+            </div>
+
+            <table>
+                <tr ng-repeat="file in $flow.files">
+                    <td>{{$index+1}}</td>
+                    <td>{{file.name}}</td>
+                    <td>{{file.msg}}</td>
+                </tr>
+            </table>
+        </div> 
+                        <i class="fa fa-cloud-download"></i>
+
+
+    </div>
+</div>-->
+
+
+<div kb-upload></div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Completed</h3>
+        <table class="table">
+            <tr>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Created</th>                                
+            </tr>
+            <tr ng-repeat="info in uploads.data">
+                <td>
+                    <a href="{{shockURL}}/node/{{info.id}}?download" download>
+                        {{info.file.name}}
+                    </a>
+                </td>
+                <td>{{info.file.size}}</td>
+                <td>{{info.created_on}}</td>
+            </tr>
+        </table>
+    </div>
+</div>

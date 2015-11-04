@@ -1,0 +1,21 @@
+
+
+
+<div class="input-group">
+    <input ng-model="ddModel" ng-keypress="openDDSelector()" type="text" class="form-control" placeholder="{{ddSelected}}" >
+
+    <div class="input-group-btn" >
+        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+            <span class="caret"></span>
+        </button>
+
+        <ul class="dropdown-menu dd-selector" 
+            style="right: 0; left: auto; max-height: 200px; overflow-y: scroll;" role="menu" >
+            <li ng-class="{active: $index == selectedIndex}"
+                ng-repeat="item in items | filter : ddModel" key-navigation>
+                <a tabindex="{{$index}}" ng-click="ddSelect($index, item)">{{item.name}}</a>
+            </li>
+        </ul>
+    </div>
+
+</div>

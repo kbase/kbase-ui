@@ -1,0 +1,101 @@
+
+.ncheck {
+    width: 13px;
+    height: 13px;
+    border: 1px solid #ccc ;
+    margin-left: auto;
+    margin-right: auto;
+}
+.ncheck:hover {
+    border: 1px solid #999 ;    
+}
+
+.ncheck-btn { /* select all button */
+    width: 13px;
+    height: 13px;
+    border: 1px solid #999 ;
+    margin: 0 0 0 12px;
+}
+.ncheck-checked {
+    background: url(../img/checkmark.png) no-repeat -5px -5px;
+    background-image: -webkit-image-set(url(../img/checkmark.png) 1x,url(../img/checkmark_2x.png) 2x);
+}
+.ncheck-minus {
+    background: url(../img/checkmark-partial.png) no-repeat -5px -5px;
+    background-image: -webkit-image-set(url(../img/checkmark-partial.png) 1x,url(../img/checkmark_2x.png) 2x);
+}
+
+
+/* option buttons when object is checked */
+.checked-opts {
+    margin: 0 0 0 40px;
+}
+
+/* option buttons for all object option buttons */
+
+.obj-opt {
+    display: inline;
+}
+
+.type-filter {
+    width: 100px;
+}
+
+
+/*
+.dataTables_length,
+.dataTables_info {
+    float: left;
+}
+
+.dataTables_length {
+    padding: 0 3px;
+    margin: 7px 0 0 15px;
+}
+*/
+
+.obj-version:hover {
+    cursor:hand;
+    cursor:pointer;
+}
+
+.history-icon {
+    margin: -2px 0 0 0;
+}
+.history-table {
+    margin: 0 0 0 100px;
+}
+
+.history-table thead:last-child tr:last-child th:first-child, .table-bordered tbody:last-child tr:last-child td:first-child, .table-bordered tfoot:last-child tr:last-child td:first-child {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    -webkit-border-bottom-left-radius: 0;
+    border-bottom-left-radius: 0;
+    -moz-border-radius-bottomleft: 0;
+}
+
+.model-icon {
+    height: 17px;
+    width: 17px;
+    margin: -2px 0 0 0;
+}
+
+.model-icon:hover {
+    cursor: hand;
+    cursor: pointer;
+    opacity: .75;
+}
+
+/* temp arrow placement for bootstrap popover */
+.view-options + .popover.bottom .arrow {
+    left: 25%;
+}
+
+.badge-success {
+    background-color: #5cb85c;
+}
+.search-query {
+    margin: 0 0 10px 0;
+}
+

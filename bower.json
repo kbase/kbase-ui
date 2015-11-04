@@ -40,11 +40,9 @@
     "google-code-prettify": "1.0.4",
     "d3-plugins-sankey": "1.1.0",
     "handlebars": "4.0.3",
-    
     "kbase-common-js": "eapearson/kbase-common-js#master",
     "kbase-ui-plugin-dataview": "eapearson/kbase-ui-plugin-dataview#master",
     "kbase-ui-plugin-dashboard": "eapearson/kbase-ui-plugin-dashboard#master",
-    
     "kbase-ui-plugin-typeview": "eapearson/kbase-ui-plugin-typeview#master",
     "kbase-service-clients-js": "eapearson/kbase-service-clients-js#master",
     "kbase-ui-plugin-vis-widgets": "eapearson/kbase-ui-plugin-vis-widgets#master",
@@ -53,7 +51,9 @@
     "nunjucks": "1.3.4",
     "node-uuid": "1.4.3",
     "moment": "2.10.6",
-    "numeral": "1.5.3"
+    "numeral": "1.5.3",
+    "blockUI": "jquery.blockUI#*",
+    "q": "1.4.1"
   },
   "devDependencies": {}
 }

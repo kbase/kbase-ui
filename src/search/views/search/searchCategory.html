@@ -1,0 +1,38 @@
+<div class="search-results-content-area">
+    <div class="row search-result-column-header-row">
+        <div class="btn-group search-result-column-header-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="btn-group search-result-column-header search-result-select-all col-xs-1 col-sm-1 col-md-1 col-lg-1" ng-show="options.userState.session.token">
+                <button type="button" class="btn btn-default search-result-column-header-toggle" ng-click="toggleAll(options.resultJSON.items)" data-toggle="tooltip" data-placement="top" tooltip="Select all results on this page." tooltip-placement="top">
+                    <div><strong>In Cart</strong></div>
+                    <span class="glyphicon" ng-class="{'glyphicon-check': options.userState.session.selectAll[options.currentURL][options.currentItemRange],'glyphicon-unchecked': !options.userState.session.selectAll[options.currentURL][options.currentItemRange]}"></span>
+                </button>
+            </div>
+            <div class="btn-group search-result-column-header search-result-select-all col-xs-1 col-sm-1 col-md-1 col-lg-1" ng-show="!options.userState.session.token">
+                <button type="button" class="btn btn-default search-result-column-header-toggle disabled"></button>
+            </div>
+            <!-- Column headers -->
+            <div class="btn-group" ng-include="options.templates[options.selectedCategory].header"></div>
+        </div>
+    </div>
+    <section class="row search-result-column-set">
+        <div class="search-result-row" ng-repeat="item in options.resultJSON.items" ng-class="{'search-result-row-even': !$even}">
+            <div class="row search-typedRecord">
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 search-checkbox" ng-class="{'search-duplicate-row': options.duplicates[item.row_id]}" ng-show="options.userState.session.token">
+                    <a ng-click="toggleCheckbox(item.row_id, item)" class="search-checkbox-link" >
+                        <span class="glyphicon" ng-class="{'glyphicon-unchecked': !options.userState.session.data_cart.data[item.row_id], 'glyphicon-check': options.userState.session.data_cart.data[item.row_id]}"/>
+                    </a>
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 search-result-position" ng-show="options.userState.session.token">{{item.position}}.</div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 search-result-position-loggedOut" ng-show="!options.userState.session.token">{{item.position}}.</div>
+
+                <div ng-include="options.templates[options.selectedCategory].rows"></div>
+            </div>
+            <div ng-if="options.expandedCategories[options.selectedCategory]" collapse="options.userState.session.viewType != 'expanded'" class="search-typedRecord-expanded row">
+                <div class="well search-result-column-expanded">
+                    <table class="search-result-expanded-entry" ng-include="options.templates[options.selectedCategory].expanded">                    
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

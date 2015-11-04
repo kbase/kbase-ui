@@ -1,0 +1,18 @@
+<tr ng-if="item.comment">
+    <td class="search-result-column-expanded-entry-cell gwas-expanded-header"><strong>Comment:</strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.comment}}</td>
+</tr>                    
+<!--
+<tr ng-if="item.genes">
+    <td class="search-result-column-expanded-entry-cell gwas-expanded-header"><strong>Gene List:</strong></td>
+    <td class="search-result-column-expanded-entry-cell">
+        <tr ng-repeat='p in item.genes.split("  ") track by $index'><td>{{p}}</td></tr>
+    </td>
+</tr>                    
+<tr ng-if="item.genes_snp_list">
+    <td class="search-result-column-expanded-entry-cell gwas-expanded-header"><strong>SNP List:</strong></td>
+    <td class="search-result-column-expanded-entry-cell">
+        <tr ng-repeat='p in item.genes_snp_list.split("  ") track by $index'><td>{{p}}</td></tr>
+    </td>
+</tr>                    
+-->
