@@ -1,7 +1,7 @@
 var tests = [];
 for (var file in window.__karma__.files) {
   if (window.__karma__.files.hasOwnProperty(file)) {
-    if (/Spec\.js$/.test(file)) {
+    if (/[sS]pec\.js$/.test(file)) {
       tests.push(file);
     }
   }
@@ -11,7 +11,7 @@ requirejs.config({
     // Karma serves files from '/base'
     baseUrl: '/base/build/client',
 
-   paths: {
+    paths: {
         // External Dependencies
         // ----------------------
         text: 'bower_components/requirejs-text/text',
@@ -120,6 +120,7 @@ requirejs.config({
         kb_appService_type: 'js/services/type',
 
         kb_common_typeManager: 'bower_components/kbase-common-js/typeManager',
+        kb_common_appServiceManager: 'bower_components/kbase-common-js/appServiceManager',
 
         kb_ui: 'css/kb-ui',
         kb_bootstrap: 'css/kb-bootstrap',

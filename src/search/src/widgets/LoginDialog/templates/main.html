@@ -1,0 +1,63 @@
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" area-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                KBase Sign In                
+            <div class="modal-body">
+                <form name="form" id="form" class="form-horizontal">
+                <fieldset>
+                    <div class="alert alert-error" id="error" style="display:none;">
+                        <div>
+                            <div class="pull-left">
+                                <!-- eh, no ul? -->
+                               <i class="icon-warning-sign" style="float:left; margin-right: 0.3em;"></i>
+                               <div>
+                                   <strong>Error:</strong>
+                                   <span id="errormsg"></span>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-success" id="pending" style="display:none;">
+                        <div>
+                            <div class="pull-left">
+                                <i class="icon-info-sign" style="float:left; margin-right: 0.3em;"></i>
+                                <div>
+                                    <strong>Logging in as: <span id="pendinguser"></strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-lg-2" for="user_id" style="amargin-right: 10px;">
+                            Username:
+                        </label>
+                        <div class="col-lg-9">
+                            <input class="form-control" type="text" name="user_id" id="user_id" size="20" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-lg-2" for="password" style="margin-right: 10px;">
+                            Password:
+                        </label>
+                        <div class="col-lg-9">
+                            <input class="form-control" type="password" name="password" id="password" size="20" />
+                        </div>
+                    </div>
+                </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Sign In</button>
+                
+                <br />
+            
+                <a type="btn btn-link" href="https://gologin.kbase.us/ResetPassword" target="_blank">Forgot Password?</a>
+                <a type="btn btn-link" href="https://gologin.kbase.us/OAuth?response_type=code&step=SignUp&redirect_uri=">Sign Up</a>
+                
+            </div>
+        </div>
+    </div>
+</div>

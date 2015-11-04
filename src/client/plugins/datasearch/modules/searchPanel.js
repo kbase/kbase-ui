@@ -63,7 +63,15 @@ define([
 
         return {
             make: function (config) {
-                return widget(config);
+                // return widget(config);
+                var hash = window.location.hash;
+                
+                // if no hash in location, or the hash part doesn't have the 
+                // magic search invocation "?q=....", go to default search.
+                if (!hash || !/\?q\=/.test(hash)) {
+                    hash = "#/search/?q=*";
+                }
+                window.location.href = "/search/" + hash;
             }
         };
     });

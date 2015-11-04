@@ -1,0 +1,12 @@
+<tr ng-if="item.compound_names">
+    <td class="search-result-column-expanded-entry-cell media_expanded_header"><strong>Compound names:</strong></td>
+    <td class="search-result-column-expanded-entry-cell" ng-if="options.tokens">{{item.compound_names[0]}}></div></td>
+</tr>                    
+<tr ng-if="item.compound_abbreviations">
+    <td class="search-result-column-expanded-entry-cell media_expanded_header"><strong>Compound abbreviations:</strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.compound_abbreviations[0]}}</td>
+</tr>                    
+<tr ng-if="item.compound_ids">
+    <td class="search-result-column-expanded-entry-cell media_expanded_header"><strong>Compound ids:</strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.compound_ids[0]}}</td>
+</tr>                    

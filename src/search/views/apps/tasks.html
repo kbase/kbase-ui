@@ -1,0 +1,40 @@
+<div class="row">
+    <div class="col-md-5">
+        <div class="dashboard-info blue">
+            <i class="fa fa-tasks fa-5x pull-left"></i>
+            <div class="h1">{{narrative.tasks.length}}</div>
+            <div class="h4">Running Tasks</div>
+        </div>
+    </div>
+    <div class="col-md-5 col-md-offset-1">
+        <div class="dashboard-info green">
+            <i class="fa fa-check-square fa-5x pull-left"></i>
+            <div class="h1" tasks-count>0</div>
+            <div class="h4">Completed</div>
+        </div>
+    </div>
+</div>
+
+<br><br>
+<div ng-if="narrative.tasks.length > 0">
+    <div class="row">
+        <div class="col-md-12"> 
+            <table class="table task-table">
+                <tr>
+                    <th><b>Task</b></th>
+                    <th><b>Time Started</b></th>
+                <tr>
+                <tr ng-repeat="task in narrative.tasks">
+                    <td>{{task.name}}</td>
+                    <td>some time</td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<div ng-if="narrative.tasks.length == 0">
+    You have no tasks.  You may want to run tasks (analysis) via the 
+    <a ui-sref="analysis.apps">Apps</a> tab.
+</div>
