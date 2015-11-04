@@ -26,25 +26,25 @@ plugins:
             directory: bower_components/kbase-service-clients-js
         #-
         #    dataview
-        #-
-        #    name: dataview
-        #    directory: ../../../kbase-ui-plugin-dataview/src/plugin
+        
         -
             name: dataview
             directory: bower_components/kbase-ui-plugin-dataview
-        -
-            dataview
-        -
-            typebrowser
+
+        #-
+        #    typebrowser
+        
         -
             name: typebrowser
             directory: bower_components/kbase-ui-plugin-typebrowser
+        
         -
             name: typeview
             directory: bower_components/kbase-ui-plugin-typeview
         -
             name: dashboard
             directory: bower_components/kbase-ui-plugin-dashboard
+            
         -
             userprofile
         -
