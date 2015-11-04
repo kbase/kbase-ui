@@ -29,7 +29,7 @@ module.exports = function (grunt) {
 
     var servicesTarget = 'prod',
         // set to 'test' for switching to dev menus, 'prod' for normal ones.
-        uiTarget = 'prod';
+        uiTarget = 'test';
 
     // Config
     // TODO: maybe read something from the runtime/config directory so we don't 
@@ -384,6 +384,8 @@ module.exports = function (grunt) {
                 files: [
 // Uncomment to have these built into kbase-ui directly from a local repo.
 // plugins as defined in ui-test.yml also need to be adjusted.
+
+
 //                    {
 //                        cwd: makeRepoDir('kbase-ui-plugin-dataview/src/plugin'),
 //                        src: '**/*',
@@ -395,7 +397,14 @@ module.exports = function (grunt) {
 //                        src: '**/*',
 //                        dest: buildDir('client/plugins/typebrowser'),
 //                        expand: true
+//                    },
+//                    {
+//                        cwd: makeRepoDir('kbase-ui-plugin-databrowser/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/plugins/databrowser'),
+//                        expand: true
 //                    }
+                    
                     
                     
 //                    {
@@ -404,12 +413,7 @@ module.exports = function (grunt) {
 //                        dest: buildDir('client/plugins/dashboard'),
 //                        expand: true
 //                    },
-//                    {
-//                        cwd: makeRepoDir('kbase-ui-plugin-databrowser/src/plugin'),
-//                        src: '**/*',
-//                        dest: buildDir('client/plugins/databrowser'),
-//                        expand: true
-//                    },
+                   
                 ]
             },
             deploy: {
@@ -495,6 +499,17 @@ module.exports = function (grunt) {
                 }
             }
         },
+        shell: {
+            bowerUpdate: {
+                command: [
+                    'bower',
+                    'update'
+                ].join(' '),
+                options: {
+                    stderr: false
+                }
+            }
+        },
         markdown: {
             build: {
                 files: [
@@ -517,7 +532,8 @@ module.exports = function (grunt) {
     // Does the whole building task
     grunt.registerTask('build', [
         // 'get-build-options', 
-        'bower:install',
+        // 'bower:install',
+        'shell:bowerUpdate',
         'copy:bower',
         'copy:build',
         'copy:dev',
