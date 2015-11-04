@@ -144,21 +144,21 @@ define(['jquery', 'q', 'kb.cookie', 'kb.config', 'kb.logger'],
                     session.token = session.token.replace(/PIPESIGN/g, '|').replace(/EQUALSSIGN/g, '=');
 
                     // Ensure that we have localStorage.
-                    var storageSessionString = localStorage.getItem(this.cookieName);
-                    if (!storageSessionString) {
-                        Logger.logWarning('Local Storage Cookie missing -- resetting session');
-                        this.removeSession();
-                        return null;
-                    }
+                    // var storageSessionString = localStorage.getItem(this.cookieName);
+                    // if (!storageSessionString) {
+                    //     Logger.logWarning('Local Storage Cookie missing -- resetting session');
+                    //     this.removeSession();
+                    //     return null;
+                    // }
 
-                    var storageSession = JSON.parse(storageSessionString);
-                    if (session.token !== storageSession.token) {
-                        Logger.logWarning('Local Storage Cookie token different than cookie token -- resetting session');
-                        // console.log(session.token);
-                        // console.log(storageSession)
-                        this.removeSession();
-                        return null;
-                    }
+                    // var storageSession = JSON.parse(storageSessionString);
+                    // if (session.token !== storageSession.token) {
+                    //     Logger.logWarning('Local Storage Cookie token different than cookie token -- resetting session');
+                    //     // console.log(session.token);
+                    //     // console.log(storageSession)
+                    //     this.removeSession();
+                    //     return null;
+                    // }
 
                     // now we have a session object equivalent to the one returned by the auth service.
                     var newSession = {
