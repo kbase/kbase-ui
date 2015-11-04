@@ -634,8 +634,8 @@ module.exports = function (grunt) {
     // distributable index.html to use the compiled product.
     grunt.registerTask('build', [
         // 'get-build-options', 
-        // 'bower:install',
-        'shell:bowerUpdate',
+        'bower:install',
+        // 'shell:bowerUpdate',
         'copy:bower',
         'copy:build',
         'copy:dev',
