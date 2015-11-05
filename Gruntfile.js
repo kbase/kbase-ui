@@ -15,12 +15,8 @@ var path = require('path'),
 // Here we switch to the deployment environment.
 // prod = production
 // ci = continuous integration
-
-//if (grunt.option('kb_deployment_config')) {
-//           deployCfgFile = grunt.option('kb_deployment_config');
-//       } else if (process.env.KB_DEPLOYMENT_CONFIG) {
-//           deployCfgFile = process.env.KB_DEPLOYMENT_CONFIG;
-//       }
+var servicesTarget = 'prod',
+    uiTarget = 'prod';
 
 /**
  * Cancels a task
@@ -34,7 +30,7 @@ function cancelTask() {
 }
 
 module.exports = function (grunt) {
-    var servicesTarget = 'prod',
+    var servicesTarget = 'ci',
         // set to 'test' for switching to dev menus, 'prod' for normal ones.
         uiTarget = 'prod';
 
@@ -87,6 +83,7 @@ module.exports = function (grunt) {
             settingsCfg = 'config/settings.yml',
             outFile = buildDir('client/config.yml'),
             done = this.async();
+
         fs.readFile(serviceTemplateFile, 'utf8', function (err, serviceTemplate) {
             if (err) {
                 console.log(err);
@@ -311,19 +308,41 @@ module.exports = function (grunt) {
 
 
     ],
-        bowerCopy = bowerFiles.map(function (cfg) {
-            // path is like dir/path/name
-            var filePaths = [];
-            // dir either dir or name is the first level directory.
-            // path.unshift(cfg.dir || cfg.name);
+    bowerCopy = bowerFiles.map(function (cfg) {
+        // path is like dir/path/name
+        var filePaths = [];
+        // dir either dir or name is the first level directory.
+        // path.unshift(cfg.dir || cfg.name);
 
-            // If there is a path (subdir) we add that too.
-            if (cfg.path) {
-                filePaths.unshift(cfg.path);
+        // If there is a path (subdir) we add that too.
+        if (cfg.path) {
+            filePaths.unshift(cfg.path);
+        }
+
+        // Until we get a path which we use as a prefix to the src.
+        var pathString = filePaths
+            .filter(function (el) {
+                if (el === null || el === undefined || el === '') {
+                    return false;
+                }
+                return true;
+            })
+            .join('/');
+
+        var srcs = (function () {
+            if (cfg.src === undefined) {
+                return [cfg.name + '.js'];
+            } else {
+                if (typeof cfg.src === 'string') {
+                    return [cfg.src];
+                } else {
+                    return cfg.src;
+                }
             }
+        }());
 
-            // Until we get a path which we use as a prefix to the src.
-            var pathString = filePaths
+        var sources = srcs.map(function (s) {
+            return [pathString, s]
                 .filter(function (el) {
                     if (el === null || el === undefined || el === '') {
                         return false;
@@ -331,44 +350,22 @@ module.exports = function (grunt) {
                     return true;
                 })
                 .join('/');
-
-            var srcs = (function () {
-                if (cfg.src === undefined) {
-                    return [cfg.name + '.js'];
-                } else {
-                    if (typeof cfg.src === 'string') {
-                        return [cfg.src];
-                    } else {
-                        return cfg.src;
-                    }
-                }
-            }());
-
-            var sources = srcs.map(function (s) {
-                return [pathString, s]
-                    .filter(function (el) {
-                        if (el === null || el === undefined || el === '') {
-                            return false;
-                        }
-                        return true;
-                    })
-                    .join('/');
-            });
-
-            var cwd = cfg.cwd;
-            if (cwd && cwd.charAt(0) === '/') {
-                // ignore and move on
-            } else {
-                cwd = 'bower_components/' + (cfg.dir || cfg.name) + (cwd ? '/' + cwd : '');
-            }
-            return {
-                nonull: true,
-                expand: true,
-                cwd: cwd,
-                src: sources,
-                dest: buildDir('client/bower_components') + '/' + (cfg.dir || cfg.name)
-            };
         });
+
+        var cwd = cfg.cwd;
+        if (cwd && cwd.charAt(0) === '/') {
+            // ignore and move on
+        } else {
+            cwd = 'bower_components/' + (cfg.dir || cfg.name) + (cwd ? '/' + cwd : '');
+        }
+        return {
+            nonull: true,
+            expand: true,
+            cwd: cwd,
+            src: sources,
+            dest: buildDir('client/bower_components') + '/' + (cfg.dir || cfg.name)
+        };
+    });
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -390,10 +387,6 @@ module.exports = function (grunt) {
                         dest: buildDir('client/data'),
                         expand: true
                     },
-                    //{
-                    //    src: 'src/config/ci.yml',
-                    //    dest: buildDir('client/config/client.yml')
-                    //},
                     {
                         src: 'lib/kbase-client-api.js',
                         dest: buildDir('client'),
@@ -559,30 +552,19 @@ module.exports = function (grunt) {
             compile: {
                 options: {
                     buildCSS: false,
-                    baseUrl: "build/client",
-                    mainConfigFile: "build/client/js/require-config.js",
+                    baseUrl: 'build/client',
+                    mainConfigFile: 'build/client/js/require-config.js',
                     findNestedDependencies: true,
-                    optimize: "none",
+                    optimize: 'uglify2',
                     generateSourceMaps: true,
                     preserveLicenseComments: false,
-                    name: "kb_startup",
-                    out: "build/client/dist/kbase-min.js",
-                    // exclude: ['normalize'],
+                    name: 'kb_startup',
+                    out: 'build/client/dist/kbase-min.js',
+                    exclude: ['yaml!config.yml'],
                     paths: {
                         'css-builder': 'bower_components/require-css/css-builder',
                         normalize: 'bower_components/require-css/normalize',
                     }
-                    // exclude: [
-                    //     'kb_bootstrap',
-                    //     'kb_ui',
-                    //     'kb_icons'
-                    // ],
-                    // paths : {
-                    //     "IPythonMain": "empty:",
-                    //     "ipythonCellMenu": "empty:",
-                    //     "narrativeConfig": "empty:",
-                    // },
-
                 }
             }
         },
@@ -626,16 +608,18 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask('get-build-options', 'Set build options from command line or environment', getBuildOptions);
-    grunt.registerTask('build-config', 'Build the config file', buildConfigFile);
+    grunt.registerTask('get-build-options', 
+                       'Set build options from command line or environment', 
+                       getBuildOptions);
+    grunt.registerTask('build-config', 
+                       'Build the config file',
+                       buildConfigFile);
 
     // Does the whole building task. Installs everything needed
     // from Bower, builds and optimizes things, and tweaks the 
     // distributable index.html to use the compiled product.
     grunt.registerTask('build', [
-        // 'get-build-options', 
         'bower:install',
-        // 'shell:bowerUpdate',
         'copy:bower',
         'copy:build',
         'copy:dev',
@@ -644,8 +628,7 @@ module.exports = function (grunt) {
         'build-config',
         'requirejs',
         'filerev',
-        'regex-replace'
-
+        'regex-replace',
     ]);
 
     grunt.registerTask('deploy', [
