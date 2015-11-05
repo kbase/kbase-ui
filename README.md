@@ -1,3 +1,10 @@
+[![Build Status](https://travis-ci.org/kbase/kbase-ui.svg?branch=master)](https://travis-ci.org/kbase/kbase-ui)
+
+| Branch | Status |
+| :--- | :--- |
+| master | [![Build Status](https://travis-ci.org/kbase/kbase-ui.svg?branch=master)](https://travis-ci.org/kbase/kbase-ui) [![Coverage Status](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master)](https://coveralls.io/r/kbase/kbase-ui?branch=master) |
+
+
 # KBase User Interface
 
 ## Contents
@@ -87,6 +94,8 @@ cd kbase-ui
 
 The kbase-ui can build with a couple of lines typed at the console, or a single invocation of ```make```.
 
+By default, this builds the package to use the services on ci.kbase.us. You can change this in either the `Gruntfile.js` (modify the servicesTarget variable), or the Makefile (in the TARGET variable).
+
 > ```
 npm install
 grunt build
@@ -106,6 +115,18 @@ The tests can be run directly with karma, or through the make process
 
 > ```
 karma start test/karma.conf.js
+> ```
+
+or
+
+> ```
+make test
+> ```
+
+or 
+
+> ```
+grunt test
 > ```
 
 ##### 4) Local Deploy for development and testing

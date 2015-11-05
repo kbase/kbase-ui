@@ -7,6 +7,7 @@ We use a combination of `make` and `grunt` for building the KBase UI. Actually, 
 
 ## Requirements  
 Before deploying, your machine will need to have a few JavaScript tools installed.
+
 1. nodejs - https://nodejs.org
   * Mac OSX (10.7+) - Most of the usual installers has it. I recommend Homebrew, with the command `brew install node --update`
   * Debian-flavored Linux - there's already a Debian package named 'node' - you don't want that. use `apt-get` to get the following packages instead: `apt-get install nodejs-dev npm nodejs-legacy`
