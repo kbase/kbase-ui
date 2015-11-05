@@ -87,6 +87,8 @@ cd kbase-ui
 
 The kbase-ui can build with a couple of lines typed at the console, or a single invocation of ```make```.
 
+By default, this builds the package to use the services on ci.kbase.us. You can change this in either the `Gruntfile.js` (modify the servicesTarget variable), or the Makefile (in the TARGET variable).
+
 > ```
 npm install
 grunt build
