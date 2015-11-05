@@ -8,6 +8,7 @@ require.config({
     paths: {
         // External Dependencies
         // ----------------------
+        css: 'bower_components/require-css/css',
         text: 'bower_components/requirejs-text/text',
         json: 'bower_components/requirejs-json/json',
         yaml: 'bower_components/require-yaml/yaml',
@@ -42,6 +43,7 @@ require.config({
         nunjucks: 'bower_components/nunjucks/nunjucks',
         font_awesome: 'bower_components/font-awesome/css/font-awesome',
         uuid: 'bower_components/node-uuid/uuid',
+        numeral: 'bower_components/numeral/numeral',
 
         'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
             //'jquery-svg-anim': 'bower_components/jquery.svg/jquery.svganim.min',
@@ -69,11 +71,8 @@ require.config({
         kb_common_messenger: 'bower_components/kbase-common-js/messenger',
         kb_common_observed: 'bower_components/kbase-common-js/observed',
         kb_common_format: 'bower_components/kbase-common-js/format',
-        // widget support should move out into a plugin.
-        kb_common_widgetManager: 'bower_components/kbase-common-js/widgetManager',
-        kb_common_widgetMount: 'bower_components/kbase-common-js/widgetMount',
-        kb_common_widgetSet: 'bower_components/kbase-common-js/widgetSet',
         kb_common_gravatar: 'bower_components/kbase-common-js/gravatar',
+
         kb_common_data: 'js/dev/data',
 
         kb_common_appServiceManager: 'bower_components/kbase-common-js/appServiceManager',
@@ -86,6 +85,7 @@ require.config({
         kb_widgetAdapters_kbWidget: 'bower_components/kbase-common-js/widgetAdapters/kbWidgetAdapter',
 
         kb_widgetBases_kbWidget: 'bower_components/kbase-common-js/widgetLegacy/kbaseWidget',
+
         kb_widgetBases_kbAuthenticatedWidget: 'bower_components/kbase-common-js/widgetLegacy/kbaseAuthenticatedWidget',
         kb_widget_kbTabs: 'bower_components/kbase-common-js/widgetLegacy/kbTabs',
         kb_widget_helpers: 'bower_components/kbase-common-js/widgetLegacy/kbaseHelperPlugins',
@@ -117,6 +117,8 @@ require.config({
         kb_vis_sparkline : 'bower_components/kbase-common-js/vis/kbaseSparkline',
         kb_vis_treechart : 'bower_components/kbase-common-js/vis/kbaseTreechart',
         kb_vis_venndiagram : 'bower_components/kbase-common-js/vis/kbaseVenndiagram',
+
+        kb_widgetBases_dataWidget: 'js/dev/dataWidget',
 
         // Just for testing vega
         kb_common_csv: 'bower_components/kbase-common-js/csv',
@@ -156,9 +158,11 @@ require.config({
         kb_common_typeManager: 'bower_components/kbase-common-js/typeManager',
 
         kb_ui: 'css/kb-ui',
+        kb_datatables: 'css/kb-datatables',
         kb_bootstrap: 'css/kb-bootstrap',
         kb_icons: 'css/kb-icons',
-        kb_main: 'js/main'
+        kb_main: 'js/main',
+        kb_startup: 'js/startup'
     },
     shim: {
         vega: {
@@ -171,6 +175,7 @@ require.config({
 //        kb_bootstrap: {
 //            deps: ['bootstrap']
 //        },
+
         bootstrap: {
             deps: ['jquery', 'css!bootstrap_css']
         },
@@ -184,7 +189,7 @@ require.config({
     },
     map: {
         '*': {
-            'css': 'bower_components/require-css/css',
+            // 'css': 'bower_components/require-css/css',
             'promise': 'bluebird'
         }
     }

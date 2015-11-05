@@ -1,0 +1,68 @@
+/* Use alongside btn-default, btn-primary etc. to provide a frameless, flat button.
+   NB: we are still utilizing the main bs button styles for basic color, hover, active
+   states, so btn-bare cannot be used on its own.
+*/
+.btn-bare {
+   background: none;
+   border-color: transparent;
+}
+.btn-bare:hover {
+   border-color: transparent;
+}
+
+.btn-kbase {
+   xbackground-color: #2196F3;
+   border-radius: 1px;
+   xcolor: #fff;
+   border: none;
+   xpadding: 10px 20px;
+   xfont-size: 13px;
+   box-shadow: 1px 1px 3px #aaa;
+}
+
+.btn-kbase:hover {
+   xbackground-color: #1E88E5;
+}
+
+.btn-group-kbase {
+   xbox-shadow: 1px 1px 3px #aaa;
+   xmargin-bottom: 4px;
+}
+.btn-group .btn-kbase {
+   box-shadow: none;
+   xmargin-bottom: 3px;
+}
+
+.btn-kbase[disabled=disabled] {
+   box-shadow: none;
+   background-color: #BBDEFB;
+   color: #fff;
+}
+
+.btn-kbase.round-button {
+   border-radius: 100%;
+   padding: 10px 12px;
+   border-radius: none;
+   color: #fff;
+}
+
+.btn-kbase.round-button span {
+   font-size: 18px;
+}
+
+.form-control-kbase {
+   border-radius: 1px;
+}
+.well-kbase {
+   border-radius: 1px;
+}
+.alert-kbase {
+   border-radius: 1px;
+}
+
+.modal-kbase {
+    width: 263px;
+}
+.modal-kbase .modal-content {
+    border-radius: 1px;
+}

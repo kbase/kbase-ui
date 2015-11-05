@@ -1,3 +1,11 @@
+/*global define */
+/*jslint
+ white: true, browser: true
+ */
+
+/**
+ * Gruntfile for kbase-ui
+ */
 'use strict';
 var path = require('path'),
     iniParser = require('node-ini'),
@@ -8,15 +16,15 @@ var path = require('path'),
 // prod = production
 // ci = continuous integration
 
-
-
-
 //if (grunt.option('kb_deployment_config')) {
-//           deployCfgFile = grunt.option('kb_deployment_config');        
+//           deployCfgFile = grunt.option('kb_deployment_config');
 //       } else if (process.env.KB_DEPLOYMENT_CONFIG) {
 //           deployCfgFile = process.env.KB_DEPLOYMENT_CONFIG;
 //       }
 
+/**
+ * Cancels a task
+ */
 function cancelTask() {
     var message = Array.prototype.slice.call(arguments).map(function (message) {
         return String(message);
@@ -26,10 +34,9 @@ function cancelTask() {
 }
 
 module.exports = function (grunt) {
-
     var servicesTarget = 'prod',
         // set to 'test' for switching to dev menus, 'prod' for normal ones.
-        uiTarget = 'test';
+        uiTarget = 'prod';
 
     // Config
     // TODO: maybe read something from the runtime/config directory so we don't 
@@ -112,11 +119,13 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-mkdir');
     grunt.loadNpmTasks('grunt-shell');
-    //grunt.loadNpmTasks('grunt-contrib-requirejs');
-    //grunt.loadNpmTasks('grunt-karma');
-    //grunt.loadNpmTasks('grunt-coveralls');
+    grunt.loadNpmTasks('grunt-contrib-requirejs');
+    grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-coveralls');
     grunt.loadNpmTasks('grunt-connect');
     grunt.loadNpmTasks('grunt-open');
+    grunt.loadNpmTasks('grunt-filerev');
+    grunt.loadNpmTasks('grunt-regex-replace');
     //grunt.loadNpmTasks('grunt-http-server');
     //grunt.loadNpmTasks('grunt-markdown');
 
@@ -130,12 +139,12 @@ module.exports = function (grunt) {
         {
             name: 'bluebird',
             cwd: 'js/browser',
-            src: ['bluebird.js'],
+            src: ['bluebird.js']
         },
         {
             name: 'bootstrap',
             cwd: 'dist',
-            src: '**/*',
+            src: '**/*'
         },
         {
             name: 'd3'
@@ -147,7 +156,7 @@ module.exports = function (grunt) {
         {
             name: 'jquery',
             cwd: 'dist',
-            src: ['jquery.js'],
+            src: ['jquery.js']
         },
         {
             name: 'js-yaml',
@@ -172,7 +181,7 @@ module.exports = function (grunt) {
         },
         {
             name: 'require-css',
-            src: 'css.js'
+            src: ['css.js', 'css-builder.js', 'normalize.js']
         },
         {
             dir: 'require-yaml',
@@ -233,6 +242,10 @@ module.exports = function (grunt) {
             cwd: 'browser',
             src: 'nunjucks.js'
         },
+        {
+            dir: 'numeral',
+            src: ['numeral.js', 'languages/*.js']
+        },
         // PLUGINS
         {
             name: 'kbase-ui-plugin-databrowser',
@@ -284,22 +297,33 @@ module.exports = function (grunt) {
             name: 'kbase-service-clients-js',
             cwd: 'dist/plugin',
             src: ['**/*']
+        },
+
+        // Dependencies needed for Search (for now)
+        {
+            name: 'blockUI',
+            src: ['jquery.blockUI.js']
+        },
+        {
+            name: 'q',
+            src: ['q.js']
         }
+
 
     ],
         bowerCopy = bowerFiles.map(function (cfg) {
             // path is like dir/path/name
-            var path = [];
+            var filePaths = [];
             // dir either dir or name is the first level directory.
             // path.unshift(cfg.dir || cfg.name);
 
             // If there is a path (subdir) we add that too.
             if (cfg.path) {
-                path.unshift(cfg.path);
+                filePaths.unshift(cfg.path);
             }
 
             // Until we get a path which we use as a prefix to the src.
-            var pathString = path
+            var pathString = filePaths
                 .filter(function (el) {
                     if (el === null || el === undefined || el === '') {
                         return false;
@@ -333,8 +357,9 @@ module.exports = function (grunt) {
 
             var cwd = cfg.cwd;
             if (cwd && cwd.charAt(0) === '/') {
+                // ignore and move on
             } else {
-                cwd = 'bower_components/' + (cfg.dir || cfg.name) + (cwd ? '/' + cwd : '')
+                cwd = 'bower_components/' + (cfg.dir || cfg.name) + (cwd ? '/' + cwd : '');
             }
             return {
                 nonull: true,
@@ -378,12 +403,16 @@ module.exports = function (grunt) {
             },
             dev: {
                 files: [
-                    {
-                        cwd: makeRepoDir('kbase-ui-plugin-dataview/src/plugin'),
-                        src: '**/*',
-                        dest: buildDir('client/plugins/dataview'),
-                        expand: true
-                    },
+// Uncomment to have these built into kbase-ui directly from a local repo.
+// plugins as defined in ui-test.yml also need to be adjusted.
+
+
+//                    {
+//                        cwd: makeRepoDir('kbase-ui-plugin-dataview/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/plugins/dataview'),
+//                        expand: true
+//                    },
 //                    {
 //                        cwd: makeRepoDir('kbase-ui-plugin-typebrowser/src/plugin'),
 //                        src: '**/*',
@@ -391,17 +420,21 @@ module.exports = function (grunt) {
 //                        expand: true
 //                    },
 //                    {
+//                        cwd: makeRepoDir('kbase-ui-plugin-databrowser/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/plugins/databrowser'),
+//                        expand: true
+//                    }
+                    
+                    
+                    
+//                    {
 //                        cwd: makeRepoDir('dashboard/src/plugin'),
 //                        src: '**/*',
 //                        dest: buildDir('client/plugins/dashboard'),
 //                        expand: true
 //                    },
-//                    {
-//                        cwd: makeRepoDir('kbase-ui-plugin-databrowser/src/plugin'),
-//                        src: '**/*',
-//                        dest: buildDir('client/plugins/databrowser'),
-//                        expand: true
-//                    },
+                   
                 ]
             },
             deploy: {
@@ -419,6 +452,16 @@ module.exports = function (grunt) {
                     {
                         src: 'config/ui-' + uiTarget + '.yml',
                         dest: buildDir('client/ui.yml')
+                    }
+                ]
+            },
+            'build-search': {
+                files: [
+                    {
+                        cwd: 'src/search',
+                        src: '**/*',
+                        dest: 'build/client/search',
+                        expand: true
                     }
                 ]
             },
@@ -453,7 +496,7 @@ module.exports = function (grunt) {
             }
         },
         // Testing with Karma!
-        'karma': {
+        karma: {
             unit: {
                 configFile: 'test/karma.conf.js'
             },
@@ -472,7 +515,7 @@ module.exports = function (grunt) {
             }
         },
         // Run coveralls and send the info.
-        'coveralls': {
+        coveralls: {
             options: {
                 force: true
             },
@@ -484,6 +527,17 @@ module.exports = function (grunt) {
             install: {
                 options: {
                     copy: false
+                }
+            }
+        },
+        shell: {
+            bowerUpdate: {
+                command: [
+                    'bower',
+                    'update'
+                ].join(' '),
+                options: {
+                    stderr: false
                 }
             }
         },
@@ -500,55 +554,125 @@ module.exports = function (grunt) {
                 options: {
                 }
             }
+        },
+        requirejs: {
+            compile: {
+                options: {
+                    buildCSS: false,
+                    baseUrl: "build/client",
+                    mainConfigFile: "build/client/js/require-config.js",
+                    findNestedDependencies: true,
+                    optimize: "none",
+                    generateSourceMaps: true,
+                    preserveLicenseComments: false,
+                    name: "kb_startup",
+                    out: "build/client/dist/kbase-min.js",
+                    // exclude: ['normalize'],
+                    paths: {
+                        'css-builder': 'bower_components/require-css/css-builder',
+                        normalize: 'bower_components/require-css/normalize',
+                    }
+                    // exclude: [
+                    //     'kb_bootstrap',
+                    //     'kb_ui',
+                    //     'kb_icons'
+                    // ],
+                    // paths : {
+                    //     "IPythonMain": "empty:",
+                    //     "ipythonCellMenu": "empty:",
+                    //     "narrativeConfig": "empty:",
+                    // },
+
+                }
+            }
+        },
+        // Put a 'revision' stamp on the output file. This attaches an 8-character 
+        // md5 hash to the end of the requirejs built file.
+        filerev: {
+            options: {
+                algorithm: 'md5',
+                length: 8
+            },
+            source: {
+                files: [{
+                    src: [
+                        'build/client/dist/kbase-min.js',
+                    ],
+                    dest: 'build/client/dist/'
+                }]
+            }
+        },
+
+        // Once we have a revved file, this inserts that reference into page.html at
+        // the right spot (near the top, the narrative_paths reference)
+        'regex-replace': {
+            dist: {
+                src: ['build/client/index.html'],
+                actions: [
+                    {
+                        name: 'requirejs-onefile',
+                        search: '/js/startup',
+                        replace: function(match) {
+                            // do a little sneakiness here. we just did the filerev thing, so get that mapping
+                            // and return that (minus the .js on the end)
+                            var revvedFile = grunt.filerev.summary['build/client/dist/kbase-min.js'];
+                            // starts with 'static/' and ends with '.js' so return all but the first 7 and last 3 characters
+                            return revvedFile.substr(12, revvedFile.length - 10);
+                        },
+                        flags: ''
+                    }
+                ]
+            }
         }
     });
 
     grunt.registerTask('get-build-options', 'Set build options from command line or environment', getBuildOptions);
     grunt.registerTask('build-config', 'Build the config file', buildConfigFile);
 
-    // Does the whole building task
+    // Does the whole building task. Installs everything needed
+    // from Bower, builds and optimizes things, and tweaks the 
+    // distributable index.html to use the compiled product.
     grunt.registerTask('build', [
         // 'get-build-options', 
         'bower:install',
+        // 'shell:bowerUpdate',
         'copy:bower',
         'copy:build',
-        // 'copy:dev',
+        'copy:dev',
         'copy:config',
-        'build-config'
-            // 'copy:config-prod'
+        'copy:build-search',
+        'build-config',
+        'requirejs',
+        'filerev',
+        'regex-replace'
+
     ]);
 
-    /*
-     grunt.registerTask('build-test', [
-     'bower:install',
-     'copy:build',
-     'copy:bower',
-     'copy:config-test'
-     ]);
+    grunt.registerTask('deploy', [
+        'copy:deploy'
+    ]);
      
-     grunt.registerTask('deploy', [
-     'copy:deploy'
-     ]);
+    // Does a single, local, unit test run.
+    grunt.registerTask('test', [
+        'karma:unit',
+    ]);
      
-     // Does a single, local, unit test run.
-     grunt.registerTask('test', [
-     'karma:unit',
-     ]);
+    // Does a single unit test run, then sends 
+    // the lcov results to coveralls. Intended for running
+    // from travis-ci.
+    grunt.registerTask('test-travis', [
+        'karma:unit',
+        'coveralls'
+    ]);
      
-     // Does a single unit test run, then sends 
-     // the lcov results to coveralls. Intended for running
-     // from travis-ci.
-     grunt.registerTask('test-travis', [
-     'karma:unit',
-     'coveralls'
-     ]);
-     
-     // Does an ongoing test run in a watching development
-     // mode.
-     grunt.registerTask('develop', [
-     'karma:dev',
-     ]);
-     */
+    // Does an ongoing test run in a watching development
+    // mode.
+    grunt.registerTask('develop', [
+        'karma:dev',
+    ]);
+    
+    // Starts a little server and runs the app in a page. 
+    // Should be run after 'grunt build'.
     grunt.registerTask('preview', [
         'open:dev',
         'connect'

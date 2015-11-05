@@ -1,0 +1,46 @@
+<p>Hi, this is the navtest app</p>
+<p>This app exists to demonstrate how to take advantage of the function site ui:</p>
+
+<ul>
+  <li>Main Content Area    
+    <ul>
+      <li>Standard app layout
+        <ul>
+          <li>Layout</li>
+          <li>Sidebar</li>
+          <li>Main content area</li>
+        </ul>
+      </li>
+    </ul>
+  
+  </li>
+  <li>Navbar
+    <ul>
+      <li>dropdown menu items</li>
+      <li>title</li>
+      <li>buttons</li>
+    </ul>
+    </li>
+</ul>
+
+<h2>Standard App Layout</h2>
+<p><a href="#test">test link</a></p>
+<p>The functional site is laid out in three basic regions: the navbar, sidebar, and content areas.</p>
+<p>The navbar and sidebar are displayed in fixed mode. This means that they are positioned absolutely on the page with reference to the viewport. Note that this is different than absolute positioning, which is relative to the page or a container (another absolute or relatively positioned node.) They will stay fixed at that position in the viewport and will not scroll away. </p>
+<p>The main content area is a standard block</p>
+<p id="test">here we go</p>
+
+<script>
+require(['jquery', 'kb.widget.navbar'],
+function($, NAVBAR) { 
+  
+  NAVBAR.clear()
+  .addDefaultMenu()
+  .setTitle('This is the Navbar widget, and it\'s version is ' + NAVBAR.getVersion())
+  .addButton({
+    name: 'about', type: 'default', icon: 'info', label: 'About NavTest', callback: function () {
+      alert('This is the Navbar Test Page');
+    }
+  });
+});
+</script>

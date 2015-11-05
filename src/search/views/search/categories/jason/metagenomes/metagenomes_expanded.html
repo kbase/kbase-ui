@@ -1,0 +1,24 @@
+<tr ng-if="item.biome.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>Creation Date: </strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.metagenome_created}}</td>
+</tr> 
+<tr ng-if="item.sequence_type.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>PI Name: </strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.mix_PI_full_name}}</td>
+</tr> 
+<tr ng-if="item.seq_method.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>Location: </strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.mix_location}}</td>
+</tr> 
+<tr ng-if="item.env_package_type.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>Longitude: </strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.mix_longitude}}</td>
+</tr> 
+<tr ng-if="item.location.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>Latitude: </strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.mix_latitude}}</td>
+</tr>
+<tr ng-if="item.feature.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>Project Website: </strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.project_url}}</td>
+</tr>

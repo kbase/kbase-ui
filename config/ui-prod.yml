@@ -40,10 +40,10 @@ plugins:
             directory: bower_components/kbase-ui-plugin-vis-widgets
 menu:
     available_items:
-#            search: 
-#                path: search/?q=*
-#                label: Search Data
-#                icon: search
+#           search: 
+#               path: search/?q=*
+#               label: Search Data
+#               icon: search
 #            narrative: 
 #                uri: "#narrativemanager/start"
 #                label: Narrative

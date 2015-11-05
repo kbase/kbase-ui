@@ -1,0 +1,75 @@
+
+<div ng-if="!narrative.current_app">
+    <div class="">
+        <h1>Analysis Apps <small>v. Alpha</small></h1> 
+        <h4 class="text-muted">Workspace-inspired, rough prototype of how apps could be done.</h4>
+    </div>
+
+    <h5>Version Alpha:</h5>
+    <ul>
+        <li>Just getting started</li>
+    </ul>
+
+    <h5>To do:</h5>
+    <ul>
+        <li>Plug-in AWE for tasks</li>
+        <li>Restyle site using newly designed theme</li>
+        <li>Decide how the mini WS browser should appear, if at all.</li>
+        <li>Add social aspects</li>
+        <li>Run end-2-end tests using <a href="https://github.com/angular/protractor">protractor</a></li>
+    </ul>    
+</div>
+
+<div ng-if="narrative.current_app">
+    <div class="panel panel-default" narrative-cell>
+        <div class="panel-heading">
+            <span class="panel-title pull-left">{{narrative.current_app.title}}</span> 
+            
+            <div class="pull-right text-muted">
+                <a ng-click="flip($event)">
+                    <i class="fa fa-question"></i>
+                </a>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="narrative-cell-container">
+            <div class="narrative-cell">
+                <div class="panel-body">
+
+                    <figure class="front">
+                        <form class="form-horizontal" role="form">
+                          <div class="form-group" ng-repeat="field in narrative.current_app.params">
+                            <label class="col-sm-3 control-label">{{field.ui_name}}</label>
+
+                            <div class="col-sm-9">
+                                <input ng-if="field.type == 'string'" ng-model="fields[field.ui_name]" type="text" class="form-control" placeholder="">
+                                <div ng-if="field.type != 'string'" 
+                                     dd-model="{{fields[field.ui_name]}}"
+                                     dd-selector 
+                                     dd-default="{{narrative.wsObjsByType[field.type][0].name}}"
+                                     dd-selected="" 
+                                     dd-data="narrative.wsObjsByType[field.type]">
+                                </div>
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <div class="col-sm-offset-3 col-sm-9">
+                              <button ng-click="runCell($index, narrative.current_app)" type="submit" class="btn btn-primary pull-right">Run</button>
+                            </div>
+                          </div>
+                        </form>
+                    </figure>
+                    
+                    <!-- back side of cell / documentation -->
+                    <figure class="back">
+                       {{narrative.current_app.description}}
+                    </figure>
+
+                </div> 
+            </div> 
+        </div> <!-- end body container-->
+
+    </div> <!-- end cell -->
+</div>

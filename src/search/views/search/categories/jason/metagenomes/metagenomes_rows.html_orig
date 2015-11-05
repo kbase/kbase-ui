@@ -1,0 +1,10 @@
+<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 search-result-column metagenome_id">{{item.metagenome_id.split("mgm")[1]}}</div>
+<div class="col-xs-3 col-sm-3 col-md-4 col-lg-4 search-result-column metagenome_name">
+    <span>
+        <a target='_blank' href="{{options.landingPages.metagenome}}{{item.metagenome_id.split('mgm')[1]}}">
+            <strong><em>{{item.metagenome_name}}</em></strong>
+        </a>
+    </span>
+</div>
+<div class="col-xs-1 col-sm-1 col-md-2 col-lg-2 search-result-column project_name">{{item.project_name}}</div>
+<div class="col-xs-1 col-sm-1 col-md-2 col-lg-2 search-result-column sample_name">{{item.sample_name}}</div>

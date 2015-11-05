@@ -8,7 +8,8 @@ define([
     'css!font_awesome',
     'css!kb_bootstrap',
     // 'css!kb_icons',
-    'css!kb_ui'
+    'css!kb_ui',
+    'css!kb_datatables'
 ], function (App, dom, uiConfig) {
     'use strict';
     function makeSymbol(s) {

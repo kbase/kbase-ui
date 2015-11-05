@@ -26,23 +26,25 @@ plugins:
             directory: bower_components/kbase-service-clients-js
         #-
         #    dataview
-        #-
-        #    name: dataview
-        #    directory: ../../../kbase-ui-plugin-dataview/src/plugin
+        
         -
             name: dataview
             directory: bower_components/kbase-ui-plugin-dataview
+
         #-
-        #    dataview
+        #    typebrowser
+        
         -
             name: typebrowser
             directory: bower_components/kbase-ui-plugin-typebrowser
+        
         -
             name: typeview
             directory: bower_components/kbase-ui-plugin-typeview
         -
             name: dashboard
             directory: bower_components/kbase-ui-plugin-dashboard
+            
         -
             userprofile
         -
@@ -58,13 +60,15 @@ plugins:
         #    databrowser
         -
             name: databrowser
-            directory: bower_components/kbase-ui-plugin-databrowser        
+            directory: bower_components/kbase-ui-plugin-databrowser      
+        -
+            datawidgetdemo
 menu:
     available_items:
-#            search: 
-#                path: search/?q=*
-#                label: Search Data
-#                icon: search
+#           search: 
+#               path: search/?q=*
+#               label: Search Data
+#               icon: search
 #            narrative: 
 #                uri: "#narrativemanager/start"
 #                label: Narrative
@@ -89,7 +93,7 @@ menu:
     menus:
         authenticated: 
             main: [narrative, search, dashboard]
-            developer: [databrowser, typebrowser]
+            developer: [databrowser, typebrowser, datawidgetdemo]
             help: [about-kbase, contact-kbase]
         unauthenticated: 
             main: [search]
