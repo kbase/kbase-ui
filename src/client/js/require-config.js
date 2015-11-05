@@ -21,13 +21,6 @@ require.config({
         d3: 'bower_components/d3/d3',
         d3_sankey: 'bower_components/d3-plugins-sankey/sankey',
         d3_sankey_css: 'bower_components/d3-plugins-sankey/sankey',
-        //nvd3: 'bower_components/nvd3/build/nv.d3',
-        //chartist: 'bower_components/chartist/dist/chartist',
-        //chartist_css: 'bower_components/chartist/dist/chartist.min',
-        //vega: 'bower_components/vega/vega',
-        //vegaChartHelper: 'js/vegaChartHelper',
-        //regression: 'js/regression',
-        lodash: 'bower_components/lodash/lodash',
         postal: 'bower_components/postal.js/postal',
         // For the ui
         bootstrap: 'bower_components/bootstrap/js/bootstrap',
@@ -76,10 +69,10 @@ require.config({
         
         // widget support should move out into a plugin.
         kb_common_widgetManager: 'bower_components/kbase-common-js/widgets/widgetManager',
-        kb_common_widgetMount: 'bower_components/kbase-common-js/widgets/widgetMount',
-        kb_common_widgetSet: 'bower_components/kbase-common-js/widgets/widgetSet',
+        kb_common_widgetMount: 'js/dev/widgets/widgetMount',
+        kb_common_widgetSet: 'js/dev/widgets/widgetSet',
 
-        kb_widgetBases_standardWidget: 'bower_components/kbase-common-js/widgets/standardWidget',
+        kb_widgetBases_standardWidget: 'js/dev/widgets/standardWidget',
         kb_widgetBases_panelWidget: 'bower_components/kbase-common-js/widgets/panelWidget',
         kb_widgetAdapters_objectWidget: 'bower_components/kbase-common-js/widgetAdapters/widgetAdapter',
         kb_widgetAdapters_kbWidget: 'bower_components/kbase-common-js/widgetAdapters/kbWidgetAdapter',

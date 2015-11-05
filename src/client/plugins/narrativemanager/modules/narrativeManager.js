@@ -2,7 +2,7 @@
 /*jslint white: true*/
 define([
     'jquery',
-    'lodash',
+    'underscore',
     'bluebird',
     'kb_service_workspace',
     'kb_service_narrativeMethodStore'

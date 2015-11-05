@@ -8,7 +8,7 @@ define([
     'kb_common_html',
     'kb_common_domEvent'
 ],
-    function (Promise, _, dom, State, html, domEventFactory) {
+    function (Promise, _, dom, State, html, fDomEvent) {
         'use strict';
 
         function makeWidget(config) {
@@ -16,7 +16,7 @@ define([
                 state = State.make(),
                 runtime = config.runtime,
                 internalApi = {}, externalApi = {},
-                domEvent = domEventFactory.make();
+                domEvent = fDomEvent.make();
 
             if (!runtime) {
                 throw {
@@ -56,12 +56,11 @@ define([
                 return [];
             }
 
-            // CONFIG
-            function getConfig(prop, defaultValue) {
-                return runtime.getConfig(prop, defaultValue);
-            }
-            function hasConfig(prop) {
-                return runtime.hasConfig(prop);
+            // Interacting with content.
+            function setHtml(content) {
+                if (container) {
+                    container.innerHTML = content;
+                }
             }
 
             // STATE
@@ -72,9 +71,6 @@ define([
             }
             function getState(prop, defaultValue) {
                 return state.get(prop, defaultValue);
-            }
-            function hasState(prop) {
-                return state.has(prop);
             }
 
             // EVENTS
@@ -98,20 +94,21 @@ define([
             function detachDomEvents() {
                 domEvent.detachEvents();
             }
-
+            
             // Object construction setup
-
+            
             if (config && config.on) {
                 Object.keys(config.on).forEach(function (hookName) {
                     addHook(hookName, config.on[hookName]);
                 });
             }
-
+            
             if (config && config.events) {
                 config.events.forEach(function (event) {
                     attachDomEvent(event);
-                });
+                })
             }
+
 
 
             // INTERNAL API
@@ -119,16 +116,12 @@ define([
             internalApi = Object.freeze({
                 recv: recv,
                 send: send,
-                getConfig: getConfig,
-                hasConfig: hasConfig,
                 getState: getState,
                 setState: setState,
-                hasState: hasState,
                 get: getState,
                 set: setState,
                 addDomEvent: addDomEvent,
                 attachDomEvent: attachDomEvent,
-                setTitle: setTitle,
                 runtime: runtime
             });
 
@@ -146,37 +139,18 @@ define([
                     // Let us get more subtle later.
                     detachDomEvents();
                     var promises = getHook('render').map(function (fun) {
-                        return Promise.try(function () {
-                            return fun.call(internalApi);
-                        });
+                        return Promise.try(fun, [internalApi]);
                     });
                     return Promise.settle(promises)
                         .then(function (results) {
                             // should only be one render result ... 
                             var result = results[results.length - 1];
                             if (result.isFulfilled()) {
-                                var content = result.value();
-                                if (content) {
-                                    if (typeof content === 'object') {
-                                        if (content.content) {
-                                            setContent('body', content.content);
-                                        }
-                                        if (content.after) {
-                                            try {
-                                                content.after.call(internalApi);
-                                            } catch (ex) {
-                                                console.log('Error running "after" method for render');
-                                                console.log(ex);
-                                                setContent('error', 'Error running "after" method for render');
-                                            }
-                                        }
-                                    } else {
-                                        setContent('body', content);
-                                    }
-                                    
+                                if (result.value()) {
+                                    setHtml(result.value());
                                 }
                             } else if (result.isRejected()) {
-                                setContent('error', 'ERROR: ' + result.reason());
+                                setHtml('ERROR: ' + result.reason());
                                 console.log('ERROR');
                                 console.log(result.reason());
                             }
@@ -187,116 +161,13 @@ define([
                 });
             }
 
-            // Data
-            function addErrorMessage(errorObject) {
-                console.log('ERROR');
-                console.log(errorObject);
-            }
-
-            // invokes an arbitrary set of data fetch hooks, each of which sets
-            // a property on the observed object in order to invoke
-            function fetchData(params) {
-                return Promise.try(function () {
-                    if (hasHook('fetch')) {
-                        var promises = getHook('fetch').map(function (fun) {
-                            return Promise.try(function () {
-                                return fun.call(internalApi, params);
-                            });
-                        });
-                        return Promise.settle(promises)
-                            .then(function (results) {
-                                results.forEach(function (result) {
-                                    if (result.isFulfilled()) {
-                                        var value = result.value();
-                                        if (value) {
-                                            setState(value.name, value.value);
-                                        }
-                                    } else if (result.isRejected()) {
-                                        addErrorMessage({
-                                            type: 'FetchError',
-                                            reason: 'ErrorFetchingData',
-                                            message: result.reason()
-                                        });
-                                    }
-                                });
-                            });
-                    }
-                });
-            }
-
-            function buildLayout() {
-                var div = html.tag('div'),
-                    span = html.tag('span'),
-                    id = html.genId(),
-                    content = div({id: id, class: 'panel panel-default'}, [
-                        div({class: 'panel-heading'}, [
-                            span({class: 'panel-title', dataElement: 'title'})
-                        ]),
-                        div({class: 'panel-body'}, [
-                            div({dataElement: 'body'}),
-                            div({dataElement: 'error'})
-                        ])
-                    ]);
-                return {
-                    id: id,
-                    content: content
-                };
-            }
-            function buildCollapseLayout(config) {
-                var div = html.tag('div'),
-                    span = html.tag('span'),
-                    id = html.genId(),
-                    headingId = html.genId(),
-                    collapseId = html.genId(),
-                    content = div({id: id, class: 'panel panel-default'}, [
-                        div({id: headingId, class: 'panel-heading'}, [
-                            span({class: 'panel-title'}, [
-                                span({class: (config.collapsed ? 'collapsed' : ''),
-                                    style: {cursor: 'pointer'}, ariaControls: collapseId,
-                                    ariaExpanded: (config.collapsed ? 'false' : 'true'),
-                                    dataTarget: '#' + collapseId,
-                                    dataToggle: 'collapse', dataElement: 'title'})
-                            ])
-                        ]),
-                        div({id: collapseId, class: 'panel-collapse collapse in',
-                            areaLabelledby: headingId}, [
-                            div({class: 'panel-body'}, [
-                                div({dataElement: 'body'}),
-                                div({dataElement: 'error'})
-                            ])
-                        ])
-                    ]);
-                return {
-                    id: id,
-                    content: content
-                };
-            }
-            // var layout = buildCollapseLayout({collapsed: false});
-            var layout = buildLayout();
-
-            function setContent(element, content) {
-                var node = container.querySelector('[data-element="' + element + '"]');
-                if (node) {
-                    node.innerHTML = content;
-                }
-            }
-            function setTitle(content) {
-                var node = container.querySelector('[data-element="title"]');
-                if (node) {
-                    node.innerHTML = content;
-                }
-            }
-
             // The Interface
 
             function init(config) {
                 return Promise.try(function () {
                     if (hasHook('init')) {
                         var promises = getHook('init').map(function (fun) {
-                            return Promise.try(function () {
-                                return fun.call(internalApi, config);
-                            });
-
+                            return Promise.try(fun, [internalApi, config]);
                         });
                         return Promise.settle(promises);
                     }
@@ -305,13 +176,11 @@ define([
             function attach(node) {
                 return Promise.try(function () {
                     mount = node;
-                    container = dom.append(mount, dom.createElement('div'));
-                    container.innerHTML = layout.content;
+                    container = dom.createElement('div');
+                    dom.append(mount, container);
                     if (hasHook('attach')) {
                         var promises = getHook('attach').map(function (fun) {
-                            return Promise.try(function () {
-                                return fun.call(internalApi, container);
-                            });
+                            return Promise.try(fun, [internalApi, container]);
                         });
                         return Promise.settle(promises)
                             .then(function () {
@@ -324,11 +193,6 @@ define([
                 return Promise.try(function () {
                     // Start the heartbeat listener, which presently just 
                     // renders.
-
-                    if (config.title) {
-                        setTitle(config.title);
-                    }
-
                     listeners.push(runtime.recv('app', 'heartbeat', function () {
                         render()
                             .then(function () {
@@ -345,41 +209,29 @@ define([
                         if (hasHook('initialContent')) {
                             getHook('initialContent').forEach(function (fun) {
                                 promises.push(
-                                    Promise.try(function () {
-                                        return fun.call(internalApi, params);
-                                    })
+                                    Promise.try(fun, [internalApi, params])
                                     .then(function (data) {
-                                        setContent('body', data);
+                                        setHtml(data);
                                     }));
                             });
                         }
                         if (hasHook('start')) {
                             getHook('start').forEach(function (fun) {
-                                promises.push(Promise.try(function () {
-                                    return fun.call(internalApi, params);
-                                }));
+                                promises.push(Promise.try(fun, [internalApi, params]));
                             });
                         }
                         return promises;
                     })
-                        .each(function (item, index, value) {
-                            // what to do? Check value for error and log it.
-                        });
-                });
-            }
-            function run(params) {
-                return Promise.try(function () {
-                    setState('params', params);
-                    return fetchData(params);
+                    .each(function (item, index, value) {
+                        // what to do? Check value for error and log it.
+                    });
                 });
             }
             function stop() {
                 return new Promise(function (resolve) {
                     if (hasHook('stop')) {
                         var promises = getHook('stop').map(function (fun) {
-                            return Promise.try(function () {
-                                fun.call(internalApi);
-                            });
+                            return Promise.try(fun, [internalApi]);
                         });
                         resolve(Promise.settle(promises));
                     } else {
@@ -394,9 +246,7 @@ define([
                     mount = null;
                     if (hasHook('detach')) {
                         var promises = getHook('detach').map(function (fun) {
-                            return Promise.try(function () {
-                                return fun.call(internalApi);
-                            });
+                            return Promise.try(fun, [internalApi]);
                         });
                         resolve(Promise.settle(promises).
                             then(function () {
@@ -411,9 +261,7 @@ define([
                 return new Promise(function (resolve) {
                     if (hasHook('destroy')) {
                         var promises = getHook('destroy').map(function (fun) {
-                            return Promise.try(function () {
-                                return fun.call(internalApi);
-                            });
+                            return Promise.try(fun, [internalApi]);
                         });
                         resolve(Promise.settle(promises));
                     } else {
@@ -429,7 +277,6 @@ define([
                 init: init,
                 attach: attach,
                 start: start,
-                run: run,
                 stop: stop,
                 detach: detach,
                 destroy: destroy

@@ -90,7 +90,7 @@ define([
                             resolve();
                         } else {
                             this.userProfile = Object.create(UserProfile).init({
-                                runtime: this.runtime, 
+                                runtime: this.runtime,
                                 username: this.params.userId
                             });
                             this.userProfile.loadProfile()
@@ -147,7 +147,6 @@ define([
                     }
                 }
             },
-
             formToObject: {
                 value: function (schema) {
                     // walk the schema, building an object out of any form values 
@@ -880,11 +879,11 @@ define([
                     if (this.isOwner()) {
                         // For now the user profile is available through the login widget, not the session.
                         this.places.title.html('You - ' + this.userProfile.getProp('user.realname') + ' (' + this.userProfile.getProp('user.username') + ')');
-                        
-                        this.runtime.send('navbar', 'clearButtons');
+
+                        this.runtime.send('ui', 'clearButtons');
                         this.runtime.send('ui', 'setTitle', 'Viewing your profile');
-                        
-                        this.runtime.send('navbar', 'addButton', {
+
+                        this.runtime.send('ui', 'addButton', {
                             name: 'account',
                             label: 'Account',
                             style: 'default',
@@ -896,7 +895,7 @@ define([
                                 })
                             }.bind(this)
                         });
-                        this.runtime.send('navbar', 'addButton', {
+                        this.runtime.send('ui', 'addButton', {
                             name: 'edit',
                             label: 'Edit Profile',
                             style: 'primary',
@@ -915,68 +914,68 @@ define([
 //                                alert('clicked me');
 //                            }
 //                        });
-                        
+
                         /*navbar.clearButtons();
-                        navbar.addButton({
-                            name: 'edit',
-                            label: 'Edit',
-                            style: 'primary',
-                            icon: 'edit',
-                            callback: function () {
-                                widget.clearMessages();
-                                widget.renderEditView();
-                            }.bind(this)
-                        });
-                        navbar.addButton({
-                            name: 'test',
-                            label: 'Test Button',
-                            style: 'primary',
-                            icon: 'comment', 
-                            callback: function () {
-                                alert('clicked me');
-                            }
-                        });*/
-                        
+                         navbar.addButton({
+                         name: 'edit',
+                         label: 'Edit',
+                         style: 'primary',
+                         icon: 'edit',
+                         callback: function () {
+                         widget.clearMessages();
+                         widget.renderEditView();
+                         }.bind(this)
+                         });
+                         navbar.addButton({
+                         name: 'test',
+                         label: 'Test Button',
+                         style: 'primary',
+                         icon: 'comment', 
+                         callback: function () {
+                         alert('clicked me');
+                         }
+                         });*/
+
 
                         //navbar.render();
                         // alert('rendered?');
 
                         // NAVBAR.setTitle('Viewing your profile');
-                       /*NAVBAR.clearButtons();
-                        NAVBAR.addButton({
-                           
-                        });
-                        NAVBAR.addDropdown({
-                            place: 'end',
-                            name: 'options', style: 'default', icon: 'gears', label: 'Options',
-                            items: [
-                                {name: 'changepassword', icon: 'key', label: 'Change Password',
-                                    url: 'https://gologin.kbase.us/account/ChangePassword', external: true},
-                                {name: 'optout', icon: 'trash', color: 'green', label: 'Remove Profile',
-                                    callback: function (e) {
-                                        e.preventDefault();
-                                        var modal = $('.UserProfileWidget [data-widget-modal="confirm-optout"]')
-                                            .modal('show');
-
-                                        // NB the deny button is already wired as [data-dismiss="modal"] which will 
-                                        // close the modal, and without further intervention, do nothing.
-                                        modal.find('[data-widget-modal-control="confirm"]').on('click', function (e) {
-                                            modal
-                                                .modal('hide')
-                                                .on('hidden.bs.modal', function (e) {
-                                                    widget.deleteProfile();
-                                                });
-                                        });
-                                    }.bind(this)},
-                                {type: 'divider'},
-                                {name: 'help', icon: 'question', color: 'orange', label: 'Help', callback: function (e) {
-                                        e.preventDefault();
-                                        var modal = $('.UserProfileWidget [data-widget-modal="help"]')
-                                            .modal('show');
-                                    }}
-                            ]
-                        });
-                        */
+                        /*NAVBAR.clearButtons();
+                         NAVBAR.addButton({
+                         
+                         });
+                         NAVBAR.addDropdown({
+                         place: 'end',
+                         name: 'options', style: 'default', icon: 'gears', label: 'Options',
+                         items: [
+                         {name: 'changepassword', icon: 'key', label: 'Change Password',
+                         url: 'https://gologin.kbase.us/account/ChangePassword', external: true},
+                         {name: 'optout', icon: 'trash', color: 'green', label: 'Remove Profile',
+                         callback: function (e) {
+                         e.preventDefault();
+                         var modal = $('.UserProfileWidget [data-widget-modal="confirm-optout"]')
+                         .modal('show');
+                         
+                         // NB the deny button is already wired as [data-dismiss="modal"] which will 
+                         // close the modal, and without further intervention, do nothing.
+                         modal.find('[data-widget-modal-control="confirm"]').on('click', function (e) {
+                         modal
+                         .modal('hide')
+                         .on('hidden.bs.modal', function (e) {
+                         widget.deleteProfile();
+                         });
+                         });
+                         }.bind(this)},
+                         {type: 'divider'},
+                         {name: 'help', icon: 'question', color: 'orange', label: 'Help', callback: function (e) {
+                         e.preventDefault();
+                         var modal = $('.UserProfileWidget [data-widget-modal="help"]')
+                         .modal('show');
+                         }}
+                         ]
+                         });
+                         */
                     } else {
                         var title = this.userProfile.getProp('user.realname') + ' (' + this.userProfile.getProp('user.username') + ')';
                         this.places.title.html(title);
@@ -1076,8 +1075,8 @@ define([
                 value: function () {
                     var W = this;
                     this.runtime.send('ui', 'setTitle', {title: 'Editing your profile'});
-                    this.runtime.send('navbar', 'clearButtons');
-                    this.runtime.send('navbar', 'addButton', {
+                    this.runtime.send('ui', 'clearButtons');
+                    this.runtime.send('ui', 'addButton', {
                         name: 'save',
                         label: 'Save',
                         style: 'primary',
@@ -1091,7 +1090,7 @@ define([
                                         W.renderViewEditLayout();
                                         W.addSuccessMessage('Success!', 'Your user profile has been updated.');
                                         W.renderInfoView();
-                                        this.runtime.send('session', 'profile.saved');
+                                        W.runtime.send('session', 'profile.saved');
                                     })
                                     .catch(function (err) {
                                         W.renderErrorView(err);
@@ -1099,7 +1098,7 @@ define([
                             }
                         }
                     });
-                    this.runtime.send('navbar', 'addButton', {
+                    this.runtime.send('ui', 'addButton', {
                         name: 'cancel',
                         label: 'Cancel',
                         style: 'default',
@@ -1108,8 +1107,8 @@ define([
                             // Do we have pending changes?
                             // 
                             // var changed = !NAVBAR.findButton('save').prop('disabled');
-                            
-                            var changed = W.changed
+
+                            var changed = W.changed;
 
                             if (changed) {
                                 var modal = $('.UserProfileWidget [data-widget-modal="confirm-cancel"]')
@@ -1130,62 +1129,62 @@ define([
                             }
                         }
                     });
-                    
-                    
-                    
+
+
+
                     /*navbar.setTitle('Editing your profile');
-                    navbar.clearButtons();
-                    navbar.addButton({
-                        name: 'save',
-                        label: 'Save',
-                        style: 'primary',
-                        icon: 'save',
-                        disabled: true,
-                        callback: function () {
-                            if (W.updateUserProfileFromForm()) {
-                                W.userProfile.saveProfile()
-                                    .then(function () {
-                                        W.renderViewEditLayout();
-                                        W.addSuccessMessage('Success!', 'Your user profile has been updated.');
-                                        W.renderInfoView();
-                                        R.publish('session', 'profile.saved');
-                                    })
-                                    .catch(function (err) {
-                                        W.renderErrorView(err);
-                                    })
-                                    .done();
-                            }
-                        }
-                    });
-                    navbar.addButton({
-                        name: 'cancel',
-                        label: 'Cancel',
-                        style: 'default',
-                        icon: 'ban',
-                        callback: function () {
-                            // Do we have pending changes?
-                            // var changed = !NAVBAR.findButton('save').prop('disabled');
-                            var changed = false;
-
-                            if (changed) {
-                                var modal = $('.UserProfileWidget [data-widget-modal="confirm-cancel"]')
-                                    .modal('show');
-
-                                modal.find('[data-widget-modal-control="confirm-cancel"]').on('click', function (e) {
-                                    modal
-                                        .modal('hide')
-                                        .on('hidden.bs.modal', function (e) {
-                                            W.clearMessages();
-                                            W.renderInfoView();
-                                        });
-                                });
-                            } else {
-                                W.clearMessages();
-                                W.renderInfoView();
-                            }
-                        }
-                    });
-                    */
+                     navbar.clearButtons();
+                     navbar.addButton({
+                     name: 'save',
+                     label: 'Save',
+                     style: 'primary',
+                     icon: 'save',
+                     disabled: true,
+                     callback: function () {
+                     if (W.updateUserProfileFromForm()) {
+                     W.userProfile.saveProfile()
+                     .then(function () {
+                     W.renderViewEditLayout();
+                     W.addSuccessMessage('Success!', 'Your user profile has been updated.');
+                     W.renderInfoView();
+                     R.publish('session', 'profile.saved');
+                     })
+                     .catch(function (err) {
+                     W.renderErrorView(err);
+                     })
+                     .done();
+                     }
+                     }
+                     });
+                     navbar.addButton({
+                     name: 'cancel',
+                     label: 'Cancel',
+                     style: 'default',
+                     icon: 'ban',
+                     callback: function () {
+                     // Do we have pending changes?
+                     // var changed = !NAVBAR.findButton('save').prop('disabled');
+                     var changed = false;
+                     
+                     if (changed) {
+                     var modal = $('.UserProfileWidget [data-widget-modal="confirm-cancel"]')
+                     .modal('show');
+                     
+                     modal.find('[data-widget-modal-control="confirm-cancel"]').on('click', function (e) {
+                     modal
+                     .modal('hide')
+                     .on('hidden.bs.modal', function (e) {
+                     W.clearMessages();
+                     W.renderInfoView();
+                     });
+                     });
+                     } else {
+                     W.clearMessages();
+                     W.renderInfoView();
+                     }
+                     }
+                     });
+                     */
 
                     this.places.content.html(this.renderTemplate('edit'));
 
@@ -1203,14 +1202,14 @@ define([
 
                         // append to the container
                         affiliations.append(newAffiliation);
-                        
+
                         widget.changed = true;
-                        this.runtime.send('navbar', 'enableButton', {
-                            id: 'save'
+                        this.runtime.send('ui', 'enableButton', {
+                            name: 'save'
                         });
-                        
+
                         // navbar.findButton('save').prop('disabled', false);
-                        
+
                     }.bind(this));
 
                     // Wire up remove button for any affiliation.
@@ -1218,20 +1217,20 @@ define([
                         // remove the containing affiliation group.
                         $(this).closest('[data-field-group="affiliation"]').remove();
                         widget.changed = true;
-                        this.runtime.send('navbar', 'enableButton', {
-                            id: 'save'
+                        this.runtime.send('ui', 'enableButton', {
+                            name: 'save'
                         });
                         // NAVBAR.findButton('save').prop('disabled', false);
-                        
+
                     });
                     // on any field change events, we update the relevant affiliation panel title
                     this.places.content.find('[data-field="profile.userdata.affiliations"]').on('keyup', 'input', function (e) {
                         // remove the containing affiliation group.
-                        var panel = $(this).closest('[data-field-group="affiliation"]');
-                        var title = panel.find('[data-field="title"] input').val();
-                        var institution = panel.find('[data-field="institution"] input').val();
-                        var startYear = panel.find('[data-field="start_year"] input').val();
-                        var endYear = panel.find('[data-field="end_year"] input').val();
+                        var panel = $(this).closest('[data-field-group="affiliation"]'),
+                            title = panel.find('[data-field="title"] input').val(),
+                            institution = panel.find('[data-field="institution"] input').val(),
+                            startYear = panel.find('[data-field="start_year"] input').val(),
+                            endYear = panel.find('[data-field="end_year"] input').val();
                         endYear = endYear ? endYear : 'present';
 
                         panel.find('.panel-title').html(title + ' @ ' + institution + ', ' + startYear + '-' + endYear);
@@ -1241,17 +1240,10 @@ define([
                         // enable the save button.
                         // For now we can also use this as a flag for whether to require confirmation
                         // to leave the profile.
-
-                        //widget.places.content
-                        //.find('[data-button="save"]')
-                        //.removeAttr('disabled');
-                        
                         widget.changed = true;
-                        this.runtime.send('navbar', 'enableButton', {
-                            id: 'save'
+                        W.runtime.send('ui', 'enableButton', {
+                            name: 'save'
                         });
-                        
-                        // NAVBAR.findButton('save').prop('disabled', false);
                     });
 
                 }

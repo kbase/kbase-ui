@@ -63,7 +63,7 @@ define([
         }
 
         function factory(config) {
-            var widgetMount;
+            var widgetMount, runtime = config.runtime;
             function attach(node) {
                 return Promise.try(function () {
                     widgetMount = WidgetMount.make({
@@ -75,8 +75,15 @@ define([
             function start(params) {
                 config.runtime.recv('app', 'route-widget', function (data) {
                     if (data.routeHandler.route.widget) {
-                        widgetMount.mountWidget(data.routeHandler.route.widget, data.routeHandler.params)
+                        // TODO: have an "unmount" action, so that we can 
+                        // clean up after unmount, e.g. clear menu, clear title, so that
+                        // widgets don't all have
+                        widgetMount.unmount()
                             .then(function () {
+                                runtime.send('ui', 'clearButtons');
+                            })
+                            .then(function () {
+                                return widgetMount.mount(data.routeHandler.route.widget, data.routeHandler.params)
                             })
                             .catch(function (err) {
                                 // need a catch-all widget to mount here??

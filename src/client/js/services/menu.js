@@ -8,11 +8,6 @@ define([
     function factory(config) {
         var state = observed.make(),
             runtime = config.runtime;
-        state.setItem('menu', []);
-//        state.setItem('menus', {
-//            authenticated: [],
-//            unauthenticated: []
-//        });
 
         function setMenus(from) {
             from = from || {};
@@ -34,11 +29,14 @@ define([
                     ]
                 }
             }
+
+            // Sets each menu menu item as the actual menu definition.
             Object.keys(from).forEach(function (menuSet) {
                 Object.keys(from[menuSet]).forEach(function (menuSection) {
                     menu[menuSet][menuSection] = from[menuSet][menuSection];
                 });
             });
+
             state.setItem('menus', menu);
         }
         function setupMenus() {
@@ -62,7 +60,7 @@ define([
             }
             state.setItem('menus', menu);
         }
-        setupMenus();
+
 
         state.setItem('menuItems', {
             divider: {
@@ -70,12 +68,7 @@ define([
             }
         });
 
-        runtime.recv('session', 'loggedin', function () {
-            state.setItem('menu', state.getItem('menus').authenticated);
-        });
-        runtime.recv('session', 'loggedout', function () {
-            state.setItem('menu', state.getItem('menus').unauthenticated);
-        });
+
         function clearMenu() {
             state.setItem('menu', []);
         }
@@ -89,11 +82,11 @@ define([
         /*
          * TODO: support menu sections. For now, just a simple menu.
          */
-        function addToMenu(menuEntry, item) {            
+        function addToMenu(menuEntry, item) {
             var id, section, position,
                 menuItems = state.getItem('menuItems'),
                 menuItem = menuItems[item];
-            
+
             if (!menuItem) {
                 throw {
                     type: 'InvalidKey',
@@ -158,13 +151,49 @@ define([
             });
         }
 
+        // SERVICE API
+
+        function start() {
+            runtime.recv('session', 'loggedin', function () {
+                state.setItem('menu', state.getItem('menus').authenticated);
+            });
+            runtime.recv('session', 'loggedout', function () {
+                state.setItem('menu', state.getItem('menus').unauthenticated);
+            });
+            Object.keys(config.menus).forEach(function (menuSet) {
+                Object.keys(config.menus[menuSet]).forEach(function (menuSection) {
+                    config.menus[menuSet][menuSection].forEach(function (menuItem) {
+                        addToMenu({
+                            name: menuSet,
+                            section: menuSection,
+                            position: 'bottom'
+                        }, menuItem);
+                    });
+                });
+            });
+        }
+
+        function stop() {
+
+        }
+
+        // MAIN
+
+        state.setItem('menu', []);
+        setupMenus();
+
+
+
         // API
         return {
             getCurrentMenu: getCurrentMenu,
             pluginHandler: pluginHandler,
             onChange: onChange,
             setMenus: setMenus,
-            addToMenu: addToMenu
+            addMenuItem: addMenuItem,
+            addToMenu: addToMenu,
+            start: start,
+            stop: stop
         };
     }
 

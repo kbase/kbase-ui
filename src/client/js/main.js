@@ -48,23 +48,41 @@ define([
                         selector: '#status'
                     }
                 },
-                plugins: uiConfig.plugins
+                plugins: uiConfig.plugins,
+                menus: uiConfig.menu.menus
             })
                 .then(function (runtime) {
                     // R.send('ui', 'setTitle', 'KBase Single Page App Demo Site');
-                    var menus = uiConfig.menu.menus;
-                    Object.keys(menus).forEach(function (menuSet) {
-                        Object.keys(menus[menuSet]).forEach(function (menuSection) {
-                            menus[menuSet][menuSection].forEach(function (menuItem) {
-                                runtime.service('menu').addToMenu({
-                                    name: menuSet,
-                                    section: menuSection,
-                                    position: 'bottom'
-                                }, menuItem);
-                            });
-                        });
-                    });
+                    // TODO: Move this into the menu service.
+                    // just needs to be done after the plugins...
+//                    var menus = uiConfig.menu.menus;
+//                    Object.keys(menus).forEach(function (menuSet) {
+//                        Object.keys(menus[menuSet]).forEach(function (menuSection) {
+//                            menus[menuSet][menuSection].forEach(function (menuItem) {
+//                                runtime.service('menu').addToMenu({
+//                                    name: menuSet,
+//                                    section: menuSection,
+//                                    position: 'bottom'
+//                                }, menuItem);
+//                            });
+//                        });
+//                    });
                     //runtime.service('menu').setMenus(uiConfig.menu.menus);
+                    runtime.send('ui', 'addButton', {
+                        url: 'http://www.ibm.com',
+                        label: 'IBM',
+                        icon: 'briefcase',
+                        external: true
+                    });
+                    runtime.send('ui', 'addButton', {
+                        label: 'Apple',
+                        icon: 'apple', 
+                        external: true,
+                        callback: function () {
+                            alert('Hi, from Apple');
+                            window.open('http://www.apple.com');
+                        }
+                    });
                 });
         }
     };

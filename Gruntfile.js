@@ -165,16 +165,8 @@ module.exports = function (grunt) {
             src: ['**/*']
         },
         {
-            name: 'lodash'
-        },
-        {
             dir: 'node-uuid',
             src: ['uuid.js']
-        },
-        {
-            dir: 'postal.js',
-            cwd: 'lib',
-            name: 'postal'
         },
         {
             name: 'require-css',
@@ -217,9 +209,6 @@ module.exports = function (grunt) {
             dir: 'datatables-bootstrap3-plugin',
             cwd: 'media',
             src: ['css/datatables-bootstrap3.css', 'js/datatables-bootstrap3.js']
-        },
-        {
-            name: 'vega'
         },
         {
             name: 'google-code-prettify',
@@ -276,25 +265,15 @@ module.exports = function (grunt) {
             src: ['**/*']
         },
         {
-            dir: 'data-api',
-            cwd: 'bower',
-            src: '**/*'
-        },
-//        {
-//            dir: 'kbase-data-api-js-wrappers',
-//            cwd: 'bower',
-//            src: '**/*'
-//        },
-        {
-            dir: 'thrift-binary-protocol',
-            cwd: 'src',
-            src: '**/*'
-        },
-        {
             name: 'kbase-service-clients-js',
             cwd: 'dist/plugin',
             src: ['**/*']
         },
+//        {
+//            name: 'kbase-ui-plugin-demo-vis-widget',
+//            cwd: 'src/plugin',
+//            src: ['**/*']
+//        },
 
         // Dependencies needed for Search (for now)
         {
@@ -420,13 +399,13 @@ module.exports = function (grunt) {
 //                    }
                     
                     
-                    
+//                    
 //                    {
-//                        cwd: makeRepoDir('dashboard/src/plugin'),
+//                        cwd: makeRepoDir('kbase-ui-plugin-dashboard/src/plugin'),
 //                        src: '**/*',
 //                        dest: buildDir('client/plugins/dashboard'),
 //                        expand: true
-//                    },
+//                    }
                    
                 ]
             },

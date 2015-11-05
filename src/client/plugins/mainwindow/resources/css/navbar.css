@@ -32,10 +32,10 @@
     font-size: 10pt;
     margin-top: -5px;
 }
-.navbar-right .fa::before { /* color nav icons */
+.navbar-buttons .fa::before { /* color nav icons */
   color: #2196F3;
 }
-.navbar-right .btn.kb-nav-btn:hover {
+.navbar-buttons .btn.kb-nav-btn:hover {
   background-color: #F5F5F5;
 }
 #kb-ipy-menu { /* restore rounded corners */
@@ -60,23 +60,20 @@
 }
 
 /* Own */
-#kbase-navbar .navbar-title {
+.kbase-ui .navbar-title {
   padding-left: 20px;
   border-left: 2px solid #e0e0e0;
   font-size: 120%;
   font-weight: bold;
 }
-#kbase-navbar .navbar-title .title {
+.kbase-ui navbar-title .title {
   font-weight: bold;
   font-size: 120%;
 }
 
 
-#kbase-navbar .navbar-buttons {
+.kbase-ui .navbar-buttons {
   display: inline-block; 
-  padding-right: 15px; 
-  margin-right: 15px;
-  border-right: 2px solid #e0e0e0;
 }
 
 /* Tweak navbar, sidebar and main content areas to fit together 
