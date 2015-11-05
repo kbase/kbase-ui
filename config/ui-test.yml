@@ -68,6 +68,7 @@ plugins:
 #            directory: bower_components/kbase-ui-plugin-demo-vis-widget
 menu:
     available_items:
+# these are now added from individual plugins        
 #           search: 
 #               path: search/?q=*
 #               label: Search Data
@@ -96,7 +97,7 @@ menu:
     menus:
         authenticated: 
             main: [narrative, search, dashboard]
-            developer: [databrowser, typebrowser, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
+            developer: [databrowser, typebrowser]
             help: [about-kbase, contact-kbase]
         unauthenticated: 
             main: [search]
