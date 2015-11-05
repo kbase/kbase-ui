@@ -16,6 +16,7 @@ var path = require('path'),
 // prod = production
 // ci = continuous integration
 var servicesTarget = 'prod',
+    // set to 'test' for switching to dev menus, 'prod' for normal ones.
     uiTarget = 'prod';
 
 /**
@@ -30,9 +31,6 @@ function cancelTask() {
 }
 
 module.exports = function (grunt) {
-    var servicesTarget = 'ci',
-        // set to 'test' for switching to dev menus, 'prod' for normal ones.
-        uiTarget = 'prod';
 
     // Config
     // TODO: maybe read something from the runtime/config directory so we don't 
