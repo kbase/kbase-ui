@@ -91,7 +91,7 @@ module.exports = function (grunt) {
             }
 
             var compiled = _.template(serviceTemplate),
-                services = compiled(deployCfg['ui-common']);
+                services = compiled(deployCfg['kbase-ui']);
 
             fs.readFile(settingsCfg, 'utf8', function (err, settings) {
                 if (err) {
@@ -435,7 +435,7 @@ module.exports = function (grunt) {
                     {
                         cwd: 'build/client',
                         src: '**/*',
-                        dest: deployCfg['ui-common']['deploy_target'],
+                        dest: deployCfg['kbase-ui']['deploy_target'],
                         expand: true
                     }
                 ]
@@ -512,7 +512,7 @@ module.exports = function (grunt) {
             options: {
                 force: true
             },
-            'ui-common': {
+            'kbase-ui': {
                 src: 'build/test-coverage/lcov/**/*.info'
             }
         },
