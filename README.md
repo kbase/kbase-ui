@@ -108,6 +108,18 @@ The tests can be run directly with karma, or through the make process
 karma start test/karma.conf.js
 > ```
 
+or
+
+> ```
+make test
+> ```
+
+or 
+
+> ```
+grunt test
+> ```
+
 ##### 4) Local Deploy for development and testing
 
 The build process creates build directory which can be used directly as a web site root. 
