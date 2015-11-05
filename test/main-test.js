@@ -66,9 +66,9 @@ requirejs.config({
         kb_common_observed: 'bower_components/kbase-common-js/observed',
         kb_common_format: 'bower_components/kbase-common-js/format',
         // widget support should move out into a plugin.
-        kb_common_widgetManager: 'bower_components/kbase-common-js/widgetManager',
-        kb_common_widgetMount: 'bower_components/kbase-common-js/widgetMount',
-        kb_common_widgetSet: 'bower_components/kbase-common-js/widgetSet',
+        kb_common_widgetManager: 'bower_components/kbase-common-js/widgets/widgetManager',
+        kb_common_widgetMount: 'bower_components/kbase-common-js/widgets/widgetMount',
+        kb_common_widgetSet: 'bower_components/kbase-common-js/widgets/widgetSet',
         kb_common_gravatar: 'bower_components/kbase-common-js/gravatar',
         kb_common_data: 'js/dev/data',
         
