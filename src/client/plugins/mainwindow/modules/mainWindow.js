@@ -52,7 +52,7 @@ define([
                     div({style: {display: 'inline-block', padding: '4px', height: '100%', verticalAlign: 'top'}}, [
                         div({id: widgetSet.addWidget('title')})
                     ]),
-                    div({style: {border: '0px dashed blue', position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top'}}, [
+                    div({style: {position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top'}}, [
                         div({style: {borderLeft: '0px #EEE solid', display: 'inline-block', padding: '4px', height: '100%', verticalAlign: 'top'}}, [
                             div({id: widgetSet.addWidget('buttonbar')})
                         ]),

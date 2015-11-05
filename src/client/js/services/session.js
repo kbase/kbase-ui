@@ -45,7 +45,6 @@ define([
         }
 
         function start() {
-            console.log('starting session service');
             session.setSession(session.importFromCookie());
             if (isLoggedIn()) {
                 state.setItem('loggedin', true);

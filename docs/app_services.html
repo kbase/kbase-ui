@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>app_services</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<style type="text/css">
+    body {
+        font-family: sans-serif;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        xcolor: #FFF;
+        color: #02516B;
+    }
+    h4, h5, h6 {
+        xcolor: #FFF;
+        color: #02516B;
+        text-decoration: underline;
+    }
+    h5, h6, h7 {
+        font-size: 100%;
+    }
+    /*h3 {
+        padding: 4px;
+        background-color: gray;
+        color: #FFF;
+    }
+    */
+     xcode {
+        xmargin: 1em;
+        xdisplay: block;
+        xpadding: 1em;
+        xcolor: lime;
+        background-color: #CCC;
+    }
+    .xkbase-ui pre > code {
+        xfont-size: 80%;
+        margin: 1em;
+        xdisplay: block;
+        xpadding: 1em;
+        xcolor: lime;
+        xbackground-color: black;
+    }
+    table {
+        border: 1px silver solid;
+    }
+    table tr {
+        border: 1px silver solid;        
+    }
+    table tr td {
+        border: 1px silver solid;
+    }
+    table tr th {
+        border: 1px silver solid;
+    }
+</style>
+</head>
+<body class="kbase-ui">
+<h1>KBase UI Application Services</h1><h2>Overview</h2><h2>Architecture</h2><h2>Services in the UI</h2><h3>Heartbeat</h3><p>The heartbeat service is essentially a timer which issues period messages into the message bus. Widgets or other components may subscribe to the heartbeat message in order to provide timer based services without directly using DOM based window timers.</p><h4>Configuration</h4>
+<ul>
+  <li>runtime</li>
+  <li>interval</li>
+</ul><h4>Methods</h4><p>none</p><h4>Events</h4>
+<ul>
+  <li>channel: heartbeat</li>
+  <li>message: beat</li>
+  <li>data:
+  <ul>
+    <li>beats = the number of beat messages issued, an integer</li>
+  </ul></li>
+</ul>
+<blockquote>
+  <pre><code>{
+    beats: &lt;number&gt;
+}
+</code></pre>
+</blockquote><h3>Menu</h3><p>The menu service provides an abstract service for providing menu items to the system. It maintains a set of menu item definitions, a set of possible menu configurations, and the current menu.</p><p>Menu items are accepted primary through the pluginHandler interface, in which plugins request the addition of menu items through the plugin configuration.</p><p>The menu service has a concept of ordered sets of menu items. Each set is a "menu", and may be rendered by a widget which knows how to render them.</p><p>Currently there are two menus, authenticated and unauthenticated. </p><h4>Configuration</h4>
+<ul>
+  <li>runtime</li>
+</ul><h4>Methods</h4>
+<ul>
+  <li>getCurrentMenu - returns the current menu, an array of menu items accepted by the menu manager.</li>
+  <li>onChange -</li>
+</ul><h4>Events</h4><h5>publishes</h5><p>none</p><h5>subscribes to</h5><p><strong>session:loggedin</strong></p><p>channel: session<br/>message: loggedin<br/>data: none </p><p>Published when the the session service </p><p><strong>session:loggedout</strong></p><p>channel: session<br/>message: loggedout</p><p>Published when the session service removes authentication from the app.</p><h3>Route</h3><h3>Session</h3><h3>Widget</h3><h3>Service</h3><h3>Data</h3>
+</body>
+<script>
+    
+</script>
+</html>
