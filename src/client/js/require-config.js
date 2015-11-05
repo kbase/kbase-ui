@@ -36,13 +36,13 @@ require.config({
         datatables_bootstrap: 'bower_components/datatables-bootstrap3-plugin/js/datatables-bootstrap3',
         datatables_bootstrap_css: 'bower_components/datatables-bootstrap3-plugin/css/datatables-bootstrap3',
         md5: 'bower_components/SparkMD5/spark-md5',
-        'google-code-prettify': 'bower_components/google-code-prettify/prettify',        
+        'google-code-prettify': 'bower_components/google-code-prettify/prettify',
         'google-code-prettify-style': 'bower_components/google-code-prettify/prettify',
         handlebars: 'bower_components/handlebars/handlebars',
         nunjucks: 'bower_components/nunjucks/nunjucks',
         font_awesome: 'bower_components/font-awesome/css/font-awesome',
         uuid: 'bower_components/node-uuid/uuid',
-        
+
         'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
             //'jquery-svg-anim': 'bower_components/jquery.svg/jquery.svganim.min',
             //'jquery-svg-dom': 'bower_components/jquery.svg/jquery.svgdom.min',
@@ -52,7 +52,7 @@ require.config({
             //'jquery-svg-plot': 'js/lib/widgets/jquery/communities/jquery.svg.plot',
             //'jquery-svg-graph-deviation': 'js/lib/etc/jquery-svg-graph-deviation',
 
-        
+
         kb_common_html: 'bower_components/kbase-common-js/html',
         kb_common_dom: 'bower_components/kbase-common-js/dom',
         kb_common_domEvent: 'bower_components/kbase-common-js/domEvent',
@@ -75,49 +75,76 @@ require.config({
         kb_common_widgetSet: 'bower_components/kbase-common-js/widgetSet',
         kb_common_gravatar: 'bower_components/kbase-common-js/gravatar',
         kb_common_data: 'js/dev/data',
-        
+
         kb_common_appServiceManager: 'bower_components/kbase-common-js/appServiceManager',
-        
+
         kb_widget_buttonBar: 'js/dev/widgets/buttonBar',
-        
+
         kb_widgetBases_standardWidget: 'bower_components/kbase-common-js/standardWidget',
         kb_widgetBases_panelWidget: 'bower_components/kbase-common-js/panelWidget',
         kb_widgetAdapters_objectWidget: 'bower_components/kbase-common-js/widgetAdapters/widgetAdapter',
         kb_widgetAdapters_kbWidget: 'bower_components/kbase-common-js/widgetAdapters/kbWidgetAdapter',
-        
+
         kb_widgetBases_kbWidget: 'bower_components/kbase-common-js/widgetLegacy/kbaseWidget',
         kb_widgetBases_kbAuthenticatedWidget: 'bower_components/kbase-common-js/widgetLegacy/kbaseAuthenticatedWidget',
         kb_widget_kbTabs: 'bower_components/kbase-common-js/widgetLegacy/kbTabs',
         kb_widget_helpers: 'bower_components/kbase-common-js/widgetLegacy/kbaseHelperPlugins',
         kb_widget_tabs: 'bower_components/kbase-common-js/widgetLegacy/kbaseTabs',
-        
+
+        kb_widget_button_controls : 'bower_components/kbase-common-js/widgetLegacy/kbaseButtonControls',
+        kb_widget_delete_prompt : 'bower_components/kbase-common-js/widgetLegacy/kbaseDeletePrompt',
+        kb_widget_prompt : 'bower_components/kbase-common-js/widgetLegacy/kbasePrompt',
+        kb_widget_search_controls : 'bower_components/kbase-common-js/widgetLegacy/kbaseSearchControls',
+        kb_widget_table : 'bower_components/kbase-common-js/widgetLegacy/kbaseTable',
+
+        kb_vis_visWidget : 'bower_components/kbase-common-js/vis/kbaseVisWidget',
+
+        kb_vis_point : 'bower_components/kbase-common-js/vis/geometry/point',
+        kb_vis_rectangle : 'bower_components/kbase-common-js/vis/geometry/rectangle',
+        kb_vis_size : 'bower_components/kbase-common-js/vis/geometry/size',
+        kb_vis_RGBColor : 'bower_components/kbase-common-js/vis/RGBColor',
+
+        kb_vis_barchart : 'bower_components/kbase-common-js/vis/kbaseBarchart',
+        kb_vis_chordchart : 'bower_components/kbase-common-js/vis/kbaseChordchart',
+        kb_vis_circular_heatmap : 'bower_components/kbase-common-js/vis/kbaseCircularHeatmap',
+        kb_vis_forced_network : 'bower_components/kbase-common-js/vis/kbaseForcedNetwork',
+        kb_vis_heatmap : 'bower_components/kbase-common-js/vis/kbaseHeatmap',
+        kb_vis_histogram : 'bower_components/kbase-common-js/vis/kbaseHistogram',
+        kb_vis_linechart : 'bower_components/kbase-common-js/vis/kbaseLinechart',
+        kb_vis_lineserieschart : 'bower_components/kbase-common-js/vis/kbaseLineSerieschart',
+        kb_vis_piechart : 'bower_components/kbase-common-js/vis/kbasePiechart',
+        kb_vis_scatterplot : 'bower_components/kbase-common-js/vis/kbaseScatterplot',
+        kb_vis_sparkline : 'bower_components/kbase-common-js/vis/kbaseSparkline',
+        kb_vis_treechart : 'bower_components/kbase-common-js/vis/kbaseTreechart',
+        kb_vis_venndiagram : 'bower_components/kbase-common-js/vis/kbaseVenndiagram',
+
         // Just for testing vega
         kb_common_csv: 'bower_components/kbase-common-js/csv',
         vega: 'bower_components/vega/vega',
         // kb_vegaChartHelper: 'js/vegaChartHelper',
         // utils: 'js/Utils',
         // error: 'js/Error',
-        app: 'js/App',        
+        app: 'js/App',
         // simpleApp: 'js/simpleApp',
-        
+
         thrift: 'bower_components/thrift-binary-protocol/thrift-core',
         thrift_transport_xhr: 'bower_components/thrift-binary-protocol/thrift-transport-xhr',
         thrift_protocol_binary: 'bower_components/thrift-binary-protocol/thrift-protocol-binary',
-        
+
 //        taxon_types: 'bower_components/kbase-data-api-js-wrappers/thrift/taxon/taxon_types',
-//        taxon_service: 'bower_components/kbase-data-api-js-wrappers/thrift/taxon/thrift_service',        
+//        taxon_service: 'bower_components/kbase-data-api-js-wrappers/thrift/taxon/thrift_service',
 //        kb_taxon: 'bower_components/kbase-data-api-js-wrappers/Taxon',
-//        
+//
         taxon_types: 'bower_components/data-api/thrift/taxon/taxon_types',
-        taxon_service: 'bower_components/data-api/thrift/taxon/thrift_service',        
+        taxon_service: 'bower_components/data-api/thrift/taxon/thrift_service',
         kb_taxon: 'bower_components/data-api/Taxon',
-        
+
         // TODO: move into separate repo
         // kb_api: 'lib/kbase-client-api',
         // kbase service client support -- should be refactored.
         // kb_narrative: 'js/clients/narrative',
         // kb_types: 'js/clients/types',
-        
+
 //        kb_appService_router: 'js/services/router',
 //        kb_appService_menu: 'js/services/menu',
 //        kb_appService_heartbeat: 'js/services/heartbeat',
