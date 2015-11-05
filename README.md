@@ -1,3 +1,10 @@
+[![Build Status](https://travis-ci.org/kbase/kbase-ui.svg?branch=master)](https://travis-ci.org/kbase/kbase-ui)
+
+| Branch | Status |
+| :--- | :--- |
+| master | [![Build Status](https://travis-ci.org/kbase/kbase-ui.svg?branch=master)](https://travis-ci.org/kbase/kbase-ui) [![Coverage Status](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master)](https://coveralls.io/r/kbase/kbase-ui?branch=master) |
+
+
 # KBase User Interface
 
 ## Contents
