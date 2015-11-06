@@ -12,7 +12,8 @@
 # Grunt (in a common JavaScript style), but some essential tasks
 # are exposed here.
 
-# set this to use different deploy-*.cfg files (deploy-ci, deploy-prod, etc)
+# set TARGET to use different deploy-*.cfg files (deploy-ci, deploy-prod, etc)
+# currently only 'prod', 'ci', and 'next' are valid variables.
 TARGET			= ci
 PACKAGE			= ui-common
 TOPDIR			= $(PWD)

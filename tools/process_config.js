@@ -4,14 +4,14 @@
  * A tiny node script that will read in a set of configured service
  * endpoints and inject them into the lodash-templatized config file.
  *
- * This also concatenates that template file with a more ui-common 
+ * This also concatenates that template file with a more kbase-ui 
  * focused non-templated settings file.
  *
  * Usage: from root of this repo
  * > node tools/process_config.js [ini file, default = deploy.cfg]
  *
  * This script expects that the given config file is in INI format,
- * and contains a [ui-common] stanza.
+ * and contains a [kbase-ui] stanza.
  * @author Bill Riehl wjriehl@lbl.gov
  */
 
@@ -51,7 +51,7 @@ fs.readFile(serviceTemplateFile, 'utf8', function(err, serviceTemplate) {
     if (err) return showError('Error reading service template');
 
     var compiled = _.template(serviceTemplate);
-    var services = compiled(deployCfg['ui-common']);
+    var services = compiled(deployCfg['kbase-ui']);
 
     fs.readFile(settingsCfg, 'utf8', function(err, settings) {
         if (err) return showError('Error reading UI settings file', err);

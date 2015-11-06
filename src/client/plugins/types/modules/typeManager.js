@@ -20,7 +20,7 @@ define([
                     type: 'fontAwesome',
                     classes: ['fa-file-o']
                 };
-           
+
 
             function getIcon(arg) {
                 var icon = types.getItem(['types', arg.type.module, arg.type.name, 'icon']) || defaultIcon,
@@ -52,10 +52,44 @@ define([
                     return {
                         classes: classes,
                         type: icon.type,
+                        color: getColor(arg.type),
                         html: '<span class="' + classes.join(' ') + '"></span>'
                     };
                 }
             }
+
+            function getColor(type) {
+                var code = 0, i,
+                    colors = [
+                        "#F44336",
+                        "#E91E63",
+                        "#9C27B0",
+                        "#3F51B5",
+                        "#2196F3",
+                        "#673AB7",
+                        "#FFC107",
+                        "#0277BD",
+                        "#00BCD4",
+                        "#009688",
+                        "#4CAF50",
+                        "#33691E",
+                        "#2E7D32",
+                        "#AEEA00",
+                        "#03A9F4",
+                        "#FF9800",
+                        "#FF5722",
+                        "#795548",
+                        "#006064",
+                        "#607D8B"
+                    ], color;
+
+                for (i = 0; i < type.name.length; i += 1) {
+                    code += type.name.charCodeAt(i);
+                }
+                color = colors[code % colors.length];
+                return color;
+            }
+
             function hasType(typeQuery) {
                 if (types.hasItem(['types', typeQuery.module, typeQuery.name])) {
                     return true;
@@ -229,5 +263,5 @@ define([
             make: function (config) {
                 return factory(config);
             }
-        }
+        };
     });

@@ -6,9 +6,11 @@
 
 - About
 - Design
-- Architecture
+- [Architecture](architecture.html)
 - Programming Standards
 - Developing
 - Deploying
 - Testing
 - Documenting
+- Tutorials
+- How To

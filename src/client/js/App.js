@@ -194,7 +194,8 @@ define([
                 defaultRoute: {redirect: {path: 'dashboard'}}
             });
             appServiceManager.addService('menu', {
-                runtime: api
+                runtime: api,
+                menus: cfg.menus
             });
             appServiceManager.addService('widget', {
                 runtime: api
@@ -297,6 +298,13 @@ define([
                 .then(function () {
                     // getService('heartbeat').start();
                     console.log('Services started.');
+                    // this is a hack for now ... should be a method for service
+                    // events to be sent out post root widget mounting.
+                    if (appServiceManager.getService('session').isLoggedIn()) {
+                        send('session', 'loggedin');
+                    } else {
+                        send('session', 'loggedout');
+                    }
                     send('app', 'do-route');
                     return api;
                 });
