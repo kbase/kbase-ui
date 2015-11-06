@@ -1,7 +1,7 @@
 {
-  "name": "Thrift Test",
+  "name": "KBase UI",
   "version": "0.0.1",
-  "main": "path/to/main.css",
+  "main": "none",
   "ignore": [
     ".jshintrc",
     "**/*.txt"
@@ -37,7 +37,6 @@
     "kbase-common-js": "kbase/kbase-common-js#master",
     "kbase-ui-plugin-dataview": "kbase/kbase-ui-plugin-dataview#master",
     "kbase-ui-plugin-dashboard": "kbase/kbase-ui-plugin-dashboard#master",
-    "kbase-ui-plugin-typeview": "eapearson/kbase-ui-plugin-typeview#master",
     "kbase-service-clients-js": "eapearson/kbase-service-clients-js#master",
     "kbase-ui-plugin-vis-widgets": "eapearson/kbase-ui-plugin-vis-widgets#master",
     "kbase-ui-plugin-databrowser": "eapearson/kbase-ui-plugin-databrowser#master",
@@ -47,7 +46,8 @@
     "moment": "2.10.6",
     "numeral": "1.5.3",
     "blockUI": "jquery.blockUI#*",
-    "q": "2.0.2"
+    "q": "2.0.2",
+    "kbase-ui-plugin-typeview": "eapearson/kbase-ui-plugin-typeview#master"
   },
   "devDependencies": {}
 }
