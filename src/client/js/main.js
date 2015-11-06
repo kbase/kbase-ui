@@ -1,6 +1,7 @@
 /*global define*/
 /*jslint white: true*/
 define([
+    'bluebird',
     'app',
     'kb_common_dom',
     'yaml!ui.yml',
@@ -10,8 +11,12 @@ define([
     // 'css!kb_icons',
     'css!kb_ui',
     'css!kb_datatables'
-], function (App, dom, uiConfig) {
+], function (Promise, App, dom, uiConfig) {
     'use strict';
+    Promise.config({
+        warnings: false,
+        longStackTraces: true
+    });
     function makeSymbol(s) {
         return s.trim(' ').replace(/ /, '_');
     }
@@ -33,7 +38,7 @@ define([
         dom.qs('#error').style.display = 'block';
     }
     displayStatus('running');
-    
+
     return {
         start: function () {
             return App.run({
@@ -76,7 +81,7 @@ define([
                     });
                     runtime.send('ui', 'addButton', {
                         label: 'Apple',
-                        icon: 'apple', 
+                        icon: 'apple',
                         external: true,
                         callback: function () {
                             alert('Hi, from Apple');
