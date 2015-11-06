@@ -57,15 +57,15 @@ plugins:
             narrativestore            
         -
             name: viswidgets
-            directory: bower_components/kbase-ui-plugin-vis-widgets
+            directory: bower_components/kbase-ui-plugin-demo-vis-widget
         #-
         #    databrowser
         -
             name: databrowser
             directory: bower_components/kbase-ui-plugin-databrowser      
 #        -
-#            name: viswidgetdemo
-#            directory: bower_components/kbase-ui-plugin-demo-vis-widget
+            name: viswidgetdemo
+            directory: bower_components/kbase-ui-plugin-demo-vis-widget
 menu:
     available_items:
 # these are now added from individual plugins        
@@ -97,7 +97,7 @@ menu:
     menus:
         authenticated: 
             main: [narrative, search, dashboard]
-            developer: [databrowser, typebrowser]
+            developer: [visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot, visdemoPiechart, visdemoTreechart, visdemoCircularheatmap, visdemoVenndiagram, visdemoChordchart, visdemoNetwork, visdemoSparkline]
             help: [about-kbase, contact-kbase]
         unauthenticated: 
             main: [search]
