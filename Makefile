@@ -40,7 +40,7 @@ init:
 # deals with filling out templated URL targets based on deployment
 # location (prod vs. next vs. CI vs. local)
 build:
-	@ grunt build
+	@ grunt dist
 	@ node tools/process_config.js $(DEPLOY_CFG)
 
 # The deployment step uses grunt to, essentially, copy the build
