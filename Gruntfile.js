@@ -602,10 +602,14 @@ module.exports = function (grunt) {
         'copy:dev',
         'copy:config',
         'copy:build-search',
-        'build-config',
+        'build-config'
+    ]);
+
+    grunt.registerTask('dist', [
+        'build',
         'requirejs',
         'filerev',
-        'regex-replace',
+        'regex-replace'
     ]);
 
     grunt.registerTask('deploy', [
