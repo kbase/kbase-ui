@@ -144,7 +144,8 @@ define([
                                 p({}, 'After signing in you can upload your own experimental data or find data integrated from external resources or shared by other users. You can then perform, organize, and share sophisticated comparative genomics and systems biology analyses by creating Narratives.'),
                                 p({}, 'Narratives are user-created interactive, dynamic, and shareable documents that are KBase’s way of making systems biology research transparent, reproducible, and reusable.'),
                                 p({}, 'The Narrative Interface lets you customize and execute a set of ordered KBase analyses to create your own Narratives that include your analysis steps, commentary, visualizations, and custom scripts.'),
-                                p({}, 'Want to learn more? We have an extensive and growing <a href="http://kbase.us/tutorials">library of tutorials</a> that show you how to use KBase’s new apps to analyze your data. To become familiar with the user interface, try the <a href="http://kbase.us/narrative-guide">Narrative Interface User Guide</a>.')
+                                p({}, 'Want to learn more? We have an extensive and growing <a href="http://kbase.us/tutorials">library of tutorials</a> that show you how to use KBase’s new apps to analyze your data.),
+                                p({}, 'To become familiar with the user interface, try the <a href="http://kbase.us/narrative-guide">Narrative Interface User Guide</a> or the <a href="https://youtu.be/6ql7HAUzU7U">Narrative Interface video tutorial</a>.')
                             ]),
                             div({class: 'col-sm-3'}, [
                                 div({class: 'well well-kbase'}, [
