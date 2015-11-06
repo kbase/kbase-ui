@@ -274,6 +274,7 @@ module.exports = function (grunt) {
 //        },
 
         // Dependencies needed for Search (for now)
+        // PLEASE STOP DELETING THESE.
         {
             name: 'blockUI',
             src: ['jquery.blockUI.js']
@@ -281,7 +282,13 @@ module.exports = function (grunt) {
         {
             name: 'q',
             src: ['q.js']
+        },
+        {
+            dir: 'postal.js',
+            cwd: 'lib',
+            name: 'postal'
         }
+        // End Search Dependencies.
 
 
     ],
