@@ -24,12 +24,12 @@ plugins:
         -
             name: serviceClients
             directory: bower_components/kbase-service-clients-js
-        #-
-        #    dataview
-        
         -
-            name: dataview
-            directory: bower_components/kbase-ui-plugin-dataview
+            dataview
+        
+        #-
+        #    name: dataview
+        #    directory: bower_components/kbase-ui-plugin-dataview
 
         #-
         #    typebrowser
@@ -62,10 +62,13 @@ plugins:
         #    databrowser
         -
             name: databrowser
-            directory: bower_components/kbase-ui-plugin-databrowser      
-#        -
-#            name: viswidgetdemo
-#            directory: bower_components/kbase-ui-plugin-demo-vis-widget
+            directory: bower_components/kbase-ui-plugin-databrowser    
+        -
+            name: datawidgets
+            directory: bower_components/kbase-ui-plugin-datawidgets          
+        -
+            name: viswidgetdemo
+            directory: bower_components/kbase-ui-plugin-demo-vis-widget
 menu:
     available_items:
 # these are now added from individual plugins        
@@ -97,7 +100,7 @@ menu:
     menus:
         authenticated: 
             main: [narrative, search, dashboard]
-            developer: [databrowser, typebrowser]
+            developer: [databrowser, typebrowser, test, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
             help: [about-kbase, contact-kbase]
         unauthenticated: 
             main: [search]

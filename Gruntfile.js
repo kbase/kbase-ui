@@ -17,7 +17,7 @@ var path = require('path'),
 // ci = continuous integration
 var servicesTarget = 'prod',
     // set to 'test' for switching to dev menus, 'prod' for normal ones.
-    uiTarget = 'prod';
+    uiTarget = 'test';
 
 /**
  * Cancels a task
@@ -79,7 +79,7 @@ module.exports = function (grunt) {
 
         var serviceTemplateFile = 'config/service-config-template.yml',
             settingsCfg = 'config/settings.yml',
-            outFile = buildDir('client/config.yml'),
+            outFile = buildDir('client/modules/app/config.yml'),
             done = this.async();
 
         fs.readFile(serviceTemplateFile, 'utf8', function (err, serviceTemplate) {
@@ -131,6 +131,12 @@ module.exports = function (grunt) {
      * 
      */
     var bowerFiles = [
+        {
+    name: 'kbase-ui-plugin-datawidgets',
+    cwd: 'src/plugin',
+    src: ['**/*']
+}
+,
         {
             name: 'bluebird',
             cwd: 'js/browser',
@@ -267,11 +273,17 @@ module.exports = function (grunt) {
             cwd: 'dist/plugin',
             src: ['**/*']
         },
-//        {
-//            name: 'kbase-ui-plugin-demo-vis-widget',
-//            cwd: 'src/plugin',
-//            src: ['**/*']
-//        },
+        {
+            name: 'kbase-ui-plugin-demo-vis-widget',
+            cwd: 'src/plugin',
+            src: ['**/*']
+        },
+        {
+            name: 'kbase-ui-widget',
+            cwd: 'src',
+            src: ['**/*'],
+            dest: ''
+        },
 
         // Dependencies needed for Search (for now)
         {
@@ -335,12 +347,18 @@ module.exports = function (grunt) {
         } else {
             cwd = 'bower_components/' + (cfg.dir || cfg.name) + (cwd ? '/' + cwd : '');
         }
+        var dest;
+        if (typeof cfg.dest === 'string') {            
+            dest = buildDir('client/modules/' + cfg.dest);
+        } else {
+            dest = buildDir('client/modules/bower_components') + '/' + (cfg.dir || cfg.name)
+        }
         return {
             nonull: true,
             expand: true,
             cwd: cwd,
             src: sources,
-            dest: buildDir('client/bower_components') + '/' + (cfg.dir || cfg.name)
+            dest: dest
         };
     });
 
@@ -358,17 +376,19 @@ module.exports = function (grunt) {
                         dest: buildDir('client'),
                         expand: true
                     },
+                        
                     {
                         cwd: 'src/data',
                         src: '**/*',
                         dest: buildDir('client/data'),
                         expand: true
-                    },
-                    {
-                        src: 'lib/kbase-client-api.js',
-                        dest: buildDir('client'),
-                        expand: true
                     }
+//                    ,
+//                    {
+//                        src: 'lib/kbase-client-api.js',
+//                        dest: buildDir('client'),
+//                        expand: true
+//                    }
                 ]
             },
             dev: {
@@ -377,12 +397,12 @@ module.exports = function (grunt) {
 // plugins as defined in ui-test.yml also need to be adjusted.
 
 
-//                    {
-//                        cwd: makeRepoDir('kbase-ui-plugin-dataview/src/plugin'),
-//                        src: '**/*',
-//                        dest: buildDir('client/plugins/dataview'),
-//                        expand: true
-//                    },
+                    {
+                        cwd: makeRepoDir('kbase-ui-plugin-dataview/src/plugin'),
+                        src: '**/*',
+                        dest: buildDir('client/modules/plugins/dataview'),
+                        expand: true
+                    },
 //                    {
 //                        cwd: makeRepoDir('kbase-ui-plugin-typebrowser/src/plugin'),
 //                        src: '**/*',
@@ -421,7 +441,7 @@ module.exports = function (grunt) {
                 files: [
                     {
                         src: 'config/ui-' + uiTarget + '.yml',
-                        dest: buildDir('client/ui.yml')
+                        dest: buildDir('client/modules/app/ui.yml')
                     }
                 ]
             },
@@ -530,7 +550,7 @@ module.exports = function (grunt) {
                 options: {
                     buildCSS: false,
                     baseUrl: 'build/client',
-                    mainConfigFile: 'build/client/js/require-config.js',
+                    mainConfigFile: 'build/client/modules/app/require-config.js',
                     findNestedDependencies: true,
                     optimize: 'uglify2',
                     generateSourceMaps: true,
