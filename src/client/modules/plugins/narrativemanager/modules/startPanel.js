@@ -64,7 +64,7 @@ define([
         }
 
         function startOrCreateEmptyNarrative() {
-            return narrativeManager.detectStartSettings()
+            return narrativeManager.getMostRecentNarrative()
                 .then(function (result) {
                     if (result) {
                         // we have a last_narrative, so go there
@@ -130,12 +130,10 @@ define([
             });
         }
 
-        function stop() {
-            // nothing to do?
-        }
-
         function detach() {
-            mount.removeChild(container);
+            if (container) {
+                mount.removeChild(container);
+            }
             container.innerHTML = '';
             container = null;
         }
@@ -143,7 +141,6 @@ define([
         return {
             attach: attach,
             start: start,
-            stop: stop,
             detach: detach
         };
     }

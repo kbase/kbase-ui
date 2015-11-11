@@ -43,7 +43,7 @@ define([
 
         function factory(config) {
             var runtime = config.runtime,
-                workspace = new Workspace(runtime.getConfig('services.workspace.url'), {
+                workspaceClient = new Workspace(runtime.getConfig('services.workspace.url'), {
                     token: runtime.service('session').getAuthToken()
                 }),
                 narrativeMethodStore = new NarrativeMethodStore(runtime.getConfig('services.narrative_method_store.url'), {
@@ -61,7 +61,7 @@ define([
                         return {ref: item};
                     });
                     // we need to get obj info so that we can preserve names.. annoying that ws doesn't do this!
-                    return workspace.get_object_info_new({
+                    return workspaceClient.get_object_info_new({
                         objects: objectsToCopy,
                         includeMetadata: 0
                     })
@@ -69,7 +69,7 @@ define([
                             return infoList.map(function (item) {
 
                                 var objectInfo = serviceUtils.object_info_to_object(item);
-                                return workspace.copy_object({
+                                return workspaceClient.copy_object({
                                     from: {ref: objectInfo.ref}, //!! assume same ordering
                                     to: {wsid: ws_id, name: objectInfo.name}
                                 });
@@ -84,7 +84,7 @@ define([
 
             function completeNewNarrative(workspaceId, objectId, importData) {
                 // 4) better to keep the narrative perm id instead of the name
-                return workspace.alter_workspace_metadata({
+                return workspaceClient.alter_workspace_metadata({
                     wsi: {id: workspaceId},
                     new : {narrative: String(objectId), is_temporary: 'true'}
                 })
@@ -94,51 +94,12 @@ define([
                     });
             }
 
-            function findRecentValidNarrative(workspaces) {
-                if (!workspaces || workspaces.length === 0) {
-                    return null;
-                }
-                
-                var test, workspaceInfo, ref;
-                
-                while (workspaces.length) {
-                    test = workspaces.shift();
-                    if (test.metadata && test.metadata.narrative) {
-                        workspaceInfo = test;
-                    }
-                }
-                
-                if (!workspaceInfo) {
-                    console.log('No Narratives found');
-                    return null;
-                }
-                
-                ref = [workspaceInfo.id, workspaceInfo.metadata.narrative].join('/');
-
-                return workspace.get_object_info_new({
-                    objects: [{ref: ref}],
-                    includeMetadata: 1,
-                    ignoreErrors: 1
-                })
-                    .then(function (objList) {
-                        // this case should generally never happen, so we just
-                        // check one workspace at a time to keep the load light
-                        if (objList[0] === null) {
-                            return findRecentValidNarrative(workspaces);
-                        }
-                        return({
-                            workspaceInfo: workspaceInfo,
-                            narrativeInfo: serviceUtils.objectInfoToObject(objList[0])
-                        });
-                    });
-            }
-
-            function detectStartSettings() {
+            function getMostRecentNarrative() {
                 // get the full list of workspaces
-                return workspace.list_workspace_info({
+                return workspaceClient.list_workspace_info({
                     owners: [runtime.service('session').getUsername()]
                 })
-                    .then(function (wsList) { //only check ws owned by user
+                    .then(function (wsList) {
                         var workspaces = wsList
                             .map(function (workspaceInfo) {
                                 return serviceUtils.workspaceInfoToObject(workspaceInfo);
@@ -149,21 +110,34 @@ define([
                                 }
                                 return false;
                             });
-                        if (workspaces.length > 0) {
-                            // we have existing narratives, so we load 'em up
-                            workspaces.sort(function (a, b) { //sort by date
-                                if (a[3] > b[3]) {
-                                    return -1;
-                                }
-                                if (a[3] < b[3]) {
-                                    return 1;
-                                }
-                                return 0;
-                            });
-                            var test = findRecentValidNarrative(workspaces);
-                            return test;
+                            
+                        if (workspaces.length === 0) {
+                            return null;
                         }
-                        return null;
+                        
+                        workspaces.sort(function (a, b) {
+                            if (a.moddate > b.moddate) {
+                                return -1;
+                            }
+                            if (a.moddate < b.moddate) {
+                                return 1;
+                            }
+                            return 0;
+                        });
+                        var workspaceInfo = workspaces[0],
+                            ref = [workspaceInfo.id, workspaceInfo.metadata.narrative].join('/');
+
+                        return workspaceClient.get_object_info_new({
+                            objects: [{ref: ref}],
+                            includeMetadata: 1,
+                            ignoreErrors: 1
+                        })
+                            .then(function (objList) {
+                                return({
+                                    workspaceInfo: workspaceInfo,
+                                    narrativeInfo: serviceUtils.objectInfoToObject(objList[0])
+                                });
+                            });
                     });
             }
 
@@ -234,10 +208,10 @@ define([
                             "</script>",
                         metadata: {}
                     },
-                    cellInfo = {
-                        method: spec,
-                        widget: spec.widgets.input
-                    };
+                cellInfo = {
+                    method: spec,
+                    widget: spec.widgets.input
+                };
                 cellInfo[KB_TYPE] = KB_FUNCTION_CELL;
 
                 var widgetState = [];
@@ -508,7 +482,7 @@ define([
                         returnData;
 
                     // 1 - create ws
-                    return workspace.create_workspace({
+                    return workspaceClient.create_workspace({
                         workspace: workspaceName,
                         description: ''
                     })
@@ -521,7 +495,7 @@ define([
                             var narrativeObject = result[0],
                                 metadataExternal = result[1];
                             // 3 - save the Narrative object
-                            return workspace.save_objects({
+                            return workspaceClient.save_objects({
                                 workspace: workspaceName,
                                 objects: [{
                                         type: 'KBaseNarrative.Narrative',
@@ -539,7 +513,7 @@ define([
                         })
                         .then(function (obj_info_list) {
                             // NB, there is only one so just use the first element.
-                            var objectInfo = serviceUtils.objectInfoToObject(obj_info_list[0])
+                            var objectInfo = serviceUtils.objectInfoToObject(obj_info_list[0]);
                             returnData = {
                                 workspaceInfo: newWorkspaceInfo,
                                 narrativeInfo: objectInfo
@@ -554,7 +528,7 @@ define([
 
             return {
                 createTempNarrative: createTempNarrative,
-                detectStartSettings: detectStartSettings
+                getMostRecentNarrative: getMostRecentNarrative
             };
         }
 
