@@ -99,13 +99,16 @@ define([
                     return null;
                 }
                 
-                var workspaceInfo, ref;
+                var test, workspaceInfo, ref;
                 
-                do {
-                    workspaceInfo = serviceUtils.workspaceInfoToObject(workspaces.shift());
-                } while (workspaces.length && !workspaceInfo.metadata || !workspaceInfo.metadata.narrative);
-                    
-                if (!workspaces.length) {
+                while (workspaces.length) {
+                    test = workspaces.shift();
+                    if (test.metadata && test.metadata.narrative) {
+                        workspaceInfo = test;
+                    }
+                }
+                
+                if (!workspaceInfo) {
                     console.log('No Narratives found');
                     return null;
                 }
@@ -144,6 +147,7 @@ define([
                                 if (workspaceInfo.metadata && workspaceInfo.metadata.narrative) {
                                     return true;
                                 }
+                                return false;
                             });
                         if (workspaces.length > 0) {
                             // we have existing narratives, so we load 'em up
@@ -157,8 +161,6 @@ define([
                                 return 0;
                             });
                             var test = findRecentValidNarrative(workspaces);
-                            console.log('DETECED? ' );
-                            console.log(test);
                             return test;
                         }
                         return null;
