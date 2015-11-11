@@ -62,12 +62,12 @@ define([
                     });
                     // we need to get obj info so that we can preserve names.. annoying that ws doesn't do this!
                     return workspace.get_object_info_new({
-                        objects: objectsToCopy, 
+                        objects: objectsToCopy,
                         includeMetadata: 0
                     })
                         .then(function (infoList) {
                             return infoList.map(function (item) {
-                                
+
                                 var objectInfo = serviceUtils.object_info_to_object(item);
                                 return workspace.copy_object({
                                     from: {ref: objectInfo.ref}, //!! assume same ordering
@@ -82,105 +82,35 @@ define([
 
             }
 
-            function complete_new_narrative(ws_id, obj_id, importData) {
+            function completeNewNarrative(workspaceId, objectId, importData) {
                 // 4) better to keep the narrative perm id instead of the name
                 return workspace.alter_workspace_metadata({
-                    wsi: {id: ws_id},
-                    new : {narrative: String(obj_id), is_temporary: 'true'}
+                    wsi: {id: workspaceId},
+                    new : {narrative: String(objectId), is_temporary: 'true'}
                 })
                     .then(function () {
                         //should really do this first - fix later
-                        return copy_to_narrative(ws_id, importData);
+                        return copy_to_narrative(workspaceId, importData);
                     });
             }
-            /*
-             function promiseIterator(nextFun) {
-             nextFun()
-             .then(function (result) {
-             
-             })
-             }
-             function promiseIterator(items, fun, resolve, reject) {
-             
-             var loop = function () {
-             
-             }
-             
-             if (! workspaces || workspaces.length) {
-             return {last_narrative: null};
-             }
-             
-             var workspace = workspaces.shift();
-             
-             var ref = workspace[0] + '/' + workspace[8].narrative;
-             
-             return Promise.resolve(workspace.get_object_info_new({
-             objects: [{ref: ref}], 
-             includeMetadata: 1, 
-             ignoreErrors: 1
-             }))
-             .then(function (objList) {
-             // this case should generally never happen, so we just
-             // check one workspace at a time to keep the load light
-             if (objList[0] === null) {
-             return findRecentValidNarrative(workspace);
-             }
-             resolve({last_narrative: {ws_info: workspace, nar_info: objList[0]}});
-             })
-             .catch(function (err) {
-             reject(err);
-             })
-             }
-             
-             function findRecentValidNarrative3(workspaces) {
-             return new Promise(function (resolve, reject) {
-             return promiseIterator(workspaces, function(workspaces) {
-             
-             }, resolve, reject);
-             });
-             }
-             
-             function findRecentValidNarrative2(workspaces, resolve, reject) {
-             
-             if (! workspaces || workspaces.length) {
-             return {last_narrative: null};
-             }
-             
-             var workspace = workspaces.shift();
-             
-             var ref = workspace[0] + '/' + workspace[8].narrative;
-             
-             return Promise.resolve(workspace.get_object_info_new({
-             objects: [{ref: ref}], 
-             includeMetadata: 1, 
-             ignoreErrors: 1
-             }))
-             .then(function (objList) {
-             // this case should generally never happen, so we just
-             // check one workspace at a time to keep the load light
-             if (objList[0] === null) {
-             return findRecentValidNarrative(workspace);
-             }
-             resolve({last_narrative: {ws_info: workspace, nar_info: objList[0]}});
-             })
-             .catch(function (err) {
-             reject(err);
-             })
-             }
-             */
 
             function findRecentValidNarrative(workspaces) {
-                console.log('LOOKING FOR A NARRATIVE... ' + workspaces.length);
                 if (!workspaces || workspaces.length === 0) {
-                    return {last_narrative: null};
+                    return null;
                 }
-
-                console.log('OK, ABOUT TO LOOK FOR NARRATIVE');
-
-                var wsInfo = serviceUtils.workspaceInfoToObject(workspaces.shift()),
-                    ref = [wsInfo.id, wsInfo.metadata.narrative].join('/');
                 
-                console.log('LOOKING FOR ' + ref);
+                var workspaceInfo, ref;
+                
+                do {
+                    workspaceInfo = serviceUtils.workspaceInfoToObject(workspaces.shift());
+                } while (workspaces.length && !workspaceInfo.metadata || !workspaceInfo.metadata.narrative);
+                    
+                if (!workspaces.length) {
+                    console.log('No Narratives found');
+                    return null;
+                }
+                
+                ref = [workspaceInfo.id, workspaceInfo.metadata.narrative].join('/');
 
                 return workspace.get_object_info_new({
                     objects: [{ref: ref}],
@@ -191,69 +121,30 @@ define([
                         // this case should generally never happen, so we just
                         // check one workspace at a time to keep the load light
                         if (objList[0] === null) {
-                            console.log('FAILED TO FIND ONE...');
                             return findRecentValidNarrative(workspaces);
                         }
-                        console.log('GOT ONE!');
-                        return({last_narrative: {ws_info: wsInfo, nar_info: serviceUtils.objectInfoToObject(objList[0])}});
-                    });
-            }
-            function findRecentValidNarrativex(workspaces, index) {
-                if (index >= workspaces.length) {
-                    return {last_narrative: null};
-                }
-                var ref = workspaces[index][0] + '/' + workspaces[index][8].narrative;
-                return workspace.get_object_info_new({
-                    objects: [{ref: ref}], 
-                    includeMetadata: 1, 
-                    ignoreErrors: 1
-                })
-                    .then(function (objList) {
-                        //this case should generally never happen, so we just
-                        //check one workspace at a time to keep the load light
-                        if (objList[0] === null) {
-                            return findRecentValidNarrative(workspaces, index + 1);
-                        }
-                        return {last_narrative: {ws_info: workspaces[index], nar_info: objList[0]}};
+                        return({
+                            workspaceInfo: workspaceInfo,
+                            narrativeInfo: serviceUtils.objectInfoToObject(objList[0])
+                        });
                     });
             }
 
-            /* looks at the user workspaces, determines which was last modified, and
-             * returns this object:
-             *
-             * {
-             *      
-             *       last_narrative: {
-             *                           ws_info: ...
-             *                           nar_info: ...
-             *                       }
-             *   }
-             * if there are no available narratives, this will set last_narrative:null
-             *
-             */
             function detectStartSettings() {
                 // get the full list of workspaces
-                console.log('DETECTING...');
                 return workspace.list_workspace_info({
                     owners: [runtime.service('session').getUsername()]
                 })
                     .then(function (wsList) { //only check ws owned by user
-                        /*WORKSPACE INFO
-                         0: ws_id id
-                         1: ws_name workspace
-                         2: username owner
-                         3: timestamp moddate,
-                         4: int object
-                         5: permission user_permission
-                         6: permission globalread,
-                         7: lock_status lockstat
-                         8: usermeta metadata*/
-                        var workspaces = wsList.filter(function (workspace) {
-                            if (workspace[8] && workspace[8].narrative) {
-                                return true;
-                            }
-                        });
-                console.log('GOT WORKSPACES... ' + workspaces.length);
+                        var workspaces = wsList
+                            .map(function (workspaceInfo) {
+                                return serviceUtils.workspaceInfoToObject(workspaceInfo);
+                            })
+                            .filter(function (workspaceInfo) {
+                                if (workspaceInfo.metadata && workspaceInfo.metadata.narrative) {
+                                    return true;
+                                }
+                            });
                         if (workspaces.length > 0) {
                             // we have existing narratives, so we load 'em up
                             workspaces.sort(function (a, b) { //sort by date
@@ -265,14 +156,14 @@ define([
                                 }
                                 return 0;
                             });
-                            return findRecentValidNarrative(workspaces, 0);
+                            var test = findRecentValidNarrative(workspaces);
+                            console.log('DETECED? ' );
+                            console.log(test);
+                            return test;
                         }
-                        return {last_narrative: null};
+                        return null;
                     });
             }
-
-
-
 
             function discardTempNarrative(params, resolve, fail) {
             }
@@ -341,20 +232,21 @@ define([
                             "</script>",
                         metadata: {}
                     },
-                cellInfo = {};
+                    cellInfo = {
+                        method: spec,
+                        widget: spec.widgets.input
+                    };
                 cellInfo[KB_TYPE] = KB_FUNCTION_CELL;
-                cellInfo['method'] = spec;
+
                 var widgetState = [];
                 if (params) {
                     var wparams = {};
                     params.forEach(function (param) {
                         wparams[param[1]] = param[2];
                     });
-                    var state = {state: wparams};
-                    widgetState.push(state);
+                    widgetState.push({state: wparams});
                 }
                 cellInfo[KB_STATE] = widgetState;
-                cellInfo.widget = spec.widgets.input;
                 cell.metadata[KB_CELL] = cellInfo;
                 return cell;
             }
@@ -605,44 +497,6 @@ define([
                 docBaseUrl: runtime.getConfig('docsite.baseUrl')
             });
 
-
-            /*
-             *  creates a new Narrative in the single Narrative, single WS approach
-             *
-             *  // all are optional ...
-             *  params =
-             *  {
-             *      cells : [
-             *          { app: app_id },
-             *          { method: method_id },
-             *          { markdown: markdown },
-             *          { code: code }
-             *      ],
-             *      parameters : [
-             *          {
-             *              cell: n,           // indicates index in the cell
-             *              step_id: id,
-             *              parameter_id: id,  
-             *              value: value
-             *          }
-             *      ],
-             *      importData : [
-             *          {
-             *               ref: ws_reference,  
-             *               newName : name
-             *          },
-             *          ...
-             *      ]
-             *  }
-             *
-             *  _callback = function(info) {
-             *
-             *      info.ws_info = [ .. ]
-             *      info.nar_info = [ .. ]
-             *      info.object_info = [ ws_reference : [ .. ] ]
-             *      
-             *  }
-             */
             function createTempNarrative(params) {
                 return Promise.try(function () {
                     var id = (new Date()).getTime(),
@@ -657,7 +511,7 @@ define([
                         description: ''
                     })
                         .then(function (ws_info) {
-                            newWorkspaceInfo = ws_info;
+                            newWorkspaceInfo = serviceUtils.workspaceInfoToObject(ws_info);
                             // 2 - create the Narrative object
                             return fetchNarrativeObjects(workspaceName, params.cells, params.parameters);
                         })
@@ -682,14 +536,13 @@ define([
                             });
                         })
                         .then(function (obj_info_list) {
-                            var workspaceId = newWorkspaceInfo[0],
-                                objectId = obj_info_list[0][0];
+                            // NB, there is only one so just use the first element.
+                            var objectInfo = serviceUtils.objectInfoToObject(obj_info_list[0])
                             returnData = {
-                                ws_info: newWorkspaceInfo,
-                                nar_info: obj_info_list[0]
+                                workspaceInfo: newWorkspaceInfo,
+                                narrativeInfo: objectInfo
                             };
-
-                            return complete_new_narrative(workspaceId, objectId, params.importData);
+                            return completeNewNarrative(newWorkspaceInfo.id, objectInfo.id, params.importData);
                         })
                         .then(function () {
                             return returnData;
@@ -707,15 +560,3 @@ define([
         return factory;
 
     });
-/*
- WORKSPACE INFO
- 0: ws_id id
- 1: ws_name workspace
- 2: username owner
- 3: timestamp moddate,
- 4: int object
- 5: permission user_permission
- 6: permission globalread,
- 7: lock_status lockstat
- 8: usermeta metadata
- */

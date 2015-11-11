@@ -13,8 +13,8 @@ define([
         var mount, container, runtime = config.runtime,
             narrativeManager = NarrativeManagerService({runtime: runtime});
 
-        function makeNarrativePath(wsId, objId) {
-            return runtime.getConfig('services.narrative.url') + '/narrative/ws.' + wsId + '.obj.' + objId;
+        function makeNarrativePath(objectInfo) {
+            return runtime.getConfig('services.narrative.url') + '/narrative/' + objectInfo.obj_id;
         }
         function createNewNarrative(params) {
             return Promise.try(function () {
@@ -52,13 +52,10 @@ define([
                     parameters: appData,
                     importData: importData
                 })
-                    .then(function (info) {
-                        var wsId = info.nar_info[6],
-                            objId = info.nar_info[0],
-                            path = makeNarrativePath(wsId, objId);
+                    .then(function (data) {
                         return {
                             redirect: {
-                                url: path,
+                                url: makeNarrativePath(data.narrativeInfo),
                                 newWindow: false
                             }
                         };
@@ -67,41 +64,33 @@ define([
         }
 
         function startOrCreateEmptyNarrative() {
-                return narrativeManager.detectStartSettings()
-                    .then(function (result) {
-                        console.log('DETECTED, supposedly, getting: ');
-                    console.log(result);
-                        if (result.last_narrative) {
-                            // we have a last_narrative, so go there
-                            var wsId = result.last_narrative.ws_info[0],
-                                objId = result.last_narrative.nar_info[0],
-                                path = makeNarrativePath(wsId, objId);
-                            return {
-                                redirect: {
-                                    url: path,
-                                    new_window: false
-                                }
-                            };
-                        } else {
-                            //we need to construct a new narrative- we have a first timer
-                            return narrativeManager.createTempNarrative({
-                                cells: [],
-                                parameters: [],
-                                importData: []
-                            })
-                                .then(function (info) {
-                                    var wsId = info.nar_info[6],
-                                        objId = info.nar_info[0],
-                                        path = makeNarrativePath(wsId, objId);
-                                    return {
-                                        redirect: {
-                                            url: path,
-                                            new_window: false
-                                        }
-                                    };
-                                });
-                        }
-                    });
+            return narrativeManager.detectStartSettings()
+                .then(function (result) {
+                    if (result) {
+                        // we have a last_narrative, so go there
+                        return {
+                            redirect: {
+                                url: makeNarrativePath(result.narrativeInfo),
+                                new_window: false
+                            }
+                        };
+                    } else {
+                        //we need to construct a new narrative- we have a first timer
+                        return narrativeManager.createTempNarrative({
+                            cells: [],
+                            parameters: [],
+                            importData: []
+                        })
+                            .then(function (result) {
+                                return {
+                                    redirect: {
+                                        url: makeNarrativePath(result.narrativeInfo),
+                                        new_window: false
+                                    }
+                                };
+                            });
+                    }
+                });
         }
 
         function attach(node) {
