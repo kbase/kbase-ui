@@ -11,7 +11,6 @@ var Promise = require('bluebird'),
     _ = require('lodash'),
     yaml = require('js-yaml'),
     readFileAsync = Promise.promisify(fs.readFile),
-    writeFileAsync = Promise.promisify(fs.writeFile),
     execAsync = Promise.promisify(require('child_process').exec),
     bower = require('bower');
 
@@ -25,7 +24,6 @@ module.exports = function (grunt) {
         // set to 'test' for switching to dev menus, 'prod' for normal ones.
         uiTarget = 'test',
         BUILD_DIR = 'build',
-        BUILDING_DIR = 'building',
         REPO_DIR = '..';
 
 
@@ -49,13 +47,6 @@ module.exports = function (grunt) {
             return path.normalize(BUILD_DIR + '/' + subdir);
         }
         return path.normalize(BUILD_DIR);
-    }
-
-    function buildingDir(subdir) {
-        if (subdir) {
-            return path.normalize(BUILDING_DIR + '/' + subdir);
-        }
-        return path.normalize(BUILDING_DIR);
     }
 
     function makeRepoDir(subdir) {
@@ -90,38 +81,6 @@ module.exports = function (grunt) {
         var serviceTemplateFile = 'config/service-config-template.yml',
             settingsCfg = 'config/settings.yml',
             outFile = buildDir('client/modules/app/config.yml'),
-            done = this.async();
-
-        fs.readFile(serviceTemplateFile, 'utf8', function (err, serviceTemplate) {
-            if (err) {
-                console.log(err);
-                throw 'Error reading service template';
-            }
-
-            var compiled = _.template(serviceTemplate),
-                services = compiled(deployCfg['kbase-ui']);
-
-            fs.readFile(settingsCfg, 'utf8', function (err, settings) {
-                if (err) {
-                    console.log(err);
-                    throw 'Error reading UI settings file';
-                }
-
-                fs.writeFile(outFile, services + '\n\n' + settings, function (err) {
-                    if (err) {
-                        console.log(err);
-                        throw 'Error writing compiled configuration';
-                    }
-                    done();
-                });
-            });
-        });
-    }
-    
-    function buildingConfigFile() {
-        var serviceTemplateFile = 'config/service-config-template.yml',
-            settingsCfg = 'config/settings.yml',
-            outFile = buildingDir('build/client/modules/app/config.yml'),
             done = this.async();
 
         fs.readFile(serviceTemplateFile, 'utf8', function (err, serviceTemplate) {
@@ -204,48 +163,6 @@ module.exports = function (grunt) {
 
         // Install the plugin config into the build
     }
-
-    function installPluginBower() {
-        // Load plugin config        
-        var done = this.async(),
-            pluginConfig, pluginConfigFile = 'targets/test/plugin.yml',
-            bowerConfig, bowerConfigFile = 'bower.json';
-        Promise.all([readFileAsync(pluginConfigFile, 'utf8'), readFileAsync(bowerConfigFile, 'utf8')])
-            .spread(function (pluginFile, bowerFile) {
-                pluginConfig = yaml.safeLoad(pluginFile);
-                bowerConfig = JSON.parse(bowerFile);
-            })
-            .then(function () {
-                // First ensure all plugin packages are installed via bower.
-                pluginConfig.plugins.external.forEach(function (plugin) {
-                    bowerConfig.dependencies[plugin.bower.name] = plugin.bower.version;
-                })
-
-                return writeFileAsync('building/bower.json', JSON.stringify(bowerConfig, null, 4));
-            })
-            .then(function () {
-                // Then copy them to the appropriate directory.
-                done();
-            })
-            .catch(function (err) {
-                cancelTask('Error installing plugins', err);
-            });
-
-        // Install plugins into the build directory
-
-        // Install the plugin config into the build
-    }
-    
-    function enterBuilding() {
-        grunt.file.setBase('building');
-    }
-    grunt.registerTask('enter-building', 'Enter the building dir', enterBuilding);
-
-    function leaveBuilding() {
-        grunt.file.setBase('..');
-    }
-    grunt.registerTask('leave-building', 'Leave the building dir', leaveBuilding);
-
 
     // Load External Tasks
     grunt.loadNpmTasks('grunt-bower-task');
@@ -532,50 +449,18 @@ module.exports = function (grunt) {
 //                    }
                 ]
             },
-            building: {
-                files: [
-                    {
-                        cwd: 'src/client',
-                        src: '**/*',
-                        dest: buildingDir('build/client'),
-                        expand: true
-                    },
-                    {
-                        cwd: 'src/data',
-                        src: '**/*',
-                        dest: buildingDir('build/client/data'),
-                        expand: true
-                    }
-//                    ,
-//                    {
-//                        src: 'lib/kbase-client-api.js',
-//                        dest: buildDir('client'),
-//                        expand: true
-//                    }
-                ]
-            },
-            'building-to-build': {
-                files: [
-                    {
-                        cwd: 'building',
-                        src: 'build/**.*',
-                        dest: 'build',
-                        expand: true
-                    }
-                ]
-            },
             dev: {
                 files: [
 // Uncomment to have these built into kbase-ui directly from a local repo.
 // plugins as defined in ui-test.yml also need to be adjusted.
 
 
-//                    {
-//                        cwd: makeRepoDir('kbase-ui-plugin-dataview/src/plugin'),
-//                        src: '**/*',
-//                        dest: buildDir('client/modules/plugins/dataview'),
-//                        expand: true
-//                    },
+                    {
+                        cwd: makeRepoDir('kbase-ui-plugin-dataview/src/plugin'),
+                        src: '**/*',
+                        dest: buildDir('client/modules/plugins/dataview'),
+                        expand: true
+                    },
 //                    {
 //                        cwd: makeRepoDir('kbase-ui-plugin-typebrowser/src/plugin'),
 //                        src: '**/*',
@@ -618,14 +503,6 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-            config2: {
-                files: [
-                    {
-                        src: 'config/ui-' + uiTarget + '.yml',
-                        dest: buildingDir('build/client/modules/app/ui.yml')
-                    }
-                ]
-            },
             'build-search': {
                 files: [
                     {
@@ -636,30 +513,10 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-            'building-search': {
-                files: [
-                    {
-                        cwd: 'src/search',
-                        src: '**/*',
-                        dest: 'building/build/client/search',
-                        expand: true
-                    }
-                ]
-            }
         },
         clean: {
             build: {
                 src: [buildDir()]
-            },
-            building: {
-                src: [buildingDir()]
-            }
-        },
-        mkdir: {
-            building: {
-                options: {
-                    create: [buildingDir()]
-                }
             }
         },
         connect: {
@@ -726,15 +583,6 @@ module.exports = function (grunt) {
                 command: [
                     'bower',
                     'update'
-                ].join(' '),
-                options: {
-                    stderr: false
-                }
-            },
-            bowerInstall: {
-                command: [
-                    'bower',
-                    'install'
                 ].join(' '),
                 options: {
                     stderr: false
@@ -822,17 +670,9 @@ module.exports = function (grunt) {
         'Build the config file',
         buildConfigFile);
 
-    grunt.registerTask('building-config',
-        'Build the config file',
-        buildingConfigFile);
-        
     grunt.registerTask('install-plugins',
         'Install UI plugins',
         installPlugins);
-
-    grunt.registerTask('install-plugins-bower',
-        'Install UI plugins',
-        installPluginBower);
 
     // Does the whole building task. Installs everything needed
     // from Bower, builds and optimizes things, and tweaks the 
@@ -848,28 +688,6 @@ module.exports = function (grunt) {
         'copy:build-search',
         'build-config'
     ]);
-
-    grunt.registerTask('clean-building', [
-        'clean:building'
-    ]);
-    grunt.registerTask('build-building', [
-        'mkdir:building',
-        'copy:building',
-        'install-plugins-bower',
-        'enter-building',
-        'bower:install',
-        'copy:bower',
-        'leave-building',
-        'copy:config',
-        'copy:building-search',
-        'building-config'
-    ]);
-    grunt.registerTask('install-building', 'Finish the building', [
-        'clean:build',
-        'copy:building-to-build'
-    ]);
-
-
 
     grunt.registerTask('dist', [
         'build',

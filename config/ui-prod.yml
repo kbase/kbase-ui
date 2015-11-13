@@ -3,6 +3,13 @@
 plugins:
     -
         -
+            userprofileservice
+        -
+            types            
+    -
+        -
+            serviceClients
+        -
             mainwindow
         -
             message
@@ -11,22 +18,11 @@ plugins:
         -
             login
         -
-            name: serviceClients
-            directory: bower_components/kbase-service-clients-js
+            dataview
         -
-            userprofileservice
+            typeview
         -
-            types            
-    -
-        -
-            name: dataview
-            directory: bower_components/kbase-ui-plugin-dataview
-        -
-            name: typeview
-            directory: bower_components/kbase-ui-plugin-typeview
-        -
-            name: dashboard
-            directory: bower_components/kbase-ui-plugin-dashboard
+            dashboard
         -
             userprofile
         -
@@ -36,35 +32,9 @@ plugins:
         -
             narrativestore
         -
-            name: viswidgets
-            directory: bower_components/kbase-ui-plugin-vis-widgets
+            viswidgets
 menu:
     available_items:
-#           search: 
-#               path: search/?q=*
-#               label: Search Data
-#               icon: search
-#            narrative: 
-#                uri: "#narrativemanager/start"
-#                label: Narrative
-#                icon: file
-#            narrativeTutorial: 
-#                uri: https://kbase.us/narrative-guide
-#                label: Narrative Tutorial
-#                icon: info-circle
-#
-#            about_kbase: 
-#                uri: https://kbase.us/about
-#                label: About KBase
-#                icon: info-circle
-#            contact_kbase: 
-#                uri: https://kbase.us/contact-us
-#                label: Contact KBase
-#                icon: envelope-o
-#            dashboard:
-#                uri: "#dashboard"
-#                label: Dashboard
-#                icon: dashboard
     menus:
         authenticated: 
             main: [narrative, search, dashboard]

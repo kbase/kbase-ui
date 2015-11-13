@@ -39,7 +39,15 @@
         "blockUI": "jquery.blockUI#*",
         "q": "2.0.2",
         "kbase-common-js": "eapearson/kbase-common-js#master",
-        "kbase-ui-widget": "eapearson/kbase-ui-widget#master"
+        "kbase-ui-widget": "eapearson/kbase-ui-widget#master",
+        "kbase-ui-plugin-typeview": "eapearson/kbase-ui-plugin-typeview#master",
+        "kbase-ui-plugin-dataview": "eapearson/kbase-ui-plugin-dataview#master",
+        "kbase-ui-plugin-dashboard": "eapearson/kbase-ui-plugin-dashboard#master",
+        "kbase-service-clients-js": "eapearson/kbase-service-clients-js#master",
+        "kbase-ui-plugin-vis-widgets": "eapearson/kbase-ui-plugin-vis-widgets#master",
+        "kbase-ui-plugin-databrowser": "eapearson/kbase-ui-plugin-databrowser#master",
+        "kbase-ui-plugin-typebrowser": "eapearson/kbase-ui-plugin-typebrowser#master",
+        "kbase-ui-plugin-datawidgets": "eapearson/kbase-ui-plugin-datawidgets#master"
     },
     "devDependencies": {}
 }
