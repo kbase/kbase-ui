@@ -11,7 +11,7 @@ define([
     'kb_common_asyncQueue',
     'kb_common_appServiceManager',
     'promise',
-    'yaml!app/config.yml',
+    'yaml!config/config.yml',
     'require'
 ], function (pluginManagerFactory,
     dom, messengerFactory,

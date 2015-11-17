@@ -13,7 +13,8 @@ var Promise = require('bluebird'),
     readFileAsync = Promise.promisify(fs.readFile),
     writeFileAsync = Promise.promisify(fs.writeFile),
     execAsync = Promise.promisify(require('child_process').exec),
-    bower = require('bower');
+    bower = require('bower'),
+    symlinkAsync = Promise.promisify(fs.symlink);
 
 module.exports = function (grunt) {
     'use strict';
@@ -117,38 +118,33 @@ module.exports = function (grunt) {
             });
         });
     }
-    
+
+    /*
+     * Build the services config file (concatenated with the  miscellaneous 
+     * config file) based on the services file template, the kbase standard
+     * services config.
+     * 
+     * Note that we are using the grunt api for file access. This has the advantage
+     * of being asynchronous, and building directory paths automatically.
+     * 
+     * @returns {undefined}
+     */
     function buildingConfigFile() {
         var serviceTemplateFile = 'config/service-config-template.yml',
+            serviceTemplate = grunt.file.read(serviceTemplateFile),
             settingsCfg = 'config/settings.yml',
-            outFile = buildingDir('build/client/modules/app/config.yml'),
-            done = this.async();
+            settings = grunt.file.read(settingsCfg),
+            outFile = 'building/build/client/modules/config/config.yml',
+            compiled = _.template(serviceTemplate),
+            servicesConfig = compiled(deployCfg['kbase-ui']),
+            concatenatedConfig = servicesConfig + '\n\n' + settings;
 
-        fs.readFile(serviceTemplateFile, 'utf8', function (err, serviceTemplate) {
-            if (err) {
-                console.log(err);
-                throw 'Error reading service template';
-            }
-
-            var compiled = _.template(serviceTemplate),
-                services = compiled(deployCfg['kbase-ui']);
-
-            fs.readFile(settingsCfg, 'utf8', function (err, settings) {
-                if (err) {
-                    console.log(err);
-                    throw 'Error reading UI settings file';
-                }
-
-                fs.writeFile(outFile, services + '\n\n' + settings, function (err) {
-                    if (err) {
-                        console.log(err);
-                        throw 'Error writing compiled configuration';
-                    }
-                    done();
-                });
-            });
-        });
+        grunt.file.write(outFile, concatenatedConfig);
     }
+    grunt.registerTask('building-config',
+        'Build the config file',
+        buildingConfigFile);
+
 
     function installPlugins() {
         // Load plugin config        
@@ -205,10 +201,10 @@ module.exports = function (grunt) {
         // Install the plugin config into the build
     }
 
-    function installPluginBower() {
+    function injectPluginsIntoBower() {
         // Load plugin config        
         var done = this.async(),
-            pluginConfig, pluginConfigFile = 'targets/test/plugin.yml',
+            pluginConfig, pluginConfigFile = 'targets/' + uiTarget + '/plugin.yml',
             bowerConfig, bowerConfigFile = 'bower.json';
         Promise.all([readFileAsync(pluginConfigFile, 'utf8'), readFileAsync(bowerConfigFile, 'utf8')])
             .spread(function (pluginFile, bowerFile) {
@@ -217,9 +213,16 @@ module.exports = function (grunt) {
             })
             .then(function () {
                 // First ensure all plugin packages are installed via bower.
-                pluginConfig.plugins.external.forEach(function (plugin) {
-                    bowerConfig.dependencies[plugin.bower.name] = plugin.bower.version;
-                })
+                pluginConfig.plugins.external
+                    .filter(function (plugin) {
+                        if (plugin.bower) {
+                            return true;
+                        }
+                        return false;
+                    })
+                    .forEach(function (plugin) {
+                        bowerConfig.dependencies[plugin.bower.name] = plugin.bower.version;
+                    });
 
                 return writeFileAsync('building/bower.json', JSON.stringify(bowerConfig, null, 4));
             })
@@ -235,7 +238,120 @@ module.exports = function (grunt) {
 
         // Install the plugin config into the build
     }
-    
+
+    function injectPluginsIntoConfig() {
+        // Load plugin config        
+        var done = this.async(),
+            pluginConfigFile = 'targets/' + uiTarget + '/plugin.yml';
+        readFileAsync(pluginConfigFile, 'utf8')
+            .then(function (pluginFile) {
+                return yaml.safeLoad(pluginFile);
+            })
+            .then(function (pluginConfig) {
+                var newConfig = {
+                    plugins: []
+                };
+                // Plugin sections are hard coded.
+                ['service', 'builtIn', 'external'].forEach(function (pluginSection) {
+                    newConfig.plugins.push(pluginConfig.plugins[pluginSection].map(function (pluginItem) {
+                        if (typeof pluginItem === 'string') {
+                            return pluginItem;
+                        } else {
+                            return pluginItem.name;
+                        }
+                    }));
+                });
+
+                // emulate the yaml file for now, or for ever.
+                return writeFileAsync('building/build/client/modules/config/plugin.yml', yaml.safeDump(newConfig));
+            })
+            .then(function () {
+                // Then copy them to the appropriate directory.
+                done();
+            })
+            .catch(function (err) {
+                cancelTask('Error installing plugins', err);
+            });
+
+        // Install plugins into the build directory
+
+        // Install the plugin config into the build
+    }
+    grunt.registerTask('inject-plugins-into-config', 'Inject the plugins config file into the building build config', injectPluginsIntoConfig);
+
+    /*
+     * Copy plugins from the bower module installation directory into the plugins
+     * directory. We _could_ reference plugins directly from the bower directory,
+     * as we do for other bower-installed dependencies, but it seems to be easier
+     * to keep track of (and to be able to manipulate) plugins if they are all 
+     * located in a single, well-defined location.
+     * 
+     * @returns {undefined}
+     */
+    function installExternalPlugins() {
+        // Load plugin config
+        var done = this.async(),
+            pluginConfig, pluginConfigFile = 'targets/' + uiTarget + '/plugin.yml';
+        Promise.all([readFileAsync(pluginConfigFile, 'utf8')])
+            .spread(function (pluginFile) {
+                pluginConfig = yaml.safeLoad(pluginFile);
+            })
+            .then(function () {
+                return pluginConfig.plugins.external.map(function (plugin) {
+                    if (plugin.bower) {
+                        var cwd = plugin.copy.path || 'dist/plugin',
+                            srcDir = ['building/bower_components', plugin.bower.name, cwd].join('/'),
+                            destDir = 'building/build/client/modules/plugins/' + plugin.name,
+                            mapping = grunt.file.expandMapping(['**/*'], destDir, {
+                                cwd: srcDir,
+                                filter: 'isFile'
+                            });
+                        mapping.forEach(function (fileMapping) {
+                            fileMapping.src.forEach(function (sourcePath) {
+                                grunt.file.copy(sourcePath, fileMapping.dest);
+                            });
+                        });
+                    }
+                });
+            })
+            .then(function () {
+                return Promise.all(pluginConfig.plugins.external
+                    .filter(function (plugin) {
+                        if (plugin.link) {
+                            return true;
+                        }
+                        return false;
+                    })
+                    .map(function (plugin) {
+                        if (plugin.link) {
+                            var cwd = plugin.copy.path || 'dist/plugin',
+                                source = [plugin.link.source, cwd].join('/'),
+                                destination = 'building/build/client/modules/plugins/' + plugin.name;
+                            console.log('Linking...');
+                            console.log(source);
+                            console.log('to');
+                            console.log(destination);
+                            return symlinkAsync(source, destination);
+                        }
+                    }));
+            })
+            .then(function () {
+                // Then copy them to the appropriate directory.
+                done();
+            })
+            .catch(function (err) {
+                cancelTask('Error installing plugins', err);
+            });
+
+        // Install plugins into the build directory
+
+        // Install the plugin config into the build
+    }
+    grunt.registerTask('install-external-plugins',
+        'Copy plugins from bower into their appropriate locations',
+        installExternalPlugins);
+
+
     function enterBuilding() {
         grunt.file.setBase('building');
     }
@@ -524,12 +640,6 @@ module.exports = function (grunt) {
                         dest: buildDir('client/data'),
                         expand: true
                     }
-//                    ,
-//                    {
-//                        src: 'lib/kbase-client-api.js',
-//                        dest: buildDir('client'),
-//                        expand: true
-//                    }
                 ]
             },
             building: {
@@ -545,20 +655,20 @@ module.exports = function (grunt) {
                         src: '**/*',
                         dest: buildingDir('build/client/data'),
                         expand: true
+                    },
+                    {
+                        cwd: 'targets/' + uiTarget,
+                        src: 'menu.yml',
+                        dest: buildingDir('build/client/modules/config'),
+                        expand: true
                     }
-//                    ,
-//                    {
-//                        src: 'lib/kbase-client-api.js',
-//                        dest: buildDir('client'),
-//                        expand: true
-//                    }
                 ]
             },
             'building-to-build': {
                 files: [
                     {
-                        cwd: 'building',
-                        src: 'build/**.*',
+                        cwd: 'building/build',
+                        src: '**/*',
                         dest: 'build',
                         expand: true
                     }
@@ -622,7 +732,7 @@ module.exports = function (grunt) {
                 files: [
                     {
                         src: 'config/ui-' + uiTarget + '.yml',
-                        dest: buildingDir('build/client/modules/app/ui.yml')
+                        dest: buildingDir('build/client/modules/config/ui.yml')
                     }
                 ]
             },
@@ -822,17 +932,16 @@ module.exports = function (grunt) {
         'Build the config file',
         buildConfigFile);
 
-    grunt.registerTask('building-config',
-        'Build the config file',
-        buildingConfigFile);
-        
+
+
+
     grunt.registerTask('install-plugins',
         'Install UI plugins',
         installPlugins);
 
-    grunt.registerTask('install-plugins-bower',
+    grunt.registerTask('inject-plugins-into-bower',
         'Install UI plugins',
-        installPluginBower);
+        injectPluginsIntoBower);
 
     // Does the whole building task. Installs everything needed
     // from Bower, builds and optimizes things, and tweaks the 
@@ -849,24 +958,35 @@ module.exports = function (grunt) {
         'build-config'
     ]);
 
+    // new 'building' build process.
+    // The point is the 'setup' phase - we need to prepare the base configuration for the build,
+    // which can then be modified to introduce plugins, as well as a development environment,
+    // and perhaps testing.
     grunt.registerTask('clean-building', [
         'clean:building'
     ]);
-    grunt.registerTask('build-building', [
+    grunt.registerTask('setup-building', [
         'mkdir:building',
+        'inject-plugins-into-bower',
+        'building-config',
+        'inject-plugins-into-config'
+    ]);
+    grunt.registerTask('make-building', [
         'copy:building',
-        'install-plugins-bower',
         'enter-building',
         'bower:install',
         'copy:bower',
         'leave-building',
-        'copy:config',
+        'install-external-plugins',
         'copy:building-search',
-        'building-config'
     ]);
     grunt.registerTask('install-building', 'Finish the building', [
         'clean:build',
         'copy:building-to-build'
+    ]);
+
+    grunt.registerTask('build-building', [
+        'setup-building', 'make-building', 'install-building'
     ]);
 
 
