@@ -181,8 +181,8 @@ define([
                 runtime: api,
                 cookieName: 'kbase_session',
                 extraCookieNames: ['kbase_narr_session'],
-                loginUrl: 'https://kbase.us/services/authorization/Sessions/Login',
-                cookieMaxAge: 100000
+                loginUrl: clientConfig.services.login.url,
+                cookieMaxAge: clientConfig.ui.constants.session_max_age
 
             });
             appServiceManager.addService('heartbeat', {
