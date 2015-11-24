@@ -119,7 +119,7 @@ define([
                     define('kb_plugin_' + pluginDef.package.name, [], function () {
                         return {
                             plugin: {
-                                path: '/modules/' + sourcePath + '/resources'
+                                path: '/' + sourcePath + '/resources'
                             }
                         };
                     });

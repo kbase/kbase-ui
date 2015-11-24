@@ -7,8 +7,8 @@
  */
 define([
     'jquery',
-    'kb_service_narrativeMethodStore',
-    'kb_widgetBases_kbAuthenticatedWidget',
+    'kb/service/client/NarrativeMethodStore',
+    'kb/widget/legacy/authenticatedWidget',
 ],
     function ($, NarrativeMethodStore) {
         $.KBWidget({

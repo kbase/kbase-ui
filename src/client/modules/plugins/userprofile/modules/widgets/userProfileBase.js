@@ -111,7 +111,7 @@ define([
                     /* TODO: the base url should be fed in from the calling env -- now the plugin package */
                     
                     var loaders = [                        
-                        new nunjucks.WebLoader(Plugin.plugin.path + '/' + this.widgetName + '/templates', true),
+                        new nunjucks.WebLoader(Plugin.plugin.fullPath + '/' + this.widgetName + '/templates', true),
                         //new nunjucks.WebLoader(Plugin.plugin.path + '/UserProfileBase/templates', true)
                     ];
                      this.templates.env = new nunjucks.Environment(loaders, {

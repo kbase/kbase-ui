@@ -1,7 +1,7 @@
 /*global define */
 /*jslint white: true, browser: true */
 define([
-    'kb_widgetBases_simpleWidget',
+    'kb/widget/bases/simpleWidget',
     'kb/common/html',
     'kb_plugin_mainWindow'
 ],
@@ -19,7 +19,7 @@ define([
                         var a = html.tag('a'),
                             img = html.tag('img');
                         return a({href: 'http://kbase.us'}, [
-                            img({id: 'logo', src: Plugin.plugin.path + '/images/kbase_logo.png', width: '46'})
+                            img({id: 'logo', src: Plugin.plugin.fullPath + '/images/kbase_logo.png', width: '46'})
                         ]);
                     }
                 }

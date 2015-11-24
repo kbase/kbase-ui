@@ -22,7 +22,7 @@ module.exports = function (grunt) {
     // Here we switch to the deployment environment.
     // prod = production
     // ci = continuous integration
-    var servicesTarget = 'ci',
+    var servicesTarget = 'prod',
         // set to 'test' for switching to dev menus, 'prod' for normal ones.
         uiTarget = 'test',
         BUILD_DIR = 'build',
@@ -490,6 +490,12 @@ module.exports = function (grunt) {
         },
         {
             name: 'kbase-common-js',
+            cwd: 'dist',
+            src: ['**/*'],
+            dest: ''
+        },
+         {
+            name: 'kbase-service-clients-js',
             cwd: 'dist',
             src: ['**/*'],
             dest: ''

@@ -3,7 +3,7 @@
 define([
     'bluebird',
     'kb_userProfile_widget_base',
-    'kb_service_workspace'
+    'kb/service/client/workspace'
 ],
     function (Promise, SocialWidget, WorkspaceService) {
         'use strict';

@@ -38,6 +38,7 @@
         "numeral": "1.5.3",
         "blockUI": "jquery.blockUI#*",
         "q": "2.0.2",
+        "kbase-service-clients-js": "eapearson/kbase-service-clients-js#master",
         "kbase-common-js": "eapearson/kbase-common-js#master",
         "kbase-ui-widget": "eapearson/kbase-ui-widget#master"
     },

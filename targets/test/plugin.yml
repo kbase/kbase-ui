@@ -92,13 +92,6 @@ plugins:
             copy:
                 path: src/plugin
         -
-            name: serviceclients
-            bower:
-                name: kbase-service-clients-js
-                version: eapearson/kbase-service-clients-js#master
-            copy:
-                path: dist/plugin
-        -
             name: datawidgets
             bower:
                 name: kbase-ui-plugin-datawidgets

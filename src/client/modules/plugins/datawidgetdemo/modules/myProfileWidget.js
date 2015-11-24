@@ -3,8 +3,8 @@
 define([
     'bluebird',
     'kb/common/html',
-    'kb_widgetBases_dataWidget',
-    'kb_service_userProfile'
+    'kb/widget/bases/dataWidget',
+    'kb/service/client/UserProfile'
 ], function (Promise, html, DataWidget, UserProfile) {
     function factory(config) {
         return DataWidget.make({

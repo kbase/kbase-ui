@@ -1,7 +1,7 @@
 /*global define */
 /*jslint white: true, browser: true */
 define([
-    'kb_widgetBases_simpleWidget',
+    'kb/widget/base/simpleWidget',
     'kb/common/dom',
     'kb/common/html'
 ],

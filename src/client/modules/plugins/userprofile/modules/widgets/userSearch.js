@@ -2,7 +2,7 @@ define([
     'jquery',
     'bluebird',
     'kb_userProfile_widget_base', 
-    'kb_service_userProfile'
+    'kb/service/client/UserProfile'
 ],
     function ($, Promise, SocialWidget, UserProfileService) {
         "use strict";

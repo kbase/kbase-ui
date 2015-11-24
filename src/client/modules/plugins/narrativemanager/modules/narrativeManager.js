@@ -4,9 +4,9 @@ define([
     'jquery',
     'underscore',
     'bluebird',
-    'kb_service_workspace',
-    'kb_service_narrativeMethodStore',
-    'kb_service_utils'
+    'kb/service/client/workspace',
+    'kb/service/client/NarrativeMethodStore',
+    'kb/service/utils'
 ],
     function ($, _, Promise, Workspace, NarrativeMethodStore, serviceUtils) {
         'use strict';

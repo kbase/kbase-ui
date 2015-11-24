@@ -10,7 +10,7 @@ define([
     'bluebird',
     'kb/common/html',
     'kb/common/utils',
-    'kb_service_workspace',
+    'kb/service/client/workspace',
     'kb_typeView_specCommon',
     'google-code-prettify',
     'datatables_bootstrap'

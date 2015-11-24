@@ -1,7 +1,7 @@
 /*global define*/
 /*jslint white: true*/
 define([
-    'kb_widgetBases_dataWidget'
+    'kb/widget/bases/dataWidget'
 ], function (DataWidget) {
     function factory(config) {
         return DataWidget.make({
