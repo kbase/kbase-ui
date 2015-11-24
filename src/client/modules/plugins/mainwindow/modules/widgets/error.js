@@ -1,8 +1,8 @@
 /*global define */
 /*jslint white: true */
 define([
-    'kb_common_html',
-    'kb_common_dom'
+    'kb/common/html',
+    'kb/common/dom'
 ], function (html, dom) {
     'use strict';
     function factory(config) {

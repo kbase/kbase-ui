@@ -3,7 +3,7 @@
 define([
     'underscore',
     'kb_widgetBases_simpleWidget',
-    'kb_common_html',
+    'kb/common/html',
     'kb_plugin_mainWindow',
     'bootstrap'
 ],

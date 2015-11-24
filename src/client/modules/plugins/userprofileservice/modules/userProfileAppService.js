@@ -2,10 +2,10 @@
 /*jslint browser: true, white: true */
 define([
     'promise',
-    'kb_common_observed',
-    'kb_common_props',
+    'kb/common/observed',
+    'kb/common/props',
     'kb_userprofile_userProfile',
-    'kb_common_lang'
+    'kb/common/lang'
 ], function (Promise, observed, props, userProfile, lang) {
     'use strict';
 

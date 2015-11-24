@@ -22,7 +22,7 @@ module.exports = function (grunt) {
     // Here we switch to the deployment environment.
     // prod = production
     // ci = continuous integration
-    var servicesTarget = 'prod',
+    var servicesTarget = 'ci',
         // set to 'test' for switching to dev menus, 'prod' for normal ones.
         uiTarget = 'test',
         BUILD_DIR = 'build',
@@ -413,11 +413,6 @@ module.exports = function (grunt) {
             cwd: 'dist'
         },
         {
-            name: 'kbase-common-js',
-            cwd: 'src/js',
-            src: ['**/*']
-        },
-        {
             dir: 'node-uuid',
             src: ['uuid.js']
         },
@@ -493,6 +488,13 @@ module.exports = function (grunt) {
             src: ['**/*'],
             dest: ''
         },
+        {
+            name: 'kbase-common-js',
+            cwd: 'dist',
+            src: ['**/*'],
+            dest: ''
+        },
+
         // Dependencies needed for Search (for now)
         {
             name: 'blockUI',

@@ -7,7 +7,7 @@
  */
 define([
     'bluebird',
-    'kb_common_html',
+    'kb/common/html',
     'kb/widget/widgetSet'
 ],
     function (Promise, html, WidgetSet) {

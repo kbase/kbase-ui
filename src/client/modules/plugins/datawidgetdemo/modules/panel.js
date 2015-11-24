@@ -5,8 +5,8 @@
  */
 define([
     'promise',
-    'kb_common_html',
-    'kb_common_dom',
+    'kb/common/html',
+    'kb/common/dom',
     'kb/widget/widgetSet'
 ],
     function (Promise, html, dom, WidgetSet) {

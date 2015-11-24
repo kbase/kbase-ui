@@ -3,7 +3,7 @@
 define([
      'bluebird',
     'app/App',
-    'kb_common_dom',
+    'kb/common/dom',
     'yaml!config/plugin.yml',
     'yaml!config/menu.yml',
     'bootstrap',

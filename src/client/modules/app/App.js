@@ -3,13 +3,13 @@
  white: true, browser: true
  */
 define([
-    'kb_common_pluginManager',
-    'kb_common_dom',
-    'kb_common_messenger',
+    'kb/common/pluginManager',
+    'kb/common/dom',
+    'kb/common/messenger',
     'kb/widget/widgetMount',    
-    'kb_common_props',
-    'kb_common_asyncQueue',
-    'kb_common_appServiceManager',
+    'kb/common/props',
+    'kb/common/asyncQueue',
+    'kb/common/appServiceManager',
     'promise',
     'yaml!config/config.yml',
     'require'

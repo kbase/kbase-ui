@@ -2,7 +2,7 @@
 /*jslint white: true, browser: true */
 define([
     'kb_widgetBases_simpleWidget',
-    'kb_common_html'
+    'kb/common/html'
 ],
     function (SimpleWidgetFactory, html) {
         'use strict';

@@ -2,8 +2,8 @@
 /*jslint browser:true  vars: true */
 define([
     'bluebird',
-    'kb_common_asyncQueue',
-    'kb_common_lang'
+    'kb/common/asyncQueue',
+    'kb/common/lang'
 ],
     function (Promise, asyncQueue, lang) {
         function factory(config) {

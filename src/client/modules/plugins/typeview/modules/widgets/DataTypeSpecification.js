@@ -8,8 +8,8 @@
 define([
     'jquery',
     'bluebird',
-    'kb_common_html',
-    'kb_common_utils',
+    'kb/common/html',
+    'kb/common/utils',
     'kb_service_workspace',
     'kb_typeView_specCommon',
     'google-code-prettify',

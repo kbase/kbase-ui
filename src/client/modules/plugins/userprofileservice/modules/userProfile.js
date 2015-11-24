@@ -3,7 +3,7 @@
 
 define([
     'bluebird',
-    'kb_common_utils',
+    'kb/common/utils',
     'md5',
     'kb_userprofile_userProfileService',
     'kb_plugin_userprofileservice'

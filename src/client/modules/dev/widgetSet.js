@@ -6,8 +6,8 @@
  white: true
  */
 define([
-    'kb_common_html',
-    'kb_common_dom',
+    'kb/common/html',
+    'kb/common/dom',
     'bluebird'
 ], function (html, dom, Promise) {
     'use strict';

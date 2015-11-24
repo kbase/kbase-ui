@@ -10,8 +10,8 @@ define([
     'nunjucks',
     'jquery',
     'bluebird',
-    'kb_common_utils',
-    'kb_common_html', 
+    'kb/common/utils',
+    'kb/common/html', 
     'kb_userprofile_userProfile',
     'kb_plugin_userprofile'
 ],
