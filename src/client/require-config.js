@@ -106,7 +106,7 @@ require.config({
 //        kb_vis_size: 'bower_components/kbase-common-js/dist/kb/common/vis/geometry/size',
 //        kb_vis_RGBColor: 'bower_components/kbase-common-js/dist/kb/common/vis/RGBColor',
 //        kb_vis_barchart: 'bower_components/kbase-common-js/dist/kb/common/vis/kbaseBarchart',
-//        kb_vis_chordchart: 'bower_components/kbase-common-js/dist/kb/common/vis/kbaseChordchart',
+//        kb_vis_chordchart: 'bower_compoƒnents/kbase-common-js/dist/kb/common/vis/kbaseChordchart',
 //        kb_vis_circular_heatmap: 'bower_components/kbase-common-js/dist/kb/common/vis/kbaseCircularHeatmap',
 //        kb_vis_forced_network: 'bower_components/kbase-common-js/dist/kb/common/vis/kbaseForcedNetwork',
 //        kb_vis_heatmap: 'bower_components/kbase-common-js/dist/kb/common/vis/kbaseHeatmap',

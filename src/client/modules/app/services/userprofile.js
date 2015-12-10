@@ -3,10 +3,14 @@
 define([
     'promise',
     'kb/common/observed',
-    'kb/common/props',
-    'kb_userprofile_userProfile',
+    'kb/service/userProfile',
     'kb/common/lang'
-], function (Promise, observed, props, userProfile, lang) {
+], function (
+    Promise,
+    observed,
+    userProfile,
+    lang
+    ) {
     'use strict';
 
     function factory(config) {
@@ -37,6 +41,7 @@ define([
                     loadProfile()
                         .then(function (profile) {
                             state.setItem('userprofile', profile);
+                            return null;
                         })
                         .catch(function (err) {
                             console.log('ERROR starting profile app service');
@@ -46,6 +51,7 @@ define([
                     state.setItem('userprofile', null);
                 }
             });
+            return true;
         }
         function stop() {
             return Promise.try(function () {

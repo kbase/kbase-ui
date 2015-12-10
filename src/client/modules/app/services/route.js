@@ -77,7 +77,7 @@ define([
             });
         }
         function pluginHandler(pluginConfig) {
-            installRoutes(pluginConfig);
+            return installRoutes(pluginConfig);
         }
 
         runtime.recv('app', 'do-route', function () {

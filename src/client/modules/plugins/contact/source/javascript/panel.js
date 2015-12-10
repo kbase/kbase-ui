@@ -120,9 +120,10 @@ define([
             };
         }
 
-        function widget() {
+        function widget(config) {
             var mount, container;
             var contact = ContactViewModel();
+            var runtime = config.runtime;
 
             // API
             function init(config) {
@@ -136,7 +137,7 @@ define([
                     container = document.createElement('div');
                     mount.appendChild(container);
                     container.innerHTML = renderContactForm();
-                    R.send('app', 'title', 'Contact KBase');
+                    runtime.send('app', 'title', 'Contact KBase');
                     resolve();
                 });
             }

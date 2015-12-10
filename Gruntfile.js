@@ -87,6 +87,87 @@ module.exports = function (grunt) {
         }
     }
 
+    var STATE = {};
+    function setTaskState(name, value) {
+        STATE[name] = value;
+    }
+    function getTaskState(name) {
+        var path = name.split('.'),
+            key = path[0],
+            propertyPath = path.length > 1 ? path.slice(1) : [],
+            value;
+
+        if (!STATE.hasOwnProperty(key)) {
+            throw new Error('No task state with key "' + key + '"');
+        }
+        value = STATE[key];
+
+        propertyPath.forEach(function (propKey) {
+            if (!value.hasOwnProperty(propKey)) {
+                throw new Error('No property "' + propertyPath.join('.') + ' in state key ' + propKey);
+            }
+            value = value[propKey];
+        });
+        return value;
+    }
+
+    var targetConfig;
+    function loadTargetConfig() {
+        var // done = this.async(),
+            target = grunt.option('target');
+        if (!target) {
+            // load from /args.yml
+
+            // If not there, build for production, er test.
+            if (!target) {
+                target = 'test';
+                console.log('Using default target: ' + target);
+            } else {
+                console.log('Using target provided from developer defaults: ' + target);
+            }
+        } else {
+            console.log('Using target provided form command line: ' + target);
+        }
+
+        if (!target) {
+            throw new Error('Target not defined');
+        }
+
+        setTaskState('target', target);
+
+        // Load the deployment config
+        var deployConfigPath = 'targets/' + target + '/deploy.yml';
+
+        var content = fs.readFileSync(deployConfigPath, 'utf8');
+        var config = yaml.safeLoad(content);
+        setTaskState('targetConfig', yaml.safeLoad(content));
+    }
+    loadTargetConfig()
+
+//        readFileAsync(deployConfigPath, 'utf8')
+//            .then(function (content) {
+//                setTaskState('targetConfig', yaml.safeLoad(content));
+//                done(targetConfig);
+//            })
+//            .catch(function (err) {
+//                cancelTask('Error reading target config file.', err);
+//            });
+
+    // Set the services target and ui target.
+
+//    }
+//    grunt.registerTask('load-target-config',
+//        'Load the specified target configuration',
+//        loadTargetConfig);
+
+    function tinkerReport() {
+        console.log('TINKER');
+        console.log('Target config');
+        console.log(getTaskState('targetConfig'));
+        console.log(getTaskState('targetConfig.uiTargetKey'));
+    }
+    grunt.registerTask('tinker-report', 'Report from Tinkering', tinkerReport);
+
     function buildConfigFile() {
         var serviceTemplateFile = 'config/service-config-template.yml',
             settingsCfg = 'config/settings.yml',
@@ -156,7 +237,7 @@ module.exports = function (grunt) {
             })
             .then(function (config) {
                 // First ensure all plugin packages are installed via bower.
-                return Promise.all(config.plugins.external.map(function (plugin) {
+                return Promise.all(config.plugins.map(function (plugin) {
                     console.log('Loading plugin: ' + plugin.name);
                     return new Promise(function (resolve, reject) {
                         bower.commands.install([plugin.install.bower.package])
@@ -204,7 +285,7 @@ module.exports = function (grunt) {
     function injectPluginsIntoBower() {
         // Load plugin config        
         var done = this.async(),
-            pluginConfig, pluginConfigFile = 'targets/' + uiTarget + '/plugin.yml',
+            pluginConfig, pluginConfigFile = 'targets/' + getTaskState('target') + '/plugin.yml',
             bowerConfig, bowerConfigFile = 'bower.json';
         Promise.all([readFileAsync(pluginConfigFile, 'utf8'), readFileAsync(bowerConfigFile, 'utf8')])
             .spread(function (pluginFile, bowerFile) {
@@ -213,9 +294,9 @@ module.exports = function (grunt) {
             })
             .then(function () {
                 // First ensure all plugin packages are installed via bower.
-                pluginConfig.plugins.external
+                pluginConfig.plugins
                     .filter(function (plugin) {
-                        if (plugin.bower) {
+                        if (typeof plugin === 'object' && plugin.bower) {
                             return true;
                         }
                         return false;
@@ -238,32 +319,32 @@ module.exports = function (grunt) {
 
         // Install the plugin config into the build
     }
+    grunt.registerTask(
+        'inject-plugins-into-bower',
+        'Install UI plugins',
+        injectPluginsIntoBower
+        );
+
 
     function injectPluginsIntoConfig() {
         // Load plugin config        
         var done = this.async(),
-            pluginConfigFile = 'targets/' + uiTarget + '/plugin.yml';
+            pluginConfigFile = 'targets/' + getTaskState('target') + '/plugin.yml';
         readFileAsync(pluginConfigFile, 'utf8')
             .then(function (pluginFile) {
                 return yaml.safeLoad(pluginFile);
             })
             .then(function (pluginConfig) {
-                var newConfig = {
-                    plugins: []
-                };
-                // Plugin sections are hard coded.
-                ['service', 'builtIn', 'external'].forEach(function (pluginSection) {
-                    newConfig.plugins.push(pluginConfig.plugins[pluginSection].map(function (pluginItem) {
-                        if (typeof pluginItem === 'string') {
-                            return pluginItem;
-                        } else {
-                            return pluginItem.name;
-                        }
-                    }));
+                var newConfig = pluginConfig.plugins.map(function (pluginItem) {
+                    if (typeof pluginItem === 'string') {
+                        return pluginItem;
+                    } else {
+                        return pluginItem.name;
+                    }
                 });
 
                 // emulate the yaml file for now, or for ever.
-                return writeFileAsync('building/build/client/modules/config/plugin.yml', yaml.safeDump(newConfig));
+                return writeFileAsync('building/build/client/modules/config/plugin.yml', yaml.safeDump({plugins: newConfig}));
             })
             .then(function () {
                 // Then copy them to the appropriate directory.
@@ -277,7 +358,10 @@ module.exports = function (grunt) {
 
         // Install the plugin config into the build
     }
-    grunt.registerTask('inject-plugins-into-config', 'Inject the plugins config file into the building build config', injectPluginsIntoConfig);
+    grunt.registerTask(
+        'inject-plugins-into-config',
+        'Inject the plugins config file into the building build config',
+        injectPluginsIntoConfig);
 
     /*
      * Copy plugins from the bower module installation directory into the plugins
@@ -291,31 +375,40 @@ module.exports = function (grunt) {
     function installExternalPlugins() {
         // Load plugin config
         var done = this.async(),
-            pluginConfig, pluginConfigFile = 'targets/' + uiTarget + '/plugin.yml';
+            pluginConfig, pluginConfigFile = 'targets/' + getTaskState('target') + '/plugin.yml';
         Promise.all([readFileAsync(pluginConfigFile, 'utf8')])
             .spread(function (pluginFile) {
                 pluginConfig = yaml.safeLoad(pluginFile);
-            })
-            .then(function () {
-                return pluginConfig.plugins.external.map(function (plugin) {
-                    if (plugin.bower) {
-                        var cwd = plugin.copy.path || 'dist/plugin',
-                            srcDir = ['building/bower_components', plugin.bower.name, cwd].join('/'),
-                            destDir = 'building/build/client/modules/plugins/' + plugin.name,
-                            mapping = grunt.file.expandMapping(['**/*'], destDir, {
-                                cwd: srcDir,
-                                filter: 'isFile'
-                            });
-                        mapping.forEach(function (fileMapping) {
-                            fileMapping.src.forEach(function (sourcePath) {
-                                grunt.file.copy(sourcePath, fileMapping.dest);
-                            });
-                        });
+                return pluginConfig.plugins.filter(function (plugin) {
+                    if (typeof plugin !== 'string') {
+                        return plugin;
                     }
-                });
+                })
             })
-            .then(function () {
-                return Promise.all(pluginConfig.plugins.external
+            .then(function (externalPlugins) {
+                return [externalPlugins, externalPlugins.map(function (plugin) {
+                        if (plugin.bower) {
+                            console.log(plugin.name);
+                            console.log(plugin.copy);
+                            var cwd = plugin.copy.path || 'dist/plugin',
+                                srcDir = ['building/bower_components', plugin.bower.name, cwd].join('/'),
+                                destDir = 'building/build/client/modules/plugins/' + plugin.name,
+                                mapping = grunt.file.expandMapping(['**/*'], destDir, {
+                                    cwd: srcDir,
+                                    filter: 'isFile'
+                                });
+                            console.log('here');
+                            mapping.forEach(function (fileMapping) {
+                                fileMapping.src.forEach(function (sourcePath) {
+                                    grunt.file.copy(sourcePath, fileMapping.dest);
+                                });
+                            });
+                        }
+                    })];
+            })
+            .spread(function (externalPlugins) {
+                console.log('umm, here?');
+                return Promise.all(externalPlugins
                     .filter(function (plugin) {
                         if (plugin.link) {
                             return true;
@@ -324,14 +417,31 @@ module.exports = function (grunt) {
                     })
                     .map(function (plugin) {
                         if (plugin.link) {
+                            /* linking won't work, but we can just copy 
+                             console.log('really?');
+                             console.log(plugin);
+                             var cwd = plugin.copy.path || 'dist/plugin',
+                             source = [plugin.link.source, cwd].join('/'),
+                             destination = 'building/build/client/modules/plugins/' + plugin.name;
+                             console.log('Linking...');
+                             console.log(source);
+                             console.log('to');
+                             console.log(destination);
+                             return symlinkAsync(source, destination);
+                             */
                             var cwd = plugin.copy.path || 'dist/plugin',
                                 source = [plugin.link.source, cwd].join('/'),
-                                destination = 'building/build/client/modules/plugins/' + plugin.name;
-                            console.log('Linking...');
-                            console.log(source);
-                            console.log('to');
-                            console.log(destination);
-                            return symlinkAsync(source, destination);
+                                destination = 'building/build/client/modules/plugins/' + plugin.name,
+                                mapping = grunt.file.expandMapping(['**/*'], destination, {
+                                    cwd: source,
+                                    filter: 'isFile'
+                                });
+                            // return symlinkAsync(source, destination);
+                            mapping.forEach(function (fileMapping) {
+                                fileMapping.src.forEach(function (sourcePath) {
+                                    grunt.file.copy(sourcePath, fileMapping.dest);
+                                });
+                            });
                         }
                     }));
             })
@@ -494,13 +604,12 @@ module.exports = function (grunt) {
             src: ['**/*'],
             dest: ''
         },
-         {
+        {
             name: 'kbase-service-clients-js',
             cwd: 'dist',
             src: ['**/*'],
             dest: ''
         },
-
         // Dependencies needed for Search (for now)
         {
             name: 'blockUI',
@@ -665,7 +774,7 @@ module.exports = function (grunt) {
                         expand: true
                     },
                     {
-                        cwd: 'targets/' + uiTarget,
+                        cwd: 'targets/' + getTaskState('target'),
                         src: 'menu.yml',
                         dest: buildingDir('build/client/modules/config'),
                         expand: true
@@ -733,14 +842,6 @@ module.exports = function (grunt) {
                     {
                         src: 'config/ui-' + uiTarget + '.yml',
                         dest: buildDir('client/modules/app/ui.yml')
-                    }
-                ]
-            },
-            config2: {
-                files: [
-                    {
-                        src: 'config/ui-' + uiTarget + '.yml',
-                        dest: buildingDir('build/client/modules/config/ui.yml')
                     }
                 ]
             },
@@ -947,14 +1048,12 @@ module.exports = function (grunt) {
         'Install UI plugins',
         installPlugins);
 
-    grunt.registerTask('inject-plugins-into-bower',
-        'Install UI plugins',
-        injectPluginsIntoBower);
+
 
     // Does the whole building task. Installs everything needed
     // from Bower, builds and optimizes things, and tweaks the 
     // distributable index.html to use the compiled product.
-    grunt.registerTask('build', [
+    grunt.registerTask('build-old', [
         'bower:install',
         'copy:bower',
         'copy:plugins',
@@ -974,6 +1073,7 @@ module.exports = function (grunt) {
         'clean:building'
     ]);
     grunt.registerTask('setup-building', [
+        // 'load-target-config',
         'mkdir:building',
         'inject-plugins-into-bower',
         'building-config',
@@ -986,7 +1086,7 @@ module.exports = function (grunt) {
         'copy:bower',
         'leave-building',
         'install-external-plugins',
-        'copy:building-search',
+        'copy:building-search'
     ]);
     grunt.registerTask('install-building', 'Finish the building', [
         'clean:build',
@@ -997,7 +1097,10 @@ module.exports = function (grunt) {
         'setup-building', 'make-building', 'install-building'
     ]);
 
-
+    grunt.registerTask('tinker', [
+        'load-target-config',
+        'tinker-report'
+    ]);
 
     grunt.registerTask('dist', [
         'build',
@@ -1012,7 +1115,7 @@ module.exports = function (grunt) {
 
     // Does a single, local, unit test run.
     grunt.registerTask('test', [
-        'karma:unit',
+        'karma:unit'
     ]);
 
     // Does a single unit test run, then sends 
@@ -1026,7 +1129,7 @@ module.exports = function (grunt) {
     // Does an ongoing test run in a watching development
     // mode.
     grunt.registerTask('develop', [
-        'karma:dev',
+        'karma:dev'
     ]);
 
     // Starts a little server and runs the app in a page. 
@@ -1035,5 +1138,18 @@ module.exports = function (grunt) {
         'open:dev',
         'connect'
     ]);
+
+
+    /*
+     * Main build tasks -- redirect to the real ones.
+     */
+
+    grunt.registerTask('build', [
+        'build-building'
+    ]);
+    grunt.registerTask('clean', [
+        'clean-building'
+    ]);
+
 
 };

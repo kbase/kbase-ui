@@ -6,19 +6,23 @@ define([
     'kb/common/pluginManager',
     'kb/common/dom',
     'kb/common/messenger',
-    'kb/widget/widgetMount',    
+    'kb/widget/widgetMount',
     'kb/common/props',
     'kb/common/asyncQueue',
     'kb/common/appServiceManager',
-    'promise',
-    'yaml!config/config.yml',
-    'require'
-], function (pluginManagerFactory,
-    dom, messengerFactory,
-    widgetMountFactory, 
-    props, asyncQueue, AppServiceManager, Promise, clientConfig, req) {
+    'yaml!config/config.yml'
+], function (
+    pluginManagerFactory,
+    dom,
+    messengerFactory,
+    widgetMountFactory,
+    props,
+    asyncQueue,
+    AppServiceManager,
+    clientConfig
+    ) {
     'use strict';
-    
+
     var moduleVersion = '0.0.1';
 
     function factory(cfg) {
@@ -79,6 +83,13 @@ define([
         function snd(spec) {
             return messenger.send(spec);
         }
+        function sendp(channel, message, data) {
+            return messenger.sendPromise({
+                channel: channel,
+                message: message,
+                data: data
+            });
+        }
 
         // Plugins
         function installPlugins(plugins) {
@@ -90,7 +101,10 @@ define([
 //                    return pluginManager.installPlugins(pluginSet);
 //                });
 //            }), function () {});
-            return pluginManager.installPluginSets(plugins);
+            // return pluginManager.installPluginSets(plugins);
+            console.log('installing plugins');
+            console.log(plugins);
+            return pluginManager.installPlugins(plugins);
         }
 
         // Services for plugins
@@ -127,20 +141,20 @@ define([
         }
 
         var renderQueue = asyncQueue.make();
-        
+
         var appServiceManager = AppServiceManager.make();
-        
+
         function proxyMethod(obj, method, args) {
-        if (!obj[method]) {
-            throw {
-                name: 'UndefinedMethod',
-                message: 'The requested method "' + method + '" does not exist on this object',
-                suggestion: 'This is a developer problem, not your fault'
-            };
+            if (!obj[method]) {
+                throw {
+                    name: 'UndefinedMethod',
+                    message: 'The requested method "' + method + '" does not exist on this object',
+                    suggestion: 'This is a developer problem, not your fault'
+                };
+            }
+            return obj[method].apply(obj, args);
         }
-        return obj[method].apply(obj, args);
-    }
-        
+
         var api = {
             getConfig: getConfig,
             config: getConfig,
@@ -148,6 +162,7 @@ define([
             // Session
             installPlugins: installPlugins,
             send: send,
+            sendp: sendp,
             recv: receive,
             drop: drop,
             snd: snd,
@@ -155,7 +170,7 @@ define([
             urcv: urcv,
             // Services
             addService: function () {
-                 return proxyMethod(appServiceManager, 'addService', arguments);
+                return proxyMethod(appServiceManager, 'addService', arguments);
             },
             loadService: function () {
                 return proxyMethod(appServiceManager, 'loadService', arguments);
@@ -173,7 +188,7 @@ define([
                 return proxyMethod(appServiceManager, 'dumpServices', arguments);
             }
         };
-        
+
 
         function begin() {
             // Register service handlers.
@@ -207,11 +222,17 @@ define([
             appServiceManager.addService('data', {
                 runtime: api
             });
+            appServiceManager.addService('type', {
+                runtime: api
+            });
+            appServiceManager.addService('userprofile', {
+                runtime: api
+            });
 //            appServiceManager.addService('type', {
 //                runtime: api
 //            });
-            
-            
+
+
 //            addService(['session'], sessionServiceFactory.make({
 //                runtime: api,
 //                cookieName: 'kbase_session',
@@ -282,6 +303,8 @@ define([
 //            })
 
             // ROUTING
+            console.log('CONFIG');
+                    console.log(config);
 
             return appServiceManager.loadServices()
                 .then(function () {
@@ -289,7 +312,7 @@ define([
                     return installPlugins(config.plugins);
                 })
                 .then(function () {
-                   console.log('Root widget mounted');
+                    console.log('Root widget mounted');
                     return appServiceManager.startServices();
                 })
                 .then(function () {

@@ -29,7 +29,7 @@ define([
                         // widgets don't all have
                         widgetMount.unmount()
                             .then(function () {
-                                runtime.send('ui', 'clearButtons');
+                                return runtime.sendp('ui', 'clearButtons');
                             })
                             .then(function () {
                                 return widgetMount.mount(data.routeHandler.route.widget, data.routeHandler.params);

@@ -11,11 +11,11 @@ define([
     'jquery',
     'bluebird',
     'kb/common/utils',
-    'kb/common/html', 
-    'kb_userprofile_userProfile',
+    'kb/common/html',
+    'kb/service/userProfile',
     'kb_plugin_userprofile'
 ],
-    function (nunjucks, $, Promise, Utils, html, UserProfile,Plugin) {
+    function (nunjucks, $, Promise, Utils, html, UserProfile, Plugin) {
         "use strict";
         var SocialWidget = Object.create({}, {
             // The init function interfaces this object with the caller, and sets up any 
@@ -41,7 +41,7 @@ define([
                     // Note that params may change. E.g. the user may select another 
                     // member profile to view.
                     this.params = {};
-                    
+
                     this.runtime = cfg.runtime;
                     if (!this.runtime) {
                         throw {
@@ -50,7 +50,7 @@ define([
                             message: 'The runtime is required for a user profile widget.'
                         };
                     }
-                    
+
 
                     // Also the userId is required -- this is the user for whom the social widget is concerning.
                     // by convention, if the userId is empty, we use the current logged in user.
@@ -109,16 +109,16 @@ define([
                     //   /src/widgets/WIDGETNAME/templates
                     this.templates = {};
                     /* TODO: the base url should be fed in from the calling env -- now the plugin package */
-                    
-                    var loaders = [                        
+
+                    var loaders = [
                         new nunjucks.WebLoader(Plugin.plugin.fullPath + '/' + this.widgetName + '/templates', true),
-                        //new nunjucks.WebLoader(Plugin.plugin.path + '/UserProfileBase/templates', true)
+                            //new nunjucks.WebLoader(Plugin.plugin.path + '/UserProfileBase/templates', true)
                     ];
-                     this.templates.env = new nunjucks.Environment(loaders, {
+                    this.templates.env = new nunjucks.Environment(loaders, {
                         'autoescape': false
                     });
-                    
-                    
+
+
                     //this.templates.env = new nunjucks.Environment(new nunjucks.WebLoader('/plugins/userprofile/source/javascript/widgets/' + this.widgetName + '/templates'), {
                     //    'autoescape': false
                     //});
@@ -139,7 +139,7 @@ define([
                         return this.listMaps['avatarColor'][color].textColor;
                     }.bind(this));
                     // this is the cache of templates.
-                    
+
                     this.templates.cache = {};
 
                     // The context object is what is given to templates.
@@ -169,7 +169,7 @@ define([
                         }
                     }.bind(this));
 
-                     this.runtime.recv('session', 'logout.success', function () {
+                    this.runtime.recv('session', 'logout.success', function () {
                         if (this.onLoggedOut) {
                             this.onLoggedOut();
                         }
@@ -325,13 +325,15 @@ define([
             },
             refresh: {
                 value: function () {
-                    return new Promise(function (resolve, reject, notify) {
+                    return new Promise(function (resolve) {
                         if (!this.refreshTimer) {
                             this.refreshTimer = window.setTimeout(function () {
                                 this.refreshTimer = null;
                                 this.render();
                                 resolve();
                             }.bind(this), 0);
+                        } else {
+                            resolve();
                         }
                     }.bind(this));
                 }
@@ -348,7 +350,13 @@ define([
                 value: function (path, value, norefresh) {
                     Utils.setProp(this.state, path, value);
                     if (!norefresh) {
-                        this.refresh().done();
+                        this.refresh()
+                            .then(function () {
+                                return null;
+                            })
+                            .catch(function (err) {
+                                // do something.
+                            });
                     }
                 }
             },
@@ -551,7 +559,7 @@ define([
                     // The widgets use 'userId', which originates in the url as a path component,
                     // e.g. /people/myusername.
                     paramName = paramName ? paramName : 'userId';
-                    if (this.runtime.service('session').isLoggedIn() && 
+                    if (this.runtime.service('session').isLoggedIn() &&
                         this.runtime.service('session').getUsername() === this.params[paramName]) {
                         return true;
                     } else {
@@ -623,7 +631,7 @@ define([
 //                        .attr('href', '/src/widgets/social/' + this.widgetName + '/style.css');
 //                }
 //            },
-            
+
             loadCSSResource: {
                 value: function (url) {
                     if (!this.cssLoaded) {

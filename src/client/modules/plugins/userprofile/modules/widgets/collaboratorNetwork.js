@@ -46,38 +46,31 @@ define([
             },
             setInitialState: {
                 value: function (options) {
-                    return new Promise(function (resolve, reject) {
-                        if (!this.runtime.service('session').isLoggedIn()) {
-                            resolve();
-                        } else {
-                            Promise.resolve(this.userProfileClient.get_user_profile([this.params.userId]))
+                    return Promise.try(function () {
+                        if (this.runtime.service('session').isLoggedIn()) {
+                            return Promise.resolve(this.userProfileClient.get_user_profile([this.params.userId]))
                                 .then(function (data) {
                                     if (data && data[0]) {
                                         this.setState('currentUserProfile', data[0], false);
-                                        this.clientMethods.getCollaborators({
+                                        return this.clientMethods.getCollaborators({
                                             users: [this.getParam('userId')]
-                                        })
-                                            .then(function (collaborators) {
-                                                this.setState('collaborators', collaborators);
-                                                resolve();
-                                            }.bind(this))
-                                            .catch(function (err) {
+                                        });
+                                    } else {
+                                        throw new Error('User not found');
+                                    }
+                                }.bind(this))
+                                .then(function (collaborators) {
+                                    this.setState('collaborators', collaborators);
+                                    return null;
+                                }.bind(this));
+//                                             .catch(function (err) {
 //                                                this.runtime.service('logger').logError({
 //                                                    message: 'error building collab network...',
 //                                                    data: err
 //                                                });
-                                                reject(err);
-                                            });
-                                    } else {
-                                        reject('User not found');
-                                    }
-                                }.bind(this))
-                                .catch(function (err) {
-//                                    R.logError({
-//                                        data:err
-//                                    });
-                                    reject(err);
-                                });
+//                                                reject(err);
+//                                            });
+                                    
                         }
                     }.bind(this));
                 }

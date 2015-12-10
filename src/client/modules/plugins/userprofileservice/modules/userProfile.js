@@ -5,7 +5,7 @@ define([
     'bluebird',
     'kb/common/utils',
     'md5',
-    'kb_userprofile_userProfileService',
+    'kb/service/client/UserProfile',
     'kb_plugin_userprofileservice'
 ],
     function (Promise, Utils, md5, UserProfileService, Plugin) {

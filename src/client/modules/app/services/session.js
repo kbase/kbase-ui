@@ -84,4 +84,4 @@ define([
             return factory(config);
         }
     };
-})
+});

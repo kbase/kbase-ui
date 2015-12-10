@@ -4,7 +4,7 @@ define([
     'bluebird',
     'kb/common/utils',
     'kb_userProfile_widget_base',
-    'kb_userprofile_userProfile'
+    'kb/service/userProfile'
 ],
     function (nunjucks, $, Promise, Utils, SocialWidget, UserProfile) {
         "use strict";
@@ -63,12 +63,11 @@ define([
                     this.renderWaitingView();
                     this.setInitialState()
                         .then(function () {
-                            this.refresh().done();
+                            return this.refresh();
                         }.bind(this))
                         .catch(function (err) {
                             this.renderErrorView(err);
                         }.bind(this));
-
                     return this;
                 }
             },

@@ -69,10 +69,9 @@ define([
             },
             setInitialState: {
                 value: function (options) {                    
-                    return new Promise(function (resolve, reject) {
+                    return Promise.try(function () {
                         // We only run any queries if the session is authenticated.
                         if (!this.runtime.service('session').isLoggedIn()) {
-                            resolve();
                             return;
                         }
 
@@ -82,7 +81,7 @@ define([
                         // At present we can just use the presence of "narrative_nice_name" metadata attribute 
                         // to flag a compatible workspace.
                         //
-                        Promise.resolve(this.workspaceClient.list_workspace_info({
+                        return Promise.resolve(this.workspaceClient.list_workspace_info({
                             showDeleted: 0,
                             owners: [this.params.userId]
                         }))
@@ -114,12 +113,8 @@ define([
                                     return ((x < y) ? 1 : ((x > y) ? -1 : 0));
                                 });
                                 this.setState('narratives', narratives);
-                                resolve();
-                            }.bind(this))
-                            .catch(function (err) {
-                                reject(err);
-                            });
-
+                                return null;
+                            }.bind(this));
                     }.bind(this));
                 }
             }

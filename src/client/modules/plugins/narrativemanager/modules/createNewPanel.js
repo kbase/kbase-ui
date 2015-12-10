@@ -54,8 +54,8 @@ define([
                     importData: importData
                 })
                     .then(function (info) {
-                        var wsId = info.nar_info[6],
-                            objId = info.nar_info[0],
+                        var wsId = info.narrativeInfo.wsid,
+                            objId = info.narrativeInfo.id,
                             path = makeNarrativePath(wsId, objId);
                         return {
                             redirect: {
