@@ -39,9 +39,9 @@ At the moment of this writing, we are actively developing the master branch. By 
 ```
 cd kbase-ui
 npm install
-grunt clean-build
-grunt build-build
-grunt preview-build
+grunt clean-build --target test
+grunt build-build --target test
+grunt preview-build --target test
 ```
 
 If all went well, you should see the kbase ui pop up in your default browser.

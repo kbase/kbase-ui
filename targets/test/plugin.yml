@@ -86,12 +86,12 @@ plugins:
             path: src/plugin
     -
         name: datawidgets
-        # bower:
-        #     name: kbase-ui-plugin-datawidgets
-        #     version: eapearson/kbase-ui-plugin-datawidgets#master
+         bower:
+             name: kbase-ui-plugin-datawidgets
+             version: eapearson/kbase-ui-plugin-datawidgets#master
         # The link install method will create a soft link in the plugin
         # dir to source/path
-        link:
-            source: ../kbase-ui-plugin-datawidgets
+        #link:
+        #    source: ../kbase-ui-plugin-datawidgets
         copy:
             path: src/plugin
