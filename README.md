@@ -86,7 +86,7 @@ Make yourself a nice cozy home in which to place kbase-ui. For testing and devel
 > ```
 mkdir -p work/kbase-ui-work
 cd work/kbase-ui-work
-git clone https://github.com/eapearson/kbase-ui.git
+git clone https://github.com/kbase/kbase-ui.git
 cd kbase-ui
 > ```
 
