@@ -22,10 +22,7 @@ module.exports = function (grunt) {
     // Here we switch to the deployment environment.
     // prod = production
     // ci = continuous integration
-    var servicesTarget = 'prod',
-        // set to 'test' for switching to dev menus, 'prod' for normal ones.
-        uiTarget = 'dev',
-        BUILD_DIR = 'build',
+    var BUILD_DIR = 'build',
         BUILDING_DIR = 'building',
         REPO_DIR = '..';
 
@@ -73,12 +70,7 @@ module.exports = function (grunt) {
         return path.normalize(REPO_DIR);
     }
 
-    function getConfig() {
-        var deployCfgFile = 'deploy-' + servicesTarget + '.cfg';
-        return iniParser.parseSync(deployCfgFile);
-    }
-
-    var deployCfg = getConfig();
+  
 
 
     // Manage state across tasks
@@ -111,7 +103,6 @@ module.exports = function (grunt) {
     // with a directory in /targets, which contains config files.
     // The target may be supplied on the command line as --target <target>
     // or in the grunt-args.yml file in the "target" property.
-    var targetConfig;
     function loadTargetConfig() {
         var target = grunt.option('target');
         if (!target) {
@@ -132,9 +123,19 @@ module.exports = function (grunt) {
         // Load the deployment config
         var deployConfigPath = 'targets/' + target + '/deploy.yml';
 
-        setTaskState('targetConfig', readYaml(deployConfigPath));
+        var targetConfig = readYaml(deployConfigPath);
+
+        setTaskState('targetConfig', targetConfig);
+        
+        // KBase deploy config.
+        var deployCfgFile = 'deploy-' + targetConfig.serviceTargetKey + '.cfg';
+        var deployCfg = iniParser.parseSync(deployCfgFile);
+        
+        setTaskState('deployConfig', deployCfg);
     }
     loadTargetConfig();
+    
+    
     
     var buildType;
     function setBuildType() {
@@ -187,7 +188,7 @@ module.exports = function (grunt) {
             settings = grunt.file.read(settingsCfg),
             outFile = 'building/build/client/modules/config/config.yml',
             compiled = _.template(serviceTemplate),
-            servicesConfig = compiled(deployCfg['kbase-ui']),
+            servicesConfig = compiled(getTaskState('deployConfig')['kbase-ui']),
             concatenatedConfig = servicesConfig + '\n\n' + settings;
 
         grunt.file.write(outFile, concatenatedConfig);
@@ -657,18 +658,10 @@ module.exports = function (grunt) {
             deploy: {
                 files: [
                     {
-                        cwd: 'build/client',
+                        cwd: 'dist/client',
                         src: '**/*',
-                        dest: deployCfg['kbase-ui']['deploy_target'],
+                        dest: getTaskState('deployConfig')['kbase-ui']['deploy_target'],
                         expand: true
-                    }
-                ]
-            },
-            config: {
-                files: [
-                    {
-                        src: 'config/ui-' + uiTarget + '.yml',
-                        dest: buildDir('client/modules/app/ui.yml')
                     }
                 ]
             },
@@ -932,13 +925,19 @@ module.exports = function (grunt) {
         'construct-building', 
         'install-building'
     ]);
+    
+    grunt.registerTask('clean-dist', [
+        'clean:dist',
+        'clean:build',
+        'clean:building'
+    ])
 
     // Build the Distribution Package, forced to the prod target. 
     grunt.registerTask('build-dist', [
-        'target:prod',
+        // 'target:prod',
         'clean-build',
         'build-build',
-         'clean:dist',
+        'clean:dist',
         'copy:dist',
         'requirejs:dist',
         'filerev:dist',

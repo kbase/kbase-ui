@@ -39,9 +39,10 @@ init:
 # configuration in the build target. That configuration mainly
 # deals with filling out templated URL targets based on deployment
 # location (prod vs. next vs. CI vs. local)
-build:
-	@ grunt dist
-	@ node tools/process_config.js $(DEPLOY_CFG)
+build:	
+	@ grunt build-dist --target $(TARGET)
+	#  --deploy-config $(TARGET)
+	# @ node tools/process_config.js $(DEPLOY_CFG)
 
 # The deployment step uses grunt to, essentially, copy the build
 # artifacts to the deployment directory
@@ -55,7 +56,7 @@ test: init build
 # Cleans up build artifacts without removing required libraries
 # that get installed through Bower or NPM.
 clean:
-	@ rm -rf $(DISTLIB)
+	@ grunt clean-dist
 
 # Cleans out all required libraries and packages.
 reqs-clean: clean

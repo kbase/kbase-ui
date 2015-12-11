@@ -5,29 +5,29 @@
 # TODO: alpha sort of services
 services:
     awe:
-        url: https://kbase.us/services/awe-api
+        url: https://ci.kbase.us/services/awe-api
         name: AWE
     cdmi:
         url: https://kbase.us/services/cdmi_api
         name: CDMI
     data_import_export:
-        url: https://kbase.us/services/data_import_export
+        url: https://ci.kbase.us/services/data_import_export
         name: Data Import Export
     fba:
-        url: https://kbase.us/services/KBaseFBAModeling
+        url: https://ci.kbase.us/services/KBaseFBAModeling
         name: FBA
     gene_families:
-        url: https://kbase.us/services/gene_families
+        url: https://ci.kbase.us/services/gene_families
         name: Gene Families
     genome_comparison:
-        url: https://kbase.us/services/genome_comparison/jsonrpc
+        url: https://ci.kbase.us/services/genome_comparison/jsonrpc
         name: Genome Comparison
     login:
-        url: https://kbase.us/services/authorization/Sessions/Login
+        url: https://ci.kbase.us/services/authorization/Sessions/Login
         name: Login
     narrative_method_store:
-        url: https://kbase.us/services/narrative_method_store/rpc
-        image_url: https://kbase.us/services/narrative_method_store/
+        url: https://ci.kbase.us/services/narrative_method_store/rpc
+        image_url: https://ci.kbase.us/services/narrative_method_store/
         name: Narrative Method Store
     protein_info:
         url: https://kbase.us/services/protein_info_service
@@ -36,25 +36,25 @@ services:
         url: https://kbase.us/services/search/
         name: Data Search
     shock: 
-        url: https://kbase.us/services/shock-api
+        url: https://ci.kbase.us/services/shock-api
         name: Shock
     transform:
-        url: https://kbase.us/services/transform
+        url: https://ci.kbase.us/services/transform
         name: Transform
     trees:
-        url: https://kbase.us/services/trees
+        url: https://ci.kbase.us/services/trees
         name: Trees
     user_profile:
-        url: https://kbase.us/services/user_profile/rpc
+        url: https://ci.kbase.us/services/user_profile/rpc
         name: User Profile
     user_job_state:
-        url: https://kbase.us/services/userandjobstate
+        url: https://ci.kbase.us/services/userandjobstate
         name: User and Job State
     workspace:
-        url: https://kbase.us/services/ws
+        url: https://ci.kbase.us/services/ws
         name: Workspace    
     narrative:
-        url: https://narrative.kbase.us
+        url: https://narrative-ci.kbase.us
         name: Narrative User Interface
 
 # Settings in support of the user interface
