@@ -1,0 +1,22 @@
+
+<h2>{{ userRecord.account.realname }}</h2>
+<h3>{{ userRecord.account.username }}</h3>
+
+{% if env.isOwner %}
+<p class="alert alert-warning">You do not have a public profile yet. Enhance your KBase presence with a public profile.</p>
+<h3>What is a KBase Public Profile?</h3>
+<p>A KBase profile is simply a set of facts about that you that you establish about yourself, including a photo or avatar, your affiliations, the type of work you do, and a personal statement. The profile editor is available to each KBase member, and only a member may change the profile. Changes you make to it are instantly active.</p>
+
+<h3>Who can see the profile?</h3>
+
+<p>Your profile is is visible to all KBase members and staff through the KBase web applications, and the public at large through the standard public profile viewer page.</p>
+
+<h3>Why have a KBase profile</h3>
+<p>Having a profile makes it easier for other users to become familiar with you and your work, and to which facilitates the global knowledge sharing vision of KBase.</p>
+
+
+<button type="button" class="btn btn-primary" data-button="create-profile">Create Your Public KBase Profile Now <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
+{% else %} 
+<p>This user does not have a profile.</p>
+{% endif %}
+                        

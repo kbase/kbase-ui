@@ -1,0 +1,15 @@
+<div class="col-xs-2 col-sm-2 col-md-1 col-lg-1 search-result-column fba_model_name">
+    <span>
+        <a target='_blank' class='model-scientific-name' href='{{options.landingPagePrefix}}{{item.object_workspace}}/{{item.object_name}}'>
+            <strong><em>{{item.fba_model_name}}</em></strong>
+        </a>
+    </span>
+</div>
+<div class="col-xs-2 col-sm-2 col-md-1 col-lg-1 search-result-column model-scientific-name">{{item.scientific_name}}</div>
+<div class="col-xs-2 col-sm-2 col-md-1 col-lg-1 search-result-column model-domain">{{item.domain}}</div>
+<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 search-result-column number_of_features">{{item.number_of_features | number}}</div>
+<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 search-result-column number_of_reactions">{{item.number_of_reactions | number}}</div>
+<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 search-result-column number_of_gapfillings">{{item.number_of_gapfillings | number}}</div>
+<!--
+<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 search-result-column number_of_compounds">{{item.number_of_compounds | number}}</div>
+-->

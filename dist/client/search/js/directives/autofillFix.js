@@ -1,0 +1,1 @@
+app.directive("autofillFix",function(){return function(a,b,c){b.prop("method","POST"),c.ngSubmit&&setTimeout(function(){b.unbind("submit").submit(function(d){d.preventDefault(),b.find("input").trigger("input").trigger("change").trigger("keydown"),a.$apply(c.ngSubmit)})},0)}});

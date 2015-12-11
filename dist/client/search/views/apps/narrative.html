@@ -1,0 +1,81 @@
+
+<div class="analysis-view">
+
+    <div ng-if="narrative.cells.length == 0">
+        <div class="">
+            <h1>App Builder <small>v. Alpha</small></h1> 
+            <h4 class="text-muted">Workspace-inspired, rough prototype of how modeling could be done.</h4>
+        </div>
+
+        <h5>Version Alpha:</h5>
+        <ul>
+            <li>Just getting started</li>
+        </ul>
+    </div>
+
+    <div ng-if="narrative.cells.length > 0">
+      <div ng-repeat="cell in narrative.cells track by $index" class="narrative-cell-container">
+            <div class="panel panel-default" narrative-cell>
+                <div class="panel-heading">
+                    <span class="panel-title pull-left">{{cell.title}}</span> 
+                    
+                    <div class="pull-right text-muted">
+                        <a ng-click="flip($event)">
+                            <i class="fa fa-question"></i>
+                        </a>
+                        <a ng-click="minimize($event)">
+                            <i class="fa fa-minus"></i>
+                            <!--<span class="glyphicon glyphicon-minus"></span>-->
+                        </a>                                    
+                        <a ng-click="narrative.removeCell($index)">
+                            <i class="fa fa-times"></i>
+                            <!--<span class="glyphicon glyphicon-remove"></span>-->
+                        </a>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="narrative-cell-container">
+                    <div class="narrative-cell">
+                        <div class="panel-body">
+
+                            <figure class="front">
+                                <form class="form-horizontal" role="form">
+                                  <div class="form-group" ng-repeat="field in cell.params">
+                                    <label class="col-sm-3 control-label">{{field.ui_name}}</label>
+                                        <div class="col-sm-9">
+                                            <input ng-if="field.type == 'string'" ng-model="fields[field.ui_name]" type="text" class="form-control" placeholder="">
+                                            <div ng-if="field.type != 'string'" 
+                                                 dd-model="{{fields[field.ui_name]}}"
+                                                 dd-selector 
+                                                 dd-default="{{narrative.wsObjsByType[field.type][0].name}}"
+                                                 dd-selected="" 
+                                                 dd-data="narrative.wsObjsByType[field.type]">
+                                            </div>
+                                        </div>
+                                  </div>
+
+                                  <div class="form-group">
+                                    <div class="col-sm-offset-3 col-sm-9">
+                                      <button ng-click="runCell($index, cell)" type="submit" class="btn btn-primary pull-right">Run</button>
+                                    </div>
+                                  </div>
+                                </form>
+                            </figure>
+                            
+                            <!-- back side of cell / documentation -->
+                            <figure class="back">
+                               {{cell.description}}
+                            </figure>
+
+                        </div> 
+                    </div> 
+                </div> <!-- end body container-->
+
+            </div> <!-- end cell -->
+        </div>
+    </div>
+
+
+</div>
+

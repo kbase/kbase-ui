@@ -1,0 +1,36 @@
+/* User Search Styles */
+.UserSearch .search-results {
+  margin: 0; 
+  padding: 0;
+}
+.UserSearch .search-results .results-wrapper {
+  position: relative; 
+  z-index: 2; 
+  left:0; 
+  right: 0 ;
+}
+.UserSearch .search-results .results-container {
+  position: absolute; 
+  max-height: 300px; 
+  overflow-y:auto; 
+  left:0; 
+  right: 0; 
+  border: 1px silver solid; 
+}
+.UserSearch .search-results .results {
+  background-color: #FFF; 
+  padding: 10px; 
+  width: 100%;
+}
+.UserSearch .search-results .results {
+ 
+}
+.UserSearch .search-results .results td {
+  padding: 4px;
+}
+.UserSearch .search-results .results td:nth-child(1) {
+  width: 48px;
+}
+.UserSearch .search-results .avatar {
+  width: 40px;
+}

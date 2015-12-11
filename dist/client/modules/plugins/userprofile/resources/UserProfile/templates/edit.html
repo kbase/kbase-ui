@@ -1,0 +1,231 @@
+
+<form class="form-horizontal profile-editor" role="form">
+	    		<!--
+
+	<div class="row">
+	  <div class="col-md-12">
+	    {% if env.isOwner %}
+	    	<div class="btn-toolbar" style="margin-bottom: 10px;">
+	    		<div class="btn-group">
+	    			<div class="btn-label">
+	    				Editing Your Profile
+	    			</div>
+	    		</div>
+	    		<div class="btn-group pull-right">
+	   				<button type="button" class="btn btn-danger" data-button="cancel">Cancel</button>
+	        		<button type="button" class="btn btn-success" disabled="disabled" data-button="save"><span class="glyphicon glyphicon-save" style="margin-right: 10px;"></span>Save</button>
+	   			</div>
+	   		</div>
+	    {% endif %}    
+	  </div>
+	</div>
+	   			-->
+
+	<div class="panel panel-default">
+	  <div class="panel-heading">
+	    <h3 class="panel-title">Basic Personal Information</h3>
+	  </div>
+	  <div class="panel-body">
+	    <div class="form-group name-panel">
+	      <div class="col-md-2">
+	      	<div class="form-group" data-field="profile.userdata.title">
+		        <label for="field-title">Title</label>
+		        <select class="form-control" id="field-title">
+		            <option value=""></option>
+		          {% for title in env.lists.userTitles %}
+		          	<option value="{{title.id}}" {% if title.id==userRecord.profile.userdata.title %} selected {% endif %}>{{title.label | e}}</option>
+		          {% endfor %}
+		        </select>
+		        <div data-element="message" class="help-block"></div>
+		    </div>
+	      </div>
+	      <div class="col-md-7">
+	        <div class="form-group" data-field="user.realname">
+	           <label for="field-realname">Your Name *</label>
+	           <div class="input-group-lg"><input id="field-realname" type="text" class="form-control" value="{{userRecord.user.realname | e}}"></div>
+	           <div data-element="message" class="help-block"></div>
+	        </div>
+	      </div>
+	      <div class="col-md-3">
+	      	<div class="form-group" data-field="profile.userdata.suffix">
+		        <label for="field_suffix">Suffix</label>
+		        <div class="input-group-lg"><input id="field_suffix" type="text" class="form-control" value="{{userRecord.profile.userdata.suffix | e}}"></div>
+		        <div data-element="message" class="help-block"></div>
+		    </div>
+	      </div>
+	    </div>
+
+	    <div class="form-group" data-field="profile.userdata.location">
+			<label for="location-field" class="control-label col-md-3">Location *</label>
+			<div class="col-md-9">
+				<input id="location-field" type="text" class="form-control" value="{{userRecord.profile.userdata.location}}">
+			</div>	          
+			<div data-element="message" class="help-block col-md-9 col-md-push-3"></div>
+	    </div>
+
+	    <div class="form-group" data-field="profile.userdata.email">
+        	<label for="email-field" class="control-label col-md-3">Primary Email *</label>
+        	<div class="col-md-9">
+        		<input id="email-field" type="text" class="form-control" value="{{userRecord.profile.userdata.email | e}}">
+        	</div>
+        	<div class="col-md-9 col-md-push-3">
+        		<div data-element="message" class="help-block"></div>
+        	</div>
+	    </div>
+	  </div>
+	</div>
+
+	<div class="panel panel-default">
+	  <div class="panel-heading"><h3 class="panel-title">Your Avatar</h3></div>
+	    <div class="panel-body">
+	      <div class="row">
+	        <div class="col-md-3">
+	        {% include "picture.html" %}
+
+	        	
+	        </div>
+	        <div class="col-md-9">
+	        	<h3>Gravatar</h3>
+	        	<p>Your gravatar is based on an image you have associated with your email address at <a href="http://en.gravatar.com">Gravatar</a>, a free public profile service from Automattic, the same people who brought us Wordpress. If you have a gravatar associated with the email address in this profile, we will display it within KBase.</p>
+	        	<p>If you don't have a personal gravator, or prefer not to use one, you may select one of the default auto-generated gravatars provided below.</p>
+
+	         	<div class="form-group" data-field="profile.userdata.avatar.gravatar_default">
+		           <label for="gravatar_default" class="control-label col-md-3">Default Gravatar</label>
+		           <div class="col-md-9">
+		           
+			           	<select id="gravatar_default" class="form-control">
+		           		    <option value="">- none -</option>
+			           	{% for default in env.lists.gravatarDefaults %}
+			           	<option value="{{default.id}}" {% if default.id==userRecord.profile.userdata.avatar.gravatar_default %} selected{% endif %}>{{default.label}}</option>
+			           	{% endfor %}
+			           	</select>
+		           </div>
+		         
+	        	</div>
+	        	
+	        </div>
+	      </div>
+	    </div>
+	</div>
+
+	<div class="panel panel-default" data-field="profile.userdata.user_class"> 
+	  <div class="panel-heading"><label class="control-label" style="text-align: left;">User Class *</label></div>
+	    <div class="panel-body">
+	      <div class="row">
+	        <div class="col-md-12">
+	          <p>What is the primary use for this account?</p>
+	          {% for class in env.lists.userClasses %}
+	            <div class="radio">
+	              <label><input name="profile_user_class" type="radio" value="{{class.id}}" class="radio" {% if class.id==userRecord.profile.userdata.user_class %} checked{% endif %}>{{class.label}}</label>
+	            </div>
+	          {% endfor %}
+	          <div data-element="message" class="help-block"></div>
+	        </div>
+	      </div>
+	    </div>
+	  </div>
+	</div> 
+
+	<div class="panel panel-default">
+	  <div class="panel-heading"><h3 class="panel-title">Your Roles</h3></div>
+	    <div class="panel-body">
+	      <div class="row">
+	        <div class="col-md-12" data-field="profile.userdata.roles" data-field-type="array">
+	        <p>How are you using this account?</p>
+	          {% for role in env.lists.userRoles %}
+	          <div class="checkbox">
+	            <label><input type="checkbox" name="profile_roles" class="checkbox" data-field-value="t" value="{{role.id}}">{{role.label}}</label>
+	          </div>
+	          {% endfor %}
+	          <script>
+	           {% for role in userRecord.profile.userdata.roles %}
+	          $('[data-field="profile.userdata.roles"] input[value="{{role}}"]').prop('checked', true);
+	          {% endfor %}
+	          </script>
+	          <div data-element="message" class="help-block"></div>
+	        </div>
+	      </div>
+	    </div>
+	</div>
+	      
+	
+
+	<div class="panel panel-default">
+	  <div class="panel-heading">
+	    <h3 class="panel-title">Affiliations</h3>
+	  </div>
+	  <div id="affiliationPanel" class="panel-body" data-field-group="profile">
+	    <div class="row">
+	      <div class="col-md-12" data-field="profile.userdata.affiliations" data-field-group-type="array">
+	        
+	        {% for affiliation in userRecord.profile.userdata.affiliations|sort(true,true,"start_year") %}
+	        {% include "edit_affiliation.html" %}
+	        {% endfor %}
+	    
+	      </div>
+	    </div>
+	    <div class="row">
+	      <div class="col-md-12">
+	      	<div class="button-group" style="margin-bottom: 10px;">
+	        	<button id="addAffiliation" type="button" class="btn btn-default" data-button="add-affiliation"><span class="glyphicon glyphicon-plus"></span> Add Affiliation</button>
+	        </div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	     
+	<div class="panel panel-default">
+	  <div class="panel-heading">
+	    <h3 class="panel-title">Personal or Research Statement</h3>
+	  </div>
+	  <div class="panel-body">
+	    <div class="row">
+	      <div class="col-md-12" data-field="profile.userdata.personal_statement">
+	        <textarea id="personalStatement" class="form-control" rows="8" style="resize:vertical;">{{userRecord.profile.userdata.personal_statement}}</textarea>
+	        <div data-element="message" data-class="help-block"></div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<!-- 
+	<div class="row">
+	  <div class="col-md-12">
+	    {% if env.isOwner %}
+	    	<div class="btn-toolbar" style="margin-bottom: 10px;">
+	    		<div class="btn-group">
+	    			<div class="btn-label">
+	    				Editing Your Profile
+	    			</div>
+	    		</div>
+	    		<div class="btn-group pull-right">
+	   				<button type="button" class="btn btn-danger" data-button="cancel">Cancel</button>
+	        		<button type="button" class="btn btn-success" disabled="disabled" data-button="save"><span class="glyphicon glyphicon-save" style="margin-right: 10px;"></span>Save</button>
+	   			</div>
+	   		</div>
+	    {% endif %}    
+	  </div>
+	</div>
+	-->
+</form>
+
+
+<!-- Modals -->
+<div class="modal fade" data-widget-modal="confirm-cancel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-widget-modal-control="deny-cancel"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Confirm Cancel of Edit Session</h4>
+      </div>
+      <div class="modal-body">
+      	<p>Are you sure you want to cancel the edit session?</p>
+      	<p>You will lose any changes you may have made.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-widget-modal-control="deny-cancel" data-dismiss="modal">No</button>
+        <button type="button" class="btn btn-primary" data-widget-modal-control="confirm-cancel" >Yes</button>
+      </div>
+    </div>
+  </div>
+</div>

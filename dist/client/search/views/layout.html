@@ -1,0 +1,13 @@
+<div data-kbase-view="{{name}}" class="kbase-view kbase-{{name}}-view container-fluid">
+   {% for row in rows %}
+    <div class="row">
+       {% for col in row %}
+        <div class="col-sm-{{col.span}}">
+            {% for mount in col.mounts %}
+             <div data-kbase-mount="{{mount.name}}"></div>
+            {% endfor %}
+       </div>
+       {% endfor %}
+   </div>
+   {% endfor %}
+</div>

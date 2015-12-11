@@ -30,11 +30,11 @@ module.exports = function (config) {
              * have the Require apparatus take over.
              */
             
-            {pattern: 'build/client/js/*.js', included: false},
-            {pattern: 'build/client/js/**/*.js', included: false},
-            {pattern: 'build/client/bower_components/**/*.js', included: false},
+            {pattern: 'build/client/modules/*.js', included: false},
+            {pattern: 'build/client/modules/**/*.js', included: false},
+            // {pattern: 'build/client/bower_components/**/*.js', included: false},
             {pattern: 'test/spec/**/*.js', included: false},
-            {pattern: 'build/client/*.yml', included: false},
+            {pattern: 'build/client/modules/config/*.yml', included: false},
             'test/main-test.js',
         ],
         // list of files to exclude

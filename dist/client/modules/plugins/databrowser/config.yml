@@ -1,0 +1,43 @@
+## YAML Template.
+---
+package:
+    author: Erik Pearson
+    name: about panel
+    description: A package containing the about panel
+    date: August 5, 2015
+    version: 0.0.1
+source:
+    ## sources are relative to build/plugins/PACKAGE/source/javascript
+    ## NB: need to quote file names, otherwise 
+    modules:
+        -
+            module: kb_databrowser_panel
+            file: panel
+        -
+            module: kb_databrowser_widget
+            file: databrowserWidget
+install:
+    widgets:
+        -
+            module: kb_databrowser_panel
+            id: databrowser_panel
+            type: factory
+        - 
+            module: kb_databrowser_widget
+            id: databrowser_widget
+            type: factory
+    routes:
+        -
+            path: ['databrowser']
+            queryParams:
+                type: {}
+            widget: databrowser_panel
+    menu:
+        -
+            name: databrowser
+            definition:
+                path: databrowser
+                label: Data Browser
+                icon: database
+            
+       

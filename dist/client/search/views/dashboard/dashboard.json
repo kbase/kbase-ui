@@ -1,0 +1,10 @@
+{"name": "dashboard",
+ {"rows": [ 
+    [{"span": 8, "mounts": [{"type": "widget", "name": "ownNarratives"},
+                            {"type": "widget", "name": "sharedNarratives"}]},
+     {"span": 4, "mounts": [{"type": "widget", "name": "profile"}]}],
+    [{"span": 8, "mounts": [{"type": "widget", "name": "apps"}]}],
+    [{"span": 12, "mounts": [{"type": "widget", "name": "data"}]}]
+ ]}
+}
+

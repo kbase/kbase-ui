@@ -1,0 +1,187 @@
+<div class="collapse" id="{{env.widgetName}}-more-info-{{env.instanceId}}"> 
+	<div class="well">
+		<p>This panel shows Narratives that you own.</p>
+	</div>
+</div>
+
+
+<div class="row">
+   <div class="col-sm-2">
+      <a role="button" class="btn btn-primary btn-kbase" href="#narrativemanager/new">
+      <span class="fa fa-plus-circle" style="font-size: 150%; margin-right: 8px;vertical-align: middle;" target="_blank"></span>
+     Create New Narrative
+     </a>
+
+   </div>
+   <div class="col-sm-2">
+      
+   </div>
+   <div class="col-sm-2">
+      
+   </div>
+   <div class="col-sm-2">
+      
+   </div>
+
+   <div class="col-sm-4" style="text-align: right">
+      Found 
+       {% if state.narrativesFiltered|length == 1 %}
+      
+      {{ state.narrativesFiltered|length }} Narrative
+      
+      {% elif state.narrativesFiltered|length > 1 %}
+      
+       {{ state.narrativesFiltered|length }} Narratives
+       
+      {% elif 1 %}
+      
+      no narratives
+      
+      {% endif %}
+   </div>
+</div>
+
+ 
+ <div class="row">
+   <div class="col-sm-12">
+{% if state.narrativesFiltered|length > 0 %}
+
+ <table cellpadding="0" cellspacing="0" border="0" class="table" id="dashboard-narratives-{{env.generatedId}}">
+ <thead>
+     <tr>
+         <th>Title</th>
+         <th class="number">Ver.</th>
+         <!-- <th>Apps</th> -->
+         <th>Pub.?</th>
+         <th>Share</th>
+        <th class="number"><span class="fa-stack">
+                    <span class="fa fa-square fa-stack-2x" style="color: rgb(0, 150, 136);"></span> 
+                    <span class="fa fa-inverse fa-stack-1x fa-cubes" style=""></span> 
+                    </span></th>
+         <th class="number"><span class="fa-stack fa"  style="{% if methodCount == 0 %}opacity: 0.3; {% endif %}">
+                    <span class="fa fa-square fa-stack-2x" style="color: rgb(103, 58, 183);"></span> 
+                    <span class="fa fa-inverse fa-stack-1x fa-cube"></span> 
+                    </span></th>
+         <th class="number"><span class="fa-stack fa">
+                    <span class="fa fa-circle fa-stack-2x" style="color: #2196F3;"></span> 
+                    <span class="fa fa-inverse fa-stack-1x fa-terminal" style=""></span> 
+                    </span></th>
+         <th class="number"><span class="fa-stack fa">
+                    <span class="fa fa-circle fa-stack-2x" style="color: #2196F3;"></span> 
+                    <span class="fa fa-inverse fa-stack-1x fa-paragraph" style=""></span> 
+                    </span></th>
+         <th class="number"><span class="fa-stack fa">
+                    <span class="fa fa-square fa-stack-2x" style="color: #FFC107;"></span> 
+                    <span class="fa fa-inverse fa-stack-1x fa-file-o" style="margin: -3px 0 0 -3px; font-size: 80%;"></span> 
+                    <span class="fa fa-inverse fa-stack-1x fa-file" style="margin: 2px 0 0 3px; color: #FFC107; font-size: 80%;"></span> 
+                    <span class="fa fa-inverse fa-stack-1x fa-file-o" style="margin: 2px 0 0 3px; font-size: 80%;"></span> 
+                    </span></th>
+         
+         <th>Running</th>
+         <th>Error</th>
+         <th>Runtime</th>
+         <th class="date">Last Saved</th>
+         <th>By</th>
+     </tr>
+ </thead>
+
+{% for narrative in state.narrativesFiltered %}
+	<tr>
+		<td>
+		    <a target="_blank" href="/narrative/{{narrative.object.obj_id}}">{{narrative.workspace.metadata.narrative_nice_name}}</a>
+		</td>
+		<td style="text-align: right; padding-right: 1em;">
+            {{narrative.object.version}}
+		</td>
+		<!--<td>
+            {% for app, i in narrative.object.metadata.cellInfo.app %}
+            <div class="app">{{app}}</div>
+              {% endfor %}
+		</td>-->
+		<td style="text-align: center;">
+            {% if narrative.workspace.globalread == 'r' %}<span class="fa fa-check"></span> 
+            {% elif narrative.workspace.globalread == 'w' %}<span class="fa fa-check"></span> 
+            {% else %}
+            {% endif %}
+		</td>
+		<td>
+           {{narrative.permissions|length}}
+		</td>
+		<td class="number">
+           {{narrative.object.metadata.cellInfo.app|length2}}
+		</td>
+		<td class="number">
+           {{narrative.object.metadata.cellInfo.method|length2}}
+		</td>
+		<td class="number">
+           {{narrative.object.metadata.cellInfo.ipython.code}}
+
+		</td>
+		<td class="number">
+           {{narrative.object.metadata.cellInfo.ipython.markdown}}
+		</td>
+		<td class="number">
+            {{narrative.workspace.object_count - 1}}
+		</td>
+		<td class="number">
+            {% set jobcount = narrative.object.metadata.jobInfo.running %}
+            {% if jobcount > 0 %}
+            {{jobcount}}  <span class="fa fa-gear fa-spin" style="color:green;"></span>
+            {% endif %}
+		</td>
+		<td class="number" >
+            {% set jobcount = narrative.object.metadata.jobInfo.error %}
+            {% if jobcount > 0 %}
+            {{jobcount}}  <span class="fa fa-exclamation-circle fa-spin" style="color:red;"></span>
+            {% endif %}
+		</td>
+		<td>		   
+           {% if narrative.object.metadata.jobInfo.run_time %}
+		   {{narrative.object.metadata.jobInfo.run_time | niceRuntime}}
+           {% endif %}
+		</td>
+		<td class="date">
+		     {{narrative.object.save_date  | jsDatestring  }}
+        </td>
+        <td>
+           {% if narrative.object.saved_by == env.loggedInUser %}
+           you
+           {% else %}
+           {{narrative.object.saved_by}}
+           {% endif %}
+        </td>
+	</tr>
+{% endfor %}
+
+</table>
+	
+	<script>
+require(['jquery', 'kb.utils'], function ($, Utils) {
+	$('#dashboard-narratives-{{env.generatedId}}').DataTable({
+       lengthMenu: [5, 10, 20],
+        order: [[12, "desc"]],
+        columnDefs: [
+           {targets: 12, type: "date", render: {display: function(data) {return Utils.niceElapsedTime(data)}}}
+        ],
+        initComplete: function (settings) {
+            var api = this.api();
+            var rowCount = api.data().length;
+            var pageSize = api.page.len();
+            var wrapper = api.settings()[0].nTableWrapper;
+            if (rowCount <= pageSize) {
+                $(wrapper).find('.dataTables_paginate').closest('.row').hide();
+                $(wrapper).find('.dataTables_filter').closest('.row').hide();
+            }
+        }
+    });
+});
+</script>
+	
+{% else %}
+
+<p style="margin-top: 1em;">You do not own any Narratives. Why not <a href="/functional-site/#/narrativemanager/new">create your first one?</a>.</p>
+
+{% endif %}
+
+   </div>
+</div>

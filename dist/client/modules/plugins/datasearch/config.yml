@@ -1,0 +1,44 @@
+## Welcome Panel
+---
+package:
+    name: datasearch
+    description: The venerable data search service
+    author: Erik Pearson
+    date: October 26, 2015
+    version: 0.0.1
+source:
+    modules:
+        -
+            module: kb_datasearch_panel
+            file: searchPanel
+install:
+    # Register the welcome widget
+    widgets:
+        - 
+            module: kb_datasearch_panel
+            id: datasearch_panel
+            type: factory
+    # Set up a route to install that widget in the main body view
+    routes:
+        -
+            path: ['search']
+            widget: datasearch_panel
+    # Set up a menu item to invoke the path above
+    menu:
+        -
+            name: search
+            menus:
+                - 
+                    name: authenticated
+                    section: main
+                    position: top
+                - 
+                    name: unauthenticated
+                    section: main
+                    position: top
+            definition:
+                uri: "/search/#/search/?q=*"
+                path: search
+                label: Search
+                icon: search
+        

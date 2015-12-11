@@ -1,0 +1,98 @@
+<div class="collapse" id="{{env.widgetName}}-more-info-{{env.instanceId}}">
+   <div class="well">
+      <p>This panel shows summary counts of your KBase presence, compared to the rest of the KBase user population.</p>
+   </div>
+</div>
+
+{% if state.histogram.narrative %}
+
+
+<div style="width: 100%; height: 100px; border: 1px dashed red;
+  position: relative;">
+   <div style="width: 100%; height: 100px;">
+      {% for chart in state.histogram.narrative.chart %}
+         <div style="position: absolute; bottom: 0; left: {{loop.index0 * chart.width}}%; width: {{chart.width}}%; width: {{chart.width}}%; height: {{chart.height}}%;  background-color: aqua;"> 
+            <div style="position: absolute; top: 0; left: 0;color: gray; font-size: 80%; width:100%; text-align: center;">{{chart.count}}</div>
+             <div style="position: absolute; bottom: 0; left: 0;color: gray; font-size: 80%; width:100%; text-align: center;">{{chart.label}}</div>
+         </div>
+      {% endfor %}
+
+      <!-- The user's value here -->
+      <div style="position: absolute; bottom: 0; left: {{state.histogram.narrative.user.scale|round}}%; width: 2%; height: 50%; background-color: green;">
+         
+         <div style="position: absolute; top: 0; left: 0;"><span class="label label-default" style="opacity: 0.5;">You - {{state.histogram.narrative.user.value}}</span></div>
+         
+      </div>
+
+      <!-- y axis scale, inside -->
+      <div style="position: absolute; bottom: 0; left: 0; width: 5%; height: 100%; background-color: transaprent;">
+        
+         <div style="position: absolute; top: 0; left: 0; color: red;"><span class="label label-default" style="opacity: 0.5;">{{state.histogram.narrative.chartMax}}</span></div>
+         
+         <div style="position: absolute; bottom: 0; left: 0;color: red;"><span class="label label-default" style="opacity: 0.5;">{{state.histogram.narrative.min}}</span></div>
+         
+         <!--
+           <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 10px; border: 1px red solid;">
+            
+            <div style="position: absolute; bottom: 0; left: 0;">
+               x min
+            </div>
+            <div style="position: absolute; bottom: 0; right: 0;">
+               x max
+            </div>
+            
+         </div>
+         -->
+      </div>
+   </div>
+
+   {% endif %}
+
+   <!--
+   <table class="table">
+      <tr>
+         <th>Measure</th>
+         <th>Shown</th>
+         <th>Total</th>
+         <th>KBase Avg.</th>
+         <th>Your Rank</th>
+      </tr>
+
+      <tr>
+         <td>Narratives</td>
+         <td>{{state.narratives.filtered}}</td>
+         <td>{{state.narratives.count}}</td>
+         <td></td>
+         <td></td>
+      </tr>
+      <tr>
+         <td>Shared Narratives</td>
+         <td>{{state.sharedNarratives.filtered}}</td>
+         <td>{{state.sharedNarratives.count}}</td>
+         <td></td>
+         <td></td>
+      </tr>
+      <tr>
+         <td>Data Objects</td>
+         <td></td>
+         <td>{{state.dataObjects.count}}</td>
+         <td></td>
+         <td></td>
+      </tr>
+      <tr>
+         <td>Running Jobs</td>
+         <td></td>
+         <td>{{state.runningJobs.count}}</td>
+         <td></td>
+         <td></td>
+      </tr>
+      <tr>
+         <td>Collaborators</td>
+         <td>{{state.collaborators.filtered}}</td>
+         <td>{{state.collaborators.count}}</td>
+         <td></td>
+         <td></td>
+      </tr>
+
+   </table>
+   -->

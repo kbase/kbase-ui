@@ -1,0 +1,1 @@
+define([],function(){"use strict";var a=function(a){this.runtime=a.runtime};return a});

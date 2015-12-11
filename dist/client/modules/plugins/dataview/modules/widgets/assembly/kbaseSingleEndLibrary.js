@@ -1,0 +1,1 @@
+!function(a,b){a.KBWidget({name:"kbaseSingleEndLibrary",parent:"kbaseSingleObjectBasicWidget",version:"1.0.1",getDataModel:function(a){var b={description:"This data object is a reference to a single end read library",items:[]};return a.handle&&b.items.push({name:"Source file name",value:a.handle.file_name}),b}})}(jQuery);

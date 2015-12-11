@@ -1,0 +1,79 @@
+## Demo Plugin for Screencast
+---
+package:
+    author: Erik Pearson
+    name: demo_visWidgets
+    description: A plugin installing menus, routes, and panels demonstrating Jim's vis widgets
+    date: August 9, 2015
+    version: 0.0.1
+source:
+    modules:
+        -
+            module: kb_visDemo_barChart
+            file: barchart
+        -
+            module: kb_visDemo_heatMap
+            file: heatmap
+        -
+            module: kb_visDemo_lineChart
+            file: linechart
+        -
+            module: kb_visDemo_scatterPlot
+            file: scatterplot
+install:
+    widgets:
+        -
+            module: kb_visDemo_barChart
+            id: kb_visDemo_barChart
+            type: factory
+        -
+            module: kb_visDemo_heatMap
+            id: kb_visDemo_heatMap
+            type: factory
+        -
+            module: kb_visDemo_lineChart
+            id: kb_visDemo_lineChart
+            type: factory
+        -
+            module: kb_visDemo_scatterPlot
+            id: kb_visDemo_scatterPlot
+            type: factory
+    routes:
+        -
+            path: ['visdemo', 'barchart']
+            widget: kb_visDemo_barChart
+        -
+            path: ['visdemo', 'heatmap']
+            widget: kb_visDemo_heatMap
+        -
+            path: ['visdemo', 'linechart']
+            widget: kb_visDemo_lineChart
+        -
+            path: ['visdemo', 'scatterplot']
+            widget: kb_visDemo_scatterPlot
+    menu:
+        -
+            name: visdemoBarchart
+            definition:
+                path: visdemo/barchart
+                label: Vis Demo - Bar Chart
+                icon: paw
+        -
+            name: visdemoHeatmap
+            definition:
+                path: visdemo/heatmap
+                label: Vis Demo - heatmap
+                icon: paw
+        -
+            name: visdemoLinechart
+            definition:
+                path: visdemo/linechart
+                label: Vis Demo - linechart
+                icon: paw
+        -
+            name: visdemoScatterplot
+            definition:
+                path: visdemo/scatterplot
+                label: Vis Demo - scatterplot
+                icon: paw                
+                

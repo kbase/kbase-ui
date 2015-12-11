@@ -1,0 +1,32 @@
+<tr ng-if="item.biome.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>Biome: </strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.biome}}</td>
+</tr> 
+<tr ng-if="item.sequence_type.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>Sequence Type: </strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.sequence_type}}</td>
+</tr> 
+<tr ng-if="item.seq_method.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>Sequence Method: </strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.seq_method}}</td>
+</tr> 
+<tr ng-if="item.env_package_type.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>Environmental Package Type: </strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.env_package_type}}</td>
+</tr> 
+<tr ng-if="item.location.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>Location: </strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.location}}</td>
+</tr>
+<tr ng-if="item.feature.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>Feature: </strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.feature}}</td>
+</tr>
+<tr ng-if="item.material.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>Material: </strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.material}}</td>
+</tr>
+<tr ng-if="item.PI_info.trim().length > 0">
+    <td class="search-result-column-expanded-entry-cell metagenome_expanded_header"><strong>PI:</strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.PI_info}}</td>
+</tr>

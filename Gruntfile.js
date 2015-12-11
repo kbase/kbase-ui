@@ -142,7 +142,7 @@ module.exports = function (grunt) {
         var config = yaml.safeLoad(content);
         setTaskState('targetConfig', yaml.safeLoad(content));
     }
-    loadTargetConfig()
+    loadTargetConfig();
 
 //        readFileAsync(deployConfigPath, 'utf8')
 //            .then(function (content) {
@@ -262,7 +262,7 @@ module.exports = function (grunt) {
                                         reject(error);
                                     });
                             });
-                        })
+                        });
 
                     //return execAsync([
                     //    'bower', 'install', plugin.install.bower.package
@@ -383,7 +383,7 @@ module.exports = function (grunt) {
                     if (typeof plugin !== 'string') {
                         return plugin;
                     }
-                })
+                });
             })
             .then(function (externalPlugins) {
                 return [externalPlugins, externalPlugins.map(function (plugin) {
@@ -407,7 +407,6 @@ module.exports = function (grunt) {
                     })];
             })
             .spread(function (externalPlugins) {
-                console.log('umm, here?');
                 return Promise.all(externalPlugins
                     .filter(function (plugin) {
                         if (plugin.link) {
@@ -482,10 +481,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-coveralls');
-    grunt.loadNpmTasks('grunt-connect');
+    grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-open');
     grunt.loadNpmTasks('grunt-filerev');
     grunt.loadNpmTasks('grunt-regex-replace');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     //grunt.loadNpmTasks('grunt-http-server');
     //grunt.loadNpmTasks('grunt-markdown');
 
@@ -781,6 +781,16 @@ module.exports = function (grunt) {
                     }
                 ]
             },
+            dist: {
+                files: [
+                    {
+                        cwd: 'build',
+                        src: '**',
+                        dest: 'dist',
+                        expand: true
+                    }
+                ]
+            },
             'building-to-build': {
                 files: [
                     {
@@ -872,6 +882,12 @@ module.exports = function (grunt) {
             },
             building: {
                 src: [buildingDir()]
+            },
+            dist: {
+                src: ['dist']
+            },
+            detritus: {
+                src: ['building/**/.DS_Store']
             }
         },
         mkdir: {
@@ -882,12 +898,26 @@ module.exports = function (grunt) {
             }
         },
         connect: {
-            server: {
-                port: 8887,
-                base: 'build/client',
-                keepalive: false,
-                onCreateServer: function (server, connect, options) {
-                    console.log('created...');
+            build: {
+                options: {
+                    port: 8887,
+                    base: 'build/client',
+                    open: true,
+                    keepalive: true,
+                    onCreateServer: function (server, connect, options) {
+                        console.log('created...');
+                    }
+                }
+            },
+            dist: {
+                options: {
+                    port: 8887,
+                    base: 'dist/client',
+                    open: true,
+                    keepalive: true,
+                    onCreateServer: function (server, connect, options) {
+                        console.log('created...');
+                    }
                 }
             }
         },
@@ -975,21 +1005,21 @@ module.exports = function (grunt) {
             }
         },
         requirejs: {
-            compile: {
+            dist: {
                 options: {
                     buildCSS: false,
-                    baseUrl: 'build/client',
-                    mainConfigFile: 'build/client/modules/app/require-config.js',
+                    baseUrl: 'dist/client/modules',
+                    mainConfigFile: 'dist/client/modules/require-config.js',
                     findNestedDependencies: true,
                     optimize: 'uglify2',
                     generateSourceMaps: true,
                     preserveLicenseComments: false,
-                    name: 'kb_startup',
-                    out: 'build/client/dist/kbase-min.js',
-                    exclude: ['yaml!config.yml'],
+                    name: 'startup',
+                    out: 'dist/client/modules/kbase-min.js',
+                    exclude: ['yaml!config/config.yml'],
                     paths: {
                         'css-builder': 'bower_components/require-css/css-builder',
-                        normalize: 'bower_components/require-css/normalize',
+                        normalize: 'bower_components/require-css/normalize'
                     }
                 }
             }
@@ -1001,12 +1031,12 @@ module.exports = function (grunt) {
                 algorithm: 'md5',
                 length: 8
             },
-            source: {
+            dist: {
                 files: [{
                         src: [
-                            'build/client/dist/kbase-min.js',
+                            'dist/client/modules/kbase-min.js'
                         ],
-                        dest: 'build/client/dist/'
+                        dest: 'dist/client/modules/'
                     }]
             }
         },
@@ -1014,19 +1044,33 @@ module.exports = function (grunt) {
         // the right spot (near the top, the narrative_paths reference)
         'regex-replace': {
             dist: {
-                src: ['build/client/index.html'],
+                src: ['dist/client/index.html'],
                 actions: [
                     {
                         name: 'requirejs-onefile',
-                        search: '/js/startup',
+                        search: 'startup',
                         replace: function (match) {
                             // do a little sneakiness here. we just did the filerev thing, so get that mapping
                             // and return that (minus the .js on the end)
-                            var revvedFile = grunt.filerev.summary['build/client/dist/kbase-min.js'];
+                            var revvedFile = grunt.filerev.summary['dist/client/modules/kbase-min.js'];
+                            console.log('REVVED');
+                            console.log(revvedFile);
                             // starts with 'static/' and ends with '.js' so return all but the first 7 and last 3 characters
-                            return revvedFile.substr(12, revvedFile.length - 10);
+                            return revvedFile.substr(20, revvedFile.length - 10);
                         },
                         flags: ''
+                    }
+                ]
+            }
+        },
+        uglify: {
+            dist: {
+                files: [
+                    {
+                        cwd: 'dist/client',
+                        src: '**/*.js',
+                        dest: 'dist/client',
+                        expand: true
                     }
                 ]
             }
@@ -1086,15 +1130,19 @@ module.exports = function (grunt) {
         'copy:bower',
         'leave-building',
         'install-external-plugins',
-        'copy:building-search'
+        'copy:building-search',
+        'clean:detritus'
     ]);
     grunt.registerTask('install-building', 'Finish the building', [
         'clean:build',
         'copy:building-to-build'
+        
     ]);
 
     grunt.registerTask('build-building', [
-        'setup-building', 'make-building', 'install-building'
+        'setup-building', 
+        'make-building', 
+        'install-building'
     ]);
 
     grunt.registerTask('tinker', [
@@ -1108,6 +1156,16 @@ module.exports = function (grunt) {
         'filerev',
         'regex-replace'
     ]);
+
+    grunt.registerTask('build-dist', [
+        'clean:dist',
+        'copy:dist',
+        //'requirejs:dist',
+        //'filerev:dist',
+        //'regex-replace:dist',
+        'uglify:dist'
+    ]);
+
 
     grunt.registerTask('deploy', [
         'copy:deploy'
@@ -1134,22 +1192,26 @@ module.exports = function (grunt) {
 
     // Starts a little server and runs the app in a page. 
     // Should be run after 'grunt build'.
-    grunt.registerTask('preview', [
-        'open:dev',
-        'connect'
+    grunt.registerTask('preview-build', [
+        'open',
+        'connect:build'
     ]);
+    
+    grunt.registerTask('preview-dist', [
+        // 'open',
+        'connect:dist'
+    ])
 
 
     /*
      * Main build tasks -- redirect to the real ones.
      */
 
-    grunt.registerTask('build', [
-        'build-building'
-    ]);
-    grunt.registerTask('clean', [
-        'clean-building'
-    ]);
-
+//    grunt.registerTask('build', [
+//        'build-building'
+//    ]);
+//    grunt.registerTask('clean', [
+//        'clean-building'
+//    ]);
 
 };

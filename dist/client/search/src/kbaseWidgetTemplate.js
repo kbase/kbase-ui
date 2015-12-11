@@ -1,0 +1,1 @@
+!function(a,b){a.KBWidget({name:"MyWidget",parent:"kbaseWidget",version:"1.0.0",options:{},init:function(a){return this._super(a),this}})}(jQuery);

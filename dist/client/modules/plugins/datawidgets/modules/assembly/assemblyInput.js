@@ -1,0 +1,1 @@
+define(["kb/widget/bases/dataWidget"],function(a){"use strict";function b(b){return a.make({})}return{make:function(a){return b(a)}}});

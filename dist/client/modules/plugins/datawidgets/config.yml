@@ -1,0 +1,152 @@
+## Welcome Panel
+---
+package:
+    name: datawidgets
+    description: New style data widgets
+    author: Erik Pearson
+    date: November 5, 2015
+    version: 0.0.1
+source:
+    modules:
+        -
+            module: kb_datawidgets_panel
+            file: panel
+        -
+            module: kb_datawidgets_widget
+            file: widget
+        -
+            module: kb_datawidgets_widget2
+            file: widget2
+        -
+            module: kb_datawidgets_expression_expressionSeries
+            file: expression/expressionSeries
+        # Assembly
+        -
+            module: kb_datawidgets_assembly_assemblyInput
+            file: assembly/assemblyInput
+            
+install:
+    widgets:
+        - 
+            module: kb_datawidgets_panel
+            id: kb_datawidgets_panel
+            type: factory
+        -
+            module: kb_datawidgets_widget
+            id: kb_datawidgets_widget
+            type: factory
+        -
+            module: kb_datawidgets_widget2
+            id: kb_datawidgets_widget2
+            type: factory
+        # WIDGETS
+        -
+            module: kb_datawidgets_expression_expressionSeries
+            id: kb_datawidgets_expression_expressionSeries
+            type: factory
+        -
+            module: plugins/datawidgets/modules/contigset/contigSet/widget
+            id: kb_datawidgets_contigset_contigSet
+            type: factory
+        -
+            module: plugins/datawidgets/modules/trees/tree
+            id: kb_datawidgets_trees_tree
+            type: factory
+        # ASSEMBLY
+        -
+            modules: kb_datawidgets_assembly_assemblyInput
+            id: kb_datawidgets_assembly_assemblyInput
+            type: factory
+            
+    # Set up a route to install that widget in the main body view
+    routes:
+        -
+            path:
+                -
+                    test
+                -
+                    type: param
+                    name: workspaceId
+                -
+                    type: param
+                    name: objectId
+                -
+                    type: param
+                    name: objectVersion
+            widget: kb_datawidgets_panel
+    # Set up a menu item to invoke the path above
+    menu:
+        -
+            name: test
+            definition:
+                path: test/78/38/1
+                label: Test!
+                icon: smile-o
+    type:
+         # EXPRESSION
+        -
+            type:
+                module: KBaseExpression
+                name: ExpressionSeries
+                version: any
+            icon:  
+                type: fontAwesome
+                classes: ['fa-tachometer']
+            viewers:
+                -
+                    title: Data View
+                    default: true
+                    widget:
+                        name: kb_datawidgets_expression_expressionSeries                        
+                    panel: false
+                    
+        # GENOMES
+        
+        -
+            type:
+                module: KBaseGenomes
+                name: ContigSet
+                version: any
+            icon: 
+                type: fontAwesome
+                classes: ['fa-align-justify']
+            viewers:
+                -
+                    title: Data View
+                    default: true
+                    widget: 
+                        name: kb_datawidgets_contigset_contigSet
+                    panel: true  
+         # TREES
+        
+        -
+            type:
+                module: KBaseTrees
+                name: Tree
+                version: any
+            icon:   
+                type: kbase
+                classes: ['icon-tree', 'kb-data-icon-dnudge']
+            viewers:
+                -
+                    title: Data View
+                    default: true
+                    widget:
+                        name: kb_datawidgets_trees_tree
+                    panel: false
+        # ASSEMBLY
+        -
+            type:
+                module: KBaseAssembly
+                name: AssemblyInput
+                version: any
+            icon: 
+                type: kbase
+                classes: ['icon-reads', 'kb-data-icon-dnudge']  
+            viewers:
+                -
+                    title: Data View
+                    default: true
+                    widget:
+                        name: kb_datawidgets_assembly_assemblyInput
+                    panel: true              
