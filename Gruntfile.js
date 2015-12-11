@@ -135,6 +135,26 @@ module.exports = function (grunt) {
         setTaskState('targetConfig', readYaml(deployConfigPath));
     }
     loadTargetConfig();
+    
+    var buildType;
+    function setBuildType() {
+        buildType = grunt.option('type');
+        if (!buildType) {
+            var config = readYaml('grunt-args.yml');
+            if (config) {
+                buildType = config.type;
+            }
+        }
+
+        if (!buildType) {
+            throw new Error('Build type not defined');
+        }
+
+        console.log('Build type set to "' + buildType + '"');
+
+        setTaskState('buildType', buildType);
+    }
+    setBuildType();
 
 
     // Allow a task to insist on a given target. Necessary for somethlinke 
