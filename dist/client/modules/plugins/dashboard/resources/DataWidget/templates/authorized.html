@@ -1,0 +1,73 @@
+<div class="collapse" id="{{env.widgetName}}-more-info-{{env.instanceId}}"> 
+    <div class="well">
+        <p>This panel shows Data Objects in all of your Narratives.</p>
+    </div>
+</div>
+<table class="table table-bordered table-striped" id="dashboard-data-widget-{{env.generatedId}}">
+    <thead>
+        <tr>
+            <th>Object Name</th>
+            <th>Type</th>
+            <th>Version</th>
+            <th>In Narrative</th>
+            <!--
+           <th>In Your Narratives</th>
+           <th>In Shared</th>
+           <th>In Public</th>
+          
+           <th>Views</th>
+           <th>Runs</th>
+           
+            -->
+            <th>Version</th>
+            <th>Last Modified</th>
+        </tr>
+    </thead>
+    <tfoot>
+
+    </tfoot>
+
+    <tbody>
+        {% for object in state.workspaceObjects %}
+
+        <tr>
+            <td><a href="#dataview/{{object.wsid}}/{{object.id}}/{{object.version}}">{{object.name}}</a></td>
+            <td>{{object.typeName}}</td>
+            <td>{{object.typeMajorVersion}}.{{object.typeMinorVersion}}</td>
+            <td>x</td>
+            <!--
+            <td>x</td>
+            <td>x</td>
+             
+            <td>x</td>
+            <td>{{object.save_by}}</td>
+            
+            -->
+            <td>{{object.version}}</td>
+            <td>{{object.save_date | dateFormat}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+<script>
+    require(['jquery'], function ($) {
+        $('#dashboard-data-widget-{{env.generatedId}}').DataTable({
+            initComplete: function (settings) {
+                var api = this.api();
+                var rowCount = api.data().length;
+                var pageSize = api.page.len();
+                var wrapper = api.settings()[0].nTableWrapper;
+                if (rowCount <= pageSize) {
+                    $(wrapper).find('.dataTables_paginate').closest('.row').hide();
+                    $(wrapper).find('.dataTables_filter').closest('.row').hide();
+                }
+            }
+        });
+        /*$('#dashboard-data-widget-{{env.generatedId}}').DataTable({
+         scrollY: '400px',
+         scrollCollapse: true,
+         paging: false
+         });*/
+    });
+</script>

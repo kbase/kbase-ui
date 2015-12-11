@@ -1,0 +1,42 @@
+## include file for main config
+# it is simply merged with the master config
+---
+source:
+    modules:
+        -
+            module: kb_widget_dataview_modeling_biochemMedia
+            file: widgets/modeling/KBaseBiochem.Media
+install:
+    widgets:
+        -
+            module: kb_widget_dataview_modeling_biochemMedia
+            id: kb_dataview_biochem_media
+            type: kbwidget
+    types:
+        -
+            type: 
+                module: KBaseBiochem
+                name:   Media
+                version: any
+            icon: 
+                type: fontAwesome
+                classes: ['fa-flask']
+            viewers:
+                -
+                    default: true
+                    title: Data View
+                    widget: kb_dataview_biochem_media
+                    jqueryWidget: kbaseTabTable
+                    panel: true
+                    options:
+                        -
+                            from: workspaceName
+                            to: ws
+                        -
+                            from: objectName
+                            to: obj
+                        -                            
+                            from: objectType
+                            to: type
+                
+        

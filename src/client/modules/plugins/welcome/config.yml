@@ -1,0 +1,73 @@
+## Welcome Panel
+---
+package:
+    name: welcome
+    description: A welcome page
+    author: Erik Pearson
+    date: September 14, 2015
+    version: 0.0.1
+source:
+    modules:
+        -
+            module: kb_widget_welcome
+            file: welcomePanelWidget
+        -
+            module: kb_widget_hello
+            file: helloPanelWidget
+        -
+            module: kb_widget_goodbye
+            file: goodbyePanelWidget
+install:
+    # Register the welcome widget
+    widgets:
+        - 
+            module: kb_widget_welcome
+            id: welcome
+            type: factory
+        -
+            module: kb_widget_hello
+            id: hello
+            type: factory
+        -
+            module: kb_widget_goodbye
+            id: goodbye
+            type: factory
+    # Set up a route to install that widget in the main body view
+    routes:
+        -
+            path: ['welcome']
+            widget: welcome
+        -
+            path: ['hello']
+            widget: hello
+        -
+            path: ['goodbye']
+            widget: goodbye              
+    # Set up a menu item to invoke the path above
+    menu:
+        -
+            name: welcome
+            definition:
+                path: welcome
+                label: Welcome!
+                icon: smile-o
+        -
+            name: about-kbase
+            definition:
+                uri: https://kbase.us/about
+                newWindow: true
+                label: About KBase
+                icon: info-circle
+        -
+            name: contact-kbase
+            definition:
+                uri: https://kbase.us/contact
+                newWindow: true
+                label: Contact KBase
+                icon: envelope-o
+        -
+            name: narrative
+            definition:
+                path: narrativemanager/start
+                label: Narrative
+                icon: file                    

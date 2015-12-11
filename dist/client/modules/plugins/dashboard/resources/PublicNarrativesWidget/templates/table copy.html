@@ -1,0 +1,133 @@
+<div class="collapse" id="more-info-{{env.instanceId}}"> 
+	<div class="well">
+		<p>This panel shows Narratives that have been shared with you.</p>
+	</div>
+</div>
+
+
+  <div class="row">
+   <div class="col-sm-2">
+      
+   </div>
+   <div class="col-sm-2">
+      
+   </div>
+   <div class="col-sm-2">
+      
+   </div>
+   <div class="col-sm-2">
+      
+   </div>
+
+   <div class="col-sm-4" style="text-align: right">
+      Found 
+       {% if state.narratives|length == 1 %}
+      
+      {{ state.narratives|length }} Narrative
+      
+      {% elif state.narratives|length > 1 %}
+      
+       {{ state.narratives|length }} Narratives
+       
+      {% elif 1 %}
+      
+      no narratives
+      
+      {% endif %}
+   </div>
+</div>
+
+
+{% if state.narratives | length > 0 %}
+
+   
+   <table class="table" id="dashboard-shared-narratives-widgets-{{env.instanceId}}">
+ <thead>
+     <tr>
+         <th>Title</th>
+         <th class="number">Ver.</th>
+         <th>Owner</th>
+         <th>You Can</th>
+         <th>Also Shared With</th>
+         <th class="number"># objects</th>
+         <th class="date">Last Saved</th> 
+     </tr>
+ </thead>
+
+{% for narrative in state.narratives %}
+	<tr>
+		
+		<td>
+		    <a target="_blank" href="/narrative/{{narrative.object.obj_id}}">{{narrative.workspace.metadata.narrative_nice_name}}</a>
+		</td>
+		<td class="number">
+            {{narrative.object.version}}
+		</td>
+		<td>
+            {{narrative.workspace.owner}}
+        </td>
+        <td>
+            {% if narrative.workspace.user_permission == 'r'%}View
+            {% elif narrative.workspace.user_permission == 'w' %}Edit
+            {% elif narrative.workspace.user_permission == 'a' %}Edit and Share
+            {% endif %}
+        </td>
+		<td>
+           {% if narrative.workspace.user_permission == 'r'%}
+              No Access to Sharing 
+              <style type="text/css">
+                
+               </style>
+              <button type="button" class="btn btn-default btn-bare" data-toggle="popover" title="No Access to Sharing" data-content="For a Narrative with View permission, you may not view the list of other sharers">
+                 <span class="fa fa-info-circle"></span>
+              </button>
+           {% else %}
+              {% if narrative.permissions|length > 0 %}
+           {{ narrative.permissions | length }} user{% if narrative.permissions|length > 1 %}s{% endif %}
+           <select>
+              {% for perm in narrative.permissions %} 
+              <option value="{{perm.username}}">{{perm.username}} ({{perm.permission|permissionLabel}})</option>
+              {% endfor %}
+           </select>
+           {% else %}
+             nobody
+           {% endif %}
+           {% endif %}
+		</td>
+		<td class="number">
+            {{narrative.workspace.object_count}}
+		</td>
+		<td class="date">
+		     {{narrative.workspace.moddate | dateFormat }}
+        </td>
+	</tr>
+	
+{% endfor %}
+
+</table>
+
+<script>
+require(['jquery'], function ($) {
+	var table = $('#dashboard-shared-narratives-widgets-{{env.instanceId}}');
+    table.DataTable({
+        initComplete: function (settings) {
+            var api = this.api();
+            var rowCount = api.data().length;
+            var pageSize = api.page.len();
+            var wrapper = api.settings()[0].nTableWrapper;
+            if (rowCount <= pageSize) {
+                $(wrapper).find('.dataTables_paginate').closest('.row').hide();
+                $(wrapper).find('.dataTables_filter').closest('.row').hide();
+            }
+        }
+    });
+});
+</script>
+
+{% else %}
+
+<p>No Narratives have been shared with you.</p>
+
+{% endif %}
+
+

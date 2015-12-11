@@ -1,0 +1,26 @@
+## YAML Template.
+---
+package:
+    author: Erik Pearson
+    name: login plugin
+    description: A login panel
+    date: August 19, 2015
+    version: 0.0.1
+source:
+    modules:
+        ## sources are relative to build/plugins/PACKAGE/source/javascript
+        -
+            module: kb_widget_loginPanel
+            file: login
+install:
+    widgets:
+        -
+            module: kb_widget_loginPanel
+            id: loginPanelWidget
+            type: factory
+    routes:
+        -
+            path: ['login']
+            widget: loginPanelWidget
+            queryParams:
+                nextrequest: {}

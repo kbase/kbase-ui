@@ -1,0 +1,1 @@
+define(["kb/widget/base/simpleWidget","kb/common/dom","kb/common/html"],function(a,b,c){"use strict";function d(b){return a.make({runtime:b.runtime,on:{start:function(){this.set("updated",new Date)},render:function(){return"Goodbye."}}})}return{make:function(a){return d(a)}}});

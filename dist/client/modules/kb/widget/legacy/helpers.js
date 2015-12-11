@@ -1,0 +1,1 @@
+define(["jquery","kb/common/html"],function(a,b){"use strict";a.fn.rmLoading=function(){a(this).find(".loader").remove()},a.fn.loading=function(c,d){var e=b.tag("div");return a(this).rmLoading(),a(this).append(e({"class":"loader"},b.loading(c))),this}});

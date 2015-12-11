@@ -1,0 +1,11 @@
+## UI Configuration File - Test
+---
+menus:
+    authenticated: 
+        main: [narrative, search, dashboard]
+        developer: []
+        help: [about-kbase, contact-kbase]
+    unauthenticated: 
+        main: [search]
+        developer: []
+        help: [about-kbase, contact-kbase]

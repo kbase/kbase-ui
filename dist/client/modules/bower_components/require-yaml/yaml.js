@@ -1,0 +1,1 @@
+define(["text","js-yaml"],function(a,b){var c={};return{write:function(a,b,d){b in c&&d('define("'+a+"!"+b+'", function(){ return '+c[b]+"; });\n")},load:function(d,e,f,g){a.get(e.toUrl(d),function(a){try{var e=b.safeLoad(a);g.isBuild&&(c[d]=JSON.stringify(e)),f(e)}catch(h){f.error(h)}})},version:"0.1.1"}});

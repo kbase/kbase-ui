@@ -161,23 +161,75 @@ To deal with these issues we offer a set of pre-built widget objects which allow
 
 ### data Widget
 
-- recv
-- send
-- getConfig
-- hasConfig
-- getState
-- setState
-- hasState
-- get
-- set
-- addDomEvent
-- attachDomEvent
-- setTitle
-- runtime
+- message bus:
+    - recv
+    - send
+- configuration (app-wide)
+    - getConfig
+    - hasConfig
+- state (observed)
+    - getState
+    - setState
+    - hasState
+    - get
+    - set
+- dom events
+    - addDomEvent
+    - attachDomEvent
+- content
+    - setTitle
+    - render
+- other
+    - runtime
 
-The data widget is dedicated to serving the needs of data visualization applications. 
+The data widget is dedicated to serving the needs of data visualization applications.
 
-#### recv
+#### Messaging
+
+The data widget utilizes the app-wide message bus to interact with different components of the system. These messages are one-way, and are used for notification of events, or requests for ui updates. It is a simple pub/sub style message bus, which utilizes the channel and message pattern. To send a message one specifies a channel, message, and option data item (payload). Receiving a message is as simple as specifying a channel, message, and handler function which receives the data payload as the sole argument.
+
+Messages are asynchronous and are processed in the order in which they are sent.
+
+Because the message bus is global, and message subscription registers a receiver in the global message bus, each subscription must be removed when no longer needed. This is automatically handled by the data widget, and in fact the user of the data widget does not provide direct access to the global message bus. 
+
+##### ```send```
+
+Receive a message and optional data payload on a given channel.
+
+###### arguments
+
+channel
+: string - the channel on which to locate the message
+
+message
+: string - a message identifier
+
+data [optional]
+: object - an arbitrary object which is sent as a payload for the message and will be received unmodified by recipients.
+
+###### example
+
+In the following example, the ```setTitle``` message is sent on the ```ui``` channel, carrying the data item ```'This is my title'```.
+
+> ```
+this.send('ui', 'setTitle', 'This is my title');
+> ```
+
+##### ```recv```
+
+Receive a message and optional data payload on a given channel.
+
+###### arguments
+
+channel
+: string - the channel on which to locate the message
+
+message
+: string - a message identifier
+
+handler
+: function - a function which will receive one argument which will contain the data payload, if any. The context of this function will not be modified, so you may bind it locally for convenience.
+
 
 
 

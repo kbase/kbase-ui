@@ -1,0 +1,279 @@
+## YAML Template.
+---
+package:
+    author: Erik Pearson
+    name: dataview
+    description: Viewers for data object (aka Landing Pages)
+    date: August 6, 2015
+    version: 0.0.1
+source:
+    ## sources are relative to build/plugins/PACKAGE/source/javascript
+    ## NB: need to quote file names, otherwise 
+    modules:
+        -
+            module: kb_panel_dataview
+            file: panel
+            widget: kb_dataview_panel
+        -
+            module: kb_widget_dataview_provenance
+            file: widgets/kbaseWSObjGraphCenteredView
+            widget: kb_dataview_provenance
+        -
+            module: kb_widget_dataview_download
+            file: widgets/kbaseDownloadPanel
+            widget: kb_dataview_download
+        -
+            module: kb_widget_dataview_base
+            file: widgets/DataviewWidget
+        -
+            module: kb_widget_dataview_overview
+            file: widgets/OverviewWidget
+            widget: kb_dataview_overview
+        -
+            module: kb_widget_dataview_genericVisualizer
+            file: widgets/GenericVisualizer
+            widget: kb_dataview_dispatcher
+        
+        # GENOME
+        -
+            module: kb_widget_dataview_genome
+            file: widgets/genomes/kbaseGenomePage
+            widget: kb_dataview_genome
+        -
+            module: kb_widget_dataview_genome_wideOverview
+            file: widgets/genomes/kbaseGenomeWideOverview
+            widget: kb_dataview_genome_wideOverview
+        -
+            module: kb_widget_dataview_genome_overview
+            file: widgets/genomes/kbaseGenomeOverview
+            css: true
+            widget: kb_dataview_
+        -
+            module: kb_widget_dataview_genome_wikiDescription
+            file: widgets/genomes/kbaseWikiDescription
+        -
+            module: kb_widget_dataview_genomeLiterature
+            file: widgets/genomes/kbaseLitWidget
+        -
+            module:  kb_widget_dataview_genome_genePage
+            file: widgets/genomes/kbaseGenePage
+        -
+            module: kb_widget_dataview_genome_geneInstanceInfo
+            file: widgets/genomes/kbaseGeneInstanceInfo
+        -
+            module: kb_widget_dataview_genome_geneSequence
+            file: widgets/geneomes/kbaseGeneSequence
+        -
+            module: kb_widget_dataview_genome_geneBiochemistry
+            file: widgets/genomes/kbaseGeneBiochemistry            
+        -
+            module: kb_widget_dataview_genomeLineage
+            file: widgets/genomes/kbaseGenomeLineage
+        -
+            module: kb_widget_dataview_genome_wideTaxonomy
+            file: widgets/genomes/kbaseGenomeWideTaxonomy
+        -
+            module: kb_widget_dataview_genome_wideAssemblyAnnotation
+            file: widgets/genomes/kbaseGenomeWideAssemAnnot
+        -
+            module: kb_widget_dataview_genome_multiContigBrowser
+            file: widgets/genomes/kbaseMultiContigBrowser
+            css: true
+        -
+            module: kb_widget_dataview_genome_seedFunctions
+            file: widgets/genomes/kbaseSEEDFunctions
+            css: true
+        -
+            module: kb_widget_dataview_contigset_contigSetView
+            file: widgets/contigset/kbaseContigSetView
+            
+        # EXPRESSION
+        
+        -
+            module: kb_widget_dataview_expression_expressionSeries
+            file: widgets/expression/kbaseExpressionSeries
+            
+        # SEED FUNCTION STYLES TOO?
+        -
+            module: kb_widget_dataview_genome_geneTable
+            file: widgets/genomes/kbaseGenomeGeneTable
+        -
+            module: kb_widget_dataview_genome_contigBrowserButtons
+            file: widgets/genomes/kbaseContigBrowserButtons
+        -
+            module: kb_widget_dataview_genome_annotationSetTable
+            file: widgets/from_narrative/kbaseAnnotationSetTable
+        -
+            module: kb_widget_dataview_genome_pangenome
+            file: widgets/genomes/kbasePanGenome
+        -
+            module: kb_widget_dataview_genome_phenotypeSet
+            file: widgets/genomes/kbasePhenotypeSet            
+            
+        # ASSEMBLY
+        
+        -
+            module: kb_widget_dataview_assembly_singleObjectBasic
+            file: widgets/assembly/kbaseSingleObjectBasicWidget
+        -
+            module: kb_widget_dataview_assembly_assemblyInput
+            file: widgets/assembly/kbaseAssemblyInput
+        -
+            module: kb_widget_dataview_assembly_assemblyView
+            file: widgets/from_narrative/kbaseAssemblyView
+        -
+            module: kb_widget_dataview_assembly_pairedEndLibrary
+            file: widgets/assembly/kbasePairedEndLibrary
+        -
+            module: kb_widget_dataview_assembly_filePairedEndLibrary
+            file: widgets/assembly/kbaseFilePairedEndLibrary
+        
+        # COMMUNITIES
+        -
+            module: kb_widget_dataview_communities_collection
+            file: widgets/communities/kbaseCollectionView
+        -
+            module: kb_widget_dataview_communities_functionalMatrix
+            file: widgets/communities/kbaseAbundanceDataView
+        -
+            module: kb_widget_dataview_communities_functionalProfile
+            file: widgets/communities/kbaseAbundanceDataView
+        -
+            module: kb_widget_dataview_communities_graph
+            file: widgets/communities/kbStandaloneGraph
+        -
+            module: kb_widget_dataview_communities_plot
+            file: widgets/communities/kbStandalonePlot
+        -
+            module: kb_widget_dataview_communities_heatmap
+            file: widgets/communities/kbStandaloneHeatmap
+        -
+            module: kb_widget_dataview_communities_abundanceDataHeatmap
+            file: widgets/communities/kbaseAbundanceDataHeatmap
+        -
+            module: kb_widget_dataview_communities_metagenome
+            file: widgets/communities/kbaseMetagenomeView
+        -
+            module: kb_widget_dataview_communities_jquerySvg
+            file: widgets/communities/jquery.svg
+            
+        # PROTEOME COMPARISON
+        
+        -
+            module: kb_widget_dataview_proteomeComparison_genomeComparison
+            file: widgets/protcmp/kbaseGenomeComparison
+        -
+            module: kb_widget_dataview_proteomeComparison_genomeComparisonViewer
+            file: widgets/protcmp/kbaseGenomeComparisonViewer
+            
+        # MODELING
+        -
+            module: kb_widget_dataview_modeling_objects
+            file: widgets/modeling/KBObjects
+        -
+            module: kb_widget_dataview_modeling_biochemMedia
+            file: widgets/modeling/KBaseBiochem.Media
+        -
+            module: kb_widget_dataview_modeling_fba
+            file: widgets/modeling/KBaseFBA.FBA
+        -
+            module: kb_widget_dataview_modeling_fbaModel
+            file: widgets/modeling/KBaseFBA.FBAModel
+        -
+            module: kb_widget_dataview_modeling_fbaModelSet
+            file: widgets/modeling/KBaseFBA.FBAModelSet
+        -
+            module: kb_widget_dataview_modeling_phenotypeSet
+            file: widgets/modeling/KBasePhenotypes.PhenotypeSet
+        -
+            module: kb_widget_dataview_modeling_phenotypeSimulationSet
+            file: widgets/modeling/KBasePhenotypes.PhenotypeSimulationSet
+        -
+            module: kb_widget_dataview_modeling_genomeSet
+            file: widgets/modeling/KBaseSearch.GenomeSet
+        -
+            module: kb_widget_dataview_modeling_tabTable
+            file: widgets/modeling/kbaseTabTable
+            
+        # TREES
+        
+        -
+            module: kb_widget_dataview_trees_easytree
+            file: widgets/trees/easyTree
+        -
+            module: kb_widget_dataview_trees_tree
+            file: widgets/trees/kbaseTree  
+            
+
+        
+install:
+    routes:
+        -
+            path: 
+                - 
+                    dataview
+                -
+                    type: param
+                    name: workspaceId
+                -
+                    type: param
+                    name: objectId
+            queryParams:
+                sub: {}
+                subid: {}            
+            widget: kb_panel_dataview
+        -
+            path: ['dataview', {type: param, name: workspaceId}, {type: param, name: objectId}, {type: param, name: objectVersion}]
+            queryParams:
+                sub: {}
+                subid: {}            
+            panelFactory: kb_panel_dataview
+    # no menu
+    
+    # This section adds a mapping from a type to to a module. It provides the 
+    # following information:
+    # default: true if this should be the default viewer for objects of this type
+    # 
+    types:
+        -
+            type: 
+                module: Communities
+                name:   Collection
+                version: any
+            icon: 
+                type: fontAwesome
+                classes: ['fa-list-ul']
+            viewers:
+                -
+                    # if set true, this will be set as the default vis widget for this type.
+                    default: true
+                    # This the title for the widget
+                    title: 'Data View 3'                
+                    # This is the module name as specified in the plugin
+                    # it should follow standard namespacing. It should also be 
+                    # defined above in the modules.
+                    # module: kb_widget_dataview_communities_collection
+                    # This is the registered widget id. The mapping of widget
+                    # to module is probably made above.
+                    widget: kb_dataview_communitiesCollection
+
+                    # This is the internal jquery object name for this widget,
+                    # if it is invoked this way.
+                    type: kbwidget
+                    jqueryWidget: CollectionView
+                    # If a bootstrap panel is requested to wrap this widget.
+                    panel: true
+                    # Mapping of standard options to the widget option properties.
+                    # By standard, I mean those defined in the GenericVisualizer widget.
+                    options:
+                        -
+                            from: workspaceId
+                            to: ws
+                        -
+                            from: objectId
+                            to: id
+                        -
+                            from: authToken
+                            to: token
+                
+        

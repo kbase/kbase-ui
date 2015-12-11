@@ -1,0 +1,44 @@
+## Data Widget Demo
+---
+package:
+    name: dataWidgetDemo
+    description: A simple panel to play with the data widget.
+    author: Erik Pearson
+    date: November 1, 2015
+    version: 0.0.1
+source:
+    modules:
+        -
+           module: kb_datawidgetdemo_panel
+           file: panel
+        -
+            module: kb_datawidgetdemo_myDataWidget
+            file: myDataWidget
+        -
+            module: kb_datawidgetdemo_myProfileWidget
+            file: myProfileWidget
+install:
+    widgets:
+        -
+            module: kb_datawidgetdemo_panel
+            name: kb_datawidgetdemo_panel
+            type: factory
+        -
+            module: kb_datawidgetdemo_myDataWidget
+            name: kb_datawidgetdemo_myDataWidget
+            type: factory
+        -
+            module: kb_datawidgetdemo_myProfileWidget
+            name: kb_datawidgetdemo_myProfileWidget
+            type: factory
+    routes:
+        -
+            path: ['datawidgetdemo']
+            widget: kb_datawidgetdemo_panel
+    menu:
+        -
+            name: datawidgetdemo
+            definition:
+                path: datawidgetdemo
+                label: Data Widget Demo!
+                icon: smile-o            

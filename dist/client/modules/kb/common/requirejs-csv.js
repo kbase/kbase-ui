@@ -1,0 +1,1 @@
+define(["text"],function(a){"use strict";return{load:function(a,b,c,d){d.isBuild?c(""):b(["text!"+a],function(a){c(parseCsv(a))})},loadFromFileSystem:function(a,b){var c=nodeRequire("fs"),d=require.toUrl(b),e=c.readFileSync(d).toString();return'define("'+a+"!"+b+'", function () {\nreturn '+e+";\n});\n"},write:function(a,b,c){c(this.loadFromFileSystem(a,b))}}});

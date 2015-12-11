@@ -1,0 +1,1 @@
+define(["promise","jquery"],function(a,b){"use strict";function c(a){var b=a.split(/\n/),c=b.map(function(a){return a.split(/,/).map(function(a){var b=a.trim();if('"'===b.charAt(0))return b.replace(/"/g,"");var c;return c=b.match(/\./)?parseFloat(b):parseInt(b),isNaN(c)?b:c})});return c}function d(d){return a.resolve(b.get(d)).then(function(a){return c(a)})}return{load:d}});

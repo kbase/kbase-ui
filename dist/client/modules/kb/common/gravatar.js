@@ -1,0 +1,1 @@
+define(["md5"],function(a){"use strict";function b(b){function c(b,c,d,e){var f=a.hash(b),g="https://www.gravatar.com/avatar/"+f+"?s="+c+"&amp;r="+d+"&d="+e;return g}return{makeGravatarUrl:c}}return{make:function(a){return b(a)}}});

@@ -1,0 +1,10 @@
+{% if env.isOwner %}
+   Your Collaborators
+{% else %}
+	Your Collaborators in Common with 
+	{% if state.currentUserProfile.profile.userdata.title %}
+		{{state.currentUserProfile.profile.userdata.title}}
+	{% endif %}
+	{{state.currentUserProfile.user.realname}}
+{% endif %}
+

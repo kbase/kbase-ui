@@ -1,0 +1,192 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 24, 2015, Jun 24, 2015 11:49:44 AM
+    Author     : erik
+*/
+
+.kbase-dashboard-view {
+}
+
+ .kb-row {}
+ 
+ .-col {
+    display: inline-block;
+ }
+ 
+ .-col.-span-8 {
+    width: 66.6666%;
+ }
+ 
+ .-col.-span-4 {
+    width: 33.3333%;
+ }
+ 
+ .kbase-dashboard-view .table td.number,
+ .kbase-dashboard-view .table th.number {
+    text-align: right;
+    padding-right: 2em;
+ }
+ 
+ .kbase-dashboard-view .table td.date,
+ .kbase-dashboard-view .table th.date {
+    text-align: right;
+    padding-right: 2em;
+ }
+ 
+ .kbase-dashboard-view .kbase-widget .btn {
+ }
+ 
+ .kbase-dashboard-view .slider {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+ }
+.kbase-dashboard-view .slider::-webkit-scrollbar {
+   visibility: hidden;
+}
+.kbase-dashboard-view .slider.-autoOverflow::-webkit-scrollbar {
+   visibility: visible;
+}
+
+ .kbase-dashboard-view .slider .-card {
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+    margin: 4px 16px 12px 4px;
+    
+    height: 250px;
+    width: 250px;
+    
+    
+    padding: 4px;
+    
+ }
+.slider .-card .-inner {
+   position: relative;
+}
+
+.kbase-dashboard-view .slider .-card .-title {
+   position: absolute;
+   top: 0;
+   left: 0;
+   height: 30px;
+   width: 250px;
+   font-weight: bold;
+   padding: 5px;
+   overflow: hidden;
+}
+.kbase-dashboard-view .slider .-card .-body {
+   position: absolute;
+   top: 30px;
+   left: 0;
+   height: 150px;
+   width: 250px;
+   background-color: #FFF; 
+   box-shadow: 1px 1px 1px #ccc;
+   overflow: hidden;
+   padding: 3px;
+}
+ .slider .-card .-body.-active {
+   box-shadow: inset 1px 1px 1px #ccc;
+}
+.slider .-card .-body.-autoOverflow {
+   overflow:auto;
+}
+.kbase-dashboard-view .slider .-card .-box {
+   position: absolute;
+   top: 25px;
+   left: 0;
+   height: 200px;
+   width: 250px;
+   background-color: #FFF; 
+   box-shadow: 1px 1px 1px #ccc;
+   overflow: hidden;
+   padding: 3px;
+}
+.kbase-dashboard-view .slider .-card .-message {
+   position: absolute;
+   top: 25px;
+   left: 0;
+   height: 200px;
+   width: 250px;
+   background-color: #FFF; 
+   box-shadow: 1px 1px 1px #ccc;
+   overflow: hidden;
+   padding: 3px;
+}
+.kbase-dashboard-view .slider .-card .-message p {
+   white-space: normal;
+   padding: 3px;
+   overflow: none;
+}
+.kbase-dashboard-view .slider .-card .-saved {
+   position: absolute;
+   top: 210px;
+   left: 0;
+   height: 20px;
+   width: 250px;
+   text-align: center;
+}
+.kbase-dashboard-view .slider .-card .-footer {
+   position: absolute;
+   top: 190px;
+   left: 0;
+   height: 20px;
+   width: 250px;
+}
+
+.kbase-dashboard-view .slider .-card table {
+    height: 100%;
+    width: 100%;
+ }
+ 
+
+ .kbase-dashboard-view .kbtn {
+    background-color: #337ab7;
+    border: 1px solid #2e6da4;
+    border-radius: 2px;
+    color: #FFF;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+ }
+
+.navbar-group {
+   display: inline-block;
+}
+.navbar-group.navbar-form {
+   margin: 0;
+}
+
+/* Disable these. Widgets use a different 
+   arrow than other collapsibles
+   
+.kbase-dashboard-view [data-toggle="collapse"]::after {
+  margin-left: 6px;
+  font-family: "FontAwesome";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 90%;
+  width: 12px;
+  color: silver;
+  line-height: 1;
+  vertical-align: baseline;
+  content: "\f078 ";
+}
+.kbase-dashboard-view [data-toggle="collapse"].collapsed::after {
+  content: "\f054 ";
+}
+*/
+
+.kbase-dashboard-view [data-toggle="collapse"]::before {
+    display: inline-block;
+    width: 1.2em;
+}
+.kbase-dashboard-view [data-toggle="collapse"].collapsed::before {
+    display: inline-block;
+    width: 1.2em;
+}

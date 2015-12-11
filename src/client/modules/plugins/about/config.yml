@@ -1,0 +1,44 @@
+## YAML Template.
+---
+package:
+    author: Erik Pearson
+    name: about panel
+    description: A package containing the about panel
+    date: August 5, 2015
+    version: 0.0.1
+source:
+    ## sources are relative to build/plugins/PACKAGE/source/javascript
+    ## NB: need to quote file names, otherwise 
+    modules:
+        -
+            module: kb_about_aboutWidget
+            file: panel
+install:
+    widgets:
+        - 
+            module: kb_about_aboutWidget
+            id: kb_about
+            type: factory
+    routes:
+        -
+            path: ['about']
+            widget: kb_about
+    menu:
+        -
+            name: about
+            menus: ['authenticated', 'unauthenticated']
+            definition:
+                path: about
+                label: About the Functional Site
+                icon: info-circle
+        -
+            name: contact
+            menus: ['authenticated', 'unauthenticated']
+            definition:
+                uri: http://kbase.us/contact
+                newWindow: true
+                label: Contact KBase
+                icon: envelope-o
+               
+                    
+            

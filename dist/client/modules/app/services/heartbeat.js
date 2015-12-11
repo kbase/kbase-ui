@@ -1,0 +1,1 @@
+define([],function(){"use strict";function a(a){function b(){e=0,d=window.setInterval(function(){e+=1,f.send("app","heartbeat",{heartbeat:e})},g)}function c(){d&&window.clearInterval(d)}var d,e=0,f=a.runtime,g=a.interval||100;return{start:b,stop:c}}return{make:function(b){return a(b)}}});

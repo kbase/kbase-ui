@@ -1,0 +1,76 @@
+## YAML Template.
+---
+package:
+    author: Erik Pearson
+    name: type_viewer
+    description: View a type
+    date: August 19, 2015
+    version: 0.0.1
+source:
+    ## sources are relative to build/plugins/PACKAGE/source/javascript
+    ## NB: need to quote file names, otherwise 
+    modules:
+        -
+            # The main view widget for the viewing types.
+            module: kb_panel_typeView
+            file: typeViewPanel
+        -
+            module: kb_panel_moduleView
+            file: moduleViewPanel
+        #-
+        #    module: kb_panel_functionView
+        #    file: functionViewPanel
+        -
+            module: kb_widget_dataTypeSpecification
+            file: "widgets/DataTypeSpecification.js"
+        -
+            module: kb_widget_moduleSpecification
+            file: "widgets/ModuleSpecification.js"
+        #-
+        #    module: kb_widget_FunctionSpecification
+        #    file: "widgets/FunctionSpecification.js"
+        -
+            module: kb_spec_common
+            file: kbaseSpecCommon
+    dependencies:
+        -   
+            module: google-code-prettify
+        -
+            module: blubird
+        
+install:
+    widgets:
+        -
+            module: kb_panel_typeView
+            id: kb_typeview_typeViewPanel
+            type: factory
+        -
+            module: kb_panel_moduleView
+            id: kb_typeview_moduleViewPanel
+            type: factory
+        #-
+        #    module: kb_panel_functionView
+        #    id: kb_typeview_functionViewPanel
+        -
+            module: kb_widget_dataTypeSpecification
+            id: kb_typeview_dataTypeSpec
+            type: factory
+        -
+            module: kb_widget_moduleSpecification
+            id: kb_typeview_moduleSpec
+            type: factory
+        #-
+        #    module: kb_widget_FunctionSpecification
+        #    id: kb_typeview_functionSpec
+    routes:
+        -
+            path: ['spec', 'type', {type: 'param', name: 'datatype'}]
+            widget: kb_typeview_typeViewPanel
+        -
+            path: ['spec', 'module', {type: 'param', name: 'moduleid'}]
+            widget: kb_typeview_moduleViewPanel
+        #-
+        #    path: ['spec', 'functions', {type: 'param', name: 'functionid'}]
+        #    widget: kb_typeview_functionViewPanel
+   
+        

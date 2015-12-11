@@ -1,0 +1,54 @@
+<div class="collapse" id="{{env.widgetName}}-more-info-{{env.generatedId}}">
+   <div class="well">
+      <p>This table shows your "Collaborators" - other KBase users who have access to Narratives to which you also have access.</p>
+   </div>
+</div>
+
+{% if state.collaborators|length == 0 %}
+
+<p>
+You do not yet have any collaborators. To gain collaborators, you need to create narratives and share with other users, or be given share access to Narratives of other users. Your collaborators are those users who are "share partners" with all Narratives you own or share.
+</p>
+
+{% else  %}
+
+<table class="table" id="collaborator_table_{{env.generatedId}}">
+	<thead>
+	<tr>
+		<th>Name</th>
+		<th>Username</th>
+		<th class="number">In common</th>
+	</tr>
+	</thead>
+	<tbody>
+{% for user in state.collaborators %}
+	<tr>
+		<td><a href="#/people/{{user.username}}">{{user.realname}}</a></td>
+		<td>{{user.username}}</td>
+		<td class="number">{{user.count}}</td>
+	</tr>
+{% endfor %}
+	</tbody>
+</table>
+
+{% endif %}
+
+<script>
+require(['jquery', 'datatables', 'datatables_bootstrap'], function ($) {
+    $('#collaborator_table_{{env.generatedId}}').dataTable({
+        initComplete: function (settings) {
+            var api = this.api();
+            var rowCount = api.data().length;
+            var pageSize = api.page.len();
+            var wrapper = api.settings()[0].nTableWrapper;
+            if (rowCount <= pageSize) {
+                $(wrapper).find('.dataTables_length').hide();
+                $(wrapper).find('.dataTables_filter').hide();
+                $(wrapper).find('.dataTables_paginate').hide();
+                $(wrapper).find('.dataTables_info').hide();
+            }
+        }
+    });
+});
+
+</script>

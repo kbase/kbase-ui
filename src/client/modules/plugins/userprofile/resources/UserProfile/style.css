@@ -1,0 +1,57 @@
+/* Edit template */
+.user-profile-widget .profile-editor .name-panel .form-group {
+	margin: 0 10px;
+}
+
+.user-profile-widget .btn-label {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 120%;
+    font-weight: bold;
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.428571429;
+    text-align: left;
+    white-space: nowrap;
+    vertical-align: middle;
+    xcursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+.user-profile-widget .btn-toolbar {
+    background-color: silver;
+    border-radius: 4px;
+}
+/*
+.field-message {
+    display: none;
+}
+.field-message.error-message {
+    color: red;
+    display: block;
+}
+*/
+.user-profile-widget .profile-view-view h2 {
+    margin: 0;
+}
+
+/* View Template */
+.user-profile-widget .profile-view-view h3 {
+    font-size: 130%;
+    margin: 10px 0 5px 0;
+    text-decoration: underline;
+  }
+.user-profile-widget .profile-view-view ul {
+    padding: 0;
+    list-style: none;
+  }
+.user-profile-widget .profile-view-view ul li {
+    margin: 0;
+  }
+.user-profile-widget .profile-view-view .personal-statement {
+    margin: 20px 0 0 0;
+    line-height: 1.5;
+  }

@@ -1,0 +1,16 @@
+plugins:
+  - mainwindow
+  - message
+  - welcome
+  - login
+  - userprofile
+  - datasearch
+  - narrativemanager
+  - narrativestore
+  - viswidgets
+  - typeview
+  - dataview
+  - dashboard
+  - databrowser
+  - typebrowser
+  - datawidgets

@@ -1,0 +1,212 @@
+<div class="collapse" id="{{env.widgetName}}-more-info-{{env.instanceId}}">
+   <div class="well">
+      <p>This panel shows KBase Apps.</p>
+   </div>
+</div>
+
+<table width="100%">
+   <tr>
+      <th width="33%" valign="top">
+         <h4 style="text-align: center;">Your Favorites</h4>         
+      </th>
+      <th width="33%" valign="top">
+         <h4 style="text-align: center;">Collaborators' Favorites</h4>         
+      </th>
+       <th width="33%" valign="top">
+         <h4 style="text-align: center;">Public Favorites</h4>         
+      </th>
+   </tr>
+   <tr>
+      <td width="33%" valign="top">
+         <table class="table table-borderless hoverable">
+           
+            {% if state.appOwnership.owned|isEmpty %} 
+              
+               <div style="font-style: italic;text-align: center;">No Apps found in Narratives that you own.</div>
+            {% else %}
+               {% for app in state.appOwnership.owned|sort("count") %} {% if app.count > 0 %}
+               <tr>
+                  <td valign="baseline" style="vertical-align: top;">
+                     <a href="#/narrativestore/app/{{app.app.id}}" target="_blank">{{ app.app.name }}</a>
+                  </td>
+                 <td width="30px" valign="baseline" style="vertical-align: top;"> 
+                     <div class="-switchable">
+                       <div class="-if-inactive">
+                          <span class="-appcount" >{{app.count}}</span>
+                       </div>
+                       <div class="-if-active">
+                           <a href="#/narrativemanager/new?app={{app.app.id}}" class="btn btn-default btn-link" target="_blank"  data-toggle="tooltip" data-placement="auto" title="Create a new Narrative using this App" data-container="body" >
+                              <span class="-icon">
+                                 <span class="fa-stack">
+                                 <i class="fa fa-file fa-stack-2x"></i>
+                                 <i class="fa fa-plus fa-inverse fa-stack-1x" style="margin-top: 3px;"></i>
+                                 </span>
+                              </span>
+                           </a>
+                       </div>
+                     </div>
+                  </td>
+               </tr>
+               {% endif %} {% endfor %}
+            {% endif %}
+         </table>
+      </td>
+       <td width="33%" valign="top">
+         <table class="table table-borderless hoverable">
+           
+            {% if state.appOwnership.shared|isEmpty %} 
+              <div style="font-style: italic; text-align: center;">No Apps found in Narratives shared with you.</div>
+            {% else %}
+               {% for app in state.appOwnership.shared|sort("count") %} {% if app.count > 0 %}
+               <tr>
+                  <td valign="baseline" style="vertical-align: top;">
+                     <a href="#/narrativestore/app/{{app.app.id}}" target="_blank">{{ app.app.name }}</a>
+                  </td>
+                 <td width="30px" valign="baseline" style="vertical-align: top;"> 
+                     <div class="-switchable">
+                       <div class="-if-inactive">
+                          <span  class="-appcount">{{app.count}}</span>
+                       </div>
+                       <div class="-if-active">
+                           <a href="#/narrativemanager/new?app={{app.app.id}}" class="btn btn-default btn-link" target="_blank"  data-toggle="tooltip" data-placement="auto" title="Create a new Narrative using this App" data-container="body" >
+                              <span class="-icon">
+                                 <span class="fa-stack">
+                                 <i class="fa fa-file fa-stack-2x"></i>
+                                 <i class="fa fa-plus fa-inverse fa-stack-1x" style="margin-top: 3px;"></i>
+                                 </span>
+                              </span>
+                           </a>
+                       </div>
+                     </div>
+                  </td>
+               </tr>
+               {% endif %} {% endfor %}
+            {% endif %}
+         </table>
+      </td>
+       <td width="33%" valign="top">
+         <table class="table table-borderless hoverable">
+            {% if state.appOwnership.public|isEmpty %} 
+               <i>That is strange, there are no Apps in public Narratives.</i>
+            {% else %}
+               {% for app in state.appOwnership.public|sort("count") %} {% if app.count > 0 %}
+               <tr>
+                  <td valign="baseline" style="vertical-align: top;">
+                     <a href="#/narrativestore/app/{{app.app.id}}" target="_blank">{{ app.app.name }}</a>
+                  </td>
+                  <td width="30px" valign="baseline" style="vertical-align: top;"> 
+                     <div class="-switchable">
+                       <div class="-if-inactive">
+                          <span class="-appcount">{{app.count}}</span>
+                       </div>
+                       <div class="-if-active">
+                           <a href="#/narrativemanager/new?app={{app.app.id}}" class="btn btn-default btn-link" target="_blank"  data-toggle="tooltip" data-placement="auto" title="Create a new Narrative using this App" data-container="body" >
+                              <span class="-icon">
+                                 <span class="fa-stack">
+                                 <i class="fa fa-file fa-stack-2x"></i>
+                                 <i class="fa fa-plus fa-inverse fa-stack-1x" style="margin-top: 3px;"></i>
+                                 </span>
+                              </span>
+                           </a>
+                       </div>
+                     </div>
+                  </td>
+               </tr>
+               {% endif %} {% endfor %}
+            {% endif %}
+         </table>
+      </td>
+   </tr>
+</table>
+
+<style type="text/css">
+table.hoverable tr.-active {
+   background-color: #F5F5F5;
+}
+table.hoverable tr .btn {
+   
+}
+table.hoverable tr .btn .-switchable {
+   position: relative;
+   width: 30px; height: 30px;
+   text-align: center; 
+   vertical-align: middle;
+}
+   
+.-switchable {
+   height: 32px; 
+   width: 32px;
+}
+.-if-active, .-if-inactive {
+   position: relative;
+   text-align: center;
+}
+.-switchable .btn {
+   position: relative;
+   margin: 0; padding: 0;
+}
+.-appcount {
+   color: #888;
+}
+   
+/* normal state */
+.hoverable .-switchable .-if-inactive {
+   display: block;
+}
+.hoverable .-switchable .-if-active {
+   display: none;
+}
+/* when hovered over */
+.hoverable .-active .-switchable .-if-inactive {
+   display: none;
+}
+.hoverable .-active .-switchable .-if-active {
+   display: block;
+}
+   
+.table.table-borderless, .table.table-borderless td {
+   border: 0; 
+}
+   
+   
+
+   
+   
+/*table.hoverable tr.-active .-switchable .btn .-icon {
+   display: block;
+}
+table.hoverable tr .-switchable .btn  .-count {
+   display: block;
+}
+table.hoverable tr.-active .-switchable .btn .-count {
+   display: none;
+}
+   */
+
+</style>
+<script>
+   require(['jquery'], function ($) {
+      /*
+      $('#dashboard-apps-widget-{{env.generatedId}}').DataTable({
+         initComplete: function (settings) {
+            var api = this.api();
+            var rowCount = api.data().length;
+            var pageSize = api.page.len();
+            var wrapper = api.settings()[0].nTableWrapper;
+            if (rowCount <= pageSize) {
+               $(wrapper).find('.dataTables_paginate').closest('.row').hide();
+               $(wrapper).find('.dataTables_filter').closest('.row').hide();
+            }
+         }
+      });
+      */
+      
+      $('table.hoverable tr')
+      .on('mouseover', function (e) {
+         $(this).addClass('-active');
+      })
+      .on('mouseout', function (e) {
+         $(this).removeClass('-active');
+      });
+   });
+</script>

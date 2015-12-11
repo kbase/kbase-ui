@@ -1,0 +1,90 @@
+## KBase UI Configuration
+---
+# TODO: ensure that this list includes all supported services
+# TODO: ensure that all services represented are also defined as amd modules
+# TODO: alpha sort of services
+services:
+    awe:
+        url: https://ci.kbase.us/services/awe-api
+        name: AWE
+    cdmi:
+        url: https://kbase.us/services/cdmi_api
+        name: CDMI
+    data_import_export:
+        url: https://ci.kbase.us/services/data_import_export
+        name: Data Import Export
+    fba:
+        url: https://ci.kbase.us/services/KBaseFBAModeling
+        name: FBA
+    gene_families:
+        url: https://ci.kbase.us/services/gene_families
+        name: Gene Families
+    genome_comparison:
+        url: https://ci.kbase.us/services/genome_comparison/jsonrpc
+        name: Genome Comparison
+    login:
+        url: https://ci.kbase.us/services/authorization/Sessions/Login
+        name: Login
+    narrative_method_store:
+        url: https://ci.kbase.us/services/narrative_method_store/rpc
+        image_url: https://ci.kbase.us/services/narrative_method_store/
+        name: Narrative Method Store
+    protein_info:
+        url: https://kbase.us/services/protein_info_service
+        name: Protein Info
+    search:
+        url: https://kbase.us/services/search/
+        name: Data Search
+    shock: 
+        url: https://ci.kbase.us/services/shock-api
+        name: Shock
+    transform:
+        url: https://ci.kbase.us/services/transform
+        name: Transform
+    trees:
+        url: https://ci.kbase.us/services/trees
+        name: Trees
+    user_profile:
+        url: https://ci.kbase.us/services/user_profile/rpc
+        name: User Profile
+    user_job_state:
+        url: https://ci.kbase.us/services/userandjobstate
+        name: User and Job State
+    workspace:
+        url: https://ci.kbase.us/services/ws
+        name: Workspace    
+    narrative:
+        url: https://narrative-ci.kbase.us
+        name: Narrative User Interface
+
+# Settings in support of the user interface
+ui:
+    images:
+        spinner:
+            url: /ui-common/assets/img/ajax-loader.gif
+    constants:
+        client_timeout: 900000,
+        session_max_age: 5184000
+     # TODO: simply paths?    
+    paths:
+        spa_root: '#'
+        landing_pages: '#dataview/'
+        # ws_browser: '#/ws'
+        version_check: /narrative_version
+        dashboard_metrics: /userMetrics
+    # TODO: simply urls?
+    urls:
+        reset_password: https://gologin.kbase.us/ResetPassword
+        status_page: http://kbase.us/internal/status
+        submit_jira_ticket: https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%20version
+        update_profile: https://gologin.kbase.us/account/UpdateProfile
+        
+# Primarily for output links for the docsite. 
+# TODO: merge with ui.outbound_links?        
+docsite:
+    base_url: http://kbase.us
+    host: kbase.us
+    paths:
+        about: /what-is-kbase
+        contact: /contact-us
+        browser_support: /supported-browsers

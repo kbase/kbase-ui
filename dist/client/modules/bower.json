@@ -1,0 +1,19 @@
+{
+    "name": "kbase-ui-widget",
+    "version": "1.0.0",
+    "main": "path/to/main.css",
+    "ignore": [
+        ".jshintrc",
+        "**/*.txt"
+    ],
+    "dependencies": {
+        "bluebird": "^3.0.0",
+        "kbase-common-js": "eapearson/kbase-common-js#master",
+        "jquery": "^2.1.0",
+        "bootstrap": "^3.3.0",
+        "handlebars": "^4.0.0",
+        "underscore": "^1.8.0"
+    },
+    "devDependencies": {
+    }
+}
