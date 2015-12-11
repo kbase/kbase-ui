@@ -1113,8 +1113,9 @@ module.exports = function (grunt) {
     // The point is the 'setup' phase - we need to prepare the base configuration for the build,
     // which can then be modified to introduce plugins, as well as a development environment,
     // and perhaps testing.
-    grunt.registerTask('clean-building', [
-        'clean:building'
+    grunt.registerTask('clean-build', [
+        'clean:building',
+        'clean:build'
     ]);
     grunt.registerTask('setup-building', [
         // 'load-target-config',
@@ -1139,7 +1140,7 @@ module.exports = function (grunt) {
         
     ]);
 
-    grunt.registerTask('build-building', [
+    grunt.registerTask('build-build', [
         'setup-building', 
         'make-building', 
         'install-building'

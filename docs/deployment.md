@@ -19,6 +19,7 @@ Before deploying, your machine will need to have a few JavaScript tools installe
 The rest of the dependencies are managed by the install process.
 
 ## Local deployment for development and testing
+
 ### With make
 This is pretty simple, just run `make`, and it will generate a directory called 'build' with everything you need.
 
