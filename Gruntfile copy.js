@@ -1,5 +1,5 @@
 /*global define*/
-/*jslint white:true*/
+/*jslint white: true,browser:true*/
 
 /**
  * Gruntfile for kbase-ui
@@ -30,8 +30,6 @@ module.exports = function (grunt) {
         REPO_DIR = '..';
 
 
-    // UTILITIES
-
     /**
      * Cancels a task
      */
@@ -41,11 +39,6 @@ module.exports = function (grunt) {
         }).join(' ');
         console.error(message);
         process.exit(1);
-    }
-        
-    function readYaml(file) {
-        var content = fs.readFileSync(file, 'utf8');
-        return yaml.safeLoad(content);
     }
 
     // Config
@@ -80,13 +73,25 @@ module.exports = function (grunt) {
 
     var deployCfg = getConfig();
 
+    // not using this yet.
+    function getBuildOptions() {
+        servicesTarget = grunt.option('servicesTarget'); // prod or ci
+        uiTarget = grunt.option('uiTarget'); // prod or test
 
-    // Manage state across tasks
+        if (!servicesTarget || ['prod', 'ci'].indexOf(servicesTarget) === -1) {
+            cancelTask(' Invalid value for required option "servicesTarget":', servicesTarget);
+        }
+
+        if (!uiTarget || ['prod', 'dev'].indexOf(uiTarget) === -1) {
+            cancelTask('Invalid value for required option "uiTarget":', uiTarget);
+        }
+    }
+
     var STATE = {};
     function setTaskState(name, value) {
         STATE[name] = value;
     }
-    function getTaskState(name, defaultValue) {
+    function getTaskState(name) {
         var path = name.split('.'),
             key = path[0],
             propertyPath = path.length > 1 ? path.slice(1) : [],
@@ -106,19 +111,22 @@ module.exports = function (grunt) {
         return value;
     }
 
-    // Manage the target configuration.
-    // A target is just a simple string, prod or dev, which is associated
-    // with a directory in /targets, which contains config files.
-    // The target may be supplied on the command line as --target <target>
-    // or in the grunt-args.yml file in the "target" property.
     var targetConfig;
-    function loadTargetConfig() {
-        var target = grunt.option('target');
+    function loadTargetConfig(target) {
         if (!target) {
-            var config = readYaml('grunt-args.yml');
-            if (config) {
-                target = config.target;
+            target = grunt.option('target');
+            
+            // load from /args.yml
+
+            // If not there, build for production, er test.
+            if (!target) {
+                target = 'dev';
+                console.log('Using default target: ' + target);
+            } else {
+                console.log('Using target provided from command line: ' + target);
             }
+        } else {
+            console.log('Using target provided from a task: ' + target);
         }
 
         if (!target) {
@@ -126,29 +134,82 @@ module.exports = function (grunt) {
         }
 
         console.log('Loading target config "' + target + '"');
-
         setTaskState('target', target);
 
         // Load the deployment config
         var deployConfigPath = 'targets/' + target + '/deploy.yml';
 
-        setTaskState('targetConfig', readYaml(deployConfigPath));
+        var content = fs.readFileSync(deployConfigPath, 'utf8');
+        setTaskState('targetConfig', yaml.safeLoad(content));
     }
     loadTargetConfig();
 
+//        readFileAsync(deployConfigPath, 'utf8')
+//            .then(function (content) {
+//                setTaskState('targetConfig', yaml.safeLoad(content));
+//                done(targetConfig);
+//            })
+//            .catch(function (err) {
+//                cancelTask('Error reading target config file.', err);
+//            });
 
-    // Allow a task to insist on a given target. Necessary for somethlinke 
-    // like build-dist which should only run under the prod target.
-    function targetTask() {
+    // Set the services target and ui target.
+
+//    }
+//    grunt.registerTask('load-target-config',
+//        'Load the specified target configuration',
+//        loadTargetConfig);
+
+    function tinkerReport() {
+        console.log('TINKER');
+        console.log('Target config');
+        console.log(getTaskState('targetConfig'));
+        console.log(getTaskState('targetConfig.uiTargetKey'));
+    }
+    grunt.registerTask('tinker-report', 'Report from Tinkering', tinkerReport);
+    
+    function target() {
         // Pure coincidence that the target property is also the name of our
         // build target property.
-        var currentTarget = getTaskState('target');
-        if (currentTarget !== this.data.name) {
-            cancelTask('A task requires the target "' + this.data.name + '", but the current target is "' + currentTarget +'"');
+        var target = getTaskState('target');
+        if (target !== this.data.name) {
+            console.log('Overriding target ' + target + ' with ' + this.data.name);
+            loadTargetConfig(this.data.name);
         }
-       
     }
-    grunt.registerMultiTask('target', 'Check the current target, regardless of command line or config', targetTask);
+    grunt.registerMultiTask('target', 'Set the current target, regardless of command line or config', target);
+
+    function buildConfigFile() {
+        var serviceTemplateFile = 'config/service-config-template.yml',
+            settingsCfg = 'config/settings.yml',
+            outFile = buildDir('client/modules/app/config.yml'),
+            done = this.async();
+
+        fs.readFile(serviceTemplateFile, 'utf8', function (err, serviceTemplate) {
+            if (err) {
+                console.log(err);
+                throw 'Error reading service template';
+            }
+
+            var compiled = _.template(serviceTemplate),
+                services = compiled(deployCfg['kbase-ui']);
+
+            fs.readFile(settingsCfg, 'utf8', function (err, settings) {
+                if (err) {
+                    console.log(err);
+                    throw 'Error reading UI settings file';
+                }
+
+                fs.writeFile(outFile, services + '\n\n' + settings, function (err) {
+                    if (err) {
+                        console.log(err);
+                        throw 'Error writing compiled configuration';
+                    }
+                    done();
+                });
+            });
+        });
+    }
 
     /*
      * Build the services config file (concatenated with the  miscellaneous 
@@ -175,6 +236,62 @@ module.exports = function (grunt) {
     grunt.registerTask('building-config',
         'Build the config file',
         buildingConfigFile);
+
+
+    function installPlugins() {
+        // Load plugin config        
+        var done = this.async(),
+            pluginConfig = 'plugins.yml';
+        readFileAsync(pluginConfig, 'utf8')
+            .then(function (content) {
+                return yaml.safeLoad(content);
+            })
+            .then(function (config) {
+                // First ensure all plugin packages are installed via bower.
+                return Promise.all(config.plugins.map(function (plugin) {
+                    console.log('Loading plugin: ' + plugin.name);
+                    return new Promise(function (resolve, reject) {
+                        bower.commands.install([plugin.install.bower.package])
+                            .on('end', function (results) {
+                                console.log('Updated : ' + plugin.name);
+                                console.log(results);
+                                resolve();
+                            })
+                            .on('error', function (error) {
+                                reject(error);
+                            });
+                    })
+                        .then(function () {
+                            return new Promise(function (resolve, reject) {
+                                bower.commands.info([plugin.install.bower.package])
+                                    .on('end', function (results) {
+                                        console.log('info : ' + plugin.name);
+                                        console.log(results);
+                                        resolve(results);
+                                    })
+                                    .on('error', function (error) {
+                                        reject(error);
+                                    });
+                            });
+                        });
+
+                    //return execAsync([
+                    //    'bower', 'install', plugin.install.bower.package
+                    //].join(' '));                    
+                }));
+            })
+            .then(function () {
+                // Then copy them to the appropriate directory.
+                done();
+            })
+            .catch(function (err) {
+                cancelTask('Error installing plugins', err);
+            });
+
+        // Install plugins into the build directory
+
+        // Install the plugin config into the build
+    }
 
     function injectPluginsIntoBower() {
         // Load plugin config        
@@ -232,8 +349,9 @@ module.exports = function (grunt) {
                 var newConfig = pluginConfig.plugins.map(function (pluginItem) {
                     if (typeof pluginItem === 'string') {
                         return pluginItem;
-                    } 
-                    return pluginItem.name;
+                    } else {
+                        return pluginItem.name;
+                    }
                 });
 
                 // emulate the yaml file for now, or for ever.
@@ -309,6 +427,18 @@ module.exports = function (grunt) {
                     })
                     .map(function (plugin) {
                         if (plugin.link) {
+                            /* linking won't work, but we can just copy 
+                             console.log('really?');
+                             console.log(plugin);
+                             var cwd = plugin.copy.path || 'dist/plugin',
+                             source = [plugin.link.source, cwd].join('/'),
+                             destination = 'building/build/client/modules/plugins/' + plugin.name;
+                             console.log('Linking...');
+                             console.log(source);
+                             console.log('to');
+                             console.log(destination);
+                             return symlinkAsync(source, destination);
+                             */
                             var cwd = plugin.copy.path || 'dist/plugin',
                                 source = [plugin.link.source, cwd].join('/'),
                                 destination = 'building/build/client/modules/plugins/' + plugin.name,
@@ -367,6 +497,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-filerev');
     grunt.loadNpmTasks('grunt-regex-replace');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    //grunt.loadNpmTasks('grunt-http-server');
     //grunt.loadNpmTasks('grunt-markdown');
 
     /* 
@@ -499,6 +630,47 @@ module.exports = function (grunt) {
             name: 'q',
             src: ['q.js']
         }
+    ], bowerPlugins = [
+        // PLUGINS
+        // Note that they all have a dest property which places them into a 
+        // specific directory
+        {
+            name: 'kbase-ui-plugin-datawidgets',
+            dest: 'plugins/datawidgets'
+        },
+        {
+            name: 'kbase-ui-plugin-databrowser',
+            dest: 'plugins/databrowser'
+        },
+        {
+            name: 'kbase-ui-plugin-typebrowser',
+            dest: 'plugins/typebrowser'
+        },
+        {
+            name: 'kbase-ui-plugin-dataview',
+            dest: 'plugins/dataview'
+        },
+        {
+            name: 'kbase-ui-plugin-typeview',
+            dest: 'plugins/typeview'
+        },
+        {
+            name: 'kbase-ui-plugin-dashboard',
+            dest: 'plugins/dashboard'
+        },
+        {
+            name: 'kbase-ui-plugin-vis-widgets',
+            dest: 'plugins/viswidgets'
+        },
+        {
+            name: 'kbase-service-clients-js',
+            cwd: 'dist/plugin',
+            dest: 'plugins/serviceclients'
+        },
+        {
+            name: 'kbase-ui-plugin-demo-vis-widget',
+            dest: 'plugins/viswidgetdemo'
+        }
     ];
 
     function bowerCopy(bowerFiles, defaults) {
@@ -576,6 +748,12 @@ module.exports = function (grunt) {
             bower: {
                 files: bowerCopy(bowerPackages)
             },
+            plugins: {
+                files: bowerCopy(bowerPlugins, {
+                    cwd: 'src/plugin',
+                    src: ['**/*']
+                })
+            },
             build: {
                 files: [
                     {
@@ -633,7 +811,43 @@ module.exports = function (grunt) {
                         expand: true
                     }
                 ]
-            },           
+            },
+            dev: {
+                files: [
+// Uncomment to have these built into kbase-ui directly from a local repo.
+// plugins as defined in ui-test.yml also need to be adjusted.
+
+
+//                    {
+//                        cwd: makeRepoDir('kbase-ui-plugin-dataview/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/modules/plugins/dataview'),
+//                        expand: true
+//                    },
+//                    {
+//                        cwd: makeRepoDir('kbase-ui-plugin-typebrowser/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/plugins/typebrowser'),
+//                        expand: true
+//                    },
+//                    {
+//                        cwd: makeRepoDir('kbase-ui-plugin-databrowser/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/plugins/databrowser'),
+//                        expand: true
+//                    }
+
+
+//                    
+//                    {
+//                        cwd: makeRepoDir('kbase-ui-plugin-dashboard/src/plugin'),
+//                        src: '**/*',
+//                        dest: buildDir('client/plugins/dashboard'),
+//                        expand: true
+//                    }
+
+                ]
+            },
             deploy: {
                 files: [
                     {
@@ -716,6 +930,15 @@ module.exports = function (grunt) {
                         console.log('created...');
                     }
                 }
+            }
+        },
+        'http-server': {
+            dev: {
+                root: buildDir('client'),
+                port: 8887,
+                host: '0.0.0.0',
+                autoIndex: true,
+                runInBackground: true
             }
         },
         open: {
@@ -873,6 +1096,38 @@ module.exports = function (grunt) {
         }
     });
 
+    grunt.registerTask('get-build-options',
+        'Set build options from command line or environment',
+        getBuildOptions);
+
+    grunt.registerTask('build-config',
+        'Build the config file',
+        buildConfigFile);
+
+
+
+
+    grunt.registerTask('install-plugins',
+        'Install UI plugins',
+        installPlugins);
+
+
+
+    // Does the whole building task. Installs everything needed
+    // from Bower, builds and optimizes things, and tweaks the 
+    // distributable index.html to use the compiled product.
+    grunt.registerTask('build-old', [
+        'bower:install',
+        'copy:bower',
+        'copy:plugins',
+        'copy:build',
+        // 'install-plugins',
+        'copy:dev',
+        'copy:config',
+        'copy:build-search',
+        'build-config'
+    ]);
+
     // new 'building' build process.
     // The point is the 'setup' phase - we need to prepare the base configuration for the build,
     // which can then be modified to introduce plugins, as well as a development environment,
@@ -881,7 +1136,6 @@ module.exports = function (grunt) {
         'clean:building',
         'clean:build'
     ]);
-
     grunt.registerTask('setup-building', [
         // 'load-target-config',
         'mkdir:building',
@@ -889,8 +1143,7 @@ module.exports = function (grunt) {
         'building-config',
         'inject-plugins-into-config'
     ]);
-
-    grunt.registerTask('construct-building', [
+    grunt.registerTask('make-building', [
         'copy:building',
         'enter-building',
         'bower:install',
@@ -900,31 +1153,46 @@ module.exports = function (grunt) {
         'copy:building-search',
         'clean:detritus'
     ]);
-
     grunt.registerTask('install-building', 'Finish the building', [
         'clean:build',
         'copy:building-to-build'
         
     ]);
-    
+
     grunt.registerTask('build-build', [
         'setup-building', 
-        'construct-building', 
+        'make-building', 
         'install-building'
     ]);
 
-    // Build the Distribution Package, forced to the prod target. 
-    grunt.registerTask('build-dist', [
+    grunt.registerTask('tinker', [
+        'load-target-config',
+        'tinker-report'
+    ]);
+
+    grunt.registerTask('dist', [
+        'build',
+        'requirejs',
+        'filerev',
+        'regex-replace'
+    ]);
+    
+    grunt.registerTask('make-dist', [
         'target:prod',
         'clean-build',
         'build-build',
-         'clean:dist',
+        'build-dist'
+    ]);
+
+    grunt.registerTask('build-dist', [
+        'clean:dist',
         'copy:dist',
         'requirejs:dist',
         'filerev:dist',
         'regex-replace:dist',
         'uglify:dist'
     ]);
+
 
     grunt.registerTask('deploy', [
         'copy:deploy'
@@ -959,5 +1227,18 @@ module.exports = function (grunt) {
     grunt.registerTask('preview-dist', [
         // 'open',
         'connect:dist'
-    ]);
+    ])
+
+
+    /*
+     * Main build tasks -- redirect to the real ones.
+     */
+
+//    grunt.registerTask('build', [
+//        'build-building'
+//    ]);
+//    grunt.registerTask('clean', [
+//        'clean-building'
+//    ]);
+
 };

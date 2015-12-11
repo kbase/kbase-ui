@@ -7,7 +7,6 @@ plugins:
   - datasearch
   - narrativemanager
   - narrativestore
-  - viswidgetdemo
   - viswidgets
   - typeview
   - dataview

@@ -3,7 +3,7 @@
 menus:
     authenticated: 
         main: [narrative, search, dashboard]
-        developer: [databrowser, typebrowser, test, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
+        developer: []
         help: [about-kbase, contact-kbase]
     unauthenticated: 
         main: [search]
