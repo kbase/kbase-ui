@@ -109,9 +109,11 @@ plugins:
 modules:
     -
         name: kbase-ui-widget
-        copy:
+        bower:
+            version: "0.1.0"
+        #copy:
             # NB: from is relative to the location of mutant.
-            from: ../../kbase-ui-widget/src
+        #    from: ../../kbase-ui-widget/src
     -
         name: kbase-common-js
         bower:
