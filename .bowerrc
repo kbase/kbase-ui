@@ -1,4 +1,6 @@
 {
     "analytics": true,
-    "directory": "bower_components"
+    "directory": "bower_components",
+    "registry": "http://localhost:5678/",
+    "timeout": 300000
 }

@@ -181,21 +181,21 @@ module.exports = function (grunt) {
      * 
      * @returns {undefined}
      */
-    function buildingConfigFile() {
+    function makeServiceConfigFile() {
         var serviceTemplateFile = 'config/service-config-template.yml',
             serviceTemplate = grunt.file.read(serviceTemplateFile),
             settingsCfg = 'config/settings.yml',
             settings = grunt.file.read(settingsCfg),
-            outFile = 'building/build/client/modules/config/config.yml',
+            outFile = 'building/build/client/modules/config/service.yml',
             compiled = _.template(serviceTemplate),
             servicesConfig = compiled(getTaskState('deployConfig')['kbase-ui']),
             concatenatedConfig = servicesConfig + '\n\n' + settings;
 
         grunt.file.write(outFile, concatenatedConfig);
     }
-    grunt.registerTask('building-config',
+    grunt.registerTask('make-service-config',
         'Build the config file',
-        buildingConfigFile);
+        makeServiceConfigFile);
 
     function injectPluginsIntoBower() {
         // Load plugin config        
@@ -899,7 +899,6 @@ module.exports = function (grunt) {
         // 'load-target-config',
         'mkdir:building',
         'inject-plugins-into-bower',
-        'building-config',
         'inject-plugins-into-config'
     ]);
 
@@ -930,7 +929,40 @@ module.exports = function (grunt) {
         'clean:dist',
         'clean:build',
         'clean:building'
-    ])
+    ]);
+    
+    
+    /*
+     * grunt build --target <targetType> --deploy <deployType> --ui <uiType>
+     * --target = the services configuration (matches a config file named deploy-<target>.cfg
+     *      so either ci, next or prod
+     * --deploy = the deployment type, either build or dist
+     * --ui = the ui configuration, either dev or prod.
+     */
+    function buildIt() {
+        //var serviceTarget = getTaskState('deployConfig').serviceTargetKey,
+        //    uiTarget = getTaskState('deployConfig').uiTargetKey;
+        var serviceTarget = grunt.option('target') || 'ci',
+            deployTarget = grunt.option('deploy') || 'build',
+            uiTarget = grunt.option('ui') || 'test';
+        
+        /*
+         * At present, we ignore the service target for the build phase. We
+         * only need that during deployment. 
+         */
+    }    
+    grunt.registerTask('build-it', 'One size fits all build task', buildIt);
+    
+    function installIt() {        
+        var serviceTarget = grunt.option('target') || 'ci',
+            deployTarget = grunt.option('deploy') || 'build',
+            uiTarget = grunt.option('ui') || 'test';
+    }
+    grunt.registerTask('install-it', 'Given a built system, put it together with runtime stuff into the proper location', installIt);
+    
+    function testIt() {        
+    }
+    grunt.registerTask('test-it', 'Given a build and installed system, run tests upon it!');
 
     // Build the Distribution Package, forced to the prod target. 
     grunt.registerTask('build-dist', [
@@ -946,8 +978,15 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask('deploy', [
+        'make-service-config',
         'copy:deploy'
     ]);
+    
+    grunt.registerTask('deploy-dev', [
+        'make-service-config',
+        'copy:deploy'
+    ]);
+
 
     // Does a single, local, unit test run.
     grunt.registerTask('test', [

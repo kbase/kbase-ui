@@ -9,8 +9,7 @@ define([
     'kb/widget/widgetMount',
     'kb/common/props',
     'kb/common/asyncQueue',
-    'kb/common/appServiceManager',
-    'yaml!config/config.yml'
+    'kb/common/appServiceManager'
 ], function (
     pluginManagerFactory,
     dom,
@@ -18,8 +17,7 @@ define([
     widgetMountFactory,
     props,
     asyncQueue,
-    AppServiceManager,
-    clientConfig
+    AppServiceManager
     ) {
     'use strict';
 
@@ -28,7 +26,12 @@ define([
     function factory(cfg) {
         var config = cfg,
             pluginManager,
+            serviceConfig = cfg.serviceConfig,
+            clientConfig = cfg.clientConfig,
             clientConfigProps = props.make({data: clientConfig});
+
+        // quick hack:
+        clientConfig.services = serviceConfig.services;
 
         function getConfig(prop, defaultValue) {
             return clientConfigProps.getItem(prop, defaultValue);
@@ -37,23 +40,7 @@ define([
             return clientConfigProps.hasItem(prop);
         }
 
-
-
         // Events
-//        function publish(channel, message, data) {
-//            if (data === undefined) {
-//                data = {};
-//            }
-//            console.log('publishing: ' + channel + ':' + message);
-//            return Postal.channel(channel).publish(message, data);
-//        }
-//        function subscribe(channel, message, fun) {
-//            console.log('subscribing: ' + channel + ':' + message);
-//            return Postal.channel(channel).subscribe(message, fun);
-//        }
-//        function unsubscribe(subscription) {
-//            return subscription.unsubscribe();
-//        }
 
         // Our own events
         var messenger = messengerFactory.make();
@@ -93,25 +80,12 @@ define([
 
         // Plugins
         function installPlugins(plugins) {
-//            var i = 0;
-//            return Promise.each(plugins.map(function (pluginSet) {
-//                i += 1;
-//                return Promise.try(function () {
-//                    console.log('x: SET ' + i);
-//                    return pluginManager.installPlugins(pluginSet);
-//                });
-//            }), function () {});
-            // return pluginManager.installPluginSets(plugins);
             console.log('installing plugins');
             console.log(plugins);
             return pluginManager.installPlugins(plugins);
         }
 
         // Services for plugins
-
-
-
-
 
         var rootNode;
         function setRootNode(selector) {
@@ -196,7 +170,7 @@ define([
                 runtime: api,
                 cookieName: 'kbase_session',
                 extraCookieNames: ['kbase_narr_session'],
-                loginUrl: clientConfig.services.login.url,
+                loginUrl: serviceConfig.services.login.url,
                 cookieMaxAge: clientConfig.ui.constants.session_max_age
 
             });
@@ -228,47 +202,6 @@ define([
             appServiceManager.addService('userprofile', {
                 runtime: api
             });
-//            appServiceManager.addService('type', {
-//                runtime: api
-//            });
-
-
-//            addService(['session'], sessionServiceFactory.make({
-//                runtime: api,
-//                cookieName: 'kbase_session',
-//                extraCookieNames: ['kbase_narr_session'],
-//                loginUrl: 'https://kbase.us/services/authorization/Sessions/Login',
-//                cookieMaxAge: 100000
-//
-//            }));
-//            addService(['heartbeat'], heartbeatServiceFactory.make({
-//                runtime: api
-//            }));
-//            addService(['routes', 'route', 'routing'], routerServiceFactory.make({
-//                runtime: api,
-//                notFoundRoute: {redirect: {path: 'message/notfound'}},
-//                defaultRoute: {redirect: {path: 'dashboard'}}
-//            }));
-//            addService(['menu', 'menus'], menuServiceFactory.make({
-//                runtime: api
-//            }));
-//            addService(['widgets', 'widget'], widgetServiceFactory.make({
-//                runtime: api
-//            }));
-//            addService(['service', 'services'], serviceServiceFactory({
-//                runtime: api
-//            }));
-//            addService(['data'], dataServiceFactory.make({
-//                runtime: api
-//            }));
-//            addService(['type', 'types'], typeServiceFactory.make({
-//                runtime: api
-//            }));
-//            addService(['userprofile'], userProfileServiceFactory.make({
-//                runtime: api                
-//            }));
-
-
 
             pluginManager = pluginManagerFactory.make({
                 runtime: api
@@ -296,15 +229,8 @@ define([
                 });
 
             });
-//            receive('ui', 'setTitle', function (title) {
-//                renderQueue.addItem({
-//                    send('title', 'set', title);
-//                });
-//            })
 
             // ROUTING
-            console.log('CONFIG');
-                    console.log(config);
 
             return appServiceManager.loadServices()
                 .then(function () {

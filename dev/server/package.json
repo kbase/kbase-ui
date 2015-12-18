@@ -1,0 +1,10 @@
+{
+    "name": "kbase-ui-server",
+    "version": "0.1.0",
+    "dependencies": {
+        "node-static": "^0.7.7",
+        "bluebird": "3.0.6", 
+        "open": "0.0.3"
+    }
+    
+}

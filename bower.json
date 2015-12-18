@@ -8,7 +8,7 @@
     ],
     "dependencies": {
         "spark-md5": "1.0.0",
-        "bluebird": "^3.0.0",
+        "bluebird": "3.0.6",
         "comma-separated-values": "3.6.3",
         "d3": "3.5.6",
         "jquery": "2.1.4",
@@ -23,9 +23,6 @@
         "require-yaml": "0.1.2",
         "bootstrap": "3.3.5",
         "font-awesome": "4.3.0",
-        "oxygen-googlefont": "*",
-        "roboto-googlefont": "*",
-        "oxygenmono-googlefont": "*",
         "requirejs-domready": "2.0.1",
         "datatables-bootstrap3-plugin": "0.4.0",
         "SparkMD5": "spark-md5#1.0.0",
@@ -36,11 +33,9 @@
         "node-uuid": "1.4.3",
         "moment": "2.10.6",
         "numeral": "1.5.3",
-        "blockUI": "jquery.blockUI#*",
-        "q": "2.0.2",
-        "kbase-service-clients-js": "eapearson/kbase-service-clients-js#master",
-        "kbase-common-js": "eapearson/kbase-common-js#master",
-        "kbase-ui-widget": "eapearson/kbase-ui-widget#master"
+        "blockui": "2.70",
+        "q": "2.0.2"
+
     },
     "devDependencies": {}
 }

@@ -4,11 +4,11 @@
 
 @font-face {
   font-family: "kbase-icons";
-  src:url("icons/kbase-icons.eot");
-  src:url("icons/kbase-icons.eot?#iefix") format("embedded-opentype"),
-    url("icons/kbase-icons.woff") format("woff"),
-    url("icons/kbase-icons.ttf") format("truetype"),
-    url("icons/kbase-icons.svg#kbase-icons") format("svg");
+  src:url("icons/custom_icons/kbase-icons.eot");
+  src:url("icons/custom_icons/kbase-icons.eot?#iefix") format("embedded-opentype"),
+    url("icons/custom_icons/kbase-icons.woff") format("woff"),
+    url("icons/custom_icons/kbase-icons.ttf") format("truetype"),
+    url("icons/custom_icons/kbase-icons.svg#kbase-icons") format("svg");
   font-weight: normal;
   font-style: normal;
 

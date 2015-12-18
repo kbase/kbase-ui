@@ -1,0 +1,22 @@
+{
+  "name": "kbase-ui-private-bower",
+  "version": "0.0.1",
+  "keywords": [
+    "util",
+    "functional",
+    "server",
+    "client",
+    "browser"
+  ],
+  "author": "KBase",
+  "license": "SEE LICENSE IN ../LICENSE.md",  
+  "contributors": [
+    "eapearson",
+    "briehl"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+   
+    "private-bower": "^1.1.7"
+  }
+}

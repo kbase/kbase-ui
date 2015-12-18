@@ -1,6 +1,9 @@
-/bower_components/
-/node_modules/
+bower_components
+node_modules
 /build/
-/building/
 /temp/
-/nbproject/
+/nbproject
+/dev/dist
+/dev/build
+/dev/config
+/mutations/mutantfiles

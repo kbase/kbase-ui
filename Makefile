@@ -40,13 +40,27 @@ init:
 # deals with filling out templated URL targets based on deployment
 # location (prod vs. next vs. CI vs. local)
 build:	
-	@ grunt build-dist --target $(TARGET)
+	cd mutations; node build
+	#@ grunt build-dist --target $(TARGET)
 	#  --deploy-config $(TARGET)
 	# @ node tools/process_config.js $(DEPLOY_CFG)
 
+start:
+	cd dev/server; node server start &
+
+stop: 
+	cd dev/server; node server stop 
+
+# Run the server, and open a browser pointing to it.
+preview:
+	cd dev/server; node server preview
+	
+dist: 
+	cd mutations; node build prod prod
+
 # The deployment step uses grunt to, essentially, copy the build
 # artifacts to the deployment directory
-deploy:
+deploy:	
 	@ grunt deploy
 
 # Tests are managed by grunt, but this also mimics the workflow.

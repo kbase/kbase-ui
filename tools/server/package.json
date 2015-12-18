@@ -1,0 +1,9 @@
+{
+    "name": "erik",
+    "version": "0.1.0",
+    "dependencies": {
+        "node-static": "^0.7.7",
+        "bluebird": "3.0.6"
+    }
+    
+}

@@ -6,14 +6,15 @@ These are the latest build instructions for KBase UI.
 
 - ensure you have the prequisites
 - fetch kbase ui
-- 
 
 ## Prerequisites
 
 If your machine is not set up for javascript development, you may need to install some prerequisites. If so, please refer to the [developer set up docs].
 
+- install system tools and global node binaries
+- the kbase-ui Makefile does not install anything globally
 
-## Create a development directory
+# Create a development environment
 
 This directory will contain the kbase-ui repo and any other related repos or files. The kbase-ui is self-contained, but if you will be working on plugins in tandem, it is handy to use a working directory to contain each repo -- kbase-ui and any plugins.
 
@@ -23,34 +24,104 @@ dev
   kbase-ui-plugin-myplugin
 ```
 
-For now, just create the ```dev``` (or whatever you want to call it) wherever you want to.
+## Create develoment directory
 
+For now, just create the ```dev``` (or whatever you want to call it) wherever you want to. We'll refer to that as the *dev* directory.
 
 ## Grab a copy of kbase-ui and make sure it is working
 
-Within the dev directory
+Within the *dev* directory
 
 ```
 git clone https://github.com/kbase-ui
 ```
 
-At the moment of this writing, we are actively developing the master branch. Soon we will move on to the standard KBase branch layout, and this information will be obsolete.
+> Note: At the moment of this writing, we are actively developing the master branch. Soon we will move on to the standard KBase branch layout, and this information will be obsolete.
+
+The basic workflow uses *make* to control the essential build, test, and deploy processes. However, the actual commands are more flexible, and implemented in javascript through Node. So as we walk through these processes, we'll first present the top-level *make* procedure, and then the actual tasks accomplished, and finally the more detailed low level javascript commands.
+
+### Build the Kbase UI
+
+So, first we will build the developer version of *kbase-ui*:
 
 ```
 cd kbase-ui
-npm install
-grunt clean-build
-grunt build-build
-grunt preview-build
+make build
 ```
 
-If all went well, you should see the KBase ui pop up in your default browser.
+#### What does it do?
 
-The grunt tasks will clean out, build, start a web server, and launch your default browser against a freshly constructed "build" version of kbase.ui. The build version will utilize un-minified javascript and css, and may generally be looser in the application of code quality checks.
+- installs npm packages (npm install)
+- sets up the developer environment if it doesn't yet exist (dev)
+- uses the developer preferences to configure the ui
+- installs bower packages
+- arranges all files into a build directory
+- installs the build directory into the dev directory
+
+The tasks will clean out, build, start a web server, and launch your default browser against a freshly constructed "build" version of kbase.ui. The build version will utilize un-minified javascript and css, and may generally be looser in the application of code quality checks.
+
+### Start the Dev Server
+
+Included with kbase-ui is a very small, static nodejs server. We use this server for previewing and demoing kbase-ui.
+
+```
+make start
+```
+
+This starts the node web server in ```dev/server``` on port 8080
+
+> Coming soon, options for starting the server on a different port, and tareting dist or build.
+
+- ensures that the required node modules are installed locally
+- starts up a web server on port 8080
+- sets the server root to either dev (kbase-ui/dev/build) or release (kbase-ui/dist)
+
+### Preview the Site
+
+After the server is started, it can be accessed at *http://localhost:8080* on any local browser. However, while your fingers are on the keyboard and you are focused on the terminal...
+
+```
+make preview
+```
+
+#### What does it do?
+
+- opens default browser on your system with a url for the test server
+
+## A better workflow
+
+Ordinarily you would not want to leave the server running in your main development window, yet you will want to have it running for a long time.
+
+In a separate terminal (e.g. hit *Command+T* on a Mac) navigate to the kbase-ui dev directory (yes, this dev directory is internal to kbase-ui...) and start a local web server
+
+```
+cd kbase-ui/dev
+node server
+```
+
+This workflow allows you to rebuild kbase-ui, yet keep the local server running in order to refresh the browser to pick up the changes.
+
+Yes, I know this is now considered an archaic development workflow.
+
 
 ## Controlling the Build
 
-There are currently three basic builds for kbase-ui: build for ci, build for production, distribution for production.
+There are three basic parameters for the build process, each of which control major characteritics of kbase-ui:
+
+- *build* type, either build or dist, determines the final shape of the files. All else being equal, the actual UI will function the same with any build, although there may be other noticable differences, such as performance or debugability
+    - *build* - the developer build, or just plain "build", is a fully functioning kbase-ui with all javascript files in standard form (not minified). This version is best for running in development, since browsers will have unfeterred access to legible source code. It is also good for testing, for the same reason, that test diagnosis will be much easier with full source access. In additionk, it is the right build in which to do code quality and correctness checks.
+    - *dist* - the distribution, or "dist" build, is the form meant for final release. All code is minified and perhaps combined (concatenated) into compound files. These modifications are designed purely for performance reasons -- they offer no other improvements in usability of kbase-ui.
+- *ui* target allows different configurations of the UI, including menus and plugins. The primary purpose is to provide a way to create ui configurations for testing new components, configuring the local kbase-ui for development, debugging, or testing, and yet to maintain an "official" set of configurations to match the different deployment environments. To that end, the following ui targets are supported:
+    - ci
+    - prod
+    - dev
+    - any locally defined targets (more on this later)
+- the *deploy* target represents the interface between kbase-ui and other KBase services. As such, it defines 
+
+There are currently three basic builds for kbase-ui: 
+- *build* for *ci*, 
+- *build* for *production*, 
+- distribution for production.
 
 There are two types of builds that can be produced. The standard build, or "build", is a complete kbase-ui in unminified form. All javascript and css should be in its original form. This aids in development -- debugging and build speed.
 
