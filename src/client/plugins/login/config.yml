@@ -2,7 +2,7 @@
 ---
 package:
     author: Erik Pearson
-    name: login plugin
+    name: login
     description: A login panel
     date: August 19, 2015
     version: 0.0.1
