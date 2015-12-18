@@ -46,8 +46,9 @@
     "moment": "2.10.6",
     "numeral": "1.5.3",
     "blockUI": "jquery.blockUI#*",
-    "q": "2.0.2",
-    "kbase-ui-plugin-typeview": "eapearson/kbase-ui-plugin-typeview#master"
+    "q": "~1.4.1",
+    "kbase-ui-plugin-typeview": "eapearson/kbase-ui-plugin-typeview#master",
+    "postal.js": "~1.0.7"
   },
   "devDependencies": {}
 }
