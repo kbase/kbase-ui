@@ -1,144 +1,88 @@
-[![Build Status](https://travis-ci.org/kbase/kbase-ui.svg?branch=master)](https://travis-ci.org/kbase/kbase-ui)
-
-| Branch | Status |
-| :--- | :--- |
-| master | [![Build Status](https://travis-ci.org/kbase/kbase-ui.svg?branch=master)](https://travis-ci.org/kbase/kbase-ui) [![Coverage Status](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master)](https://coveralls.io/r/kbase/kbase-ui?branch=master) |
-
-
 # KBase User Interface
 
-## Contents
+## Current Status
 
-- Prerequisites
-- Installation
+[![Build Status](https://travis-ci.org/kbase/kbase-ui.svg?branch=master)](https://travis-ci.org/kbase/kbase-ui)
 
+<table class="table table-bordered">
+    <tr>
+        <th>Branch</th>
+        <th colspan="2">Status</th>
+    </tr>
+    <tr>
+        <th></th>
+        <th>Build</th>
+        <th>Coverage</th>
+    </tr>
+    <tr>
+        <td>master</td>
+        <td>
+            <img src="https://travis-ci.org/kbase/kbase-ui.svg?branch=master"><a href="https://travis-ci.org/kbase/kbase-ui">details</a>
+        </td>
+        <td>
+            <img src="https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master"><a href="ttps://coveralls.io/r/kbase/kbase-ui?branch=master">details</a>
+        </td>
+    </tr>
+</table>
 
-## Prerequisites
+## About
 
-In general:
+The DOE KBase User Interface, or *KBase UI* for short, is a web browser Single Page App (SPA) providing tools for [KBase](http://kbase.us). It is a partner to the KBase Narrative Interface. Current features include:
 
-- git
-- nodejs
-- bower
-- karma
+- *Dashboard*, for an overview of your narratives and activies of your colleages
+- *User Profile*, for viewing any user profile and editing your own, 
+- *Data Viewer*, for inspecting any data object you have access to 
+- *Type Viewer*, for inspecting the attributes of any data type,
+- *Authenticator*, for logging into and out of your KBase Account
 
-### Macintosh
+> If you have stumbled up on this project, you may first want to [find out about KBase](http://kbase.us). 
+> The *KBase UI* is not a general purpose tool, but works inside the KBase ecosystem. 
 
-can probably just use installable nodejs and git, but these instructions are for macports or homebrew
+The primary audience for this project is 
 
-#### Macports
+- KBase Developers and Staff - who need access to the kbase-ui for development, testing, deployment
+- KBase Advanced Users - who are developing servivces and plugins for kbase-ui
 
-##### 1) install macports: 
-
-Download and follow the instructions at https://www.macports.org/install.php.
-
-As part of the macports install, you will need to also install xcode and/or xcode command line utils. This can take up to an hour.
-
-##### 2) Use the terminal to install the dependencies using Macports.
-
-open terminal and issue the following commands:
-
-> ```
-sudo port install npm phantomjs
-sudo npm install -g bower
-sudo npm install -g grunt-cli
-sudo npm install -g karma-cli
-> ```
-
-
-### Windows
-
-I (Erik) performed an install, from scratch (starting with no dev tools whatsoever) on Windows 10, in about 15 minutes, which includes looking for and finding the appropriate windows installers.
-
-You need to install the Windows packages for Git and Nodejs, and use the Git bash shell for command line stuff. Also, phantomjs is distributed as a simple binary, so I elected to install it via npm (npm install -g phantomjs) I seem to recall that phantomjs does not play well when installed via npm, but I may be mistaken because it works fine on Windows -- although it is a little behind the official latest version (2.0.0), which may be a good thing since issues have been reported. On the other hand, there are js compatability issues reported for < 2.0.0 which will not be fixed.)
-
-Occasionally you may be prompted for an admin account authorization if you are using a standard account. Other than that, the process was surprisingly smooth.
-
-### Linux
-
-### Vagrant on Mac
-
-> ```
-vagrant init ubuntu/trusty64
-vagrant up
-vagrant ssh
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get dist-upgrade
-exit
-vagrant reload
-vagrant ssh
-sudo apt-get -y install git npm nodejs-legacy phantomjs
-# weird I had to do the following - must be a vagrant thing.
-sudo chown vagrant /home/vagrant/tmp 
-sudo npm install -g bower
-sudo npm install -g grunt-cli
-sudo npm install -g karma-cli
-> ```
+Most KBase users will be exposed to the KBase UI by ... [using KBase](https://narrative.kbase.us) :)
 
 ## Installation
 
+As a SPA, Kbase UI is "just" a collection of web browser assets. All you need to run it is a modern web browser and a web server. Please read the installation guide for full instructions.
 
-#### 1) Clone the kbase-ui repo
+Please see the Installation Guide for all of the details.
 
-Make yourself a nice cozy home in which to place kbase-ui. For testing and development you just need a single directory owned by you.
+However, in the context of a short readme, I hope you can forgive us for jumping to the happy ending version:
 
-> ```
-mkdir -p work/kbase-ui-work
-cd work/kbase-ui-work
-git clone https://github.com/kbase/kbase-ui.git
-cd kbase-ui
-> ```
+```
+mkdir myproject
+cd myproject
+git clone https://github.com/kbase/doekbase-ui
+cd doekbase-ui
+make run
+```
 
-##### 2) Build it
+For more complete instructions (which in turn have links to technical guides), please see:
 
-The kbase-ui can build with a couple of lines typed at the console, or a single invocation of ```make```.
+- [Prerequisites](prerequisites.md)
+- [Installation](installation.md)
+- [Deployment](deployment.md)
 
-By default, this builds the package to use the services on ci.kbase.us. You can change this in either the `Gruntfile.js` (modify the servicesTarget variable), or the Makefile (in the TARGET variable).
+## Development
 
-> ```
-npm install
-grunt build
-> ```
+Please see the [Developer Guide](development.md).
 
-or 
+## Contributing
 
-> ```
-make
-> ```
+The KBase UI is an open source project, managed through github. As such, contributions, even internally within KBase, are conducted through fork and PR.
 
-Note: Depending on your platform and installed browsers, you may need to hand-tweak the browsers used for testing; phantomjs is by default the sole browser tested.
+## Reporting Bugs
 
-##### 3) Run tests
+We do not currently use github issues for bug reports. Please send any bug reports, comments, or requests to [help@kbase.us](mailto:help@kbase.us) or use our [contact form](http://kbase.us/contact-us).
 
-The tests can be run directly with karma, or through the make process
+## License
 
-> ```
-karma start test/karma.conf.js
-> ```
+[LICENSE.md](license.md)
 
-or
+---
 
-> ```
-make test
-> ```
 
-or 
-
-> ```
-grunt test
-> ```
-
-##### 4) Local Deploy for development and testing
-
-The build process creates build directory which can be used directly as a web site root. 
-
-You may use the server of your choice, or use the built-in mini-web-server via
-
-> ```
-grunt preview
-> ```
-
-##### 5) Production Deploy
-
-The production deploy just copies the build directory to the appropriate location.

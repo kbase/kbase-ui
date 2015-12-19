@@ -1,5 +1,15 @@
 /*global define*/
 /*jslint white:true*/
+
+/*
+ * SETUP-DEV
+ * Set up a development environment in /dev (relative to the repo).
+ * - copy server
+ * - copy private-bower
+ * - copy config config
+ * 
+ */
+
 'use strict';
 
 var Promise = require('bluebird'),

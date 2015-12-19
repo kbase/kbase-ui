@@ -28,22 +28,36 @@ all: init build
 # See above for 'all' - just running 'make' should locally build
 default: init build
 
+# The "EZ Install" version - init, build, start, preview
+
+run: init build start preview
+	
+
 # Initialization here pulls in all dependencies from Bower and NPM.
 # This is **REQUIRED** before any build process can proceed.
+# bower install is not part of the build process, since the bower
+# config is not known until the parts are assembled...
 init:
-	@ bower install --allow-root
-	@ npm install
+	npm install
 
 # Perform the build.
 # The actual build step is done by grunt. This also sets up the 
 # configuration in the build target. That configuration mainly
 # deals with filling out templated URL targets based on deployment
 # location (prod vs. next vs. CI vs. local)
+#@ grunt build-dist --target $(TARGET)
+#  --deploy-config $(TARGET)
+# @ node tools/process_config.js $(DEPLOY_CFG)
 build:	
 	cd mutations; node build
-	#@ grunt build-dist --target $(TARGET)
-	#  --deploy-config $(TARGET)
-	# @ node tools/process_config.js $(DEPLOY_CFG)
+	
+# Set up a development environment. 
+# Installs tools into kbase-ui/dev. These tools are ignored by git,
+# so may safely be modified by the developer. They are important but not 
+# required by the dev process. More in the docs.
+devinit:
+	cd mutations; node setup-dev
+	
 
 start:
 	cd dev/server; node server start &
