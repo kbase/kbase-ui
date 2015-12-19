@@ -39,6 +39,7 @@ run: init build start preview
 # config is not known until the parts are assembled...
 init:
 	npm install
+	cd dev/server; npm install
 
 # Perform the build.
 # The actual build step is done by grunt. This also sets up the 
