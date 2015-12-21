@@ -135,7 +135,7 @@ module.exports = function (grunt) {
                 configFile: 'dev/test/karma.conf.js',
                 reporters: ['progress', 'coverage'],
                 coverageReporter: {
-                    dir: 'dev/build/test-coverage/',
+                    dir: 'dev/test-coverage/',
                     reporters: [
                         {type: 'html', subdir: 'html'}
                     ]
@@ -150,7 +150,7 @@ module.exports = function (grunt) {
                 force: true
             },
             'kbase-ui': {
-                src: 'build/test-coverage/lcov/**/*.info'
+                src: 'dev/test-coverage/lcov/**/*.info'
             }
         },
         

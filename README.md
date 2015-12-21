@@ -7,6 +7,43 @@
 <table class="table table-bordered">
     <tr>
         <th width="20%">Branch</th>
+        <td width="80%">release (0.1.0)</td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td>
+            <table class="table table-striped">
+                <tr>
+                    <th width="33%">
+                        Build
+                    </th>        
+                    <td width="33%">
+                        <img src="https://travis-ci.org/kbase/kbase-ui.svg?branch=master">
+                    </td>
+                    <td width="33%">
+                        <a href="https://travis-ci.org/kbase/kbase-ui">details</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Coverage
+                    </th>
+                    <td>
+                        <img src="https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master">
+                    </td>
+                    <td>
+                        <a href="ttps://coveralls.io/r/kbase/kbase-ui?branch=master">details</a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    
+</table>
+
+<table class="table table-bordered">
+    <tr>
+        <th width="20%">Branch</th>
         <td width="80%">master</td>
     </tr>
     <tr>
