@@ -44,11 +44,6 @@ require.config({
         numeral: 'bower_components/numeral/numeral',
         'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
 
-        thrift: 'bower_components/thrift-binary-protocol/thrift-core',
-        thrift_transport_xhr: 'bower_components/thrift-binary-protocol/thrift-transport-xhr',
-        thrift_protocol_binary: 'bower_components/thrift-binary-protocol/thrift-protocol-binary',
-        kb_common_typeManager: 'bower_components/kbase-common-js/dist/kb/common/typeManager',
-        
         kb_ui: 'css/kb-ui',
         kb_datatables: 'css/kb-datatables',
         kb_bootstrap: 'css/kb-bootstrap',

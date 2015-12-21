@@ -6,23 +6,39 @@
 
 <table class="table table-bordered">
     <tr>
-        <th>Branch</th>
-        <th colspan="2">Status</th>
+        <th width="20%">Branch</th>
+        <td width="80%">master</td>
     </tr>
     <tr>
-        <th></th>
-        <th>Build</th>
-        <th>Coverage</th>
-    </tr>
-    <tr>
-        <td>master</td>
+        <th>Status</th>
         <td>
-            <img src="https://travis-ci.org/kbase/kbase-ui.svg?branch=master"><a href="https://travis-ci.org/kbase/kbase-ui">details</a>
-        </td>
-        <td>
-            <img src="https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master"><a href="ttps://coveralls.io/r/kbase/kbase-ui?branch=master">details</a>
+            <table class="table table-striped">
+                <tr>
+                    <th width="33%">
+                        Build
+                    </th>        
+                    <td width="33%">
+                        <img src="https://travis-ci.org/kbase/kbase-ui.svg?branch=master">
+                    </td>
+                    <td width="33%">
+                        <a href="https://travis-ci.org/kbase/kbase-ui">details</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Coverage
+                    </th>
+                    <td>
+                        <img src="https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master">
+                    </td>
+                    <td>
+                        <a href="ttps://coveralls.io/r/kbase/kbase-ui?branch=master">details</a>
+                    </td>
+                </tr>
+            </table>
         </td>
     </tr>
+    
 </table>
 
 ## About
@@ -56,8 +72,8 @@ However, in the context of a short readme, I hope you can forgive us for jumping
 ```
 mkdir myproject
 cd myproject
-git clone https://github.com/kbase/doekbase-ui
-cd doekbase-ui
+git clone https://github.com/kbase/kbase-ui
+cd kbase-ui
 make run
 ```
 
@@ -82,7 +98,4 @@ We do not currently use github issues for bug reports. Please send any bug repor
 ## License
 
 [LICENSE.md](license.md)
-
----
-
 

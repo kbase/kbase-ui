@@ -1,20 +1,19 @@
 var tests = [];
 for (var file in window.__karma__.files) {
-  if (window.__karma__.files.hasOwnProperty(file)) {
-    if (/[sS]pec\.js$/.test(file)) {
-      tests.push(file);
+    if (window.__karma__.files.hasOwnProperty(file)) {
+        if (/[sS]pec\.js$/.test(file)) {
+            tests.push(file);
+        }
     }
-  }
 }
 
 requirejs.config({
     // Karma serves files from '/base'
     baseUrl: '/base/build/client/modules',
-
     paths: {
         // External Dependencies
         // ----------------------
-      css: 'bower_components/require-css/css',
+        css: 'bower_components/require-css/css',
         text: 'bower_components/requirejs-text/text',
         json: 'bower_components/requirejs-json/json',
         yaml: 'bower_components/require-yaml/yaml',
@@ -44,22 +43,12 @@ requirejs.config({
         uuid: 'bower_components/node-uuid/uuid',
         numeral: 'bower_components/numeral/numeral',
         'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
-
-        thrift: 'bower_components/thrift-binary-protocol/thrift-core',
-        thrift_transport_xhr: 'bower_components/thrift-binary-protocol/thrift-transport-xhr',
-        thrift_protocol_binary: 'bower_components/thrift-binary-protocol/thrift-protocol-binary',
-        kb_common_typeManager: 'bower_components/kbase-common-js/dist/kb/common/typeManager',
-        
         kb_ui: 'css/kb-ui',
         kb_datatables: 'css/kb-datatables',
         kb_bootstrap: 'css/kb-bootstrap',
         kb_icons: 'css/kb-icons'
     },
     shim: {
-        vega: {
-            exports: 'vg',
-            deps: ['d3']
-        },
         kb_bootstrap: {
             deps: ['bootstrap']
         },
@@ -71,7 +60,7 @@ requirejs.config({
         },
         d3_sankey: {
             deps: ['d3', 'css!d3_sankey_css']
-            // deps: ['d3', 'css!d3_sankey_css', 'css!kb/style/sankey']
+                // deps: ['d3', 'css!d3_sankey_css', 'css!kb/style/sankey']
         },
     },
     map: {
@@ -80,10 +69,8 @@ requirejs.config({
             'promise': 'bluebird'
         }
     },
-
     // ask Require.js to load these files (all our tests)
     deps: tests,
-
     // start test run, once Require.js is done
     callback: window.__karma__.start
 });

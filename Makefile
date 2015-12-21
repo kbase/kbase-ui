@@ -40,6 +40,7 @@ run: init build start preview
 init:
 	npm install
 	cd dev/server; npm install
+	grunt init
 
 # Perform the build.
 # The actual build step is done by grunt. This also sets up the 
@@ -79,8 +80,10 @@ deploy:
 	@ grunt deploy
 
 # Tests are managed by grunt, but this also mimics the workflow.
-test: init build
-	@ grunt test
+#init build
+test:
+	karma start dev/test/karma.conf.js
+	
 
 # Cleans up build artifacts without removing required libraries
 # that get installed through Bower or NPM.
@@ -96,4 +99,4 @@ reqs-clean: clean
 docs: init
 	@echo docs!
 
-.PHONY: all
+.PHONY: all test

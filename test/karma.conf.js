@@ -4,7 +4,7 @@
 module.exports = function (config) {
     config.set({
         // base path that will be used to resolve all patterns (eg. files, exclude)
-        basePath: '../',
+        basePath: '..',
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
         frameworks: ['jasmine', 'requirejs'],
@@ -30,7 +30,6 @@ module.exports = function (config) {
              * have the Require apparatus take over.
              */
             
-            {pattern: 'build/client/modules/*.js', included: false},
             {pattern: 'build/client/modules/**/*.js', included: false},
             // {pattern: 'build/client/bower_components/**/*.js', included: false},
             {pattern: 'test/spec/**/*.js', included: false},
@@ -44,7 +43,7 @@ module.exports = function (config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-          'build/client/!(bower_components)/**/*.js': ['coverage']
+          'dev/build/client/!(bower_components)/**/*.js': ['coverage']
         },
 
         coverageReporter: {

@@ -6,4 +6,5 @@ node_modules
 /dev/dist
 /dev/build
 /dev/config
+/dev/test
 /mutations/mutantfiles

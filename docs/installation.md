@@ -1,72 +1,111 @@
 # Installation
 
-These installation and build instructions cover the easiest out of the box experience to get the KBase UI up and runnning. Each section provides pointers for more information on each of the procedures.
+There are four basic build scenarios:
 
+- development
+- production 
+- release
+- deployment
 
-## 1) Clone the kbase-ui repo
+The *development* build creates a complete usable KBase UI system, but code is not fully optimized. The *testing* build is similar to development, except that a separate set of testing files are built from the primary build. The *release* build contains optimizations, especially to improve load time, including minification and concatenation.
 
-Make yourself a nice cozy home in which to place kbase-ui. For testing and development you just need a single directory owned by you.
+These scenarios are supported by specific build parameters, which are covered in more detail in the [building](building.md) documentation.
+
+## Preparation
+
+All installations require the following stesps:
+
+### 1) Create a working directory
+
+For development, you will want to create a directory to contain the *KBase UI* code, as well as any other code you are working on, such as plugins. The [development](development.md) documentation describes development issues in depth.
 
 ```
 mkdir -p work/kbase-ui-work
 cd work/kbase-ui-work
-git clone https://github.com/kbase/kbase-ui.git
+```
+
+For a more ephemeral installation, in which the repo will only be used for a short period of time, either to install a release or to run tests, the install directory can simple be something like
+
+```
+mkdir kbase-ui-temp
+cd kbase-ui-temp
+```
+
+### 2) Clone the kbase-ui repo
+
+```
+git clone https://github.com/kbase/kbase-ui
 cd kbase-ui
 ```
 
-## 2) Build it
+### 3) Prepare the repo
 
-The kbase-ui can build with a couple of lines typed at the console, or a single invocation of ```make```.
+The repo relies on Javascript node modules for all tasks. Before using these tools, you first need to install their dependencies. This is accomplished with
 
-The default build uses the developer UI and the CI KBase services, but you can change this by supplying arguments to *make*. For a default developer build:
+```
+make init
+```
+
+## Development
+
+The developer build is the basis of all other builds, and is the default. There are developer settings which allow you to build with local copies of modules (plugins or otherwise), in which case the build diverges from others. In any case, the build consists of the entirety of KBase UI, plus all dependencies and plugins installed. The app is fully runnable with this build.
+
+### 1) Build it
+
+In the default configuration, building will create only the developer build:
 
 ```
 make build
 ```
 
-If you wish to create a production build
+> See the [development](development.md) docs for integration of local modules
+
+### 2) Run it
+
+All builds may be directly run using the provided nodejs http server. They may also be "run" using any web server, so if you have a preferred method of previewing web sites, etc. you may use that instead.
+
+The integrated nodejs http server is located in dev/server, and may be started with 
+
+```
+make preview
+```
+
+By default the server will run against the developer build (dev/build), but can also run against the production build (dev/prod).
+
+### 3) Test it
+
+After a successful build, you may want to run a quick test as a sanity check. This is not meant to replace the test process.
+
+```
+make test
+```
+
+Or directly like this:
+
+```
+karma start dev/test/karma.conf.js
+```
+
+
+## Production Build
+
+The production build may be installed in very much the same way as the development build, but with additional arguments supplied to the requisite make commands. The production build uses the *prod* UI configuration, the *prod* Services configuration, and also creates an optimized build called the *dist* (short for *distribution*).
+
+### 1) Build it
 
 ```
 make build prod prod
 ```
 
-This will use the production UI (first argument) and production Services (second argument.)
+This will use the configuration sets for production UI (first argument) and production Services (second argument).
 
-In either case, the build will be placed into ```dev/build```.
+The end product will be two installations of the KBase UI, ```dev/build```, which is the normal developer build as described above, and ```dev/dist``` which is the optimized distribution build. Note that this is not the same as the release distribution, which is specially packaged for placement into a release branch, and is directly usable without any build steps.
 
-> For more about building, see the Build Guide.
+> For more about building, see the [Build Guide](building.md).
 
-## 3) Run tests
+## Release Installation
 
-Tests can be run directly with karma, or through the make process
+Finally we come to the installation of a release. A release is distributed through the *release* branch of the *kbase-ui* repo, and contains a pre-built distribution build in an archive format.
 
-```
-karma start test/karma.conf.js
-```
-
-or
-
-```
-make test
- ```
-
-or 
-
-```
-grunt test
-```
-
-## 4) Local Deploy for development and testing
-
-The build process creates build directory which can be used directly as a web site root. 
-
-You may use the server of your choice, or use the built-in mini-web-server via
-
-```
-grunt preview
-```
-
-## 5) Production Deploy
-
-The production deploy just copies the build directory to the appropriate location.
+> This section to be done, since we haven't worked this out yet, and do not actually have a release branch.
 
