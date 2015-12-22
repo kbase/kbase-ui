@@ -189,7 +189,7 @@ function bowerInstall(state) {
             .install(undefined, undefined, {
                 cwd: base,
                 offline: state.config.bower.offline || false,
-                registry: "http://localhost:5678",
+                // registry: "http://localhost:5678",
                 timeout: 300000
             })
             .on('end', function (installed) {
