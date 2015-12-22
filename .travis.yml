@@ -4,7 +4,6 @@ node_js:
   - "0.12"
   # NB this should be 4.2, which is the LTS for node; they are working on it.
   - "4.1"
-  - "iojs"
 cache:
   directories:
   - bower_components
