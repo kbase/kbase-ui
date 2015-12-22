@@ -1,1 +1,0 @@
-$(function(){$("#search_terms").on("keypress",function(a){if(13===a.keyCode){var b=$.trim($("#search_terms")[0].value);if(null!==b&&""!==b){var c=encodeURIComponent(b),d="/search.shtml?q="+c;window.location=d}}})});

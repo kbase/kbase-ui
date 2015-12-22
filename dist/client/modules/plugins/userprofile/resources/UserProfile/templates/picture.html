@@ -1,5 +1,0 @@
-{%if userRecord.profile.userdata.avatar.gravatar_default and userRecord.profile.userdata.email %} 
-	<img src="{{userRecord.profile.userdata.email | gravatar(200,"pg",userRecord.profile.userdata.avatar.gravatar_default)}}" width="95%" style="max-width: 300px;">
-{% else %}
-	<center><img src="{{env.pluginPath}}/images/nouserpic.png" width="95%" style="max-width: 300px;"></center>
-{% endif %}

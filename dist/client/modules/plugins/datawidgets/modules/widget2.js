@@ -1,1 +1,0 @@
-define([],function(){"use strict";function a(a){function b(a){d=a}function c(a){d.innerHTML="See, it works!"}var d;return{attach:b,run:c}}return{make:function(b){return a(b)}}});

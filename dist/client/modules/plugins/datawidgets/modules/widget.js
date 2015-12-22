@@ -1,1 +1,0 @@
-define(["kb/widget/bases/dataWidget"],function(a){"use strict";function b(b){return a.make({runtime:b.runtime,on:{render:function(){return"Hi, I am a widget"}}})}return{make:function(a){var c=b(a);return c}}});

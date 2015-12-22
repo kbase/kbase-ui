@@ -1,1 +1,0 @@
-define(["./props"],function(a){"use strict";function b(){function b(a,b){g.setItem(a,b),h=!0}function c(a){return g.getItem(a)}function d(a){return g.hasItem(a)}function e(){return h}function f(){h=!1}var g=a.make(),h=!1;return{set:b,get:c,has:d,isDirty:e,setClean:f}}return{make:function(){return b()}}});

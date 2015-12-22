@@ -1,1 +1,0 @@
-define(["promise","kb/common/html","kb/common/dom"],function(a,b,c){"use strict";return{make:function(a){var b=window.location.hash;b&&/\?q\=/.test(b)||(b="#/search/?q=*"),window.location.href="/search/"+b}}});

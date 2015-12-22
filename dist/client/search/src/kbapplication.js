@@ -1,1 +1,0 @@
-!function(a){a.KBApplication=a.fn.KBApplication=function(b){return this.constructor=a.KBWidget.constructor,this}}(jQuery);

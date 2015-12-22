@@ -1,1 +1,0 @@
-define([],function(){function a(a){return a.metadata.narrative&&/^\d+$/.test(a.metadata.narrative)&&"true"!==a.metadata.is_temporary?!0:!1}return{isValid:a}});

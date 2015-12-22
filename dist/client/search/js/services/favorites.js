@@ -1,1 +1,0 @@
-app.service("favoriteService",function(){$(".fav-loading"),$(".favorite-count");this.getFavs=function(){};var a="favorites",b="list",c=USER_ID?kb.ujs.get_has_state(a,b,0):void 0;return c}),app.service("MVService",function(){this.org_name});

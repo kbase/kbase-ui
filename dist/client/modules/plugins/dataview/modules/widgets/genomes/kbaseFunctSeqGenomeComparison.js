@@ -1,1 +1,0 @@
-!function(a,b){a.KBWidget({name:"kbaseFunctGenomeComparison",parent:"kbaseWidget",version:"1.0.0",init:function(a){this._super(a);var b=(a.ws,a.name,this.$elem);return b.append("coming soon"),this}})}(jQuery);

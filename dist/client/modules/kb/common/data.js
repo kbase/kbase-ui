@@ -1,1 +1,0 @@
-define(["jquery","bluebird"],function(a,b){"use strict";function c(c){if(c.sync){var d;return a.get({url:"/data/"+c.path+"/"+c.file+".json",async:!1,dataType:"json",success:function(a){d=a},error:function(a){throw new Error("Error getting data: "+c.file)}}),d}return new b.resolve(a.get("/data/"+c.path+"/"+c.file+".json"))}return{getJSON:c}});

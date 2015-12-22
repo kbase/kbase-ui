@@ -1,1 +1,0 @@
-angular.module("ui",[]),angular.module("ui").directive("navbar",function(a){return{link:function(a,b,c){"use strict";require(["kb.widget.navbar","jquery"],function(c,d){var e=Object.create(c);e.init({container:d(b),userId:a.params.userid}).go()})}}});

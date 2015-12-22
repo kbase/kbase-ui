@@ -1,1 +1,0 @@
-define([],function(){"use strict";function a(a,b){this.width=a,this.height=b}return a.prototype.asString=function(){return"{"+this.width+", "+this.height+"}"},a});

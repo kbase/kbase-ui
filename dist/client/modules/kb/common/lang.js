@@ -1,1 +1,0 @@
-define([],function(){"use strict";function a(a){this.type=a.type,this.reason=a.reason,this.message=a.message,this.blame=a.blame,this.code=a.code,this.suggestion=a.suggestion}return a.prototype=new Error,{UIError:a}});
