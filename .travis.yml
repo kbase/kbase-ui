@@ -8,11 +8,11 @@ cache:
   directories:
   - bower_components
   - node_modules
-branches:
-  only:
-    - develop
-    - staging
-    - master
+#branches:
+#  only:
+#    - develop
+#    - staging
+#    - master
 before_install:
   - npm install -g bower
   - npm install -g grunt-cli
