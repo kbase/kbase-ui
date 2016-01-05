@@ -60,11 +60,11 @@ plugins:
             path: src/plugin
     -
         name: dataview
-        #bower:
-        #     name: kbase-ui-plugin-dataview
-        #     version: 0.1.2
-        link:
-            source: ../kbase-ui-plugin-dataview
+        bower:
+             name: kbase-ui-plugin-dataview
+             version: 0.1.2
+        #link:
+        #    source: ../kbase-ui-plugin-dataview
         copy:
             path: src/plugin
     -
