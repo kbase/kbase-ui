@@ -19,7 +19,6 @@ branches:
 #    - staging
 #    - master
 before_install:
-  - git pull --tags
   - npm install -g bower
   - npm install -g grunt-cli
 install:
