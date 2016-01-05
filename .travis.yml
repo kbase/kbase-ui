@@ -11,7 +11,6 @@ cache:
 branches:
     only:
         - master
-        - /^v\d+\.\d+\.\d+$/
         
         
 #branches:
@@ -20,6 +19,7 @@ branches:
 #    - staging
 #    - master
 before_install:
+  - git pull --tags
   - npm install -g bower
   - npm install -g grunt-cli
 install:
