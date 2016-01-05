@@ -5,43 +5,6 @@
 <table class="table table-bordered">
     <tr>
         <th width="20%">Branch</th>
-        <td width="80%">release (0.1.0)</td>
-    </tr>
-    <tr>
-        <th>Status</th>
-        <td>
-            <table class="table table-striped">
-                <tr>
-                    <th width="33%">
-                        Build
-                    </th>        
-                    <td width="33%">
-                        <img src="https://travis-ci.org/eapearson/kbase-ui.svg?branch=master">
-                    </td>
-                    <td width="33%">
-                        <a href="https://travis-ci.org/eapearson/kbase-ui">details</a>
-                    </td>
-                </tr>
-                <tr>
-                    <th>
-                        Coverage
-                    </th>
-                    <td>
-                        <img src="https://coveralls.io/repos/eapearson/kbase-ui/badge.svg?branch=master">
-                    </td>
-                    <td>
-                        <a href="ttps://coveralls.io/r/eapearson/kbase-ui?branch=master">details</a>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    
-</table>
-
-<table class="table table-bordered">
-    <tr>
-        <th width="20%">Branch</th>
         <td width="80%">master</td>
     </tr>
     <tr>
@@ -78,7 +41,7 @@
 
 ## About
 
-The DOE KBase User Interface, or *KBase UI* for short, is a web browser Single Page App (SPA) providing tools for [KBase](http://kbase.us). It is a partner to the KBase Narrative Interface. Current features include:
+The KBase User Interface, or *KBase UI* for short, is a web browser Single Page App (SPA) providing tools for [KBase](http://kbase.us) users. It is a partner to the [KBase Narrative Interface](https://github.com/kbase/narrative). Current features include:
 
 - *Dashboard*, for an overview of your narratives and activies of your colleages
 - *User Profile*, for viewing any user profile and editing your own, 
@@ -98,9 +61,11 @@ Most KBase users will be exposed to the KBase UI by ... [using KBase](https://na
 
 ## Installation
 
-As a SPA, Kbase UI is "just" a collection of web browser assets. All you need to run it is a modern web browser and a web server. Please read the installation guide for full instructions.
+As a SPA, Kbase UI is "just" a collection of web browser assets. All you need to run it is a modern web browser and a web server. 
 
-Please see the Installation Guide for all of the details.
+At present there is no installable distribution of KBase UI. The essential process is to download the project, ensure you have the (widely available and free) prerequsite development tools, build the project (just a few seconds), and then use the built-in preview server to pull up the app.
+
+Please see the [Installation Guide](docs/installation.md) for details.
 
 However, in the context of a short readme, I hope you can forgive us for jumping to the happy ending version:
 
@@ -114,13 +79,13 @@ make run
 
 For more complete instructions (which in turn have links to technical guides), please see:
 
-- [Prerequisites](prerequisites.md)
-- [Installation](installation.md)
-- [Deployment](deployment.md)
+- [Prerequisites](docs/prerequisites.md)
+- [Installation](docs/installation.md)
+- [Deployment](docs/deployment.md)
 
 ## Development
 
-Please see the [Developer Guide](development.md).
+Please see the [Developer Guide](docs/development.md).
 
 ## Contributing
 
@@ -132,5 +97,5 @@ We do not currently use github issues for bug reports. Please send any bug repor
 
 ## License
 
-[LICENSE.md](license.md)
+[LICENSE.md](LICENSE.md)
 
