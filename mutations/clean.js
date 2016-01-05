@@ -1,5 +1,8 @@
 /*global define*/
 /*jslint white:true*/
+/*
+ * Cleans out everything that is created with build.
+ */
 'use strict';
 
 var Promise = require('bluebird'),

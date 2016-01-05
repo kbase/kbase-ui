@@ -31,7 +31,8 @@ var Promise = require('bluebird'),
     bower = require('bower'),
     glob = Promise.promisify(require('glob').Glob),
     ini = require('ini'),
-    underscore = require('underscore');
+    underscore = require('underscore'),
+    dir = Promise.promisifyAll(require('node-dir'));
 
 
 // UTILS
@@ -72,6 +73,59 @@ function saveIni(path, iniData) {
 
 // SUB TASKS
 
+function arrayDiff(a, b) {
+    if (a.length >= b.length) {
+        return [];
+    }
+    var i;
+    for (i = 0; i < a.length; i += 1) {
+        if (a[i] !== b[i]) {
+            return [];
+        }
+    }
+    return b.slice(i, b.length);
+}
+
+/*
+ * 
+* Copy files from one directory to another, creating any required directories.
+ */
+function copyDirFiles(from, to) {
+    var fromPath, toPath;
+    return fs.realpathAsync(from)
+        .then(function (realpath) {
+            fromPath = realpath.split('/');
+            return fs.realpathAsync(to);
+        })
+        .then(function (realpath) {
+            toPath = realpath.split('/');
+            return dir.filesAsync(from);
+        })
+        .then(function (paths) {
+            return Promise.all(paths.map(function (path) {
+                return fs.realpathAsync(path)
+                    .then(function (realpath) {
+                        return realpath.split('/');
+                    });
+            }));
+        })
+        .then(function (realpaths) {
+            return Promise.all(realpaths.map(function (filePath) {
+                var dir = filePath.slice(0, filePath.length - 1),
+                    relative = arrayDiff(fromPath, dir),
+                    fileName = filePath[filePath.length - 1],
+                    targetDir = toPath.concat(relative);
+                // make the found paths relative.
+
+                return fs.ensureDirAsync(targetDir.join('/'))
+                    .then(function () {
+                        return fs.copyAsync(filePath.join('/'), targetDir.concat([fileName]).join('/'));
+                        // console.log(targetDir.concat([fileName]).join('/'));
+                    });
+            }));
+        });
+}
+
 /*
  * Simply copies directory trees into the top level of the modules client directory
  *
@@ -85,7 +139,27 @@ function copyModules(state) {
         })
         .then(function (config) {
             return Promise.all(config.modules.filter(function (spec) {
-                if (spec.copy) { 
+                if (spec.copy) {
+                    return true;
+                }
+                return false;
+            }).map(function (spec) {
+                return copyDirFiles(spec.copy.from, root.concat(['build', 'client', 'modules']).join('/'));
+                // return fs.copyAsync(spec.copy.from, root.concat(['build', 'client', 'modules']).join('/'));
+            }));
+        });
+}
+
+function copyModulesx(state) {
+    var root = state.environment.path,
+        configFilePath = root.concat(['config', 'ui', state.config.targets.ui, 'build.yml']).join('/');
+    return fs.readFileAsync(configFilePath, 'utf8')
+        .then(function (configFile) {
+            return yaml.safeLoad(configFile);
+        })
+        .then(function (config) {
+            return Promise.all(config.modules.filter(function (spec) {
+                if (spec.copy) {
                     return true;
                 }
                 return false;
@@ -94,7 +168,6 @@ function copyModules(state) {
             }));
         });
 }
-
 function injectModulesIntoBower(state) {
     // Load plugin config        
     var root = state.environment.path,
@@ -439,7 +512,7 @@ function copyUiConfig(state) {
         configSource = root.concat(['config', 'ui', state.config.targets.ui]),
         configDest = root.concat(['build', 'client', 'modules', 'config']),
         configFiles = ['settings.yml'];
-    
+
     return Promise.all(configFiles.map(function (file) {
         return copyFiles(configSource, configDest, file);
     }))
@@ -526,12 +599,12 @@ function makeDistBuild(state) {
     return fs.copyAsync(root.concat(['build']).join('/'), root.concat(['dist']).join('/'))
         .then(function () {
             glob(root.concat(['dist', 'client', 'modules', '**', '*.js']).join('/'))
-            .then(function (matches) {
-                return Promise.all(matches.map(function (match) {
-                   var result = uglify.minify(match);
-                   return fs.writeFileAsync(match, result.code);
-                }));
-            });
+                .then(function (matches) {
+                    return Promise.all(matches.map(function (match) {
+                        var result = uglify.minify(match);
+                        return fs.writeFileAsync(match, result.code);
+                    }));
+                });
         })
         .then(function () {
             return fs.removeAsync(devPath.concat(['dist']).join('/'));
@@ -580,7 +653,7 @@ var initialFilesystem = [
             kbDeployConfig: deployTarget
         }
     };
-    
+
 mutant.createInitialState(initialFilesystem, initialData)
     .then(function (state) {
         return mutant.copyState(state);
@@ -655,6 +728,7 @@ mutant.createInitialState(initialFilesystem, initialData)
     })
     .then(function (state) {
         if (state.config.build.dist) {
+            console.log('Making the dist build...');
             return makeDistBuild(state);
         } else {
             return null;

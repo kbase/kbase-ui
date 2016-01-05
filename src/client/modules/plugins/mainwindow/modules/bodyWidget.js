@@ -24,9 +24,6 @@ define([
             function start(params) {
                 config.runtime.recv('app', 'route-widget', function (data) {
                     if (data.routeHandler.route.widget) {
-                        // TODO: have an "unmount" action, so that we can 
-                        // clean up after unmount, e.g. clear menu, clear title, so that
-                        // widgets don't all have
                         widgetMount.unmount()
                             .then(function () {
                                 return runtime.sendp('ui', 'clearButtons');

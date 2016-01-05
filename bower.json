@@ -1,13 +1,21 @@
 {
-    "name": "KBase UI",
-    "version": "0.0.1",
-    "main": "none",
-    "ignore": [
-        ".jshintrc",
-        "**/*.txt"
+    "name": "kbase-ui",
+    "description": "The KBase User Interface",
+    "keywords": [
+        "kbase",
+        "ui"        
     ],
+    "author": ["kbase"],
+    "moduleType": "amd-application",
+    "main": "src/client/index.html",
+    "ignore": [
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/kbase/kbase-ui"
+    },
     "dependencies": {
-        "spark-md5": "1.0.0",
+        "spark-md5": "2.0.0",
         "bluebird": "3.0.6",
         "comma-separated-values": "3.6.3",
         "d3": "3.5.6",
@@ -24,6 +32,7 @@
         "bootstrap": "3.3.5",
         "font-awesome": "4.3.0",
         "requirejs-domready": "2.0.1",
+        "datatables": "1.10.9",
         "datatables-bootstrap3-plugin": "0.4.0",
         "SparkMD5": "spark-md5#1.0.0",
         "google-code-prettify": "1.0.4",
@@ -37,5 +46,6 @@
         "q": "2.0.2"
 
     },
-    "devDependencies": {}
+    "devDependencies": {},
+    "license": "SEE LICENSE IN LICENSE.md"
 }

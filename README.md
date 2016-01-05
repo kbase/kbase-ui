@@ -2,8 +2,6 @@
 
 ## Current Status
 
-[![Build Status](https://travis-ci.org/kbase/kbase-ui.svg?branch=master)](https://travis-ci.org/kbase/kbase-ui)
-
 <table class="table table-bordered">
     <tr>
         <th width="20%">Branch</th>
@@ -18,10 +16,10 @@
                         Build
                     </th>        
                     <td width="33%">
-                        <img src="https://travis-ci.org/kbase/kbase-ui.svg?branch=master">
+                        <img src="https://travis-ci.org/eapearson/kbase-ui.svg?branch=master">
                     </td>
                     <td width="33%">
-                        <a href="https://travis-ci.org/kbase/kbase-ui">details</a>
+                        <a href="https://travis-ci.org/eapearson/kbase-ui">details</a>
                     </td>
                 </tr>
                 <tr>
@@ -29,10 +27,10 @@
                         Coverage
                     </th>
                     <td>
-                        <img src="https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master">
+                        <img src="https://coveralls.io/repos/eapearson/kbase-ui/badge.svg?branch=master">
                     </td>
                     <td>
-                        <a href="ttps://coveralls.io/r/kbase/kbase-ui?branch=master">details</a>
+                        <a href="ttps://coveralls.io/r/eapearson/kbase-ui?branch=master">details</a>
                     </td>
                 </tr>
             </table>

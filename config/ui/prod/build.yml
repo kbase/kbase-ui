@@ -58,23 +58,25 @@ plugins:
             path: src/plugin
     -
         name: dataview
-        bower:
-            name: kbase-ui-plugin-dataview
-            version: 0.1.2
+        #bower:
+        #    name: kbase-ui-plugin-dataview
+        #    version: 0.1.2
+        link:
+            source: ../kbase-ui-plugin-dataview
         copy:
             path: src/plugin
     -
         name: dashboard
         bower:
             name: kbase-ui-plugin-dashboard
-            version: 0.1.0
+            version: 0.1.1
         copy:
             path: src/plugin
     -
         name: databrowser
         bower:
             name: kbase-ui-plugin-databrowser
-            version: 0.1.0
+            version: 0.1.1
         copy:
             path: src/plugin
     -
@@ -112,8 +114,8 @@ modules:
     -
         name: kbase-common-js
         bower:
-            version: 0.1.0
+            version: 0.1.2
     -
         name: kbase-service-clients-js
         bower:
-            version: 0.1.0
+            version: 0.1.1

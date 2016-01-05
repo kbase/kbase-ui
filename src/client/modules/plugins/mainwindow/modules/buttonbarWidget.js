@@ -18,6 +18,7 @@ define([
             }
             function addButton(w, buttonDef) {
                 var buttons = w.get('buttons');
+                buttonDef.type = 'button';
                 if (buttonDef.external) {
                     buttonDef.target = '_blank';
                 }
@@ -97,7 +98,14 @@ define([
                 var span = html.tag('span'),
                     content = span({class: 'navbar-buttons'}, [
                         w.get('buttons').list.map(function (buttonDef) {
-                            return renderButton(w, buttonDef).content;
+                            switch (buttonDef.type) {
+                                case 'button':
+                                    return renderButton(w, buttonDef).content;
+                                    break;
+                                case 'dropdown':
+                                    return renderDropdown(w, buttonDef).content;
+                                    break;
+                            }
                         }).join('')
                     ]);
                 return content;
@@ -122,76 +130,141 @@ define([
 //            function findButton(name) {
 //                return this.container.find('.navbar-buttons [data-button="' + name + '"]');
 //            }
-//            function addDropdown(cfg) {
-//                // var button = $('<button type="button" class="btn btn-' + cfg.style + ' dropdown-toggle" data-toggle="dropdown" aria-expanded="false">' + cfg.label + ' <span class="caret"></span></button>');
-//                var iconStyle = '';
-//                var label = '';
-//                if (cfg.label) {
-//                    label = '<div class="kb-nav-btn-txt">' + cfg.label + ' <span class="caret"></span></div>';
-//                } else {
-//                    label = cfg.label + ' <span class="caret"></span>';
-//                    iconStyle += 'font-size: 150%;';
-//                }
-//                var button = $('<button  class="btn btn-' + (cfg.style || 'default') + ' navbar-btn kb-nav-btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">' +
-//                    '  <div class="fa fa-' + cfg.icon + '" style="' + iconStyle + '"></div>' + label + '</button>');
-//                if (cfg.disabled) {
-//                    button.prop('disabled', true);
-//                }
-//
-//                var menu = $('<ul class="dropdown-menu" role="menu"></ul>');
-//                if (cfg.items) {
-//                    for (var i = 0; i < cfg.items.length; i++) {
-//                        var item = cfg.items[i];
-//                        if (item.type === 'divider') {
-//                            menu.append('<li class="divider"></li>');
-//                        } else {
-//                            var menuItem = $('<li></li>');
-//
-//                            if (item.url) {
-//                                var link = $('<a></a>')
-//                                    .attr('href', item.url)
-//                                    .attr('data-menu-item', item.name);
-//                            } else if (item.callback) {
-//                                var link = $('<a></a>')
-//                                    .attr('href', '#')
-//                                    .attr('data-menu-item', item.name)
-//                                    .on('click', item.callback);
-//                            }
-//                            if (item.external) {
-//                                link.attr('target', '_blank');
-//                            }
-//
-//                            var icon = $('<div class="navbar-icon" style=""></div>');
-//                            if (item.icon) {
-//                                icon.append($('<span class="fa fa-' + item.icon + '"  class="navbar-icon"></span>'));
-//                            }
-//
-//                            menu.append(menuItem.append(link.append(icon).append(item.label)));
-//                        }
-//                    }
-//                }
-//                var dropdown = $('<div class="dropdown" style="display: inline-block;"></div>').append(button).append(menu);
-//                if (cfg.place === 'end') {
-//                    this.container.find('.navbar-buttons').append(dropdown);
-//                } else {
-//                    this.container.find('.navbar-buttons').prepend(dropdown);
-//                }
-//                if (cfg.widget) {
-//                    var widgetName = cfg.widget;
-//                    var panel = $('<div>');
-//                    menu.append($('<li></li>').append(panel));
-//                    var widget = panel[widgetName]({dropdown: dropdown, navbar: this, params: cfg.params});
-//                }
-//                return this;
-//            }
+            function addDropdown(w, buttonDef) {
+                var buttons = w.get('buttons');
+                buttonDef.type = 'dropdown';
+                if (buttonDef.place === 'end') {
+                    buttons.list.push(buttonDef);
+                    if (buttonDef.name) {
+                        buttons.map[buttonDef.name] = buttonDef;
+                    }
+                } else {
+                    buttons.list.unshift(buttonDef);
+                    if (buttonDef.name) {
+                        buttons.map[buttonDef.name] = buttonDef;
+                    }
+                }
+                w.set('buttons', buttons);
+            }
+            function renderMenuItem(w, itemDef) {
+                var div = html.tag('div'),
+                    span = html.tag('span'),
+                    li = html.tag('li'),
+                    a = html.tag('a'),
+                    itemButton;
+                
+                if (itemDef.icon) {
+                    itemButton = li([
+                        div({class: 'navbar-icon'}, [
+                            span({class: 'fa fa-' + itemDef.icon + ' navbar-icon'}),
+                            itemDef.label
+                        ])
+                    ]);
+                } else {
+                    itemButton = li([
+                        div({class: 'navbar-icon'}, [
+                            itemDef.label
+                        ])
+                    ]);
+                }
+                
+                if (itemDef.url) {
+                    // a link style button
+                    return a({
+                        dataMenuItem: itemDef.name,
+                        disabled: itemDef.disabled,
+                        href: itemDef.url,
+                        target: itemDef.target
+                    }, itemButton);
+                } 
+                return a({
+                    href: '#',
+                    dataMenuItem: itemDef.name,
+                    id: w.addDomEvent('click', function (e) {
+                        e.preventDefault();
+                        try {
+                            itemDef.callback();
+                        } catch (ex) {
+                            console.error('Error running menu item callback');
+                            console.error(ex);
+                            console.error(itemDef);
+                        }
+                    })
+                }, itemButton);
+            }
+            function renderDropdown(w, buttonDef) {
+                var label,
+                    dropdownButton, buttonAttribs = {}, labelStyle = {},
+                    div = html.tag('div'),
+                    a = html.tag('a'),
+                    button = html.tag('button'),
+                    span = html.tag('span'),
+                    id = html.genId(),
+                    events = [];
+
+                if (buttonDef.label) {
+                    label = div({class: 'kb-nav-btn-txt'}, [
+                        buttonDef.label,
+                        span({class: 'caret'})
+                    ]);
+                } else {
+                    label = span({class: 'caret'});
+                    labelStyle.fontSize = '150%';
+                }
+
+                var btnClass = [
+                    'btn',
+                    'btn-' + (buttonDef.style || 'default'),
+                    'navbar-btn',
+                    'kb-nav-btn',
+                    'dropdown-toggle'
+                ],
+                    btnAttribs = {
+                        class: btnClass.join(' '),
+                        dataToggle: 'dropdown',
+                        ariaExpanded: 'false'
+                    };
+                if (buttonDef.disabled) {
+                    btnAttribs.disabled = true;
+                }
+                var dropdownButton = button(btnAttribs, [
+                    div({class: ['fa', 'fa-' + buttonDef.icon].join(' '), style: labelStyle}, [
+                        label
+                    ])
+                ]);
+
+                var menu = ul({class: 'dropdown-menu', role: 'menu'}, [
+                    buttonDef.items.map(function (item) {
+                        switch (item.type) {
+                            case 'divider':
+                                return li({class: 'divider'});
+                            default:
+                                return renderMenuItem(w, item);
+                        }
+                    })
+                ]);
+                
+                var dropdown = div({class: 'dropdown', stlyle: {display: 'inline-block'}}, [
+                    button,
+                    menu
+                ]);
+
+                if (cfg.widget) {
+                    var widgetName = cfg.widget;
+                    var panel = $('<div>');
+                    menu.append($('<li></li>').append(panel));
+                    var widget = panel[widgetName]({dropdown: dropdown, navbar: this, params: cfg.params});
+                }
+                return this;
+            }
 
             return SimpleWidgetFactory.make({
                 runtime: config.runtime,
                 on: {
                     init: function () {
                         this.set('buttons', {
-                           list: [],
-                           map: {}
+                            list: [],
+                            map: {}
                         });
                     },
                     start: function () {
@@ -208,6 +281,9 @@ define([
                         this.recv('ui', 'disableButton', function (data) {
                             disableButton(widget, data.name);
                         });
+                        this.recv('ui', 'addDropdown', function (data) {
+                            addDropdown(widget, data);
+                        })
 
                     },
                     render: function () {
