@@ -50,7 +50,7 @@ The KBase User Interface, or *KBase UI* for short, is a web browser Single Page 
 - *Authenticator*, for logging into and out of your KBase Account
 
 > If you have stumbled up on this project, you may first want to [find out about KBase](http://kbase.us). 
-> The *KBase UI* is not a general purpose tool, but works inside the KBase ecosystem. 
+> The *KBase UI* is not a general purpose tool -- it is designed to work inside the KBase ecosystem. 
 
 The primary audience for this project is 
 
@@ -61,7 +61,7 @@ Most KBase users will be exposed to the KBase UI by ... [using KBase](https://na
 
 ## Installation
 
-As a SPA, Kbase UI is "just" a collection of web browser assets. All you need to run it is a modern web browser and a web server. 
+As a SPA, the Kbase UI is "just" a collection of web browser assets. All you need to run it is a modern web browser, a web server, and an internet connection.
 
 At present there is no installable distribution of KBase UI. The essential process is to download the project, ensure you have the (widely available and free) prerequsite development tools, build the project (just a few seconds), and then use the built-in preview server to pull up the app.
 
