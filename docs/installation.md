@@ -7,13 +7,19 @@ There are four basic build scenarios:
 - release
 - deployment
 
-The *development* build creates a complete usable KBase UI system, but code is not fully optimized. The *testing* build is similar to development, except that a separate set of testing files are built from the primary build. The *release* build contains optimizations, especially to improve load time, including minification and concatenation.
+The *development* build creates a complete usable KBase UI system, but code is not fully optimized. It is suitable for development of the UI or of plugins being developed for integration into it. It is also the right build to use for running and developing tests.
+
+The *production* build is additive to the development build, in that if first creates a development build, and then creates and optimized set of production-ready files. This build step is separated from development becuase the creation of production-ready files can be time consuming.
+
+The *release* build contains optimizations, especially to improve load time, including minification and concatenation. It also runs all tests and code quality checks, so that a release may not be built unless all tests and code quality checks succeed.
+
+Finally, the *deployment* build will create a release build and then install it into the target system. The only deployment environment currently supported is the KBase runtime environment.
 
 These scenarios are supported by specific build parameters, which are covered in more detail in the [building](building.md) documentation.
 
 ## Preparation
 
-All installations require the following stesps:
+All installations require the following steps:
 
 ### 1) Create a working directory
 
@@ -45,6 +51,8 @@ The repo relies on Javascript node modules for all tasks. Before using these too
 ```
 make init
 ```
+
+> At the time of writing, KBase UI consists of a master branch and tagged commits. The procedures described herein do not cover switching between branches or tags.
 
 ## Development
 
