@@ -29,7 +29,8 @@ all: init build
 default: init build
 
 # The "EZ Install" version - init, build, start, preview
-
+# Note that this uses the default targets -- which are least disruptive (to production)
+# and most experimental (development ui, ci services)
 run: init build start preview
 	
 
@@ -74,10 +75,10 @@ preview:
 dist: 
 	cd mutations; node build prod prod
 
-# The deployment step uses grunt to, essentially, copy the build
-# artifacts to the deployment directory
+# The deploy step will copy the files according to the instructions in the deploy
+# config. See mutations/deploy.js for details.
 deploy:	
-	@ grunt deploy
+	cd mutations; node deploy
 
 # Tests are managed by grunt, but this also mimics the workflow.
 #init build
