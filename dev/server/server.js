@@ -9,8 +9,19 @@ var port = 8080;
 
 function start () {
     var type = process.argv[3] || 'build',
-        rootDir = path.normalize([__dirname, '..', type, 'client'].join('/')),
+	rootDir, 
         title = 'kbup-' + String(port);
+    
+    console.log('Starting local kbase-ui server');
+    console.log('Type: ' + type);
+    console.log('Port: ' + port);
+
+    if (type === 'deployed') {
+	// TODO: get this from the deploy config
+	rootDir = '/kb/deployment/ui-common/';
+    } else {
+        rootDir = path.normalize([__dirname, '..', type, 'client'].join('/'));
+    }
     process.title = title;
     if (!fs.existsSync(rootDir)) {
         console.log('root dir ' + rootDir + ' does not exist or is not accessible to you');
