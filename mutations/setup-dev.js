@@ -32,6 +32,8 @@ function evaluateSystem(state) {
 var uiTarget = process.argv[2] || 'dev';
 var deployTarget = process.argv[3] || 'ci';
 
+// TODO: copy config if not done already.
+
 evaluateSystem({
     uiTarget: uiTarget,
     deployTarget: deployTarget
