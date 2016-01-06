@@ -4,9 +4,9 @@ node_modules
 /temp/
 /nbproject
 /dev/dist
+/dev/temp
 /dev/build
 /dev/config
 /dev/test
 /dev/test-coverage
 /mutations/mutantfiles
-/.idea

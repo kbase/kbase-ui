@@ -25,6 +25,7 @@
 
 var Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs-extra')),
+    pathExists = require('path-exists'),
     findit = require('findit2'),
     mutant = require('./mutant'),
     yaml = require('js-yaml'),
@@ -88,7 +89,7 @@ function arrayDiff(a, b) {
 
 /*
  * 
-* Copy files from one directory to another, creating any required directories.
+ * Copy files from one directory to another, creating any required directories.
  */
 function copyDirFiles(from, to) {
     var fromPath, toPath;
@@ -616,10 +617,7 @@ function makeDistBuild(state) {
 }
 
 
-// INPUT
 
-var uiTarget = process.argv[2] || 'dev';
-var deployTarget = process.argv[3] || 'ci';
 
 
 // STATE
@@ -630,114 +628,133 @@ var deployTarget = process.argv[3] || 'ci';
 
 
 
-var initialFilesystem = [
-    {
-        cwd: ['..'],
-        path: ['src']
-    },
-    {
-        cwd: ['..'],
-        files: ['deploy.cfg', 'bower.json']
-    },
-    {
-        cwd: ['..'],
-        path: ['install']
-    },
-    {
-	    cwd: ['..', 'dev'],
-	    path: ['config']
-    }
-],
-    initialData = {
-        targets: {
-            ui: uiTarget,
-            kbDeployConfig: deployTarget
+function main() {
+// INPUT
+    var initialFilesystem = [
+        {
+            cwd: ['..'],
+            path: ['src']
+        },
+        {
+            cwd: ['..'],
+            files: ['deploy.cfg', 'bower.json']
+        },
+        {
+            cwd: ['..'],
+            path: ['install']
         }
-    };
+    ];
+    return pathExists('../dev/config')
+        .then(function (exists) {
+            // ugly work around for now
+            var buildControlConfigPath;
+            if (exists) {
+                initialFilesystem.push({
+                    cwd: ['..', 'dev'],
+                    path: ['config']
+                });
+                buildControlConfigPath = ['..', 'dev', 'config', 'build.yml'];
+            } else {
+                initialFilesystem.push({
+                    cwd: ['..'],
+                    path: ['config']
+                });
+                buildControlConfigPath = ['..', 'config', 'build.yml'];
+            }
+            return {
+                initialFilesystem: initialFilesystem,
+                buildControlConfigPath: buildControlConfigPath
+            };
+        })
+        .then(function (config) {
+            console.log('Creating initial state with config: ');
+	    console.log(config);
+            return mutant.createInitialState(config);
+        })
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            console.log('Setting up build...');
+            return setupBuild(state);
+        })
 
-mutant.createInitialState(initialFilesystem, initialData)
-    .then(function (state) {
-        return mutant.copyState(state);
-    })
-    .then(function (state) {
-        console.log('Setting up build...');
-        return setupBuild(state);
-    })
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            console.log('Fetching bower packages...');
+            return fetchPackagesWithBower(state);
+        })
 
-    .then(function (state) {
-        return mutant.copyState(state);
-    })
-    .then(function (state) {
-        console.log('Fetching bower packages...');
-        return fetchPackagesWithBower(state);
-    })
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            console.log('Installing bower packages...');
+            return installBowerPackages(state);
+        })
 
-    .then(function (state) {
-        return mutant.copyState(state);
-    })
-    .then(function (state) {
-        console.log('Installing bower packages...');
-        return installBowerPackages(state);
-    })
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            console.log('Installing Plugins...');
+            return installPlugins(state);
+        })
 
-    .then(function (state) {
-        return mutant.copyState(state);
-    })
-    .then(function (state) {
-        console.log('Installing Plugins...');
-        return installPlugins(state);
-    })
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            console.log('Copying config files...');
+            return copyUiConfig(state);
+        })
 
-    .then(function (state) {
-        return mutant.copyState(state);
-    })
-    .then(function (state) {
-        console.log('Copying config files...');
-        return copyUiConfig(state);
-    })
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            console.log('Making KBase Config...');
+            return makeKbConfig(state);
+        })
 
-    .then(function (state) {
-        return mutant.copyState(state);
-    })
-    .then(function (state) {
-        console.log('Making KBase Config...');
-        return makeKbConfig(state);
-    })
-
-    // Disable temporarily ... we don't want to wipe out bower.json
-    // until we have determined if we will be building a dist.
-    .then(function (state) {
-        return mutant.copyState(state);
-    })
-    .then(function (state) {
-        console.log('Cleaning up...');
-        return cleanup(state);
-    })
+        // Disable temporarily ... we don't want to wipe out bower.json
+        // until we have determined if we will be building a dist.
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            console.log('Cleaning up...');
+            return cleanup(state);
+        })
 
 
 // From here, we can make a dev build, make a release
-    .then(function (state) {
-        return mutant.copyState(state);
-    })
-    .then(function (state) {
-        console.log('Making the dev build...');
-        return makeDevBuild(state);
-    })
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            console.log('Making the dev build...');
+            return makeDevBuild(state);
+        })
 
-    .then(function (state) {
-        return mutant.copyState(state);
-    })
-    .then(function (state) {
-        if (state.config.build.dist) {
-            console.log('Making the dist build...');
-            return makeDistBuild(state);
-        } else {
-            return null;
-        }
-    })
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            if (state.config.build.dist) {
+                console.log('Making the dist build...');
+                return makeDistBuild(state);
+            } else {
+                return null;
+            }
+        })
+        .catch(function (err) {
+            console.log('ERROR');
+            console.log(err);
+            console.log(err.stack);
+        });
+}
 
-    .catch(function (err) {
-        console.log('ERROR');
-        console.log(err);
-        console.log(err.stack);
-    });
+main();

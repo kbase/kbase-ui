@@ -249,8 +249,9 @@ function engine(app, oldState, next, stateHistory, resolve, reject, update) {
     });
 }
 
-function createInitialState(initialFilesystem, initialData) {
-
+function createInitialState(config) {
+    var initialFilesystem = config.initialFilesystem,
+        buildControlConfigPath = config.buildControlConfigPath;
     // TODO: do this better...
     var app, appName;
     if (process.argv[0].match(/node$/)) {
@@ -262,7 +263,7 @@ function createInitialState(initialFilesystem, initialData) {
 
     console.log('Creating initial state for app: ' + appName);
 
-    return loadYaml(['..', 'dev', 'config', appName + '.yml'])
+    return loadYaml(buildControlConfigPath)
         .then(function (config) {
             var runDirName = uniqts('run_'),
                 // This is the root of all process files
@@ -292,9 +293,8 @@ function createInitialState(initialFilesystem, initialData) {
                     filesystem: inputFs,
                     path: runDir.concat(inputFs)
                 },
-                data: initialData,
-                state: {
-                },
+                data: {},
+                state: {},
                 config: config,
                 history: []
             };
