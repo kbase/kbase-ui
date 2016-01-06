@@ -26,7 +26,71 @@
 var findit = require('findit2'),
     Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs-extra')),
+    glob = Promise.promisify(require('glob').Glob),
+    yaml = require('js-yaml'),
+    ini = require('ini'),
     uniqState = {};
+
+// UTILS
+
+function copyFiles(tryFrom, tryTo, globExpr) {
+    return Promise.all([fs.realpathAsync(tryFrom.join('/')), fs.realpathAsync(tryTo.join('/'))])
+        .spread(function (from, to) {
+            return [from.split('/'), to.split('/'), glob(globExpr, {
+                    cwd: from
+                })]
+        })
+        .spread(function (from, to, matches) {
+            return Promise.all(matches.map(function (match) {
+                var fromPath = from.concat([match]).join('/'),
+                    toPath = to.concat([match]).join('/');
+                return fs.copy(fromPath, toPath, {});
+            }));
+        });
+}
+
+function ensureEmptyDir(path) {
+    var dir = path.join('/');
+    
+    // ensure dir
+    return fs.ensureDirAsync(dir) 
+        .then(function () {
+            return fs.readdirAsync(dir);
+        })
+        .then(function (files) {
+            if (files.length > 0) {
+                throw new Error('Directory is not empty: ' + dir);
+            }
+        });
+}
+
+function loadYaml(path) {
+    var yamlPath = path.join('/');
+    return fs.readFileAsync(yamlPath, 'utf8')
+        .then(function (contents) {
+            return yaml.safeLoad(contents);
+        });
+}
+
+function loadIni(iniPath) {
+    var yamlPath = iniPath.join('/');
+    return fs.readFileAsync(yamlPath, 'utf8')
+        .then(function (contents) {
+            return ini.parse(contents);
+        });
+}
+
+function rtrunc(array, len) {
+    var start = 0,
+        end = array.length - len;
+    return array.slice(start, end);
+}
+
+function saveIni(path, iniData) {
+    return fs.writeFileAsync(path.join('/'), ini.stringify(iniData));
+}
+
+
 
 function uniq(prefix) {
     if (!uniqState[prefix]) {
@@ -186,19 +250,19 @@ function engine(app, oldState, next, stateHistory, resolve, reject, update) {
 }
 
 function createInitialState(initialFilesystem, initialData) {
-    
+
     // TODO: do this better...
-    var appName;    
+    var app, appName;
     if (process.argv[0].match(/node$/)) {
-        appName = process.argv[1];
+        app = process.argv[1];
     } else {
-        appName = process.argv[0];
+        app = process.argv[0];
     }
-    
-    return fs.readFileAsync(appName + '.json', 'utf8')
-        .then(function (configFile) {
-            return JSON.parse(configFile);
-        })
+    appName = app.split('/').pop();
+
+    console.log('Creating initial state for app: ' + appName);
+
+    return loadYaml(['..', 'dev', 'config', appName + '.yml'])
         .then(function (config) {
             var runDirName = uniqts('run_'),
                 // This is the root of all process files
@@ -241,5 +305,11 @@ module.exports = {
     mutate: mutate,
     createInitialState: createInitialState,
     deleteMatchingFiles: deleteMatchingFiles,
-    copyState: copyState
+    copyState: copyState,
+    copyFiles: copyFiles,
+    ensureEmptyDir: ensureEmptyDir,
+    loadYaml: loadYaml,
+    loadIni: loadIni,
+    saveIni: saveIni,
+    rtrunc: rtrunc
 };

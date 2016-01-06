@@ -514,7 +514,7 @@ function copyUiConfig(state) {
         configFiles = ['settings.yml'];
 
     return Promise.all(configFiles.map(function (file) {
-        return copyFiles(configSource, configDest, file);
+        return mutant.copyFiles(configSource, configDest, file);
     }))
         .then(function () {
             return state;
@@ -536,6 +536,7 @@ function makeKbConfig(state) {
         fs.readFileAsync(root.concat(['config', 'deploy', 'templates', 'service.yml']).join('/'), 'utf8')
     ])
         .spread(function (kbDeployConfig, template) {
+            state.config.kbDeployConfig = kbDeployConfig;
             var compiled = underscore.template(template),
                 expanded = compiled(kbDeployConfig['kbase-ui']);
             return Promise.all([expanded, saveIni(root.concat(['deploy.cfg']), kbDeployConfig)]);
@@ -636,15 +637,15 @@ var initialFilesystem = [
     },
     {
         cwd: ['..'],
-        path: ['config']
-    },
-    {
-        cwd: ['..'],
         files: ['deploy.cfg', 'bower.json']
     },
     {
         cwd: ['..'],
         path: ['install']
+    },
+    {
+	    cwd: ['..', 'dev'],
+	    path: ['config']
     }
 ],
     initialData = {
