@@ -29,3 +29,13 @@ docsite:
         about: /what-is-kbase
         contact: /contact-us
         browser_support: /supported-browsers
+
+menus:
+    authenticated: 
+        main: [narrative, search, dashboard]
+        developer: []
+        help: [about-kbase, contact-kbase]
+    unauthenticated: 
+        main: [search]
+        developer: []
+        help: [about-kbase, contact-kbase]
