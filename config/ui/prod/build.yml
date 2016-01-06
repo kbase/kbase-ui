@@ -29,7 +29,7 @@ plugins:
         # bower update <package>
         bower:
             name: kbase-ui-plugin-demo-vis-widget
-            version: 0.1.0
+            version: 0.1.1
         # This defaults to dist/plugin. If this is not the case, then
         # set it here. This is for the grunt task which copies the
         # package, as installed by bower.
@@ -46,23 +46,23 @@ plugins:
         name: viswidgets
         bower:
             name: kbase-ui-plugin-vis-widgets
-            version: 0.1.0
+            version: 0.1.1
         copy:
             path: src/plugin
     -
         name: typeview
         bower:
             name: kbase-ui-plugin-typeview
-            version: 0.1.0
+            version: 0.1.1
+        #link:
+        #    source: ../kbase-ui-plugin-typeview
         copy:
             path: src/plugin
     -
         name: dataview
-        #bower:
-        #    name: kbase-ui-plugin-dataview
-        #    version: 0.1.2
-        link:
-            source: ../kbase-ui-plugin-dataview
+        bower:
+            name: kbase-ui-plugin-dataview
+            version: 0.1.2
         copy:
             path: src/plugin
     -
@@ -83,20 +83,14 @@ plugins:
         name: typebrowser
         bower:
             name: kbase-ui-plugin-typebrowser
-            version: 0.1.1
-        #link:
-        #    source: ../kbase-ui-plugin-typebrowser
+            version: 0.1.2
         copy:
             path: src/plugin
     -
         name: datawidgets
         bower:
              name: kbase-ui-plugin-datawidgets
-             version: 0.1.0
-        # The link install method will create a soft link in the plugin
-        # dir to source/path
-        #link:
-        #   source: ../kbase-ui-plugin-datawidgets
+             version: 0.1.2
         copy:
             path: src/plugin
                
@@ -110,7 +104,7 @@ modules:
     -
         name: kbase-ui-widget
         bower:
-            version: 0.1.2
+            version: 0.1.3
     -
         name: kbase-common-js
         bower:
