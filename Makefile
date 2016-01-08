@@ -52,7 +52,7 @@ init:
 #  --deploy-config $(TARGET)
 # @ node tools/process_config.js $(DEPLOY_CFG)
 build:	
-	cd mutations; node build
+	cd mutations; node build build
 	
 # Set up a development environment. 
 # Installs tools into kbase-ui/dev. These tools are ignored by git,
@@ -73,12 +73,12 @@ preview:
 	cd tools/server; node server preview
 	
 dist: 
-	cd mutations; node build prod prod
+	cd mutations; node build deploy
 
 # The deploy step will copy the files according to the instructions in the deploy
 # config. See mutations/deploy.js for details.
 deploy:	
-	cd mutations; node deploy
+	cd mutations; node build deploy; node deploy
 
 # Tests are managed by grunt, but this also mimics the workflow.
 #init build

@@ -536,7 +536,7 @@ function copyUiConfig(state) {
  */
 function makeKbConfig(state) {
     var root = state.environment.path,
-        fileName = 'deploy-' + state.config.targets.kbDeployKey + '.cfg';
+        fileName = 'deploy-' + state.config.targets.deploy + '.cfg';
 
     return Promise.all([
         loadIni(root.concat(['config', 'deploy', fileName])),
@@ -633,7 +633,7 @@ function makeDistBuild(state) {
 
 
 
-function main() {
+function main(type) {
 // INPUT
     var initialFilesystem = [
         {
@@ -658,13 +658,13 @@ function main() {
                     cwd: ['..', 'dev'],
                     path: ['config']
                 });
-                buildControlConfigPath = ['..', 'dev', 'config', 'build.yml'];
+                buildControlConfigPath = ['..', 'dev', 'config', type + '.yml'];
             } else {
                 initialFilesystem.push({
                     cwd: ['..'],
                     path: ['config']
                 });
-                buildControlConfigPath = ['..', 'config', 'build.yml'];
+                buildControlConfigPath = ['..', 'config', type + '.yml'];
             }
             return {
                 initialFilesystem: initialFilesystem,
@@ -762,4 +762,6 @@ function main() {
         });
 }
 
-main();
+var type = process.argv[2] || 'build';
+
+main(type);

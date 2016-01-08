@@ -23,8 +23,8 @@ var Promise = require('bluebird'),
     bower = require('bower'),
     glob = Promise.promisify(require('glob').Glob),
     ini = require('ini'),
-    underscore = require('underscore');
-
+    underscore = require('underscore'),
+    pathExists = require('path-exists');
 
 function evaluateSystem(state) {
     return Promise.try(function () {
@@ -38,15 +38,30 @@ var kbDeployKey = process.argv[3] || 'ci';
 
 function loadDeployConfig(state) {
     var root = state.environment.path,
-        fileName = 'deploy-' + state.config.build.targets.kbDeployKey + '.cfg';
-    return mutant.loadIni(root.concat(['dev', 'config', 'deploy', fileName]))
+        fileName = 'deploy-' + state.config.build.targets.deploy + '.cfg';
+    return mutant.loadIni(state.config.root.concat(['deploy', fileName]))
         .then(function (kbDeployConfig) {
             return state.config.kbDeployConfig = kbDeployConfig;
         });
 }
 
 function loadBuildConfig(state) {
-    return mutant.loadYaml(['..', 'dev', 'config', 'build' + '.yml'])
+    return Promise.resolve(pathExists('../dev/config'))
+        .then(function (devExists) {
+            var configRoot;
+            if (devExists) {
+                configRoot = ['..', 'dev', 'config'];
+                return [configRoot, mutant.loadYaml(configRoot.concat(['build.yml']))];
+            } else {
+                configRoot = ['..', 'config'];
+                return [configRoot, mutant.loadYaml(configRoot.concat(['build.yml']))];
+            }
+        })
+        .spread(function (configRoot, config) {
+            state.config.build = config;
+            state.config.root = configRoot;
+            return state;
+        });
 }
 
 
@@ -58,11 +73,7 @@ evaluateSystem({
     }
 })
     .then(function (state) {
-	    return [state, loadBuildConfig(state)];
-    })
-    .spread(function (state, config) {
-	    state.config.build =  config;
-	    return state;
+        return loadBuildConfig(state);
     })
     .then(function (state) {
         return [state, loadDeployConfig(state)];
@@ -70,16 +81,16 @@ evaluateSystem({
     .spread(function (state) {
         var deployConfig = state.config.kbDeployConfig['kbase-ui'].deploy_target,
             deployPath = deployConfig.split('/');
-            
+
         state.deployPath = deployPath;
 
         // Ensure the directory is there, yet has no files.
         return [state, mutant.ensureEmptyDir(deployPath)];
     })
     .spread(function (state) {
-        var sourceDir = state.environment.path.concat(['dev', 'dist', 'client']),
+        var sourceDir = state.environment.path.concat(['build', 'dist', 'client']),
             destDir = state.deployPath;
-            
+
         return [state, mutant.copyFiles(sourceDir, destDir, '**/*')];
     })
     .spread(function (state) {

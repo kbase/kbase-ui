@@ -1,10 +1,10 @@
 ## Global Build Config
 ---
 targets:
-    ui: dev
-    deploy: ci
+    ui: prod
+    deploy: prod
 build:
-    dist: false
+    dist: true
 bower:
     offline: false
 debug: false

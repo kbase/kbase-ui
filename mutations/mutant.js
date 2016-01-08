@@ -172,23 +172,27 @@ function mutate(app, state, next) {
 
 function copyState(oldState) {
     return Promise.try(function () {
-        var newState = JSON.parse(JSON.stringify(oldState)),
-            tempDir = uniq('temp_'),
-            newFs = [tempDir],
-            oldFs = oldState.environment.filesystem,
+        if (oldState.config.debug) {
+            var newState = JSON.parse(JSON.stringify(oldState)),
+                tempDir = uniq('temp_'),
+                newFs = [tempDir],
+                oldFs = oldState.environment.filesystem,
+                start = (new Date()).getTime();
+
+            // Give the next process a fresh copy of all the files.
+            newState.environment.filesystem = newFs;
+            newState.environment.path = newState.environment.root.concat(newFs);
+
+            newState.copyTime = (new Date()).getTime() - start;
             start = (new Date()).getTime();
 
-        // Give the next process a fresh copy of all the files.
-        newState.environment.filesystem = newFs;
-        newState.environment.path = newState.environment.root.concat(newFs);
-
-        newState.copyTime = (new Date()).getTime() - start;
-        start = (new Date()).getTime();
-
-        return fs.copyAsync(oldState.environment.path.join('/'), newState.environment.path.join('/'))
-            .then(function () {
-                return newState;
-            });
+            return fs.copyAsync(oldState.environment.path.join('/'), newState.environment.path.join('/'))
+                .then(function () {
+                    return newState;
+                });
+            } else {
+                return oldState;
+            }
     });
 }
 
