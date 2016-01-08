@@ -42,7 +42,7 @@ init:
 	npm install
 	cd tools/server; npm install
 	grunt init
-
+	
 # Perform the build.
 # The actual build step is done by grunt. This also sets up the 
 # configuration in the build target. That configuration mainly

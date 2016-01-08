@@ -54,8 +54,8 @@ plugins:
         bower:
             name: kbase-ui-plugin-typeview
             version: 0.1.1
-        #link:
-        #    source: ../kbase-ui-plugin-typeview
+        #directory:
+        #    path: ../kbase-ui-plugin-typeview
         copy:
             path: src/plugin
     -
@@ -63,8 +63,8 @@ plugins:
         bower:
              name: kbase-ui-plugin-dataview
              version: 0.1.2
-        #link:
-        #    source: ../kbase-ui-plugin-dataview
+        #directory:
+        #    path: ../kbase-ui-plugin-dataview
         copy:
             path: src/plugin
     -
@@ -86,8 +86,8 @@ plugins:
         bower:
             name: kbase-ui-plugin-typebrowser
             version: 0.1.2
-        # link:
-        #    source: ../kbase-ui-plugin-typebrowser
+        # directory:
+        #    path: ../kbase-ui-plugin-typebrowser
         copy:
             path: src/plugin
     -
@@ -95,10 +95,8 @@ plugins:
         bower:
              name: kbase-ui-plugin-datawidgets
              version: 0.1.2
-        # The link install method will create a soft link in the plugin
-        # dir to source/path
-        # link:
-        #    source: ../kbase-ui-plugin-datawidgets
+        directory:
+            path: ../kbase-ui-plugin-datawidgets
         copy:
             path: src/plugin
                

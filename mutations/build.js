@@ -405,15 +405,15 @@ function installExternalPlugins(state) {
         .spread(function (externalPlugins) {
             return Promise.all(externalPlugins
                 .filter(function (plugin) {
-                    return plugin.link ? true : false;
+                    return plugin.directory ? true : false;
                 })
                 .map(function (plugin) {
-                    if (plugin.link) {
+                    if (plugin.directory) {
                         var cwds = plugin.copy.path || 'dist/plugin',
                             cwd = cwds.split('/'),
                             // Our actual cwd is mutations, so we need to escape one up to the 
                             // project root.
-                            source = ['..'].concat(plugin.link.source.split('/')).concat(cwd),
+                            source = ['..'].concat(plugin.directory.path.split('/')).concat(cwd),
                             destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
                         return copyFiles(source, destination, '**/*');
                     }
