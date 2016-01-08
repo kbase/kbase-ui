@@ -128,14 +128,14 @@ module.exports = function (grunt) {
         // Testing with Karma!
         karma: {
             unit: {
-                configFile: 'dev/test/karma.conf.js'
+                configFile: 'test/karma.conf.js'
             },
             dev: {
                 // to do - add watch here
-                configFile: 'dev/test/karma.conf.js',
+                configFile: 'test/karma.conf.js',
                 reporters: ['progress', 'coverage'],
                 coverageReporter: {
-                    dir: 'dev/test-coverage/',
+                    dir: 'build/build-test-coverage/',
                     reporters: [
                         {type: 'html', subdir: 'html'}
                     ]
@@ -150,7 +150,7 @@ module.exports = function (grunt) {
                 force: true
             },
             'kbase-ui': {
-                src: 'dev/test-coverage/lcov/**/*.info'
+                src: 'build/build-test-coverage/lcov/**/*.info'
             }
         },
         
