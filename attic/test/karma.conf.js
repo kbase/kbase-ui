@@ -30,11 +30,11 @@ module.exports = function (config) {
              * have the Require apparatus take over.
              */
             
-            {pattern: 'build/build/client/modules/**/*.js', included: false},
+            {pattern: 'build/client/modules/**/*.js', included: false},
             // {pattern: 'build/client/bower_components/**/*.js', included: false},
             {pattern: 'test/spec/**/*.js', included: false},
-            {pattern: 'build/build/client/modules/config/*.yml', included: false},
-            'test/build-test.js',
+            {pattern: 'build/client/modules/config/*.yml', included: false},
+            'test/main-test.js',
         ],
         // list of files to exclude
         exclude: [
@@ -47,7 +47,7 @@ module.exports = function (config) {
         },
 
         coverageReporter: {
-            dir: 'build/build-test-coverage/',
+            dir: 'test-coverage/',
             reporters: [
                 {type: 'html', subdir: 'html'},
                 {type: 'lcov', subdir: 'lcov'}

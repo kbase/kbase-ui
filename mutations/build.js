@@ -276,90 +276,96 @@ function bowerInstall(state) {
 }
 
 function copyFromBower(state) {
-    var bowerFiles = state.config.bowerFiles,
-        copyJobs = [];
+    var root = state.environment.path;
 
-    bowerFiles.forEach(function (cfg) {
+    return mutant.loadYaml(root.concat(['config', 'bowerInstall.yml']))
+        .then(function (config) {
+            var copyJobs = [];
 
-        // The top level bower directory name is usually the name of the
-        // package (which also is often also base of the sole json file name)
-        // but since this is not always the case, we allow the dir setting
-        // to override this.
-        var dir = cfg.dir || cfg.name;
-        if (!dir) {
-            throw new Error('Either the name or dir property must be provided to establish the top level directory');
-        }
+            config.bowerFiles.forEach(function (cfg) {
+                /*
+                 The top level bower directory name is usually the name of the
+                 package (which also is often also base of the sole json file name)
+                 but since this is not always the case, we allow the dir setting
+                 to override this.
+                 */
+                var dir = cfg.dir || cfg.name, sources, cwd, dest;
+                if (!dir) {
+                    throw new Error('Either the name or dir property must be provided to establish the top level directory');
+                }
 
-        // The source defaults to the package name with .js, unless the 
-        // src property is provided, in which case it must be either a single
-        // or set of glob-compatible strings.
-        var sources;
-        if (cfg.src) {
-            if (typeof cfg.src === 'string') {
-                sources = [cfg.src];
-            } else {
-                sources = cfg.src;
-            }
-        } else if (cfg.name) {
-            sources = [cfg.name + '.js'];
-        } else {
-            throw new Error('Either the src or name must be provided in order to have something to copy');
-        }
+                /*
+                 The source defaults to the package name with .js, unless the 
+                 src property is provided, in which case it must be either a single
+                 or set of glob-compatible strings.*/
+                if (cfg.src) {
+                    if (typeof cfg.src === 'string') {
+                        sources = [cfg.src];
+                    } else {
+                        sources = cfg.src;
+                    }
+                } else if (cfg.name) {
+                    sources = [cfg.name + '.js'];
+                } else {
+                    throw new Error('Either the src or name must be provided in order to have something to copy');
+                }
 
-        // Finally, the cwd serves as a way to dig into a subdirectory and use it as the 
-        // basis for copying. This allows us to "bring up" files to the top level of 
-        // the destination. Since we are relative to the root of this proces, we
-        // need to jigger that here.
-        var cwd;
-        if (cfg.cwd) {
-            if (typeof cfg.cwd === 'string') {
-                cfg.cwd = cfg.cwd.split(/,/);
-            }
-            cwd = ['build', 'bower_components', dir].concat(cfg.cwd);
-        } else {
-            cwd = ['build', 'bower_components', dir];
-        }
+                /*
+                 Finally, the cwd serves as a way to dig into a subdirectory and use it as the 
+                 basis for copying. This allows us to "bring up" files to the top level of 
+                 the destination. Since we are relative to the root of this proces, we
+                 need to jigger that here.
+                 */
+                if (cfg.cwd) {
+                    if (typeof cfg.cwd === 'string') {
+                        cfg.cwd = cfg.cwd.split(/,/);
+                    }
+                    cwd = ['build', 'bower_components', dir].concat(cfg.cwd);
+                } else {
+                    cwd = ['build', 'bower_components', dir];
+                }
 
+                /*
+                 The destination will be composed of 'bower_components' at the top 
+                 level, then the package name or dir (as specified above).
+                 This is the core of our "thinning and flattening", which is part of the 
+                 point of this bower copy process.
+                 In addition, if the spec includes a dest property, we will use that 
+                 */
+                if (cfg.bowerComponent) {
+                    dest = ['build', 'client', 'modules', 'bower_components'].concat([cfg.dir || cfg.name]);
+                } else {
+                    dest = ['build', 'client', 'modules'];
+                }
 
-        // The destination will be composed of 'bower_components' at the top 
-        // level, then the package name or dir (as specified above).
-        // This is the core of our "thinning and flattening", which is part of the 
-        // point of this bower copy process.
-        // In addition, if the spec includes a dest property, we will use that 
-        var dest;
-        if (cfg.bowerComponent) {
-            dest = ['build', 'client', 'modules', 'bower_components'].concat([cfg.dir || cfg.name]);
-        } else {
-            dest = ['build', 'client', 'modules'];
-        }
-
-        sources.forEach(function (source) {
-            copyJobs.push({
-                cwd: cwd,
-                src: source,
-                dest: dest
+                sources.forEach(function (source) {
+                    copyJobs.push({
+                        cwd: cwd,
+                        src: source,
+                        dest: dest
+                    });
+                });
             });
+
+            // Create and execute a set of promises to fetch and operate on the files found
+            // in the above spec.
+            return Promise.all(copyJobs.map(function (copySpec) {
+                return glob(copySpec.src, {
+                    cwd: state.environment.path.concat(copySpec.cwd).join('/')
+                })
+                    .then(function (matches) {
+                        // Do the copy!
+                        return Promise.all(matches.map(function (match) {
+                            var fromPath = state.environment.path.concat(copySpec.cwd).concat([match]).join('/'),
+                                toPath = state.environment.path.concat(copySpec.dest).concat([match]).join('/');
+                            return fs.copy(fromPath, toPath, {});
+                        }));
+                    })
+                    .then(function () {
+                        return state;
+                    });
+            }));
         });
-    });
-
-    // Create and execute a set of promises to fetch and operate on the files found
-    // in the above spec.
-    return Promise.all(copyJobs.map(function (copySpec) {
-        return glob(copySpec.src, {
-            cwd: state.environment.path.concat(copySpec.cwd).join('/')
-        })
-            .then(function (matches) {
-                // Do the copy!
-                return Promise.all(matches.map(function (match) {
-                    var fromPath = state.environment.path.concat(copySpec.cwd).concat([match]).join('/'),
-                        toPath = state.environment.path.concat(copySpec.dest).concat([match]).join('/');
-                    return fs.copy(fromPath, toPath, {});
-                }));
-            })
-            .then(function () {
-                return state;
-            });
-    }));
 }
 
 /*
@@ -570,8 +576,10 @@ function cleanup(state) {
 
 function makeDevBuild(state) {
     var root = state.environment.path,
-        devPath = ['..', 'dev'];
-    return fs.removeAsync(devPath.concat(['build']).join('/'))
+        devPath = ['..', 'dev'],
+        buildPath = ['..', 'build'];
+
+    return fs.removeAsync(buildPath.concat(['build']).join('/'))
         .then(function () {
             return fs.ensureDirAsync(devPath.join('/'));
         })
@@ -585,7 +593,7 @@ function makeDevBuild(state) {
             return fs.moveAsync(root.concat(['install']).join('/'), root.concat(['build', 'install']).join('/'));
         })
         .then(function () {
-            return fs.copyAsync(root.concat(['build']).join('/'), devPath.concat(['build']).join('/'));
+            return fs.copyAsync(root.concat(['build']).join('/'), buildPath.concat(['build']).join('/'));
         })
         .then(function () {
             return state;
@@ -595,7 +603,7 @@ function makeDevBuild(state) {
 
 function makeDistBuild(state) {
     var root = state.environment.path,
-        devPath = ['..', 'dev'],
+        buildPath = ['..', 'build'],
         uglify = require('uglify-js');
 
     return fs.copyAsync(root.concat(['build']).join('/'), root.concat(['dist']).join('/'))
@@ -609,15 +617,12 @@ function makeDistBuild(state) {
                 });
         })
         .then(function () {
-            return fs.removeAsync(devPath.concat(['dist']).join('/'));
+            return fs.removeAsync(buildPath.concat(['dist']).join('/'));
         })
         .then(function () {
-            return fs.copyAsync(root.concat(['dist']).join('/'), devPath.concat(['dist']).join('/'));
+            return fs.copyAsync(root.concat(['dist']).join('/'), buildPath.concat(['dist']).join('/'));
         });
 }
-
-
-
 
 
 // STATE
@@ -668,7 +673,7 @@ function main() {
         })
         .then(function (config) {
             console.log('Creating initial state with config: ');
-	    console.log(config);
+            console.log(config);
             return mutant.createInitialState(config);
         })
         .then(function (state) {

@@ -68,19 +68,35 @@ make build
 
 > See the [development](development.md) docs for integration of local modules
 
-### 2) Run it
+### 2) Start It
 
 All builds may be directly run using the provided nodejs http server. They may also be "run" using any web server, so if you have a preferred method of previewing web sites, etc. you may use that instead.
 
-The integrated nodejs http server is located in dev/server, and may be started with 
+The integrated nodejs http server is located in *dev/server*, and may be started with 
+
+```
+make start &
+```
+
+By default the server will run against the developer build (dev/build), but can also run against the production build (dev/prod). This is configured through build.yml.
+
+
+### 3) Use it
+
+The server may be run from https://localhost:PORT, where PORT defaults to 8888 but may be configured in dev/config/build.yml. However, there is of course a make task for this which reads the config file and launches the system default browser pointing to the server.
 
 ```
 make preview
 ```
+### 4) Stop it
 
-By default the server will run against the developer build (dev/build), but can also run against the production build (dev/prod).
+When done, you can stop the server through a stop task. It uses the port in the build.yml config file to locate and kill the process.
 
-### 3) Test it
+```
+make stop
+```
+
+### 5) Test it
 
 After a successful build, you may want to run a quick test as a sanity check. This is not meant to replace the test process.
 

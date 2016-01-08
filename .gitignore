@@ -1,12 +1,22 @@
+# package caches wherever they may be installed
 bower_components
 node_modules
-/build/
+
+# General purpose temp directory
 /temp/
+
+# IDEs
+# put your ide here 
 /nbproject
-/dev/dist
+
+# Build artifacts
+/build/dist
+/build/build
+/build/build-test-coverage
+/mutations/mutantfiles
+
+# Developer artifacts
 /dev/temp
-/dev/build
 /dev/config
 /dev/test
 /dev/test-coverage
-/mutations/mutantfiles

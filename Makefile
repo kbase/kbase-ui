@@ -40,7 +40,7 @@ run: init build start preview
 # config is not known until the parts are assembled...
 init:
 	npm install
-	cd dev/server; npm install
+	cd tools/server; npm install
 	grunt init
 
 # Perform the build.
@@ -63,14 +63,14 @@ devinit:
 	
 
 start:
-	cd dev/server; node server start &
+	cd tools/server; node server start &
 
 stop: 
-	cd dev/server; node server stop 
+	cd tools/server; node server stop 
 
 # Run the server, and open a browser pointing to it.
 preview:
-	cd dev/server; node server preview
+	cd tools/server; node server preview
 	
 dist: 
 	cd mutations; node build prod prod
@@ -83,7 +83,7 @@ deploy:
 # Tests are managed by grunt, but this also mimics the workflow.
 #init build
 test:
-	karma start dev/test/karma.conf.js
+	karma start test/karma.conf.js
 	
 
 # Cleans up build artifacts without removing required libraries
@@ -100,4 +100,4 @@ reqs-clean: clean
 docs: init
 	@echo docs!
 
-.PHONY: all test
+.PHONY: all test build
