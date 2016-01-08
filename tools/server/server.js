@@ -5,6 +5,7 @@ var fs = Promise.promisifyAll(require('fs'));
 var execAsync = Promise.promisify(require('child_process').exec);
 var open = require('open');
 var yaml = require('js-yaml');
+var pathExists = require('path-exists');
 
 function loadYaml(path) {
     var yamlPath = path.join('/');
@@ -15,24 +16,37 @@ function loadYaml(path) {
 }
 
 function loadBuildConfig(state) {
-    return loadYaml(['..', '..', 'dev', 'config', 'build.yml']);
+    return Promise.resolve(pathExists('../../dev/config'))
+        .then(function (devExists) {
+            var configRoot;
+            if (devExists) {
+                configRoot = ['..', '..', 'dev', 'config'];
+                return [configRoot, loadYaml(configRoot.concat(['build.yml']))];
+            } else {
+                configRoot = ['..', '..', 'config'];
+                return [configRoot, loadYaml(configRoot.concat(['build.yml']))];
+            }
+        })
+        .spread(function (configRoot, config) {
+            return config;
+        });
 }
 
 
-function start (config) {
+function start(config) {
     var type = process.argv[3] || 'build',
-	rootDir, 
+        rootDir,
         port = config.server.port,
         title = 'kbup-' + String(port);
-        
-    
+
+
     console.log('Starting local kbase-ui server');
     console.log('Type: ' + type);
     console.log('Port: ' + port);
 
     if (type === 'deployed') {
-	// TODO: get this from the deploy config
-	rootDir = '/kb/deployment/ui-common/';
+        // TODO: get this from the deploy config
+        rootDir = '/kb/deployment/ui-common/';
     } else {
         rootDir = path.normalize([__dirname, '..', '..', 'build', type, 'client'].join('/'));
     }
@@ -60,9 +74,10 @@ function start (config) {
 }
 
 function getServerPid(port) {
+    var title;
     return execAsync('ps -o pid,command')
         .then(function (stdout, stderr) {
-            var title = 'kbup-' + String(port);
+            title = 'kbup-' + String(port);
             return stdout.toString()
                 .split('\n')
                 .map(function (item) {
@@ -76,24 +91,26 @@ function getServerPid(port) {
                         return true;
                     }
                     return false;
-                });            
+                });
         })
         .then(function (procs) {
             if (procs.length === 1) {
                 var pid = parseInt(procs[0]);
                 return pid;
             } else if (procs.length === 0) {
-                throw new Error('No processes matched');
+                throw new Error('No processes matched ' + title);
             } else {
-               throw new ('Too many processes matched ' + title);
+                throw new ('Too many processes matched ' + title);
             }
         });
 }
 
 function stop(config) {
     // yeah, well, we'll improve this...
+    console.log('Stopping server on port ' + config.server.port);
     getServerPid(config.server.port)
         .then(function (pid) {
+            console.log('PID: ' + pid);
             process.kill(pid);
         });
 }

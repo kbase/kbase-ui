@@ -8,3 +8,5 @@ build:
 bower:
     offline: false
 debug: false
+server:
+    port: 8080
