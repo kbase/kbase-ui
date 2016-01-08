@@ -673,7 +673,7 @@ function main() {
         })
         .then(function (config) {
             console.log('Creating initial state with config: ');
-            console.log(config);
+            // console.log(config);
             return mutant.createInitialState(config);
         })
         .then(function (state) {

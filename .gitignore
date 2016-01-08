@@ -3,7 +3,7 @@ bower_components
 node_modules
 
 # General purpose temp directory
-/temp/
+/temp
 
 # IDEs
 # put your ide here 
