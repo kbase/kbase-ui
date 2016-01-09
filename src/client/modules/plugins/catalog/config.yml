@@ -1,0 +1,41 @@
+## Welcome Panel
+---
+package:
+    name: AppCatalog
+    description: KBase App Catalog
+    author: Michael Sneddon
+    date: January 2015
+    version: 0.0.1
+source:
+    modules:
+        -
+            module: catalog_home
+            file: catalog_home
+
+        -
+            module: catalog_browser_widgets
+            file: widgets/kbaseCatalogBrowser
+
+    styles:
+        -
+            file: catalog_styles
+install:
+    # Register the welcome widget
+    widgets:
+        - 
+            module: catalog_home
+            id: catalog_home
+            type: factory
+        -
+            module: catalog_browser_widgets
+            id: catalog_browser
+            title: Catalog Browser
+            config:
+                jqueryName: KBaseCatalogBrowser
+            type: kbwidget
+
+    # Set up a route to install that widget in the main body view
+    routes:
+        -
+            path: ['catalog']
+            widget: catalog_home              
