@@ -91,8 +91,10 @@ function arrayDiff(a, b) {
  * 
  * Copy files from one directory to another, creating any required directories.
  */
-function copyDirFiles(from, to) {
-    var fromPath, toPath;
+function copyDirFiles(pathFrom, pathTo) {
+    var from = pathFrom.join('/'),
+        to = pathTo.join('/'),
+        fromPath, toPath;
     return fs.realpathAsync(from)
         .then(function (realpath) {
             fromPath = realpath.split('/');
@@ -133,6 +135,7 @@ function copyDirFiles(from, to) {
  */
 function copyModules(state) {
     var root = state.environment.path,
+        projectRoot = root.concat(['..', '..', '..']),
         configFilePath = root.concat(['config', 'ui', state.config.targets.ui, 'build.yml']).join('/');
     return fs.readFileAsync(configFilePath, 'utf8')
         .then(function (configFile) {
@@ -140,35 +143,89 @@ function copyModules(state) {
         })
         .then(function (config) {
             return Promise.all(config.modules.filter(function (spec) {
-                if (spec.copy) {
+                if (spec.directory) {
                     return true;
                 }
                 return false;
             }).map(function (spec) {
-                return copyDirFiles(spec.copy.from, root.concat(['build', 'client', 'modules']).join('/'));
-                // return fs.copyAsync(spec.copy.from, root.concat(['build', 'client', 'modules']).join('/'));
+                var from = projectRoot.concat(spec.directory.path.split('/')),
+                    to = root.concat(['build', 'client', 'modules']);
+                return copyDirFiles(from, to);
             }));
         });
 }
 
-function copyModulesx(state) {
-    var root = state.environment.path,
-        configFilePath = root.concat(['config', 'ui', state.config.targets.ui, 'build.yml']).join('/');
-    return fs.readFileAsync(configFilePath, 'utf8')
-        .then(function (configFile) {
-            return yaml.safeLoad(configFile);
+function dirList(dir) {
+    return fs.readdirAsync(dir.join('/'))
+        .then(function (files) {
+            return files.map(function (file) {
+                return dir.concat([file]);
+            });
         })
-        .then(function (config) {
-            return Promise.all(config.modules.filter(function (spec) {
-                if (spec.copy) {
-                    return true;
-                }
-                return false;
-            }).map(function (spec) {
-                return fs.copyAsync(spec.copy.from, root.concat(['build', 'client', 'modules']).join('/'));
+        .then(function (files) {
+            return Promise.all(files.map(function (file) {
+                return fs.statAsync(file.join('/')).then(function (stats) {
+                    return {
+                        stats: stats,
+                        path: file
+                    };
+                });
             }));
+        })
+        .then(function (files) {
+            return files.filter(function (file) {
+                return file.stats.isDirectory();
+            });
         });
 }
+
+/*
+ * Install any bower package which has an install config file at the top level.
+ */
+
+function installModule(state, source) {
+    return loadYaml(source.concat(['install.yml']))
+        .then(function (installConfig) {
+            if (installConfig.moduleType === 'amd') {
+                if (installConfig.package.type === 'namespaced') {
+                    var from = source.concat(installConfig.package.path.split('/')),
+                        to = state.environment.path.concat(['build', 'client', 'modules']);
+
+                    return copyDirFiles(from, to);
+                }
+            }
+        });
+}
+
+function installModulePackages(state) {
+    // iterate through all of the bower packages in root/bower_components
+    var root = state.environment.path;
+
+    return dirList(root.concat(['build', 'bower_components']))
+        .then(function (dirs) {
+            return Promise.all(dirs.map(function (dir) {
+                return Promise.all([dir, pathExists(dir.path.concat('install.yml').join('/'))]);
+            }));
+        })
+        .then(function (dirs) {
+            return dirs
+                .filter(function (dir) {
+                    return dir[1];
+                })
+                .map(function (dir) {
+                    return dir[0];
+                });
+        })
+        .then(function (installDirs) {
+            return Promise.all(installDirs.map(function (installDir) {
+                return installModule(state, installDir.path);
+            }));
+        })
+        .then(function () {
+            return state;
+        });
+}
+
 function injectModulesIntoBower(state) {
     // Load plugin config        
     var root = state.environment.path,
@@ -706,6 +763,15 @@ function main(type) {
         .then(function (state) {
             console.log('Installing Plugins...');
             return installPlugins(state);
+        })
+
+
+
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            return installModulePackages(state);
         })
 
         .then(function (state) {

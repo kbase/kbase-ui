@@ -110,17 +110,17 @@ modules:
     -
         name: kbase-ui-widget
         bower:
-            version: "0.1.3"
+            version: 0.1.4
         #copy:
         #    # NB: from is relative to the location of mutant.
         #    from: ../../kbase-ui-widget/src
     -
         name: kbase-common-js
         bower:
-            version: "0.1.2"
+            version: 0.1.3
         #copy:
         #    from: ../../kbase-common-js/dist
     -
         name: kbase-service-clients-js
         bower:
-            version: "0.1.1"
+            version: 0.1.2
