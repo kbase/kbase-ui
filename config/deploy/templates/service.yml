@@ -55,4 +55,7 @@ services:
         name: Workspace    
     narrative:
         url: <%= narrative_url %>
-        name: Narrative User Interface
+        name: Narrative User Interface    
+    catalog:
+        url: <%= catalog_url %>
+        name: Catalog

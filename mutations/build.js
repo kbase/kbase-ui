@@ -89,19 +89,16 @@ function arrayDiff(a, b) {
 
 /*
  * 
- * Copy files from one directory to another, creating any required directories.
+ * Copy files from one directory to another, creating any required directories,
+ * but of course requiring the source to exist.
  */
 function copyDirFiles(pathFrom, pathTo) {
     var from = pathFrom.join('/'),
         to = pathTo.join('/'),
-        fromPath, toPath;
+        fromPath, toPath = pathTo;
     return fs.realpathAsync(from)
         .then(function (realpath) {
             fromPath = realpath.split('/');
-            return fs.realpathAsync(to);
-        })
-        .then(function (realpath) {
-            toPath = realpath.split('/');
             return dir.filesAsync(from);
         })
         .then(function (paths) {
@@ -119,7 +116,7 @@ function copyDirFiles(pathFrom, pathTo) {
                     fileName = filePath[filePath.length - 1],
                     targetDir = toPath.concat(relative);
                 // make the found paths relative.
-
+                
                 return fs.ensureDirAsync(targetDir.join('/'))
                     .then(function () {
                         return fs.copyAsync(filePath.join('/'), targetDir.concat([fileName]).join('/'));
@@ -133,7 +130,7 @@ function copyDirFiles(pathFrom, pathTo) {
  * Simply copies directory trees into the top level of the modules client directory
  *
  */
-function copyModules(state) {
+function copyLocalModules(state) {
     var root = state.environment.path,
         projectRoot = root.concat(['..', '..', '..']),
         configFilePath = root.concat(['config', 'ui', state.config.targets.ui, 'build.yml']).join('/');
@@ -149,7 +146,7 @@ function copyModules(state) {
                 return false;
             }).map(function (spec) {
                 var from = projectRoot.concat(spec.directory.path.split('/')),
-                    to = root.concat(['build', 'client', 'modules']);
+                    to = root.concat(['build', 'local_modules']);
                 return copyDirFiles(from, to);
             }));
         });
@@ -197,7 +194,36 @@ function installModule(state, source) {
         });
 }
 
-function installModulePackages(state) {
+function installModulePackagesFromBower(state) {
+    // iterate through all of the bower packages in root/bower_components
+    var root = state.environment.path;
+
+    return dirList(root.concat(['build', 'bower_components']))
+        .then(function (dirs) {
+            return Promise.all(dirs.map(function (dir) {
+                return Promise.all([dir, pathExists(dir.path.concat('install.yml').join('/'))]);
+            }));
+        })
+        .then(function (dirs) {
+            return dirs
+                .filter(function (dir) {
+                    return dir[1];
+                })
+                .map(function (dir) {
+                    return dir[0];
+                });
+        })
+        .then(function (installDirs) {
+            return Promise.all(installDirs.map(function (installDir) {
+                return installModule(state, installDir.path);
+            }));
+        })
+        .then(function () {
+            return state;
+        });
+}
+
+function installModulePackagesFromFilesystem(state) {
     // iterate through all of the bower packages in root/bower_components
     var root = state.environment.path;
 
@@ -529,7 +555,7 @@ function setupBuild(state) {
             return injectPluginsIntoConfig(state);
         })
         .then(function () {
-            return copyModules(state);
+            return copyLocalModules(state);
         })
         .then(function () {
             return injectModulesIntoBower(state);
@@ -771,8 +797,15 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            return installModulePackages(state);
+            return installModulePackagesFromBower(state);
         })
+        
+//        .then(function (state) {
+//            return mutant.copyState(state);
+//        })
+//        .then(function (state) {
+//            return installModulePackagesFromFilesystem(state);
+//        })
 
         .then(function (state) {
             return mutant.copyState(state);
