@@ -56,8 +56,8 @@ plugins:
         bower:
             name: kbase-ui-plugin-typeview
             version: 0.1.1
-        #link:
-        #    source: ../kbase-ui-plugin-typeview
+        #directory:
+        #    path: ../kbase-ui-plugin-typeview
         copy:
             path: src/plugin
     -
@@ -65,8 +65,8 @@ plugins:
         bower:
              name: kbase-ui-plugin-dataview
              version: 0.1.2
-        #link:
-        #    source: ../kbase-ui-plugin-dataview
+        #directory:
+        #    path: ../kbase-ui-plugin-dataview
         copy:
             path: src/plugin
     -
@@ -88,19 +88,17 @@ plugins:
         bower:
             name: kbase-ui-plugin-typebrowser
             version: 0.1.2
-        # link:
-        #    source: ../kbase-ui-plugin-typebrowser
+        # directory:
+        #    path: ../kbase-ui-plugin-typebrowser
         copy:
             path: src/plugin
     -
         name: datawidgets
         bower:
              name: kbase-ui-plugin-datawidgets
-             version: 0.1.2
-        # The link install method will create a soft link in the plugin
-        # dir to source/path
-        # link:
-        #    source: ../kbase-ui-plugin-datawidgets
+             version: 0.1.3
+        directory:
+            path: ../kbase-ui-plugin-datawidgets
         copy:
             path: src/plugin
                
@@ -114,17 +112,17 @@ modules:
     -
         name: kbase-ui-widget
         bower:
-            version: "0.1.3"
+            version: 0.1.4
         #copy:
         #    # NB: from is relative to the location of mutant.
         #    from: ../../kbase-ui-widget/src
     -
         name: kbase-common-js
         bower:
-            version: "0.1.2"
+            version: 0.1.3
         #copy:
         #    from: ../../kbase-common-js/dist
     -
         name: kbase-service-clients-js
         bower:
-            version: "0.1.1"
+            version: 0.1.3

@@ -104,18 +104,6 @@ bowerFiles:
             - languages/*.js
         bowerComponent: true
     -
-        name: kbase-ui-widget
-        cwd: src
-        src: "**/*"
-    -
-        name: kbase-common-js
-        cwd: dist
-        src: "**/*"
-    -
-        name: kbase-service-clients-js
-        cwd: dist
-        src: "**/*"
-    -
         name: blockUI
         src:
             - jquery.blockUI.js
