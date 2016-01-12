@@ -37,5 +37,5 @@ install:
     # Set up a route to install that widget in the main body view
     routes:
         -
-            path: ['catalog2']
+            path: ['appcatalog']
             widget: catalog_home              

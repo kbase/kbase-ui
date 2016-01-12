@@ -10,6 +10,33 @@
     margin: 0.1em;
 }
 
-.kbcb-main-div {
+.kbcb-main-panel-div {
     margin: 0.1em;
+}
+
+.kbcb-loading-panel-div {
+    margin: 0.1em;
+    text-align:center;
+    vertical-align:middle;
+}
+
+
+.kbcb-app {
+    margin: 0.4em;
+    width: 150px;
+    height:150px;
+    text-align:center;
+    vertical-align:middle;
+    background-color: #ddd;
+    display:inline-block;
+}
+
+.kbcb-module {
+    margin: 0.3em;
+    width: 150px;
+    height:150px;
+    text-align:center;
+    vertical-align:middle;
+    background-color: #ddd;
+    display:inline-block;
 }
