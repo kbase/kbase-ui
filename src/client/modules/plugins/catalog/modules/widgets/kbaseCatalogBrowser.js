@@ -8,28 +8,90 @@
 define([
     'jquery',
     'kb/service/client/NarrativeMethodStore',
+    'kb/service/client/Catalog',
     'kb/widget/legacy/authenticatedWidget',
+    'bootstrap',
 ],
-    function ($, NarrativeMethodStore) {
+    function ($, NarrativeMethodStore, Catalog) {
         $.KBWidget({
             name: "KBaseCatalogBrowser",
-            parent: "kbaseAuthenticatedWidget",
+            parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
             options: {
 
             },
             $mainPanel: null,
             $errorPanel: null,
-            narstore: null,
+
+
+            // clients to the catalog service and the NarrativeMethodStore
+            catalog: null,
+            nms: null,
+
+            // list of NMS method and app info (todo: we need to move this to the catalog)
+            // for now, most of the filtering/sorting etc is done on the front end; this
+            // will eventually need to move to backend servers when there are enough methods
+            appBriefInfo: null,
+
+            // list of catalog module info
+            moduleInfo: null,
+
+
             init: function (options) {
                 this._super(options);
                 
+                var self = this;
 
-                this.$elem.append("now we're in business.")
+                // new style we have a runtime object that gives us everything in the options
+                self.runtime = options.runtime;
+                console.log(options);
+                console.log(this.runtime.service('session').getAuthToken());
+                self.setupClients();
+
+                // get the list of apps and modules
+                var loadingCalls = [];
+                loadingCalls.push(self.populateAppListWithMethods());
+                loadingCalls.push(self.populateAppListWithApps());
+                loadingCalls.push(self.populateModuleList());
 
 
-                this.narstore = new NarrativeMethodStore(this.runtime.getConfig('services.narrative_method_store.url'));
+                Promise.all(loadingCalls).then(function() {
+                    console.log('done loading!')
+                })
 
 
+
+
+                self.nms.status().then(function(status){console.log(status);})
+
+
+                // 
+
+
+                this.$controlToolbar = this.renderControlToolbar();
+
+                this.$elem.append(this.$controlToolbar);
+
+                this.$elem.append($('<div>').append("now we're in business.").addClass('catalog'));
+
+
+              //  this.narstore = new NarrativeMethodStore(this.runtime.getConfig('services.narrative_method_store.url'));
+
+               // alert(runtime.service('session').getAuthToken());
+
+           /* var catalog = new Catalog(runtime.getConfig('services.catalog.url'), {
+                 token: runtime.service('session').getAuthToken()
+            });*/
+            /*
+            catalog.version(
+                 function (version) {
+                     alert('Catalog version is ' + version);
+                 },
+                 function (err) {
+                     alert('ERROR (check console)');
+                     console.log('ERROR');
+                     console.log(err);
+                 };
+*/
 
 /*
                 console.log('NARR VIEW');
@@ -66,6 +128,118 @@ define([
 
                 return this;
             },
+
+
+            setupClients: function() {
+                this.catalog = new Catalog(
+                    this.runtime.getConfig('services.catalog.url'),
+                    { token: this.runtime.service('session').getAuthToken() }
+                );
+                this.nms = new NarrativeMethodStore(
+                    this.runtime.getConfig('services.narrative_method_store.url'),
+                    { token: this.runtime.service('session').getAuthToken() }
+                );
+
+            },
+
+
+
+            renderControlToolbar: function () {
+                var self = this;
+
+                var $searchDiv = $('<div>').addClass('col-md-6');
+
+                var $searchBox = $('<input type="text" placeholder="Search">').addClass('form-control');
+                $searchBox.on('input',
+                    function() {
+                        self.filter($searchBox.val());
+                    });
+
+                $searchDiv.append($('<div>').addClass('input-group input-group-sm')
+                                        .append($searchBox));
+
+                // sort
+                // toggle module vs app/method
+                // toggle release, dev, beta versions
+
+                var $ctrbar = $('<div>').addClass('row kbcb-ctr-toolbar');
+                $ctrbar.append($searchDiv);
+
+                return $ctrbar;
+            },
+
+
+            filter: function(query) {
+                console.log(query);
+            },
+
+
+
+            populateAppListWithMethods: function() {
+                var self = this;
+
+                // determine which set of methods to fetch
+                var tag='release';
+
+                return self.nms.list_methods({
+                        tag:tag
+                    })
+                    .then(function (methods) {
+                        console.log('hello methods');
+                        console.log(methods);
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+            populateAppListWithApps: function() {
+                var self = this;
+
+                // determine which set of methods to fetch
+                var tag='release';
+
+                return self.nms.list_apps({
+                        tag:tag
+                    })
+                    .then(function (apps) {
+                        console.log('hello apps');
+                        console.log(apps);
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+
+
+            populateModuleList: function() {
+                var self = this
+
+                var moduleSelection = {
+                    include_released:1,
+                    include_unreleased:1,
+                    include_disabled:0
+                };
+
+                return self.catalog.list_basic_module_info(moduleSelection)
+                    .then(function (modules) {
+                        //return self.catalog.list_basic_module_info()
+                        //console.log('hello modules');
+                        //console.log(modules);
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+
+
+
+
             getParameterByName: function (name) {
                 var name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
                 var regexS = "[\\?&]" + name + "=([^&#]*)";
