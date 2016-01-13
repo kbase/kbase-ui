@@ -63,7 +63,7 @@ devinit:
 	
 
 start:
-	cd tools/server; node server start &
+	cd tools/server; node server start  $(target) &
 
 stop: 
 	cd tools/server; node server stop 

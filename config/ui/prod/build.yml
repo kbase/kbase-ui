@@ -22,79 +22,33 @@ plugins:
         narrativestore
     # external:
     -
-        # Becomes the plugin directory name
-        name: viswidgetdemo
-        # Installation configuration.
-        # Provided to bower. The package is fed to
-        # bower install <package>
-        # and
-        # bower update <package>
-        bower:
-            name: kbase-ui-plugin-demo-vis-widget
-            version: 0.1.1
-        # This defaults to dist/plugin. If this is not the case, then
-        # set it here. This is for the grunt task which copies the
-        # package, as installed by bower.
-        # The grunt "bowerCopy" tasks needs the bower package name, in order to locate
-        # the source, the plugin name, to create the destination in plugins,
-        # and the path within the packge to the plugin source, which is
-        # standardized to dist/plugin but can be overridden by the cwd (named
-        # to match the grunt usage of cwd to indicate the base directory for
-        # a task operation on files.)
-        copy:
-            # only required if the code is not located in dist/plugin
-            path: src/plugin
-    -
         name: viswidgets
-        bower:
-            name: kbase-ui-plugin-vis-widgets
-            version: 0.1.1
-        copy:
-            path: src/plugin
+        globalName: kbase-ui-plugin-vis-widgets
+        cwd: src/plugin
+        version: 0.1.1
+        source:
+            bower: {}
     -
         name: typeview
-        bower:
-            name: kbase-ui-plugin-typeview
-            version: 0.1.1
-        #link:
-        #    source: ../kbase-ui-plugin-typeview
-        copy:
-            path: src/plugin
+        globalName: kbase-ui-plugin-typeview
+        version: 0.1.1
+        source:
+            bower: {}
     -
         name: dataview
-        bower:
-            name: kbase-ui-plugin-dataview
-            version: 0.1.2
-        copy:
-            path: src/plugin
+        globalName: kbase-ui-plugin-dataview
+        version: 0.1.2
+        cwd: src/plugin
+        source:
+            bower: {}
     -
         name: dashboard
-        bower:
-            name: kbase-ui-plugin-dashboard
-            version: 0.1.1
-        copy:
-            path: src/plugin
-    -
-        name: databrowser
-        bower:
-            name: kbase-ui-plugin-databrowser
-            version: 0.1.1
-        copy:
-            path: src/plugin
-    -
-        name: typebrowser
-        bower:
-            name: kbase-ui-plugin-typebrowser
-            version: 0.1.2
-        copy:
-            path: src/plugin
-    -
-        name: datawidgets
-        bower:
-             name: kbase-ui-plugin-datawidgets
-             version: 0.1.3
-        copy:
-            path: src/plugin
+        globalName: kbase-ui-plugin-dashboard
+        version: 0.1.1
+        cwd: src/plugin
+        source:
+            bower: {}
+
                
 # Copy these directories into the modules
 # There are two forms, as for plugins. 
@@ -104,14 +58,22 @@ plugins:
 
 modules:
     -
-        name: kbase-ui-widget
-        bower:
-            version: 0.1.4
+        globalName: kbase-ui-widget
+        version: 0.1.4
+        source:
+            bower: {}
     -
-        name: kbase-common-js
-        bower:
-            version: 0.1.3
+        globalName: kbase-common-js
+        version: 0.1.3
+        source:
+            bower: {}
     -
-        name: kbase-service-clients-js
-        bower:
-            version: 0.1.3
+        globalName: kbase-service-clients-js
+        version: 0.1.4
+        source:
+            bower: {}
+    -
+        globalName: kbase-data-api-js-clients
+        version: 0.1.3
+        source:
+            bower: {}

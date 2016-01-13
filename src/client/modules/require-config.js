@@ -47,7 +47,14 @@ require.config({
         kb_ui: 'css/kb-ui',
         kb_datatables: 'css/kb-datatables',
         kb_bootstrap: 'css/kb-bootstrap',
-        kb_icons: 'css/kb-icons'
+        kb_icons: 'css/kb-icons',
+        
+        // This really should be brought in somehow else.
+        // Perhaps namespace it???
+        thrift: 'bower_components/thrift-binary-protocol/thrift-core',
+        thrift_transport_xhr: 'bower_components/thrift-binary-protocol/thrift-transport-xhr',
+        thrift_protocol_binary: 'bower_components/thrift-binary-protocol/thrift-protocol-binary',
+
     },
     shim: {
         bootstrap: {

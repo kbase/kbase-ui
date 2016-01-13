@@ -5,6 +5,7 @@ targets:
     deploy: prod
 build:
     dist: true
+    temp: ../mutantfiles
 bower:
     offline: false
 debug: false

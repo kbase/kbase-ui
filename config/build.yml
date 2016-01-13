@@ -5,6 +5,7 @@ targets:
     deploy: ci
 build:
     dist: false
+    temp: ../mutantfiles
 bower:
     offline: false
 debug: false
