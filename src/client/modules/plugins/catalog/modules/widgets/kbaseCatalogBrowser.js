@@ -9,10 +9,11 @@ define([
     'jquery',
     'kb/service/client/NarrativeMethodStore',
     'kb/service/client/Catalog',
+    './catalog_util',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
-    function ($, NarrativeMethodStore, Catalog) {
+    function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
         $.KBWidget({
             name: "KBaseCatalogBrowser",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
@@ -21,7 +22,6 @@ define([
             },
             $mainPanel: null,
             $errorPanel: null,
-
 
             // clients to the catalog service and the NarrativeMethodStore
             catalog: null,
@@ -109,9 +109,9 @@ define([
             renderControlToolbar: function () {
                 var self = this;
 
-                var $searchDiv = $('<div>').addClass('col-md-6');
+                var $searchDiv = $('<div>').addClass('col-md-4');
 
-                var $searchBox = $('<input type="text" placeholder="Search">').addClass('form-control');
+                var $searchBox = $('<input type="text" placeholder="Search" size="50">').addClass('form-control');
                 $searchBox.on('input',
                     function() {
                         self.filterApps($searchBox.val());
@@ -126,6 +126,12 @@ define([
 
                 var $ctrbar = $('<div>').addClass('row kbcb-ctr-toolbar');
                 $ctrbar.append($searchDiv);
+
+
+                var $linksDiv = $('<div>').addClass('col-md-6');
+                $linksDiv.append('<a href="#appcatalog/status">status</a> | ');
+                $linksDiv.append('<a href="#appcatalog/register">register new app</a>');
+                $ctrbar.append($linksDiv);
 
                 return $ctrbar;
             },
@@ -318,7 +324,7 @@ define([
 
                 if(app.info['module_name']) {
                     $appDiv.append('<br>').append(
-                        $('<a href="#catalog/module/'+app.info.module_name+'">')
+                        $('<a href="#appcatalog/module/'+app.info.module_name+'">')
                             .append('['+app.info.module_name+']'));
                 }
                 app.$div = $appDiv;

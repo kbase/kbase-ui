@@ -21,6 +21,15 @@ source:
         -
             module: catalog_module_dev_viewer
             file: catalog_module_dev_viewer
+        -
+            module: catalog_registration
+            file: catalog_registration
+        -
+            module: catalog_status
+            file: catalog_status
+        -
+            module: catalog_util
+            file: catalog_util
 
         # here is one per widget
         -
@@ -35,6 +44,15 @@ source:
         -
             module: catalog_module_dev_viewer_widget
             file: widgets/kbaseCatalogModuleDevViewer
+        -
+            module: catalog_registration_widget
+            file: widgets/kbaseCatalogRegistration
+        -
+            module: catalog_status_widget
+            file: widgets/kbaseCatalogStatus
+        -
+            module: catalog_view_sdk_registration_log_widget
+            file: KBaseViewSDKRegistrationLog
 
     styles:
         -
@@ -58,6 +76,18 @@ install:
             module: catalog_module_dev_viewer
             id: catalog_module_dev_viewer
             type: factory
+        - 
+            module: catalog_registration
+            id: catalog_registration
+            type: factory
+        - 
+            module: catalog_status
+            id: catalog_status
+            type: factory
+        - 
+            module: catalog_util
+            id: catalog_util
+            type: widget
         -
             module: catalog_home_widget
             id: catalog_browser
@@ -86,6 +116,27 @@ install:
             config:
                 jqueryName: KBaseCatalogModuleDevViewer
             type: kbwidget
+        -
+            module: catalog_registration_widget
+            id: catalog_registration_widget
+            title: App Catalog Module Registration
+            config:
+                jqueryName: KBaseCatalogRegistrationViewer
+            type: kbwidget
+        -
+            module: catalog_status_widget
+            id: catalog_status_widget
+            title: App Catalog Status
+            config:
+                jqueryName: KBaseCatalogStatusViewer
+            type: kbwidget
+        -
+            module: catalog_view_sdk_registration_log_widget
+            id: catalog_view_sdk_registration_log_widget
+            title: App Catalog Module Registration Log
+            config:
+                jqueryName: KBaseViewSDKRegistrationLog
+            type: kbwidget
 
 
 
@@ -103,4 +154,10 @@ install:
         -
             path: ['appcatalog', 'app', {type: param, name: type}, {type: param, name: namespace}, {type: param, name: name}]
             widget: catalog_app_viewer
+        -
+            path: ['appcatalog', 'register']
+            widget: catalog_registration
+        -
+            path: ['appcatalog', 'status']
+            widget: catalog_status
 

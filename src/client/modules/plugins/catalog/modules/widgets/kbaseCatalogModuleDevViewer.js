@@ -46,9 +46,6 @@ define([
             $loadingPanel: null,
 
 
-
-
-
             init: function (options) {
                 this._super(options);
                 

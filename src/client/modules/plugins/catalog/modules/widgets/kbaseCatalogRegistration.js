@@ -14,7 +14,7 @@ define([
 ],
     function ($, NarrativeMethodStore, Catalog) {
         $.KBWidget({
-            name: "KBaseCatalogModuleViewer",
+            name: "KBaseCatalogRegistration",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
             options: {
                 module_name:'null'
@@ -27,10 +27,6 @@ define([
             catalog: null,
             nms: null,
 
-            // 
-            module_name: null,
-            moduleDetails: null,
-            isGithub: null,
 
             // main panel and elements
             $mainPanel: null,
@@ -56,7 +52,12 @@ define([
                 var mainPanelElements = self.initMainPanel();
                 self.$mainPanel = mainPanelElements[0];
                 self.$elem.append(self.$mainPanel);
-                self.showLoading();
+
+                // nothing to fetch, just show some stuff
+                self.render();
+                self.hideLoading();
+
+                return this;
 
                 // get the module information
                 var loadingCalls = [];
@@ -77,108 +78,48 @@ define([
             render: function() {
                 var self = this;
 
-                var info = self.moduleDetails.info;
-                var versions = self.moduleDetails.versions;
 
-                var $header = $('<div>');
+/*<form>
+  <div class="form-group">
+    <label for="exampleInputEmail1">Email address</label>
+    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Password</label>
+    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+  </div>
+  <div class="form-group">
+    <label for="exampleInputFile">File input</label>
+    <input type="file" id="exampleInputFile">
+    <p class="help-block">Example block-level help text here.</p>
+  </div>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox"> Check me out
+    </label>
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>*/
+                var $registrationForm = $('<form>');
 
-                $header.append($('<h1>').append(info.module_name));
-                $header.append($('<h4>').append(
-                    '<a href="'+info.git_url+'" target="_blank">'+info.git_url+'<a>'));
-                $header.append($('<div>').html(info.description));
+                var $gitUrlInput = $('<input type="text" class="form-control" id="git_url" placeholder="e.g. https://github.com/msneddon/MegaHit">');
+                var $commitInput = $('<input type="text" class="form-control" id="commit" placeholder="e.g. 15b6ec0">');
 
-                var $owners = $('<div>').append('<i>KBase Module Developed by:</i> ');
-                for(var k=0; k<info.owners.length; k++) {
-                    // todo: get nice name
-                    var username = info.owners[k];
-                    $owners.append('<a href="#people/'+username+'">'+username+"</a> ");
+                var $registerBtn = $('<button>').addClass('btn btn-default').append('Register');
 
-                }
-                $header.append($owners);
+                $registrationForm.append(
+                    $('<div>').addClass('form-group')
+                        .append($('<label for="git_url">Module Git URL</label>'))
+                        .append($gitUrlInput));
 
-                self.$mainPanel.append($header);
-                self.$mainPanel.append('<hr>');
+                $registrationForm.append(
+                    $('<div>').addClass('form-group')
+                        .append($('<label for="git_url">Commit (optional)</label>'))
+                        .append($commitInput));
 
+                $registrationForm.append($registerBtn);
 
-
-                var $versionDiv = $('<div>');
-
-                $versionDiv.append('<h3>Stable Released Version</h3>');
-                if(info.release) {
-                    $versionDiv.append(self.renderVersion('release',info.release));
-                } else {
-                    $versionDiv.append('<i>This module has not been released.</i>');
-                }
-
-                $versionDiv.append('<h3>Beta Version</h3>');
-                if(info.beta) {
-                    $versionDiv.append(self.renderVersion('beta',info.beta));
-                } else {
-                    $versionDiv.append('<i>This module has not been released to beta.</i>');
-                }
-
-                $versionDiv.append('<h3>Development Version</h3>');
-                if(info.dev) {
-                    $versionDiv.append(self.renderVersion('dev',info.dev));
-                } else {
-                    $versionDiv.append('<i>This module has not been registered properly.</i>');
-                }
-
-                self.$mainPanel.append($versionDiv);
-                
-
-                if(versions) {
-                    if(versions.length>0) {
-                        self.$mainPanel.append('<hr>');
-                        $versionDiv.append('<h3>Old Releases</h3>');
-                        for(var v=0; v<versions.length; v++) {
-                            $versionDiv.append('<h4>'+versions[v].version+'</h4>');
-                            $versionDiv.append(self.renderVersion(versions[v].version,versions[v]));
-                        }
-                    }
-                }
-
-                console.debug(self.moduleDetails);
-            },
-
-            // tag=dev/beta/release/version number, version=the actual info
-            renderVersion: function(tag, version) {
-                var self = this;
-                var git_url = this.moduleDetails.info.git_url;
-                var $verDiv = $('<div>');
-
-                // Check state here, it may be registering currently
-
-                $verDiv.append('<b>Version:</b> ' + version.version + '<br>');
-                $verDiv.append('<b>Timestamp:</b> ' + version.timestamp+'<br>');
-                if(self.isGithub) {
-                    $verDiv.append('<b>Commit:</b> <a href="'+git_url+'/tree/' + version.git_commit_hash+
-                        '" target="_blank">'+version.git_commit_hash+'</a><br>');
-                } else {
-                    $verDiv.append('<b>Commit:</b> ' + version.git_commit_hash+'<br>');
-                }
-                $verDiv.append('<b>Commit Mssg:</b> ' + version.git_commit_message+'<br>');
-                $verDiv.append('<b>Narrative Methods:</b> ');
-
-
-                if(version.narrative_methods) {
-                    if(version.narrative_methods.length>0) {
-                        $verDiv.append('<br>');
-                        var $l = $('<ul>');
-                        for(var i=0; i<version.narrative_methods.length; i++) {
-                            var id = version.narrative_methods[i];
-                            $l.append('<li><a href="#appcatalog/app/method/'+self.module_name+'/'+id+
-                                '">'+id+'</a></li>');
-                        }
-                        $verDiv.append($l);
-                    } else {
-                        $verDiv.append('none<br>');
-                    }
-                } else {
-                    $verDiv.append('none<br>');
-                }
-
-                return $verDiv;
+                self.$mainPanel.append($registrationForm);
             },
 
 

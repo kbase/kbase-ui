@@ -42,6 +42,7 @@ define([
             });
         }
         function attach(node) {
+            runtime.send('ui', 'setTitle', 'App Catalog');
             return Promise.try(function () {
                 mount = node;
                 container = mount.appendChild(DOM.createElement('div'));
@@ -66,6 +67,7 @@ define([
             });
         }
         function detach() {
+            runtime.send('ui', 'setTitle', '');
             return Promise.try(function () {
                 return widgetSet.detach();
             });
