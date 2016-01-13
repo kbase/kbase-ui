@@ -271,7 +271,8 @@ function createInitialState(config) {
         .then(function (config) {
             var runDirName = uniqts('run_'),
                 // This is the root of all process files
-                runDir = mkdir(['mutantfiles'], [runDirName]),
+		root = (config.build.temp && ['..'].concat(config.build.temp.split('/'))) || ['mutantfiles'],
+                runDir = mkdir(root, [runDirName]),
                 // This is the "input" filesystem
                 inputFiles = mkdir(runDir, ['inputfiles']),
                 inputFs = [];
