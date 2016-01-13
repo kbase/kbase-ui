@@ -8,13 +8,33 @@ package:
     version: 0.0.1
 source:
     modules:
+        # not sure what modules are, but here is one per factory
         -
             module: catalog_home
             file: catalog_home
-
         -
-            module: catalog_browser_widgets
+            module: catalog_app_viewer
+            file: catalog_app_viewer
+        -
+            module: catalog_module_viewer
+            file: catalog_module_viewer
+        -
+            module: catalog_module_dev_viewer
+            file: catalog_module_dev_viewer
+
+        # here is one per widget
+        -
+            module: catalog_home_widget
             file: widgets/kbaseCatalogBrowser
+        -
+            module: catalog_app_viewer_widget
+            file: widgets/kbaseCatalogAppViewer
+        -
+            module: catalog_module_viewer_widget
+            file: widgets/kbaseCatalogModuleViewer
+        -
+            module: catalog_module_dev_viewer_widget
+            file: widgets/kbaseCatalogModuleDevViewer
 
     styles:
         -
@@ -26,16 +46,61 @@ install:
             module: catalog_home
             id: catalog_home
             type: factory
+        - 
+            module: catalog_app_viewer
+            id: catalog_app_viewer
+            type: factory
+        - 
+            module: catalog_module_viewer
+            id: catalog_module_viewer
+            type: factory
+        - 
+            module: catalog_module_dev_viewer
+            id: catalog_module_dev_viewer
+            type: factory
         -
-            module: catalog_browser_widgets
+            module: catalog_home_widget
             id: catalog_browser
-            title: Catalog Browser
+            title: App Catalog
             config:
                 jqueryName: KBaseCatalogBrowser
             type: kbwidget
+        -
+            module: catalog_app_viewer_widget
+            id: catalog_app_viewer_widget
+            title: App Catalog
+            config:
+                jqueryName: KBaseCatalogAppViewer
+            type: kbwidget
+        -
+            module: catalog_module_viewer_widget
+            id: catalog_module_viewer_widget
+            title: App Catalog
+            config:
+                jqueryName: KBaseCatalogModuleViewer
+            type: kbwidget
+        -
+            module: catalog_module_dev_viewer_widget
+            id: catalog_module_dev_viewer_widget
+            title: App Catalog
+            config:
+                jqueryName: KBaseCatalogModuleDevViewer
+            type: kbwidget
+
+
 
     # Set up a route to install that widget in the main body view
     routes:
         -
             path: ['appcatalog']
-            widget: catalog_home              
+            widget: catalog_home
+        -
+            path: ['appcatalog', 'module', {type: param, name: module_name}]
+            widget: catalog_module_viewer
+        -
+            path: ['appcatalog', 'module', {type: param, name: module_name}, 'dev']
+            widget: catalog_module_dev_viewer
+        -
+            path: ['appcatalog', 'app', {type: param, name: type}, {type: param, name: namespace}, {type: param, name: name}]
+            widget: catalog_app_viewer
+

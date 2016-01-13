@@ -14,7 +14,7 @@ define([
 ],
     function ($, NarrativeMethodStore, Catalog) {
         $.KBWidget({
-            name: "KBaseCatalogBrowser",
+            name: "KBaseCatalogModuleDevViewer",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
             options: {
 
@@ -64,6 +64,12 @@ define([
                 self.$controlToolbar = this.renderControlToolbar();
                 self.$elem.append(this.$controlToolbar);
 
+
+
+                console.log(options);
+                self.$elem.append("module dev viewer");
+                return this;
+
                 // initialize and add the main panel
                 self.$loadingPanel = self.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
@@ -87,6 +93,64 @@ define([
                     self.renderAppList();
                     self.hideLoading();
                 });
+
+
+
+
+                this.$elem.append($('<div>').append("now we're in business.").addClass('catalog'));
+
+
+              //  this.narstore = new NarrativeMethodStore(this.runtime.getConfig('services.narrative_method_store.url'));
+
+               // alert(runtime.service('session').getAuthToken());
+
+           /* var catalog = new Catalog(runtime.getConfig('services.catalog.url'), {
+                 token: runtime.service('session').getAuthToken()
+            });*/
+            /*
+            catalog.version(
+                 function (version) {
+                     alert('Catalog version is ' + version);
+                 },
+                 function (err) {
+                     alert('ERROR (check console)');
+                     console.log('ERROR');
+                     console.log(err);
+                 };
+*/
+
+/*
+                console.log('NARR VIEW');
+                console.log(this.$elem);
+
+                this.$errorPanel = $('<div>').addClass('alert alert-danger').hide();
+                this.$elem.append(this.$errorPanel);
+
+                this.$mainPanel = $("<div>");
+                this.$elem.append(this.$mainPanel);
+
+                this.$narMethodStoreInfo = $("<div>").css({margin: '10px', padding: '10px'});
+                this.$elem.append(this.$narMethodStoreInfo);
+
+                this.narstore = new NarrativeMethodStore(this.runtime.getConfig('services.narrative_method_store.url'));
+                this.getNarMethodStoreInfo();
+                this.imageUrl = this.runtime.getConfig('services.narrative_method_store.image_url');
+                
+                console.log('Narrative Store');
+                console.log(options);
+
+                if (options.namespace) {
+                    this.options.id = this.options.namespace + '/' + this.options.id;
+                }
+
+                if (options.type === 'app') {
+                    this.fetchAppInfoAndRender();
+                } else if (options.type === 'method') {
+                    this.fetchMethodInfoAndRender();
+                } else {
+                    this.showError({error: {message: 'Must specify either "app" or "method" in url, as in narrativestore/app/app_id.'}});
+                }
+                */
 
                 return this;
             },
@@ -318,7 +382,7 @@ define([
 
                 if(app.info['module_name']) {
                     $appDiv.append('<br>').append(
-                        $('<a href="#catalog/module/'+app.info.module_name+'">')
+                        $('<a href="#catalog/modules/'+app.info.module_name+'">')
                             .append('['+app.info.module_name+']'));
                 }
                 app.$div = $appDiv;

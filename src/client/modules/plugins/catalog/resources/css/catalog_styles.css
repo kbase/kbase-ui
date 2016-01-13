@@ -27,7 +27,7 @@
     height:150px;
     text-align:center;
     vertical-align:middle;
-    background-color: #ddd;
+    background-color: #eee;
     display:inline-block;
 }
 
@@ -37,6 +37,14 @@
     height:150px;
     text-align:center;
     vertical-align:middle;
-    background-color: #ddd;
+    background-color: #eee;
     display:inline-block;
 }
+
+
+
+.kbcb-mod-main-panel {
+    margin: 2.0em;
+}
+
+
