@@ -144,7 +144,7 @@ function copyLocalModules(state) {
                     return true;
                 }
                 return false;
-            }).map(function (spec) {
+            }).map(function (spec) {                
                 var from = projectRoot.concat(spec.directory.path.split('/')),
                     to = root.concat(['build', 'local_modules']);
                 return copyDirFiles(from, to);
@@ -266,13 +266,15 @@ function injectModulesIntoBower(state) {
             // First ensure all plugin packages are installed via bower.
             pluginConfig.modules
                 .filter(function (module) {
-                    if (typeof module === 'object' && module.bower) {
+                    if (typeof module === 'object' && module.source.bower) {
                         return true;
                     }
                     return false;
                 })
-                .forEach(function (plugin) {
-                    bowerConfig.dependencies[plugin.bower.name || plugin.name] = plugin.bower.version;
+                .forEach(function (module) {
+                    var name = module.source.bower.name || module.globalName,
+                        version = module.source.bower.version || module.version;
+                    bowerConfig.dependencies[name] = version;
                 });
 
             return fs.writeFileAsync(root.concat(['build', 'bower.json']).join('/'), JSON.stringify(bowerConfig, null, 4));
@@ -293,13 +295,15 @@ function injectPluginsIntoBower(state) {
             // First ensure all plugin packages are installed via bower.
             pluginConfig.plugins
                 .filter(function (plugin) {
-                    if (typeof plugin === 'object' && plugin.bower) {
+                    if (typeof plugin === 'object' && plugin.source.bower) {
                         return true;
                     }
                     return false;
                 })
                 .forEach(function (plugin) {
-                    bowerConfig.dependencies[plugin.bower.name] = plugin.bower.version;
+                    var name = plugin.source.bower.name || plugin.globalName,
+                        version = plugin.source.bower.version || plugin.version;
+                    bowerConfig.dependencies[name] = version;
                 });
 
             return fs.writeFileAsync(root.concat(['build', 'bower.json']).join('/'), JSON.stringify(bowerConfig, null, 4));
@@ -476,10 +480,10 @@ function installExternalPlugins(state) {
         })
         .then(function (externalPlugins) {
             return [externalPlugins, Promise.all(externalPlugins.map(function (plugin) {
-                    if (plugin.bower) {
-                        var cwds = plugin.copy.path || 'dist/plugin',
+                    if (plugin.source.bower) {
+                        var cwds = plugin.cwd || 'dist/plugin',
                             cwd = cwds.split('/'),
-                            srcDir = root.concat(['build', 'bower_components', plugin.bower.name]).concat(cwd),
+                            srcDir = root.concat(['build', 'bower_components', plugin.globalName]).concat(cwd),
                             destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
                         return copyFiles(srcDir, destDir, '**/*');
                     }
@@ -488,15 +492,16 @@ function installExternalPlugins(state) {
         .spread(function (externalPlugins) {
             return Promise.all(externalPlugins
                 .filter(function (plugin) {
-                    return plugin.directory ? true : false;
+                    return plugin.source.directory ? true : false;
                 })
                 .map(function (plugin) {
                     if (plugin.directory) {
-                        var cwds = plugin.copy.path || 'dist/plugin',
+                        var cwds = plugin.cwd || 'dist/plugin',
                             cwd = cwds.split('/'),
                             // Our actual cwd is mutations, so we need to escape one up to the 
                             // project root.
-                            source = ['..'].concat(plugin.directory.path.split('/')).concat(cwd),
+                            repoRoot = (plugin.source.directory.root && plugin.directory.root.split('/')) || ['..', '..', '..'],
+                            source = repoRoot.concat([plugin.globalName]).concat(cwd),
                             destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
                         return copyFiles(source, destination, '**/*');
                     }
