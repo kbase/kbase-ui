@@ -9,6 +9,7 @@ define([
     'jquery',
     'kb/service/client/NarrativeMethodStore',
     'kb/service/client/Catalog',
+    'plugins/catalog/modules/widgets/kbaseViewSDKRegistrationLog',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
@@ -51,6 +52,9 @@ define([
                 self.$elem.append(self.$loadingPanel);
                 var mainPanelElements = self.initMainPanel();
                 self.$mainPanel = mainPanelElements[0];
+                self.$inputPanel = mainPanelElements[1];
+                self.$registrationLogPanel = mainPanelElements[2];
+                self.$errorPanel = mainPanelElements[3];
                 self.$elem.append(self.$mainPanel);
 
                 // nothing to fetch, just show some stuff
@@ -58,68 +62,63 @@ define([
                 self.hideLoading();
 
                 return this;
-
-                // get the module information
-                var loadingCalls = [];
-                self.moduleDetails = { info:null, versions:null };
-                loadingCalls.push(self.getModuleInfo());
-                loadingCalls.push(self.getModuleVersions());
-
-                // when we have it all, then render the list
-                Promise.all(loadingCalls).then(function() {
-                    self.render();
-                    self.hideLoading();
-                });
-
-
-                return this;
             },
 
             render: function() {
                 var self = this;
 
+                var $registrationForm = $('<div>');
 
-/*<form>
-  <div class="form-group">
-    <label for="exampleInputEmail1">Email address</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
-  </div>
-  <div class="form-group">
-    <label for="exampleInputPassword1">Password</label>
-    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-  </div>
-  <div class="form-group">
-    <label for="exampleInputFile">File input</label>
-    <input type="file" id="exampleInputFile">
-    <p class="help-block">Example block-level help text here.</p>
-  </div>
-  <div class="checkbox">
-    <label>
-      <input type="checkbox"> Check me out
-    </label>
-  </div>
-  <button type="submit" class="btn btn-default">Submit</button>
-</form>*/
-                var $registrationForm = $('<form>');
-
-                var $gitUrlInput = $('<input type="text" class="form-control" id="git_url" placeholder="e.g. https://github.com/msneddon/MegaHit">');
+                var $gitUrlInput = $('<input type="text" class="form-control" id="git_url" placeholder="e.g. https://github.com/msneddon/kb_megahit">');
                 var $commitInput = $('<input type="text" class="form-control" id="commit" placeholder="e.g. 15b6ec0">');
+
+                var $git_url_group = 
+                    $('<div>').addClass('form-group')
+                        .append($('<label for="git_url">Module Git URL</label>'))
+                        .append($gitUrlInput);
+                $registrationForm.append($git_url_group);
+
+                var $git_commit_group = 
+                    $('<div>').addClass('form-group')
+                        .append($('<label for="git_url">Commit (optional)</label>'))
+                        .append($commitInput);
+                $registrationForm.append($git_commit_group);
+
+                var $warning = $('<span>').addClass('label label-warning');
+                var $warningDiv = $('<div>').append($warning).append('<br><br>').hide();
+                $registrationForm.append($warningDiv);
 
                 var $registerBtn = $('<button>').addClass('btn btn-default').append('Register');
 
-                $registrationForm.append(
-                    $('<div>').addClass('form-group')
-                        .append($('<label for="git_url">Module Git URL</label>'))
-                        .append($gitUrlInput));
+                $registerBtn.on('click', function() {
+                    // make sure a git url is entered
+                    var submitted_git_url = $gitUrlInput.val().trim();
+                    if(!submitted_git_url) {
+                        $git_url_group.addClass('has-error');
+                        $warning.text("Please specify a git url.");
+                        $warningDiv.show();
+                        return;
+                    }
+                    // grab the hash
+                    var submitted_git_hash = $commitInput.val().trim();
 
-                $registrationForm.append(
-                    $('<div>').addClass('form-group')
-                        .append($('<label for="git_url">Commit (optional)</label>'))
-                        .append($commitInput));
+                    // clear any error state on input and disable buttons
+                    $git_url_group.removeClass('has-error');
+                    $warningDiv.hide();
+
+                    $gitUrlInput.prop("disabled",true);
+                    $commitInput.prop("disabled",true);
+                    $registerBtn.hide();
+
+                    // register the thing
+                    self.register(submitted_git_url, submitted_git_hash)
+
+                });
 
                 $registrationForm.append($registerBtn);
 
-                self.$mainPanel.append($registrationForm);
+
+                self.$inputPanel.append($registrationForm);
             },
 
 
@@ -135,13 +134,46 @@ define([
             },
 
 
+            register: function(git_url, commit_hash) {
+                var self = this;
+
+                var params = {
+                    git_url: git_url
+                };
+                if(commit_hash) {
+                    params['git_commit_hash'] = commit_hash;
+                }
+
+                return self.catalog.register_repo(params)
+                    .then(function (registration_id) {
+                        console.log(registration_id);
+                        var $logWidget = $('<div>')
+                        self.logWidget = $logWidget["KBaseViewSDKRegistrationLog"]({
+                            registration_id: registration_id,
+                            runtime: self.runtime
+                        });
+                        self.$registrationLogPanel.append($logWidget).show();
+                    })
+                    .catch(function (err) {
+                        self.showError(err);
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
 
 
 
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
                 var $mainPanel = $('<div>').addClass('kbcb-mod-main-panel');
-                return [$mainPanel];
+                var $inputPanel = $('<div>');
+                var $logPanel = $('<div>').hide();
+                var $errorPanel = $('<div>').css('color','red').hide();
+                $mainPanel
+                    .append($inputPanel)
+                    .append($logPanel)
+                    .append($errorPanel);
+                return [$mainPanel, $inputPanel, $logPanel, $errorPanel];
             },
 
             initLoadingPanel: function() {
@@ -163,83 +195,10 @@ define([
 
 
 
-
-            getModuleInfo: function() {
-                var self = this
-
-                var moduleSelection = {
-                    module_name: self.module_name
-                };
-
-                return self.catalog.get_module_info(moduleSelection)
-                    .then(function (info) {
-                        console.log(info);
-                        /*typedef structure {
-                            string module_name;
-                            string git_url;
-
-                            string description;
-                            string language;
-
-                            list <string> owners;
-
-                            ModuleVersionInfo release;
-                            ModuleVersionInfo beta;
-                            ModuleVersionInfo dev;
-                        } ModuleInfo;*/
-                        self.moduleDetails.info = info;
-                        var git_url = self.moduleDetails.info.git_url;
-                        var github = 'https://github.com/'
-                        if(git_url.substring(0, github.length) === github) {
-                            self.isGithub = true;
-                            // if it ends with .git, truncate so we get the basic url
-                            if(git_url.indexOf('.git', git_url.length - '.git'.length) !== -1) {
-                                self.moduleDetails.info.git_url = git_url.substring(0, git_url.length - '.git'.length);
-                            }
-                        }
-                    })
-                    .catch(function (err) {
-                        console.error('ERROR');
-                        console.error(err);
-                    });
-            },
-
-
-            getModuleVersions: function() {
-                var self = this
-
-                var moduleSelection = {
-                    module_name: self.module_name
-                };
-
-                return self.catalog.list_released_module_versions(moduleSelection)
-                    .then(function (versions) {
-                        console.log(versions);
-                        /*typedef structure {
-                            string module_name;
-                            string git_url;
-
-                            string description;
-                            string language;
-
-                            list <string> owners;
-
-                            ModuleVersionInfo release;
-                            ModuleVersionInfo beta;
-                            ModuleVersionInfo dev;
-                        } ModuleInfo;*/
-                        self.moduleDetails.versions = versions;
-                    })
-                    .catch(function (err) {
-                        console.error('ERROR');
-                        console.error(err);
-                    });
-            },
-
-
             showError: function (error) {
                 this.$errorPanel.empty();
-                this.$errorPanel.append('<strong>Error when fetching App/Method information.</strong><br><br>');
+                this.$errorPanel.append('<br>');
+                this.$errorPanel.append('<strong>Error when attempting to register this repository.</strong><br><br>');
                 this.$errorPanel.append(error.error.message);
                 this.$errorPanel.append('<br>');
                 this.$errorPanel.show();

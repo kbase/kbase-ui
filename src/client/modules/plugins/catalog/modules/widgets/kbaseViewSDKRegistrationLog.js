@@ -5,11 +5,11 @@
  * @public
  */
 
-define(['jquery', 
-        'kbwidget', 
-        'kbaseAuthenticatedWidget', 
-        'catalog-client-api'
-        ], function($) {
+define(['jquery',
+        'kb/service/client/Catalog',
+        'kb/widget/legacy/authenticatedWidget'
+        ], function($, Catalog) {
+
     $.KBWidget({
         name: 'KBaseViewSDKRegistrationLog',
         parent: 'kbaseAuthenticatedWidget',
@@ -21,43 +21,36 @@ define(['jquery',
         // Catalog client
         catalogClient: null,
 
-
         log: null,
 
         init: function(options) {
             this._super(options);
-            this.registration_id = options.output;
+
             if(options.registration_id) {
                 this.registration_id = options.registration_id;
             }
-            if (window.kbconfig && window.kbconfig.urls)
-                this.options.catalogURL = window.kbconfig.urls.catalog;
+
+            this.catalogClient = new Catalog(
+                    this.runtime.getConfig('services.catalog.url'),
+                    { token: this.runtime.service('session').getAuthToken() }
+                );
+
             // Create a message pane
             this.$messagePane = $("<div/>").addClass("kbwidget-message-pane kbwidget-hide-message");
             this.$elem.append(this.$messagePane);
             this.loading(true);
 
+            this.render();
 
             this.log = [];
             return this;
         },
 
         loggedInCallback: function(event, auth) {
-            // Build a client
-
-            this.catalogClient = new Catalog(this.options.catalogURL, auth);
-
-            if(!this.registration_id) {
-                this.loading(false);
-                this.showMessage("No registration_id provided or returned, so no build log can be shown.");
-            } else {
-                this.render();
-            }
             return this;
         },
 
         loggedOutCallback: function(event, auth) {
-            this.isLoggedIn = false;
             return this;
         },
 
@@ -117,7 +110,7 @@ define(['jquery',
                     function(build_info) {
 
                         // display the state
-                        self.updateBuildState(build_info.registration, build_info.error_message);
+                        self.updateBuildState(build_info.registration, build_info.error_message, build_info);
 
                         // make sure our log array is big enough
                         var log_length = skip+build_info.log.length;
@@ -156,7 +149,7 @@ define(['jquery',
             }
         },
 
-        updateBuildState: function(state, error) {
+        updateBuildState: function(state, error, build_info) {
             var self = this;
             self.loading(false);
             self.$registration_state_td
@@ -176,12 +169,14 @@ define(['jquery',
             } else {
                 self.$registration_state_td.empty()
                     .append($('<span>').addClass('label label-success').append(state))
+                    // could add link to module here
+                    //.append('<a href="#appcatalog/module/'+build_info.module_name_lc+')
             }
         },
 
         loading: function(isLoading) {
             if (isLoading)
-                this.showMessage("<img src='" + this.options.loadingImage + "'/>");
+                this.showMessage($('<i>').addClass('fa fa-spinner fa-2x fa-spin'));
             else
                 this.hideMessage();                
         },

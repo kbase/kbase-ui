@@ -52,7 +52,7 @@ source:
             file: widgets/kbaseCatalogStatus
         -
             module: catalog_view_sdk_registration_log_widget
-            file: KBaseViewSDKRegistrationLog
+            file: widgets/kbaseViewSDKRegistrationLog
 
     styles:
         -
