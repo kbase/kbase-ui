@@ -116,7 +116,7 @@ function copyDirFiles(pathFrom, pathTo) {
                     fileName = filePath[filePath.length - 1],
                     targetDir = toPath.concat(relative);
                 // make the found paths relative.
-                
+
                 return fs.ensureDirAsync(targetDir.join('/'))
                     .then(function () {
                         return fs.copyAsync(filePath.join('/'), targetDir.concat([fileName]).join('/'));
@@ -144,7 +144,7 @@ function copyLocalModules(state) {
                     return true;
                 }
                 return false;
-            }).map(function (spec) {                
+            }).map(function (spec) {
                 var from = projectRoot.concat(spec.directory.path.split('/')),
                     to = root.concat(['build', 'local_modules']);
                 return copyDirFiles(from, to);
@@ -495,17 +495,55 @@ function installExternalPlugins(state) {
                     return plugin.source.directory ? true : false;
                 })
                 .map(function (plugin) {
-                    if (plugin.directory) {
-                        var cwds = plugin.cwd || 'dist/plugin',
-                            cwd = cwds.split('/'),
-                            // Our actual cwd is mutations, so we need to escape one up to the 
-                            // project root.
-                            repoRoot = (plugin.source.directory.root && plugin.directory.root.split('/')) || ['..', '..', '..'],
-                            source = repoRoot.concat([plugin.globalName]).concat(cwd),
-                            destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
-                        return copyFiles(source, destination, '**/*');
-                    }
+                    var cwds = plugin.cwd || 'dist/plugin',
+                        cwd = cwds.split('/'),
+                        // Our actual cwd is mutations, so we need to escape one up to the 
+                        // project root.
+                        repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..', '..'],
+                        source = repoRoot.concat([plugin.globalName]).concat(cwd),
+                        destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+                    return copyFiles(source, destination, '**/*');
                 }));
+        });
+}
+
+/*
+ * Simply copies any modules which have a directory source into the bower components tree.
+ * Messy, but necessary for development.
+ */
+
+function installModules(state) {
+    return installExternalModules(state)
+        .then(function () {
+            return state;
+        });
+}
+
+function installExternalModules(state) {
+    // Load plugin config
+    var root = state.environment.path,
+        buildConfig,
+        buildConfigFile = root.concat(['config', 'ui', state.config.targets.ui, '/build.yml']).join('/');
+    return fs.readFileAsync(buildConfigFile, 'utf8')
+        .then(function (contents) {
+            buildConfig = yaml.safeLoad(contents);
+            return buildConfig.modules.filter(function (module) {
+                if (module.source.directory) {
+                    return true;
+                }
+                return false;
+            });
+        })
+        .then(function (modules) {
+            console.log('MODULES');
+        console.log(modules);
+            return Promise.all(modules.map(function (module) {
+                var repoRoot = (module.source.directory.root && module.source.directory.root.split('/')) || ['..', '..', '..'],
+                    source = repoRoot.concat([module.globalName]),
+                    destination = root.concat(['build', 'client', 'modules', 'bower_components', module.globalName]);
+                console.log('copying from...'); console.log(repoRoot); console.log(source), console.log(destination);
+                return copyFiles(source, destination, '**/*');
+            }));
         });
 }
 
@@ -796,7 +834,14 @@ function main(type) {
             return installPlugins(state);
         })
 
-
+        
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            console.log('Installing Modules...');
+            return installModules(state);
+        })
 
         .then(function (state) {
             return mutant.copyState(state);
@@ -804,7 +849,7 @@ function main(type) {
         .then(function (state) {
             return installModulePackagesFromBower(state);
         })
-        
+
 //        .then(function (state) {
 //            return mutant.copyState(state);
 //        })
