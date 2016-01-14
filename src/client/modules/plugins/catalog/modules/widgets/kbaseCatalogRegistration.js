@@ -16,18 +16,14 @@ define([
     function ($, NarrativeMethodStore, Catalog) {
         $.KBWidget({
             name: "KBaseCatalogRegistration",
-            parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
+            parent: "kbaseAuthenticatedWidget",
             options: {
-                module_name:'null'
+                registration_id: null
             },
-            $mainPanel: null,
-            $errorPanel: null,
-
 
             // clients to the catalog service and the NarrativeMethodStore
             catalog: null,
             nms: null,
-
 
             // main panel and elements
             $mainPanel: null,
@@ -37,9 +33,6 @@ define([
                 this._super(options);
                 
                 var self = this;
-
-                self.module_name = options.module_name;
-                self.isGithub = false;
 
                 // new style we have a runtime object that gives us everything in the options
                 self.runtime = options.runtime;
@@ -55,11 +48,11 @@ define([
                 self.$errorPanel = mainPanelElements[3];
                 self.$elem.append(self.$mainPanel);
 
-                // nothing to fetch, just show some stuff
+                // nothing to fetch first, just show some stuff
                 self.render();
                 self.hideLoading();
 
-                return this;
+                return this;    
             },
 
             render: function() {
@@ -122,7 +115,6 @@ define([
 
                     $registrationForm.append($registerBtn);
 
-
                     self.$inputPanel.append($registrationForm);
                 }
             },
@@ -174,8 +166,6 @@ define([
                 });
                 self.$registrationLogPanel.append($logWidget).show();
             },
-
-
 
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
