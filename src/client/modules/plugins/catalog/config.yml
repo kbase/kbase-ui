@@ -158,6 +158,9 @@ install:
             path: ['appcatalog', 'register']
             widget: catalog_registration
         -
+            path: ['appcatalog', 'register', {type: param, name: registration_id}]
+            widget: catalog_registration
+        -
             path: ['appcatalog', 'status']
             widget: catalog_status
 

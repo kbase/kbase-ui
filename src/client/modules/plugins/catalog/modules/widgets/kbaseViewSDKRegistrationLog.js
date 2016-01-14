@@ -15,7 +15,9 @@ define(['jquery',
         parent: 'kbaseAuthenticatedWidget',
         version: '1.0.0',
         options: {
-            registration_id: null
+            registration_id: null,
+            show_module_links: false,
+            n_rows: 20
         },
 
         // Catalog client
@@ -63,18 +65,16 @@ define(['jquery',
             container.append($table);
             var width = "15%"
 
-            $table.append('<tr><td width="'+width+'">Registration ID</td><td>'+self.registration_id+'</td></tr>');
-            //table.append('<tr><td width="'+width+'">Is active</td><td id="'+pref+'_active"></td></tr>');
-            //table.append('<tr><td width="'+width+'">Release Approval</td><td id="'+pref+'_release_approval"></td></tr>');
-            //table.append('<tr><td width="'+width+'">Release Review</td><td id="'+pref+'_review_message"></td></tr>');
+            $table.append('<tr><td width="'+width+'">Registration ID</td><td><a href="#appcatalog/register/'+self.registration_id+'">'
+                +self.registration_id+'</a></td></tr>');
+
             self.$registration_state_td = $('<td></td>')
             $table.append(
                 $('<tr>')
                     .append($('<td width="'+width+'">Progress</td>'))
                     .append(self.$registration_state_td));
-            //table.append('<tr><td width="'+width+'">Error Mssg</td><td><textarea style="width:100%;" rows="2" readonly id="'+pref+'_error"/></td></tr>');
 
-            self.$log_window = $('<textarea style="width:100%;font-family:Monaco,monospace;font-size:9pt;color:#555;resize:vertical;" rows="20" readonly>')
+            self.$log_window = $('<textarea style="width:100%;font-family:Monaco,monospace;font-size:9pt;color:#555;resize:vertical;" rows="'+self.options.n_rows+'" readonly>')
             container.append(self.$log_window);
 
             self.$track_checkbox= $('<input type="checkbox">').prop('checked', true);;
@@ -83,7 +83,6 @@ define(['jquery',
                     .append(self.$track_checkbox)
                     .append('Auto scroll to new log output'));
             
-            //$checkboxContainer.append($('<label>').append(self.$track_checkbox));
             container.append($checkboxContainer)
 
             self.getLogAndState(self.registration_id,0);
@@ -135,7 +134,7 @@ define(['jquery',
 
                     }, function(error) {
                         console.error(error);
-                        //self.showData(data, error.error.error);
+                        self.$log_window.val('Error fetching log: '+ error.error.error);
                     });
         },
 
@@ -157,10 +156,7 @@ define(['jquery',
                 self.$registration_state_td.empty()
                     .append($('<span>').addClass('label label-danger').append(state))
                     .append('<br><br>')
-                    .append(error)
-
-                // now always show if something is in error field
-                //$('#'+pref+'_error').val(data.error_message);
+                    .append(error);
             } else if (state !== 'complete') {
                 self.$registration_state_td.empty().append(state)
                 setTimeout(function(event) {
@@ -169,8 +165,15 @@ define(['jquery',
             } else {
                 self.$registration_state_td.empty()
                     .append($('<span>').addClass('label label-success').append(state))
-                    // could add link to module here
-                    //.append('<a href="#appcatalog/module/'+build_info.module_name_lc+')
+                if(self.options.show_module_links) {
+                    self.$registration_state_td.append('&nbsp;&nbsp;&nbsp;');
+                    self.$registration_state_td.append(
+                            'Successfully registered <a href="#appcatalog/module/'+build_info.module_name_lc+'">'+build_info.module_name_lc+'</a> '
+                        );
+                    self.$registration_state_td.append(
+                            'from <a href="'+build_info.git_url+'" target="_blank">'+build_info.git_url+'</a>.'
+                        );
+                }
             }
         },
 
