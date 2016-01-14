@@ -119,6 +119,7 @@ define([
 
                 $versionDiv.append('<h3>Development Version</h3>');
                 if(info.dev) {
+                    $versionDiv.append('<a href="#appcatalog/status/'+info.module_name+'">View recent registrations</a><br>')
                     $versionDiv.append(self.renderVersion('dev',info.dev));
                 } else {
                     $versionDiv.append('<i>This module has not been registered properly.</i>');

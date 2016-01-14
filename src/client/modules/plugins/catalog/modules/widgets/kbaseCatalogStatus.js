@@ -145,6 +145,15 @@ define([
                         $filterModules.val(names[0].toLowerCase());
                     }
                 }
+
+                var $setLimit = $('<select>').addClass('form-control');
+                $setLimit.append('<option value="20">20</option>');
+                $setLimit.append('<option value="50">50</option>');
+                $setLimit.append('<option value="100">100</option>');
+                $setLimit.append('<option value="500">500</option>');
+                $setLimit.append('<option value="500">1000</option>');
+                $setLimit.val(self.options.limit);
+
                 $filterModules.on('change',function(){
                     var modules = [];
                     if($filterModules.val() !== 'All.Modules') {
@@ -152,7 +161,7 @@ define([
                     }
                     self.getBuildStatus(
                             self.options.skip,
-                            self.options.limit,
+                            $setLimit.val(),
                             modules)
                         .then(
                             function() { self.renderBuildList(); }
@@ -163,14 +172,39 @@ define([
                             .append($('<label for="filter_modules">').append('Filter by Module'))
                             .append($filterModules);
 
+                
+
+                $setLimit.on('change',function(){
+                    var modules = [];
+                    if($filterModules.val() !== 'All.Modules') {
+                        modules = [$filterModules.val()];
+                    }
+                    self.getBuildStatus(
+                            self.options.skip,
+                            $setLimit.val(),
+                            modules)
+                        .then(
+                            function() { self.renderBuildList(); }
+                        );
+                });
+
+                var $setLimitDiv = 
+                        $('<div>').addClass('form-group')
+                            .append($('<label for="filter_modules">').append('Showing:'))
+                            .append($setLimit);
+
 
                 var $refreshBtn = $('<button>').addClass('btn btn-default')
                                     .append('<i class="fa fa-refresh fa-lg">');
                 $refreshBtn.on('click',function() {
+                    var modules = [];
+                    if($filterModules.val() !== 'All.Modules') {
+                        modules = [$filterModules.val()];
+                    }
                     self.getBuildStatus(
                         self.options.skip,
-                        self.options.limit,
-                        []).then(
+                        $setLimit.val(),
+                        modules).then(
                             function() {
                                 self.renderBuildList();
                             }
@@ -179,7 +213,7 @@ define([
 
                 self.$controlToolbarPanel
                         .append($('<div>').addClass('col-md-6').append($filterModulesDiv))
-                        .append($('<div>').addClass('col-md-6').append())
+                        .append($('<div>').addClass('col-md-2').append($setLimitDiv))
                         .append($('<div>').addClass('col-md-2').append($refreshBtn));
 
             },
