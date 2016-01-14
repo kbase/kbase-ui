@@ -1,0 +1,61 @@
+## KBase UI Configuration
+---
+# TODO: ensure that this list includes all supported services
+# TODO: ensure that all services represented are also defined as amd modules
+# TODO: alpha sort of services
+services:
+    awe:
+        url: <%= awe_url %>
+        name: AWE
+    cdmi:
+        url: <%= cdmi_url %>
+        name: CDMI
+    data_import_export:
+        url: <%= data_io_url %>
+        name: Data Import Export
+    fba:
+        url: <%= fba_url %>
+        name: FBA
+    gene_families:
+        url: <%= gene_families_url %>
+        name: Gene Families
+    genome_comparison:
+        url: <%= genome_comparison_url %>
+        name: Genome Comparison
+    login:
+        url: <%= login_url %>
+        name: Login
+    narrative_method_store:
+        url: <%= nms_url %>
+        image_url: <%= nms_image_url %>
+        name: Narrative Method Store
+    protein_info:
+        url: <%= protein_info_url %>
+        name: Protein Info
+    search:
+        url: <%= search_url %>
+        name: Data Search
+    shock: 
+        url: <%= shock_url %>
+        name: Shock
+    transform:
+        url: <%= transform_url %>
+        name: Transform
+    trees:
+        url: <%= trees_url %>
+        name: Trees
+    user_profile:
+        url: <%= user_profile_url %>
+        name: User Profile
+    user_job_state:
+        url: <%= ujs_url %>
+        name: User and Job State
+    workspace:
+        url: <%= ws_url %>
+        name: Workspace    
+    narrative:
+        url: <%= narrative_url %>
+        name: Narrative User Interface    
+    catalog:
+        url: <%= catalog_url %>
+        name: Catalog

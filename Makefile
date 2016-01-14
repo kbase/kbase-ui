@@ -28,34 +28,68 @@ all: init build
 # See above for 'all' - just running 'make' should locally build
 default: init build
 
+# The "EZ Install" version - init, build, start, preview
+# Note that this uses the default targets -- which are least disruptive (to production)
+# and most experimental (development ui, ci services)
+run: init build start preview
+	
+
 # Initialization here pulls in all dependencies from Bower and NPM.
 # This is **REQUIRED** before any build process can proceed.
+# bower install is not part of the build process, since the bower
+# config is not known until the parts are assembled...
 init:
-	@ bower install --allow-root
-	@ npm install
-
+	npm install
+	cd tools/server; npm install
+	grunt init
+	
 # Perform the build.
 # The actual build step is done by grunt. This also sets up the 
 # configuration in the build target. That configuration mainly
 # deals with filling out templated URL targets based on deployment
 # location (prod vs. next vs. CI vs. local)
-build:
-	@ grunt dist
-	@ node tools/process_config.js $(DEPLOY_CFG)
+#@ grunt build-dist --target $(TARGET)
+#  --deploy-config $(TARGET)
+# @ node tools/process_config.js $(DEPLOY_CFG)
+build:	
+	cd mutations; node build build
+	
+# Set up a development environment. 
+# Installs tools into kbase-ui/dev. These tools are ignored by git,
+# so may safely be modified by the developer. They are important but not 
+# required by the dev process. More in the docs.
+devinit:
+	cd mutations; node setup-dev
+	
 
-# The deployment step uses grunt to, essentially, copy the build
-# artifacts to the deployment directory
-deploy:
-	@ grunt deploy
+start:
+	cd tools/server; node server start  $(target) &
+
+stop: 
+	cd tools/server; node server stop 
+
+# Run the server, and open a browser pointing to it.
+preview:
+	cd tools/server; node server preview
+	
+dist: 
+	cd mutations; node build deploy
+
+# The deploy step will copy the files according to the instructions in the deploy
+# config. See mutations/deploy.js for details.
+deploy:	
+	cd mutations; node build deploy; node deploy
 
 # Tests are managed by grunt, but this also mimics the workflow.
-test: init build
-	@ grunt test
+#init build
+test:
+	karma start test/karma.conf.js
+	
 
 # Cleans up build artifacts without removing required libraries
 # that get installed through Bower or NPM.
 clean:
-	@ rm -rf $(DISTLIB)
+	@ grunt clean-dist
 
 # Cleans out all required libraries and packages.
 reqs-clean: clean
@@ -66,4 +100,4 @@ reqs-clean: clean
 docs: init
 	@echo docs!
 
-.PHONY: all
+.PHONY: all test build

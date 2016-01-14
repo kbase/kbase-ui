@@ -1,0 +1,7 @@
+## Cached args for grunt build
+---
+# target can be dev, prod, or other targets defined in /targets
+target: dev
+
+# type can be build, dist
+type: build

@@ -1,0 +1,13 @@
+## Global Build Config
+---
+targets:
+    ui: dev
+    deploy: ci
+build:
+    dist: false
+    temp: ../mutantfiles
+bower:
+    offline: false
+debug: false
+server:
+    port: 8080

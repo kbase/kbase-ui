@@ -1,0 +1,115 @@
+# This is used to copy specific files from bower_components to the build.
+# It is yucky that we have to do this, but there is no universal bower package
+# format, and some bower repos are complete source hairballs. We reduce the code
+# side significantly, and eliminate the possibility of serving up hairball files
+# from the kbase-ui service.
+bowerFiles:
+    -
+        name: bluebird
+        cwd: js/browser
+        src:
+            - bluebird.js
+        bowerComponent: true
+    -
+        name: bootstrap
+        cwd: dist
+        src: "**/*"
+        bowerComponent: true
+    -
+        name: d3
+        bowerComponent: true
+    -
+        name: font-awesome
+        src:
+            - css/font-awesome.css
+            - fonts/*
+        bowerComponent: true
+    -
+        name: jquery
+        cwd: dist
+        bowerComponent: true
+    -
+        name: js-yaml
+        cwd: dist
+        bowerComponent: true
+    -
+        dir: node-uuid
+        src:
+            - uuid.js
+        bowerComponent: true
+    -
+        name: require-css
+        src:
+            - css.js
+            - css-builder.js
+            - normalize.js
+        bowerComponent: true
+    -
+        dir: require-yaml
+        name: yaml
+        bowerComponent: true
+    -
+        dir: requirejs
+        name: require
+        bowerComponent: true
+    -
+        dir: requirejs-json
+        name: json
+        bowerComponent: true
+    -
+        dir: requirejs-text
+        name: text
+        bowerComponent: true
+    -
+        dir: SparkMD5
+        name: spark-md5
+        bowerComponent: true
+    -
+        name: underscore
+        bowerComponent: true
+    -
+        name: datatables
+        cwd: media
+        src:
+            - css/jquery.dataTables.css
+            - images/*
+            - js/jquery.dataTables.js
+        bowerComponent: true
+    -
+        name: datatables-bootstrap
+        dir: datatables-bootstrap3-plugin
+        cwd: media
+        src:
+            - css/datatables-bootstrap3.css
+            - js/datatables-bootstrap3.js
+        bowerComponent: true
+    -
+        dir: d3-plugins-sankey
+        src:
+            - sankey.js
+            - sankey.css
+        bowerComponent: true
+    -
+        name: handlebars
+        bowerComponent: true
+    -
+        name: nunjucks
+        cwd: browser
+        src: nunjucks.js
+        bowerComponent: true
+    -
+        dir: numeral
+        src:
+            - numeral.js
+            - languages/*.js
+        bowerComponent: true
+    -
+        name: blockUI
+        src:
+            - jquery.blockUI.js
+        bowerComponent: true
+    -
+        name: q
+        src:
+            - q.js
+        bowerComponent: true

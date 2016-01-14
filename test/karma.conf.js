@@ -4,7 +4,7 @@
 module.exports = function (config) {
     config.set({
         // base path that will be used to resolve all patterns (eg. files, exclude)
-        basePath: '../',
+        basePath: '..',
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
         frameworks: ['jasmine', 'requirejs'],
@@ -30,12 +30,11 @@ module.exports = function (config) {
              * have the Require apparatus take over.
              */
             
-            {pattern: 'build/client/js/*.js', included: false},
-            {pattern: 'build/client/js/**/*.js', included: false},
-            {pattern: 'build/client/bower_components/**/*.js', included: false},
+            {pattern: 'build/build/client/modules/**/*.js', included: false},
+            // {pattern: 'build/client/bower_components/**/*.js', included: false},
             {pattern: 'test/spec/**/*.js', included: false},
-            {pattern: 'build/client/*.yml', included: false},
-            'test/main-test.js',
+            {pattern: 'build/build/client/modules/config/*.yml', included: false},
+            'test/build-test.js',
         ],
         // list of files to exclude
         exclude: [
@@ -44,11 +43,11 @@ module.exports = function (config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-          'build/client/!(bower_components)/**/*.js': ['coverage']
+          'build/client/modules/!(bower_components)/**/*.js': ['coverage']
         },
 
         coverageReporter: {
-            dir: 'build/test-coverage/',
+            dir: 'build/build-test-coverage/',
             reporters: [
                 {type: 'html', subdir: 'html'},
                 {type: 'lcov', subdir: 'lcov'}
