@@ -1,17 +1,17 @@
 <div class="container-fluid kbase-view kbase-search-view">
     <div class="row search-sections">
         <div class="col-sm-3 col-md-3 col-lg-3 search-left-nav search-leftarea-size"> <!-- left navigation columns -->
-            <div class="search-leftarea-size"> <!-- Narrative selected -->                            
+            <div class="search-leftarea-size"> <!-- Narrative selected -->
                 <div class="col-sm-12 col-md-12 col-lg-12 search-leftarea-size">
                     <div ng-hide="options.userState.session.token" class="alert alert-warning search-login">
                         <div id="login-message" class="text-center">
                             <a ng-click='login()'>Sign in</a> to select data and send to your Narratives
                         </div>
                     </div>
-                    <!--                  
+                    <!--
                     <div ng-show="options.userState.session.token" class="alert alert-success search-logout">
-                        <div id="logout-message" class="text-center">                                                    
-                            Logged in as <strong>{{options.userState.session.user_id}}</strong>                                                
+                        <div id="logout-message" class="text-center">
+                            Logged in as <strong>{{options.userState.session.user_id}}</strong>
                         </div>
                         <div class="text-center">{{options.userState.session.name}}</div>
                         <div class="text-center">
@@ -39,7 +39,7 @@
                             <span class="badge badge-info" ng-repeat="w in options.userState.longterm.workspaces" ng-if="w[1] == options.userState.session.selectedWorkspace">{{w[4]}}</span>
                         </div>
                     </div>
-                    
+
                     <div ng-show="options.userState.session.selectedWorkspace" class="text-center">
                         <!--
                         <div class="search-transfer-row" ng-show="options.userState.session.transfer_cart.size > 0">
@@ -83,7 +83,7 @@
 
 
 
-                    
+
                     <div ng-show="options.userState.session.token">
                         <div class='text-center search-selections-title'>
                             <h3 data-toggle="tooltip" data-placement="right" tooltip="Here you can see what data you have selected, organize it, and send it to Narratives." tooltip-placement="right">Selections</h3>
@@ -95,7 +95,7 @@
                                 <span class="glyphicon glyphicon-shopping-cart search-cart"></span>
                             </div>
                         </div>
-                
+
                         <div class="text-center">
                             <div style="margin-bottom: 5px;">
                                 <button rel="tooltip" tooltip="Transfer my selections to Narratives." tooltip-placement="bottom" data-placement="bottom" data-toggle="modal" data-target="#transferPanel" type="button" ng-class="{'disabled': options.userState.session.data_cart.size < 1 || !options.userState.session.selectedWorkspace}" class='btn btn-primary' ng-click="copyData(options.selectedCategory)">
@@ -116,7 +116,7 @@
                                 -->
                                 <button data-toggle="tooltip" data-placement="bottom" tooltip="Discard my data selections." tooltip-placement="bottom" type="button" ng-class="{'disabled': options.userState.session.data_cart.size < 1}" class='btn btn-danger' ng-click='emptyCart()'>
                                     <span class="glyphicon glyphicon-trash"></span>
-                                </button>              
+                                </button>
                             </div> <!-- end Narrative send button group -->
                         </div>
                     </div>
@@ -148,8 +148,7 @@
                         <label class="col-sm-2 control-label">Genomes:</label>
                         <div class="col-sm-10">
                             <div ng-repeat="item in targetGenomes" style="padding:0 0 5px 0">
-                                <input id="genomes_{{item.key}}" name="genome_names[]" value="" class="form-control" style="width:414px" type="text" value="" placeholder="Search by Genome Name"
-                                    ng-model="selectedGenomeName"
+                                <input id="genomes_{{item.key}}" class="form-control" style="width:414px;display:inline-block" type="text" placeholder="Search by Genome Name"
                                     typeahead="genome as genome.name for genome in getGenomeName($viewValue) | filter:$viewValue"
                                     typeahead-loading="loading..." typeahead-min-length="4" typeahead-wait-ms="500"
                                     typeahead-on-select="onGenomeNameSelect($item, $model, $label, {{item.key}})">
@@ -187,7 +186,7 @@
                 </form>
             </div>
 
-            <div class="col-md-12 col-lg-12 search-result-section"> <!-- all results -->                            
+            <div class="col-md-12 col-lg-12 search-result-section"> <!-- all results -->
                 <div ng-if="options.searchOptions.general.q && getTotalCount() < 1 && !options.selectedCategory && !searchActive" class="search-results-select-category">
                     <div class="alert alert-danger">
                         <strong>No results found for any data type.</strong>
@@ -250,7 +249,7 @@
                                     <li ng-if="(options.pageLinksRange[0] + options.numPageLinks) * options.resultJSON.itemsPerPage < options.resultJSON.totalResults">
                                         <a ng-click="setCurrentPage(options.pageLinksRange[0] + options.numPageLinks)">Next {{options.numPageLinks}} &rarr;</a>
                                     </li>
-                                </ul>                        
+                                </ul>
                             </div>-->
                         </div>
                     </div> <!-- end specific category results row -->
