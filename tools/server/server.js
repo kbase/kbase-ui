@@ -21,22 +21,24 @@ function loadBuildConfig(state) {
             var configRoot;
             if (devExists) {
                 configRoot = ['..', '..', 'dev', 'config'];
-                return [configRoot, loadYaml(configRoot.concat(['build.yml']))];
+                return [configRoot, loadYaml(configRoot.concat(['builds', state.args.type + '.yml']))];
             } else {
-                configRoot = ['..', '..', 'config'];
-                return [configRoot, loadYaml(configRoot.concat(['build.yml']))];
+                configRoot = ['..', '..','config'];
+                return [configRoot, loadYaml(configRoot.concat(['builds', state.args.type + '.yml']))];
             }
         })
         .spread(function (configRoot, config) {
-            return config;
+            state.config.build = config;
+            state.config.root = configRoot;
+            return state;
         });
 }
 
 
-function start(config) {
-    var type = process.argv[3] || 'build',
+function start(state) {
+    var type = state.args.type,
         rootDir,
-        port = config.server.port,
+        port = state.config.build.server.port,
         title = 'kbup-' + String(port);
 
 
@@ -105,20 +107,20 @@ function getServerPid(port) {
         });
 }
 
-function stop(config) {
+function stop(state) {
     // yeah, well, we'll improve this...
-    console.log('Stopping server on port ' + config.server.port);
-    getServerPid(config.server.port)
+    console.log('Stopping server on port ' + state.config.build.server.port);
+    getServerPid(state.config.build.server.port)
         .then(function (pid) {
             console.log('PID: ' + pid);
             process.kill(pid);
         });
 }
 
-function preview(config) {
-    getServerPid(config.server.port)
+function preview(state) {
+    getServerPid(state.config.build.server.port)
         .then(function () {
-            var port = config.server.port;
+            var port = state.config.build.server.port;
             var url = 'http://localhost:' + String(port);
             console.log('Opening browser for ' + url);
             open(url);
@@ -132,24 +134,43 @@ function usage() {
     console.log('node server <cmd>');
 }
 
-loadBuildConfig()
-    .then(function (config) {
-        switch (process.argv[2]) {
-            case 'start':
-                start(config);
-                break;
-            case 'stop':
-                stop(config);
-                break;
-            case 'preview':
-                preview(config);
-                break;
-            default:
-                usage(config);
-        }
-    })
-    .catch(function (err) {
-        console.log('ERROR');
-        console.log(err);
-        usage();
-    });
+function main(state) {
+    loadBuildConfig(state)
+        .then(function (state) {
+            switch (state.args.action) {
+                case 'start':
+                    start(state);
+                    break;
+                case 'stop':
+                    stop(state);
+                    break;
+                case 'preview':
+                    preview(state);
+                    break;
+                default:
+                    usage(state);
+            }
+        })
+        .catch(function (err) {
+            console.log('ERROR');
+            console.log(err);
+            usage();
+        });
+}
+
+
+var action = process.argv[2];
+if (action === undefined) {
+    throw new Error('action required: node server <action> <type>');
+}
+var type = process.argv[3] || 'build';
+
+main({
+    args: {
+        action:action,
+        type: type
+    },
+    config: {
+        
+    }
+});

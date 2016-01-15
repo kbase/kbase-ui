@@ -59,3 +59,9 @@ services:
     catalog:
         url: <%= catalog_url %>
         name: Catalog
+    taxon_api:
+        url: <%= taxon_api_url %>
+        name: Taxon API
+    assembly_api:
+        url: <%= assembly_api_url %>
+        name: Assembly API        

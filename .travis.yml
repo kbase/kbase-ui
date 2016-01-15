@@ -18,9 +18,9 @@ branches:
 #    - develop
 #    - staging
 #    - master
-before_install:
-  - npm install -g bower
-  - npm install -g grunt-cli
+#before_install:
+#  - npm install -g bower
+#  - npm install -g grunt-cli
 install:
-  - make
-script: grunt test-travis
+  - make build target=ci
+script: make test-travis
