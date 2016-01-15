@@ -535,8 +535,6 @@ function installExternalModules(state) {
             });
         })
         .then(function (modules) {
-            console.log('MODULES');
-        console.log(modules);
             return Promise.all(modules.map(function (module) {
                 var repoRoot = (module.source.directory.root && module.source.directory.root.split('/')) || ['..', '..', '..'],
                     source = repoRoot.concat([module.globalName]),
@@ -700,18 +698,11 @@ function cleanup(state) {
         });
 }
 
-function makeDevBuild(state) {
+function makeBaseBuild(state) {
     var root = state.environment.path,
-        devPath = ['..', 'dev'],
         buildPath = ['..', 'build'];
 
     return fs.removeAsync(buildPath.concat(['build']).join('/'))
-        .then(function () {
-            return fs.ensureDirAsync(devPath.join('/'));
-        })
-        .then(function () {
-            return fs.moveAsync(root.concat(['deploy.cfg']).join('/'), root.concat(['build', 'deploy.cfg']).join('/'));
-        })
         .then(function () {
             return fs.moveAsync(root.concat(['config']).join('/'), root.concat(['build', 'config']).join('/'));
         })
@@ -771,7 +762,7 @@ function main(type) {
         },
         {
             cwd: ['..'],
-            files: ['deploy.cfg', 'bower.json']
+            files: ['bower.json']
         },
         {
             cwd: ['..'],
@@ -892,8 +883,8 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Making the dev build...');
-            return makeDevBuild(state);
+            console.log('Making the base build...');
+            return makeBaseBuild(state);
         })
 
         .then(function (state) {

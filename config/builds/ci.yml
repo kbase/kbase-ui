@@ -2,10 +2,10 @@
 ---
 targets:
     ui: prod
-    deploy: prod
+    deploy: ci
 build:
     dist: true
-    temp: ../mutantfiles
+    temp: temp
 bower:
     offline: false
 debug: false

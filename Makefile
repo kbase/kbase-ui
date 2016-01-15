@@ -54,7 +54,7 @@ init:
 #  --deploy-config $(TARGET)
 # @ node tools/process_config.js $(DEPLOY_CFG)
 build:	
-	cd mutations; node build build
+	cd mutations; node build $(target)
 
 dist: 
 	cd mutations; node build dist

@@ -157,19 +157,6 @@ function deleteMatchingFiles(path, regex) {
     });
 }
 
-function mutate(app, state, next) {
-    var history = [state];
-    return new Promise(function (resolve, reject, update) {
-        return engine(app, state, next, history, resolve, reject, update);
-    })
-        .then(function (result) {
-            return {
-                result: result,
-                history: history
-            };
-        });
-}
-
 function copyState(oldState) {
     return Promise.try(function () {
         if (oldState.config.debug) {
@@ -192,63 +179,6 @@ function copyState(oldState) {
                 });
         } 
         return oldState;
-    });
-}
-
-// ENGINE
-// The little one that could.
-function engine(app, oldState, next, stateHistory, resolve, reject, update) {
-    return Promise.try(function () {
-        var nextProcess = app[next].process;
-        if (nextProcess) {
-            try {
-                // make our filesystem.
-                var result,
-                    state = JSON.parse(JSON.stringify(oldState)),
-                    tempDir = uniq('temp_'),
-                    newFs = [tempDir],
-                    oldFs = state.environment.filesystem,
-                    start = (new Date()).getTime();
-
-                // Give the next process a fresh copy of all the files.
-                state.environment.filesystem = newFs;
-                state.environment.path = state.environment.root.concat(newFs);
-                state.environment.name = next;
-                copydir(state.environment.root, oldFs, state.environment.root, newFs);
-                state.copyTime = (new Date()).getTime() - start;
-                start = (new Date()).getTime();
-
-                // Run the next process with the fresh state. The state
-                // should now be modified (and is also returned in the 
-                // result.)
-                return nextProcess(state)
-                    .then(function (result) {
-                        state.processTime = (new Date()).getTime() - start;
-                        stateHistory.push(state);
-                        if (result[1]) {
-                            return engine(app, result[0], result[1], stateHistory, resolve, reject, update)
-                                .then(function () {
-                                });
-                        } else {
-                            // console.log(arguments);
-                            resolve(result[0]);
-                        }
-                    })
-                    .catch(function (err) {
-                        console.log('ERROR in the process: ' + next);
-                        console.log(err);
-                        console.log(err.stack);
-                        reject(err);
-                    });
-            } catch (ex) {
-                console.log('ERROR in the process: ' + next);
-                console.log(ex);
-                console.log(ex.stack);
-                reject(ex);
-            }
-        } else {
-            console.log('$$$$$$$$$ DONE $$$$$$$$$$$');
-        }
     });
 }
 
@@ -324,12 +254,11 @@ function finish(state) {
         }
     })
         .then(function () {
-            console.log('Finishd with mutations');
-        })
+            console.log('Finished with mutations');
+        });
 }
 
 module.exports = {
-    mutate: mutate,
     createInitialState: createInitialState,
     finish: finish,
     deleteMatchingFiles: deleteMatchingFiles,
