@@ -21,6 +21,8 @@ DISTLIB			= $(TOPDIR)/build
 DOCSLIB			= $(TOPDIR)/docs
 DEPLOY_CFG		= deploy-$(TARGET).cfg
 KB_TOP			= /kb
+GRUNT		        = ./node_modules/.bin/grunt
+KARMA			= ./node_modules/.bin/karma
 
 # Standard 'all' target = just do the standard build
 all: init build
@@ -41,7 +43,7 @@ run: init build start preview
 init:
 	npm install
 	cd tools/server; npm install
-	grunt init
+	$(GRUNT) init
 	
 # Perform the build.
 # The actual build step is done by grunt. This also sets up the 
@@ -53,6 +55,14 @@ init:
 # @ node tools/process_config.js $(DEPLOY_CFG)
 build:	
 	cd mutations; node build build
+
+dist: 
+	cd mutations; node build dist
+
+# The deploy step will copy the files according to the instructions in the deploy
+# config. See mutations/deploy.js for details.
+deploy:	
+	cd mutations; node build deploy; node deploy
 	
 # Set up a development environment. 
 # Installs tools into kbase-ui/dev. These tools are ignored by git,
@@ -72,13 +82,6 @@ stop:
 preview:
 	cd tools/server; node server preview
 	
-dist: 
-	cd mutations; node build deploy
-
-# The deploy step will copy the files according to the instructions in the deploy
-# config. See mutations/deploy.js for details.
-deploy:	
-	cd mutations; node build deploy; node deploy
 
 # Tests are managed by grunt, but this also mimics the workflow.
 #init build
@@ -86,15 +89,15 @@ test:
 	karma start test/karma.conf.js
 	
 
-# Cleans up build artifacts without removing required libraries
-# that get installed through Bower or NPM.
+# Clean slate
 clean:
-	@ grunt clean-dist
+	$(GRUNT) clean-all
+	
+clean-temp:
+	$(GRUNT) clean:temp
 
-# Cleans out all required libraries and packages.
-reqs-clean: clean
-	@ rm -rf node_modules/
-	@ rm -rf bower_components/
+# If you need more clean refinement, please see Gruntfile.js, in which you will
+# find clean tasks for each major build artifact.
 
 # Eventually, if docs need to be built, the process will go here.
 docs: init

@@ -784,13 +784,13 @@ function main(type) {
                     cwd: ['..', 'dev'],
                     path: ['config']
                 });
-                buildControlConfigPath = ['..', 'dev', 'config', type + '.yml'];
+                buildControlConfigPath = ['..', 'dev', 'config', 'builds', type + '.yml'];
             } else {
                 initialFilesystem.push({
                     cwd: ['..'],
                     path: ['config']
                 });
-                buildControlConfigPath = ['..', 'config', type + '.yml'];
+                buildControlConfigPath = ['..', 'config', 'builds', type + '.yml'];
             }
             return {
                 initialFilesystem: initialFilesystem,

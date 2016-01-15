@@ -5,7 +5,27 @@ The KBase UI is constructed from multiple Git repos. The core repo is this one: 
 
 We use a combination of `make` and `grunt` for building the KBase UI. Actually, we mainly use `grunt` for the task running, but each `make` target just wraps it up, if you're more comfortable with that. This also lets the KBase UI stack more easily fit into the rest of the KBase operations efforts.
 
-## Requirements  
+## Requirements
+
+- nodejs
+- npm (may be installed with newer nodejs)
+- git
+
+
+### nodejs
+
+The node with ubuntu is really out of date:
+
+get the NodeSource PPA:
+
+curl -sL https://deb.nodesource.com/setup | sudo bash -
+
+and build tools
+
+apt-get install build-essential
+
+
+
 Before deploying, your machine will need to have a few JavaScript tools installed.
 
 1. nodejs - https://nodejs.org
