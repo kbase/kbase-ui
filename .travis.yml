@@ -4,10 +4,10 @@ node_js:
   - "0.12"
   # NB this should be 4.2, which is the LTS for node; they are working on it.
   - "4.1"
-cache:
-  directories:
-  - bower_components
-  - node_modules
+#cache:
+#  directories:
+#  - bower_components
+#  - node_modules
 branches:
     only:
         - master
@@ -22,5 +22,6 @@ branches:
 #  - npm install -g bower
 #  - npm install -g grunt-cli
 install:
-  - make build target=ci
+    - make init
+    - make build config=ci
 script: make test-travis
