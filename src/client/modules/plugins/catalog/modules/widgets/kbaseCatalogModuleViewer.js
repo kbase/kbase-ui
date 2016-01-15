@@ -22,7 +22,6 @@ define([
             $mainPanel: null,
             $errorPanel: null,
 
-
             // clients to the catalog service and the NarrativeMethodStore
             catalog: null,
             nms: null,
@@ -100,7 +99,6 @@ define([
                 self.$mainPanel.append('<hr>');
 
 
-
                 var $versionDiv = $('<div>');
 
                 $versionDiv.append('<h3>Stable Released Version</h3>');
@@ -168,7 +166,9 @@ define([
                         var $l = $('<ul>');
                         for(var i=0; i<version.narrative_methods.length; i++) {
                             var id = version.narrative_methods[i];
-                            $l.append('<li><a href="#appcatalog/app/method/'+self.module_name+'/'+id+
+                            //$l.append('<li><a href="#appcatalog/app/method/'+self.module_name+'/'+id+
+                            //    '">'+id+'</a></li>');
+                            $l.append('<li><a href="#narrativestore/method/'+self.module_name+'/'+id+
                                 '">'+id+'</a></li>');
                         }
                         $verDiv.append($l);
@@ -193,8 +193,6 @@ define([
                     { token: this.runtime.service('session').getAuthToken() }
                 );
             },
-
-
 
 
 

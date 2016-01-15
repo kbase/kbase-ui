@@ -31,10 +31,15 @@ define([
             // main panel and elements
             $mainPanel: null,
             $loadingPanel: null,
+            $basicStatusDiv: null,
+            $controlToolbarPanel: null,
+            $buildListPanel: null,
+
 
             build_list: null,
             module_list: null,
             catalog_version: null,
+            requested_releases: null,
 
             init: function (options) {
                 this._super(options);
@@ -51,8 +56,9 @@ define([
                 self.$elem.append(self.$loadingPanel);
                 var mainPanelElements = self.initMainPanel();
                 self.$mainPanel = mainPanelElements[0];
-                self.$controlToolbarPanel = mainPanelElements[1];
-                self.$buildListPanel = mainPanelElements[2];
+                self.$basicStatusDiv = mainPanelElements[1];
+                self.$controlToolbarPanel = mainPanelElements[2];
+                self.$buildListPanel = mainPanelElements[3];
                 self.$elem.append(self.$mainPanel);
                 self.showLoading();
 
@@ -66,6 +72,7 @@ define([
                 loadingCalls.push(self.getBuildStatus(self.options.skip, self.options.limit, modules));
                 loadingCalls.push(self.getCatalogVersion());
                 loadingCalls.push(self.getModuleList());
+                loadingCalls.push(self.getPendingReleases());
 
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
@@ -78,6 +85,7 @@ define([
 
             render: function() {
                 var self = this;
+                self.renderBasicStatus();
                 self.renderControlPanel();
                 self.renderBuildList();
             },
@@ -94,12 +102,12 @@ define([
                 );
             },
 
-
-
             initMainPanel: function($appListPanel, $moduleListPanel) {
                 var $mainPanel = $('<div>').addClass('kbcb-mod-main-panel');
 
-                //$mainPanel.append($('<h3>').append('Catalog Server:'));
+                $mainPanel.append($('<h3>').append('Catalog Status:'));
+                var $basicStatusDiv = $('<div>');
+                $mainPanel.append($basicStatusDiv);
 
                 $mainPanel.append($('<h3>').append('Recent Module Registrations:'));
                 //$mainPanel.append('<br>');
@@ -108,7 +116,7 @@ define([
                 //$mainPanel.append('<br>');
                 var $buildListPanel = $('<div>');
                 $mainPanel.append($buildListPanel);
-                return [$mainPanel, $controlToolbarPanel, $buildListPanel];
+                return [$mainPanel, $basicStatusDiv, $controlToolbarPanel, $buildListPanel];
             },
 
             initLoadingPanel: function() {
@@ -129,9 +137,40 @@ define([
             },
 
 
+            renderBasicStatus: function() {
+                var self = this;
+                self.$basicStatusDiv.append('Running <b>v'+self.catalog_version+'</b> of the Catalog Server on: ');
+                self.$basicStatusDiv.append('<a href="'+self.runtime.getConfig('services.catalog.url')+'">'+self.runtime.getConfig('services.catalog.url')+'</a>');
+                self.$basicStatusDiv.append('<br>');
+                self.$basicStatusDiv.append('<b>'+self.module_list.length+'</b> modules registered.');
+                self.$basicStatusDiv.append('<br>');
+                self.$basicStatusDiv.append('<b>Modules Pending Release:</b>');
+                if(self.requested_releases.length>0) {
+                    var $ul = $('<ul>');
+                    for(var k=0; k<self.requested_releases.length; k++) {
+                        var mod = self.requested_releases[k];
+                        var $li = $('<li>');
+                        $li.append('<a href="#appcatalog/module/'+mod.module_name+'">'+mod.module_name+'</a>');
+                        $li.append('- <a href="'+mod.git_url+'">'+mod.git_url+'</a><br>');
+                        $li.append(mod.git_commit_hash + ' - '+mod.git_commit_message+'<br>');
+                        $li.append('owners: [')
+                        for(var owner=0; owner<mod.owners.length; owner++) {
+                            if(owner>0) { $ul.append(', ') }
+                            $li.append('<a href="#people/'+mod.owners[owner]+'">'+mod.owners[owner]+'</a>');
+                        }
+                        $li.append(']<br>');
+                        $li.append('Registered on: '+new Date(mod.timestamp).toLocaleString()+'<br>');
+                        $ul.append($li);
+                    }
+                    self.$basicStatusDiv.append('<br>');
+                    self.$basicStatusDiv.append($ul);
+                } else {
+                    self.$basicStatusDiv.append(' <i>None.</i><br>');
+                }
+            },
+
             renderControlPanel: function() {
                 var self = this;
-                self.$controlToolbarPanel.append('')
 
                 var $filterModules = $('<select>').addClass('form-control')
                 $filterModules.append('<option value="All.Modules">All Modules</option>');
@@ -285,13 +324,34 @@ define([
 
                 return self.catalog.version()
                     .then(function (version) {
-                        console.log('version:'+version);
+                        self.catalog_version = version;
                     })
                     .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                     });
-            },         
+            },
+
+            getPendingReleases: function() {
+                var self = this
+
+                /* typedef structure {
+                    string module_name;
+                    string git_url;
+                    string git_commit_hash;
+                    string git_commit_message;
+                    int timestamp;
+                    list <string> owners;
+                } RequestedReleaseInfo; */
+                return self.catalog.list_requested_releases()
+                    .then(function (requested_releases) {
+                        self.requested_releases = requested_releases;
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
 
 
             getBuildStatus: function(skip, limit, module_names) {
