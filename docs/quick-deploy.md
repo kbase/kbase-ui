@@ -23,17 +23,22 @@ E.g.
 
 ```
 sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get dist-upgrade
+sudo apt-get upgrade -y
+sudo apt-get dist-upgrade -y
 ```
 
-- if dist-upgrade you should restart the instance
-- if you are advised to *autoremove*. Might as well do this with ```sudo apt-get autoremove```.
+if dist-upgrade has something to do you should restart the instance
+
+if you are advised to *autoremove*. Might as well do this with:
+
+```
+sudo apt-get autoremove -y
+```
 
 
 #### 2) get the NodeSource PPA:
 
-The node with Ubuntu is very old -- antique by node standards -- and will not work with kbase-ui build tool requirements.
+The node with Ubuntu is very old -- antique by node standards -- and will not work with kbase-ui build tool requirements. We have been using 4.x and will migrate to 5.x in the future.
 
 ```
 curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
@@ -47,10 +52,12 @@ These are required for the build tools and providing a web server.
 sudo apt-get install -y git build-essential libfontconfig1 nodejs nginx
 ```
 
-- libfontconfig1 is for phantomjs -- a hidden dependency
-- build tools is for npm modules which include c-compilable code (e.g. phantomjs)
+- *ibfontconfig1* is for *phantomjs* -- a hidden dependency
+- *build-essential* is for npm modules which include c-compilable code (e.g. phantomjs)
 
 ### Prepare kbase-ui
+
+You'll want to be in whatever filesystem location is acceptable for creating the build directory.
 
 #### 1) Clone kbase-ui
 
@@ -69,12 +76,12 @@ git clone --branch v0.1.3 --depth 1 https://github.com/eapearson/kbase-ui
 ```
 cd kbase-ui
 make init
-make build target=ENV
+make build config=ENV
 ```
 
 - ```make init``` will install build tools locally
 - ```make build target=ENV``` will build the base, and possibly the dist, depending on the build target settings.
-    - build targets include ci, next, prod
+    - build targets include *ci*, *next*, *prod*
 
 > Where are the configurations for this? See [configuration](configuration.md)
 
@@ -106,7 +113,7 @@ And then empty the file and copy/paste in the following very simple example non-
 server {
   listen 80 default_server;
   listen [::]:80 default_server ipv6only=on;
-  root /kb/deployment/services/kbase-ui
+  root /kb/deployment/services/kbase-ui;
   index index.html;
   server_name narrative.kbase.us;
   location / {
