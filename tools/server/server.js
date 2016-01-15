@@ -45,7 +45,6 @@ function start(state) {
     console.log('Starting local kbase-ui server');
     console.log('Type: ' + type);
     console.log('Port: ' + port);
-    console.log(state);
 
     if (type === 'deployed') {
         // TODO: get this from the deploy config

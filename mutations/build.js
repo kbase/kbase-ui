@@ -747,6 +747,9 @@ function makeDistBuild(state) {
         })
         .then(function () {
             return fs.copyAsync(root.concat(['dist']).join('/'), buildPath.concat(['dist']).join('/'));
+        })
+        .then(function () {
+            return state;
         });
 }
 
@@ -900,9 +903,11 @@ function main(type) {
             if (state.config.build.dist) {
                 console.log('Making the dist build...');
                 return makeDistBuild(state);
-            } else {
-                return null;
             }
+            return state;
+        })
+        .then(function (state) {
+            return mutant.finish(state);
         })
         .catch(function (err) {
             console.log('ERROR');
