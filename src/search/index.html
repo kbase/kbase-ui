@@ -6,10 +6,10 @@
    <link rel="icon" type="image/x-icon" href="assets/img/KBase_favicon.ico">
 
    <!-- external css -->
-   <link rel="stylesheet" type="text/css" href="../bower_components/bootstrap/css/bootstrap.min.css" />
+   <link rel="stylesheet" type="text/css" href="../modules/bower_components/bootstrap/css/bootstrap.min.css" />
 
    <!-- jquery-ui-1.10.0.custom.css is needed for the landing page card layout, some old landing pages still use this style -->
-   <!-- <link rel="stylesheet" type="text/css" href="../bower_components/jquery-ui/themes/ui-lightness/jquery-ui.min.css" /> -->
+   <!-- <link rel="stylesheet" type="text/css" href="../modules/bower_components/jquery-ui/themes/ui-lightness/jquery-ui.min.css" /> -->
 
    <!-- DataTable 1.10.4 css dependencies. 2014-01-29 eap -->
    <!-- <link rel="stylesheet" type="text/css" href="assets/css/dataTables.bootstrap.css" /> -->
@@ -18,7 +18,7 @@
    <link rel="stylesheet" type="text/css" href="ext/dataTables/1.10.4/extensions/ColVis/css/dataTables.colVis.min.css" />
    <link rel="stylesheet" type="text/css" href="/ext/dataTables/1.10.4/css/jquery.dataTables.bootstrap.css" /> --> 
 
-   <link rel="stylesheet" type="text/css" href="../bower_components/datatables-bootstrap3-plugin/css/datatables-bootstrap3.css" />
+   <link rel="stylesheet" type="text/css" href="../modules/bower_components/datatables-bootstrap3-plugin/css/datatables-bootstrap3.css" />
 
 <!--   <link rel="stylesheet" type="text/css" href="ext/dataTables/1.10.4/plugins/integration/font-awesome/dataTables.fontAwesome.css" /> -->
 
@@ -38,7 +38,7 @@
    <link rel="stylesheet" href="/ext/animate/animate.css" />
  -->
 
-   <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.css" type="text/css" />
+   <link rel="stylesheet" href="../modules/bower_components/font-awesome/css/font-awesome.css" type="text/css" />
 
    <!-- End external css -->
 
@@ -68,7 +68,7 @@
 
 
    <!-- External javascript packages -->
-   <script src="../bower_components/underscore/underscore.js"></script>
+   <script src="../modules/bower_components/underscore/underscore.js"></script>
 
    <!-- Google Analytics -->
 
@@ -89,12 +89,12 @@
       ga('send', 'pageview');
    </script>
 
-   <script src="../bower_components/jquery/jquery.js"></script>
+   <script src="../modules/bower_components/jquery/jquery.js"></script>
    <!-- <script src="../ext/jquery-migrate/jquery-migrate-1.2.1.js"></script> -->
-   <!-- <script src="../bower_components/jquery-ui/jquery-ui.js"></script> -->
-   <script src="../bower_components/blockUI/jquery.blockUI.js"></script>
-   <script src="../bower_components/bootstrap/js/bootstrap.min.js"></script>
-   <script src="../bower_components/d3/d3.js"></script>
+   <!-- <script src="../modules/bower_components/jquery-ui/jquery-ui.js"></script> -->
+   <script src="../modules/bower_components/blockUI/jquery.blockUI.js"></script>
+   <script src="../modules/bower_components/bootstrap/js/bootstrap.min.js"></script>
+   <script src="../modules/bower_components/d3/d3.js"></script>
 
    <!-- datatables -->
    <!--
@@ -105,11 +105,11 @@
 
         -->
    <!-- DataTables 1.10.4 -->
-   <script src="../bower_components/datatables/js/jquery.dataTables.js"></script>
+   <script src="../modules/bower_components/datatables/js/jquery.dataTables.js"></script>
 <!--   <script src="ext/dataTables/1.10.4/extensions/ColReorder/js/dataTables.colReorder.min.js"></script>
    <script src="ext/dataTables/1.10.4/extensions/ColVis/js/dataTables.colVis.min.js"></script>
 -->   
-   <script src="../bower_components/datatables-bootstrap3-plugin/js/datatables-bootstrap3.js"></script>
+   <script src="../modules/bower_components/datatables-bootstrap3-plugin/js/datatables-bootstrap3.js"></script>
 
    <!-- <script src="assets/js/FixedHeader.min.js"></script> -->
 
@@ -120,8 +120,8 @@
 <!--
    <script src="assets/js/viz/raphael-min.js"></script>
 -->
-   <script src="../bower_components/q/q.js"></script>
-   <script src="../bower_components/postal.js/postal.js"></script>
+   <script src="../modules/bower_components/q/q.js"></script>
+   <script src="../modules/bower_components/postal/postal.js"></script>
 
 <!--   <script src="ext/postal/postal.request-response-0.3.1.min.js"></script>
    <script src="ext/postal/postal-config.js"></script> -->
@@ -156,7 +156,7 @@
 
    <!-- KBase client library javascript -->
 <!--   <script src="assets/js/kbclient/wikiScraper.js"></script> -->
-   <script src="../lib/kbase-client-api.js"></script>
+   <script src="js/kbase-client-api.js"></script>
    <!-- The following are supserseded by /ext/js/kbase-clients/kbase-client-api[.min].js -->
    <!-- <script src="assets/js/kbclient/kbase.js"></script>-->
    <!--<script src="assets/js/kbclient/workspaceDeluxe-0.2.1.js"></script>-->
@@ -210,7 +210,7 @@
 
 
    <!-- ws obj reference related widgets -->
-   <script src="../bower_components/d3-plugins-sankey/sankey.js"></script>
+   <script src="../modules/bower_components/d3-plugins-sankey/sankey.js"></script>
    <!-- this is a d3 plugin -->
 
 <!--   <script src="../src/widgets/workspaces/kbaseWSButtons.js"></script>
@@ -482,7 +482,7 @@
    <script src="assets/js/header.js"></script>
 
    <!-- RequireJS should go after all other javascript imports -->
-   <script src="../bower_components/requirejs/require.js"></script>
+   <script src="../modules/bower_components/requirejs/require.js"></script>
    <script src="js/require-config.js"></script>
 
    <!-- end application -->

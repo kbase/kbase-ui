@@ -43,7 +43,8 @@
         "moment": "2.10.6",
         "numeral": "1.5.3",
         "blockui": "2.70",
-        "q": "2.0.2"
+        "q": "2.0.2",
+        "postal": "1.0.7"
     },
     "devDependencies": {},
     "license": "SEE LICENSE IN LICENSE.md"
