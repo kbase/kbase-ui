@@ -1,8 +1,6 @@
 # Quick Deploy Guide
 
-
-# Deploying the KBase UI
-
+This document provides steps to install kbase-ui into a working state on Ubuntu 14.04.
 
 ## Steps
 
