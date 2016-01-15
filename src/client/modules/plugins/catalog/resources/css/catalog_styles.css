@@ -1,9 +1,10 @@
 
 
 
-.catalog {
-    background-color: #EFFCEB;
-    border-color: green;
+.kbcb-browser-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    /*background: #eeeded;*/
 }
 
 .kbcb-ctr-toolbar {
@@ -11,8 +12,9 @@
 }
 
 .kbcb-main-panel-div {
-    margin: 0.1em;
+    margin: 0.3em;
 }
+
 
 .kbcb-loading-panel-div {
     margin: 0.1em;
@@ -21,6 +23,33 @@
 }
 
 
+
+.kbcb-app-card {
+    background: #eeeded;
+    width: 150px;
+    height:150px;
+    margin: 0.4em;
+    border-radius: 2px;
+    display: block;
+    float: left;
+    position: relative;
+    overflow:hidden;
+    text-align:center;
+    vertical-align:middle;
+}
+
+.kbcb-hover {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.2s ease-in-out;
+}
+
+.kbcb-hover:hover {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  cursor:pointer;
+}
+
+
+/* deprecated */
 .kbcb-app {
     margin: 0.4em;
     width: 150px;
@@ -29,6 +58,7 @@
     vertical-align:middle;
     background-color: #eee;
     display:inline-block;
+    overflow:hidden;
 }
 
 .kbcb-module {
@@ -39,6 +69,7 @@
     vertical-align:middle;
     background-color: #eee;
     display:inline-block;
+    overflow:hidden;
 }
 
 

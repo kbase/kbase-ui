@@ -58,8 +58,10 @@ define([
                 self.setupClients();
 
                 // initialize and add the control bar
+                var $container = $('<div>').addClass('kbcb-browser-container');
+                self.$elem.append($container);
                 self.$controlToolbar = this.renderControlToolbar();
-                self.$elem.append(this.$controlToolbar);
+                $container.append(this.$controlToolbar);
 
                 // initialize and add the main panel
                 self.$loadingPanel = self.initLoadingPanel();
@@ -68,7 +70,7 @@ define([
                 self.$mainPanel = mainPanelElements[0];
                 self.$appListPanel = mainPanelElements[1];
                 self.$moduleListPanel = mainPanelElements[2];
-                self.$elem.append(self.$mainPanel);
+                $container.append(self.$mainPanel);
                 self.showLoading();
 
                 // get the list of apps and modules
@@ -81,6 +83,24 @@ define([
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
                     console.log('done loading!');
+
+                    // do a quick sort here first
+                    self.appList.sort(function(a,b) {
+                        // first make sure methods show up first
+                        if(a.type<b.type) return 1;
+                        if(b.type<a.type) return -1;
+
+                        if(a.info.module_name && !b.info.module_name) return -1;
+                        if(!a.info.module_name && b.info.module_name) return 1;
+                        
+                        if(a.info.name<b.info.name) 1;
+                        if(b.info.name>b.info.name) -1;
+
+
+                        return 0;
+                    });
+
+
                     self.renderAppList();
                     self.hideLoading();
                 });
@@ -186,6 +206,7 @@ define([
                 var $moduleListPanel = $('<div>');
                 $mainPanel.append($appListPanel);
                 $mainPanel.append($moduleListPanel);
+                $mainPanel.append('<br><br>')
                 return [$mainPanel, $appListPanel, $moduleListPanel];
             },
 
@@ -315,7 +336,7 @@ define([
 
 
             renderAppBox: function(app) {
-                var $appDiv = $('<div>').addClass('kbcb-app');
+                var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover');
                 $appDiv.append('<br>')
                 $appDiv.append(app.info.name);
 
@@ -324,6 +345,15 @@ define([
                         $('<a href="#appcatalog/module/'+app.info.module_name+'">')
                             .append('['+app.info.module_name+']'));
                 }
+
+                $appDiv.on('click', function() {
+                    if(app.type === 'method') {
+                        window.location.href = "#narrativestore/method/"+app.info.id;
+                    } else {
+                        window.location.href = "#narrativestore/app/"+app.info.id;
+                    }
+                });
+
                 app.$div = $appDiv;
             },
 
@@ -337,6 +367,8 @@ define([
 
             renderAppList: function() {
                 var self = this;
+
+                self.$appListPanel.append('<i>Note: temporarily showing dev versions</i><br>')
 
                 for(var k=0; k<self.appList.length; k++) {
                     self.$appListPanel.append(self.appList[k].$div);
