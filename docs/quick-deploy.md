@@ -2,6 +2,13 @@
 
 This document provides steps to install kbase-ui into a working state on Ubuntu 14.04.
 
+It can serve as a starting point for documentation tailored to specific deploy scenarios. In that case, we probably want to have a set of quick deployment documents (with links to common materials or more detailed explanations):
+
+- CI
+- Next
+- Production
+- Local dry-run
+
 ## Steps
 
 ### Prerequisites
@@ -81,13 +88,19 @@ sudo ./deploy.sh
 
 ### Web server
 
-Of course, kbase-ui is nothing unless it is served by an http server.
+Of course, kbase-ui is nothing unless it is fronted by an http server.
 
-In the current deploy environment, there should already be a running nginx, but we'll pretend there isn't.
+The prerequisites already installed a stock nginx server.
 
 Replace the default nginx config file with one appropriate for the deployment environment.
 
-The following is a very simple example for a non-https testing server:
+E.g. 
+
+```
+sudo vi /etc/nginx/sites-available/default
+```
+
+And then empty the file and copy/paste in the following very simple example non-secure server:
 
 ```
 server {
