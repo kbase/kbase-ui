@@ -185,9 +185,10 @@ homologyApp.service('homologyOptionsService', function homologyOptionsService() 
                                 "general": {
                                     "itemsPerPage": 10,
                                     "program": "blastp",
+                                    "searchtype": "features",
                                     "genome_ids": [],
                                     "max_hit": 10,
-                                    "evalue": "1e-10"
+                                    "evalue": "1e-5"
                                 },
                                 "perCategory": {"features":{}}
                                },
@@ -304,9 +305,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         }
     });
 
-    $scope.availableDatabases = [{value: "kbase_fna", label: "KBase genomic sequences (fna)"},
-        {value: "kbase_ffn", label: "KBase gene sequences (ffn)"},
-        {value: "kbase_faa", label: "KBase protein sequences (faa)"}
+    $scope.availableDatabases = [{value: "kbase_nr.faa", label: "KBase Non-redendant Protein Sequences (NR-faa)"}
     ];
 
     $scope.availablePrograms = [{value: "blastn", label: "blastn"},
@@ -346,7 +345,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             }
         }).then(function(response){
             return response.data.items.map(function(genome){
-               return {name: genome.scientific_name, id: genome.genome_id};
+               return {label: genome.scientific_name + ' (' + genome.genome_id + ')', id: genome.genome_id};
             });
         });
     };
@@ -504,17 +503,28 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
 
         // TODO: implement validation with proper message
         //console.log($scope.targetGenomes);
-        var genomeIds = $scope.targetGenomes.map(function(genome){
-           return genome.genome_id;
-        });
-        if (genomeIds.length == 0) return;
+        var method = "", params = null;
 
-        var params = [options.sequence, options.program, genomeIds, "features", options.evalue, options.max_hit, 70];
+        console.log("database: ", options.database);
+        if (options.database != undefined) {
+          // database search
+          method = "HomologyService.blast_fasta_to_database";
+          params = [options.sequence, options.program, options.database, options.evalue, options.max_hit, 70];
+        }
+        else {
+          // genome search
+          var genomeIds = $scope.targetGenomes.map(function(genome){
+             return genome.genome_id;
+          });
+          if (genomeIds.length == 0) return;
+          method = "HomologyService.blast_fasta_to_genomes";
+          params = [options.sequence, options.program, genomeIds, options.searchtype, options.evalue, options.max_hit, 70];
+        }
 
         $("#loading_message_text").html(options.defaultMessage);
         $.blockUI({message: $("#loading_message")});
 
-        $scope.json_call_ajax("HomologyService.blast_fasta_to_genomes", params, 2, function(data) {
+        $scope.json_call_ajax(method, params, 2, function(data) {
 
             var items = $scope.formatJSONResult(data);
             $scope.options.resultJSON = {
@@ -548,7 +558,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 $scope.options.currentItemRange = $scope.options.resultJSON.items[0].position + "-" + $scope.options.resultJSON.items[$scope.options.resultJSON.items.length - 1].position;
             }
             else {
-                console.log($scope.options);
+                console.error($scope.options);
             }
 
             $scope.$apply();
@@ -564,19 +574,19 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     };
 
     $scope.formatJSONResult = function(json){
-        //console.log(json);
+        console.log(json);
         var root = json[0][0].report.results.search;
         var hits = root.hits;
-        var query_title = root.query_title;
+        var query_id = root.query_id;
         var entries = [];
         hits.forEach(function(hit, index){
             //console.log(hit);
             entries.push({
-                "row_id": hit.description[0].title.split('|').slice(0,2).join("|"),
+                "row_id": hit.description[0].id,
                 "object_type": "KBaseSearch.Feature",
                 "position": (index + 1),
-                "qseqid": query_title,
-                "sseqid": hit.description[0].title,
+                "qseqid": query_id,
+                "sseqid": hit.description[0].id,
                 "pident": parseInt(Number(hit.hsps[0].identity / hit.len * 10000))/100,
                 "length": hit.len,
                 "qstart": hit.hsps[0].query_from,
