@@ -574,6 +574,12 @@ table.search-transfer-table {
     vertical-align:top;
 }
 
+.search-result-column-expanded-entry-cell pre {
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 12px;
+}
+
 .search-result-column-header {
     margin-left: 0px;
     margin-right: 0px;
@@ -920,6 +926,42 @@ table.search-transfer-table {
 .feature_type {
     width: 50px;
     margin-right: 10px;
+}
+
+.homology_query_seq_header {
+    width: 131px;
+}
+
+.homology_query_seq_field {
+    width: 120px;
+    margin-right: 9px;
+}
+
+.homology_subj_seq_header {
+    width: 211px;
+}
+
+.homology_subj_seq_field {
+    width: 200px;
+    margin-right: 9px;
+}
+
+.homology_position_header {
+    width: 50px;
+}
+
+.homology_position_field {
+    width: 40px;
+    margin-right: 9px;
+}
+
+.homology_numeric_header {
+    width: 60px;
+}
+
+.homology_numeric_field {
+    width: 50px;
+    margin-right: 9px;
 }
 
 .domain-header {

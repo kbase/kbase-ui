@@ -15,6 +15,8 @@ plugins:
     -
         datasearch
     -
+        homologyservice
+    -
         narrativemanager
     -
         narrativestore
@@ -95,9 +97,9 @@ plugins:
                 # This is where to find repos; it will be the level above kbase-ui
                 # if not specified, or may be overridden in the dev config.
                 # root: /Users/erik/work/kbase/sprints/data-api-widgets
-               
+
 # Copy these directories into the modules
-# There are two forms, as for plugins. 
+# There are two forms, as for plugins.
 # a bower: section will specify a bower dependency
 # a copy: section will specify a directory to copy literally into modules
 # a link: section will specify a directory to link into modules

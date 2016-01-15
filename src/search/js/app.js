@@ -25,7 +25,7 @@ var app = angular.module('landing-pages',
      'ws-directives', 'modeling-directives', 'angular-json-rpc',
      'communities-directives', 'narrative-directives',
      'ui.router', 'ngResource', 'kbaseLogin', 
-      'ui.bootstrap', 'search'])
+      'ui.bootstrap', 'search', 'homology'])
     .config(['$locationProvider', '$stateProvider', '$httpProvider', '$urlRouterProvider',
     function($locationProvider, $stateProvider, $httpProvider, $urlRouterProvider) {
 
