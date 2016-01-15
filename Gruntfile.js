@@ -246,8 +246,39 @@ module.exports = function (grunt) {
             dev: {
                 name: 'dev'
             }
+        },
+        clean: {
+            build: {
+                src: [
+                    'build/build'
+                ]
+            },
+            dist: {
+                src: [
+                    'build/dist'
+                ]
+            },
+            test: {
+                src: [
+                    'build/build-test-coverage'
+                ]
+            },
+            temp: {
+                src: [
+                    'build/temp'
+                ]
+            },
+            deps: {
+                src: [
+                    'node_modules', 'bower_components'
+                ]
+            }
         }
     });
+    
+    grunt.registerTask('clean-all', [
+        'clean:build', 'clean:dist', 'clean:test', 'clean:deps', 'clean:temp'
+    ]);
 
     // Does a single, local, unit test run.
     grunt.registerTask('test', [

@@ -535,8 +535,6 @@ function installExternalModules(state) {
             });
         })
         .then(function (modules) {
-            console.log('MODULES');
-        console.log(modules);
             return Promise.all(modules.map(function (module) {
                 var repoRoot = (module.source.directory.root && module.source.directory.root.split('/')) || ['..', '..', '..'],
                     source = repoRoot.concat([module.globalName]),
@@ -700,18 +698,11 @@ function cleanup(state) {
         });
 }
 
-function makeDevBuild(state) {
+function makeBaseBuild(state) {
     var root = state.environment.path,
-        devPath = ['..', 'dev'],
         buildPath = ['..', 'build'];
 
     return fs.removeAsync(buildPath.concat(['build']).join('/'))
-        .then(function () {
-            return fs.ensureDirAsync(devPath.join('/'));
-        })
-        .then(function () {
-            return fs.moveAsync(root.concat(['deploy.cfg']).join('/'), root.concat(['build', 'deploy.cfg']).join('/'));
-        })
         .then(function () {
             return fs.moveAsync(root.concat(['config']).join('/'), root.concat(['build', 'config']).join('/'));
         })
@@ -747,6 +738,9 @@ function makeDistBuild(state) {
         })
         .then(function () {
             return fs.copyAsync(root.concat(['dist']).join('/'), buildPath.concat(['dist']).join('/'));
+        })
+        .then(function () {
+            return state;
         });
 }
 
@@ -768,7 +762,7 @@ function main(type) {
         },
         {
             cwd: ['..'],
-            files: ['deploy.cfg', 'bower.json']
+            files: ['bower.json']
         },
         {
             cwd: ['..'],
@@ -784,13 +778,13 @@ function main(type) {
                     cwd: ['..', 'dev'],
                     path: ['config']
                 });
-                buildControlConfigPath = ['..', 'dev', 'config', type + '.yml'];
+                buildControlConfigPath = ['..', 'dev', 'config', 'builds', type + '.yml'];
             } else {
                 initialFilesystem.push({
                     cwd: ['..'],
                     path: ['config']
                 });
-                buildControlConfigPath = ['..', 'config', type + '.yml'];
+                buildControlConfigPath = ['..', 'config', 'builds', type + '.yml'];
             }
             return {
                 initialFilesystem: initialFilesystem,
@@ -889,8 +883,8 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Making the dev build...');
-            return makeDevBuild(state);
+            console.log('Making the base build...');
+            return makeBaseBuild(state);
         })
 
         .then(function (state) {
@@ -900,9 +894,11 @@ function main(type) {
             if (state.config.build.dist) {
                 console.log('Making the dist build...');
                 return makeDistBuild(state);
-            } else {
-                return null;
             }
+            return state;
+        })
+        .then(function (state) {
+            return mutant.finish(state);
         })
         .catch(function (err) {
             console.log('ERROR');

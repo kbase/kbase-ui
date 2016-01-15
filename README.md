@@ -81,7 +81,7 @@ For more complete instructions (which in turn have links to technical guides), p
 
 - [Prerequisites](docs/prerequisites.md)
 - [Installation](docs/installation.md)
-- [Deployment](docs/deployment.md)
+- [Deployment](docs/quick-deploy.md)
 
 ## Development
 

@@ -19,7 +19,7 @@
  *   
  */
 
-/*global define*/
+/*global require, module*/
 /*jslint white:true*/
 'use strict';
 
@@ -38,7 +38,7 @@ function copyFiles(tryFrom, tryTo, globExpr) {
         .spread(function (from, to) {
             return [from.split('/'), to.split('/'), glob(globExpr, {
                     cwd: from
-                })]
+                })];
         })
         .spread(function (from, to, matches) {
             return Promise.all(matches.map(function (match) {
@@ -51,9 +51,9 @@ function copyFiles(tryFrom, tryTo, globExpr) {
 
 function ensureEmptyDir(path) {
     var dir = path.join('/');
-    
+
     // ensure dir
-    return fs.ensureDirAsync(dir) 
+    return fs.ensureDirAsync(dir)
         .then(function () {
             return fs.readdirAsync(dir);
         })
@@ -157,19 +157,6 @@ function deleteMatchingFiles(path, regex) {
     });
 }
 
-function mutate(app, state, next) {
-    var history = [state];
-    return new Promise(function (resolve, reject, update) {
-        return engine(app, state, next, history, resolve, reject, update);
-    })
-        .then(function (result) {
-            return {
-                result: result,
-                history: history
-            };
-        });
-}
-
 function copyState(oldState) {
     return Promise.try(function () {
         if (oldState.config.debug) {
@@ -190,72 +177,33 @@ function copyState(oldState) {
                 .then(function () {
                     return newState;
                 });
-            } else {
-                return oldState;
-            }
+        } 
+        return oldState;
     });
 }
 
-// ENGINE
-// The little one that could.
-function engine(app, oldState, next, stateHistory, resolve, reject, update) {
-    return Promise.try(function () {
-        var nextProcess = app[next].process;
-        if (nextProcess) {
-            try {
-                // make our filesystem.
-                var result,
-                    state = JSON.parse(JSON.stringify(oldState)),
-                    tempDir = uniq('temp_'),
-                    newFs = [tempDir],
-                    oldFs = state.environment.filesystem,
-                    start = (new Date()).getTime();
-
-                // Give the next process a fresh copy of all the files.
-                state.environment.filesystem = newFs;
-                state.environment.path = state.environment.root.concat(newFs);
-                state.environment.name = next;
-                copydir(state.environment.root, oldFs, state.environment.root, newFs);
-                state.copyTime = (new Date()).getTime() - start;
-                start = (new Date()).getTime();
-
-                // Run the next process with the fresh state. The state
-                // should now be modified (and is also returned in the 
-                // result.)
-                return nextProcess(state)
-                    .then(function (result) {
-                        state.processTime = (new Date()).getTime() - start;
-                        stateHistory.push(state);
-                        if (result[1]) {
-                            return engine(app, result[0], result[1], stateHistory, resolve, reject, update)
-                                .then(function () {
-                                });
-                        } else {
-                            // console.log(arguments);
-                            resolve(result[0]);
-                        }
-                    })
-                    .catch(function (err) {
-                        console.log('ERROR in the process: ' + next);
-                        console.log(err);
-                        console.log(err.stack);
-                        reject(err);
-                    });
-            } catch (ex) {
-                console.log('ERROR in the process: ' + next);
-                console.log(ex);
-                console.log(ex.stack);
-                reject(ex);
-            }
-        } else {
-            console.log('$$$$$$$$$ DONE $$$$$$$$$$$');
-        }
-    });
+function makeRunDir(state) {
+    var runDirName = uniqts('run_'),
+        // This is the root of all process files
+        root = (state.config.build.temp && ['..'].concat(state.config.build.temp.split('/'))) || ['mutantfiles'],
+        runDir = mkdir(root, [runDirName]);
+    state.environment.root = runDir;
+    return state;
 }
 
-function createInitialState(config) {
-    var initialFilesystem = config.initialFilesystem,
-        buildControlConfigPath = config.buildControlConfigPath;
+function removeRunDir(state) {
+    if (state.environment.root) {
+        return fs.removeAsync(state.environment.root.join('/'))
+            .then(function () {
+                return state;
+            });
+    }
+    return state;
+}
+
+function createInitialState(initialConfig) {
+    var initialFilesystem = initialConfig.initialFilesystem,
+        buildControlConfigPath = initialConfig.buildControlConfigPath;
     // TODO: do this better...
     var app, appName;
     if (process.argv[0].match(/node$/)) {
@@ -268,13 +216,15 @@ function createInitialState(config) {
     console.log('Creating initial state for app: ' + appName);
 
     return loadYaml(buildControlConfigPath)
-        .then(function (config) {
-            var runDirName = uniqts('run_'),
-                // This is the root of all process files
-		root = (config.build.temp && ['..'].concat(config.build.temp.split('/'))) || ['mutantfiles'],
-                runDir = mkdir(root, [runDirName]),
-                // This is the "input" filesystem
-                inputFiles = mkdir(runDir, ['inputfiles']),
+        .then(function (buildConfig) {
+            var state = {
+                environment: {},
+                data: {}, state: {}, config: buildConfig, history: []
+            };
+            return makeRunDir(state);
+        })
+        .then(function (state) {
+            var inputFiles = mkdir(state.environment.root, ['inputfiles']),
                 inputFs = [];
 
             // We first copy the input directories into the input filesystem
@@ -290,25 +240,27 @@ function createInitialState(config) {
 
             inputFs = ['inputfiles'];
 
-            return {
-                // A path to the root filesystem for the current state    
-                environment: {
-                    // root for the above filesystem.
-                    root: runDir,
-                    filesystem: inputFs,
-                    path: runDir.concat(inputFs)
-                },
-                data: {},
-                state: {},
-                config: config,
-                history: []
-            };
+            state.environment.filesystem = inputFs;
+            state.environment.path = state.environment.root.concat(inputFs);
+
+            return state;
+        });
+}
+
+function finish(state) {
+    return Promise.try(function () {
+        if (!state.config.debug) {
+            return removeRunDir(state);
+        }
+    })
+        .then(function () {
+            console.log('Finished with mutations');
         });
 }
 
 module.exports = {
-    mutate: mutate,
     createInitialState: createInitialState,
+    finish: finish,
     deleteMatchingFiles: deleteMatchingFiles,
     copyState: copyState,
     copyFiles: copyFiles,

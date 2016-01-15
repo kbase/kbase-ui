@@ -1,20 +1,20 @@
 # Prerequisites
 
-In order to run the KBase UI you will need a web server which can serve up typical web file types. It will need to point to a single directory, and probably require almost no configuration. The [installation](installation.md) instructions describe how to set up the two supported configurations, nginx and nodejs. In production KBase uses nodejs as the web server front end, and in development nodejs is preferred.
+In order to run the KBase UI you will need a web server which can serve up typical web file types. It will need to point to a single directory, and probably require almost no configuration. The [installation](installation.md) instructions describe how to set up the two supported configurations, nginx and nodejs. In production, KBase uses nginx as the web server front end, and in development nodejs is preferred since it is included and can be quickly started, stopped, and requires no additional system software.
 
-For development, you will need a common javascript development toolchain, described below.
+For development, you will need a common Javascript development toolchain, described below.
+
+## System Requirements
+
+The kbase-ui should build and run on any modern system: Mac OS X, Linux, FreeBSD, Windows.
 
 At the system level, you will need to install the following packages:
 
 - git
 - nodejs
+- npm
 
-It should not matter which version of these packages you install, as long as they are relatively recent. git is very stable, but nodejs is evolving rapidly and undergoes periodic major version shifts. As of this writing, we are using nodejs 4.2.3, so the version 4 line, although version 5.3.0 is out. The version 5 line has suffered some hiccups after initial release, and some plugins have not caught up yet, so we have avoided it for now.
-
-Once nodejs is installed, these node packages need to be installed globally with npm:
-
-- bower
-- karma
+These are only required for installation, and the KBse build tools are not super-sensitive to the precise version, as long as they are relatively recent. git is very stable, but nodejs is evolving rapidly and undergoes periodic major version shifts. As of this writing, we are using nodejs 4.2.3, so the version 4 line, although version 5.3.0 is out. We experienced failures with version 5, and have not attempted again.
 
 Installation of system level packages depends on ... the system you use, of course. Even within a platform there may be multiple ways to install a given package. In this document we provide instructions for installation on platforms in use at KBase using methods that we have employed.
 
@@ -68,10 +68,15 @@ Download and follow the instructions at [https://www.macports.org/install.php](h
 
 #### 2) Use the terminal to install the dependencies using Macports.
 
-open terminal and issue the following commands:
+open Terminal and issue the following commands:
 
 ```
 sudo port install npm phantomjs
+```
+
+You may optionally install these tools globally. They will be installed locally and used internally by the Makefile, but if you anticipate using these tools from the command line you will have an easier time installing them globally.
+
+```
 sudo npm install -g bower
 sudo npm install -g grunt-cli
 sudo npm install -g karma-cli
@@ -107,6 +112,8 @@ Occasionally you may be prompted for an admin account authorization if you are u
 
 Using Vagrant, or a virtual machine directly, is a great way to test the canonical installation environment for KBase UI, which is Ubunto 14.04 (as of the time of writing.) It is also a great way to shake out prerequisites, to test out changes to prerequisites, and to generally create an isolated runtime, since you may not want to remove the requisite packages in your native working environment.
 
+First get a working VM up and running:
+
 ```
 vagrant init ubuntu/trusty64
 vagrant up
@@ -117,10 +124,28 @@ sudo apt-get dist-upgrade
 exit
 vagrant reload
 vagrant ssh
-sudo apt-get -y install git npm nodejs-legacy phantomjs
-# weird I had to do the following - must be a vagrant thing.
-sudo chown vagrant /home/vagrant/tmp 
-sudo npm install -g bower
-sudo npm install -g grunt-cli
-sudo npm install -g karma-cli
 ```
+
+The node with Ubuntu is very old -- antique by node standards -- and will not work with kbase-ui requirements.
+
+get the NodeSource PPA:
+
+```
+curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+```
+
+and build tools
+
+this is for npm modules which include c-compilable code (e.g. phantomjs)
+
+```
+apt-get install build-essential
+```
+
+this is for phantomjs -- a hidden dependency
+
+```
+sudo apt-get install libfontconfig1
+```
+
+You are now ready to install use kbase-ui

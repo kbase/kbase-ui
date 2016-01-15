@@ -1,11 +1,84 @@
 # Deploying the KBase UI
 
+
+## Steps
+
+### Prerequisites
+
+
+### Clone kbase-ui
+
+
+### Select which branch or tag
+
+
+### Make
+
+
+### Make deploy
+
+
+## Configuration Explained
+
+
+## Background - architecture
+
+
+## Notes
+
+### PhantomJS 
+
+PhantomJS is a very finicky package. On some systems it is better to install a binary globally into the system, on others not. The main culprit seems to be NPM. Here are some sample issues:
+
+Ubuntu
+
+- when installed with npm has a hidden dependency which is only discovered when you try to use it: libfontconfig1
+- when installed with apt-git, is too old and not compatible with the npm wrapper (which is still required)
+- npm leaves installers cached in /tmp, and the npm gets very confused about the phantomjs installer that gets left in /tmp if you have to backup and need to install again. Rebooting or otherwise clearing /tmp fixes this.
+
+
+---
+
+
 ## Background - architecture  
 The KBase UI is constructed from multiple Git repos. The core repo is this one: [kbase-ui](https://github.com/kbase/kbase-ui). Going through the following build steps will use Bower to automatically download and install elements of the other repos (see [below](#repo-list) for details).
 
 We use a combination of `make` and `grunt` for building the KBase UI. Actually, we mainly use `grunt` for the task running, but each `make` target just wraps it up, if you're more comfortable with that. This also lets the KBase UI stack more easily fit into the rest of the KBase operations efforts.
 
-## Requirements  
+## Requirements
+
+### System Requirements
+
+- nodejs
+- npm (may be installed with newer nodejs)
+- git
+
+
+### nodejs
+
+The node with Ubuntu is very old -- antique by node standards -- and will not work with kbase-ui requirements.
+
+get the NodeSource PPA:
+
+```
+curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+```
+
+and build tools
+
+this is for npm modules which include c-compilable code (e.g. phantomjs)
+
+```
+apt-get install build-essential
+```
+
+this is for phantomjs -- a hidden dependency
+
+```
+sudo apt-get install libfontconfig1
+```
+
+
 Before deploying, your machine will need to have a few JavaScript tools installed.
 
 1. nodejs - https://nodejs.org
