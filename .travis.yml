@@ -23,4 +23,4 @@ branches:
 #  - npm install -g grunt-cli
 install:
   - make build target=ci
-script: grunt test-travis
+script: make test-travis

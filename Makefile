@@ -28,7 +28,7 @@ KARMA			= ./node_modules/.bin/karma
 all: init build
 
 # See above for 'all' - just running 'make' should locally build
-default: init build ci
+default: init build
 
 # The "EZ Install" version - init, build, start, preview
 # Note that this uses the default targets -- which are least disruptive (to production)
@@ -79,6 +79,8 @@ preview:
 test:
 	$(KARMA) start test/karma.conf.js
 	
+test-travis:
+	$(GRUNT) test-travis	
 
 # Clean slate
 clean:
