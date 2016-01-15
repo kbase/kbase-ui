@@ -17,139 +17,169 @@ define([
             name: "KBaseCatalogModuleDevViewer",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
             options: {
-
+                module_name: null
             },
             $mainPanel: null,
             $errorPanel: null,
-
 
             // clients to the catalog service and the NarrativeMethodStore
             catalog: null,
             nms: null,
 
-            // list of NMS method and app info (todo: we need to move this to the catalog)
-            // for now, most of the filtering/sorting etc is done on the front end; this
-            // will eventually need to move to backend servers when there are enough methods
-            appList: null,
-
-            // list of catalog module info
-            moduleList: null,
-
-            // control panel and elements
-            $controlToolbar: null,
-
+            // 
+            module_name: null,
+            moduleDetails: null,
+            isGithub: null,
 
             // main panel and elements
             $mainPanel: null,
-            $appListPanel: null,
-            $moduleListPanel: null,
             $loadingPanel: null,
-
 
             init: function (options) {
                 this._super(options);
                 
                 var self = this;
 
+                self.module_name = options.module_name;
+                self.isGithub = false;
+
                 // new style we have a runtime object that gives us everything in the options
                 self.runtime = options.runtime;
-                console.log(options);
-                console.log(this.runtime.service('session').getAuthToken());
                 self.setupClients();
 
-                // initialize and add the control bar
-                self.$controlToolbar = this.renderControlToolbar();
-                self.$elem.append(this.$controlToolbar);
-
-
-
                 console.log(options);
-                self.$elem.append("module dev viewer");
-                return this;
 
                 // initialize and add the main panel
                 self.$loadingPanel = self.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
                 var mainPanelElements = self.initMainPanel();
                 self.$mainPanel = mainPanelElements[0];
-                self.$appListPanel = mainPanelElements[1];
-                self.$moduleListPanel = mainPanelElements[2];
                 self.$elem.append(self.$mainPanel);
                 self.showLoading();
 
-                // get the list of apps and modules
+                // get the module information
                 var loadingCalls = [];
-                self.appList = []; self.moduleList = [];
-                loadingCalls.push(self.populateAppListWithMethods());
-                loadingCalls.push(self.populateAppListWithApps());
-                loadingCalls.push(self.populateModuleList());
+                self.moduleDetails = { info:null, versions:null };
+                loadingCalls.push(self.getModuleInfo());
+                loadingCalls.push(self.getModuleVersions());
 
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
-                    console.log('done loading!');
-                    self.renderAppList();
+                    self.render();
                     self.hideLoading();
                 });
 
 
-
-
-                this.$elem.append($('<div>').append("now we're in business.").addClass('catalog'));
-
-
-              //  this.narstore = new NarrativeMethodStore(this.runtime.getConfig('services.narrative_method_store.url'));
-
-               // alert(runtime.service('session').getAuthToken());
-
-           /* var catalog = new Catalog(runtime.getConfig('services.catalog.url'), {
-                 token: runtime.service('session').getAuthToken()
-            });*/
-            /*
-            catalog.version(
-                 function (version) {
-                     alert('Catalog version is ' + version);
-                 },
-                 function (err) {
-                     alert('ERROR (check console)');
-                     console.log('ERROR');
-                     console.log(err);
-                 };
-*/
-
-/*
-                console.log('NARR VIEW');
-                console.log(this.$elem);
-
-                this.$errorPanel = $('<div>').addClass('alert alert-danger').hide();
-                this.$elem.append(this.$errorPanel);
-
-                this.$mainPanel = $("<div>");
-                this.$elem.append(this.$mainPanel);
-
-                this.$narMethodStoreInfo = $("<div>").css({margin: '10px', padding: '10px'});
-                this.$elem.append(this.$narMethodStoreInfo);
-
-                this.narstore = new NarrativeMethodStore(this.runtime.getConfig('services.narrative_method_store.url'));
-                this.getNarMethodStoreInfo();
-                this.imageUrl = this.runtime.getConfig('services.narrative_method_store.image_url');
-                
-                console.log('Narrative Store');
-                console.log(options);
-
-                if (options.namespace) {
-                    this.options.id = this.options.namespace + '/' + this.options.id;
-                }
-
-                if (options.type === 'app') {
-                    this.fetchAppInfoAndRender();
-                } else if (options.type === 'method') {
-                    this.fetchMethodInfoAndRender();
-                } else {
-                    this.showError({error: {message: 'Must specify either "app" or "method" in url, as in narrativestore/app/app_id.'}});
-                }
-                */
-
                 return this;
+            },
+
+            render: function() {
+                var self = this;
+
+                var info = self.moduleDetails.info;
+                var versions = self.moduleDetails.versions;
+
+                var $header = $('<div>');
+
+                $header.append($('<h1>').append(info.module_name));
+                $header.append($('<h4>').append(
+                    '<a href="'+info.git_url+'" target="_blank">'+info.git_url+'<a>'));
+                $header.append($('<div>').html(info.description));
+
+                var $owners = $('<div>').append('<i>KBase Module Developed by:</i> ');
+                for(var k=0; k<info.owners.length; k++) {
+                    // todo: get nice name
+                    var username = info.owners[k];
+                    $owners.append('<a href="#people/'+username+'">'+username+"</a> ");
+
+                }
+                $header.append($owners);
+
+                self.$mainPanel.append($header);
+                self.$mainPanel.append('<hr>');
+
+
+                var $versionDiv = $('<div>');
+
+                $versionDiv.append('<h3>Stable Released Version</h3>');
+                if(info.release) {
+                    $versionDiv.append(self.renderVersion('release',info.release));
+                } else {
+                    $versionDiv.append('<i>This module has not been released.</i>');
+                }
+
+                $versionDiv.append('<h3>Beta Version</h3>');
+                if(info.beta) {
+                    $versionDiv.append(self.renderVersion('beta',info.beta));
+                } else {
+                    $versionDiv.append('<i>This module has not been released to beta.</i>');
+                }
+
+                $versionDiv.append('<h3>Development Version</h3>');
+                if(info.dev) {
+                    $versionDiv.append('<a href="#appcatalog/status/'+info.module_name+'">View recent registrations</a><br>')
+                    $versionDiv.append(self.renderVersion('dev',info.dev));
+                } else {
+                    $versionDiv.append('<i>This module has not been registered properly.</i>');
+                }
+
+                self.$mainPanel.append($versionDiv);
+                
+
+                if(versions) {
+                    if(versions.length>0) {
+                        $versionDiv.append('<hr>');
+                        $versionDiv.append('<h3>Old Releases</h3>');
+                        for(var v=0; v<versions.length; v++) {
+                            $versionDiv.append('<h4>'+versions[v].version+'</h4>');
+                            $versionDiv.append(self.renderVersion(versions[v].version,versions[v]));
+                        }
+                    }
+                }
+
+                console.debug(self.moduleDetails);
+            },
+
+            // tag=dev/beta/release/version number, version=the actual info
+            renderVersion: function(tag, version) {
+                var self = this;
+                var git_url = this.moduleDetails.info.git_url;
+                var $verDiv = $('<div>');
+
+                // Check state here, it may be registering currently
+
+                $verDiv.append('<b>Version:</b> ' + version.version + '<br>');
+                $verDiv.append('<b>Registration Timestamp:</b> ' + new Date(version.timestamp).toLocaleString() + ' - ' + version.timestamp + '<br>');
+                if(self.isGithub) {
+                    $verDiv.append('<b>Commit:</b> <a href="'+git_url+'/tree/' + version.git_commit_hash+
+                        '" target="_blank">'+version.git_commit_hash+'</a><br>');
+                } else {
+                    $verDiv.append('<b>Commit:</b> ' + version.git_commit_hash+'<br>');
+                }
+                $verDiv.append('<b>Commit Mssg:</b> ' + version.git_commit_message+'<br>');
+                $verDiv.append('<b>Narrative Apps/Methods:</b> ');
+
+
+                if(version.narrative_methods) {
+                    if(version.narrative_methods.length>0) {
+                        $verDiv.append('<br>');
+                        var $l = $('<ul>');
+                        for(var i=0; i<version.narrative_methods.length; i++) {
+                            var id = version.narrative_methods[i];
+                            //$l.append('<li><a href="#appcatalog/app/method/'+this.moduleDetails.info.module_name+'/'+id+
+                            //    '">'+id+'</a></li>');
+                            $l.append('<li><a href="#narrativestore/method/'+this.moduleDetails.info.module_name+'/'+id+
+                                '">'+id+'</a></li>');
+                        }
+                        $verDiv.append($l);
+                    } else {
+                        $verDiv.append('none<br>');
+                    }
+                } else {
+                    $verDiv.append('none<br>');
+                }
+
+                return $verDiv;
             },
 
 
@@ -162,89 +192,12 @@ define([
                     this.runtime.getConfig('services.narrative_method_store.url'),
                     { token: this.runtime.service('session').getAuthToken() }
                 );
-
             },
-
-
-
-            renderControlToolbar: function () {
-                var self = this;
-
-                var $searchDiv = $('<div>').addClass('col-md-6');
-
-                var $searchBox = $('<input type="text" placeholder="Search">').addClass('form-control');
-                $searchBox.on('input',
-                    function() {
-                        self.filterApps($searchBox.val());
-                    });
-
-                $searchDiv.append($('<div>').addClass('input-group input-group-sm')
-                                        .append($searchBox));
-
-                // sort
-                // toggle module vs app/method
-                // toggle release, dev, beta versions
-
-                var $ctrbar = $('<div>').addClass('row kbcb-ctr-toolbar');
-                $ctrbar.append($searchDiv);
-
-                return $ctrbar;
-            },
-
-
-            filterApps: function(query) {
-                var self = this;
-                query = query.trim();
-                if(query) {
-                    var terms = query.toLowerCase().match(/\w+|"(?:\\"|[^"])+"/g);
-                    if (terms) {
-                        //console.log(terms);
-                        for(var k=0; k<self.appList.length; k++) {
-                            var match = true;
-                            for(var t=0; t<terms.length; t++) {
-                                if(terms[t].charAt(0)=='"' && terms[t].charAt(terms.length-1)=='"' && terms[t].length>2) {
-                                    terms[t] = terms[t].substring(1,terms[t].length-1);
-                                    // the regex keeps quotes in quoted strings, so toss those
-                                }
-                                // filter on names
-                                if(self.appList[k].info.name.toLowerCase().indexOf(terms[t]) < 0) {
-                                    match = false; break;
-                                }
-                                // filter on other stuff
-                            }
-
-                            // show or hide
-                            if(match) {
-                                self.appList[k].$div.show();
-                            } else {
-                                self.appList[k].$div.hide();
-                            }
-                        }
-                    } else {
-                        self.clearFilter();
-                    }
-
-                } else {
-                    self.clearFilter();
-                }
-            },
-
-            clearFilter: function() {
-                var self = this;
-                for(var k=0; k<self.appList.length; k++) {
-                    self.appList[k].$div.show();
-                }
-            },
-
 
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
-                var $mainPanel = $('<div>').addClass('kbcb-main-panel-div');
-                var $appListPanel = $('<div>');
-                var $moduleListPanel = $('<div>');
-                $mainPanel.append($appListPanel);
-                $mainPanel.append($moduleListPanel);
-                return [$mainPanel, $appListPanel, $moduleListPanel];
+                var $mainPanel = $('<div>').addClass('kbcb-mod-main-panel');
+                return [$mainPanel];
             },
 
             initLoadingPanel: function() {
@@ -265,103 +218,40 @@ define([
             },
 
 
-            skipApp: function(categories) {
-                for(var i=0; i<categories.length; i++) {
-                    if(categories[i]=='inactive') {
-                        return true;
-                    }
-                    if(categories[i]=='viewers') {
-                        return true;
-                    }
-                    if(categories[i]=='importers') {
-                        return true;
-                    }
-                }
-                return false;
-            },
 
 
-            populateAppListWithMethods: function() {
-                var self = this;
-
-                // determine which set of methods to fetch
-                var tag='dev';
-
-                return self.nms.list_methods({
-                        tag:tag
-                    })
-                    .then(function (methods) {
-                        for(var k=0; k<methods.length; k++) {
-
-                            // logic to hide/show certain categories
-                            if(self.skipApp(methods[k].categories)) continue;
-
-                            var m = {
-                                type: 'method',
-                                info: methods[k],
-                                $div: $('<div>').addClass('kbcb-app')
-                            };
-                            self.renderAppBox(m);
-                            self.appList.push(m);
-                        }
-                    })
-                    .catch(function (err) {
-                        console.error('ERROR');
-                        console.error(err);
-                    });
-            },
-
-            populateAppListWithApps: function() {
-                var self = this;
-
-                // determine which set of methods to fetch
-                var tag='release';
-
-                return self.nms.list_apps({
-                        tag:tag
-                    })
-                    .then(function (apps) {
-                        console.log('hello apps');
-                        console.log(apps);
-                        for(var k=0; k<apps.length; k++) {
-                            var a = {
-                                type: 'app',
-                                info: apps[k],
-                                $div: $('<div>').addClass('kbcb-app')
-                            };
-                            self.renderAppBox(a);
-                            self.appList.push(a);
-                        }
-                    })
-                    .catch(function (err) {
-                        console.error('ERROR');
-                        console.error(err);
-                    });
-            },
-
-
-
-            populateModuleList: function() {
+            getModuleInfo: function() {
                 var self = this
 
                 var moduleSelection = {
-                    include_released:1,
-                    include_unreleased:1,
-                    include_disabled:0
+                    module_name: self.module_name
                 };
 
-                return self.catalog.list_basic_module_info(moduleSelection)
-                    .then(function (modules) {
-                        //return self.catalog.list_basic_module_info()
-                        //console.log('hello modules');
-                        //console.log(modules);
-                        for(var k=0; k<modules.length; k++) {
-                            var m = {
-                                info: modules[k],
-                                $div: $('<div>').addClass('kbcb-module')
-                            };
-                            self.renderModuleBox(m);
-                            self.moduleList.push(m);
+                return self.catalog.get_module_info(moduleSelection)
+                    .then(function (info) {
+                        console.log(info);
+                        /*typedef structure {
+                            string module_name;
+                            string git_url;
+
+                            string description;
+                            string language;
+
+                            list <string> owners;
+
+                            ModuleVersionInfo release;
+                            ModuleVersionInfo beta;
+                            ModuleVersionInfo dev;
+                        } ModuleInfo;*/
+                        self.moduleDetails.info = info;
+                        var git_url = self.moduleDetails.info.git_url;
+                        var github = 'https://github.com/'
+                        if(git_url.substring(0, github.length) === github) {
+                            self.isGithub = true;
+                            // if it ends with .git, truncate so we get the basic url
+                            if(git_url.indexOf('.git', git_url.length - '.git'.length) !== -1) {
+                                self.moduleDetails.info.git_url = git_url.substring(0, git_url.length - '.git'.length);
+                            }
                         }
                     })
                     .catch(function (err) {
@@ -371,36 +261,37 @@ define([
             },
 
 
+            getModuleVersions: function() {
+                var self = this
 
-            renderAppBox: function(app) {
-                var $appDiv = $('<div>').addClass('kbcb-app');
-                $appDiv.append('<br>')
-                $appDiv.append(app.info.name);
+                var moduleSelection = {
+                    module_name: self.module_name
+                };
 
-                if(app.info['module_name']) {
-                    $appDiv.append('<br>').append(
-                        $('<a href="#catalog/modules/'+app.info.module_name+'">')
-                            .append('['+app.info.module_name+']'));
-                }
-                app.$div = $appDiv;
+                return self.catalog.list_released_module_versions(moduleSelection)
+                    .then(function (versions) {
+                        console.log(versions);
+                        /*typedef structure {
+                            string module_name;
+                            string git_url;
+
+                            string description;
+                            string language;
+
+                            list <string> owners;
+
+                            ModuleVersionInfo release;
+                            ModuleVersionInfo beta;
+                            ModuleVersionInfo dev;
+                        } ModuleInfo;*/
+                        self.moduleDetails.versions = versions;
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
             },
 
-            renderModuleBox: function(module) {
-                var $modDiv = $('<div>').addClass('kbcb-app');
-                $modDiv.append(module.info.module_name);
-                module.$div = $modDiv;
-            },
-
-
-
-            renderAppList: function() {
-                var self = this;
-
-                for(var k=0; k<self.appList.length; k++) {
-                    self.$appListPanel.append(self.appList[k].$div);
-                }
-
-            },
 
             showError: function (error) {
                 this.$errorPanel.empty();

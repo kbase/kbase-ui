@@ -17,7 +17,7 @@ define([
             name: "KBaseCatalogModuleViewer",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
             options: {
-                module_name:'null'
+                module_name: null
             },
             $mainPanel: null,
             $errorPanel: null,
@@ -48,6 +48,7 @@ define([
                 self.setupClients();
 
                 console.log(options);
+                console.log(this.runtime.service('session'))
 
                 // initialize and add the main panel
                 self.$loadingPanel = self.initLoadingPanel();
@@ -128,7 +129,7 @@ define([
 
                 if(versions) {
                     if(versions.length>0) {
-                        self.$mainPanel.append('<hr>');
+                        $versionDiv.append('<hr>');
                         $versionDiv.append('<h3>Old Releases</h3>');
                         for(var v=0; v<versions.length; v++) {
                             $versionDiv.append('<h4>'+versions[v].version+'</h4>');
@@ -149,7 +150,7 @@ define([
                 // Check state here, it may be registering currently
 
                 $verDiv.append('<b>Version:</b> ' + version.version + '<br>');
-                $verDiv.append('<b>Timestamp:</b> ' + version.timestamp+'<br>');
+                $verDiv.append('<b>Registration Timestamp:</b> ' + new Date(version.timestamp).toLocaleString() + ' - ' + version.timestamp + '<br>');
                 if(self.isGithub) {
                     $verDiv.append('<b>Commit:</b> <a href="'+git_url+'/tree/' + version.git_commit_hash+
                         '" target="_blank">'+version.git_commit_hash+'</a><br>');
@@ -157,7 +158,7 @@ define([
                     $verDiv.append('<b>Commit:</b> ' + version.git_commit_hash+'<br>');
                 }
                 $verDiv.append('<b>Commit Mssg:</b> ' + version.git_commit_message+'<br>');
-                $verDiv.append('<b>Narrative Methods:</b> ');
+                $verDiv.append('<b>Narrative Apps/Methods:</b> ');
 
 
                 if(version.narrative_methods) {
@@ -166,9 +167,9 @@ define([
                         var $l = $('<ul>');
                         for(var i=0; i<version.narrative_methods.length; i++) {
                             var id = version.narrative_methods[i];
-                            //$l.append('<li><a href="#appcatalog/app/method/'+self.module_name+'/'+id+
+                            //$l.append('<li><a href="#appcatalog/app/method/'+this.moduleDetails.info.module_name+'/'+id+
                             //    '">'+id+'</a></li>');
-                            $l.append('<li><a href="#narrativestore/method/'+self.module_name+'/'+id+
+                            $l.append('<li><a href="#narrativestore/method/'+this.moduleDetails.info.module_name+'/'+id+
                                 '">'+id+'</a></li>');
                         }
                         $verDiv.append($l);
@@ -193,8 +194,6 @@ define([
                     { token: this.runtime.service('session').getAuthToken() }
                 );
             },
-
-
 
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
