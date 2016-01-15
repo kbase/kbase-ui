@@ -18,7 +18,7 @@ The node with ubuntu is really out of date:
 
 get the NodeSource PPA:
 
-curl -sL https://deb.nodesource.com/setup | sudo bash -
+curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 
 and build tools
 

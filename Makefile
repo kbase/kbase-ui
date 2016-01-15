@@ -86,7 +86,7 @@ preview:
 # Tests are managed by grunt, but this also mimics the workflow.
 #init build
 test:
-	karma start test/karma.conf.js
+	$(KARMA) start test/karma.conf.js
 	
 
 # Clean slate
