@@ -113,3 +113,10 @@ bowerFiles:
         src:
             - q.js
         bowerComponent: true
+    - 
+        name: postal
+        cwd: lib
+        src: 
+            - postal.js        
+        bowerComponent: true
+            

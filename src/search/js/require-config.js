@@ -40,16 +40,16 @@ require.config({
       alert("Error:" + err);
    },
    paths: {
-      Q: '../bower_components/q/q',
-      nunjucks: '../bower_components/nunjucks/nunjucks',
+      Q: '../modules/bower_components/q/q',
+      nunjucks: '../modules/bower_components/nunjucks/nunjucks',
       md5: 'src/md5',
-      lodash: '../bower_components/lodash/lodash',
+      lodash: '../modules/bower_components/lodash/lodash',
       'postal.request-response': '/ext/postal/postal.request-response.min',
       postaldeluxe: 'src/postal/postal-deluxe',
 
-      domReady: '../bower_components/requirejs-domready/domReady',
-      text: '../bower_components/requirejs-text/text',
-      json: '../bower_components/requirejs-json/json',
+      domReady: '../modules/bower_components/requirejs-domready/domReady',
+      text: '../modules/bower_components/requirejs-text/text',
+      json: '../modules/bower_components/requirejs-json/json',
       
       // kbase utils
       'kb.utils': 'src/kbaseUtils',

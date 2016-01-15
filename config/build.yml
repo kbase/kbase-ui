@@ -8,6 +8,6 @@ build:
     temp: ../mutantfiles
 bower:
     offline: false
-debug: false
+debug: true
 server:
     port: 8080
