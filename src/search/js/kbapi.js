@@ -12,6 +12,7 @@ function KBCacheClient(token) {
     	ws_url = urls.workspace_url;
     	//ujs_url = urls.user_job_state_url;
     	search_url = urls.search_url;
+	homology_service_url = urls.homology_service_url;
     } else {
         fba_url = "http://kbase.us/services/KBaseFBAModeling/"
         ws_url = "https://kbase.us/services/ws/"
@@ -40,6 +41,7 @@ function KBCacheClient(token) {
     // some accessible variables
     self.ws_url = ws_url;
     self.search_url = search_url;    
+    self.homology_service_url = homology_service_url;
     self.token = token;
     self.nar_type = 'KBaseNarrative.Narrative';
     self.metagenome_url = "./communities/metagenome.html?metagenome=";

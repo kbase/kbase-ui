@@ -1,0 +1,279 @@
+<div class="container-fluid kbase-view kbase-search-view">
+    <div class="row search-sections">
+        <div class="col-sm-3 col-md-3 col-lg-3 search-left-nav search-leftarea-size"> <!-- left navigation columns -->
+            <div class="search-leftarea-size"> <!-- Narrative selected -->                            
+                <div class="col-sm-12 col-md-12 col-lg-12 search-leftarea-size">
+                    <div ng-hide="options.userState.session.token" class="alert alert-warning search-login">
+                        <div id="login-message" class="text-center">
+                            <a ng-click='login()'>Sign in</a> to select data and send to your Narratives
+                        </div>
+                    </div>
+                    <!--                  
+                    <div ng-show="options.userState.session.token" class="alert alert-success search-logout">
+                        <div id="logout-message" class="text-center">                                                    
+                            Logged in as <strong>{{options.userState.session.user_id}}</strong>                                                
+                        </div>
+                        <div class="text-center">{{options.userState.session.name}}</div>
+                        <div class="text-center">
+                            <a ng-click='logout()'>Sign out</a>
+                        </div>
+                    </div>
+                    -->
+
+
+                    <div ng-hide="!options.userState.session.token || options.userState.session.selectedWorkspace" class="alert alert-warning">
+                        <div class="text-center">
+                            <span class="search-cart-label"><a ng-click="options.userState.session.selectedWorkspace = undefined; listWorkspaces();">Select a Narrative</a></span>
+                        </div>
+                    </div>
+                    <div ng-show="options.userState.session.selectedWorkspace" class="alert alert-success">
+                        <div class="text-center">
+                            <span>Copy to Narrative</span>
+                        </div>
+                        <div>
+                            <button type="button" class="btn-xs btn-danger btn-select-narrative" ng-click="options.userState.session.selectedWorkspace = undefined" ng-show="options.userState.session.transfer_cart.size == 0 && !options.transferring"><span class="glyphicon glyphicon-remove-sign"></span></button>
+                        </div>
+                        <div class="text-center">
+                            <span class="glyphicon glyphicon-hdd"></span>
+                            <span class="search-cart-label">{{options.userState.session.selectedWorkspaceName}}</span>
+                            <span class="badge badge-info" ng-repeat="w in options.userState.longterm.workspaces" ng-if="w[1] == options.userState.session.selectedWorkspace">{{w[4]}}</span>
+                        </div>
+                    </div>
+                    
+                    <div ng-show="options.userState.session.selectedWorkspace" class="text-center">
+                        <!--
+                        <div class="search-transfer-row" ng-show="options.userState.session.transfer_cart.size > 0">
+                            <button type="button" class="btn btn-primary" ng-class="{disabled: !options.userState.session.selectedWorkspace || options.transferring}" ng-click="copyData(options.selectedCategory)">Copy<span class="glyphicon glyphicon-transfer"><span></button>
+                        </div>
+                        <div class="search-transfer-row search-transfer-row" ng-show="options.userState.session.data_cart.size == 0 && !options.transferring">
+                            <p>Select data to copy.</p>
+                        </div>
+                        -->
+                        <div class="search-transfer-row search-transfer-progress" ng-show="options.userState.session.data_cart.size >= 0 && (options.transferring || options.objectsTransferred > 0)">
+                            <div class="text-center">Object Copy Requests Sent</div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'min-width': (options.transferRequests/options.transferSize * 100.0) + '%'}">
+                                    {{options.transferRequests}}/{{options.transferSize}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="search-transfer-row search-transfer-progress" ng-show="options.objectsTransferred > 0 && options.transferSize > 0">
+                            <div class="text-center">Completed Object Copies</div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'min-width': (options.objectsTransferred/options.transferSize * 100.0) + '%'}">
+                                    {{options.objectsTransferred}}/{{options.transferSize}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="workspace-area" ng-class="{'panelAnimateOut': options.userState.session.displayWorkspaces, 'panelAnimateIn': !options.userState.session.displayWorkspaces}" ng-show="options.userState.session.displayWorkspaces">
+                        <ul class='nav nav-pills nav-stacked scroll-menu'>
+                            <li id="{{w[1].replace(':','_')}}_{{w[4]}}" ng-repeat="w in options.userState.longterm.workspaces" ng-class="{'workspace-chosen': '{{options.userState.session.selectedWorkspace}}' == '{{w[1]}}'}">
+                                <a ng-click='selectWorkspace(w)'>
+                                    <div class="text-left">
+                                        <span class="glyphicon glyphicon-hdd"></span>
+                                        <span>{{w[8].narrative_nice_name}}</span>
+                                        <span class='badge pull-right'>{{w[4]}}</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+
+
+                    
+                    <div ng-show="options.userState.session.token">
+                        <div class='text-center search-selections-title'>
+                            <h3 data-toggle="tooltip" data-placement="right" tooltip="Here you can see what data you have selected, organize it, and send it to Narratives." tooltip-placement="right">Selections</h3>
+                        </div>
+
+                        <div class="text-center">
+                            <span class="badge" style="font-size:18px; margin-left: auto; margin-right: auto;">{{options.userState.session.data_cart.size | number}}</span>
+                            <div data-toggle="tooltip" data-placement="top" tooltip="This cart represents your data selections." tooltip-placement="top">
+                                <span class="glyphicon glyphicon-shopping-cart search-cart"></span>
+                            </div>
+                        </div>
+                
+                        <div class="text-center">
+                            <div style="margin-bottom: 5px;">
+                                <button rel="tooltip" tooltip="Transfer my selections to Narratives." tooltip-placement="bottom" data-placement="bottom" data-toggle="modal" data-target="#transferPanel" type="button" ng-class="{'disabled': options.userState.session.data_cart.size < 1 || !options.userState.session.selectedWorkspace}" class='btn btn-primary' ng-click="copyData(options.selectedCategory)">
+                                    <span class="glyphicon glyphicon-hdd"></span>
+                                    <span> </span>
+                                    <span class="glyphicon glyphicon-transfer"></span>
+                                    <span> </span>
+                                    <span class="glyphicon glyphicon-file"></span>
+                                </button>
+                                <!--
+                                <button rel="tooltip" tooltip="Transfer my selections as a set to Narratives." tooltip-placement="bottom" data-placement="bottom" data-toggle="modal" data-target="#transferPanel" type="button" ng-class="{'disabled': options.userState.session.data_cart.size < 1 || !options.userState.session.selectedWorkspace || !options.userState.session.set[options.selectedCategory]}" class='btn btn-setcopy' ng-click="copySet(options.selectedCategory)">
+                                    <span class="glyphicon glyphicon-hdd"></span>
+                                    <span> </span>
+                                    <span class="glyphicon glyphicon-transfer"></span>
+                                    <span> </span>
+                                    <span class="glyphicon glyphicon-book"></span>
+                                </button>
+                                -->
+                                <button data-toggle="tooltip" data-placement="bottom" tooltip="Discard my data selections." tooltip-placement="bottom" type="button" ng-class="{'disabled': options.userState.session.data_cart.size < 1}" class='btn btn-danger' ng-click='emptyCart()'>
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>              
+                            </div> <!-- end Narrative send button group -->
+                        </div>
+                    </div>
+                </div> <!-- end all Narrative button groups -->
+            </div> <!-- end Narrative-selected area -->
+
+        </div> <!-- end filter section -->
+
+        <div ng-cloak class="col-sm-9 col-md-9 col-lg-9 search-result-section"> <!-- search results section -->
+
+            <div class="row search-bar">
+                <form class="form-horizontal" ng-submit="newSearch()" autocomplete="off">
+                    <div class="form-group">
+                        <label for="sequence" class="col-sm-2 control-label">Sequence:</label>
+                        <div class="col-sm-10">
+                            <textarea id="sequence" class="form-control" style="font-family:monospace; font-size:12px;" rows="10" autofocus required
+                                      ng-model="options.searchOptions.general.sequence" placeholder="FASTA sequence to search"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="database" class="col-sm-2 control-label">Database:</label>
+                        <div class="col-sm-10">
+                            <select id="database" class="form-control" ng-model="options.searchOptions.general.database">
+                                <option ng-repeat="db in availableDatabases" ng-selected="db.selected" value="{{db.value}}">{{db.label}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Genomes:</label>
+                        <div class="col-sm-10">
+                            <div ng-repeat="item in targetGenomes" style="padding:0 0 5px 0">
+                                <input id="genomes_{{item.key}}" name="genome_names[]" value="" class="form-control" style="width:414px" type="text" value="" placeholder="Search by Genome Name"
+                                    ng-model="selectedGenomeName"
+                                    typeahead="genome as genome.name for genome in getGenomeName($viewValue) | filter:$viewValue"
+                                    typeahead-loading="loading..." typeahead-min-length="4" typeahead-wait-ms="500"
+                                    typeahead-on-select="onGenomeNameSelect($item, $model, $label, {{item.key}})">
+
+                                <button ng-hide="item.key > 0" type="button" class="btn" ng-click="addGenomeInputBox()">Add</button>
+                                <button ng-hide="item.key == 0" type="button" class="btn" ng-click="removeGenomeInputBox(item)">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="program" class="col-sm-2 control-label">Program:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="program" ng-model="options.searchOptions.general.program">
+                                <option ng-repeat="prog in availablePrograms" ng-selected="prog.selected" value="{{prog.value}}">{{prog.label}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="max_hit" class="col-sm-4 control-label">Max target sequences:</label>
+                        <div class="col-sm-2">
+                            <select class="form-control" id="max_hit" ng-model="options.searchOptions.general.max_hit">
+                                <option ng-repeat="level in targetSequences" ng-selected="level.selected" value="{{level.value}}">{{level.label}}</option>
+                            </select>
+                        </div>
+                        <label for="evalue" class="col-sm-4 control-label">Expect threshold:</label>
+                        <div class="col-sm-2">
+                            <input type="text" id="evalue" class="form-control" value="1e-10" ng-model="options.searchOptions.general.evalue" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-9 col-sm-3">
+                            <button type="submit" class="btn btn-primary">Search Homology</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-md-12 col-lg-12 search-result-section"> <!-- all results -->                            
+                <div ng-if="options.searchOptions.general.q && getTotalCount() < 1 && !options.selectedCategory && !searchActive" class="search-results-select-category">
+                    <div class="alert alert-danger">
+                        <strong>No results found for any data type.</strong>
+                    </div>
+                </div>
+
+                <div ng-if="options.searchOptions.general.q && options.selectedCategory && options.categoryCounts[options.selectedCategory] < 1 && !searchActive" class="search-results-select-category">
+                    <div class="alert alert-danger">
+                        <strong>No results found in {{options.searchCategories[options.selectedCategory].label}}.</strong>
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-lg-12 search-results">
+                    <!-- Show this when no category is selected -->
+                    <div class="col-md-12 col-lg-12 search-results" ng-show="options.resultsAvailable && getTotalCount() > 0">
+                        <div class="col-md-12 col-lg-12 search-result-set-header" ng-show="options.resultJSON.totalResults > 0"> <!-- result options -->
+                            <div class="col-md-12 search-results-counter">
+                                <div>
+                                    <span><strong>
+                                        <!--{{ 1 + ((options.resultJSON.currentPage - 1) * options.resultJSON.itemsPerPage) | number }}-{{ options.resultJSON.itemCount + ((options.resultJSON.currentPage - 1) * options.resultJSON.itemsPerPage) | number }} out of -->
+                                        {{ options.resultJSON.totalResults | number }} results found</strong></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12 search-results-toolbar">
+                                <div ng-if="options.expandedCategories[options.selectedCategory]" class="btn-group btn-group-xs col-xs-2 search-view-buttons" data-toggle="buttons">
+                                    <label class="control-label input-group">Views</label>
+                                    <label data-toggle="tooltip" data-placement="left" tooltip="Compact results" tooltip-placement="top" class="btn btn-small btn-default" ng-class="{'active': options.userState.session.viewType == 'compact'}" ng-click="setView('compact')">
+                                        <input type="radio" name="list_view"/>
+                                        <span class="glyphicon glyphicon-list"></span>
+                                    </label>
+                                    <label data-toggle="tooltip" data-placement="right" tooltip="Expanded results" tooltip-placement="top" class="btn btn-small btn-default" ng-class="{'active': options.userState.session.viewType == 'expanded'}" ng-click="setView('expanded')">
+                                        <input type="radio" name="list_view"/>
+                                        <span class="glyphicon glyphicon-th-list"></span>
+                                    </label>
+                                </div>
+<!--
+                                <div ng-if="!options.expandedCategories[options.selectedCategory]" class="btn-group btn-group-xs col-xs-2 search-view-buttons"></div>
+                                <div class="btn-group btn-group-xs col-xs-3 search-perpage-buttons" data-toggle="buttons">
+                                    <label class="control-label input-group">Items per page</label>
+                                    <label class="btn btn-default" ng-class="{'active': i == options.searchOptions.general.itemsPerPage}" ng-repeat="i in [10,25,50,100]" ng-click="setResultsPerPage(i)">
+                                        <input type="radio" name="rpp" >{{i}}</input>
+                                    </label>
+                                </div>
+-->
+                            </div> <!-- end toolbar row -->
+                        </div> <!-- end result options -->
+                        <div class="col-md-12 col-lg-12">
+                            <!-- our output should go here normally -->
+                            <div ng-show="options.resultJSON.totalResults > 0" class="search-results-content-area" ng-include="options.templates.root"></div>
+
+                            <!-- pagination controls should be at the bottom to slow down page requests through the UI -->
+                            <!--<div class="text-center search-results-content-area">
+                                <ul class="pagination" ng-class="{'fixed-pagination': options.resultJSON.totalResults <= options.pageLinksRange.length * options.resultJSON.itemsPerPage,'small-pagination': options.resultJSON.totalResults > options.numPageLinks && options.resultJSON.currentPage - options.numPageLinks <= 0,'large-pagination': options.resultJSON.currentPage - options.numPageLinks > 0 }">
+                                    <li ng-if="options.resultJSON.currentPage - options.numPageLinks > 0">
+                                        <a ng-click="setCurrentPage(options.pageLinksRange[0] - 1)">&larr; Previous {{options.numPageLinks}}</a>
+                                    </li>
+                                    <li ng-class="{'active': p == options.resultJSON.currentPage}" ng-repeat="p in options.pageLinksRange">
+                                        <a ng-click="setCurrentPage(p)">{{p}}</a>
+                                    </li>
+                                    <li ng-if="(options.pageLinksRange[0] + options.numPageLinks) * options.resultJSON.itemsPerPage < options.resultJSON.totalResults">
+                                        <a ng-click="setCurrentPage(options.pageLinksRange[0] + options.numPageLinks)">Next {{options.numPageLinks}} &rarr;</a>
+                                    </li>
+                                </ul>                        
+                            </div>-->
+                        </div>
+                    </div> <!-- end specific category results row -->
+                </div> <!-- end results inner row -->
+            </div> <!-- end results outer row -->
+        </div> <!-- end results section -->
+
+        <div class="hidden">
+            <div id="loading_message">
+                <strong>KBase</strong>
+                <div id="loading_message_icon">
+                    <img src="assets/img/kbase_animated_logo.gif" alt="animated_logo"/>
+                </div>
+                <div id="loading_message_text">Searching...</div>
+            </div>
+        </div>
+
+        <div id="error" class="row hidden">
+            Sorry, an error occurred. Please try again.
+            <hr/>
+            <div id="error_text"></div>
+        </div>
+
+    </div> <!-- end search sections -->
+
+</div>
