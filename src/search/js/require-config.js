@@ -40,7 +40,7 @@ require.config({
       alert("Error:" + err);
    },
    paths: {
-      Q: '../modules/bower_components/q/q',
+      Q: '../assets/js/q.min',
       nunjucks: '../modules/bower_components/nunjucks/nunjucks',
       md5: 'src/md5',
       lodash: '../modules/bower_components/lodash/lodash',

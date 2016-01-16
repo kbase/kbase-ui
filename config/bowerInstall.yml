@@ -104,7 +104,7 @@ bowerFiles:
             - languages/*.js
         bowerComponent: true
     -
-        name: blockUI
+        name: blockui
         src:
             - jquery.blockUI.js
         bowerComponent: true
