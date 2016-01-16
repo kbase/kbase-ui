@@ -25,10 +25,14 @@ GRUNT		        = ./node_modules/.bin/grunt
 KARMA			= ./node_modules/.bin/karma
 
 # Standard 'all' target = just do the standard build
-all: init build
+all:
+	@echo Use "make init && make config=TARGET build"
+	@echo see docs/quick-deploy.md 
 
 # See above for 'all' - just running 'make' should locally build
-default: init build
+default:
+	@echo Use "make init && make config=TARGET build"
+	@echo see docs/quick-deploy.md 
 
 # The "EZ Install" version - init, build, start, preview
 # Note that this uses the default targets -- which are least disruptive (to production)
