@@ -19,6 +19,8 @@ plugins:
     -
         narrativemanager
     -
+        catalog
+    -
         narrativestore
     # external:
     -

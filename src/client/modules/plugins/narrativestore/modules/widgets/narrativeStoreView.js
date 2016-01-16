@@ -15,6 +15,7 @@ define([
             name: "KBaseNarrativeStoreView",
             parent: "kbaseAuthenticatedWidget",
             options: {
+                namespace: null, // generally a module name
                 type: null, // either app or method
                 id: null
             },
@@ -42,6 +43,10 @@ define([
                 
                 console.log('Narrative Store');
                 console.log(options);
+
+                if (options.namespace) {
+                    this.options.id = this.options.namespace + '/' + this.options.id;
+                }
 
                 if (options.type === 'app') {
                     this.fetchAppInfoAndRender();
@@ -84,6 +89,9 @@ define([
 
                         self.$narMethodStoreInfo.append(
                             $('<table>').css({border: '1px solid #bbb', margin: '10px', padding: '10px'})
+                            .append($('<tr>')
+                                .append($('<th>').append('Method Store URL  '))
+                                .append($('<td>').append(self.runtime.getConfig('services.narrative_method_store.url'))))
                             .append($('<tr>')
                                 .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Yaml/Spec Location '))
                                 .append($('<td>').append('<a href="' + url + '" target="_blank">' + url + "</a>")))
