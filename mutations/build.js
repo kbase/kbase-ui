@@ -907,6 +907,16 @@ function main(type) {
         });
 }
 
-var type = process.argv[2] || 'build';
+function usage() {
+    console.error('usage: node build <config>');
+}
+
+var type = process.argv[2];
+
+if (type === undefined) {
+    console.error('Build config not specified');
+    usage();
+    process.exit(1);
+}
 
 main(type);
