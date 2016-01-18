@@ -499,7 +499,7 @@ function installExternalPlugins(state) {
                         cwd = cwds.split('/'),
                         // Our actual cwd is mutations, so we need to escape one up to the 
                         // project root.
-                        repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..', '..'],
+                        repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..'],
                         source = repoRoot.concat([plugin.globalName]).concat(cwd),
                         destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
                     return copyFiles(source, destination, '**/*');
