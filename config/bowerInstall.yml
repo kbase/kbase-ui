@@ -83,6 +83,13 @@ bowerFiles:
             - css/datatables-bootstrap3.css
             - js/datatables-bootstrap3.js
         bowerComponent: true
+    - 
+        name: google-code-prettify
+        cwd: src
+        src:
+            - prettify.js
+            - prettify.css
+        bowerComponent: true        
     -
         dir: d3-plugins-sankey
         src:
