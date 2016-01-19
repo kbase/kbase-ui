@@ -40,7 +40,8 @@ plugins:
     -
         name: typeview
         globalName: kbase-ui-plugin-typeview
-        version: 0.1.1
+        cwd: src/plugin
+        version: 0.1.2
         source:
             bower: {}
     -
