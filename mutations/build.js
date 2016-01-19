@@ -499,7 +499,7 @@ function installExternalPlugins(state) {
                         cwd = cwds.split('/'),
                         // Our actual cwd is mutations, so we need to escape one up to the 
                         // project root.
-                        repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..', '..'],
+                        repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..'],
                         source = repoRoot.concat([plugin.globalName]).concat(cwd),
                         destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
                     return copyFiles(source, destination, '**/*');
@@ -907,6 +907,16 @@ function main(type) {
         });
 }
 
-var type = process.argv[2] || 'build';
+function usage() {
+    console.error('usage: node build <config>');
+}
+
+var type = process.argv[2];
+
+if (type === undefined) {
+    console.error('Build config not specified');
+    usage();
+    process.exit(1);
+}
 
 main(type);

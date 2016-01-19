@@ -68,10 +68,10 @@ devinit:
 	
 
 start:
-	cd tools/server; node server start $(target) &
+	cd tools/server; node server start $(config) $(directory)&
 
 stop: 
-	cd tools/server; node server stop 
+	cd tools/server; node server stop  $(config)
 
 # Run the server, and open a browser pointing to it.
 preview:

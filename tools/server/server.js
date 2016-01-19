@@ -21,10 +21,10 @@ function loadBuildConfig(state) {
             var configRoot;
             if (devExists) {
                 configRoot = ['..', '..', 'dev', 'config'];
-                return [configRoot, loadYaml(configRoot.concat(['builds', state.args.type + '.yml']))];
+                return [configRoot, loadYaml(configRoot.concat(['builds', state.args.build + '.yml']))];
             } else {
                 configRoot = ['..', '..','config'];
-                return [configRoot, loadYaml(configRoot.concat(['builds', state.args.type + '.yml']))];
+                return [configRoot, loadYaml(configRoot.concat(['builds', state.args.build + '.yml']))];
             }
         })
         .spread(function (configRoot, config) {
@@ -36,21 +36,22 @@ function loadBuildConfig(state) {
 
 
 function start(state) {
-    var type = state.args.type,
+    var directory = state.args.directory,
         rootDir,
         port = state.config.build.server.port,
         title = 'kbup-' + String(port);
 
 
     console.log('Starting local kbase-ui server');
-    console.log('Type: ' + type);
-    console.log('Port: ' + port);
+    console.log('Type      : ' + state.args.build);
+    console.log('Directory : ' + state.args.directory);
+    console.log('Port      : ' + port);
 
-    if (type === 'deployed') {
+    if (directory === 'deployed') {
         // TODO: get this from the deploy config
-        rootDir = '/kb/deployment/ui-common/';
+        rootDir = '/kb/deployment/services/kbase-ui/';
     } else {
-        rootDir = path.normalize([__dirname, '..', '..', 'build', type, 'client'].join('/'));
+        rootDir = path.normalize([__dirname, '..', '..', 'build', directory, 'client'].join('/'));
     }
     process.title = title;
     if (!fs.existsSync(rootDir)) {
@@ -161,14 +162,21 @@ function main(state) {
 
 var action = process.argv[2];
 if (action === undefined) {
-    throw new Error('action required: node server <action> <type>');
+    throw new Error('action required: node server <action> <build> <directory>');
 }
-var type = process.argv[3] || 'build';
+var build = process.argv[3];
+if (build === undefined) {
+    throw new Error('action required: node server <action> <build> <directory>');
+}
+
+var directory= process.argv[4] || 'build';
+
 
 main({
     args: {
         action:action,
-        type: type
+        build: build,
+        directory: directory
     },
     config: {
         
