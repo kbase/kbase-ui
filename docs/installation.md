@@ -63,7 +63,7 @@ The developer build is the basis of all other builds, and is the default. There 
 In the default configuration, building will create only the developer build:
 
 ```
-make build
+make build config=ci
 ```
 
 > See the [development](development.md) docs for integration of local modules
