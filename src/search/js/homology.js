@@ -305,7 +305,8 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         }
     });
 
-    $scope.availableDatabases = [{value: "kbase_nr.faa", label: "KBase Non-redendant Protein Sequences (NR-faa)"}
+    $scope.availableDatabases = [{value: "kbase_nr.faa", label: "KBase Non-redendant Protein Sequences (NR-faa)"},
+      {value: "kbase_nr.ffn", label: "KBase Non-redundant gene sequences (NR-ffn)"}
     ];
 
     $scope.availablePrograms = [{value: "blastn", label: "blastn"},
@@ -536,7 +537,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             };
             $scope.options.resultsAvailable = true;
 
-            //console.log($scope.options.resultJSON);
+            console.log($scope.options.resultJSON);
 
             var position = $scope.options.resultJSON.currentPage % $scope.options.numPageLinks;
             var start;
@@ -578,15 +579,19 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         var root = json[0][0].report.results.search;
         var hits = root.hits;
         var query_id = root.query_id;
+        var metadata = json[1];
+        var identical = json[2] || {};
+
         var entries = [];
         hits.forEach(function(hit, index){
             //console.log(hit);
+            var target_id = hit.description[0].id;
             entries.push({
-                "row_id": hit.description[0].id,
+                "row_id": target_id,
                 "object_type": "KBaseSearch.Feature",
                 "position": (index + 1),
                 "qseqid": query_id,
-                "sseqid": hit.description[0].id,
+                "sseqid": target_id,
                 "pident": parseInt(Number(hit.hsps[0].identity / hit.len * 10000))/100,
                 "length": hit.len,
                 "qstart": hit.hsps[0].query_from,
@@ -595,7 +600,12 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 "send": hit.hsps[0].hit_to,
                 "evalue": hit.hsps[0].evalue,
                 "bitscore": Math.round(hit.hsps[0].bit_score),
-                "pairewise": {
+                "genome_id": metadata[target_id].genome_id,
+                "genome_name": metadata[target_id].genome_name,
+                "function": metadata[target_id].function,
+                "detail": {
+                    "match_count": metadata[target_id].match_count || 0,
+                    "matches": identical[target_id] || [],
                     "qseq": hit.hsps[0].qseq,
                     "hseq": hit.hsps[0].hseq,
                     "midline": hit.hsps[0].midline
