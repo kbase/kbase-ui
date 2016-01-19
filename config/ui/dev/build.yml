@@ -40,7 +40,8 @@ plugins:
     -
         name: typeview
         globalName: kbase-ui-plugin-typeview
-        version: 0.1.1
+        cwd: src/plugin
+        version: 0.1.2
         source:
             bower: {}
     -
@@ -93,8 +94,8 @@ plugins:
         version: 0.1.0
         cwd: src/plugin
         source:
-            bower:
-                version: eapearson/kbase-ui-plugin-data-api-demo#master
+            bower: {}
+            #    version: eapearson/kbase-ui-plugin-data-api-demo#master
             # directory:
                 # This is where to find repos; it will be the level above kbase-ui
                 # if not specified, or may be overridden in the dev config.
