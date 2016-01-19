@@ -3,7 +3,10 @@
     <div ng-if="item.detail.match_count > 1">
       <a href="/search/#/homology/" ng-click="showMatches = !showMatches">Number of matches: {{item.detail.match_count}}</a>
       <ul ng-show="showMatches">
-        <li ng-repeat="match in item.detail.matches">{{match[0]}}, {{match[1].function}}, {{match[1].genome_name}}</li>
+        <li ng-repeat="match in item.detail.matches">
+          <span ng-bind-html="match[0] | buildFeatureLink"></span> {{match[1].function}}
+          [<span ng-bind-html="match[1] | buildGenomeLink"><span>]
+        </li>
       </ul>
     </div>
     <pre>{{item.detail | displayPairwiseComparison}}</pre>

@@ -1,5 +1,5 @@
 <div class="col-md-1 col-lg-1 search-result-column homology_query_seq_field">{{item.qseqid}}</div>
-<div class="col-md-2 col-lg-2 search-result-column homology_subj_seq_field">{{item.sseqid}}</div>
+<div class="col-md-2 col-lg-2 search-result-column homology_subj_seq_field" ng-bind-html="item.sseqid | buildFeatureLink"></div>
 <div class="col-md-1 col-lg-1 search-result-column text-right homology_numeric_field">{{item.pident}}</div>
 <div class="col-md-1 col-lg-1 search-result-column text-right homology_numeric_field">{{item.length | number}}</div>
 <div class="col-md-2 col-lg-2 search-result-column homology_string_field">{{item.genome_name}}</div>

@@ -271,6 +271,22 @@ homologyApp.filter('displayPairwiseComparison', function($sce) {
    }
 });
 
+homologyApp.filter('buildFeatureLink', function($sce){
+  return function(feature_id){
+    var genome_id = feature_id.split('.peg')[0];
+    var version = "KBasePublicGenomesV5";
+
+    return $sce.trustAsHtml('<a href="/#/dataview/' + version + '/' + genome_id + '?sub=Feature&subid=' + feature_id + '" target=_blank>' + feature_id + '</a>');
+  }
+});
+
+homologyApp.filter('buildGenomeLink', function($sce){
+  return function(genome){
+    var version = "KBasePublicGenomesV5";
+
+    return $sce.trustAsHtml('<a href="/#/dataview/' + version + '/' + genome.genome_id + '" target=_blank>' + genome.genome_name + '</a>');
+  }
+});
 
 /* Controllers */
 
