@@ -188,7 +188,8 @@ homologyApp.service('homologyOptionsService', function homologyOptionsService() 
                                     "searchtype": "features",
                                     "genome_ids": [],
                                     "max_hit": 10,
-                                    "evalue": "1e-5"
+                                    "evalue": "1e-5",
+                                    "useDatabase": false
                                 },
                                 "perCategory": {"features":{}}
                                },
@@ -321,9 +322,21 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         }
     });
 
-    $scope.availableDatabases = [{value: "kbase_nr.faa", label: "KBase Non-redendant Protein Sequences (NR-faa)"},
+    $scope.availableDatabases = [{value: "", label: "Search on selected genomes", selected: true},
+      {value: "kbase_nr.faa", label: "KBase Non-redendant Protein Sequences (NR-faa)"},
       {value: "kbase_nr.ffn", label: "KBase Non-redundant gene sequences (NR-ffn)"}
     ];
+
+    $scope.validateDatabase = function() {
+      // console.log($scope.options.searchOptions.general.database, $scope.options.searchOptions.general.useDatabase);
+      if ($scope.options.searchOptions.general.database != "") {
+        // disable genome selector
+        $scope.options.searchOptions.general.useDatabase = true;
+      }
+      else {
+        $scope.options.searchOptions.general.useDatabase = false;
+      }
+    };
 
     $scope.availablePrograms = [{value: "blastn", label: "blastn"},
         {value: "blastp", label: "blastp", selected:true},
@@ -522,8 +535,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         //console.log($scope.targetGenomes);
         var method = "", params = null;
 
-        console.log("database: ", options.database);
-        if (options.database != undefined) {
+        if (options.useDatabase) {
           // database search
           method = "HomologyService.blast_fasta_to_database";
           params = [options.sequence, options.program, options.database, options.evalue, options.max_hit, 70];
