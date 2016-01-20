@@ -34,13 +34,11 @@ function loadBuildConfig(state) {
         });
 }
 
-
 function start(state) {
     var directory = state.args.directory,
         rootDir,
         port = state.config.build.server.port,
         title = 'kbup-' + String(port);
-
 
     console.log('Starting local kbase-ui server');
     console.log('Type      : ' + state.args.build);
@@ -135,6 +133,10 @@ function usage() {
     console.log('node server <cmd>');
 }
 
+function importArgs() {
+    
+}
+
 function main(state) {
     loadBuildConfig(state)
         .then(function (state) {
@@ -159,7 +161,6 @@ function main(state) {
         });
 }
 
-
 var action = process.argv[2];
 if (action === undefined) {
     throw new Error('action required: node server <action> <build> <directory>');
@@ -169,8 +170,7 @@ if (build === undefined) {
     throw new Error('action required: node server <action> <build> <directory>');
 }
 
-var directory= process.argv[4] || 'build';
-
+var directory = process.argv[4] || 'build';
 
 main({
     args: {
