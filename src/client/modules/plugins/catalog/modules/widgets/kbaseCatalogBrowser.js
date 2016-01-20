@@ -35,6 +35,9 @@ define([
             // list of catalog module info
             moduleList: null,
 
+            // dict of module info for fast lookup
+            moduleLookup: null,
+
             // control panel and elements
             $controlToolbar: null,
 
@@ -100,6 +103,7 @@ define([
                         return 0;
                     });
 
+                    self.processData();
 
                     self.renderAppList();
                     self.hideLoading();
@@ -333,18 +337,88 @@ define([
                     });
             },
 
+            processData: function() {
+                var self = this;
+
+                // setup module map
+                self.moduleLookup = {};
+                for(var m=0; m<self.moduleList.length; m++) {
+                    self.moduleLookup[self.moduleList[m].info.module_name] = self.moduleList.info;
+                }
+            },
+
 
 
             renderAppBox: function(app) {
-                var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover');
-                $appDiv.append('<br>')
-                $appDiv.append(app.info.name);
+                console.log(app)
+                //var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover');
 
+                var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover');
+
+
+                var $topDiv = $('<div>').addClass('clearfix kbcb-app-card-header');
+                var $logoSpan = $('<div>').addClass('col-xs-4 kbcb-app-card-logo');
+                // add actual logos here
+                $logoSpan.append('<div class="fa-stack fa-3x"><i class="fa fa-square fa-stack-2x method-icon"></i><i class="fa fa-inverse fa-stack-1x fa-cube"></i></div>')
+                var $titleSpan = $('<div>').addClass('col-xs-8 kbcb-app-card-title-panel');
+                
+                $titleSpan.append($('<div>').addClass('kbcb-app-card-title').append(app.info.name));
                 if(app.info['module_name']) {
-                    $appDiv.append('<br>').append(
-                        $('<a href="#appcatalog/module/'+app.info.module_name+'">')
-                            .append('['+app.info.module_name+']'));
+                    $titleSpan.append($('<div>').addClass('kbcb-app-card-module').append(
+                                        $('<a href="#appcatalog/module/'+app.info.module_name+'">')
+                                            .append(app.info.module_name)));
                 }
+                $titleSpan.append($('<div>').addClass('kbcb-app-card-authors').append('by xxx'));
+
+                $appDiv.append(
+                    $topDiv
+                        .append($logoSpan)
+                        .append($titleSpan));
+
+                var $subtitle = $('<div>').addClass('kbcb-app-card-subtitle').append(app.info.subtitle).hide()
+                $appDiv.append($subtitle);
+
+                /* footer area for metrics and such */
+                var $footer = $('<div>').addClass('clearfix kbcb-app-card-footer');
+
+
+                var $starDiv = $('<div>').addClass('col-xs-3').css('text-align','left');
+                var $star = $('<span>').addClass('kbcb-star').append('<i class="fa fa-star"></i>');
+                $star.on('click', function() {
+                    event.stopPropagation();
+                    alert('you have favorited this app - currently does nothing');
+                });
+                var favoriteCount = Math.floor(Math.random()*100);
+                $footer.append($starDiv.append($star).append('&nbsp;'+favoriteCount));
+                $starDiv.tooltip({title:'A favorite method of '+favoriteCount+' people.', placement:'bottom',
+                                    delay:{show: 400, hide: 40}});
+
+
+                var nRuns = Math.floor(Math.random()*10000);
+                var $nRuns = $('<div>').addClass('col-xs-4').css('text-align','left');
+                $nRuns.append($('<span>').append('<i class="fa fa-share"></i>'));
+                $nRuns.append('&nbsp;'+nRuns);
+                $nRuns.tooltip({title:'Run in a narrative '+nRuns+' times.', placement:'bottom',
+                                    delay:{show: 400, hide: 40}});
+
+                $footer.append($nRuns);
+
+
+                var $moreInfoDiv = $('<div>').addClass('col-xs-5').addClass('kbcb-info').css('text-align','right');
+                $moreInfoDiv
+                    .on('mouseenter', function() {
+                        $topDiv.hide();
+                        $subtitle.fadeIn();
+                    })
+                    .on('mouseleave', function() {
+                        $subtitle.hide();
+                        $topDiv.fadeIn();
+                    });
+                $moreInfoDiv.append($('<span>').append('<i class="fa fa-info"></i>'));
+                $footer.append($moreInfoDiv);
+                $appDiv.append($footer);
+
+
 
                 $appDiv.on('click', function() {
                     if(app.type === 'method') {
@@ -354,7 +428,9 @@ define([
                     }
                 });
 
-                app.$div = $appDiv;
+                var $appCardContainer = $('<div>').addClass('kbcb-app-card-container');
+
+                app.$div = $appCardContainer.append($appDiv);
             },
 
             renderModuleBox: function(module) {
@@ -375,6 +451,10 @@ define([
                 }
 
             },
+
+
+
+
 
             showError: function (error) {
                 this.$errorPanel.empty();
