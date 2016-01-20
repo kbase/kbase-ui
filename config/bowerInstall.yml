@@ -126,4 +126,9 @@ bowerFiles:
         src: 
             - postal.js        
         bowerComponent: true
+    -
+        name: thrift-binary-protocol
+        cwd: src/
+        src: "*.js"
+        bowerComponent: true        
             
