@@ -1,172 +1,24 @@
 <div class="btn-group search-result-column-header col-md-1 col-lg-1 homology_query_seq_header">
-    <button type="button" class="btn btn-default dropdown-toggle search-result-column-header-btn" data-toggle="dropdown">
-        <div class="search-column-name" ng-class="{'search-sort-activated': options.active_sorts[options.selectedCategory].sorts['qseqid']}"><strong>Query Seq Id</strong></div>
-<!--        <span class="glyphicon search-sort-icon" ng-class="{'glyphicon-sort': !options.active_sorts[options.selectedCategory].sorts['qseqid'], 'glyphicon-sort-by-alphabet': options.active_sorts[options.selectedCategory].sorts['qseqid'].direction == 'asc', 'glyphicon-sort-by-alphabet-alt': options.active_sorts[options.selectedCategory].sorts['qseqid'].direction == 'desc'}"></span>
-        <span class="badge search-sort-badge" ng-show="options.active_sorts[options.selectedCategory] && options.active_sorts[options.selectedCategory].count > 1">{{options.active_sorts[options.selectedCategory].sorts['qseqid'].order}}</span>-->
-    </button>
-    <!-- <ul class="dropdown-menu" role="menu">
-        <li>
-            <a ng-click="addSort(options.selectedCategory, 'qseqid', 'asc')">
-                <span class="glyphicon glyphicon-sort-by-alphabet"/>
-                <span>Sort ascending</span>
-            </a>
-        </li>
-        <li>
-            <a ng-click="addSort(options.selectedCategory, 'qseqid', 'desc')">
-                <span class="glyphicon glyphicon-sort-by-alphabet-alt"/>
-                <span>Sort descending</span>
-            </a>
-        </li>
-        <li>
-            <a ng-click="removeSort(options.selectedCategory, 'qseqid', true)">
-                <span class="glyphicon glyphicon-remove"/>
-                <span>Clear this sort</span>
-            </a>
-        </li>
-    </ul> -->
+  <div class="search-column-name btn search-result-column-header-btn"><strong>Query Id</strong></div>
 </div>
 <div class="btn-group search-result-column-header col-md-2 col-lg-2 homology_subj_seq_header">
-    <button type="button" class="btn btn-default dropdown-toggle search-result-column-header-btn" data-toggle="dropdown">
-        <div class="search-column-name" ng-class="{'search-sort-activated': options.active_sorts[options.selectedCategory].sorts['sseqid']}"><strong>Sub Seq Id</strong></div>
-<!--        <span class="glyphicon search-sort-icon" ng-class="{'glyphicon-sort': !options.active_sorts[options.selectedCategory].sorts['sseqid'], 'glyphicon-sort-by-alphabet': options.active_sorts[options.selectedCategory].sorts['sseqid'].direction == 'asc', 'glyphicon-sort-by-alphabet-alt': options.active_sorts[options.selectedCategory].sorts['sseqid'].direction == 'desc'}"></span>
-        <span class="badge search-sort-badge" ng-show="options.active_sorts[options.selectedCategory] && options.active_sorts[options.selectedCategory].count > 1">{{options.active_sorts[options.selectedCategory].sorts['sseqid'].order}}</span>-->
-    </button>
-    <!-- <ul class="dropdown-menu" role="menu">
-        <li>
-            <a ng-click="addSort(options.selectedCategory, 'sseqid', 'asc')">
-                <span class="glyphicon glyphicon-sort-by-alphabet"/>
-                <span>Sort ascending</span>
-            </a>
-        </li>
-        <li>
-            <a ng-click="addSort(options.selectedCategory, 'sseqid', 'desc')">
-                <span class="glyphicon glyphicon-sort-by-alphabet-alt"/>
-                <span>Sort descending</span>
-            </a>
-        </li>
-        <li>
-            <a ng-click="removeSort(options.selectedCategory, 'sseqid', true)">
-                <span class="glyphicon glyphicon-remove"/>
-                <span>Clear this sort</span>
-            </a>
-        </li>
-    </ul> -->
-</div>
-<div class="btn-group search-result-column-header col-md-1 col-lg-1 homology_numeric_header">
-    <button type="button" class="btn btn-default dropdown-toggle search-result-column-header-btn" data-toggle="dropdown">
-        <div class="search-column-name" ng-class="{'search-sort-activated': options.active_sorts[options.selectedCategory].sorts['pident']}"><strong>Identity</strong></div>
-<!--        <span class="glyphicon search-sort-icon" ng-class="{'glyphicon-sort': !options.active_sorts[options.selectedCategory].sorts['pident'], 'glyphicon-sort-by-alphabet': options.active_sorts[options.selectedCategory].sorts['pident'].direction == 'asc', 'glyphicon-sort-by-alphabet-alt': options.active_sorts[options.selectedCategory].sorts['pident'].direction == 'desc'}"></span>
-        <span class="badge search-sort-badge" ng-show="options.active_sorts[options.selectedCategory] && options.active_sorts[options.selectedCategory].count > 1">{{options.active_sorts[options.selectedCategory].sorts['pident'].order}}</span>-->
-    </button>
-    <!-- <ul class="dropdown-menu" role="menu">
-        <li>
-            <a ng-click="addSort(options.selectedCategory, 'pident', 'asc')">
-                <span class="glyphicon glyphicon-sort-by-alphabet"/>
-                <span>Sort alphabet</span>
-            </a>
-        </li>
-        <li>
-            <a ng-click="addSort(options.selectedCategory, 'pident', 'desc')">
-                <span class="glyphicon glyphicon-sort-by-alphabet-alt"/>
-                <span>Sort reverse alphabet</span>
-            </a>
-        </li>
-        <li>
-            <a ng-click="removeSort(options.selectedCategory, 'pident', true)">
-                <span class="glyphicon glyphicon-remove"/>
-                <span>Clear this sort</span>
-            </a>
-        </li>
-    </ul> -->
-</div>
-<div class="btn-group search-result-column-header col-md-1 col-lg-1 homology_numeric_header">
-    <button type="button" class="btn btn-default dropdown-toggle search-result-column-header-btn" data-toggle="dropdown">
-        <div class="search-column-name" ng-class="{'search-sort-activated': options.active_sorts[options.selectedCategory].sorts['length']}"><strong>Length</strong></div>
-<!--        <span class="glyphicon search-sort-icon" ng-class="{'glyphicon-sort': !options.active_sorts[options.selectedCategory].sorts['length'], 'glyphicon-sort-by-alphabet': options.active_sorts[options.selectedCategory].sorts['length'].direction == 'asc', 'glyphicon-sort-by-alphabet-alt': options.active_sorts[options.selectedCategory].sorts['length'].direction == 'desc'}"></span>
-        <span class="badge search-sort-badge" ng-show="options.active_sorts[options.selectedCategory] && options.active_sorts[options.selectedCategory].count > 1">{{options.active_sorts[options.selectedCategory].sorts['length'].order}}</span>-->
-    </button>
-    <!-- <ul class="dropdown-menu" role="menu">
-        <li>
-            <a ng-click="addSort(options.selectedCategory, 'length', 'asc')">
-                <span class="glyphicon glyphicon-sort-by-alphabet"/>
-                <span>Sort ascending</span>
-            </a>
-        </li>
-        <li>
-            <a ng-click="addSort(options.selectedCategory, 'length', 'desc')">
-                <span class="glyphicon glyphicon-sort-by-alphabet-alt"/>
-                <span>Sort descending</span>
-            </a>
-        </li>
-        <li>
-            <a ng-click="removeSort(options.selectedCategory, 'length', true)">
-                <span class="glyphicon glyphicon-remove"/>
-                <span>Clear this sort</span>
-            </a>
-        </li>
-    </ul> -->
+  <div class="search-column-name btn search-result-column-header-btn"><strong>Subject Id</strong></div>
 </div>
 <div class="btn-group search-result-column-header col-md-2 col-lg-2 homology_string_header">
-    <button type="button" class="btn btn-default dropdown-toggle search-result-column-header-btn">
-      <div class="search-column-name"><strong>Genome</strong></div>
-    </button>
+  <div class="search-column-name btn search-result-column-header-btn"><strong>Function</strong></div>
 </div>
 <div class="btn-group search-result-column-header col-md-2 col-lg-2 homology_string_header">
-    <button type="button" class="btn btn-default dropdown-toggle search-result-column-header-btn">
-      <div class="search-column-name"><strong>Function</strong></div>
-    </button>
+  <div class="search-column-name btn search-result-column-header-btn"><strong>Genome</strong></div>
 </div>
 <div class="btn-group search-result-column-header col-md-1 col-lg-1 homology_numeric_header">
-    <button type="button" class="btn btn-default dropdown-toggle search-result-column-header-btn" data-toggle="dropdown">
-        <div class="search-column-name" ng-class="{'search-sort-activated': options.active_sorts[options.selectedCategory].sorts['evalue']}"><strong>e value</strong></div>
-<!--        <span class="glyphicon search-sort-icon" ng-class="{'glyphicon-sort': !options.active_sorts[options.selectedCategory].sorts['evalue'], 'glyphicon-sort-by-alphabet': options.active_sorts[options.selectedCategory].sorts['evalue'].direction == 'asc', 'glyphicon-sort-by-alphabet-alt': options.active_sorts[options.selectedCategory].sorts['evalue'].direction == 'desc'}"></span>
-        <span class="badge search-sort-badge" ng-show="options.active_sorts[options.selectedCategory] && options.active_sorts[options.selectedCategory].count > 1">{{options.active_sorts[options.selectedCategory].sorts['evalue'].order}}</span>-->
-    </button>
-    <ul class="dropdown-menu" role="menu">
-        <li>
-            <a ng-click="addSort(options.selectedCategory, 'evalue', 'asc')">
-                <span class="glyphicon glyphicon-sort-by-alphabet"/>
-                <span>Sort ascending</span>
-            </a>
-        </li>
-        <li>
-            <a ng-click="addSort(options.selectedCategory, 'evalue', 'desc')">
-                <span class="glyphicon glyphicon-sort-by-alphabet-alt"/>
-                <span>Sort descending</span>
-            </a>
-        </li>
-        <li>
-            <a ng-click="removeSort(options.selectedCategory, 'evalue', true)">
-                <span class="glyphicon glyphicon-remove"/>
-                <span>Clear this sort</span>
-            </a>
-        </li>
-    </ul>
+  <div class="search-column-name btn search-result-column-header-btn"><strong>Length</strong></div>
 </div>
 <div class="btn-group search-result-column-header col-md-1 col-lg-1 homology_numeric_header">
-    <button type="button" class="btn btn-default dropdown-toggle search-result-column-header-btn" data-toggle="dropdown">
-        <div class="search-column-name" ng-class="{'search-sort-activated': options.active_sorts[options.selectedCategory].sorts['bitscore']}"><strong>score</strong></div>
-<!--        <span class="glyphicon search-sort-icon" ng-class="{'glyphicon-sort': !options.active_sorts[options.selectedCategory].sorts['bitscore'], 'glyphicon-sort-by-alphabet': options.active_sorts[options.selectedCategory].sorts['bitscore'].direction == 'asc', 'glyphicon-sort-by-alphabet-alt': options.active_sorts[options.selectedCategory].sorts['bitscore'].direction == 'desc'}"></span>
-        <span class="badge search-sort-badge" ng-show="options.active_sorts[options.selectedCategory] && options.active_sorts[options.selectedCategory].count > 1">{{options.active_sorts[options.selectedCategory].sorts['bitscore'].order}}</span>-->
-    </button>
-    <ul class="dropdown-menu" role="menu">
-        <li>
-            <a ng-click="addSort(options.selectedCategory, 'bitscore', 'asc')">
-                <span class="glyphicon glyphicon-sort-by-alphabet"/>
-                <span>Sort ascending</span>
-            </a>
-        </li>
-        <li>
-            <a ng-click="addSort(options.selectedCategory, 'bitscore', 'desc')">
-                <span class="glyphicon glyphicon-sort-by-alphabet-alt"/>
-                <span>Sort descending</span>
-            </a>
-        </li>
-        <li>
-            <a ng-click="removeSort(options.selectedCategory, 'bitscore', true)">
-                <span class="glyphicon glyphicon-remove"/>
-                <span>Clear this sort</span>
-            </a>
-        </li>
-    </ul>
+  <div class="search-column-name btn search-result-column-header-btn"><strong>Identity</strong></div>
+</div>
+<div class="btn-group search-result-column-header col-md-1 col-lg-1 homology_numeric_header">
+  <div class="search-column-name btn search-result-column-header-btn"><strong>score</strong></div>
+</div>
+<div class="btn-group search-result-column-header col-md-1 col-lg-1 homology_numeric_header">
+  <div class="search-column-name btn search-result-column-header-btn"><strong>e value</strong></div>
 </div>

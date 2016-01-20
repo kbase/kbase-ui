@@ -938,20 +938,20 @@ table.search-transfer-table {
 }
 
 .homology_subj_seq_header {
-    width: 171px;
+    width: 151px;
 }
 
 .homology_subj_seq_field {
-    width: 160px;
+    width: 140px;
     margin-right: 9px;
 }
 
 .homology_string_header {
-    width: 120px;
+    width: 130px;
 }
 
 .homology_string_field {
-    width: 110px;
+    width: 120px;
     margin-right: 9px;
 }
 
