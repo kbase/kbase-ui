@@ -4,7 +4,7 @@ define([
     'bluebird',
     'kb_userProfile_widget_base',
     'kb/service/serviceApi',
-    'kb/service/client/UserProfile'
+    'kb/service/client/userProfile'
 ],
     function (Promise, SocialWidget, ServiceApi, UserProfileService) {
         'use strict';

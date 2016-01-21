@@ -7,7 +7,7 @@
  */
 define([
     'jquery',
-    'kb/service/client/NarrativeMethodStore',
+    'kb/service/client/narrativeMethodStore',
     'kb/widget/legacy/authenticatedWidget',
 ],
     function ($, NarrativeMethodStore) {

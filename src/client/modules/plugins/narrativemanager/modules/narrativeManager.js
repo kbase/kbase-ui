@@ -5,7 +5,7 @@ define([
     'underscore',
     'bluebird',
     'kb/service/client/workspace',
-    'kb/service/client/NarrativeMethodStore',
+    'kb/service/client/narrativeMethodStore',
     'kb/service/utils'
 ],
     function ($, _, Promise, Workspace, NarrativeMethodStore, serviceUtils) {

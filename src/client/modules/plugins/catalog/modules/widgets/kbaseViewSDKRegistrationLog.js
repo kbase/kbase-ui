@@ -6,7 +6,7 @@
  */
 
 define(['jquery',
-        'kb/service/client/Catalog',
+        'kb/service/client/catalog',
         'kb/widget/legacy/authenticatedWidget'
         ], function($, Catalog) {
 
