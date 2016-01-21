@@ -119,7 +119,7 @@ modules:
             bower: {}
     -
         globalName: kbase-service-clients-js
-        version: 0.1.4
+        version: 0.1.6
         source:
             bower: {}
     -
