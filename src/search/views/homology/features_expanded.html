@@ -1,5 +1,15 @@
-<tr ng-if="item.pairewise">
-    <td class="search-result-column-expanded-entry-cell">
-        <pre>{{item.pairewise | displayPairwiseComparison}}</pre>
-    </td>
+<tr ng-if="item.detail">
+  <td class="search-result-column-expanded-entry-cell">
+    <div ng-if="item.detail.match_count > 1">
+      <a href="/search/#/homology/" ng-click="showMatches = !showMatches">Number of matches: {{item.detail.match_count}}</a>
+      <ul ng-show="showMatches">
+        <li ng-repeat="match in item.detail.matches">
+          <span ng-bind-html="match[0] | buildFeatureLink"></span>
+          &nbsp; {{match[1].function}}
+          &nbsp; <span ng-bind-html="match[1] | buildGenomeLink"><span>
+        </li>
+      </ul>
+    </div>
+    <pre>{{item.detail | displayPairwiseComparison}}</pre>
+  </td>
 </tr>

@@ -71,7 +71,7 @@
             }
             
             // in case the server didn't get the memo that this is supposed to be https!
-            // narrativeUrl = narrativeUrl.replace(/https?\:/, window.location.protocol);
+            narrativeUrl = narrativeUrl.replace(/https?\:/, window.location.protocol);
 
             // TODO: use Promise to improve the flow.
             var interval = null;

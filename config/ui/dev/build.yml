@@ -47,14 +47,14 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 0.1.2
+        version: 0.1.3
         cwd: src/plugin
         source:
             bower: {}
     -
         name: dashboard
         globalName: kbase-ui-plugin-dashboard
-        version: 0.1.1
+        version: 0.1.2
         cwd: src/plugin
         source:
             bower: {}
@@ -91,15 +91,10 @@ plugins:
     -
         name: dataapidemo
         globalName: kbase-ui-plugin-data-api-demo
-        version: 0.1.0
+        version: 0.1.1
         cwd: src/plugin
         source:
             bower: {}
-            #    version: eapearson/kbase-ui-plugin-data-api-demo#master
-            # directory:
-                # This is where to find repos; it will be the level above kbase-ui
-                # if not specified, or may be overridden in the dev config.
-                # root: /Users/erik/work/kbase/sprints/data-api-widgets
 
 # Copy these directories into the modules
 # There are two forms, as for plugins.
@@ -120,11 +115,11 @@ modules:
             bower: {}
     -
         globalName: kbase-service-clients-js
-        version: 0.1.4
+        version: 0.1.6
         source:
             bower: {}
     -
         globalName: kbase-data-api-js-clients
-        version: 0.1.4
+        version: 0.1.7
         source:
             bower: {}

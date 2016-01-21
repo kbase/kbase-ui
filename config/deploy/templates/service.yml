@@ -64,4 +64,7 @@ services:
         name: Taxon API
     assembly_api:
         url: <%= assembly_api_url %>
-        name: Assembly API        
+        name: Assembly API 
+    genomeAnnotation_api:
+        url: <%= genome_annotation_api_url %>
+        name: Genome Annotation API         

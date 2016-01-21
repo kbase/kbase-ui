@@ -139,12 +139,12 @@
                     <div class="form-group">
                         <label for="database" class="col-sm-2 control-label">Database:</label>
                         <div class="col-sm-10">
-                            <select id="database" class="form-control" ng-model="options.searchOptions.general.database">
+                            <select id="database" class="form-control" ng-model="options.searchOptions.general.database" ng-change="validateDatabase()">
                                 <option ng-repeat="db in availableDatabases" ng-selected="db.selected" value="{{db.value}}">{{db.label}}</option>
                             </select>
                         </div>
                     </div>
-
+                    <fieldset ng-disabled="options.searchOptions.general.useDatabase">
                     <div class="form-group">
                         <label for="database" class="col-sm-2 control-label">Search Type:</label>
                         <div class="col-sm-10">
@@ -177,6 +177,7 @@
                             </div>
                         </div>
                     </div>
+                    </fieldset>
                     <div class="form-group">
                         <label for="program" class="col-sm-2 control-label">Program:</label>
                         <div class="col-sm-10">

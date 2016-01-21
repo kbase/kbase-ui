@@ -119,8 +119,8 @@ vagrant init ubuntu/trusty64
 vagrant up
 vagrant ssh
 sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get dist-upgrade
+sudo apt-get upgrade -y
+sudo apt-get dist-upgrade -y
 exit
 vagrant reload
 vagrant ssh

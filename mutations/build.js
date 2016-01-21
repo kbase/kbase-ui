@@ -502,6 +502,10 @@ function installExternalPlugins(state) {
                         repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..'],
                         source = repoRoot.concat([plugin.globalName]).concat(cwd),
                         destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+//                    console.log('EXTERNAL plugin');
+//                    console.log(source);
+//                    console.log(destination);
+                        
                     return copyFiles(source, destination, '**/*');
                 }));
         });
