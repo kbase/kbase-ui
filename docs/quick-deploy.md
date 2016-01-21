@@ -52,7 +52,7 @@ These are required for the build tools and providing a web server.
 sudo apt-get install -y git build-essential libfontconfig1 nodejs nginx
 ```
 
-- *ibfontconfig1* is for *phantomjs* -- a hidden dependency
+- *ibfontconfig1* is a hidden dependency for *phantomjs* -- it will not crop up until phantomjs fails.
 - *build-essential* is for npm modules which include c-compilable code (e.g. phantomjs)
 
 ### Prepare kbase-ui
@@ -62,10 +62,18 @@ You'll want to be in whatever filesystem location is acceptable for creating the
 #### 1) Clone kbase-ui
 
 ```
-git clone https:\\github.com\kbase\kbase-ui
+git clone https://github.com/kbase/kbase-ui
 ```
 
-This will install the current master. If you want a specific release:
+This will install the current master. 
+
+For CI or normal development you will want the develop branch:
+
+```
+git clone -b develop https://github.com/kbase/kbase-ui
+```
+
+Or if you want a specific release:
 
 ```
 git clone --branch v0.1.3 --depth 1 https://github.com/eapearson/kbase-ui
@@ -80,8 +88,15 @@ make build config=ENV
 ```
 
 - ```make init``` will install build tools locally
-- ```make build target=ENV``` will build the base, and possibly the dist, depending on the build target settings.
-    - build targets include *ci*, *next*, *prod*
+- ```make build config=ENV``` will build the base, and possibly the dist, depending on the build target settings.
+    - build configs include *ci*, *next*, *prod*, and *dev*
+    - the defalt is *dev*
+
+For example, to make a build suitable for or to emulate CI
+
+```
+make build config=ci
+```
 
 > Where are the configurations for this? See [configuration](configuration.md)
 
@@ -124,3 +139,9 @@ server {
 
 - Since kbase-ui is served at https:, you may need to add an ssl server as well, depending on the front end proxy requirements.
 - In addition, the server_name may be different depending on those requirements as well.
+
+
+## Notes
+
+If you are would like to enjoy a test deploy by way of Vagrant...
+
