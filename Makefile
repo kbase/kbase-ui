@@ -23,6 +23,8 @@ DEPLOY_CFG		= deploy-$(TARGET).cfg
 KB_TOP			= /kb
 GRUNT		        = ./node_modules/.bin/grunt
 KARMA			= ./node_modules/.bin/karma
+config			= dev
+directory		= build
 
 # Standard 'all' target = just do the standard build
 all:
@@ -37,7 +39,7 @@ default:
 # The "EZ Install" version - init, build, start, preview
 # Note that this uses the default targets -- which are least disruptive (to production)
 # and most experimental (development ui, ci services)
-run: init build start preview
+run: init build start pause preview
 	
 
 # Initialization here pulls in all dependencies from Bower and NPM.
@@ -45,6 +47,7 @@ run: init build start preview
 # bower install is not part of the build process, since the bower
 # config is not known until the parts are assembled...
 init:
+	@echo "> Initialiing the repo for work."
 	npm install
 	cd tools/server; npm install
 	$(GRUNT) init
@@ -52,6 +55,7 @@ init:
 # Perform the build. Build scnearios are supported through the config option
 # which is passed in like "make build config=ci"
 build:	
+	@echo "> Building."
 	cd mutations; node build $(config)
 
 # The deploy step will copy the files according to the instructions in the deploy
@@ -68,14 +72,22 @@ devinit:
 	
 
 start:
+	@echo "> Starting preview server."
+	@echo "> (make stop to kill it)"
 	cd tools/server; node server start $(config) $(directory)&
+	
+pause:
+	@echo "> Pausing to let the server start up."
+	sleep 5
 
 stop: 
+	@echo "> Stopping the preview server."
 	cd tools/server; node server stop  $(config)
 
 # Run the server, and open a browser pointing to it.
 preview:
-	cd tools/server; node server preview
+	@echo "> Launching default browser for preview"
+	cd tools/server; node server preview $(config)
 	
 
 # Tests are managed by grunt, but this also mimics the workflow.
