@@ -212,7 +212,6 @@ define([
                 var self = this;
                 var $adminDiv = $('<div>');
 
-
                 var $adminContent = $('<div>').hide();
                 var $minMaxToggle = $('<i>').addClass('fa fa-chevron-right').css('margin-left','15px');
 
@@ -248,17 +247,27 @@ define([
                         .append('<h4>Register a New Dev Version:</h4>')
                         .append(self.renderRegisterDiv())
                     );
+                var $manageStatusPanel = $('<div>');
                 $adminContent.append(
                     $('<div>')
                         .append('<h4>Manage Releases:</h4>')
                         .append(
                             $('<button>').addClass('btn btn-default').append('Migrate Current Dev Version to Beta'))
+                                .on('click', function() {
+                                    self.catalog.push_dev_to_beta({module_name:''})
+                                            .then(function () {
+
+                                            })
+                                            .catch(function (err) {
+                                                console.error('ERROR');
+                                                console.error(err);
+                                            });
+                                    }
+                                )
                         .append('&nbsp;&nbsp;&nbsp;')
                         .append(
                             $('<button>').addClass('btn btn-default').append('Request New Release'))
                     );
-
-
 
                 $adminContent.append('<br><br><br>');
                 $adminDiv.append($adminContent);

@@ -86,6 +86,7 @@ define([
                     '<a href="'+info.git_url+'" target="_blank">'+info.git_url+'<a>'));
                 $header.append($('<div>').html(info.description));
 
+                var isOwner = false;
                 var $owners = $('<div>').append('<i>KBase Module Developed by:</i> ');
                 for(var k=0; k<info.owners.length; k++) {
                     // todo: get nice name
@@ -97,6 +98,10 @@ define([
 
                 self.$mainPanel.append($header);
                 self.$mainPanel.append('<hr>');
+
+
+
+
 
 
                 var $versionDiv = $('<div>');
