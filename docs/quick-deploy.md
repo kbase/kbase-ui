@@ -130,18 +130,20 @@ server {
   listen [::]:80 default_server ipv6only=on;
   root /kb/deployment/services/kbase-ui;
   index index.html;
-  server_name narrative.kbase.us;
+  server_name dev.kbase.us;
   location / {
       try_files $uri $uri/ =404;
   }
 }
 ```
 
-- Since kbase-ui is served at https:, you may need to add an ssl server as well, depending on the front end proxy requirements.
-- In addition, the server_name may be different depending on those requirements as well.
+- Since kbase-ui is served at https:, you may want to add an ssl server as well, depending on the front end proxy requirements.
+- The *server_name* may be whatever you want, *dev.kbase.us* is just an example (not in use publicly at KBase.)
 
+> TODO add basic ssl self-signed cert instructions, very handy for testing.
 
-## Notes
+---
 
-If you are would like to enjoy a test deploy by way of Vagrant...
+[Index](index.md) - [README](../README.md) - [KBase](http://kbase.us)
 
+---
