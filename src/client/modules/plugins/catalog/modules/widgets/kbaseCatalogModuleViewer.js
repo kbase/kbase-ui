@@ -9,6 +9,7 @@ define([
     'jquery',
     'kb/service/client/NarrativeMethodStore',
     'kb/service/client/Catalog',
+    'plugins/catalog/modules/widgets/kbaseCatalogRegistration',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
@@ -37,7 +38,7 @@ define([
 
             init: function (options) {
                 this._super(options);
-                
+
                 var self = this;
 
                 self.module_name = options.module_name;
@@ -48,7 +49,7 @@ define([
                 self.setupClients();
 
                 console.log(options);
-                console.log(this.runtime.service('session'))
+                console.log(this.runtime.service('session').getUsername());
 
                 // initialize and add the main panel
                 self.$loadingPanel = self.initLoadingPanel();
@@ -63,6 +64,7 @@ define([
                 self.moduleDetails = { info:null, versions:null };
                 loadingCalls.push(self.getModuleInfo());
                 loadingCalls.push(self.getModuleVersions());
+                loadingCalls.push(self.getModuleStatus());
 
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
@@ -85,9 +87,24 @@ define([
                 $header.append($('<h1>').append(info.module_name));
                 $header.append($('<h4>').append(
                     '<a href="'+info.git_url+'" target="_blank">'+info.git_url+'<a>'));
+
+                var isOwner = false;
+                if(self.runtime.service('session').getUsername()) {
+                    for(var k=0; k<info.owners.length; k++) {
+                        if(self.runtime.service('session').getUsername() === info.owners[k]) {
+                            isOwner = true;
+                        }
+                    }
+                }
+
+                if(isOwner) {
+                    $header.append($('<div>').html('<b>You are a module owner</b>'));
+                }
+
+
                 $header.append($('<div>').html(info.description));
 
-                var $owners = $('<div>').append('<i>KBase Module Developed by:</i> ');
+                var $owners = $('<div>').append('<br><i>Developed by:</i> ');
                 for(var k=0; k<info.owners.length; k++) {
                     // todo: get nice name
                     var username = info.owners[k];
@@ -98,6 +115,11 @@ define([
 
                 self.$mainPanel.append($header);
                 self.$mainPanel.append('<hr>');
+
+
+                if(isOwner) {
+                    self.$mainPanel.append(self.renderModuleAdminDiv());
+                }
 
 
                 var $versionDiv = $('<div>');
@@ -184,6 +206,94 @@ define([
             },
 
 
+
+
+            renderModuleAdminDiv: function() {
+                var self = this;
+                var $adminDiv = $('<div>');
+
+
+                var $adminContent = $('<div>').hide();
+                var $minMaxToggle = $('<i>').addClass('fa fa-chevron-right').css('margin-left','15px');
+
+                $adminDiv.append(
+                    $('<div>').css('cursor','pointer')
+                        .append($('<h3>').append('Module Admin Tools').css('display','inline'))
+                        .append($minMaxToggle)
+                        .on('click', function() {
+                                    if($minMaxToggle.hasClass('fa-chevron-right')) {
+                                        // hidden, so show
+                                        $minMaxToggle.removeClass('fa-chevron-right');
+                                        $minMaxToggle.addClass('fa-chevron-down');
+                                        $adminContent.slideDown();
+                                    } else {
+                                        $minMaxToggle.removeClass('fa-chevron-down');
+                                        $minMaxToggle.addClass('fa-chevron-right');
+                                        $adminContent.slideUp();
+                                    }
+                                }));
+
+
+                $adminContent.append('<br>');
+                $adminContent.append('<h4>Module state information:</h4>');
+                $adminContent.append(JSON.stringify(self.moduleDetails.state));
+
+                $adminContent.append('<br>');
+                $adminContent.append('<br>');
+
+                $adminContent.append('<br>');
+                $adminContent.append('<a href="#appcatalog/status/'+self.moduleDetails.info.module_name+'">View recent registrations</a><br>')
+                $adminContent.append(
+                    $('<div>')
+                        .append('<h4>Register a New Dev Version:</h4>')
+                        .append(self.renderRegisterDiv())
+                    );
+                $adminContent.append(
+                    $('<div>')
+                        .append('<h4>Manage Releases:</h4>')
+                        .append(
+                            $('<button>').addClass('btn btn-default').append('Migrate Current Dev Version to Beta'))
+                        .append('&nbsp;&nbsp;&nbsp;')
+                        .append(
+                            $('<button>').addClass('btn btn-default').append('Request New Release'))
+                    );
+
+
+
+                $adminContent.append('<br><br><br>');
+                $adminDiv.append($adminContent);
+
+                return $adminDiv;
+            },
+
+
+
+            renderRegisterDiv: function() {
+                var self = this;
+                var $logWidgetDiv = $('<div>')
+                var logWidget = $logWidgetDiv["KBaseCatalogRegistration"]({
+                    runtime: self.runtime,
+                    git_url: self.moduleDetails.info.original_git_url,
+                    show_title: false,
+                    show_module_links: false
+
+                });
+                return $logWidgetDiv;
+            },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             setupClients: function() {
                 this.catalog = new Catalog(
                     this.runtime.getConfig('services.catalog.url'),
@@ -246,12 +356,14 @@ define([
                         } ModuleInfo;*/
                         self.moduleDetails.info = info;
                         var git_url = self.moduleDetails.info.git_url;
+                        self.moduleDetails.info['original_git_url'] = self.moduleDetails.info.git_url;
                         var github = 'https://github.com/'
                         if(git_url.substring(0, github.length) === github) {
                             self.isGithub = true;
-                            // if it ends with .git, truncate so we get the basic url
+                            // if it ends with .git and is github, truncate so we get the basic url
                             if(git_url.indexOf('.git', git_url.length - '.git'.length) !== -1) {
                                 self.moduleDetails.info.git_url = git_url.substring(0, git_url.length - '.git'.length);
+
                             }
                         }
                     })
@@ -286,6 +398,32 @@ define([
                             ModuleVersionInfo dev;
                         } ModuleInfo;*/
                         self.moduleDetails.versions = versions;
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+            getModuleStatus: function() {
+                var self = this
+
+                var moduleSelection = {
+                    module_name: self.module_name
+                };
+
+                return self.catalog.get_module_state(moduleSelection)
+                    .then(function (state) {
+                        console.log(state);
+                        /*typedef structure {
+                            boolean active;
+                            boolean released;
+                            string release_approval;
+                            string review_message;
+                            string registration;
+                            string error_message;
+                        } ModuleState;*/
+                        self.moduleDetails['state'] = state;
                     })
                     .catch(function (err) {
                         console.error('ERROR');

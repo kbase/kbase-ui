@@ -288,7 +288,6 @@ define([
                         tag:tag
                     })
                     .then(function (apps) {
-                        console.log('hello apps');
                         console.log(apps);
                         for(var k=0; k<apps.length; k++) {
                             var a = {
@@ -350,12 +349,13 @@ define([
 
 
             renderAppBox: function(app) {
-                console.log(app)
-                //var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover');
+                //console.log(app)
 
+                // Main Container
                 var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover');
 
 
+                // HEADER - contains logo, title, module link, authors
                 var $topDiv = $('<div>').addClass('clearfix kbcb-app-card-header');
                 var $logoSpan = $('<div>').addClass('col-xs-4 kbcb-app-card-logo');
                 // add actual logos here
@@ -366,7 +366,11 @@ define([
                 if(app.info['module_name']) {
                     $titleSpan.append($('<div>').addClass('kbcb-app-card-module').append(
                                         $('<a href="#appcatalog/module/'+app.info.module_name+'">')
-                                            .append(app.info.module_name)));
+                                            .append(app.info.module_name)
+                                            .on('click',function() {
+                                                // have to stop propagation so we don't go to the app page first
+                                                event.stopPropagation();
+                                            })));
                 }
                 $titleSpan.append($('<div>').addClass('kbcb-app-card-authors').append('by xxx'));
 
@@ -375,10 +379,13 @@ define([
                         .append($logoSpan)
                         .append($titleSpan));
 
+
+                // SUBTITLE - on mouseover of info, show subtitle information
                 var $subtitle = $('<div>').addClass('kbcb-app-card-subtitle').append(app.info.subtitle).hide()
                 $appDiv.append($subtitle);
 
-                /* footer area for metrics and such */
+
+                // FOOTER - stars, number of runs, and info mouseover area
                 var $footer = $('<div>').addClass('clearfix kbcb-app-card-footer');
 
 
@@ -403,23 +410,22 @@ define([
 
                 $footer.append($nRuns);
 
-
                 var $moreInfoDiv = $('<div>').addClass('col-xs-5').addClass('kbcb-info').css('text-align','right');
                 $moreInfoDiv
                     .on('mouseenter', function() {
                         $topDiv.hide();
-                        $subtitle.fadeIn();
+                        $subtitle.fadeIn('fast');
                     })
                     .on('mouseleave', function() {
                         $subtitle.hide();
-                        $topDiv.fadeIn();
+                        $topDiv.fadeIn('fast');
                     });
                 $moreInfoDiv.append($('<span>').append('<i class="fa fa-info"></i>'));
                 $footer.append($moreInfoDiv);
                 $appDiv.append($footer);
 
 
-
+                // On click, go to the method page
                 $appDiv.on('click', function() {
                     if(app.type === 'method') {
                         window.location.href = "#narrativestore/method/"+app.info.id;
@@ -428,8 +434,8 @@ define([
                     }
                 });
 
+                // put it all in a container so we can control margins
                 var $appCardContainer = $('<div>').addClass('kbcb-app-card-container');
-
                 app.$div = $appCardContainer.append($appDiv);
             },
 
