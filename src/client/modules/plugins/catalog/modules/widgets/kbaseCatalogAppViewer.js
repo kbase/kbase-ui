@@ -45,9 +45,6 @@ define([
                 self.runtime = options.runtime;
                 self.setupClients();
                 self.util = new CatalogUtil();
-                
-                console.log('APP VIEW');
-                console.log(options);
 
                 // handle legacy methods and apps not in an SDK namespace
                 if(options.namespace==='l.m') {
@@ -56,6 +53,10 @@ define([
                 } else if (options.namespace==='l.a') {
                     // for now, forward to old style page
                     self.isLegacyApp = true;
+
+                    self.$elem.append('&nbsp Legacy apps not supported on this page yet.  Go here for now:' +
+                        '<a href="#narrativestore/app/'+options.id+'">'+options.id+"</a>");
+                    return this;
                 }
 
                 // set some local variables
@@ -93,6 +94,7 @@ define([
                     //self.render();
                     self.hideLoading();
                     self.renderMethod();
+                    self.renderInfo();
                 });
 
 
@@ -170,6 +172,9 @@ define([
             getModuleInfo: function() {
                 var self = this;
 
+                if(self.isLegacyMethod) return;
+                if(self.isLegacyApp) return;
+
                 var moduleSelection = {
                     module_name: self.module_name
                 };
@@ -198,7 +203,6 @@ define([
                             // if it ends with .git and is github, truncate so we get the basic url
                             if(git_url.indexOf('.git', git_url.length - '.git'.length) !== -1) {
                                 self.moduleDetails.info.git_url = git_url.substring(0, git_url.length - '.git'.length);
-
                             }
                         }
                     })
@@ -242,6 +246,47 @@ define([
             },
 
 
+            renderInfo: function() {
+
+                var self = this;
+
+                if(self.isLegacyMethod) {
+                    self.nms.status()
+                        .then( function(status) {
+                            var url = status.git_spec_url + "/tree/" + status.git_spec_branch;
+                            url += "/methods/" + self.options.id;
+                            //truncate out the commit comments. We're guesing about where those start...
+                            //assume first four lines are valid header info.
+                            var commit = status.git_spec_commit.split(/\r\n|\r|\n/);
+                            commit = [commit[0], commit[1], commit[2], commit[3]].join('<br>\n');
+
+                            self.$infoPanel.append(
+                                $('<table>').css({border: '1px solid #bbb', margin: '10px', padding: '10px'})
+                                .append($('<tr>')
+                                    .append($('<th>').append('NMS Store URL  '))
+                                    .append($('<td>').append(self.runtime.getConfig('services.narrative_method_store.url'))))
+                                .append($('<tr>')
+                                    .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Yaml/Spec Location '))
+                                    .append($('<td>').append('<a href="' + url + '" target="_blank">' + url + "</a>")))
+                                .append($('<tr>')
+                                    .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Method Spec Commit  '))
+                                    .append($('<td>').append(commit)))
+                                );
+                        });
+                }
+
+
+                /*if(self.isGithub) {
+                    var url = self.moduleDetails.info.git_url + ;
+                    self.$infoPanel.append(
+                        $('<table>').addClass('table').css({border: '1px solid #bbb', margin: '10px', padding: '10px'})
+                            .append($('<tr>')
+                                .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Yaml/Spec Location '))
+                                .append($('<td>').append('<a href="' + url + '" target="_blank">' + url + "</a>"))));
+
+                }*/
+
+            },
 
 
 /*
