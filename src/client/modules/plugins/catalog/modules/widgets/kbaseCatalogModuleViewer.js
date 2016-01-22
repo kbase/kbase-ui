@@ -9,11 +9,12 @@ define([
     'jquery',
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
+    './catalog_util',
     'plugins/catalog/modules/widgets/kbaseCatalogRegistration',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
-    function ($, NarrativeMethodStore, Catalog) {
+    function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
         $.KBWidget({
             name: "KBaseCatalogModuleViewer",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
@@ -30,6 +31,7 @@ define([
             // 
             module_name: null,
             moduleDetails: null,
+            appList: null,
             isGithub: null,
 
             // main panel and elements
@@ -48,6 +50,7 @@ define([
                 // new style we have a runtime object that gives us everything in the options
                 self.runtime = options.runtime;
                 self.setupClients();
+                self.util = new CatalogUtil();    './catalog_util',    './catalog_util',    './catalog_util',    './catalog_util',    './catalog_util',
 
                 console.log(options);
                 console.log(this.runtime.service('session').getUsername());
@@ -78,6 +81,11 @@ define([
                 Promise.all(loadingCalls).then(function() {
                     self.render();
                     self.hideLoading();
+
+                    self.getAppInfo()
+                        .then(function() {
+                            self.renderApps();
+                        })
                 });
 
 
@@ -363,6 +371,20 @@ define([
 
 
 
+            renderApps: function() {
+                var self = this;
+
+                //self.$appLPanel.append('<i>Note: temporarily showing dev versions</i><br>')
+                var $appListContainer = $('<div>').css({
+                        margin:'1em',
+                        'overflow':'auto',
+                        'max-width': '1000px'
+                    });
+                for(var k=0; k<self.appList.length; k++) {
+                    $appListContainer.append(self.appList[k].$div);
+                }
+                self.$appsPanel.append($appListContainer);
+            },
 
 
 
@@ -427,8 +449,63 @@ define([
 
 
 
+            getAppInfo: function() {
+                var self = this;
+
+                var tag = 'release';
+                var m_names = [];
+                if(self.moduleDetails.info.release) {
+                    m_names = self.moduleDetails.info.release.narrative_methods;
+                } else if(self.moduleDetails.info.beta) {
+                    m_names = self.moduleDetails.info.beta.narrative_methods;
+                    tag='beta';
+                } else if(self.moduleDetails.info.dev) {
+                    m_names = self.moduleDetails.info.dev.narrative_methods;
+                    tag='dev';
+                }
+                for(var m=0; m<m_names.length; m++) {
+                    m_names[m] = self.module_name + '/' + m_names[m];
+                }
+
+                if(m_names.length==0) {
+                    console.log('no methods');
+                }
+                console.log(m_names)
+
+                var params = {
+                    ids: m_names,
+                    tag: tag
+                };
+
+                return self.nms.get_method_brief_info(params)
+                    .then(function(info_list) {
+                        console.log(info_list);
+                        self.appList = [];
+
+                        for(var k=0; k<info_list.length; k++) {
+
+                            // logic to hide/show certain categories
+                            //if(self.skipApp(methods[k].categories)) continue;
+
+                            var m = {
+                                type: 'method',
+                                info: info_list[k],
+                                $div: $('<div>').addClass('kbcb-app')
+                            };
+                            self.util.renderAppCard(m);
+                            self.appList.push(m);
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+
+            },
+
+
             getModuleInfo: function() {
-                var self = this
+                var self = this;
 
                 var moduleSelection = {
                     module_name: self.module_name
