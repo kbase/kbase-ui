@@ -84,6 +84,32 @@ define([
                 return this;
             },
 
+            renderCollapsableVersionDiv: function(title, $content) {
+                // todo: replace this cut/paste with a function
+                var $div = $('<div>').css('margin-top','1em');
+                var $content = $('<div>').css('margin','1em').append($content).hide();
+                var $toggle = $('<i>').addClass('fa fa-chevron-right').css('margin-left','15px');
+                $div.append(
+                        $('<div>').css('cursor','pointer')
+                            .append($('<h4>').append(title).css('display','inline'))
+                            .append($toggle)
+                            .on('click', function() {
+                                        if($toggle.hasClass('fa-chevron-right')) {
+                                            // hidden, so show
+                                            $toggle.removeClass('fa-chevron-right');
+                                            $toggle.addClass('fa-chevron-down');
+                                            $content.slideDown();
+                                        } else {
+                                            $toggle.removeClass('fa-chevron-down');
+                                            $toggle.addClass('fa-chevron-right');
+                                            $content.slideUp();
+                                        }
+                                    }));
+                $div.append($content);
+                return $div;
+            },
+
+
             render: function() {
                 var self = this;
 
@@ -102,7 +128,8 @@ define([
                 for(var k=0; k<info.owners.length; k++) {
                     // todo: get nice name
                     var username = info.owners[k];
-                    $owners.append('<a href="#people/'+username+'">'+username+"</a> ");
+                    if(k>0) { $owners.append(', '); }
+                    $owners.append('<a href="#people/'+username+'">'+username+"</a>");
                     if(self.runtime.service('session').getUsername() === info.owners[k]) {
                         isOwner = true;
                     }
@@ -126,29 +153,35 @@ define([
 
                 
                 //VERSIONS PANEL
-
                 var $versionDiv = $('<div>');
 
-                $versionDiv.append('<h3>Stable Released Version</h3>');
                 if(info.release) {
-                    $versionDiv.append(self.renderVersion('release',info.release));
+                    $versionDiv.append(self.renderCollapsableVersionDiv(
+                        'Latest Release Version',
+                        self.renderVersion('release',info.release)
+                        ));
                 } else {
-                    $versionDiv.append('<i>This module has not been released.</i>');
+                    $versionDiv.append('<i>This module has not been released.</i><br>');
                 }
 
-                $versionDiv.append('<h3>Beta Version</h3>');
                 if(info.beta) {
-                    $versionDiv.append(self.renderVersion('beta',info.beta));
+                    $versionDiv.append(self.renderCollapsableVersionDiv(
+                        'Beta Version',
+                        self.renderVersion('beta',info.beta)
+                        ));
                 } else {
-                    $versionDiv.append('<i>This module has not been released to beta.</i>');
+                    $versionDiv.append('<i>This module has no beta version.</i><br>');
                 }
 
-                $versionDiv.append('<h3>Development Version</h3>');
                 if(info.dev) {
-                    $versionDiv.append('<a href="#appcatalog/status/'+info.module_name+'">View recent registrations</a><br>')
-                    $versionDiv.append(self.renderVersion('dev',info.dev));
+                    $versionDiv.append(self.renderCollapsableVersionDiv(
+                        'Development Version',
+                        $('<div>')
+                            .append('<a href="#appcatalog/status/'+info.module_name+'">View recent registrations</a><br><br>')
+                            .append(self.renderVersion('dev',info.dev))
+                        ));
                 } else {
-                    $versionDiv.append('<i>This module has not been registered properly.</i>');
+                    $versionDiv.append('<i>This module has not yet completed a successful registration.</i>');
                 }
 
                 self.$versionsPanel.append($versionDiv);
@@ -156,12 +189,16 @@ define([
 
                 if(versions) {
                     if(versions.length>0) {
-                        $versionDiv.append('<hr>');
-                        $versionDiv.append('<h3>Old Releases</h3>');
+                        var $oldReleaseDiv = $('<div>');
                         for(var v=0; v<versions.length; v++) {
-                            $versionDiv.append('<h4>'+versions[v].version+'</h4>');
-                            $versionDiv.append(self.renderVersion(versions[v].version,versions[v]));
+                            $oldReleaseDiv.append(self.renderCollapsableVersionDiv(
+                                versions[v].version,
+                                self.renderVersion(versions[v].version,versions[v])
+                            ));
                         }
+                        $versionDiv.append(self.renderCollapsableVersionDiv(
+                            'Old Releases',
+                            $oldReleaseDiv));
                     }
                 }
 
