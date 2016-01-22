@@ -50,10 +50,10 @@ define([
                 // new style we have a runtime object that gives us everything in the options
                 self.runtime = options.runtime;
                 self.setupClients();
-                self.util = new CatalogUtil();    './catalog_util',    './catalog_util',    './catalog_util',    './catalog_util',    './catalog_util',
+                self.util = new CatalogUtil();
 
-                console.log(options);
-                console.log(this.runtime.service('session').getUsername());
+                //console.log(options);
+                //console.log(this.runtime.service('session').getUsername());
 
                 // initialize and add the main panel
                 self.$loadingPanel = self.initLoadingPanel();
@@ -210,7 +210,8 @@ define([
                     }
                 }
 
-                console.debug(self.moduleDetails);
+                console.log('Module Details:')
+                console.log(self.moduleDetails);
             },
 
             // tag=dev/beta/release/version number, version=the actual info
@@ -376,7 +377,7 @@ define([
 
                 //self.$appLPanel.append('<i>Note: temporarily showing dev versions</i><br>')
                 var $appListContainer = $('<div>').css({
-                        margin:'1em',
+                        padding:'1em 1em 2em 1em',
                         'overflow':'auto',
                         'max-width': '1000px'
                     });
@@ -467,26 +468,16 @@ define([
                     m_names[m] = self.module_name + '/' + m_names[m];
                 }
 
-                if(m_names.length==0) {
-                    console.log('no methods');
-                }
-                console.log(m_names)
 
-                var params = {
-                    ids: m_names,
-                    tag: tag
-                };
-
+                var params = { ids: m_names, tag: tag };
                 return self.nms.get_method_brief_info(params)
                     .then(function(info_list) {
-                        console.log(info_list);
+                        //console.log(info_list);
                         self.appList = [];
 
                         for(var k=0; k<info_list.length; k++) {
-
                             // logic to hide/show certain categories
-                            //if(self.skipApp(methods[k].categories)) continue;
-
+                            if(self.util.skipApp(info_list[k].categories)) continue;
                             var m = {
                                 type: 'method',
                                 info: info_list[k],
@@ -513,7 +504,6 @@ define([
 
                 return self.catalog.get_module_info(moduleSelection)
                     .then(function (info) {
-                        console.log(info);
                         /*typedef structure {
                             string module_name;
                             string git_url;
@@ -556,7 +546,7 @@ define([
 
                 return self.catalog.list_released_module_versions(moduleSelection)
                     .then(function (versions) {
-                        console.log(versions);
+                        //console.log(versions);
                         /*typedef structure {
                             string module_name;
                             string git_url;
@@ -587,7 +577,7 @@ define([
 
                 return self.catalog.get_module_state(moduleSelection)
                     .then(function (state) {
-                        console.log(state);
+                        //console.log(state);
                         /*typedef structure {
                             boolean active;
                             boolean released;

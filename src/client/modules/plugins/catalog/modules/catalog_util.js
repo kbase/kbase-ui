@@ -91,7 +91,6 @@ define([
             // Main Container
             var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover');
 
-
             // HEADER - contains logo, title, module link, authors
             var $topDiv = $('<div>').addClass('clearfix kbcb-app-card-header');
             var $logoSpan = $('<div>').addClass('col-xs-4 kbcb-app-card-logo');
@@ -109,7 +108,29 @@ define([
                                                 event.stopPropagation();
                                             })));
             }
-            $titleSpan.append($('<div>').addClass('kbcb-app-card-authors').append('by xxx'));
+
+            if(app.type==='method') {
+                if(app.info.authors.length>0) {
+                    var $authorDiv = $('<div>').addClass('kbcb-app-card-authors').append('by ');
+                    for(var k=0; k<app.info.authors.length; k++) {
+                        if(k>=1) {
+                            $authorDiv.append(', ');
+                        }
+                        if(k>=2) {
+                            $authorDiv.append(' +'+(app.info.authors.length-2)+' more');
+                            break;
+                        }
+                        $authorDiv.append($('<a href="#people/'+app.info.authors[k]+'">')
+                                            .append(app.info.authors[k])
+                                            .on('click',function() {
+                                                // have to stop propagation so we don't go to the app page first
+                                                event.stopPropagation();
+                                            }));
+                    }
+                    $titleSpan.append($authorDiv);
+                }
+            }
+
 
             $appDiv.append(
                 $topDiv
@@ -176,7 +197,20 @@ define([
             app.$div = $appCardContainer.append($appDiv);
         };
 
-
+        this.skipApp = function(categories) {
+            for(var i=0; i<categories.length; i++) {
+                if(categories[i]=='inactive') {
+                    return true;
+                }
+                if(categories[i]=='viewers') {
+                    return true;
+                }
+                if(categories[i]=='importers') {
+                    return true;
+                }
+            }
+            return false;
+        };
 
 
 

@@ -166,19 +166,47 @@ define([
                     var terms = query.toLowerCase().match(/\w+|"(?:\\"|[^"])+"/g);
                     if (terms) {
                         //console.log(terms);
+                        console.log(self.appList[0].info);
                         for(var k=0; k<self.appList.length; k++) {
-                            var match = true;
+                            var match = false; // every term must match
                             for(var t=0; t<terms.length; t++) {
                                 if(terms[t].charAt(0)=='"' && terms[t].charAt(terms.length-1)=='"' && terms[t].length>2) {
                                     terms[t] = terms[t].substring(1,terms[t].length-1);
                                     // the regex keeps quotes in quoted strings, so toss those
                                 }
                                 // filter on names
-                                if(self.appList[k].info.name.toLowerCase().indexOf(terms[t]) < 0) {
-                                    match = false; break;
+                                if(self.appList[k].info.name.toLowerCase().indexOf(terms[t]) >= 0) {
+                                    match = true; continue;
                                 }
+                                // filter on module names, if they exist
+                                if(self.appList[k].info.module_name) {
+                                    if(self.appList[k].info.module_name.toLowerCase().indexOf(terms[t]) >= 0) {
+                                        match = true; continue;
+                                    }
+                                }
+                                // filter on other description
+                                if(self.appList[k].info.subtitle) {
+                                    if(self.appList[k].info.subtitle.toLowerCase().indexOf(terms[t]) >= 0) {
+                                        match = true; continue;
+                                    }
+                                }
+
+                                // filter on authors
+                                if(self.appList[k].info.authors) {
+                                    for(var a=0; a<self.appList[k].info.authors.length; a++) {
+                                        if(self.appList[k].info.authors[a].toLowerCase().indexOf(terms[t]) >= 0) {
+                                            match = true; break;
+                                        }
+                                    }
+                                    if(match) { continue; }
+                                }
+
                                 // filter on other stuff
+
+                                // if we get here, term didnt' match anything, so we can break
+                                match = false; break;
                             }
+
 
                             // show or hide
                             if(match) {
@@ -232,23 +260,6 @@ define([
                 self.$mainPanel.show();
             },
 
-
-            skipApp: function(categories) {
-                for(var i=0; i<categories.length; i++) {
-                    if(categories[i]=='inactive') {
-                        return true;
-                    }
-                    if(categories[i]=='viewers') {
-                        return true;
-                    }
-                    if(categories[i]=='importers') {
-                        return true;
-                    }
-                }
-                return false;
-            },
-
-
             populateAppListWithMethods: function() {
                 var self = this;
 
@@ -262,7 +273,7 @@ define([
                         for(var k=0; k<methods.length; k++) {
 
                             // logic to hide/show certain categories
-                            if(self.skipApp(methods[k].categories)) continue;
+                            if(self.util.skipApp(methods[k].categories)) continue;
 
                             var m = {
                                 type: 'method',
@@ -289,7 +300,7 @@ define([
                         tag:tag
                     })
                     .then(function (apps) {
-                        console.log(apps);
+                        //console.log(apps);
                         for(var k=0; k<apps.length; k++) {
                             var a = {
                                 type: 'app',
