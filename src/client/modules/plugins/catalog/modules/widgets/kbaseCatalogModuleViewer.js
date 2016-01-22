@@ -34,6 +34,7 @@ define([
 
             // main panel and elements
             $mainPanel: null,
+            $appsPanel: null,
             $loadingPanel: null,
 
             init: function (options) {
@@ -55,7 +56,14 @@ define([
                 self.$loadingPanel = self.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
                 var mainPanelElements = self.initMainPanel();
+                //[$mainPanel, $header, $adminPanel, $appsPanel, $descriptionPanel, $versionsPanel];
                 self.$mainPanel = mainPanelElements[0];
+                self.$headerPanel = mainPanelElements[1];
+                self.$adminPanel = mainPanelElements[2];
+                self.$appsPanel = mainPanelElements[3];
+                self.$descriptionPanel = mainPanelElements[4];
+                self.$versionsPanel = mainPanelElements[5];
+
                 self.$elem.append(self.$mainPanel);
                 self.showLoading();
 
@@ -82,45 +90,42 @@ define([
                 var info = self.moduleDetails.info;
                 var versions = self.moduleDetails.versions;
 
-                var $header = $('<div>');
 
+                // HEADER
+                var $header = $('<div>');
                 $header.append($('<h1>').append(info.module_name));
                 $header.append($('<h4>').append(
                     '<a href="'+info.git_url+'" target="_blank">'+info.git_url+'<a>'));
 
                 var isOwner = false;
-                if(self.runtime.service('session').getUsername()) {
-                    for(var k=0; k<info.owners.length; k++) {
-                        if(self.runtime.service('session').getUsername() === info.owners[k]) {
-                            isOwner = true;
-                        }
-                    }
-                }
-
-                if(isOwner) {
-                    $header.append($('<div>').html('<b>You are a module owner</b>'));
-                }
-
-
-                $header.append($('<div>').html(info.description));
-
-                var $owners = $('<div>').append('<br><i>Developed by:</i> ');
+                var $owners = $('<div>').append('<i>Developed by:</i> ');
                 for(var k=0; k<info.owners.length; k++) {
                     // todo: get nice name
                     var username = info.owners[k];
                     $owners.append('<a href="#people/'+username+'">'+username+"</a> ");
-
+                    if(self.runtime.service('session').getUsername() === info.owners[k]) {
+                        isOwner = true;
+                    }
                 }
                 $header.append($owners);
 
-                self.$mainPanel.append($header);
-                self.$mainPanel.append('<hr>');
+                self.$headerPanel.append($header);
 
 
+                // ADMIN PANEL IF OWNER
                 if(isOwner) {
-                    self.$mainPanel.append(self.renderModuleAdminDiv());
+                    self.$adminPanel.append('<b>You are a module owner</b><br>');
+                    self.$adminPanel.append(self.renderModuleAdminDiv());
                 }
 
+
+                //DESCRIPTION PANEL
+                self.$descriptionPanel.append($('<div>').html(info.description));
+
+
+
+                
+                //VERSIONS PANEL
 
                 var $versionDiv = $('<div>');
 
@@ -146,7 +151,7 @@ define([
                     $versionDiv.append('<i>This module has not been registered properly.</i>');
                 }
 
-                self.$mainPanel.append($versionDiv);
+                self.$versionsPanel.append($versionDiv);
                 
 
                 if(versions) {
@@ -210,14 +215,14 @@ define([
 
             renderModuleAdminDiv: function() {
                 var self = this;
-                var $adminDiv = $('<div>');
+                var $adminDiv = $('<div>').css('margin','0.5em 0 0.5em 0');
 
                 var $adminContent = $('<div>').hide();
                 var $minMaxToggle = $('<i>').addClass('fa fa-chevron-right').css('margin-left','15px');
 
                 $adminDiv.append(
                     $('<div>').css('cursor','pointer')
-                        .append($('<h3>').append('Module Admin Tools').css('display','inline'))
+                        .append($('<h4>').append('Module Admin Tools').css('display','inline'))
                         .append($minMaxToggle)
                         .on('click', function() {
                                     if($minMaxToggle.hasClass('fa-chevron-right')) {
@@ -233,43 +238,72 @@ define([
                                 }));
 
 
-                $adminContent.append('<br>');
-                $adminContent.append('<h4>Module state information:</h4>');
-                $adminContent.append(JSON.stringify(self.moduleDetails.state));
+                $adminContent.append('<br><a href="#appcatalog/status/'+
+                    self.moduleDetails.info.module_name+'">View recent registrations</a><br>')
+                
+                $adminContent.append('<br><b>Module state information:</b>');
+                var $stateTable = $('<table class="table table-striped table-bordered" style="margin-left: auto; margin-right: auto;">');
+                $adminContent.append($('<div>').css({'width':'500px', 'margin-left':'2em'}).append($stateTable));
+                var width = "15%"
+                var state = self.moduleDetails.state
+                for (var key in state) {
+                    if (state.hasOwnProperty(key)) {
+                        $stateTable.append('<tr><th width="'+width+'">'+key+'</th><td>'+JSON.stringify(state[key])+'</td></tr>');
+                    }
+                }
 
-                $adminContent.append('<br>');
-                $adminContent.append('<br>');
 
-                $adminContent.append('<br>');
-                $adminContent.append('<a href="#appcatalog/status/'+self.moduleDetails.info.module_name+'">View recent registrations</a><br>')
                 $adminContent.append(
                     $('<div>')
-                        .append('<h4>Register a New Dev Version:</h4>')
+                        .append('<b>Register a New Dev Version:</b>')
                         .append(self.renderRegisterDiv())
                     );
-                var $manageStatusPanel = $('<div>');
+                var $manageStatusPanel = $('<div>').css('margin','1.0em');
                 $adminContent.append(
-                    $('<div>')
-                        .append('<h4>Manage Releases:</h4>')
+                    $('<div>').css('margin-top','1em')
+                        .append('<b>Manage Releases:</b><br>')
                         .append(
-                            $('<button>').addClass('btn btn-default').append('Migrate Current Dev Version to Beta'))
+                            $('<button>').addClass('btn btn-default').append('Migrate Current Dev Version to Beta')
                                 .on('click', function() {
-                                    self.catalog.push_dev_to_beta({module_name:''})
+                                    self.catalog.push_dev_to_beta({module_name:self.module_name})
                                             .then(function () {
+                                                $manageStatusPanel
+                                                    .prepend($('<div role=alert>').addClass('alert alert-success')
+                                                                    .append('Beta version updated.  Refresh the page to see the update.'));
 
                                             })
                                             .catch(function (err) {
-                                                console.error('ERROR');
+                                                console.error('ERROR in migrating dev to beta');
                                                 console.error(err);
+                                                $manageStatusPanel
+                                                    .prepend($('<div role=alert>').addClass('alert alert-danger')
+                                                                    .append('<b>Error:</b> '+err.error.message));
                                             });
                                     }
-                                )
+                                ))
                         .append('&nbsp;&nbsp;&nbsp;')
                         .append(
-                            $('<button>').addClass('btn btn-default').append('Request New Release'))
+                            $('<button>').addClass('btn btn-default').append('Request New Release')
+                                .on('click', function() {
+                                    self.catalog.request_release({module_name:self.module_name})
+                                            .then(function () {
+                                                $manageStatusPanel
+                                                    .prepend($('<div role=alert>').addClass('alert alert-success')
+                                                                    .append('Your request has been submitted.'));
+
+                                            })
+                                            .catch(function (err) {
+                                                console.error('ERROR in migrating dev to beta');
+                                                console.error(err);
+                                                $manageStatusPanel
+                                                    .prepend($('<div role=alert>').addClass('alert alert-danger')
+                                                                    .append('<b>Error:</b> '+err.error.message));
+                                            });
+                                    }
+                                ))
+                        .append($manageStatusPanel)
                     );
 
-                $adminContent.append('<br><br><br>');
                 $adminDiv.append($adminContent);
 
                 return $adminDiv;
@@ -317,7 +351,23 @@ define([
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
                 var $mainPanel = $('<div>').addClass('kbcb-mod-main-panel');
-                return [$mainPanel];
+
+                var $header = $('<div>').css('margin','1em');
+                var $adminPanel = $('<div>').css('margin','1em');
+                var $appsPanel = $('<div>').css('margin','1em');
+                var $descriptionPanel = $('<div>').css('margin','1em');
+                var $versionsPanel = $('<div>').css('margin','1em');
+
+                $mainPanel
+                    .append($header)
+                    .append($adminPanel)
+                    .append($appsPanel)
+                    .append('<hr>')
+                    .append($descriptionPanel)
+                    .append('<hr>')
+                    .append($versionsPanel);
+
+                return [$mainPanel, $header, $adminPanel, $appsPanel, $descriptionPanel, $versionsPanel];
             },
 
             initLoadingPanel: function() {
