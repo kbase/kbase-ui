@@ -27,6 +27,11 @@
     color: rgb(103, 58, 183);
 }
 
+/* when the entire app card is a link, use this style */
+.kbcb-app-card-link {
+    text-decoration: none;
+}
+
 .kbcb-app-card-container {
     margin: 0.4em;
     width: 300px;
@@ -61,6 +66,7 @@
     /*max-height: 2.6em;
     overflow:hidden;*/
 }
+
 .kbcb-app-card-module {
     font-size:0.8em;
 }
@@ -95,6 +101,7 @@
 }
 .kbcb-star:hover {
     color:orange;
+    cursor:pointer;
 }
 
 .kbcb-info {
@@ -113,6 +120,54 @@
 .kbcb-hover:hover {
   box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
   cursor:pointer;
+}
+
+
+/* styles for App page */
+
+
+.kbcb-app-page {
+    background: #f1f1f5;
+    border-radius: 2px;
+    max-width: 1000px;
+    text-align:center;
+    color:#666;
+}
+.kbcb-app-page-header {
+    text-align: left;
+}
+.kbcb-app-page-title-panel {
+    padding: 10px 5px 5px 0px;
+}
+
+.kbcb-app-page-title {
+    font-size:2em;
+    /*max-height: 2.6em;
+    overflow:hidden;*/
+}
+
+.kbcb-app-page-module {
+    font-size:1.2em;
+}
+.kbcb-app-page-authors {
+    font-size:1em;
+    margin:0.3em 0 0 0;
+}
+.kbcb-app-page-subtitle {
+    padding: 1.5em 2em 0em 2em;
+    font-size:1.2em;
+}
+
+.kbcb-app-page-stats-bar {
+    font-size:1.2em;
+    padding:0em 2em 0.8em 3em;
+    width:100%;
+}
+
+.kbcb-app-page-logo {
+    padding: 0em;
+    margin: 1em;
+    text-align: center;
 }
 
 

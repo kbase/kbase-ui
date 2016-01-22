@@ -68,7 +68,7 @@ define([
                 $container.append(this.$controlToolbar);
 
                 // initialize and add the main panel
-                self.$loadingPanel = self.initLoadingPanel();
+                self.$loadingPanel = self.util.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
                 var mainPanelElements = self.initMainPanel();
                 self.$mainPanel = mainPanelElements[0];
@@ -241,12 +241,6 @@ define([
                 $mainPanel.append($moduleListPanel);
                 $mainPanel.append('<br><br>')
                 return [$mainPanel, $appListPanel, $moduleListPanel];
-            },
-
-            initLoadingPanel: function() {
-                var $loadingPanel = $('<div>').addClass('kbcb-loading-panel-div');
-                $loadingPanel.append($('<i>').addClass('fa fa-spinner fa-2x fa-spin'));
-                return $loadingPanel;
             },
 
             showLoading: function() {

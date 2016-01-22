@@ -85,7 +85,7 @@ define([
 
         /* rendering methods that are shared in multiple places */
 
-        this.renderAppCard = function(app) {
+        this.renderAppCard = function(app, tag) {
             //console.log(app)
 
             // Main Container
@@ -183,12 +183,23 @@ define([
             $appDiv.append($footer);
 
 
-            // On click, go to the method page
             $appDiv.on('click', function() {
                 if(app.type === 'method') {
-                    window.location.href = "#narrativestore/method/"+app.info.id;
+                    if(app.info.module_name) {
+                        // module name right now is encoded in the ID
+                        //window.location.href = '#appcatalog/app/'+app.info.module_name+'/'+app.info.id;
+                        if(tag) {
+                            window.location.href = '#appcatalog/app/'+app.info.id + '/'+tag;
+                        } else {
+                            window.location.href = '#appcatalog/app/'+app.info.id;
+                        }
+                    } else {
+                        // legacy method, encoded as l.m
+                        window.location.href = '#appcatalog/app/l.m/'+app.info.id;
+                    }
                 } else {
-                    window.location.href = "#narrativestore/app/"+app.info.id;
+                    // apps still go to old style page
+                    window.location.href = '#narrativestore/app/'+app.info.id;
                 }
             });
 
@@ -210,6 +221,13 @@ define([
                 }
             }
             return false;
+        };
+
+
+        this.initLoadingPanel= function() {
+            var $loadingPanel = $('<div>').addClass('kbcb-loading-panel-div');
+            $loadingPanel.append($('<i>').addClass('fa fa-spinner fa-2x fa-spin'));
+            return $loadingPanel;
         };
 
 

@@ -56,7 +56,7 @@ define([
                 //console.log(this.runtime.service('session').getUsername());
 
                 // initialize and add the main panel
-                self.$loadingPanel = self.initLoadingPanel();
+                self.$loadingPanel = self.util.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
                 var mainPanelElements = self.initMainPanel();
                 //[$mainPanel, $header, $adminPanel, $appsPanel, $descriptionPanel, $versionsPanel];
@@ -216,6 +216,12 @@ define([
 
             // tag=dev/beta/release/version number, version=the actual info
             renderVersion: function(tag, version) {
+                if(tag) {
+                    if(tag!=='release' || tag!=='beta' || tag!=='dev') {
+                        tag = null;
+                    }
+                }
+
                 var self = this;
                 var git_url = this.moduleDetails.info.git_url;
                 var $verDiv = $('<div>');
@@ -240,10 +246,16 @@ define([
                         var $l = $('<ul>');
                         for(var i=0; i<version.narrative_methods.length; i++) {
                             var id = version.narrative_methods[i];
-                            //$l.append('<li><a href="#appcatalog/app/method/'+this.moduleDetails.info.module_name+'/'+id+
-                            //    '">'+id+'</a></li>');
-                            $l.append('<li><a href="#narrativestore/method/'+this.moduleDetails.info.module_name+'/'+id+
-                                '">'+id+'</a></li>');
+                            if(tag) {
+
+                                $l.append('<li><a href="#appcatalog/app/'+this.moduleDetails.info.module_name+'/'+id+'/'+tag+
+                                    '">'+id+'</a></li>');
+                            } else {
+                                $l.append('<li><a href="#appcatalog/app/'+this.moduleDetails.info.module_name+'/'+id+
+                                    '">'+id+'</a></li>');
+                            }
+                            /*$l.append('<li><a href="#narrativestore/method/'+this.moduleDetails.info.module_name+'/'+id+
+                                '">'+id+'</a></li>');*/
                         }
                         $verDiv.append($l);
                     } else {
@@ -430,12 +442,6 @@ define([
                 return [$mainPanel, $header, $adminPanel, $appsPanel, $descriptionPanel, $versionsPanel];
             },
 
-            initLoadingPanel: function() {
-                var $loadingPanel = $('<div>').addClass('kbcb-loading-panel-div');
-                $loadingPanel.append($('<i>').addClass('fa fa-spinner fa-2x fa-spin'));
-                return $loadingPanel;
-            },
-
             showLoading: function() {
                 var self = this;
                 self.$loadingPanel.show();
@@ -483,7 +489,7 @@ define([
                                 info: info_list[k],
                                 $div: $('<div>').addClass('kbcb-app')
                             };
-                            self.util.renderAppCard(m);
+                            self.util.renderAppCard(m,tag);
                             self.appList.push(m);
                         }
                     })
