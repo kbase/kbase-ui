@@ -1,4 +1,4 @@
-![KBase Logo](<%= docBaseUrl %>/wp-content/uploads/2014/11/kbase-logo-web.png)
+![KBase Logo](<%= docBaseUrl %>/images/kbase-logo-web.png)
 Welcome to the Narrative Interface!
 ===
 
