@@ -9,147 +9,94 @@ define([
     'jquery',
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
+    './catalog_util',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
-    function ($, NarrativeMethodStore, Catalog) {
+    function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
         $.KBWidget({
             name: "KBaseCatalogAppViewer",
-            parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
+            parent: "kbaseAuthenticatedWidget",
             options: {
-
+                namespace: null, // generally a module name
+                id: null,
+                tag: 'release'
             },
             $mainPanel: null,
             $errorPanel: null,
 
-
             // clients to the catalog service and the NarrativeMethodStore
             catalog: null,
             nms: null,
+            imageUrl: null,
 
-            // list of NMS method and app info (todo: we need to move this to the catalog)
-            // for now, most of the filtering/sorting etc is done on the front end; this
-            // will eventually need to move to backend servers when there are enough methods
-            appList: null,
+            // narrative method/app info and spec
+            appFullInfo: null,
+            appSpec: null,
 
-            // list of catalog module info
-            moduleList: null,
-
-            // control panel and elements
-            $controlToolbar: null,
-
-
-            // main panel and elements
-            $mainPanel: null,
-            $appListPanel: null,
-            $moduleListPanel: null,
-            $loadingPanel: null,
-
-
-
+            // module details if an SDK module
+            moduleDetails: null,
 
 
             init: function (options) {
                 this._super(options);
-                
+
                 var self = this;
-
-                // new style we have a runtime object that gives us everything in the options
                 self.runtime = options.runtime;
-                console.log(options);
-                console.log(this.runtime.service('session').getAuthToken());
                 self.setupClients();
+                self.util = new CatalogUtil();
 
-                // initialize and add the control bar
-                self.$controlToolbar = this.renderControlToolbar();
-                self.$elem.append(this.$controlToolbar);
+                // handle legacy methods and apps not in an SDK namespace
+                if(options.namespace==='l.m') {
+                    //self.$elem.append('legacy method');
+                    self.isLegacyMethod = true;
+                } else if (options.namespace==='l.a') {
+                    // for now, forward to old style page
+                    self.isLegacyApp = true;
 
-                console.log(options);
-                self.$elem.append('app view')
-                return this;
+                    self.$elem.append('&nbsp Legacy apps not supported on this page yet.  Go here for now:' +
+                        '<a href="#narrativestore/app/'+options.id+'">'+options.id+"</a>");
+                    return this;
+                }
+
+                // set some local variables
+                self.module_name = options.namespace;
+                self.id = options.id;
+                self.tag = options.tag;
+                self.isGithub = false;
 
 
                 // initialize and add the main panel
-                self.$loadingPanel = self.initLoadingPanel();
+                self.$loadingPanel = self.util.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
                 var mainPanelElements = self.initMainPanel();
+                // [$mainPanel, $header, $screenshotsPanel, $descriptionPanel, $paramsPanel, $publicationsPanel, $infoPanel];
                 self.$mainPanel = mainPanelElements[0];
-                self.$appListPanel = mainPanelElements[1];
-                self.$moduleListPanel = mainPanelElements[2];
+                self.$headerPanel = mainPanelElements[1];
+                self.$screenshotsPanel = mainPanelElements[2];
+                self.$descriptionPanel = mainPanelElements[3];
+                self.$paramsPanel = mainPanelElements[4];
+                self.$publicationsPanel = mainPanelElements[5];
+                self.$infoPanel = mainPanelElements[6];
+
                 self.$elem.append(self.$mainPanel);
                 self.showLoading();
 
-                // get the list of apps and modules
+                // get the module information
                 var loadingCalls = [];
-                self.appList = []; self.moduleList = [];
-                loadingCalls.push(self.populateAppListWithMethods());
-                loadingCalls.push(self.populateAppListWithApps());
-                loadingCalls.push(self.populateModuleList());
+                self.moduleDetails = { info:null, versions:null };
+                loadingCalls.push(self.getModuleInfo());
+                loadingCalls.push(self.getAppFullInfo());
+                loadingCalls.push(self.getAppSpec());
 
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
-                    console.log('done loading!');
-                    self.renderAppList();
+                    //self.render();
                     self.hideLoading();
+                    self.renderMethod();
+                    self.renderInfo();
                 });
 
-
-
-
-                this.$elem.append($('<div>').append("now we're in business.").addClass('catalog'));
-
-
-              //  this.narstore = new NarrativeMethodStore(this.runtime.getConfig('services.narrative_method_store.url'));
-
-               // alert(runtime.service('session').getAuthToken());
-
-           /* var catalog = new Catalog(runtime.getConfig('services.catalog.url'), {
-                 token: runtime.service('session').getAuthToken()
-            });*/
-            /*
-            catalog.version(
-                 function (version) {
-                     alert('Catalog version is ' + version);
-                 },
-                 function (err) {
-                     alert('ERROR (check console)');
-                     console.log('ERROR');
-                     console.log(err);
-                 };
-*/
-
-/*
-                console.log('NARR VIEW');
-                console.log(this.$elem);
-
-                this.$errorPanel = $('<div>').addClass('alert alert-danger').hide();
-                this.$elem.append(this.$errorPanel);
-
-                this.$mainPanel = $("<div>");
-                this.$elem.append(this.$mainPanel);
-
-                this.$narMethodStoreInfo = $("<div>").css({margin: '10px', padding: '10px'});
-                this.$elem.append(this.$narMethodStoreInfo);
-
-                this.narstore = new NarrativeMethodStore(this.runtime.getConfig('services.narrative_method_store.url'));
-                this.getNarMethodStoreInfo();
-                this.imageUrl = this.runtime.getConfig('services.narrative_method_store.image_url');
-                
-                console.log('Narrative Store');
-                console.log(options);
-
-                if (options.namespace) {
-                    this.options.id = this.options.namespace + '/' + this.options.id;
-                }
-
-                if (options.type === 'app') {
-                    this.fetchAppInfoAndRender();
-                } else if (options.type === 'method') {
-                    this.fetchMethodInfoAndRender();
-                } else {
-                    this.showError({error: {message: 'Must specify either "app" or "method" in url, as in narrativestore/app/app_id.'}});
-                }
-                */
 
                 return this;
             },
@@ -164,95 +111,127 @@ define([
                     this.runtime.getConfig('services.narrative_method_store.url'),
                     { token: this.runtime.service('session').getAuthToken() }
                 );
-
+                this.imageUrl = this.runtime.getConfig('services.narrative_method_store.url');
+                this.imageUrl = this.imageUrl.substring(0,this.imageUrl.length-3);
             },
 
 
 
-            renderControlToolbar: function () {
+            getAppFullInfo: function() {
                 var self = this;
 
-                var $searchDiv = $('<div>').addClass('col-md-6');
+                var params = {};
+                if(self.isLegacyMethod) {
+                    params.ids = [self.id];
+                } else if(self.isLegacyApp) {
+                    return;
+                } else {
+                    // new sdk method
+                    params.ids = [self.module_name + '/' + self.id];
+                    params.tag = self.tag;
+                }
 
-                var $searchBox = $('<input type="text" placeholder="Search">').addClass('form-control');
-                $searchBox.on('input',
-                    function() {
-                        self.filterApps($searchBox.val());
+                return self.nms.get_method_full_info(params)
+                    .then(function(info_list) {
+                        console.log('Method full info:')
+                        console.log(info_list);
+                        self.appFullInfo = info_list[0];
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
                     });
+            },
+            getAppSpec: function() {
+                var self = this;
 
-                $searchDiv.append($('<div>').addClass('input-group input-group-sm')
-                                        .append($searchBox));
+                var params = {};
+                if(self.isLegacyMethod) {
+                    params.ids = [self.id];
+                } else if(self.isLegacyApp) {
+                    return;
+                } else {
+                    // new sdk method
+                    params.ids = [self.module_name + '/' + self.id];
+                    params.tag = self.tag;
+                }
 
-                // sort
-                // toggle module vs app/method
-                // toggle release, dev, beta versions
-
-                var $ctrbar = $('<div>').addClass('row kbcb-ctr-toolbar');
-                $ctrbar.append($searchDiv);
-
-                return $ctrbar;
+                return self.nms.get_method_spec(params)
+                    .then(function(specs) {
+                        console.log('Specs:')
+                        console.log(specs);
+                        self.appSpec = specs[0];
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
             },
 
 
-            filterApps: function(query) {
+            getModuleInfo: function() {
                 var self = this;
-                query = query.trim();
-                if(query) {
-                    var terms = query.toLowerCase().match(/\w+|"(?:\\"|[^"])+"/g);
-                    if (terms) {
-                        //console.log(terms);
-                        for(var k=0; k<self.appList.length; k++) {
-                            var match = true;
-                            for(var t=0; t<terms.length; t++) {
-                                if(terms[t].charAt(0)=='"' && terms[t].charAt(terms.length-1)=='"' && terms[t].length>2) {
-                                    terms[t] = terms[t].substring(1,terms[t].length-1);
-                                    // the regex keeps quotes in quoted strings, so toss those
-                                }
-                                // filter on names
-                                if(self.appList[k].info.name.toLowerCase().indexOf(terms[t]) < 0) {
-                                    match = false; break;
-                                }
-                                // filter on other stuff
-                            }
 
-                            // show or hide
-                            if(match) {
-                                self.appList[k].$div.show();
-                            } else {
-                                self.appList[k].$div.hide();
+                if(self.isLegacyMethod) return;
+                if(self.isLegacyApp) return;
+
+                var moduleSelection = {
+                    module_name: self.module_name
+                };
+
+                return self.catalog.get_module_info(moduleSelection)
+                    .then(function (info) {
+                        /*typedef structure {
+                            string module_name;
+                            string git_url;
+
+                            string description;
+                            string language;
+
+                            list <string> owners;
+
+                            ModuleVersionInfo release;
+                            ModuleVersionInfo beta;
+                            ModuleVersionInfo dev;
+                        } ModuleInfo;*/
+                        self.moduleDetails.info = info;
+                        var git_url = self.moduleDetails.info.git_url;
+                        self.moduleDetails.info['original_git_url'] = self.moduleDetails.info.git_url;
+                        var github = 'https://github.com/'
+                        if(git_url.substring(0, github.length) === github) {
+                            self.isGithub = true;
+                            // if it ends with .git and is github, truncate so we get the basic url
+                            if(git_url.indexOf('.git', git_url.length - '.git'.length) !== -1) {
+                                self.moduleDetails.info.git_url = git_url.substring(0, git_url.length - '.git'.length);
                             }
                         }
-                    } else {
-                        self.clearFilter();
-                    }
-
-                } else {
-                    self.clearFilter();
-                }
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
             },
-
-            clearFilter: function() {
-                var self = this;
-                for(var k=0; k<self.appList.length; k++) {
-                    self.appList[k].$div.show();
-                }
-            },
-
-
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
-                var $mainPanel = $('<div>').addClass('kbcb-main-panel-div');
-                var $appListPanel = $('<div>');
-                var $moduleListPanel = $('<div>');
-                $mainPanel.append($appListPanel);
-                $mainPanel.append($moduleListPanel);
-                return [$mainPanel, $appListPanel, $moduleListPanel];
-            },
+                var $mainPanel = $('<div>').addClass('kbcb-mod-main-panel');
 
-            initLoadingPanel: function() {
-                var $loadingPanel = $('<div>').addClass('kbcb-loading-panel-div');
-                $loadingPanel.append($('<i>').addClass('fa fa-spinner fa-2x fa-spin'));
-                return $loadingPanel;
+                var $header = $('<div>').css('margin','1em');
+                var $screenshotsPanel = $('<div>').css('margin','1em');
+                var $descriptionPanel = $('<div>').css('margin','1em');
+                var $paramsPanel = $('<div>').css('margin','1em');
+                var $publicationsPanel = $('<div>').css('margin','1em');
+                var $infoPanel = $('<div>').css('margin','1em');
+
+                $mainPanel
+                    .append($header)
+                    .append($screenshotsPanel)
+                    .append($descriptionPanel)
+                    .append($paramsPanel)
+                    .append($publicationsPanel)
+                    .append($infoPanel)
+                    .append('<br><br><br>');
+
+                return [$mainPanel, $header, $screenshotsPanel, $descriptionPanel, $paramsPanel, $publicationsPanel, $infoPanel];
             },
 
             showLoading: function() {
@@ -267,149 +246,644 @@ define([
             },
 
 
-            skipApp: function(categories) {
-                for(var i=0; i<categories.length; i++) {
-                    if(categories[i]=='inactive') {
-                        return true;
-                    }
-                    if(categories[i]=='viewers') {
-                        return true;
-                    }
-                    if(categories[i]=='importers') {
-                        return true;
-                    }
+            renderInfo: function() {
+
+                var self = this;
+
+                if(self.isLegacyMethod) {
+                    self.nms.status()
+                        .then( function(status) {
+                            var url = status.git_spec_url + "/tree/" + status.git_spec_branch;
+                            url += "/methods/" + self.options.id;
+                            //truncate out the commit comments. We're guesing about where those start...
+                            //assume first four lines are valid header info.
+                            var commit = status.git_spec_commit.split(/\r\n|\r|\n/);
+                            commit = [commit[0], commit[1], commit[2], commit[3]].join('<br>\n');
+
+                            self.$infoPanel.append(
+                                $('<table>').css({border: '1px solid #bbb', margin: '10px', padding: '10px'})
+                                .append($('<tr>')
+                                    .append($('<th>').append('NMS Store URL  '))
+                                    .append($('<td>').append(self.runtime.getConfig('services.narrative_method_store.url'))))
+                                .append($('<tr>')
+                                    .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Yaml/Spec Location '))
+                                    .append($('<td>').append('<a href="' + url + '" target="_blank">' + url + "</a>")))
+                                .append($('<tr>')
+                                    .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Method Spec Commit  '))
+                                    .append($('<td>').append(commit)))
+                                );
+                        });
                 }
-                return false;
+
+
+                /*if(self.isGithub) {
+                    var url = self.moduleDetails.info.git_url + ;
+                    self.$infoPanel.append(
+                        $('<table>').addClass('table').css({border: '1px solid #bbb', margin: '10px', padding: '10px'})
+                            .append($('<tr>')
+                                .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Yaml/Spec Location '))
+                                .append($('<td>').append('<a href="' + url + '" target="_blank">' + url + "</a>"))));
+
+                }*/
+
             },
 
 
-            populateAppListWithMethods: function() {
+/*
+            appFullInfo: null,
+            appSpec: null,
+            appMethodSpecs: null,
+            fetchAppInfoAndRender: function () {
                 var self = this;
-
-                // determine which set of methods to fetch
-                var tag='dev';
-
-                return self.nms.list_methods({
-                        tag:tag
-                    })
-                    .then(function (methods) {
-                        for(var k=0; k<methods.length; k++) {
-
-                            // logic to hide/show certain categories
-                            if(self.skipApp(methods[k].categories)) continue;
-
-                            var m = {
-                                type: 'method',
-                                info: methods[k],
-                                $div: $('<div>').addClass('kbcb-app')
-                            };
-                            self.renderAppBox(m);
-                            self.appList.push(m);
-                        }
-                    })
-                    .catch(function (err) {
-                        console.error('ERROR');
+                self.narstore.get_app_full_info({ids: [self.options.id]},
+                    function (data) {
+                        console.log('fetchAppInfoAndRender');
+                        self.appFullInfo = data[0];
+                        self.narstore.get_app_spec({ids: [self.options.id]},
+                            function (spec) {
+                                self.appSpec = spec[0];
+                                var methodIds = [];
+                                for (var s = 0; s < self.appSpec.steps.length; s++) {
+                                    methodIds.push(self.appSpec.steps[s].method_id);
+                                }
+                                self.narstore.get_method_brief_info({ids: methodIds},
+                                    function (methods) {
+                                        self.appMethodSpecs = {};
+                                        for (var m = 0; m < methods.length; m++) {
+                                            self.appMethodSpecs[methods[m].id] = methods[m];
+                                        }
+                                        self.renderApp();
+                                    },
+                                    function (err) {
+                                        self.showError(err);
+                                        console.error(err);
+                                    });
+                            },
+                            function (err) {
+                                self.showError(err);
+                                console.error(err);
+                            });
+                    },
+                    function (err) {
+                        self.showError(err);
                         console.error(err);
                     });
             },
 
-            populateAppListWithApps: function() {
+            renderApp: function () {
                 var self = this;
+                var m = self.appFullInfo;
+                var spec = self.appSpec;
+                var methodSpecs = self.appMethodSpecs;
 
-                // determine which set of methods to fetch
-                var tag='release';
+                var $header =
+                    $.jqElem('div')
+                    .addClass('row')
+                    .css('width', '95%')
+                    ;
 
-                return self.nms.list_apps({
-                        tag:tag
-                    })
-                    .then(function (apps) {
-                        console.log('hello apps');
-                        console.log(apps);
-                        for(var k=0; k<apps.length; k++) {
-                            var a = {
-                                type: 'app',
-                                info: apps[k],
-                                $div: $('<div>').addClass('kbcb-app')
-                            };
-                            self.renderAppBox(a);
-                            self.appList.push(a);
-                        }
-                    })
-                    .catch(function (err) {
-                        console.error('ERROR');
-                        console.error(err);
-                    });
-            },
+                var $basicInfo =
+                    $.jqElem('div')
+                    .addClass('col-md-8')
+                    ;
 
+                var $header = $('<div>').addClass("row").css("width", "95%");
+                var $basicInfo = $('<div>').addClass("col-md-8");
 
+                $basicInfo.append($.jqElem('div').append($.jqElem('h2').append('App - ' + m.name)));
 
-            populateModuleList: function() {
-                var self = this
-
-                var moduleSelection = {
-                    include_released:1,
-                    include_unreleased:1,
-                    include_disabled:0
-                };
-
-                return self.catalog.list_basic_module_info(moduleSelection)
-                    .then(function (modules) {
-                        //return self.catalog.list_basic_module_info()
-                        //console.log('hello modules');
-                        //console.log(modules);
-                        for(var k=0; k<modules.length; k++) {
-                            var m = {
-                                info: modules[k],
-                                $div: $('<div>').addClass('kbcb-module')
-                            };
-                            self.renderModuleBox(m);
-                            self.moduleList.push(m);
-                        }
-                    })
-                    .catch(function (err) {
-                        console.error('ERROR');
-                        console.error(err);
-                    });
-            },
-
-
-
-            renderAppBox: function(app) {
-                var $appDiv = $('<div>').addClass('kbcb-app');
-                $appDiv.append('<br>')
-                $appDiv.append(app.info.name);
-
-                if(app.info['module_name']) {
-                    $appDiv.append('<br>').append(
-                        $('<a href="#catalog/modules/'+app.info.module_name+'">')
-                            .append('['+app.info.module_name+']'));
-                }
-                app.$div = $appDiv;
-            },
-
-            renderModuleBox: function(module) {
-                var $modDiv = $('<div>').addClass('kbcb-app');
-                $modDiv.append(module.info.module_name);
-                module.$div = $modDiv;
-            },
-
-
-
-            renderAppList: function() {
-                var self = this;
-
-                for(var k=0; k<self.appList.length; k++) {
-                    self.$appListPanel.append(self.appList[k].$div);
+                if (m.subtitle) {
+                    $basicInfo.append($.jqElem('div').append($.jqElem('h4').append(m.subtitle)));
                 }
 
+                var $topButtons =
+                    $.jqElem('div')
+                    .addClass('col-md-4')
+                    .css('text-align', 'right')
+                    .append(
+                        $.jqElem('div')
+                        .addClass('btn-group')
+                        .append(
+                            $('<a href="#/narrativemanager/new?app=' + m.id + '" target="_blank">')
+                            .append(
+                                $.jqElem('button')
+                                .addClass('kb-primary-btn')
+                                .append('<span class="fa fa-plus"></span> Launch in New Narrative')
+                                )
+                            )
+                        )
+                    ;
+
+                $header.append($basicInfo);
+                if (self.auth() && self.auth().token) {
+                    $header.append($topButtons);
+                }
+
+                self.$mainPanel.append($header);
+
+                if (m.screenshots && m.screenshots.length) {
+                    var $ssPanel = $.jqElem('div');
+                    $.each(
+                        m.screenshots,
+                        function (idx, s) {
+                            $ssPanel
+                                .append(
+                                    $.jqElem('a')
+                                    .on('click', function (e) {
+
+                                        var $img = $.jqElem('img')
+                                            .attr('src', self.imageUrl + s.url)
+                                            .css('width', '100%');
+
+                                        var $prompt = $.jqElem('div').kbasePrompt({body: $img});
+
+                                        $prompt.dialogModal().css('width', '100%');
+
+                                        $prompt.dialogModal().find('.modal-dialog').css('width', '100%');
+
+                                        $prompt.openPrompt();
+                                    })
+                                    .append(
+                                        $.jqElem('img')
+                                        .attr('src', self.imageUrl + s.url)
+                                        .attr('width', '300')
+                                        )
+                                    );
+                        }
+                    );
+
+                    self.$mainPanel.append($ssPanel);
+                }
+
+                if (m.description) {
+                    self.$mainPanel
+                        .append(
+                            $.jqElem('div')
+                            .addClass('row')
+                            .css('width', '95%')
+                            .append(
+                                $.jqElem('div')
+                                .addClass('col-md-12')
+                                .append(
+                                    $.jqElem('div')
+                                    .append($.jqElem('hr'))
+                                    .append(m.description)
+                                    )
+                                )
+                            )
+                        .append($.jqElem('hr'));
+                }
+
+                if (spec.steps && spec.steps.length) {
+                    var $stepsContainer =
+                        $.jqElem('div')
+                        .css('width', '95%')
+                        .append($.jqElem('h4').append('App Steps'));
+
+                    var $stepList = $.jqElem('ul')
+                        .css('list-style-type', 'none')
+                        .css('padding-left', '0px');
+                    $stepsContainer.append($stepList);
+
+                    $.each(
+                        spec.steps,
+                        function (idx, step) {
+                            var $li = $.jqElem('li');
+
+                            var method_spec = methodSpecs[step.method_id];
+
+                            $li.append(
+                                $.jqElem('ul')
+                                .css('list-style-type', 'none')
+                                .append(
+                                    $.jqElem('li')
+                                    .append($.jqElem('b').append('Step ' + (idx + 1) + '. '))
+                                    .append(
+                                        $.jqElem('a')
+                                        .attr('href', "#narrativestore/method/" + method_spec.id)
+                                        .attr('target', '_blank')
+                                        .append(method_spec.name)
+                                        )
+                                    .append(
+                                        $.jqElem('ul')
+                                        .css('list-style-type', 'none')
+                                        .append($.jqElem('li').append(method_spec.subtitle))
+                                        )
+                                    )
+                                );
+
+                            $stepList.append($li);
+
+                        }
+                    );
+
+                    self.$mainPanel.append($stepsContainer.append($stepList));
+                }
+
+                $.each(
+                    self.$mainPanel.find('[data-method-id]'),
+                    function (idx, link) {
+                        var method_id = $(link).data('method-id');
+                        $(link).attr('target', '_blank');
+                        $(link).attr('href', "#/narrativestore/method/" + method_id);
+                    }
+                );
+            
+                console.log(self.$mainPanel);
+
             },
 
-            showError: function (error) {
-                this.$errorPanel.empty();
-                this.$errorPanel.append('<strong>Error when fetching App/Method information.</strong><br><br>');
-                this.$errorPanel.append(error.error.message);
-                this.$errorPanel.append('<br>');
-                this.$errorPanel.show();
+*/
+
+            renderMethod: function () {
+                var self = this;
+                var m = self.appFullInfo;
+                var spec = self.appSpec;
+
+
+
+                // HEADER - contains logo, title, module link, authors
+                var $header = $('<div>').addClass('kbcb-app-page');
+                var $topDiv = $('<div>').addClass('kbcb-app-page-header');
+                var $logoSpan = $('<div>').addClass('kbcb-app-page-logo');
+                // add actual logos here
+                $logoSpan.append('<div class="fa-stack fa-3x"><i class="fa fa-square fa-stack-2x method-icon"></i><i class="fa fa-inverse fa-stack-1x fa-cube"></i></div>')
+                var $titleSpan = $('<div>').addClass('kbcb-app-page-title-panel');
+                
+
+                var versiontag = '';
+                if(self.tag) {
+                    if(self.tag=='dev') {
+                        versiontag = ' (dev version)'
+                    } else if(self.tag=='beta') {
+                        versiontag = ' (beta)'
+                    }
+                }
+
+                $titleSpan.append($('<div>').addClass('kbcb-app-page-title').append(m.name + versiontag));
+                
+
+                if(self.moduleDetails.info) {
+                    $titleSpan.append($('<div>').addClass('kbcb-app-page-module').append(
+                                            $('<a href="#appcatalog/module/'+self.moduleDetails.info.module_name+'">')
+                                                .append(self.moduleDetails.info.module_name)));
+                }
+
+                if(m.authors.length>0) {
+                    var $authorDiv = $('<div>').addClass('kbcb-app-page-authors').append('by ');
+                    for(var k=0; k<m.authors.length; k++) {
+                        if(k>=1) {
+                            $authorDiv.append(', ');
+                        }
+                        if(k>=2) {
+                            $authorDiv.append(' +'+(m.authors.length-2)+' more');
+                            break;
+                        }
+                        $authorDiv.append($('<a href="#people/'+m.authors[k]+'">')
+                                            .append(m.authors[k])
+                                            .on('click',function() {
+                                                // have to stop propagation so we don't go to the app page first
+                                                event.stopPropagation();
+                                            }));
+                    }
+                    $titleSpan.append($authorDiv);
+                }
+
+
+
+                $header.append(
+                    $topDiv
+                        .append($('<table>').css('width','100%')
+                                    .append($('<tr>')
+                                        .append($('<td>')
+                                            .css({'width':'150px', 'vertical-align':'top'})
+                                            .append($logoSpan))
+                                        .append($('<td>')
+                                            .append($titleSpan))
+                                        )));
+
+
+
+                var $starDiv = $('<div>').css('text-align','left');
+                var $star = $('<span>').addClass('kbcb-star').append('<i class="fa fa-star"></i>');
+                $star.on('click', function() {
+                    event.stopPropagation();
+                    alert('You have favorited this app - currently does nothing');
+                });
+                var favoriteCount = Math.floor(Math.random()*100);
+                $starDiv.append($star).append('&nbsp;'+favoriteCount);
+                $starDiv.tooltip({title:'A favorite method of '+favoriteCount+' people.', placement:'bottom',
+                                    delay:{show: 400, hide: 40}});
+
+
+                var nRuns = Math.floor(Math.random()*10000);
+                var $nRuns = $('<div>').css('text-align','left');
+                $nRuns.append($('<span>').append('<i class="fa fa-share"></i>'));
+                $nRuns.append('&nbsp;'+nRuns);
+                $nRuns.tooltip({title:'Run in a narrative '+nRuns+' times.', placement:'bottom',
+                                    delay:{show: 400, hide: 40}});
+
+
+                $header.append(
+                    $('<div>').addClass('kbcb-app-page-stats-bar').append(
+                        $('<table>')
+                            .append($('<tr>')
+                                .append($('<td>')
+                                    .css({'width':'150px', 'vertical-align':'top'})
+                                        .append($starDiv))
+                                .append($('<td>')
+                                        .append($nRuns))
+                                )));
+
+
+                self.$headerPanel.append($header);
+
+
+                // SUBTITLE -  show subtitle information just below the other header information
+                var $subtitle = $('<div>').addClass('kbcb-app-page-subtitle').append(m.subtitle)
+                self.$headerPanel.append($subtitle);
+
+                //if (m['ver']) {
+                //$basicInfo.append('<div><strong>Version: </strong>&nbsp&nbsp'+m['ver']+"</div>");
+                //}
+
+                if (m.contact) {
+                    /*$basicInfo
+                        .append('<div>')
+                        .append('<strong>Help or Questions? Contact: </strong>&nbsp&nbsp')
+                        .append(
+                            $.jqElem('a')
+                            .attr('href', 'mailto:' + m.contact)
+                            .append(m.contact))*/
+                }
+
+                var $topButtons =
+                    $.jqElem('div')
+                    .addClass('col-md-4')
+                    .css('text-align', 'right')
+                    .append(
+                        $.jqElem('div')
+                        .addClass('btn-group')
+                        )
+                    ;
+
+
+               // $header.append($basicInfo);
+              //  $header.append($topButtons);
+
+              //  self.$headerPanel.append($header);
+
+                if (m.screenshots && m.screenshots.length) {
+                    var $ssPanel = $.jqElem('div');
+                    $.each(
+                        m.screenshots,
+                        function (idx, s) {
+                            $ssPanel
+                                .append(
+                                    $.jqElem('a')
+                                    .on('click', function (e) {
+
+                                        var $img = $.jqElem('img')
+                                            .attr('src', self.imageUrl + s.url)
+                                            .css('width', '100%')
+                                            ;
+
+                                        var $prompt = $.jqElem('div').kbasePrompt(
+                                            {
+                                                body: $img
+                                            }
+                                        );
+
+                                        $prompt.dialogModal()
+                                            .css('width', '100%')
+                                            ;
+
+                                        $prompt.dialogModal().find('.modal-dialog')
+                                            .css('width', '100%')
+                                            ;
+
+                                        $prompt.openPrompt();
+                                    })
+                                    .append(
+                                        $.jqElem('img')
+                                        .attr('src', self.imageUrl + s.url)
+                                        .attr('width', '300')
+                                        )
+                                    )
+                        }
+                    );
+
+                    self.$screenshotsPanel.append($ssPanel);
+                }
+
+
+                if (m.description) {
+                    self.$descriptionPanel
+                        .append(
+                            $.jqElem('div')
+                            .addClass('row')
+                            .css('width', '95%')
+                            .append(
+                                $.jqElem('div')
+                                .addClass('col-md-12')
+                                .append(
+                                    $.jqElem('div')
+                                    .append($.jqElem('hr'))
+                                    .append(m.description)
+                                    )
+                                )
+                            )
+                        .append($.jqElem('hr'))
+                }
+
+
+                if (spec.parameters && spec.parameters.length) {
+
+                    var $parametersDiv =
+                        $.jqElem('div')
+                        ;
+
+                    var $paramList = $.jqElem('ul')
+                        .css('list-style-type', 'none')
+                        .css('padding-left', '0px')
+                        ;
+                    $parametersDiv.append($paramList);
+
+                    var sortedParams = {
+                        inputs: [],
+                        outputs: [],
+                        parameters: []
+                    };
+
+                    $.each(
+                        spec.parameters,
+                        function (idx, param) {
+                            if (param.ui_class === 'input') {
+                                sortedParams.inputs.push(param);
+                            } else if (param.ui_class === 'output') {
+                                sortedParams.outputs.push(param);
+                            } else {
+                                sortedParams.parameters.push(param);
+                            }
+                        }
+                    );
+
+                    var ucfirst = function (string) {
+                        if (string !== undefined && string.length) {
+                            return string.charAt(0).toUpperCase() + string.slice(1);
+                        }
+                    };
+
+                    $.each(
+                        ['inputs', 'outputs', 'parameters'],
+                        function (idx, ui_class) {
+
+                            if (sortedParams[ui_class].length === 0) {
+                                return;
+                            }
+                            ;
+
+                            var $li = $.jqElem('li').append($.jqElem('h4').append(ucfirst(ui_class)));
+                            var $ui_classList = $.jqElem('ul')
+                                .css('list-style-type', 'none')
+                                .css('padding-left', '0px')
+                                ;
+                            $li.append($ui_classList);
+                            $paramList.append($li);
+
+                            $.each(
+                                sortedParams[ui_class],
+                                function (idx, param) {
+
+                                    var types = '';
+
+                                    if (param.text_options && param.text_options.valid_ws_types) {
+                                        types = $.jqElem('i')
+                                            .append(' ' + param.text_options.valid_ws_types.join(', '))
+                                            ;
+                                    }
+
+                                    var $li = $.jqElem('li');//.append('Parameter ' + (idx + 1)));
+                                    $li.append(
+                                        $.jqElem('ul')
+                                        .css('list-style-type', 'none')
+                                        .append(
+                                            $.jqElem('li')
+                                            .append(
+                                                $.jqElem('b').append(param.ui_name)
+                                                )
+                                            .append(types)
+                                            .append(
+                                                $.jqElem('ul')
+                                                .css('list-style-type', 'none')
+                                                .append($.jqElem('li').append(param.short_hint))
+                                                .append($.jqElem('li').append(param.long_hint))
+                                                )
+                                            )
+                                        );
+
+                                    $ui_classList.append($li);
+                                }
+                            );
+                        }
+                    );
+
+                    self.$paramsPanel.append($parametersDiv.append('<hr>'));
+                }
+
+                if (spec.fixed_parameters && spec.fixed_parameters.length) {
+
+                    var $parametersDiv =
+                        $.jqElem('div')
+                        .append($.jqElem('h4').append('Fixed parameters'))
+                        ;
+
+                    var $paramList = $.jqElem('ul')
+                        .css('list-style-type', 'none')
+                        .css('padding-left', '0px')
+                        ;
+                    $parametersDiv.append($paramList);
+
+                    $.each(
+                        spec.fixed_parameters,
+                        function (idx, param) {
+                            var $li = $.jqElem('li');//.append('Parameter ' + (idx + 1)));
+                            $li.append(
+                                $.jqElem('ul')
+                                .css('list-style-type', 'none')
+                                .append(
+                                    $.jqElem('li')
+                                    .append(
+                                        $.jqElem('b').append(param.ui_name)
+                                        )
+                                    .append(
+                                        $.jqElem('ul')
+                                        .css('list-style-type', 'none')
+                                        .append($.jqElem('li').append(param.description))
+                                        )
+                                    )
+                                );
+                            $paramList.append($li);
+                        }
+                    );
+                    self.$paramsPanel.append($parametersDiv.append('<hr>'));
+                }
+
+                if (m.publications && m.publications.length) {
+                    var $pubsDiv =
+                        $.jqElem('div')
+                        .append($.jqElem('strong').append('Related publications'))
+                    var $publications =
+                        $.jqElem('ul')
+                        ;
+                    $.each(
+                        m.publications,
+                        function (idx, pub) {
+                            $publications.append(
+                                $.jqElem('li')
+                                .append(pub.display_text)
+                                .append(
+                                    $.jqElem('a')
+                                    .attr('href', pub.link)
+                                    .attr('target', '_blank')
+                                    .append(pub.link)
+                                    )
+                                );
+                        }
+                    );
+
+                    self.$publicationsPanel.append($pubsDiv.append($publications));
+                }
+
+                if (m.kb_contributors !== undefined && m.kb_contributors.length) {
+                    var $contributorsDiv =
+                        $.jqElem('div')
+                        .append($.jqElem('strong').append('Team members'))
+                    var $contributors =
+                        $.jqElem('ul')
+                        ;
+                    $.each(
+                        m.publications,
+                        function (idx, name) {
+                            $publications.append(
+                                $.jqElem('li')
+                                .append(name)
+                                );
+                        }
+                    );
+
+                    self.$publicationsPanel.append($pubsDiv.append($publications));
+                }
+
+                $.each(
+                    self.$mainPanel.find('[data-method-id]'),
+                    function (idx, link) {
+                        var method_id = $(link).data('method-id');
+                        $(link).attr('target', '_blank');
+                        $(link).attr('href', "#/narrativestore/method/" + method_id);
+                    }
+                );
+
             }
         });
     });
