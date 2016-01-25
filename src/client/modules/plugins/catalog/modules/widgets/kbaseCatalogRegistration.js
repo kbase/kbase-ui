@@ -7,7 +7,7 @@
  */
 define([
     'jquery',
-    'kb/service/client/NarrativeMethodStore',
+    'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     'plugins/catalog/modules/widgets/kbaseViewSDKRegistrationLog',
     'kb/widget/legacy/authenticatedWidget',
