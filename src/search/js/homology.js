@@ -628,6 +628,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 "send": hit.hsps[0].hit_to,
                 "evalue": hit.hsps[0].evalue,
                 "bitscore": Math.round(hit.hsps[0].bit_score),
+                "feature_id": target_id,
                 "genome_id": metadata[target_id].genome_id,
                 "genome_name": metadata[target_id].genome_name,
                 "function": metadata[target_id].function,
@@ -1059,13 +1060,18 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
 
     $scope.copyFeature = function(n) {
         //console.log($scope.options.userState.session.data_cart.data[n]["object_id"]);
-        var split_id = $scope.options.userState.session.data_cart.data[n]["object_id"].split('/');
+        console.log($scope.options.userState.session.data_cart.data[n]);
+        // var split_id = $scope.options.userState.session.data_cart.data[n]["object_id"].split('/');
+        var feature_id = $scope.options.userState.session.data_cart.data[n]["feature_id"];
+        var workspace_name = "KBasePublicGenomesV5";
         //console.log("/features/" + split_id[2]);
         //console.log($scope.options.userState.session.data_cart.data[n]["genome_id"] + ".featureset");
 
         return $scope.workspace_service.get_object_subset([{"name": $scope.options.userState.session.data_cart.data[n]["genome_id"] + ".featureset",
-                                                            "workspace": $scope.options.userState.session.data_cart.data[n]["workspace_name"].split("Rich").join(""),
-                                                            "included": ["/features/" + split_id[2]]
+                                                            // "workspace": $scope.options.userState.session.data_cart.data[n]["workspace_name"].split("Rich").join(""),
+                                                            // "included": ["/features/" + split_id[2]]
+                                                            "workspace": workspace_name,
+                                                            "included": ["/features/" + feature_id]
                                                           }])
             .fail(function (xhr, status, error) {
                 console.log(xhr);
