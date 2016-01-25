@@ -471,14 +471,13 @@ define([
                     tag='dev';
                 }
                 for(var m=0; m<m_names.length; m++) {
-                    m_names[m] = self.module_name + '/' + m_names[m];
+                    m_names[m] = self.moduleDetails.info.module_name + '/' + m_names[m];
                 }
 
 
                 var params = { ids: m_names, tag: tag };
                 return self.nms.get_method_brief_info(params)
                     .then(function(info_list) {
-                        //console.log(info_list);
                         self.appList = [];
 
                         for(var k=0; k<info_list.length; k++) {
