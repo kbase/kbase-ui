@@ -1,25 +1,21 @@
 # Quick Deploy Guide
 
-This document provides steps to install kbase-ui into a working state on Ubuntu 14.04.
+This document provides steps to install *kbase-ui* into a working state on Ubuntu 14.04.
 
-It can serve as a starting point for documentation tailored to specific deploy scenarios. In that case, we probably want to have a set of quick deployment documents (with links to common materials or more detailed explanations):
+It can serve as a starting point for specific deployment scenarios. In that case, we probably want to have a set of quick deployment documents (with links to common materials or more detailed explanations):
 
 - CI
 - Next
 - Production
-- Local dry-run
+- Local testing
 
 ## Steps
 
 ### Prerequisites
 
-Assume raw ubuntu 14.04; if that isn't the situation, you'll know what to ignore.
+Assume raw, freshly installed Ubuntu 14.04; if that isn't the situation, you'll know what to ignore.
 
 #### 1) Ensure system is up to date
-
-I like to do this to ensure the  system is fully up to snuff.
-
-E.g.
 
 ```
 sudo apt-get update
@@ -27,37 +23,42 @@ sudo apt-get upgrade -y
 sudo apt-get dist-upgrade -y
 ```
 
-if dist-upgrade has something to do you should restart the instance
+if *dist-upgrade* performs installs you should restart the Ubuntu instance.
 
-if you are advised to *autoremove*. Might as well do this with:
+If you are advised to *autoremove*. Might as well do this with:
 
 ```
 sudo apt-get autoremove -y
 ```
 
 
-#### 2) get the NodeSource PPA:
+#### 2) Get the NodeSource PPA:
 
-The node with Ubuntu is very old -- antique by node standards -- and will not work with kbase-ui build tool requirements. We have been using 4.x and will migrate to 5.x in the future.
+The nodejs distributed with Ubuntu is very old -- antique by node standards -- and will not work with *kbase-ui* build tool requirements. We are currently using 4.2.x, so install that package source into Ubuntu:
 
 ```
 curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 ```
 
-#### 3) install packages
+#### 3) Install packages
 
-These are required for the build tools and providing a web server.
+These are required for the build tools and for providing a web server.
 
 ```
 sudo apt-get install -y git build-essential libfontconfig1 nodejs nginx
 ```
 
-- *ibfontconfig1* is a hidden dependency for *phantomjs* -- it will not crop up until phantomjs fails.
+- *ibfontconfig1* is a hidden dependency for *phantomjs*
 - *build-essential* is for npm modules which include c-compilable code (e.g. phantomjs)
 
 ### Prepare kbase-ui
 
-You'll want to be in whatever filesystem location is acceptable for creating the build directory.
+You'll want to be in whatever filesystem location is acceptable for creating the kbase-ui repo directory. In certain build modes (e.g. dev) a *temp* directory will be created with the directory which contains the kbase-ui repo, so you may wish to create and use a directory to contain the kbase-ui repo.
+
+```
+mkdir kbase-ui-working
+cd kbase-ui-working
+```
 
 #### 1) Clone kbase-ui
 
@@ -84,13 +85,13 @@ git clone --branch v0.1.3 --depth 1 https://github.com/eapearson/kbase-ui
 ```
 cd kbase-ui
 make init
-make build config=ENV
+make build config=ci
 ```
 
 - ```make init``` will install build tools locally
-- ```make build config=ENV``` will build the base, and possibly the dist, depending on the build target settings.
+- ```make build config=ci``` will build the base the dist.
     - build configs include *ci*, *next*, *prod*, and *dev*
-    - the defalt is *dev*
+    - the default is *dev*
 
 For example, to make a build suitable for or to emulate CI
 
@@ -102,6 +103,8 @@ make build config=ci
 
 #### 3) Deploy it
 
+This installs the *dist* directory created above into the standard KBase runtime directory ```/kb/deployment/services/kbase-ui```.
+
 ```
 sudo ./deploy.sh
 ```
@@ -112,7 +115,7 @@ sudo ./deploy.sh
 
 Of course, kbase-ui is nothing unless it is fronted by an http server.
 
-The prerequisites already installed a stock nginx server.
+We have already installed the nginx server above.
 
 Replace the default nginx config file with one appropriate for the deployment environment.
 
@@ -130,18 +133,20 @@ server {
   listen [::]:80 default_server ipv6only=on;
   root /kb/deployment/services/kbase-ui;
   index index.html;
-  server_name narrative.kbase.us;
+  server_name dev.kbase.us;
   location / {
       try_files $uri $uri/ =404;
   }
 }
 ```
 
-- Since kbase-ui is served at https:, you may need to add an ssl server as well, depending on the front end proxy requirements.
-- In addition, the server_name may be different depending on those requirements as well.
+- Since kbase-ui is served at https:, you may want to add an ssl server as well, depending on the front end proxy requirements.
+- The *server_name* may be whatever you want, *dev.kbase.us* is just an example (not in use publicly at KBase.)
 
+> TODO add basic ssl self-signed cert instructions, very handy for testing.
 
-## Notes
+---
 
-If you are would like to enjoy a test deploy by way of Vagrant...
+[Index](index.md) - [README](../README.md) - [KBase](http://kbase.us)
 
+---
