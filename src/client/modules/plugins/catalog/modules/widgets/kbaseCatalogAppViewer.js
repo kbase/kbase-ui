@@ -67,6 +67,8 @@ define([
 
 
                 // initialize and add the main panel
+                //self.$elem.addClass('container');
+
                 self.$loadingPanel = self.util.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
                 var mainPanelElements = self.initMainPanel();
@@ -213,7 +215,7 @@ define([
             },
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
-                var $mainPanel = $('<div>').addClass('kbcb-mod-main-panel');
+                var $mainPanel = $('<div>').addClass('container');
 
                 var $header = $('<div>').css('margin','1em');
                 var $screenshotsPanel = $('<div>').css('margin','1em');
@@ -514,13 +516,15 @@ define([
                 var versiontag = '';
                 if(self.tag) {
                     if(self.tag=='dev') {
-                        versiontag = ' (dev version)'
+                        versiontag = ' (under development)'
                     } else if(self.tag=='beta') {
-                        versiontag = ' (beta)'
+                        versiontag = ' beta'
                     }
                 }
 
-                $titleSpan.append($('<div>').addClass('kbcb-app-page-title').append(m.name + versiontag));
+                $titleSpan.append($('<div>').addClass('kbcb-app-page-title').append(m.name).append(
+                    $('<span>').css({'font-size':'0.5em','margin-left':'0.5em'})
+                        .append(versiontag)));
                 
 
                 if(self.moduleDetails.info) {

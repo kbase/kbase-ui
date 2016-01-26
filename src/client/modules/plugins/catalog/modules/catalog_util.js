@@ -85,17 +85,38 @@ define([
 
         /* rendering methods that are shared in multiple places */
 
-        this.renderAppCard = function(app, tag) {
-            //console.log(app)
+        this.renderAppCard = function(app, tag, nms_base_url) {
 
             // Main Container
-            var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover');
+            var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover container');
 
             // HEADER - contains logo, title, module link, authors
-            var $topDiv = $('<div>').addClass('clearfix kbcb-app-card-header');
+            var $topDiv = $('<div>').addClass('row kbcb-app-card-header');
             var $logoSpan = $('<div>').addClass('col-xs-4 kbcb-app-card-logo');
-            // add actual logos here
+
             $logoSpan.append('<div class="fa-stack fa-3x"><i class="fa fa-square fa-stack-2x method-icon"></i><i class="fa fa-inverse fa-stack-1x fa-cube"></i></div>')
+
+            // add actual logos here
+            if(app.info.icon && nms_base_url) {
+                if(app.info.icon.url) {
+                    $logoSpan.html($('<img src="'+nms_base_url + app.info.icon.url+'">')
+                                        .css({'max-width':'85%', 'padding':'7px 7px 7px 10px',
+                                              'max-height': '85%'}));
+                    /*$.ajax({
+                        type: 'HEAD',
+                        url: nms_base_url + app.info.icon.url,
+                        success: function() {
+                            $logoSpan.html($('<img src="'+nms_base_url + app.info.icon.url+'">')
+                                        .css({'max-width':'85%', 'padding':'7px 7px 7px 10px',
+                                              'max-height': '85%'}));
+                        },
+                        error: function() {
+                            console.warn('Warning: icon url set for '+app.info.id+' but does not exist');
+                        }
+                    });*/
+                }
+            }
+
             var $titleSpan = $('<div>').addClass('col-xs-8 kbcb-app-card-title-panel');
                 
             $titleSpan.append($('<div>').addClass('kbcb-app-card-title').append(app.info.name));
@@ -144,7 +165,7 @@ define([
 
 
             // FOOTER - stars, number of runs, and info mouseover area
-            var $footer = $('<div>').addClass('clearfix kbcb-app-card-footer');
+            var $footer = $('<div>').addClass('row kbcb-app-card-footer');
 
 
             var $starDiv = $('<div>').addClass('col-xs-3').css('text-align','left');

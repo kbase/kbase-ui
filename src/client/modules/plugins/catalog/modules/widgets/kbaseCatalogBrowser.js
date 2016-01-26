@@ -62,7 +62,7 @@ define([
                 self.setupClients();
 
                 // initialize and add the control bar
-                var $container = $('<div>').addClass('kbcb-browser-container');
+                var $container = $('<div>').addClass('container');
                 self.$elem.append($container);
                 self.$controlToolbar = this.renderControlToolbar();
                 $container.append(this.$controlToolbar);
@@ -123,6 +123,9 @@ define([
                     this.runtime.getConfig('services.narrative_method_store.url'),
                     { token: this.runtime.service('session').getAuthToken() }
                 );
+                this.nms_base_url = this.runtime.getConfig('services.narrative_method_store.url');
+                this.nms_base_url = this.nms_base_url.substring(0,this.nms_base_url.length-3)
+
 
             },
 
@@ -234,7 +237,7 @@ define([
 
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
-                var $mainPanel = $('<div>').addClass('kbcb-main-panel-div');
+                var $mainPanel = $('<div>').addClass('container');
                 var $appListPanel = $('<div>');
                 var $moduleListPanel = $('<div>');
                 $mainPanel.append($appListPanel);
@@ -274,7 +277,7 @@ define([
                                 info: methods[k],
                                 $div: $('<div>').addClass('kbcb-app')
                             };
-                            self.util.renderAppCard(m);
+                            self.util.renderAppCard(m, null, self.nms_base_url);
                             self.appList.push(m);
                         }
                     })

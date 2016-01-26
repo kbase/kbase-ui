@@ -124,10 +124,22 @@ define([
                 var info = self.moduleDetails.info;
                 var versions = self.moduleDetails.versions;
 
+                // determine current version
+                var verStrHeader = '(under development)'
+                if(self.moduleDetails.info.release) {
+                    verStrHeader = self.moduleDetails.info.release.version;
+                } else if (self.moduleDetails.beta) {
+                    verStrHeader = 'beta';
+                }
 
                 // HEADER
                 var $header = $('<div>');
-                $header.append($('<h1>').append(info.module_name));
+                $header
+                    .append($('<h1>').css('display','inline')
+                        .append(info.module_name))
+                    .append($('<span>').css({'font-weight':'bold','font-size':'1.2em','margin-left':'0.5em'})
+                        .append(verStrHeader));
+
                 $header.append($('<h4>').append(
                     '<a href="'+info.git_url+'" target="_blank">'+info.git_url+'<a>'));
 
@@ -217,7 +229,7 @@ define([
             // tag=dev/beta/release/version number, version=the actual info
             renderVersion: function(tag, version) {
                 if(tag) {
-                    if(tag!=='release' || tag!=='beta' || tag!=='dev') {
+                    if(tag!=='release' && tag!=='beta' && tag!=='dev') {
                         tag = null;
                     }
                 }
@@ -401,14 +413,6 @@ define([
 
 
 
-
-
-
-
-
-
-
-
             setupClients: function() {
                 this.catalog = new Catalog(
                     this.runtime.getConfig('services.catalog.url'),
@@ -422,7 +426,7 @@ define([
 
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
-                var $mainPanel = $('<div>').addClass('kbcb-mod-main-panel');
+                var $mainPanel = $('<div>').addClass('container');
 
                 var $header = $('<div>').css('margin','1em');
                 var $adminPanel = $('<div>').css('margin','1em');
