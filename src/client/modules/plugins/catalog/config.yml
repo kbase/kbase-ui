@@ -149,10 +149,10 @@ install:
             path: ['appcatalog', 'module', {type: param, name: module_name}]
             widget: catalog_module_viewer
         -
-            path: ['appcatalog', 'module', {type: param, name: module_name}, 'dev']
-            widget: catalog_module_dev_viewer
+            path: ['appcatalog', 'app', {type: param, name: namespace}, {type: param, name: id}]
+            widget: catalog_app_viewer
         -
-            path: ['appcatalog', 'app', {type: param, name: type}, {type: param, name: namespace}, {type: param, name: name}]
+            path: ['appcatalog', 'app', {type: param, name: namespace}, {type: param, name: id}, {type: param, name: tag}]
             widget: catalog_app_viewer
         -
             path: ['appcatalog', 'register']

@@ -35,6 +35,9 @@ define([
             // list of catalog module info
             moduleList: null,
 
+            // dict of module info for fast lookup
+            moduleLookup: null,
+
             // control panel and elements
             $controlToolbar: null,
 
@@ -55,6 +58,7 @@ define([
                 self.runtime = options.runtime;
                 console.log(options);
                 console.log(this.runtime.service('session').getAuthToken());
+                self.util = new CatalogUtil();
                 self.setupClients();
 
                 // initialize and add the control bar
@@ -64,7 +68,7 @@ define([
                 $container.append(this.$controlToolbar);
 
                 // initialize and add the main panel
-                self.$loadingPanel = self.initLoadingPanel();
+                self.$loadingPanel = self.util.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
                 var mainPanelElements = self.initMainPanel();
                 self.$mainPanel = mainPanelElements[0];
@@ -100,6 +104,7 @@ define([
                         return 0;
                     });
 
+                    self.processData();
 
                     self.renderAppList();
                     self.hideLoading();
@@ -161,19 +166,47 @@ define([
                     var terms = query.toLowerCase().match(/\w+|"(?:\\"|[^"])+"/g);
                     if (terms) {
                         //console.log(terms);
+                        console.log(self.appList[0].info);
                         for(var k=0; k<self.appList.length; k++) {
-                            var match = true;
+                            var match = false; // every term must match
                             for(var t=0; t<terms.length; t++) {
                                 if(terms[t].charAt(0)=='"' && terms[t].charAt(terms.length-1)=='"' && terms[t].length>2) {
                                     terms[t] = terms[t].substring(1,terms[t].length-1);
                                     // the regex keeps quotes in quoted strings, so toss those
                                 }
                                 // filter on names
-                                if(self.appList[k].info.name.toLowerCase().indexOf(terms[t]) < 0) {
-                                    match = false; break;
+                                if(self.appList[k].info.name.toLowerCase().indexOf(terms[t]) >= 0) {
+                                    match = true; continue;
                                 }
+                                // filter on module names, if they exist
+                                if(self.appList[k].info.module_name) {
+                                    if(self.appList[k].info.module_name.toLowerCase().indexOf(terms[t]) >= 0) {
+                                        match = true; continue;
+                                    }
+                                }
+                                // filter on other description
+                                if(self.appList[k].info.subtitle) {
+                                    if(self.appList[k].info.subtitle.toLowerCase().indexOf(terms[t]) >= 0) {
+                                        match = true; continue;
+                                    }
+                                }
+
+                                // filter on authors
+                                if(self.appList[k].info.authors) {
+                                    for(var a=0; a<self.appList[k].info.authors.length; a++) {
+                                        if(self.appList[k].info.authors[a].toLowerCase().indexOf(terms[t]) >= 0) {
+                                            match = true; break;
+                                        }
+                                    }
+                                    if(match) { continue; }
+                                }
+
                                 // filter on other stuff
+
+                                // if we get here, term didnt' match anything, so we can break
+                                match = false; break;
                             }
+
 
                             // show or hide
                             if(match) {
@@ -210,12 +243,6 @@ define([
                 return [$mainPanel, $appListPanel, $moduleListPanel];
             },
 
-            initLoadingPanel: function() {
-                var $loadingPanel = $('<div>').addClass('kbcb-loading-panel-div');
-                $loadingPanel.append($('<i>').addClass('fa fa-spinner fa-2x fa-spin'));
-                return $loadingPanel;
-            },
-
             showLoading: function() {
                 var self = this;
                 self.$loadingPanel.show();
@@ -226,23 +253,6 @@ define([
                 self.$loadingPanel.hide();
                 self.$mainPanel.show();
             },
-
-
-            skipApp: function(categories) {
-                for(var i=0; i<categories.length; i++) {
-                    if(categories[i]=='inactive') {
-                        return true;
-                    }
-                    if(categories[i]=='viewers') {
-                        return true;
-                    }
-                    if(categories[i]=='importers') {
-                        return true;
-                    }
-                }
-                return false;
-            },
-
 
             populateAppListWithMethods: function() {
                 var self = this;
@@ -257,14 +267,14 @@ define([
                         for(var k=0; k<methods.length; k++) {
 
                             // logic to hide/show certain categories
-                            if(self.skipApp(methods[k].categories)) continue;
+                            if(self.util.skipApp(methods[k].categories)) continue;
 
                             var m = {
                                 type: 'method',
                                 info: methods[k],
                                 $div: $('<div>').addClass('kbcb-app')
                             };
-                            self.renderAppBox(m);
+                            self.util.renderAppCard(m);
                             self.appList.push(m);
                         }
                     })
@@ -284,15 +294,14 @@ define([
                         tag:tag
                     })
                     .then(function (apps) {
-                        console.log('hello apps');
-                        console.log(apps);
+                        //console.log(apps);
                         for(var k=0; k<apps.length; k++) {
                             var a = {
                                 type: 'app',
                                 info: apps[k],
                                 $div: $('<div>').addClass('kbcb-app')
                             };
-                            self.renderAppBox(a);
+                            self.util.renderAppCard(a);
                             self.appList.push(a);
                         }
                     })
@@ -333,29 +342,18 @@ define([
                     });
             },
 
+            processData: function() {
+                var self = this;
 
-
-            renderAppBox: function(app) {
-                var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover');
-                $appDiv.append('<br>')
-                $appDiv.append(app.info.name);
-
-                if(app.info['module_name']) {
-                    $appDiv.append('<br>').append(
-                        $('<a href="#appcatalog/module/'+app.info.module_name+'">')
-                            .append('['+app.info.module_name+']'));
+                // setup module map
+                self.moduleLookup = {};
+                for(var m=0; m<self.moduleList.length; m++) {
+                    self.moduleLookup[self.moduleList[m].info.module_name] = self.moduleList.info;
                 }
-
-                $appDiv.on('click', function() {
-                    if(app.type === 'method') {
-                        window.location.href = "#narrativestore/method/"+app.info.id;
-                    } else {
-                        window.location.href = "#narrativestore/app/"+app.info.id;
-                    }
-                });
-
-                app.$div = $appDiv;
             },
+
+
+
 
             renderModuleBox: function(module) {
                 var $modDiv = $('<div>').addClass('kbcb-app');
@@ -375,6 +373,10 @@ define([
                 }
 
             },
+
+
+
+
 
             showError: function (error) {
                 this.$errorPanel.empty();

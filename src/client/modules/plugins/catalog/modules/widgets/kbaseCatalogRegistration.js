@@ -18,7 +18,10 @@ define([
             name: "KBaseCatalogRegistration",
             parent: "kbaseAuthenticatedWidget",
             options: {
-                registration_id: null
+                registration_id: null,
+                git_url: null, // if set, then no git url input field is provided, and will use this git url instead
+                show_title: true,
+                show_module_links: true
             },
 
             // clients to the catalog service and the NarrativeMethodStore
@@ -60,10 +63,15 @@ define([
 
                 // if we pass a registration_id flag, then just show that
                 if(self.options.registration_id) {
-                    self.$inputPanel.append($('<h3>').append('Module Registration Log:'));
+                    if(self.options.show_title) {
+                        self.$inputPanel.append($('<h3>').append('Module Registration Log:'));
+                    }
                     self.showRegistrationLog(self.options.registration_id);
                 } else {
-                    self.$inputPanel.append($('<h3>').append('Register a KBase Module:'));
+                    if(self.options.show_title){
+                        self.$inputPanel.append($('<h3>').append('Register a KBase Module:'));
+                        self.$inputPanel.append('For help with building and registering new KBase Apps, see the <a href="https://github.com/kbase/kb_sdk" target="_blank">KBase SDK</a><br><br>');
+                    }
                     
                     var $registrationForm = $('<div>');
 
@@ -71,10 +79,14 @@ define([
                     var $commitInput = $('<input type="text" class="form-control" id="commit" placeholder="e.g. 15b6ec0">');
 
                     var $git_url_group = 
-                        $('<div>').addClass('form-group')
-                            .append($('<label for="git_url">Module Git URL</label>'))
-                            .append($gitUrlInput);
-                    $registrationForm.append($git_url_group);
+                            $('<div>').addClass('form-group')
+                                .append($('<label for="git_url">Module Git URL</label>'))
+                                .append($gitUrlInput);
+                    if(!self.options.git_url) {
+                        $registrationForm.append($git_url_group);
+                    } else {
+                        $gitUrlInput.val(self.options.git_url);
+                    }
 
                     var $git_commit_group = 
                         $('<div>').addClass('form-group')
@@ -161,7 +173,7 @@ define([
                 self.logWidget = $logWidget["KBaseViewSDKRegistrationLog"]({
                     registration_id: registration_id,
                     runtime: self.runtime,
-                    show_module_links:true,
+                    show_module_links:self.options.show_module_links,
                     n_rows:30
                 });
                 self.$registrationLogPanel.append($logWidget).show();
@@ -169,7 +181,7 @@ define([
 
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
-                var $mainPanel = $('<div>').addClass('kbcb-mod-main-panel');
+                var $mainPanel = $('<div>').addClass('kbcb-reg-main-panel');
                 var $inputPanel = $('<div>');
                 var $logPanel = $('<div>').hide();
                 var $errorPanel = $('<div>').css('color','red').hide();
