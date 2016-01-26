@@ -242,7 +242,6 @@ define([
                 var $moduleListPanel = $('<div>');
                 $mainPanel.append($appListPanel);
                 $mainPanel.append($moduleListPanel);
-                $mainPanel.append('<br><br>')
                 return [$mainPanel, $appListPanel, $moduleListPanel];
             },
 

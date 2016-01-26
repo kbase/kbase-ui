@@ -94,7 +94,11 @@ define([
             var $topDiv = $('<div>').addClass('row kbcb-app-card-header');
             var $logoSpan = $('<div>').addClass('col-xs-4 kbcb-app-card-logo');
 
-            $logoSpan.append('<div class="fa-stack fa-3x"><i class="fa fa-square fa-stack-2x method-icon"></i><i class="fa fa-inverse fa-stack-1x fa-cube"></i></div>')
+            if(app.type === 'method') {
+                $logoSpan.append('<div class="fa-stack fa-3x"><i class="fa fa-square fa-stack-2x method-icon"></i><i class="fa fa-inverse fa-stack-1x fa-cube"></i></div>')
+            } else if (app.type === 'app') {
+                $logoSpan.append('<span class="fa-stack fa-3x"><span class="fa fa-square fa-stack-2x app-icon"></span><span class="fa fa-inverse fa-stack-1x fa-cubes" style=""></span></span>');
+            }
 
             // add actual logos here
             if(app.info.icon && nms_base_url) {

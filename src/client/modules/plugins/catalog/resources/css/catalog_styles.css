@@ -26,6 +26,9 @@
 .method-icon {
     color: rgb(103, 58, 183);
 }
+.app-icon {
+    color: rgb(0, 150, 136);
+}
 
 /* when the entire app card is a link, use this style */
 .kbcb-app-card-link {
