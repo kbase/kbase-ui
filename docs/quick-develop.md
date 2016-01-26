@@ -1,42 +1,38 @@
-# Building KBase UI
+# Quick Develop Guide
 
-These are the latest build instructions for KBase UI.
+This document describes how to set up an kbase-ui development environment. 
 
-12/11/2015
-
-- ensure you have the prequisites
-- fetch kbase ui
 
 ## Prerequisites
 
-If your machine is not set up for javascript development, you may need to install some prerequisites. If so, please refer to the [developer set up docs].
+See the [Prerequisites Guide](prerequisites.md).
 
-- install system tools and global node binaries
-- the kbase-ui Makefile does not install anything globally
+## Related 
+
+- Architecture (to be done)
+- Configuration (to be done)
+- Filesystem (to be done)
 
 # Create a development environment
 
-This directory will contain the kbase-ui repo and any other related repos or files. The kbase-ui is self-contained, but if you will be working on plugins in tandem, it is handy to use a working directory to contain each repo -- kbase-ui and any plugins.
+This directory will contain the kbase-ui repo and any other related repos or files. The kbase-ui is self-contained, but if you will be working on plugins in tandem, it is handy to use a working directory to contain each repo -- kbase-ui and any plugins. In addition, during development it is handy to point the temporary build directory outside of the repo. Some IDEs will thrash if build artifacts are created within the repo.
+
+For example:
 
 ```
-dev
+kbase-working-dir
   kbase-ui
-  kbase-ui-plugin-myplugin
+  kbase-ui-plugin-my-plugin
+  kbase-ui-plugin-my-other-plugin
 ```
-
-## Create develoment directory
-
-For now, just create the ```dev``` (or whatever you want to call it) wherever you want to. We'll refer to that as the *dev* directory.
 
 ## Grab a copy of kbase-ui and make sure it is working
 
 Within the *dev* directory
 
 ```
-git clone https://github.com/kbase-ui
+git clone -b develop https://github.com/kbase-ui
 ```
-
-> Note: At the moment of this writing, we are actively developing the master branch. Soon we will move on to the standard KBase branch layout, and this information will be obsolete.
 
 The basic workflow uses *make* to control the essential build, test, and deploy processes. However, the actual commands are more flexible, and implemented in javascript through Node. So as we walk through these processes, we'll first present the top-level *make* procedure, and then the actual tasks accomplished, and finally the more detailed low level javascript commands.
 
@@ -46,19 +42,25 @@ So, first we will build the developer version of *kbase-ui*:
 
 ```
 cd kbase-ui
+make init
+make dev
 make build
 ```
 
 #### What does it do?
 
-- installs npm packages (npm install)
-- sets up the developer environment if it doesn't yet exist (dev)
-- uses the developer preferences to configure the ui
-- installs bower packages
-- arranges all files into a build directory
-- installs the build directory into the dev directory
+- ```make init```
+    - installs npm packages (npm install) required by the build and other tools
+- ```make dev```
+    - sets up the developer environment if it doesn't yet exist (dev)
+    - copies the build config into the developer environment
+- ```make build```
+    - defaults to the developer build configuration
+    - installs bower packages
+    - arranges all files into a build directory
+    - installs the build directory in to the canonical build location ```/build/build```
 
-The tasks will clean out, build, start a web server, and launch your default browser against a freshly constructed "build" version of kbase.ui. The build version will utilize un-minified javascript and css, and may generally be looser in the application of code quality checks.
+The build version will utilize un-minified javascript and css, and may generally be looser in the application of code quality checks.
 
 ### Start the Dev Server
 
@@ -68,13 +70,20 @@ Included with kbase-ui is a very small, static nodejs server. We use this server
 make start
 ```
 
-This starts the node web server in ```dev/server``` on port 8080
+This starts the node web server, pointing to the default developer build location *build/build/client* on port 8080.
 
-> Coming soon, options for starting the server on a different port, and tareting dist or build.
+#### What does it do?
 
-- ensures that the required node modules are installed locally
-- starts up a web server on port 8080
-- sets the server root to either dev (kbase-ui/dev/build) or release (kbase-ui/dist)
+- launches server located in *tools/server*
+- uses the port configured in the build config, which defaults to *dev*
+- uses the directory target *build/build/client*, which is the default.
+
+#### Additional configuration options
+
+- For port, edit the *dev/config/ui/builds/dev.cfg* yaml file.
+- for directory target, supply the make argument "directory=XXX", where XXX is build, dist, or deployed. For build or dist, the directory selected is *build/XXX/client* and for deployed it is always */kb/deployment/services/kbase-ui* 
+
+> Note: we will be providing configurability of the deployment location
 
 ### Preview the Site
 
@@ -84,24 +93,42 @@ After the server is started, it can be accessed at *http://localhost:8080* on an
 make preview
 ```
 
+This defaults to the developer configuration to determine the port to use in the url.
+
 #### What does it do?
 
 - opens default browser on your system with a url for the test server
 
+#### Additional configuration options
+
+- make argument config=XXX will use the port indicated in that build config, which defaults to dev.
+
+## Basic Workflow
+
+Once you have the server started, web browser pointed to it, and your favorite editor or IDE pointed to the kbase-ui repo, the essential workflow is:
+
+- edit
+- build
+- preview
+
+This has the advantage that whatever code you have modified will run through the build process, which may have certain checks in place to assist in code quality, etc.
+
+However, if you have a highly iterative work style, or need to hammer on a specific project for an extended period of time, this workflow can become tedious, since the build still may take several seconds.
+
 ## A better workflow
 
-Ordinarily you would not want to leave the server running in your main development window, yet you will want to have it running for a long time.
+A better workflow is to link your source code directly into the build. This has the advantage of code changes becoming immediately available upon a browser refresh. You can even use this method for editing plugins from a separate repo.
 
-In a separate terminal (e.g. hit *Command+T* on a Mac) navigate to the kbase-ui dev directory (yes, this dev directory is internal to kbase-ui...) and start a local web server
+We do not currently have tools to support this, but will very soon. For now, you can do this yourself by removing the build source tree node you wish to work on, and linking the source node to that same location.
+
+E.g.
 
 ```
-cd kbase-ui/dev
-node server
+rm -rf build/build/client/modules/plugin/welcome
+ln -s src/client/modules/plugin/welcome build/build/client/modules/plugin/welcome
 ```
 
-This workflow allows you to rebuild kbase-ui, yet keep the local server running in order to refresh the browser to pick up the changes.
-
-Yes, I know this is now considered an archaic development workflow.
+Of course, when you do eventually rebuild this linkage will be problem and you'll need to repeat the setup.
 
 
 ## Controlling the Build
