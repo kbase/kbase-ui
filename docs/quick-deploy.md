@@ -32,7 +32,7 @@ sudo apt-get autoremove -y
 ```
 
 
-#### 2) get the NodeSource PPA:
+#### 2) Get the NodeSource PPA:
 
 The nodejs distributed with Ubuntu is very old -- antique by node standards -- and will not work with *kbase-ui* build tool requirements. We are currently using 4.2.x, so install that package source into Ubuntu:
 
@@ -40,7 +40,7 @@ The nodejs distributed with Ubuntu is very old -- antique by node standards -- a
 curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 ```
 
-#### 3) install packages
+#### 3) Install packages
 
 These are required for the build tools and for providing a web server.
 
