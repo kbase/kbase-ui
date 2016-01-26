@@ -28,7 +28,7 @@ define([
             // clients to the catalog service and the NarrativeMethodStore
             catalog: null,
             nms: null,
-            imageUrl: null,
+            nms_base_url: null,
 
             // narrative method/app info and spec
             appFullInfo: null,
@@ -394,7 +394,7 @@ define([
                                     .on('click', function (e) {
 
                                         var $img = $.jqElem('img')
-                                            .attr('src', self.imageUrl + s.url)
+                                            .attr('src', self.nms_base_url + s.url)
                                             .css('width', '100%');
 
                                         var $prompt = $.jqElem('div').kbasePrompt({body: $img});
@@ -407,7 +407,7 @@ define([
                                     })
                                     .append(
                                         $.jqElem('img')
-                                        .attr('src', self.imageUrl + s.url)
+                                        .attr('src', self.nms_base_url + s.url)
                                         .attr('width', '300')
                                         )
                                     );
@@ -660,7 +660,7 @@ define([
                                     .on('click', function (e) {
 
                                         var $img = $.jqElem('img')
-                                            .attr('src', self.imageUrl + s.url)
+                                            .attr('src', self.nms_base_url + s.url)
                                             .css('width', '100%')
                                             ;
 
@@ -682,7 +682,7 @@ define([
                                     })
                                     .append(
                                         $.jqElem('img')
-                                        .attr('src', self.imageUrl + s.url)
+                                        .attr('src', self.nms_base_url + s.url)
                                         .attr('width', '300')
                                         )
                                     )
