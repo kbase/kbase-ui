@@ -10,15 +10,16 @@ define([
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
+    './app_card',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
-    function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
+    function ($, NarrativeMethodStore, Catalog, CatalogUtil, AppCard) {
         $.KBWidget({
             name: "KBaseCatalogBrowser",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
             options: {
-
+                tag: null,
             },
             $mainPanel: null,
             $errorPanel: null,
@@ -88,25 +89,9 @@ define([
                 Promise.all(loadingCalls).then(function() {
                     console.log('done loading!');
 
-                    // do a quick sort here first
-                    self.appList.sort(function(a,b) {
-                        // first make sure methods show up first
-                        if(a.type<b.type) return 1;
-                        if(b.type<a.type) return -1;
-
-                        if(a.info.module_name && !b.info.module_name) return -1;
-                        if(!a.info.module_name && b.info.module_name) return 1;
-                        
-                        if(a.info.name<b.info.name) 1;
-                        if(b.info.name>b.info.name) -1;
-
-
-                        return 0;
-                    });
-
                     self.processData();
 
-                    self.renderAppList();
+                    self.renderAppList('name_az');
                     self.hideLoading();
                 });
 
@@ -134,31 +119,99 @@ define([
             renderControlToolbar: function () {
                 var self = this;
 
-                var $searchDiv = $('<div>').addClass('col-md-4');
+                // CONTROL BAR CONTAINER
+                var $nav = $('<nav>').addClass('navbar navbar-default')
+                                .css({'border':'0', 'background-color':'#fff'});
+                var $container = $('<div>').addClass('container-fluid');
 
+                var $content = $('<div>').addClass('');
+
+                $nav.append($container.append($content));
+
+
+                // SEARCH
                 var $searchBox = $('<input type="text" placeholder="Search" size="50">').addClass('form-control');
                 $searchBox.on('input',
                     function() {
                         self.filterApps($searchBox.val());
                     });
+                $content.append($('<form>').addClass('navbar-form navbar-left')
+                                    .append($('<div>').addClass('form-group')
+                                        .append($searchBox)));
 
-                $searchDiv.append($('<div>').addClass('input-group input-group-sm')
-                                        .append($searchBox));
-
-                // sort
-                // toggle module vs app/method
-                // toggle release, dev, beta versions
-
-                var $ctrbar = $('<div>').addClass('row kbcb-ctr-toolbar');
-                $ctrbar.append($searchDiv);
+                
+                // other controls list
+                var $ctrList = $('<ul>').addClass('nav navbar-nav').css('font-family',"'OxygenRegular', Arial, sans-serif");
+                $content.append($ctrList);
 
 
-                var $linksDiv = $('<div>').addClass('col-md-6');
-                $linksDiv.append('<a href="#appcatalog/status">status</a> | ');
-                $linksDiv.append('<a href="#appcatalog/register">register new app</a>');
-                $ctrbar.append($linksDiv);
+                // ORGANIZE BY
+                var $obNameAz = $('<a>').append('Name (a-z)')
+                                    .on('click', function() {self.renderAppList('name_az')});
+                var $obNameZa = $('<a>').append('Name (z-a)')
+                                    .on('click', function() {self.renderAppList('name_za')});
+                var $obCat = $('<a>').append('Category')
+                                    .on('click', function() {self.renderAppList('category')});
+                var $obModule = $('<a>').append('Module')
+                                    .on('click', function() {self.renderAppList('module')});
+                var $obOwner = $('<a>').append('Developer')
+                                    .on('click', function() {self.renderAppList('developer')});
 
-                return $ctrbar;
+                var $organizeBy = $('<li>').addClass('dropdown')
+                                    .append('<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Organize by <span class="caret"></span></a>')
+
+                $organizeBy
+                    .append($('<ul>').addClass('dropdown-menu')
+                        .append($('<li>')
+                            .append($obNameAz))
+                        .append($('<li>')
+                            .append($obNameZa))
+                        .append($('<li>')
+                            .append($obCat))
+                        .append($('<li>')
+                            .append($obModule))
+                        .append($('<li>')
+                            .append($obOwner))
+                        );
+
+
+                // ORGANIZE BY
+                var $verR = $('<a href="#appcatalog/browse/release">').append('Released Modules');
+                var $verB = $('<a href="#appcatalog/browse/beta">').append('Beta Modules');
+                var $verD = $('<a href="#appcatalog/browse/dev">').append('Modules in Development');
+
+                var $version = $('<li>').addClass('dropdown')
+                                    .append('<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Version<span class="caret"></span></a>')
+
+                $version
+                    .append($('<ul>').addClass('dropdown-menu')
+                        .append($('<li>')
+                            .append($verR))
+                        .append($('<li>')
+                            .append($verB))
+                        .append($('<li>')
+                            .append($verD)));
+
+
+                // NAV LINKS
+                var $statusLink = $('<li>').append($('<a href="#appcatalog/status">').append('Status'));
+
+                var $registerLink = $('<li>').append($('<a href="#appcatalog/register">').append('<i class="fa fa-plus-circle"></i> Add Module'));
+
+
+
+                // PLACE CONTENT ON CONTROL BAR
+                $content
+                    .append($ctrList
+                        .append($organizeBy)
+                        .append($version)
+                        .append($statusLink)
+                        .append($registerLink));
+
+                $nav.append($container)
+
+
+                return $nav;
             },
 
 
@@ -170,52 +223,66 @@ define([
                     if (terms) {
                         //console.log(terms);
                         console.log(self.appList[0].info);
+
+                        // for everything in the list
                         for(var k=0; k<self.appList.length; k++) {
+
+                            // for every term (every term must match to get a match)
                             var match = false; // every term must match
+                            console.log('terms')
                             for(var t=0; t<terms.length; t++) {
+                                if(t==1) console.log(terms[t]);
                                 if(terms[t].charAt(0)=='"' && terms[t].charAt(terms.length-1)=='"' && terms[t].length>2) {
                                     terms[t] = terms[t].substring(1,terms[t].length-1);
                                     // the regex keeps quotes in quoted strings, so toss those
                                 }
                                 // filter on names
                                 if(self.appList[k].info.name.toLowerCase().indexOf(terms[t]) >= 0) {
+
+                                    if(t==1) console.log('name');
                                     match = true; continue;
                                 }
                                 // filter on module names, if they exist
                                 if(self.appList[k].info.module_name) {
                                     if(self.appList[k].info.module_name.toLowerCase().indexOf(terms[t]) >= 0) {
+                                        if(t==1) console.log('mn');
                                         match = true; continue;
                                     }
                                 }
                                 // filter on other description
                                 if(self.appList[k].info.subtitle) {
                                     if(self.appList[k].info.subtitle.toLowerCase().indexOf(terms[t]) >= 0) {
+                                        if(t==1) console.log('st');
                                         match = true; continue;
                                     }
                                 }
 
                                 // filter on authors
                                 if(self.appList[k].info.authors) {
+                                    var authorMatch = false;
                                     for(var a=0; a<self.appList[k].info.authors.length; a++) {
                                         if(self.appList[k].info.authors[a].toLowerCase().indexOf(terms[t]) >= 0) {
-                                            match = true; break;
+                                            if(t==1) console.log('st');
+                                            authorMatch = true; break;
                                         }
                                     }
-                                    if(match) { continue; }
+                                    if(authorMatch) { match=true; continue; }
                                 }
 
                                 // filter on other stuff
 
-                                // if we get here, term didnt' match anything, so we can break
+
+                                // if we get here, this term didnt' match anything, so we can break
+                                if(t==1) console.log('no match')
                                 match = false; break;
                             }
 
 
-                            // show or hide
+                            // show or hide if we matched
                             if(match) {
-                                self.appList[k].$div.show();
+                                self.appList[k].show();
                             } else {
-                                self.appList[k].$div.hide();
+                                self.appList[k].hide();
                             }
                         }
                     } else {
@@ -225,12 +292,32 @@ define([
                 } else {
                     self.clearFilter();
                 }
+
+                // hide/show sections
+                var sections = self.$appListPanel.find('.catalog-section');
+                for(var i=0; i<sections.length; i++) {
+                    $(sections[i]).show();
+                    var cards = $(sections[i]).find('.kbcb-app-card-container');
+                    var hasVisible = false;
+                    for(var j=0; j<cards.length; j++) {
+                        if($(cards[j]).is(':visible')) {
+                            hasVisible = true;
+                            break;
+                        }
+                    }
+                    if(!hasVisible) {
+                        $(sections[i]).hide();
+                    }
+                }
+
+
+
             },
 
             clearFilter: function() {
                 var self = this;
                 for(var k=0; k<self.appList.length; k++) {
-                    self.appList[k].$div.show();
+                    self.appList[k].show();
                 }
             },
 
@@ -260,7 +347,14 @@ define([
                 var self = this;
 
                 // determine which set of methods to fetch
-                var tag='dev';
+                var tag='dev'; // default is dev; it should be 'release'
+                if(self.options.tag) {
+                    tag = self.options.tag;
+                    if(tag!=='dev' && tag!=='beta' && tag!=='release') {
+                        console.warn('tag '+tag+ ' is not valid! Use: dev/beta/release.  defaulting to release.');
+                        tag='release';
+                    }
+                }
 
                 return self.nms.list_methods({
                         tag:tag
@@ -271,12 +365,7 @@ define([
                             // logic to hide/show certain categories
                             if(self.util.skipApp(methods[k].categories)) continue;
 
-                            var m = {
-                                type: 'method',
-                                info: methods[k],
-                                $div: $('<div>').addClass('kbcb-app')
-                            };
-                            self.util.renderAppCard(m, null, self.nms_base_url);
+                            var m = new AppCard('method',methods[k],tag,self.nms_base_url);
                             self.appList.push(m);
                         }
                     })
@@ -289,21 +378,12 @@ define([
             populateAppListWithApps: function() {
                 var self = this;
 
-                // determine which set of methods to fetch
-                var tag='release';
-
-                return self.nms.list_apps({
-                        tag:tag
-                    })
+                // apps cannot be registered via the SDK, so don't have tag info
+                return self.nms.list_apps({})
                     .then(function (apps) {
                         //console.log(apps);
                         for(var k=0; k<apps.length; k++) {
-                            var a = {
-                                type: 'app',
-                                info: apps[k],
-                                $div: $('<div>').addClass('kbcb-app')
-                            };
-                            self.util.renderAppCard(a);
+                            var a = new AppCard('app',apps[k],null,self.nms_base_url);
                             self.appList.push(a);
                         }
                     })
@@ -352,6 +432,18 @@ define([
                 for(var m=0; m<self.moduleList.length; m++) {
                     self.moduleLookup[self.moduleList[m].info.module_name] = self.moduleList.info;
                 }
+
+                self.developers = {};
+                for(var k=0; k<self.appList.length; k++) {
+                    if(self.appList[k].type==='method') {
+                        if(self.appList[k].info.authors.length>0) {
+                            var authors = self.appList[k].info.authors;
+                            for(var i=0; i<authors.length; i++) {
+                                self.developers[authors[i]] = 1;
+                            }
+                        }
+                    }
+                }
             },
 
 
@@ -365,15 +457,143 @@ define([
 
 
 
-            renderAppList: function() {
+            renderAppList: function(organizeBy) {
                 var self = this;
 
-                self.$appListPanel.append('<i>Note: temporarily showing dev versions</i><br>')
+                self.$appListPanel.children().detach();
 
-                for(var k=0; k<self.appList.length; k++) {
-                    self.$appListPanel.append(self.appList[k].$div);
+                if(!self.options.tag) {
+                    self.$appListPanel.append('<i>Note: temporarily showing dev versions</i><br>')
                 }
 
+
+                // no organization, so show all
+                if(!organizeBy) { return; }
+
+                if(organizeBy=='name_az') {
+                    // sort by method name, A to Z
+                    self.appList.sort(function(a,b) {
+                        if(a.info.name.toLowerCase()<b.info.name.toLowerCase()) return -1;
+                        if(a.info.name.toLowerCase()>b.info.name.toLowerCase()) return 1;
+                        return 0;
+                    });
+                    var $listContainer = $('<div>').css({'overflow':'auto', 'padding':'0 0 2em 0'});
+                    for(var k=0; k<self.appList.length; k++) {
+                        self.appList[k].clearCardsAddedCount();
+                         $listContainer.append(self.appList[k].getNewCardDiv());
+                    }
+                    self.$appListPanel.append($listContainer);
+                }
+                else if(organizeBy=='name_za') {
+                    // sort by method name, Z to A
+                    self.appList.sort(function(a,b) {
+                        if(a.info.name.toLowerCase()<b.info.name.toLowerCase()) return 1;
+                        if(a.info.name.toLowerCase()>b.info.name.toLowerCase()) return -1;
+                        return 0;
+                    });
+                    var $listContainer = $('<div>').css({'overflow':'auto', 'padding':'0 0 2em 0'});
+                    for(var k=0; k<self.appList.length; k++) {
+                        self.appList[k].clearCardsAddedCount();
+                        $listContainer.append(self.appList[k].getNewCardDiv());
+                    }
+                    self.$appListPanel.append($listContainer);
+                }
+                else if(organizeBy=='module') {
+                    // Organization by module is simple because things can only be in one module, we sort and group them by module
+
+                    self.appList.sort(function(a,b) {
+                        if(a.info.module_name && b.info.module_name) {
+                            if(a.info.module_name.toLowerCase()<b.info.module_name.toLowerCase()) return -1;
+                            if(a.info.module_name.toLowerCase()>b.info.module_name.toLowerCase()) return 1;
+                            if(a.info.name.toLowerCase()<b.info.name.toLowerCase()) return -1;
+                            if(a.info.name.toLowerCase()>b.info.name.toLowerCase()) return 1;
+                            return 0;
+                        }
+                        if(a.info.module_name) return -1;
+                        if(b.info.module_name) return 1;
+                        return 0;
+                    });
+                    var currentModuleName = '';
+                    var $currentModuleDiv = null;
+                    for(var k=0; k<self.appList.length; k++) {
+                        self.appList[k].clearCardsAddedCount();
+
+                        var info = self.appList[k].info;
+
+                        var m = info.module_name;
+                        if(!m) { m = 'Not in an SDK Module'}
+
+                        if(currentModuleName != m) {
+                            currentModuleName = m;
+                            var $section = $('<div>').addClass('catalog-section');
+                            $currentModuleDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                            $section.append($('<div>').css({'color':'#777'})
+                                    .append($('<h4>').append(m)));
+                            $section.append($currentModuleDiv);
+                            self.$appListPanel.append($section);
+                        }
+                        $currentModuleDiv.append(self.appList[k].getNewCardDiv());
+                    }
+                }
+
+                else if(organizeBy=='developer') {
+                    var currentModuleName = '';
+                    var $currentModuleDiv = null;
+
+                    // get and sort the dev list
+                    var devs = [];
+                    for(var k in self.developers) { devs.push(k); }
+                    devs.sort();
+
+                    // create the sections per author
+                    var $authorDivLookup = {};
+                    for(var k=0; k<devs.length; k++) {
+                        var $section = $('<div>').addClass('catalog-section');
+                        var $authorDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                        $authorDivLookup[devs[k]] = $authorDiv;
+                        $section.append(
+                            $('<div>').css({'color':'#777'})
+                                .append($('<h4>').append(devs[k])));
+                        $section.append($authorDiv)
+                        self.$appListPanel.append($section);
+                    }
+                    var $section = $('<div>').addClass('catalog-section');
+                    var $noAuthorDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                    $section.append(
+                        $('<div>').css({'color':'#777'})
+                            .append($('<h4>').append('No Developer Specified')));
+                    $section.append($noAuthorDiv);
+                    self.$appListPanel.append($noAuthorDiv);
+
+                    // render the app list
+                    for(var k=0; k<self.appList.length; k++) {
+                        self.appList[k].clearCardsAddedCount();
+
+                        if(self.appList[k].type==='method') {
+                            if(self.appList[k].info.authors.length>0) {
+                                var authors = self.appList[k].info.authors;
+                                for(var i=0; i<authors.length; i++) {
+                                   $authorDivLookup[authors[i]].append(self.appList[k].getNewCardDiv());
+                                }
+                            } else {
+                                $noAuthorDiv.append(self.appList[k].getNewCardDiv())
+                            }
+                        } else {
+                            $noAuthorDiv.append(self.appList[k].getNewCardDiv())
+                        }
+                    }
+
+                }
+
+                else if (organizeBy=='category') {
+                    self.$appListPanel.append('<span>under construction</span> <img src="http://www.123gifs.eu/free-gifs/underconstruction/underconstruction-0069.gif">');
+
+                }
+
+
+
+                // gives some buffer at the end of the page
+                self.$appListPanel.append($('<div>').css('padding','4em'));
             },
 
 

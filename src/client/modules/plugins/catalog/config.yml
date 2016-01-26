@@ -30,6 +30,9 @@ source:
         -
             module: catalog_util
             file: catalog_util
+        - 
+            module: app_card
+            file: app_card
 
         # here is one per widget
         -
@@ -88,6 +91,10 @@ install:
             module: catalog_util
             id: catalog_util
             type: widget
+        - 
+            module: app_card
+            id: app_card
+            type: widget
         -
             module: catalog_home_widget
             id: catalog_browser
@@ -144,6 +151,12 @@ install:
     routes:
         -
             path: ['appcatalog']
+            widget: catalog_home
+        -
+            path: ['appcatalog', 'browse']
+            widget: catalog_home
+        -
+            path: ['appcatalog', 'browse', {type: param, name: tag}]
             widget: catalog_home
         -
             path: ['appcatalog', 'module', {type: param, name: module_name}]

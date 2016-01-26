@@ -35,6 +35,11 @@
     text-decoration: none;
 }
 
+.kbcb-app-card-list-container {
+    overflow: auto;
+    padding: 0em 1em 2em 1em;
+}
+
 .kbcb-app-card-container {
     margin: 0.4em;
     width: 300px;

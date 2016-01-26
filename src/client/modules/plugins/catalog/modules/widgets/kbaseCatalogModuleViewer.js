@@ -10,11 +10,12 @@ define([
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
+    './app_card',
     'plugins/catalog/modules/widgets/kbaseCatalogRegistration',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
-    function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
+    function ($, NarrativeMethodStore, Catalog, CatalogUtil, AppCard) {
         $.KBWidget({
             name: "KBaseCatalogModuleViewer",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
@@ -406,7 +407,7 @@ define([
                         'max-width': '1000px'
                     });
                 for(var k=0; k<self.appList.length; k++) {
-                    $appListContainer.append(self.appList[k].$div);
+                    $appListContainer.append(self.appList[k].getNewCardDiv());
                 }
                 self.$appsPanel.append($appListContainer);
             },
@@ -487,12 +488,8 @@ define([
                         for(var k=0; k<info_list.length; k++) {
                             // logic to hide/show certain categories
                             if(self.util.skipApp(info_list[k].categories)) continue;
-                            var m = {
-                                type: 'method',
-                                info: info_list[k],
-                                $div: $('<div>').addClass('kbcb-app')
-                            };
-                            self.util.renderAppCard(m,tag);
+                            
+                            var m = new AppCard('method',info_list[k],tag,self.nms_base_url);
                             self.appList.push(m);
                         }
                     })
