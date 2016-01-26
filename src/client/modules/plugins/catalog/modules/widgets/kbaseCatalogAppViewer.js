@@ -113,8 +113,8 @@ define([
                     this.runtime.getConfig('services.narrative_method_store.url'),
                     { token: this.runtime.service('session').getAuthToken() }
                 );
-                this.imageUrl = this.runtime.getConfig('services.narrative_method_store.url');
-                this.imageUrl = this.imageUrl.substring(0,this.imageUrl.length-3);
+                this.nms_base_url = this.runtime.getConfig('services.narrative_method_store.url');
+                this.nms_base_url = this.nms_base_url.substring(0,this.nms_base_url.length-3)
             },
 
 
@@ -510,6 +510,18 @@ define([
                 var $logoSpan = $('<div>').addClass('kbcb-app-page-logo');
                 // add actual logos here
                 $logoSpan.append('<div class="fa-stack fa-3x"><i class="fa fa-square fa-stack-2x method-icon"></i><i class="fa fa-inverse fa-stack-1x fa-cube"></i></div>')
+                
+                // add actual logos here
+                if(m.icon && self.nms_base_url) {
+                    if(m.icon.url) {
+                        $logoSpan.html($('<img src="'+self.nms_base_url + m.icon.url+'">')
+                                            .css({'max-width':'85%', 'padding':'7px 7px 7px 10px',
+                                                  'max-height': '85%'}));
+                    }
+                }
+
+
+
                 var $titleSpan = $('<div>').addClass('kbcb-app-page-title-panel');
                 
 

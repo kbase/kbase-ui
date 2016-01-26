@@ -260,7 +260,6 @@ define([
                         for(var i=0; i<version.narrative_methods.length; i++) {
                             var id = version.narrative_methods[i];
                             if(tag) {
-
                                 $l.append('<li><a href="#appcatalog/app/'+this.moduleDetails.info.module_name+'/'+id+'/'+tag+
                                     '">'+id+'</a></li>');
                             } else {
@@ -423,6 +422,8 @@ define([
                     this.runtime.getConfig('services.narrative_method_store.url'),
                     { token: this.runtime.service('session').getAuthToken() }
                 );
+                this.nms_base_url = this.runtime.getConfig('services.narrative_method_store.url');
+                this.nms_base_url = this.nms_base_url.substring(0,this.nms_base_url.length-3)
             },
 
 

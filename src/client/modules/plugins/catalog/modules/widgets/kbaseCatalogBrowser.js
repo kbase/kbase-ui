@@ -58,8 +58,8 @@ define([
 
                 // new style we have a runtime object that gives us everything in the options
                 self.runtime = options.runtime;
-                console.log(options);
-                console.log(this.runtime.service('session').getAuthToken());
+                //console.log(options);
+                //console.log(this.runtime.service('session').getAuthToken());
                 self.util = new CatalogUtil();
                 self.setupClients();
 
@@ -113,8 +113,6 @@ define([
                 );
                 this.nms_base_url = this.runtime.getConfig('services.narrative_method_store.url');
                 this.nms_base_url = this.nms_base_url.substring(0,this.nms_base_url.length-3)
-
-
             },
 
 
@@ -234,14 +232,13 @@ define([
                     var terms = query.toLowerCase().match(/\w+|"(?:\\"|[^"])+"/g);
                     if (terms) {
                         //console.log(terms);
-                        console.log(self.appList[0].info);
+                        //console.log(self.appList[0].info);
 
                         // for everything in the list
                         for(var k=0; k<self.appList.length; k++) {
 
                             // for every term (every term must match to get a match)
                             var match = false; // every term must match
-                            console.log('terms')
                             for(var t=0; t<terms.length; t++) {
                                 if(terms[t].charAt(0)=='"' && terms[t].charAt(terms.length-1)=='"' && terms[t].length>2) {
                                     terms[t] = terms[t].substring(1,terms[t].length-1);
