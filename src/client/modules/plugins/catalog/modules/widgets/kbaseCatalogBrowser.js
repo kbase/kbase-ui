@@ -41,6 +41,7 @@ define([
 
             // control panel and elements
             $controlToolbar: null,
+            $searchBox: null,
 
 
             // main panel and elements
@@ -65,7 +66,9 @@ define([
                 // initialize and add the control bar
                 var $container = $('<div>').addClass('container');
                 self.$elem.append($container);
-                self.$controlToolbar = this.renderControlToolbar();
+                var ctrElements = this.renderControlToolbar();
+                self.$controlToolbar = ctrElements[0];
+                self.$searchBox = ctrElements[1];
                 $container.append(this.$controlToolbar);
 
                 // initialize and add the main panel
@@ -156,6 +159,10 @@ define([
                                     .on('click', function() {self.renderAppList('module')});
                 var $obOwner = $('<a>').append('Developer')
                                     .on('click', function() {self.renderAppList('developer')});
+                var $obInput = $('<a>').append('Input Types')
+                                    .on('click', function() {self.renderAppList('input_types')});
+                var $obOutput = $('<a>').append('Output Types')
+                                    .on('click', function() {self.renderAppList('output_types')});
 
                 var $organizeBy = $('<li>').addClass('dropdown')
                                     .append('<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Organize by <span class="caret"></span></a>')
@@ -172,6 +179,11 @@ define([
                             .append($obModule))
                         .append($('<li>')
                             .append($obOwner))
+                        .append('<li role="separator" class="divider"></li>')
+                        .append($('<li>')
+                            .append($obInput))
+                        .append($('<li>')
+                            .append($obOutput))
                         );
 
 
@@ -211,7 +223,7 @@ define([
                 $nav.append($container)
 
 
-                return $nav;
+                return [$nav, $searchBox];
             },
 
 
@@ -231,28 +243,23 @@ define([
                             var match = false; // every term must match
                             console.log('terms')
                             for(var t=0; t<terms.length; t++) {
-                                if(t==1) console.log(terms[t]);
                                 if(terms[t].charAt(0)=='"' && terms[t].charAt(terms.length-1)=='"' && terms[t].length>2) {
                                     terms[t] = terms[t].substring(1,terms[t].length-1);
                                     // the regex keeps quotes in quoted strings, so toss those
                                 }
                                 // filter on names
                                 if(self.appList[k].info.name.toLowerCase().indexOf(terms[t]) >= 0) {
-
-                                    if(t==1) console.log('name');
                                     match = true; continue;
                                 }
                                 // filter on module names, if they exist
                                 if(self.appList[k].info.module_name) {
                                     if(self.appList[k].info.module_name.toLowerCase().indexOf(terms[t]) >= 0) {
-                                        if(t==1) console.log('mn');
                                         match = true; continue;
                                     }
                                 }
                                 // filter on other description
                                 if(self.appList[k].info.subtitle) {
                                     if(self.appList[k].info.subtitle.toLowerCase().indexOf(terms[t]) >= 0) {
-                                        if(t==1) console.log('st');
                                         match = true; continue;
                                     }
                                 }
@@ -262,18 +269,16 @@ define([
                                     var authorMatch = false;
                                     for(var a=0; a<self.appList[k].info.authors.length; a++) {
                                         if(self.appList[k].info.authors[a].toLowerCase().indexOf(terms[t]) >= 0) {
-                                            if(t==1) console.log('st');
                                             authorMatch = true; break;
                                         }
                                     }
                                     if(authorMatch) { match=true; continue; }
                                 }
 
-                                // filter on other stuff
+                                // filter on other stuff (input/output types?)
 
 
                                 // if we get here, this term didnt' match anything, so we can break
-                                if(t==1) console.log('no match')
                                 match = false; break;
                             }
 
@@ -434,6 +439,9 @@ define([
                 }
 
                 self.developers = {};
+                self.inputTypes = {};
+                self.outputTypes = {};
+
                 for(var k=0; k<self.appList.length; k++) {
                     if(self.appList[k].type==='method') {
                         if(self.appList[k].info.authors.length>0) {
@@ -442,8 +450,23 @@ define([
                                 self.developers[authors[i]] = 1;
                             }
                         }
+                        if(self.appList[k].info.input_types.length>0) {
+                            var input_types = self.appList[k].info.input_types;
+                            for(var i=0; i<input_types.length; i++) {
+                                self.inputTypes[input_types[i]] = 1;
+                            }
+                        }
+                        if(self.appList[k].info.output_types.length>0) {
+                            var output_types = self.appList[k].info.output_types;
+                            for(var i=0; i<output_types.length; i++) {
+                                self.outputTypes[output_types[i]] = 1;
+                            }
+                        }
                     }
                 }
+
+
+
             },
 
 
@@ -537,8 +560,6 @@ define([
                 }
 
                 else if(organizeBy=='developer') {
-                    var currentModuleName = '';
-                    var $currentModuleDiv = null;
 
                     // get and sort the dev list
                     var devs = [];
@@ -585,15 +606,91 @@ define([
 
                 }
 
+                
+
                 else if (organizeBy=='category') {
                     self.$appListPanel.append('<span>under construction</span> <img src="http://www.123gifs.eu/free-gifs/underconstruction/underconstruction-0069.gif">');
 
                 }
 
 
+                else if(organizeBy=='input_types') {
+                    // get and sort the type list
+                    var types = [];
+                    for(var k in self.inputTypes) { types.push(k); }
+                    types.sort();
+
+                    // create the sections per author
+                    var $typeDivLookup = {};
+                    for(var k=0; k<types.length; k++) {
+                        var $section = $('<div>').addClass('catalog-section');
+                        var $typeDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                        $typeDivLookup[types[k]] = $typeDiv;
+                        $section.append(
+                            $('<div>').css({'color':'#777'})
+                                .append($('<h4>').append(types[k])));
+                        $section.append($typeDiv)
+                        self.$appListPanel.append($section);
+                    }
+
+                    // render the app list
+                    for(var k=0; k<self.appList.length; k++) {
+                        self.appList[k].clearCardsAddedCount();
+
+                        if(self.appList[k].type==='method') {
+                            if(self.appList[k].info.input_types.length>0) {
+                                var input_types = self.appList[k].info.input_types;
+                                for(var i=0; i<input_types.length; i++) {
+                                   $typeDivLookup[input_types[i]].append(self.appList[k].getNewCardDiv());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                else if(organizeBy=='output_types') {
+                    // get and sort the type list
+                    var types = [];
+                    for(var k in self.outputTypes) { types.push(k); }
+                    types.sort();
+
+                    // create the sections per author
+                    var $typeDivLookup = {};
+                    for(var k=0; k<types.length; k++) {
+                        var $section = $('<div>').addClass('catalog-section');
+                        var $typeDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                        $typeDivLookup[types[k]] = $typeDiv;
+                        $section.append(
+                            $('<div>').css({'color':'#777'})
+                                .append($('<h4>').append(types[k])));
+                        $section.append($typeDiv)
+                        self.$appListPanel.append($section);
+                    }
+
+                    // render the app list
+                    for(var k=0; k<self.appList.length; k++) {
+                        self.appList[k].clearCardsAddedCount();
+
+                        if(self.appList[k].type==='method') {
+                            if(self.appList[k].info.output_types.length>0) {
+                                var output_types = self.appList[k].info.output_types;
+                                for(var i=0; i<output_types.length; i++) {
+                                   $typeDivLookup[output_types[i]].append(self.appList[k].getNewCardDiv());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                else {
+                    self.$appListPanel.append('<span>invalid organization parameter</span>');
+
+                }
 
                 // gives some buffer at the end of the page
                 self.$appListPanel.append($('<div>').css('padding','4em'));
+
+                self.filterApps(self.$searchBox.val());
             },
 
 
