@@ -11,6 +11,11 @@ bowerFiles:
             - bluebird.js
         bowerComponent: true
     -
+        name: knockout
+        cwd: dist
+        src: knockout.js
+        bowerComponent: true
+    -
         name: bootstrap
         cwd: dist
         src: "**/*"
