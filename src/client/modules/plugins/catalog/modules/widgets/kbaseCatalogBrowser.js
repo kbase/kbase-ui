@@ -584,7 +584,7 @@ define([
                         $('<div>').css({'color':'#777'})
                             .append($('<h4>').append('No Developer Specified')));
                     $section.append($noAuthorDiv);
-                    self.$appListPanel.append($noAuthorDiv);
+                    self.$appListPanel.append($section);
 
                     // render the app list
                     for(var k=0; k<self.appList.length; k++) {
