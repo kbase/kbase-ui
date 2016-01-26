@@ -166,4 +166,12 @@ install:
         -
             path: ['appcatalog', 'status', {type: param, name: module_names }]
             widget: catalog_status
+    menus:
+        -
+            name: appcatalog
+            definition:
+                path: ['appcatalog']
+                label: App Catalog
+                icon: book
+                
 
