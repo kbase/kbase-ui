@@ -26,10 +26,18 @@
 .method-icon {
     color: rgb(103, 58, 183);
 }
+.app-icon {
+    color: rgb(0, 150, 136);
+}
 
 /* when the entire app card is a link, use this style */
 .kbcb-app-card-link {
     text-decoration: none;
+}
+
+.kbcb-app-card-list-container {
+    overflow: auto;
+    padding: 0em 1em 2em 1em;
 }
 
 .kbcb-app-card-container {
@@ -129,7 +137,6 @@
 .kbcb-app-page {
     background: #f1f1f5;
     border-radius: 2px;
-    max-width: 1000px;
     text-align:center;
     color:#666;
 }

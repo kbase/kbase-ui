@@ -103,7 +103,7 @@ define([
             },
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
-                var $mainPanel = $('<div>').addClass('kbcb-mod-main-panel');
+                var $mainPanel = $('<div>').addClass('container');
 
                 $mainPanel.append($('<h3>').append('Catalog Status:'));
                 var $basicStatusDiv = $('<div>');
