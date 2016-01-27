@@ -548,7 +548,7 @@ define([
                             var $section = $('<div>').addClass('catalog-section');
                             $currentModuleDiv = $('<div>').addClass('kbcb-app-card-list-container');
                             $section.append($('<div>').css({'color':'#777'})
-                                    .append($('<h4>').append(m)));
+                                    .append($('<h4>').append('<a href="#appcatalog/module/'+m+'">'+m+'</a>')));
                             $section.append($currentModuleDiv);
                             self.$appListPanel.append($section);
                         }
@@ -571,7 +571,7 @@ define([
                         $authorDivLookup[devs[k]] = $authorDiv;
                         $section.append(
                             $('<div>').css({'color':'#777'})
-                                .append($('<h4>').append(devs[k])));
+                                .append($('<h4>').append('<a href="#people/'+devs[k]+'">'+devs[k]+'</a>')));
                         $section.append($authorDiv)
                         self.$appListPanel.append($section);
                     }

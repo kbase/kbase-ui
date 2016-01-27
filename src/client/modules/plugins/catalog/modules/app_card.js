@@ -66,7 +66,7 @@ define([
 
             // HEADER - contains logo, title, module link, authors
             var $topDiv = $('<div>').addClass('row kbcb-app-card-header');
-            var $logoSpan = $('<div>').addClass('col-xs-4 kbcb-app-card-logo');
+            var $logoSpan = $('<div>').addClass('col-xs-3 kbcb-app-card-logo');
 
             if(type === 'method') {
                 $logoSpan.append('<div class="fa-stack fa-3x"><i class="fa fa-square fa-stack-2x method-icon"></i><i class="fa fa-inverse fa-stack-1x fa-cube"></i></div>')
@@ -78,12 +78,12 @@ define([
             if(info.icon && nms_base_url) {
                 if(info.icon.url) {
                     $logoSpan.html($('<img src="'+nms_base_url + info.icon.url+'">')
-                                        .css({'max-width':'85%', 'padding':'7px 7px 7px 10px',
+                                        .css({'max-width':'85%', 'padding':'6px 3px 3px 8px',
                                               'max-height': '85%'}));
                 }
             }
 
-            var $titleSpan = $('<div>').addClass('col-xs-8 kbcb-app-card-title-panel');
+            var $titleSpan = $('<div>').addClass('col-xs-9 kbcb-app-card-title-panel');
                 
             $titleSpan.append($('<div>').addClass('kbcb-app-card-title').append(info.name));
             if(info['module_name']) {
