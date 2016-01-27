@@ -128,6 +128,10 @@ define([
             }
             return obj[method].apply(obj, args);
         }
+        
+        function navigate(path) {
+            send('app', 'navigate', path);
+        }
 
         var api = {
             getConfig: getConfig,
@@ -142,6 +146,8 @@ define([
             snd: snd,
             rcv: rcv,
             urcv: urcv,
+            // navigation
+            navigate: navigate,           
             // Services
             addService: function () {
                 return proxyMethod(appServiceManager, 'addService', arguments);

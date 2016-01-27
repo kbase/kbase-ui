@@ -543,7 +543,7 @@ function installExternalModules(state) {
                 var repoRoot = (module.source.directory.root && module.source.directory.root.split('/')) || ['..', '..', '..'],
                     source = repoRoot.concat([module.globalName]),
                     destination = root.concat(['build', 'client', 'modules', 'bower_components', module.globalName]);
-                // console.log('copying from...'); console.log(repoRoot); console.log(source), console.log(destination);
+                 console.log('copying from...'); console.log(repoRoot); console.log(source), console.log(destination);
                 return copyFiles(source, destination, '**/*');
             }));
         });
@@ -882,7 +882,7 @@ function main(type) {
         })
 
 
-// From here, we can make a dev build, make a release
+        // From here, we can make a dev build, make a release
         .then(function (state) {
             return mutant.copyState(state);
         })
@@ -901,6 +901,15 @@ function main(type) {
             }
             return state;
         })
+        
+        // Here we handle any developer links.
+        //.then(function (state) {
+        //    return mutant.copyState(state);
+        //})
+        //.then(function (state) {
+        //    
+        //})
+        
         .then(function (state) {
             return mutant.finish(state);
         })
