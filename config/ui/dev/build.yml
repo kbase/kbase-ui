@@ -47,7 +47,7 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 0.1.5
+        version: 0.1.6
         cwd: src/plugin
         source:
             bower: {}
@@ -61,7 +61,7 @@ plugins:
     -
         name: databrowser
         globalName: kbase-ui-plugin-databrowser
-        version: 0.1.1
+        version: 0.1.2
         cwd: src/plugin
         source:
             bower: {}
@@ -95,6 +95,20 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: shockbrowser
+        globalName: kbase-ui-plugin-shockbrowser
+        version: 0.1.1
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: jobbrowser
+        globalName: kbase-ui-plugin-jobbrowser
+        version: 0.1.1
+        cwd: src/plugin
+        source:
+            bower: {}            
 
 # Copy these directories into the modules
 # There are two forms, as for plugins.
@@ -110,12 +124,12 @@ modules:
             bower: {}
     -
         globalName: kbase-common-js
-        version: 0.1.3
+        version: 0.1.4
         source:
             bower: {}
     -
         globalName: kbase-service-clients-js
-        version: 0.1.9
+        version: 0.1.10
         source:
             bower: {}
     -
