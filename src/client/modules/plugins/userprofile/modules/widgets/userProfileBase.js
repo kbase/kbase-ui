@@ -651,7 +651,7 @@ define([
             },
             loadCSS: {
                 value: function () {
-                    this.loadCSSResource(Plugin.plugin.path + this.widgetName + '/style.css');
+                    this.loadCSSResource([Plugin.plugin.fullPath, this.widgetName, 'style.css'].join('/'));
                 }
             },
             renderMessages: {

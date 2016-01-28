@@ -543,7 +543,7 @@ function installExternalModules(state) {
                 var repoRoot = (module.source.directory.root && module.source.directory.root.split('/')) || ['..', '..', '..'],
                     source = repoRoot.concat([module.globalName]),
                     destination = root.concat(['build', 'client', 'modules', 'bower_components', module.globalName]);
-                 console.log('copying from...'); console.log(repoRoot); console.log(source), console.log(destination);
+                console.log('copying from...'); console.log(repoRoot); console.log(source), console.log(destination);
                 return copyFiles(source, destination, '**/*');
             }));
         });

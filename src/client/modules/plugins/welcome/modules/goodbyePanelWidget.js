@@ -1,7 +1,7 @@
 /*global define */
 /*jslint white: true, browser: true */
 define([
-    'kb/widget/base/simpleWidget',
+    'kb/widget/bases/simpleWidget',
     'kb/common/dom',
     'kb/common/html'
 ],
@@ -13,10 +13,11 @@ define([
                 runtime: config.runtime,
                 on: {
                     start: function () {
+                        this.send('ui', 'setTitle', 'Goodbye');
                         this.set('updated', new Date());
                     },
                     render: function () {
-                        return 'Goodbye.';
+                        return 'Goodbye.'; 
                     }
                 }
             });
