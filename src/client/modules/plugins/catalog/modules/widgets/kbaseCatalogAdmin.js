@@ -119,6 +119,9 @@ define([
                 var $approvedDevelopers = $('<div>');
                 $mainPanel.append($approvedDevelopers);
 
+
+                $mainPanel.append('<br><br>');
+
                 return [$mainPanel, $basicStatusDiv, $pendingReleaseDiv, $approvedDevelopers];
             },
 
@@ -150,8 +153,6 @@ define([
                 self.$basicStatusDiv.append('<b>'+self.module_list.length+'</b> modules registered.');
                 self.$basicStatusDiv.append('<br><br>');
 
-
-                
             },
 
 
@@ -270,11 +271,76 @@ define([
                 } else {
                     self.$pendingReleaseDiv.append(' <i>None.</i><br>');
                 }
-                self.$pendingReleaseDiv.append('<br><br>');
+                //self.$pendingReleaseDiv.append('<br>');
             },
 
-            renderDevList: function() {
 
+            refreshDevList: function() {
+                var self = this;
+                self.$devListDiv.empty();
+                self.getDevList()
+                    .then(function() {
+                        self.renderDevList();
+                    });
+            },
+
+
+            renderDevList: function() {
+                var self = this;
+
+                var $addDev = $('<div>').css('margin','1em');
+                var $devList = $('<div>').css('margin','1em');
+
+                self.$devListDiv.append($addDev);
+                self.$devListDiv.append($devList);
+
+
+                var $devName = $('<input type="text" size="50">').addClass('form-control').css('margin','4px');
+                var $add = $('<button>').addClass('btn btn-default').append($('<i>').addClass('fa fa-plus'));
+                var $trash = $('<button>').addClass('btn btn-default').append($('<i>').addClass('fa fa-trash'));
+                var $result = $('<div>');
+
+
+                $addDev.append($('<b>').append('Add/Remove Developer:')).append('<br>')
+                $addDev.append(
+                    $('<div>').addClass('input-group').css('width','35%')
+                        .append($devName)
+                        .append($('<span>').addClass('input-group-btn')
+                            .append($add)
+                            .append($trash)))
+                    .append($result);
+                $add.on('click', function() {
+                    self.catalog.approve_developer($devName.val())
+                        .then(function () {
+                            self.refreshDevList();
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                            $result.prepend($('<div role=alert>').addClass('alert alert-danger')
+                                .append('<b>Error:</b> '+err.error.message));
+                        });
+                });
+                $trash.on('click', function() {
+                    self.catalog.revoke_developer($devName.val())
+                        .then(function () {
+                            self.refreshDevList();
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                            $result.prepend($('<div role=alert>').addClass('alert alert-danger')
+                                .append('<b>Error:</b> '+err.error.message));
+                        });
+                });
+
+
+                $devList.append('<h4> '+self.dev_list.length+' Approved Developers</h4>');
+                for(var k=0; k<self.dev_list.length; k++) {
+                    $devList.append(
+                        $('<div>').append(
+                            $('<a href="#people/'+self.dev_list[k]+'">').append(self.dev_list[k])));
+                }
             },
 
 
