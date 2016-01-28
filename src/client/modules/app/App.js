@@ -80,8 +80,6 @@ define([
 
         // Plugins
         function installPlugins(plugins) {
-            console.log('installing plugins');
-            console.log(plugins);
             return pluginManager.installPlugins(plugins);
         }
 
@@ -238,8 +236,8 @@ define([
                         if (arg.node) {
                             arg.node.innerHTML = arg.content;
                         } else {
-                            console.log('ERROR');
-                            console.log('Invalid node for ui/render');
+                            console.error('ERROR');
+                            console.error('Invalid node for ui/render');
                         }
                     }
                 });
@@ -250,20 +248,16 @@ define([
 
             return appServiceManager.loadServices()
                 .then(function () {
-                    console.log('Services loaded');
                     return installPlugins(config.plugins);
                 })
                 .then(function () {
-                    console.log('Root widget mounted');
                     return appServiceManager.startServices();
                 })
                 .then(function () {
-                    console.log('Plugins installed');
                     return mountRootWidget('root', api);
                 })
                 .then(function () {
                     // getService('heartbeat').start();
-                    console.log('Services started.');
                     // this is a hack for now ... should be a method for service
                     // events to be sent out post root widget mounting.
                     if (appServiceManager.getService('session').isLoggedIn()) {
@@ -271,7 +265,6 @@ define([
                     } else {
                         send('session', 'loggedout');
                     }
-                    console.log('about to do route...');
                     send('app', 'do-route');
                     return api;
                 });
