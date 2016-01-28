@@ -186,7 +186,7 @@ define([
             });
             appServiceManager.addService('route', {
                 runtime: api,
-                notFoundRoute: {redirect: {path: 'message/notfound'}},
+                // notFoundRoute: {redirect: {path: 'message/notfound'}},
                 defaultRoute: {redirect: {path: 'dashboard'}}
             });
             appServiceManager.addService('menu', {
@@ -217,6 +217,16 @@ define([
 
             receive('session', 'loggedout', function () {
                 send('app', 'navigate', 'goodbye');
+            });
+            
+            receive('app', 'route-not-found', function (info) {
+                // alert('help, the route was not found!: ' + route.path);
+                send('app', 'navigate', {
+                    path: 'message/error/notfound',
+                    params: {
+                        info: JSON.stringify(info)
+                    }
+                });
             });
 
             // UI should be a service...
@@ -261,6 +271,7 @@ define([
                     } else {
                         send('session', 'loggedout');
                     }
+                    console.log('about to do route...');
                     send('app', 'do-route');
                     return api;
                 });
