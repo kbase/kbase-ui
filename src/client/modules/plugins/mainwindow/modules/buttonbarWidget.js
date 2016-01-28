@@ -95,7 +95,7 @@ define([
 
             function renderButtonBar(w) {
                 var span = html.tag('span'),
-                    content = span({class: 'navbar-buttons'}, [
+                    content = span({class: 'navbar-buttons kb-widget-buttonbar'}, [
                         w.get('buttons').list.map(function (buttonDef) {
                             switch (buttonDef.type) {
                                 case 'button':
