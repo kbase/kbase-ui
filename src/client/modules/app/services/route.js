@@ -12,7 +12,7 @@ define([
             try {
                 handler = router.findCurrentRoute();
             } catch (ex) {
-                console.log(ex);
+                console.error(ex);
                 if (ex instanceof Router.NotFoundException) {
                     runtime.send('app', 'route-not-found', ex);
                     return;
