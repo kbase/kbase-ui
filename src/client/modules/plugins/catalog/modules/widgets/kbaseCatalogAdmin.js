@@ -110,12 +110,12 @@ define([
                 var $basicStatusDiv = $('<div>');
                 $mainPanel.append($basicStatusDiv);
 
-                $mainPanel.append($('<h3>').append('Modules Pending Release:'));
+                $mainPanel.append($('<h4>').append('Modules Pending Release:'));
                 var $pendingReleaseDiv = $('<div>');
                 $mainPanel.append($pendingReleaseDiv);
 
 
-                $mainPanel.append($('<h3>').append('Approved Developers:'));
+                $mainPanel.append($('<h4>').append('Approved Developers:'));
                 var $approvedDevelopers = $('<div>');
                 $mainPanel.append($approvedDevelopers);
 
@@ -334,15 +334,13 @@ define([
                         });
                 });
 
-
-                $devList.append('<h4> '+self.dev_list.length+' Approved Developers</h4>');
+                $devList.append('<i> '+self.dev_list.length+' Approved Developers</i><br>');
                 for(var k=0; k<self.dev_list.length; k++) {
                     $devList.append(
                         $('<div>').append(
                             $('<a href="#people/'+self.dev_list[k]+'">').append(self.dev_list[k])));
                 }
             },
-
 
 
             getCatalogVersion: function() {
@@ -425,15 +423,6 @@ define([
                         console.error('ERROR');
                         console.error(err);
                     });
-            },
-
-
-            showError: function (error) {
-                this.$errorPanel.empty();
-                this.$errorPanel.append('<strong>Error when fetching App/Method information.</strong><br><br>');
-                this.$errorPanel.append(error.error.message);
-                this.$errorPanel.append('<br>');
-                this.$errorPanel.show();
             }
         });
     });
