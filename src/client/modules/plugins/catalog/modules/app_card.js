@@ -131,7 +131,7 @@ define([
 
 
             // FOOTER - stars, number of runs, and info mouseover area
-            var $footer = $('<div>').addClass('row kbcb-app-card-footer');
+            var $footer = $('<div>').addClass('clearfix kbcb-app-card-footer');
 
 
             var $starDiv = $('<div>').addClass('col-xs-3').css('text-align','left');
@@ -147,7 +147,7 @@ define([
 
 
             var nRuns = Math.floor(Math.random()*10000);
-            var $nRuns = $('<div>').addClass('col-xs-4').css('text-align','left');
+            var $nRuns = $('<div>').addClass('col-xs-3').css('text-align','left');
             $nRuns.append($('<span>').append('<i class="fa fa-share"></i>'));
             $nRuns.append('&nbsp;'+nRuns);
             $nRuns.tooltip({title:'Run in a narrative '+nRuns+' times.', placement:'bottom',
@@ -155,7 +155,10 @@ define([
 
             $footer.append($nRuns);
 
-            var $moreInfoDiv = $('<div>').addClass('col-xs-5').addClass('kbcb-info').css('text-align','right');
+            // buffer
+            $footer.append($('<div>').addClass('col-xs-4').css('text-align','left'));
+
+            var $moreInfoDiv = $('<div>').addClass('col-xs-1').addClass('kbcb-info').css('text-align','right');
             $moreInfoDiv
                 .on('mouseenter', function() {
                     $topDiv.hide();
