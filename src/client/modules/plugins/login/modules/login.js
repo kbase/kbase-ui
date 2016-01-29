@@ -134,7 +134,7 @@ function (html, $, Promise, Plugin) {
                     nextURL = 'next url';
 
             eventMan.reset();
-            var doodlePath = Plugin.plugin.path + '/images/doodle.png';
+            var doodlePath = Plugin.plugin.fullPath + '/doodle.png';
 
             return div({class: 'container', style: 'margin-top: 4em', id: panelId}, [
                 div({}, [
@@ -207,8 +207,6 @@ function (html, $, Promise, Plugin) {
                 if (params.nextrequest) {
                     nextRequest = JSON.parse(params.nextrequest);
                 }
-                console.log('next request is');
-                console.log(params);
             });
         }
 

@@ -23,7 +23,6 @@ require.config({
         jquery: 'bower_components/jquery/jquery',
         bluebird: 'bower_components/bluebird/bluebird',
         underscore: 'bower_components/underscore/underscore',
-        knockout: 'bower_components/knockout/knockout',
         d3: 'bower_components/d3/d3',
         d3_sankey: 'bower_components/d3-plugins-sankey/sankey',
         d3_sankey_css: 'bower_components/d3-plugins-sankey/sankey',
@@ -52,9 +51,9 @@ require.config({
         
         // This really should be brought in somehow else.
         // Perhaps namespace it???
-        thrift: 'bower_components/thrift-binary-protocol/thrift-core',
-        thrift_transport_xhr: 'bower_components/thrift-binary-protocol/thrift-transport-xhr',
-        thrift_protocol_binary: 'bower_components/thrift-binary-protocol/thrift-protocol-binary',
+        //thrift: 'bower_components/thrift-binary-protocol/thrift-core',
+        //thrift_transport_xhr: 'bower_components/thrift-binary-protocol/thrift-transport-xhr',
+        //thrift_protocol_binary: 'bower_components/thrift-binary-protocol/thrift-protocol-binary',
 
     },
     shim: {
