@@ -51,10 +51,23 @@ define([
             $loadingPanel: null,
 
 
+            categories: {},
+
+
             init: function (options) {
                 this._super(options);
                 
                 var self = this;
+
+                self.categories = {
+                    assembly : 'Assembly',
+                    annotation : 'Annotation',
+                    metabolic_modeling : 'Metabolic Modeling',
+                    comparative_genomics : 'Comparative Genomics',
+                    expression : 'Expression',
+                    util : 'Utilities'
+                };
+
 
                 // new style we have a runtime object that gives us everything in the options
                 self.runtime = options.runtime;
@@ -140,13 +153,15 @@ define([
                                     .append($('<div>').addClass('form-group')
                                         .append($searchBox)));
 
-                
                 // other controls list
                 var $ctrList = $('<ul>').addClass('nav navbar-nav').css('font-family',"'OxygenRegular', Arial, sans-serif");
                 $content.append($ctrList);
 
-
                 // ORGANIZE BY
+                var $obFavs = $('<a>').append('Favorites Count')
+                                    .on('click', function() {self.renderAppList('favorites')});
+                var $obRuns = $('<a>').append('Run Count')
+                                    .on('click', function() {self.renderAppList('runs')});
                 var $obNameAz = $('<a>').append('Name (a-z)')
                                     .on('click', function() {self.renderAppList('name_az')});
                 var $obNameZa = $('<a>').append('Name (z-a)')
@@ -168,9 +183,15 @@ define([
                 $organizeBy
                     .append($('<ul>').addClass('dropdown-menu')
                         .append($('<li>')
+                            .append($obFavs))
+                        .append($('<li>')
+                            .append($obRuns))
+                        .append('<li role="separator" class="divider"></li>')
+                        .append($('<li>')
                             .append($obNameAz))
                         .append($('<li>')
                             .append($obNameZa))
+                        .append('<li role="separator" class="divider"></li>')
                         .append($('<li>')
                             .append($obCat))
                         .append($('<li>')
@@ -231,8 +252,6 @@ define([
                 if(query) {
                     var terms = query.toLowerCase().match(/\w+|"(?:\\"|[^"])+"/g);
                     if (terms) {
-                        //console.log(terms);
-                        //console.log(self.appList[0].info);
 
                         // for everything in the list
                         for(var k=0; k<self.appList.length; k++) {
@@ -548,7 +567,7 @@ define([
                             var $section = $('<div>').addClass('catalog-section');
                             $currentModuleDiv = $('<div>').addClass('kbcb-app-card-list-container');
                             $section.append($('<div>').css({'color':'#777'})
-                                    .append($('<h4>').append(m)));
+                                    .append($('<h4>').append('<a href="#appcatalog/module/'+m+'">'+m+'</a>')));
                             $section.append($currentModuleDiv);
                             self.$appListPanel.append($section);
                         }
@@ -571,7 +590,7 @@ define([
                         $authorDivLookup[devs[k]] = $authorDiv;
                         $section.append(
                             $('<div>').css({'color':'#777'})
-                                .append($('<h4>').append(devs[k])));
+                                .append($('<h4>').append('<a href="#people/'+devs[k]+'">'+devs[k]+'</a>')));
                         $section.append($authorDiv)
                         self.$appListPanel.append($section);
                     }
@@ -606,7 +625,59 @@ define([
                 
 
                 else if (organizeBy=='category') {
-                    self.$appListPanel.append('<span>under construction</span> <img src="http://www.123gifs.eu/free-gifs/underconstruction/underconstruction-0069.gif">');
+
+                    var cats = [];
+                    for(var k in self.categories) { cats.push(k); }
+                    cats.sort();
+
+                    var $catDivLookup = {}
+                    for(var k=0; k<cats.length; k++) {
+                        var $section = $('<div>').addClass('catalog-section');
+                        var $catDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                        $catDivLookup[cats[k]] = $catDiv;
+                        $section.append(
+                            $('<div>').css({'color':'#777'})
+                                .append($('<h4>').append(self.categories[cats[k]])));
+                        $section.append($catDiv)
+                        self.$appListPanel.append($section);
+                    }
+                    var $section = $('<div>').addClass('catalog-section');
+                    var $noCatDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                    $section.append(
+                        $('<div>').css({'color':'#777'})
+                            .append($('<h4>').append('Uncategorized')));
+                    $section.append($noCatDiv);
+                    self.$appListPanel.append($section);
+
+                    for(var k=0; k<self.appList.length; k++) {
+                        self.appList[k].clearCardsAddedCount();
+
+                        if(self.appList[k].info.categories.length>0) {
+                            var appCats = self.appList[k].info.categories;
+                            var gotCat = false;
+                            for(var i=0; i<appCats.length; i++) {
+                                if($catDivLookup.hasOwnProperty(appCats[i])) {
+                                    gotCat = true;
+                                    $catDivLookup[appCats[i]].append(self.appList[k].getNewCardDiv());
+                                }
+                            }
+                            if(!gotCat) {
+                                $noCatDiv.append(self.appList[k].getNewCardDiv());
+                            }
+                        } else {
+                            $noCatDiv.append(self.appList[k].getNewCardDiv());
+                        }
+                    }
+
+                }
+
+                else if (organizeBy=='favorites') {
+                    self.$appListPanel.append('<span>under construction</span>');
+
+                }
+
+                else if (organizeBy=='runs') {
+                    self.$appListPanel.append('<span>under construction</span>');
 
                 }
 

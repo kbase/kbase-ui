@@ -30,6 +30,9 @@ source:
         -
             module: catalog_util
             file: catalog_util
+        -
+            module: catalog_admin
+            file: catalog_admin
         - 
             module: app_card
             file: app_card
@@ -53,6 +56,9 @@ source:
         -
             module: catalog_status_widget
             file: widgets/kbaseCatalogStatus
+        -
+            module: catalog_admin_widget
+            file: widgets/kbaseCatalogAdmin
         -
             module: catalog_view_sdk_registration_log_widget
             file: widgets/kbaseViewSDKRegistrationLog
@@ -86,6 +92,10 @@ install:
         - 
             module: catalog_status
             id: catalog_status
+            type: factory
+        - 
+            module: catalog_admin
+            id: catalog_admin
             type: factory
         - 
             module: catalog_util
@@ -138,6 +148,13 @@ install:
                 jqueryName: KBaseCatalogStatusViewer
             type: kbwidget
         -
+            module: catalog_admin_widget
+            id: catalog_admin_widget
+            title: App Catalog Admin
+            config:
+                jqueryName: KBaseCatalogAdmin
+            type: kbwidget
+        -
             module: catalog_view_sdk_registration_log_widget
             id: catalog_view_sdk_registration_log_widget
             title: App Catalog Module Registration Log
@@ -179,6 +196,9 @@ install:
         -
             path: ['appcatalog', 'status', {type: param, name: module_names }]
             widget: catalog_status
+        -
+            path: ['appcatalog', 'admin']
+            widget: catalog_admin
     menus:
         -
             name: appcatalog
@@ -186,5 +206,5 @@ install:
                 path: ['appcatalog']
                 label: App Catalog
                 icon: book
-                
+
 

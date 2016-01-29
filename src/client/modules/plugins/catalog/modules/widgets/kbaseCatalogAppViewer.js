@@ -10,10 +10,11 @@ define([
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
+    'kb/widget/legacy/kbasePrompt',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
-    function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
+    function ($, NarrativeMethodStore, Catalog, CatalogUtil, KBasePrompt) {
         $.KBWidget({
             name: "KBaseCatalogAppViewer",
             parent: "kbaseAuthenticatedWidget",
@@ -515,7 +516,7 @@ define([
                 if(m.icon && self.nms_base_url) {
                     if(m.icon.url) {
                         $logoSpan.html($('<img src="'+self.nms_base_url + m.icon.url+'">')
-                                            .css({'max-width':'85%', 'padding':'7px 7px 7px 10px',
+                                            .css({'max-width':'85%', 'padding':'6px 3px 3px 8px',
                                                   'max-height': '85%'}));
                     }
                 }
@@ -550,10 +551,6 @@ define([
                     for(var k=0; k<m.authors.length; k++) {
                         if(k>=1) {
                             $authorDiv.append(', ');
-                        }
-                        if(k>=2) {
-                            $authorDiv.append(' +'+(m.authors.length-2)+' more');
-                            break;
                         }
                         $authorDiv.append($('<a href="#people/'+m.authors[k]+'">')
                                             .append(m.authors[k])

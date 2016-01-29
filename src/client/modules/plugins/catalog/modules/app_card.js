@@ -66,7 +66,7 @@ define([
 
             // HEADER - contains logo, title, module link, authors
             var $topDiv = $('<div>').addClass('row kbcb-app-card-header');
-            var $logoSpan = $('<div>').addClass('col-xs-4 kbcb-app-card-logo');
+            var $logoSpan = $('<div>').addClass('col-xs-3 kbcb-app-card-logo');
 
             if(type === 'method') {
                 $logoSpan.append('<div class="fa-stack fa-3x"><i class="fa fa-square fa-stack-2x method-icon"></i><i class="fa fa-inverse fa-stack-1x fa-cube"></i></div>')
@@ -78,12 +78,12 @@ define([
             if(info.icon && nms_base_url) {
                 if(info.icon.url) {
                     $logoSpan.html($('<img src="'+nms_base_url + info.icon.url+'">')
-                                        .css({'max-width':'85%', 'padding':'7px 7px 7px 10px',
+                                        .css({'max-width':'85%', 'padding':'6px 3px 3px 8px',
                                               'max-height': '85%'}));
                 }
             }
 
-            var $titleSpan = $('<div>').addClass('col-xs-8 kbcb-app-card-title-panel');
+            var $titleSpan = $('<div>').addClass('col-xs-9 kbcb-app-card-title-panel');
                 
             $titleSpan.append($('<div>').addClass('kbcb-app-card-title').append(info.name));
             if(info['module_name']) {
@@ -131,7 +131,7 @@ define([
 
 
             // FOOTER - stars, number of runs, and info mouseover area
-            var $footer = $('<div>').addClass('row kbcb-app-card-footer');
+            var $footer = $('<div>').addClass('clearfix kbcb-app-card-footer');
 
 
             var $starDiv = $('<div>').addClass('col-xs-3').css('text-align','left');
@@ -147,7 +147,7 @@ define([
 
 
             var nRuns = Math.floor(Math.random()*10000);
-            var $nRuns = $('<div>').addClass('col-xs-4').css('text-align','left');
+            var $nRuns = $('<div>').addClass('col-xs-3').css('text-align','left');
             $nRuns.append($('<span>').append('<i class="fa fa-share"></i>'));
             $nRuns.append('&nbsp;'+nRuns);
             $nRuns.tooltip({title:'Run in a narrative '+nRuns+' times.', placement:'bottom',
@@ -155,7 +155,10 @@ define([
 
             $footer.append($nRuns);
 
-            var $moreInfoDiv = $('<div>').addClass('col-xs-5').addClass('kbcb-info').css('text-align','right');
+            // buffer
+            $footer.append($('<div>').addClass('col-xs-4').css('text-align','left'));
+
+            var $moreInfoDiv = $('<div>').addClass('col-xs-1').addClass('kbcb-info').css('text-align','right');
             $moreInfoDiv
                 .on('mouseenter', function() {
                     $topDiv.hide();

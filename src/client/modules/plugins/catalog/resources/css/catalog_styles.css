@@ -42,7 +42,7 @@
 
 .kbcb-app-card-container {
     margin: 0.4em;
-    width: 300px;
+    width: 340px;
     height:110px;
     display: block;
     position: relative;
@@ -65,7 +65,7 @@
     text-align: left;
 }
 .kbcb-app-card-title-panel {
-    padding: 10px 5px 5px 0px;
+    padding: 10px 5px 5px 5px;
 }
 
 
