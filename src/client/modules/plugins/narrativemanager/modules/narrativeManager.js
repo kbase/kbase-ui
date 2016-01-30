@@ -313,12 +313,9 @@ define([
                         cellData = gatherCellData(cells, specMapping, parameters),
                             narrativeObject = {
                                 nbformat_minor: 0,
-                                worksheets: [{
-                                        cells: cellData,
-                                        metadata: {}
-                                    }],
+                                cells: cellData,
                                 metadata: metadata,
-                                nbformat: 3
+                                nbformat: 4
                             },
                         // setup external string to string metadata for the WS object
                         metadataExternal = {};
