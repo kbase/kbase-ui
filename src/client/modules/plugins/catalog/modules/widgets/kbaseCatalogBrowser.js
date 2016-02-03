@@ -169,8 +169,11 @@ define([
                 $content.append($ctrList);
 
                 // ORGANIZE BY
-                var $obMyFavs = $('<a>').append('My Favorites')
+                var $obMyFavs = $('<a>');
+                if(self.runtime.service('session').isLoggedIn()) {
+                    $obMyFavs.append('My Favorites')
                                     .on('click', function() {self.renderAppList('my_favorites')});
+                }
                 var $obFavs = $('<a>').append('Favorites Count')
                                     .on('click', function() {self.renderAppList('favorites')});
                 var $obRuns = $('<a>').append('Run Count')
@@ -333,7 +336,7 @@ define([
                 var sections = self.$appListPanel.find('.catalog-section');
                 for(var i=0; i<sections.length; i++) {
                     $(sections[i]).show();
-                    var cards = $(sections[i]).find('.kbcb-app-card-container');
+                    var cards = $(sections[i]).find('.kbcb-app-card-container,.kbcb-app-card-list-element');
                     var hasVisible = false;
                     for(var j=0; j<cards.length; j++) {
                         if($(cards[j]).is(':visible')) {
@@ -813,13 +816,19 @@ define([
                             .append($('<h4>').append('Everything Else')));
                     $otherSection.append($otherDiv);
                     self.$appListPanel.append($otherSection);
+                    var hasFavorites = false;
                     for(var k=0; k<self.appList.length; k++) {
                         self.appList[k].clearCardsAddedCount();
                         if(self.appList[k].isStarOn()) {
                             $myDiv.append(self.appList[k].getNewCardDiv());
+                            hasFavorites = true;
                         } else {
                             $otherDiv.append(self.appList[k].getNewCardDiv());
                         }
+                    }
+                    if(!hasFavorites) {
+                        console.log('here');
+                        $myDiv.append($('<div>').css({'color':'#777'}).addClass('kbcb-app-card-list-element').append('You do not have any favorites yet.  Click on the stars to add to your favorites.'))
                     }
 
                 }
