@@ -1,11 +1,15 @@
 
 
-
 .kbcb-browser-container {
     max-width: 1000px;
     margin: 0 auto;
     /*background: #eeeded;*/
 }
+
+.kbcb-back-link {
+    padding: 0.4em;
+}
+
 
 .kbcb-ctr-toolbar {
     margin: 0.4em;
@@ -105,11 +109,23 @@
 .kbcb-star {
 }
 .kbcb-star-favorite {
+    cursor:pointer;
     color:orange;
 }
-.kbcb-star:hover {
-    color:orange;
+/*.kbcb-star-favorite:hover {
+    color:inherit;
+}*/
+
+.kbcb-star-nonfavorite {
     cursor:pointer;
+}
+.kbcb-star-nonfavorite:hover {
+    color:red;
+}
+
+.kbcb-star-count {
+    margin-left: 0.3em;
+    display: inline-block;
 }
 
 .kbcb-info {

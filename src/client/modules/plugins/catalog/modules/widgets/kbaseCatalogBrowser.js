@@ -32,12 +32,15 @@ define([
             // for now, most of the filtering/sorting etc is done on the front end; this
             // will eventually need to move to backend servers when there are enough methods
             appList: null,
+            appLookup: null,
 
             // list of catalog module info
             moduleList: null,
 
             // dict of module info for fast lookup
             moduleLookup: null,
+
+            favoritesList:null,
 
             // control panel and elements
             $controlToolbar: null,
@@ -71,8 +74,7 @@ define([
 
                 // new style we have a runtime object that gives us everything in the options
                 self.runtime = options.runtime;
-                //console.log(options);
-                //console.log(this.runtime.service('session').getAuthToken());
+                //console.log(this.runtime.service('session').getUsername());
                 self.util = new CatalogUtil();
                 self.setupClients();
 
@@ -103,12 +105,21 @@ define([
 
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
-                    console.log('done loading!');
 
                     self.processData();
 
-                    self.renderAppList('name_az');
-                    self.hideLoading();
+                    self.updateFavoritesCounts()
+                        .then(function() {
+                            self.hideLoading();
+                            self.renderAppList('favorites');
+                            return self.updateMyFavorites();
+                        }).catch(function (err) {
+                            self.hideLoading();
+                            self.renderAppList('name_az');
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+
                 });
 
                 return this;
@@ -158,6 +169,11 @@ define([
                 $content.append($ctrList);
 
                 // ORGANIZE BY
+                var $obMyFavs = $('<a>');
+                if(self.runtime.service('session').isLoggedIn()) {
+                    $obMyFavs.append('My Favorites')
+                                    .on('click', function() {self.renderAppList('my_favorites')});
+                }
                 var $obFavs = $('<a>').append('Favorites Count')
                                     .on('click', function() {self.renderAppList('favorites')});
                 var $obRuns = $('<a>').append('Run Count')
@@ -182,6 +198,8 @@ define([
 
                 $organizeBy
                     .append($('<ul>').addClass('dropdown-menu')
+                        .append($('<li>')
+                            .append($obMyFavs))
                         .append($('<li>')
                             .append($obFavs))
                         .append($('<li>')
@@ -318,7 +336,7 @@ define([
                 var sections = self.$appListPanel.find('.catalog-section');
                 for(var i=0; i<sections.length; i++) {
                     $(sections[i]).show();
-                    var cards = $(sections[i]).find('.kbcb-app-card-container');
+                    var cards = $(sections[i]).find('.kbcb-app-card-container,.kbcb-app-card-list-element');
                     var hasVisible = false;
                     for(var j=0; j<cards.length; j++) {
                         if($(cards[j]).is(':visible')) {
@@ -364,11 +382,55 @@ define([
                 self.$mainPanel.show();
             },
 
+
+            // we assume context is:
+            //    catalog: catalog_client
+            //    browserWidget: this widget, so we can toggle any update
+            toggleFavorite: function(info, context) {
+                var appCard = this;
+                var params = {};
+                if(info.module_name) {
+                    params['module_name'] = info.module_name;
+                    params['id'] = info.id.split('/')[1]
+                } else {
+                    params['id'] = info.id;
+                }
+
+                // check if is a favorite
+                if(appCard.isStarOn()) {
+                    context.catalog.remove_favorite(params)
+                        .then(function () {
+                            appCard.turnOffStar();
+                            appCard.setStarCount(appCard.getStarCount()-1);
+                            context.browserWidget.updateMyFavorites();
+                            return context.browserWidget.updateFavoritesCounts();
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                } else {
+                    context.catalog.add_favorite(params)
+                        .then(function () {
+                            appCard.turnOnStar();
+                            appCard.setStarCount(appCard.getStarCount()+1);
+                            context.browserWidget.updateMyFavorites();
+                            return context.browserWidget.updateFavoritesCounts();
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                }
+            },
+
+
+
             populateAppListWithMethods: function() {
                 var self = this;
 
                 // determine which set of methods to fetch
-                var tag='dev'; // default is dev; it should be 'release'
+                var tag='release'; // default is to show only 'release' tagged modules
                 if(self.options.tag) {
                     tag = self.options.tag;
                     if(tag!=='dev' && tag!=='beta' && tag!=='release') {
@@ -386,7 +448,9 @@ define([
                             // logic to hide/show certain categories
                             if(self.util.skipApp(methods[k].categories)) continue;
 
-                            var m = new AppCard('method',methods[k],tag,self.nms_base_url);
+                            var m = new AppCard('method',methods[k],tag,self.nms_base_url, 
+                                self.toggleFavorite, {catalog:self.catalog, browserWidget:self},
+                                self.runtime.service('session').isLoggedIn());
                             self.appList.push(m);
                         }
                     })
@@ -427,9 +491,6 @@ define([
 
                 return self.catalog.list_basic_module_info(moduleSelection)
                     .then(function (modules) {
-                        //return self.catalog.list_basic_module_info()
-                        //console.log('hello modules');
-                        //console.log(modules);
                         for(var k=0; k<modules.length; k++) {
                             var m = {
                                 info: modules[k],
@@ -445,13 +506,74 @@ define([
                     });
             },
 
+
+            updateFavoritesCounts: function() {
+                var self = this
+                var listFavoritesParams = { };
+                return self.catalog.list_favorite_counts(listFavoritesParams)
+                    .then(function (counts) {
+                        for(var k=0; k<counts.length; k++) {
+                            var c = counts[k];
+                            var lookup = c.id;
+                            if(c.module_name_lc != 'nms.legacy') {
+                                lookup = c.module_name_lc + '/' + lookup
+                            }
+                            if(self.appLookup[lookup]) {
+                                self.appLookup[lookup].setStarCount(c.count);
+                            }
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+            // warning!  will not return a promise if the user is not logged in!
+            updateMyFavorites: function() {
+                var self = this
+                if(self.runtime.service('session').isLoggedIn()) {
+                    return self.catalog.list_favorites(self.runtime.service('session').getUsername())
+                        .then(function (favorites) {
+                            self.favoritesList = favorites;
+                            for(var k=0; k<self.favoritesList.length; k++) {
+                                var fav = self.favoritesList[k];
+                                var lookup = fav.id;
+                                if(fav.module_name_lc != 'nms.legacy') {
+                                    lookup = fav.module_name_lc + '/' + lookup
+                                }
+                                if(self.appLookup[lookup]) {
+                                    self.appLookup[lookup].turnOnStar();
+                                }
+                            }
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                }
+            },
+
+
             processData: function() {
                 var self = this;
 
                 // setup module map
                 self.moduleLookup = {};
+                self.appLookup = {};
                 for(var m=0; m<self.moduleList.length; m++) {
-                    self.moduleLookup[self.moduleList[m].info.module_name] = self.moduleList.info;
+                    self.moduleLookup[self.moduleList[m].info.module_name] = self.moduleList[m];
+                }
+                for(var a=0; a<self.appList.length; a++) {
+                    // only lookup for methods; apps are deprecated
+                    if(self.appList[a].type==='method') {
+                        if(self.appList[a].info.module_name) {
+                            var idTokens = self.appList[a].info.id.split('/');
+                            self.appLookup[idTokens[0].toLowerCase() + '/' + idTokens[1]] = self.appList[a];
+                        } else {
+                            self.appLookup[self.appList[a].info.id] = self.appList[a];
+                        }
+                    }
                 }
 
                 self.developers = {};
@@ -500,11 +622,6 @@ define([
                 var self = this;
 
                 self.$appListPanel.children().detach();
-
-                if(!self.options.tag) {
-                    self.$appListPanel.append('<i>Note: temporarily showing dev versions</i><br>')
-                }
-
 
                 // no organization, so show all
                 if(!organizeBy) { return; }
@@ -671,9 +788,71 @@ define([
 
                 }
 
-                else if (organizeBy=='favorites') {
-                    self.$appListPanel.append('<span>under construction</span>');
+                else if (organizeBy=='my_favorites') {
+                    // sort by number of stars, then by app name
+                    self.appList.sort(function(a,b) {
+                        var aStars = a.getStarCount();
+                        var bStars = b.getStarCount();
+                        if(aStars>bStars) return -1;
+                        if(bStars>aStars) return 1;
+                        var aName = a.info.name.toLowerCase();
+                        var bName = b.info.name.toLowerCase();
+                        if(aName<bName) return -1;
+                        if(aName>bName) return 1;
+                        return 0;
+                    });
+                    var $mySection = $('<div>').addClass('catalog-section');
+                    var $myDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                    $mySection.append(
+                        $('<div>').css({'color':'#777'})
+                            .append($('<h4>').append('My Favorites')));
+                    $mySection.append($myDiv);
+                    self.$appListPanel.append($mySection);
 
+                    var $otherSection = $('<div>').addClass('catalog-section');
+                    var $otherDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                    $otherSection.append(
+                        $('<div>').css({'color':'#777'})
+                            .append($('<h4>').append('Everything Else')));
+                    $otherSection.append($otherDiv);
+                    self.$appListPanel.append($otherSection);
+                    var hasFavorites = false;
+                    for(var k=0; k<self.appList.length; k++) {
+                        self.appList[k].clearCardsAddedCount();
+                        if(self.appList[k].isStarOn()) {
+                            $myDiv.append(self.appList[k].getNewCardDiv());
+                            hasFavorites = true;
+                        } else {
+                            $otherDiv.append(self.appList[k].getNewCardDiv());
+                        }
+                    }
+                    if(!hasFavorites) {
+                        console.log('here');
+                        $myDiv.append($('<div>').css({'color':'#777'}).addClass('kbcb-app-card-list-element').append('You do not have any favorites yet.  Click on the stars to add to your favorites.'))
+                    }
+
+                }
+
+
+                else if (organizeBy=='favorites') {
+                    // sort by number of stars, then by app name
+                    self.appList.sort(function(a,b) {
+                        var aStars = a.getStarCount();
+                        var bStars = b.getStarCount();
+                        if(aStars>bStars) return -1;
+                        if(bStars>aStars) return 1;
+                        var aName = a.info.name.toLowerCase();
+                        var bName = b.info.name.toLowerCase();
+                        if(aName<bName) return -1;
+                        if(aName>bName) return 1;
+                        return 0;
+                    });
+                    var $listContainer = $('<div>').css({'overflow':'auto', 'padding':'0 0 2em 0'});
+                    for(var k=0; k<self.appList.length; k++) {
+                        self.appList[k].clearCardsAddedCount();
+                        $listContainer.append(self.appList[k].getNewCardDiv());
+                    }
+                    self.$appListPanel.append($listContainer);
                 }
 
                 else if (organizeBy=='runs') {
@@ -752,7 +931,6 @@ define([
 
                 else {
                     self.$appListPanel.append('<span>invalid organization parameter</span>');
-
                 }
 
                 // gives some buffer at the end of the page

@@ -7,7 +7,15 @@ define([
 ], function (Promise, $, DOM, html, WidgetSet) {
     'use strict';
 
-    function AppCard(type, info, tag, nms_base_url) {
+    // favorites callback should accept:
+    //  
+    //  favoritesCallback(this.info)
+    //    info = 
+    //      id:
+    //      module_name:
+    //      ...
+    //     
+    function AppCard(type, info, tag, nms_base_url, favoritesCallback, favoritesCallbackParams, isLoggedIn) {
 
         this.$divs = [];
         this.info = info;
@@ -15,6 +23,17 @@ define([
         this.tag = tag;
         this.nms_base_url = nms_base_url;
         this.cardsAdded = 0;
+
+        this.isLoggedIn = isLoggedIn;
+
+        this.favoritesCallback = favoritesCallback;
+        this.favoritesCallbackParams = favoritesCallbackParams;
+
+        // only an SDK module if it has a module name
+        this.isSdk = false;
+        if(this.info.module_name) {
+            this.isSdk = true;
+        }
 
 
 
@@ -52,6 +71,62 @@ define([
             this.cardsAdded = 0;
             this.$divs=0;
         };
+
+
+        this.starCount = null;
+        this.onStar = false;
+        this.deactivatedStar = false;
+
+        this.turnOnStar = function() {
+            this.onStar = true;
+            for(var k=0; k<this.$divs.length; k++) {
+                this.$divs[k].find('.kbcb-star')
+                    .removeClass('kbcb-star-nonfavorite').addClass('kbcb-star-favorite');
+            }
+        };
+        this.turnOffStar = function() {
+            this.onStar = false;
+            for(var k=0; k<this.$divs.length; k++) {
+                this.$divs[k].find('.kbcb-star')
+                    .removeClass('kbcb-star-favorite').addClass('kbcb-star-nonfavorite');
+            }
+        };
+
+        this.isStarOn = function() {
+            return this.onStar;
+        }
+
+        this.deactivateStar = function() {
+            this.deactivatedStar = true;
+            for(var k=0; k<this.$divs.length; k++) {
+                this.$divs[k].find('.kbcb-star')
+                    .removeClass('kbcb-star-favorite').removeClass('kbcb-star-nonfavorite');
+            }
+        };
+
+        this.getStarCount = function(count) {
+            if(this.starCount) return this.starCount;
+            return 0;
+        };
+
+        this.setStarCount = function(count) {
+            this.starCount = count;
+            if(this.starCount<=0) { this.starCount = null; }
+            if(this.starCount) {
+                for(var k=0; k<this.$divs.length; k++) {
+                    this.$divs[k].find('.kbcb-star-count').html(count);
+                }
+            } else {
+                for(var k=0; k<this.$divs.length; k++) {
+                    this.$divs[k].find('.kbcb-star-count').empty();
+                }
+            }
+        };
+
+        this.setRunCount = function() {
+
+        };
+
 
         /* rendering methods that are shared in multiple places */
         this._renderAppCard = function() {
@@ -129,31 +204,44 @@ define([
             var $subtitle = $('<div>').addClass('kbcb-app-card-subtitle').append(info.subtitle).hide()
             $appDiv.append($subtitle);
 
-
             // FOOTER - stars, number of runs, and info mouseover area
             var $footer = $('<div>').addClass('clearfix kbcb-app-card-footer');
 
+            if(type==='method') {
+                var $starDiv = $('<div>').addClass('col-xs-3').css('text-align','left');
+                var $star = $('<span>').addClass('kbcb-star').append('<i class="fa fa-star"></i>');
+                var self = this;
+                if(self.isLoggedIn) {
+                    $star.addClass('kbcb-star-nonfavorite');
+                    $star.on('click', function() {
+                        event.stopPropagation();
+                        if(!self.deactivatedStar && self.favoritesCallback) {
+                            self.favoritesCallback(self.info, self.favoritesCallbackParams)
+                        }
+                    });
+                    $starDiv.tooltip({title:'Click on the star to add/remove from your favorites', placement:'right',
+                                        delay:{show: 400, hide: 40}});
+                }
+                var $starCount = $('<span>').addClass('kbcb-star-count');
+                if(this.starCount) { $starCount.html('&nbsp;' + this.starCount); }
+                $footer.append($starDiv.append($star).append($starCount));
+                
+            } else {
+                $footer.append($('<div>').addClass('col-xs-3'))
+            }
 
-            var $starDiv = $('<div>').addClass('col-xs-3').css('text-align','left');
-            var $star = $('<span>').addClass('kbcb-star').append('<i class="fa fa-star"></i>');
-            $star.on('click', function() {
-                event.stopPropagation();
-                alert('You have favorited this app - currently does nothing');
-            });
-            var favoriteCount = Math.floor(Math.random()*100);
-            $footer.append($starDiv.append($star).append('&nbsp;'+favoriteCount));
-            $starDiv.tooltip({title:'A favorite method of '+favoriteCount+' people.', placement:'right',
-                                    delay:{show: 400, hide: 40}});
+            if(this.isSdk) {
+                var nRuns = Math.floor(Math.random()*10000);
+                var $nRuns = $('<div>').addClass('col-xs-3').css('text-align','left');
+                $nRuns.append($('<span>').append('<i class="fa fa-share"></i>'));
+                $nRuns.append('&nbsp;'+nRuns);
+                $nRuns.tooltip({title:'Run in a narrative '+nRuns+' times.', placement:'bottom',
+                                        delay:{show: 400, hide: 40}});
 
-
-            var nRuns = Math.floor(Math.random()*10000);
-            var $nRuns = $('<div>').addClass('col-xs-3').css('text-align','left');
-            $nRuns.append($('<span>').append('<i class="fa fa-share"></i>'));
-            $nRuns.append('&nbsp;'+nRuns);
-            $nRuns.tooltip({title:'Run in a narrative '+nRuns+' times.', placement:'bottom',
-                                    delay:{show: 400, hide: 40}});
-
-            $footer.append($nRuns);
+                $footer.append($nRuns);
+            } else {
+                $footer.append($('<div>').addClass('col-xs-3'))
+            }
 
             // buffer
             $footer.append($('<div>').addClass('col-xs-4').css('text-align','left'));
