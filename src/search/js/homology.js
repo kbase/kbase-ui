@@ -185,10 +185,13 @@ homologyApp.service('homologyOptionsService', function homologyOptionsService() 
                                 "general": {
                                     "itemsPerPage": 10,
                                     "program": "blastp",
+                                    "database": "",
                                     "searchtype": "features",
                                     "genome_ids": [],
                                     "max_hit": 10,
                                     "evalue": "1e-5",
+                                    "sequence_invalid": false,
+                                    "genome_ids_invalid": false,
                                     "useDatabase": false
                                 },
                                 "perCategory": {"features":{}}
@@ -323,7 +326,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     });
 
     $scope.availableDatabases = [{value: "", label: "Search on selected genomes", selected: true},
-      {value: "kbase_nr.faa", label: "KBase Non-redendant Protein Sequences (NR-faa)"},
+      {value: "kbase_nr.faa", label: "KBase Non-redundant Protein Sequences (NR-faa)"},
       {value: "kbase_nr.ffn", label: "KBase Non-redundant gene sequences (NR-ffn)"}
     ];
 
@@ -532,8 +535,22 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     $scope.getHomologyResults = function(options){
 
         // TODO: implement validation with proper message
+        // 1. sequence should have only one fasta
+        // 2. when genomes are not added and database == "", send message
         //console.log($scope.targetGenomes);
         var method = "", params = null;
+
+        if (options.sequence) {
+            if (options.sequence.indexOf('>') >= 0 &&
+                options.sequence.indexOf('>') === options.sequence.lastIndexOf('>')) {
+				// contains only one >. pass
+                $scope.options.searchOptions.general.sequence_invalid = false;
+            } else {
+                angular.element.find('#sequence')[0].focus();
+				$scope.options.searchOptions.general.sequence_invalid = true;
+                return;
+            }
+        }
 
         if (options.useDatabase) {
           // database search
@@ -544,8 +561,16 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
           // genome search
           var genomeIds = $scope.targetGenomes.map(function(genome){
              return genome.genome_id;
+          }).filter(function(id){
+              return id != undefined;
           });
-          if (genomeIds.length == 0) return;
+          if (genomeIds.length == 0) {
+              angular.element.find('#genomes_0')[0].focus();
+              $scope.options.searchOptions.general.genome_ids_invalid = true;
+              return;
+          } else {
+              $scope.options.searchOptions.general.genome_ids_invalid = false;
+          }
           method = "HomologyService.blast_fasta_to_genomes";
           params = [options.sequence, options.program, genomeIds, options.searchtype, options.evalue, options.max_hit, 70];
         }
@@ -565,7 +590,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             };
             $scope.options.resultsAvailable = true;
 
-            console.log($scope.options.resultJSON);
+            //console.log($scope.options.resultJSON);
 
             var position = $scope.options.resultJSON.currentPage % $scope.options.numPageLinks;
             var start;
@@ -596,6 +621,9 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         }, function (error) {
             console.log("getResults threw an error!");
             console.log(error);
+
+            $scope.options.resultJSON.totalResults = 0;
+            $scope.options.errorMessage = error.error.message;
             $scope.options.resultsAvailable = false;
             $scope.$apply();
             $.unblockUI();
@@ -603,7 +631,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     };
 
     $scope.formatJSONResult = function(json){
-        console.log(json);
+        //console.log(json);
         var root = json[0][0].report.results.search;
         var hits = root.hits;
         var query_id = root.query_id;
@@ -628,9 +656,10 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 "send": hit.hsps[0].hit_to,
                 "evalue": hit.hsps[0].evalue,
                 "bitscore": Math.round(hit.hsps[0].bit_score),
-                "genome_id": metadata[target_id].genome_id,
-                "genome_name": metadata[target_id].genome_name,
-                "function": metadata[target_id].function,
+                "feature_id": target_id,
+                "genome_id": metadata[target_id].genome_id || '',
+                "genome_name": metadata[target_id].genome_name || '',
+                "function": metadata[target_id].function || '',
                 "detail": {
                     "match_count": metadata[target_id].match_count || 0,
                     "matches": identical[target_id] || [],
@@ -1059,13 +1088,18 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
 
     $scope.copyFeature = function(n) {
         //console.log($scope.options.userState.session.data_cart.data[n]["object_id"]);
-        var split_id = $scope.options.userState.session.data_cart.data[n]["object_id"].split('/');
+        console.log($scope.options.userState.session.data_cart.data[n]);
+        // var split_id = $scope.options.userState.session.data_cart.data[n]["object_id"].split('/');
+        var feature_id = $scope.options.userState.session.data_cart.data[n]["feature_id"];
+        var workspace_name = "KBasePublicGenomesV5";
         //console.log("/features/" + split_id[2]);
         //console.log($scope.options.userState.session.data_cart.data[n]["genome_id"] + ".featureset");
 
         return $scope.workspace_service.get_object_subset([{"name": $scope.options.userState.session.data_cart.data[n]["genome_id"] + ".featureset",
-                                                            "workspace": $scope.options.userState.session.data_cart.data[n]["workspace_name"].split("Rich").join(""),
-                                                            "included": ["/features/" + split_id[2]]
+                                                            // "workspace": $scope.options.userState.session.data_cart.data[n]["workspace_name"].split("Rich").join(""),
+                                                            // "included": ["/features/" + split_id[2]]
+                                                            "workspace": workspace_name,
+                                                            "included": ["/features/" + feature_id]
                                                           }])
             .fail(function (xhr, status, error) {
                 console.log(xhr);
