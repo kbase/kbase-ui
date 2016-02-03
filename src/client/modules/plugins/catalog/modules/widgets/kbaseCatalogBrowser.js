@@ -32,12 +32,15 @@ define([
             // for now, most of the filtering/sorting etc is done on the front end; this
             // will eventually need to move to backend servers when there are enough methods
             appList: null,
+            appLookup: null,
 
             // list of catalog module info
             moduleList: null,
 
             // dict of module info for fast lookup
             moduleLookup: null,
+
+            favoritesList:null,
 
             // control panel and elements
             $controlToolbar: null,
@@ -72,7 +75,7 @@ define([
                 // new style we have a runtime object that gives us everything in the options
                 self.runtime = options.runtime;
                 //console.log(options);
-                //console.log(this.runtime.service('session').getAuthToken());
+                console.log(this.runtime.service('session').getUsername());
                 self.util = new CatalogUtil();
                 self.setupClients();
 
@@ -109,6 +112,9 @@ define([
 
                     self.renderAppList('name_az');
                     self.hideLoading();
+                    console.log('here');
+                    self.updateFavoritesCounts();
+                    self.updateMyFavorites();
                 });
 
                 return this;
@@ -364,6 +370,52 @@ define([
                 self.$mainPanel.show();
             },
 
+
+            // we assume context is:
+            //    catalog: catalog_client
+            //    browserWidget: this widget, so we can toggle any update
+            toggleFavorite: function(info, context) {
+                var appCard = this;
+                var params = {};
+                if(info.module_name) {
+                    params['module_name'] = info.module_name;
+                    params['id'] = info.id.split('/')[1]
+                } else {
+                    params['id'] = info.id;
+                }
+
+                // check if is a favorite
+                if(appCard.isStarOn()) {
+                    context.catalog.remove_favorite(params)
+                        .then(function () {
+                            console.log('removed favorite')
+                            appCard.turnOffStar();
+                            appCard.setStarCount(appCard.getStarCount()-1);
+                            context.browserWidget.updateMyFavorites();
+                            return context.browserWidget.updateFavoritesCounts();
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                } else {
+                    context.catalog.add_favorite(params)
+                        .then(function () {
+                            console.log('added favorite')
+                            appCard.turnOnStar();
+                            appCard.setStarCount(appCard.getStarCount()+1);
+                            context.browserWidget.updateMyFavorites();
+                            return context.browserWidget.updateFavoritesCounts();
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                }
+            },
+
+
+
             populateAppListWithMethods: function() {
                 var self = this;
 
@@ -386,7 +438,11 @@ define([
                             // logic to hide/show certain categories
                             if(self.util.skipApp(methods[k].categories)) continue;
 
-                            var m = new AppCard('method',methods[k],tag,self.nms_base_url);
+                            var m = new AppCard('method',methods[k],tag,self.nms_base_url, 
+                                self.toggleFavorite, {catalog:self.catalog, browserWidget:self});
+                            if(!self.runtime.service('session').isLoggedIn()) {
+                                m.deactivateStar();
+                            }
                             self.appList.push(m);
                         }
                     })
@@ -445,14 +501,81 @@ define([
                     });
             },
 
+
+            updateFavoritesCounts: function() {
+                var self = this
+                var listFavoritesParams = { };
+                return self.catalog.list_favorite_counts(listFavoritesParams)
+                    .then(function (counts) {
+                        //return self.catalog.list_basic_module_info()
+                        console.log(counts);
+                        //console.log(modules);
+                        for(var k=0; k<counts.length; k++) {
+                            var c = counts[k];
+                            var lookup = c.id;
+                            if(c.module_name_lc) {
+                                lookup = c.module_name_lc + '/' + lookup
+                            }
+                            if(self.appLookup[lookup]) {
+                                self.appLookup[lookup].setStarCount(c.count);
+                            }
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+            // warning!  will not return a promise if the user is not logged in!
+            updateMyFavorites: function() {
+                var self = this
+                if(self.runtime.service('session').isLoggedIn()) {
+                    return self.catalog.list_favorites(self.runtime.service('session').getUsername())
+                        .then(function (favorites) {
+                            console.log(favorites);
+                            self.favoritesList = favorites;
+                            for(var k=0; k<self.favoritesList.length; k++) {
+                                var fav = self.favoritesList[k];
+                                var lookup = fav.id;
+                                if(fav.module_name_lc) {
+                                    lookup = fav.module_name_lc + '/' + lookup
+                                }
+                                if(self.appLookup[lookup]) {
+                                    self.appLookup[lookup].turnOnStar();
+                                }
+                            }
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                }
+            },
+
+
+
             processData: function() {
                 var self = this;
 
                 // setup module map
                 self.moduleLookup = {};
+                self.appLookup = {};
                 for(var m=0; m<self.moduleList.length; m++) {
-                    self.moduleLookup[self.moduleList[m].info.module_name] = self.moduleList.info;
+                    self.moduleLookup[self.moduleList[m].info.module_name] = self.moduleList[m];
                 }
+                for(var a=0; a<self.appList.length; a++) {
+                    // only lookup for methods; apps are deprecated
+                    if(self.appList[a].type==='method') {
+                        if(self.appList[a].info.module_name) {
+                            var idTokens = self.appList[a].info.id.split('/');
+                            self.appLookup[idTokens[0].toLowerCase() + '/' + idTokens[1]] = self.appList[a];
+                        } else {
+                            self.appLookup[self.appList[a].info.id] = self.appList[a];
+                        }
+                    }
+                }
+                console.log(self.appLookup)
 
                 self.developers = {};
                 self.inputTypes = {};
@@ -752,7 +875,6 @@ define([
 
                 else {
                     self.$appListPanel.append('<span>invalid organization parameter</span>');
-
                 }
 
                 // gives some buffer at the end of the page

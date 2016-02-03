@@ -105,11 +105,23 @@
 .kbcb-star {
 }
 .kbcb-star-favorite {
+    cursor:pointer;
     color:orange;
 }
-.kbcb-star:hover {
-    color:orange;
+/*.kbcb-star-favorite:hover {
+    color:inherit;
+}*/
+
+.kbcb-star-nonfavorite {
     cursor:pointer;
+}
+.kbcb-star-nonfavorite:hover {
+    color:red;
+}
+
+.kbcb-star-count {
+    margin-left: 0.3em;
+    display: inline-block;
 }
 
 .kbcb-info {
