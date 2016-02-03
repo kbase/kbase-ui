@@ -540,7 +540,7 @@ function installExternalModules(state) {
         })
         .then(function (modules) {
             return Promise.all(modules.map(function (module) {
-                var repoRoot = (module.source.directory.root && module.source.directory.root.split('/')) || ['..', '..', '..'],
+                var repoRoot = (module.source.directory.root && module.source.directory.root.split('/')) || ['..', '..'],
                     source = repoRoot.concat([module.globalName]),
                     destination = root.concat(['build', 'client', 'modules', 'bower_components', module.globalName]);
                 console.log('copying from...'); console.log(repoRoot); console.log(source), console.log(destination);
