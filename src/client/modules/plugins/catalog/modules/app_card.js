@@ -75,16 +75,12 @@ define([
         this.onStar = false;
         this.deactivatedStar = false;
 
-
-
         this.turnOnStar = function() {
             this.onStar = true;
             for(var k=0; k<this.$divs.length; k++) {
                 this.$divs[k].find('.kbcb-star')
                     .removeClass('kbcb-star-nonfavorite').addClass('kbcb-star-favorite');
             }
-//$starDiv.tooltip({title:'A favorite method of '+favoriteCount+' people.', placement:'right',
-//                                        delay:{show: 400, hide: 40}});
         };
         this.turnOffStar = function() {
             this.onStar = false;
@@ -206,10 +202,8 @@ define([
             var $subtitle = $('<div>').addClass('kbcb-app-card-subtitle').append(info.subtitle).hide()
             $appDiv.append($subtitle);
 
-
             // FOOTER - stars, number of runs, and info mouseover area
             var $footer = $('<div>').addClass('clearfix kbcb-app-card-footer');
-
 
             if(type==='method') {
                 var $starDiv = $('<div>').addClass('col-xs-3').css('text-align','left');
@@ -218,12 +212,13 @@ define([
                 var self = this;
                 $star.on('click', function() {
                     event.stopPropagation();
-                    console.log('clicked')
                     if(!self.deactivatedStar && self.favoritesCallback) {
                         self.favoritesCallback(self.info, self.favoritesCallbackParams)
                     }
                 });
                 var $starCount = $('<span>').addClass('kbcb-star-count');
+                $starDiv.tooltip({title:'Click on the star to add/remove from your favorites', placement:'right',
+                                        delay:{show: 400, hide: 40}});
                 if(this.starCount) { $starCount.html('&nbsp;' + this.starCount); }
                 $footer.append($starDiv.append($star).append($starCount));
                 

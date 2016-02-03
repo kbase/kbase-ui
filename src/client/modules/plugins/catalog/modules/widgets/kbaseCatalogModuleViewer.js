@@ -85,7 +85,9 @@ define([
 
                     self.getAppInfo()
                         .then(function() {
+                            var p = Promise.all([self.updateMyFavorites(),self.updateFavoritesCounts()]);
                             self.renderApps();
+                            return p;
                         })
                 });
 
@@ -401,9 +403,8 @@ define([
 
                 //self.$appLPanel.append('<i>Note: temporarily showing dev versions</i><br>')
                 var $appListContainer = $('<div>').css({
-                        padding:'1em 1em 2em 1em',
-                        'overflow':'auto',
-                        'max-width': '1000px'
+                        padding:'1em 0em 2em 1em',
+                        'overflow':'auto'
                     });
                 for(var k=0; k<self.appList.length; k++) {
                     $appListContainer.append(self.appList[k].getNewCardDiv());
@@ -459,6 +460,88 @@ define([
                 self.$mainPanel.show();
             },
 
+            // we assume context is:
+            //    catalog: catalog_client
+            //    browserWidget: this widget, so we can toggle any update
+            toggleFavorite: function(info, context) {
+                var appCard = this;
+                var params = {};
+                if(info.module_name) {
+                    params['module_name'] = info.module_name;
+                    params['id'] = info.id.split('/')[1]
+                } else {
+                    params['id'] = info.id;
+                }
+
+                // check if is a favorite
+                if(appCard.isStarOn()) {
+                    context.catalog.remove_favorite(params)
+                        .then(function () {
+                            appCard.turnOffStar();
+                            appCard.setStarCount(appCard.getStarCount()-1);
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                } else {
+                    context.catalog.add_favorite(params)
+                        .then(function () {
+                            appCard.turnOnStar();
+                            appCard.setStarCount(appCard.getStarCount()+1);
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                }
+            },
+
+            updateFavoritesCounts: function() {
+                var self = this;
+                var listFavoritesParams = { 'modules' : [self.moduleDetails.info.module_name] };
+                return self.catalog.list_favorite_counts(listFavoritesParams)
+                    .then(function (counts) {
+                        for(var k=0; k<counts.length; k++) {
+                            var c = counts[k];
+                            var lookup = c.id;
+                            if(c.module_name_lc != 'nms.legacy') {
+                                lookup = c.module_name_lc + '/' + lookup
+                            }
+                            if(self.appLookup[lookup]) {
+                                self.appLookup[lookup].setStarCount(c.count);
+                            }
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+            updateMyFavorites: function() {
+                var self = this
+                if(self.runtime.service('session').isLoggedIn()) {
+                    return self.catalog.list_favorites(self.runtime.service('session').getUsername())
+                        .then(function (favorites) {
+                            self.favoritesList = favorites;
+                            for(var k=0; k<self.favoritesList.length; k++) {
+                                var fav = self.favoritesList[k];
+                                var lookup = fav.id;
+                                if(fav.module_name_lc != 'nms.legacy') {
+                                    lookup = fav.module_name_lc + '/' + lookup
+                                }
+                                if(self.appLookup[lookup]) {
+                                    self.appLookup[lookup].turnOnStar();
+                                }
+                            }
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                }
+            },
 
 
 
@@ -484,14 +567,25 @@ define([
                 var params = { ids: m_names, tag: tag };
                 return self.nms.get_method_brief_info(params)
                     .then(function(info_list) {
-                        self.appList = [];
-
+                        self.appList = []; self.appLookup = [];
                         for(var k=0; k<info_list.length; k++) {
                             // logic to hide/show certain categories
                             if(self.util.skipApp(info_list[k].categories)) continue;
                             
-                            var m = new AppCard('method',info_list[k],tag,self.nms_base_url);
+                            var m = new AppCard('method',info_list[k],tag,self.nms_base_url,
+                                self.toggleFavorite, {catalog:self.catalog, browserWidget:self});
                             self.appList.push(m);
+                        }
+                        for(var a=0; a<self.appList.length; a++) {
+                            // only lookup for methods; apps are deprecated
+                            if(self.appList[a].type==='method') {
+                                if(self.appList[a].info.module_name) {
+                                    var idTokens = self.appList[a].info.id.split('/');
+                                    self.appLookup[idTokens[0].toLowerCase() + '/' + idTokens[1]] = self.appList[a];
+                                } else {
+                                    self.appLookup[self.appList[a].info.id] = self.appList[a];
+                                }
+                            }
                         }
                     })
                     .catch(function (err) {

@@ -74,8 +74,7 @@ define([
 
                 // new style we have a runtime object that gives us everything in the options
                 self.runtime = options.runtime;
-                //console.log(options);
-                console.log(this.runtime.service('session').getUsername());
+                //console.log(this.runtime.service('session').getUsername());
                 self.util = new CatalogUtil();
                 self.setupClients();
 
@@ -106,13 +105,13 @@ define([
 
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
-                    console.log('done loading!');
 
                     self.processData();
 
                     self.renderAppList('name_az');
+
                     self.hideLoading();
-                    console.log('here');
+
                     self.updateFavoritesCounts();
                     self.updateMyFavorites();
                 });
@@ -388,7 +387,6 @@ define([
                 if(appCard.isStarOn()) {
                     context.catalog.remove_favorite(params)
                         .then(function () {
-                            console.log('removed favorite')
                             appCard.turnOffStar();
                             appCard.setStarCount(appCard.getStarCount()-1);
                             context.browserWidget.updateMyFavorites();
@@ -401,7 +399,6 @@ define([
                 } else {
                     context.catalog.add_favorite(params)
                         .then(function () {
-                            console.log('added favorite')
                             appCard.turnOnStar();
                             appCard.setStarCount(appCard.getStarCount()+1);
                             context.browserWidget.updateMyFavorites();
@@ -483,9 +480,6 @@ define([
 
                 return self.catalog.list_basic_module_info(moduleSelection)
                     .then(function (modules) {
-                        //return self.catalog.list_basic_module_info()
-                        //console.log('hello modules');
-                        //console.log(modules);
                         for(var k=0; k<modules.length; k++) {
                             var m = {
                                 info: modules[k],
@@ -507,13 +501,10 @@ define([
                 var listFavoritesParams = { };
                 return self.catalog.list_favorite_counts(listFavoritesParams)
                     .then(function (counts) {
-                        //return self.catalog.list_basic_module_info()
-                        console.log(counts);
-                        //console.log(modules);
                         for(var k=0; k<counts.length; k++) {
                             var c = counts[k];
                             var lookup = c.id;
-                            if(c.module_name_lc) {
+                            if(c.module_name_lc != 'nms.legacy') {
                                 lookup = c.module_name_lc + '/' + lookup
                             }
                             if(self.appLookup[lookup]) {
@@ -533,12 +524,11 @@ define([
                 if(self.runtime.service('session').isLoggedIn()) {
                     return self.catalog.list_favorites(self.runtime.service('session').getUsername())
                         .then(function (favorites) {
-                            console.log(favorites);
                             self.favoritesList = favorites;
                             for(var k=0; k<self.favoritesList.length; k++) {
                                 var fav = self.favoritesList[k];
                                 var lookup = fav.id;
-                                if(fav.module_name_lc) {
+                                if(fav.module_name_lc != 'nms.legacy') {
                                     lookup = fav.module_name_lc + '/' + lookup
                                 }
                                 if(self.appLookup[lookup]) {
@@ -552,7 +542,6 @@ define([
                         });
                 }
             },
-
 
 
             processData: function() {
@@ -575,7 +564,6 @@ define([
                         }
                     }
                 }
-                console.log(self.appLookup)
 
                 self.developers = {};
                 self.inputTypes = {};

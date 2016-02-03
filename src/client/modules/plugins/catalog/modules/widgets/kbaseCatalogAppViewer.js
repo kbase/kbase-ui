@@ -498,6 +498,54 @@ define([
 
 */
 
+            updateFavoritesCounts: function() {
+                var self = this
+                var listFavoritesParams = { };
+                return self.catalog.list_favorite_counts(listFavoritesParams)
+                    .then(function (counts) {
+                        for(var k=0; k<counts.length; k++) {
+                            var c = counts[k];
+                            var lookup = c.id;
+                            if(c.module_name_lc != 'nms.legacy') {
+                                lookup = c.module_name_lc + '/' + lookup
+                            }
+                            if(self.appLookup[lookup]) {
+                                self.appLookup[lookup].setStarCount(c.count);
+                            }
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+            // warning!  will not return a promise if the user is not logged in!
+            updateMyFavorites: function() {
+                var self = this
+                if(self.runtime.service('session').isLoggedIn()) {
+                    return self.catalog.list_favorites(self.runtime.service('session').getUsername())
+                        .then(function (favorites) {
+                            self.favoritesList = favorites;
+                            for(var k=0; k<self.favoritesList.length; k++) {
+                                var fav = self.favoritesList[k];
+                                var lookup = fav.id;
+                                if(fav.module_name_lc != 'nms.legacy') {
+                                    lookup = fav.module_name_lc + '/' + lookup
+                                }
+                                if(self.appLookup[lookup]) {
+                                    self.appLookup[lookup].turnOnStar();
+                                }
+                            }
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                }
+            },
+
+
             renderMethod: function () {
                 var self = this;
                 var m = self.appFullInfo;
