@@ -95,11 +95,12 @@ define([
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
                     //self.render();
-                    self.updateFavoritesCounts();
-
                     self.hideLoading();
                     self.renderMethod();
                     self.renderInfo();
+
+                    // must be called after renderMethod, because it relies on elements existing in the dom
+                    self.updateFavoritesCounts();
                 });
 
 
