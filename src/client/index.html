@@ -4,47 +4,26 @@
         <title>KBase | User Interface ALPHA</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style type="text/css">
-            .errorWidget {
-                border: 1px red solid;
-                border-radius: 4px;
-                padding: 4px;
-                margin: 4px;
-            }
-            .label {
-                font-weight: bold;
-                color: gray;
-                width: 100px;
-                display: inline-block;
-            }
-        </style>
-    </head>
-    <body class="kbase-ui">
-        <div id="root"></div>
-        <script src="/modules/bower_components/requirejs/require.js" data-main="modules/startup"></script>
-    </body>
-    <script>
-      /**
-       * Google analytics injection - creates a "ga" global function
-       *
-       * Might consider making this a module dependency, maybe link it
-       * to the router, so we know what routes folks use.
-       *
-       * Or not.
-       */
-      (function (i, s, o, g, r, a, m) {
-         i['GoogleAnalyticsObject'] = r;
-         i[r] = i[r] || function () {
-            (i[r].q = i[r].q || []).push(arguments)
-         }, i[r].l = 1 * new Date();
-         a = s.createElement(o);
-         m = s.getElementsByTagName(o)[0];
-         a.async = 1;
-         a.src = g;
-         m.parentNode.insertBefore(a, m);
-      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        <script src="/mustard.js"></script>
+    </style>
+</head>
+<body class="kbase-ui">
+    <div id="root"></div>
+    <div id="error"></div>
+    <div id="status"></div>
+    <script src="/modules/bower_components/requirejs/require.js" data-main="modules/startup"></script>
+    <noscript>
+    <h1>Javascript Required</h1>
+    <p>
+        KBase requires a web browser which supports Javascript and has Javascript enabled.
+    </p>
 
-      ga('create', 'UA-48256002-1', 'kbase.us');
-      ga('send', 'pageview');
-    </script>
+    <p>
+        Please consult our documentation for <a href="http://kbase.us/supported-browsers">supported browsers</a>.
+    </p>
+    <p>
+        If you have additional questions or concerns please <a href="http://kbase.us/contact">contact us</a> or email us directly at <a href="mailto:help@kbase.us">help@kbase.us</a>.
+    </p>
+    </noscript>
+</body>    
 </html>

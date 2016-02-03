@@ -7,7 +7,7 @@
  */
 define([
     'jquery',
-    'kb/service/client/NarrativeMethodStore',
+    'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     'plugins/catalog/modules/widgets/kbaseViewSDKRegistrationLog',
     'kb/widget/legacy/authenticatedWidget',
@@ -181,7 +181,7 @@ define([
 
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
-                var $mainPanel = $('<div>').addClass('kbcb-reg-main-panel');
+                var $mainPanel = $('<div>').addClass('container');
                 var $inputPanel = $('<div>');
                 var $logPanel = $('<div>').hide();
                 var $errorPanel = $('<div>').css('color','red').hide();

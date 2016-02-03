@@ -10,11 +10,12 @@ define([
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
+    './app_card',
     'plugins/catalog/modules/widgets/kbaseCatalogRegistration',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
-    function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
+    function ($, NarrativeMethodStore, Catalog, CatalogUtil, AppCard) {
         $.KBWidget({
             name: "KBaseCatalogModuleViewer",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
@@ -124,10 +125,22 @@ define([
                 var info = self.moduleDetails.info;
                 var versions = self.moduleDetails.versions;
 
+                // determine current version
+                var verStrHeader = '(under development)'
+                if(self.moduleDetails.info.release) {
+                    verStrHeader = self.moduleDetails.info.release.version;
+                } else if (self.moduleDetails.beta) {
+                    verStrHeader = 'beta';
+                }
 
                 // HEADER
                 var $header = $('<div>');
-                $header.append($('<h1>').append(info.module_name));
+                $header
+                    .append($('<h1>').css('display','inline')
+                        .append(info.module_name))
+                    .append($('<span>').css({'font-weight':'bold','font-size':'1.2em','margin-left':'0.5em'})
+                        .append(verStrHeader));
+
                 $header.append($('<h4>').append(
                     '<a href="'+info.git_url+'" target="_blank">'+info.git_url+'<a>'));
 
@@ -217,7 +230,7 @@ define([
             // tag=dev/beta/release/version number, version=the actual info
             renderVersion: function(tag, version) {
                 if(tag) {
-                    if(tag!=='release' || tag!=='beta' || tag!=='dev') {
+                    if(tag!=='release' && tag!=='beta' && tag!=='dev') {
                         tag = null;
                     }
                 }
@@ -247,7 +260,6 @@ define([
                         for(var i=0; i<version.narrative_methods.length; i++) {
                             var id = version.narrative_methods[i];
                             if(tag) {
-
                                 $l.append('<li><a href="#appcatalog/app/'+this.moduleDetails.info.module_name+'/'+id+'/'+tag+
                                     '">'+id+'</a></li>');
                             } else {
@@ -394,18 +406,10 @@ define([
                         'max-width': '1000px'
                     });
                 for(var k=0; k<self.appList.length; k++) {
-                    $appListContainer.append(self.appList[k].$div);
+                    $appListContainer.append(self.appList[k].getNewCardDiv());
                 }
                 self.$appsPanel.append($appListContainer);
             },
-
-
-
-
-
-
-
-
 
 
 
@@ -418,11 +422,13 @@ define([
                     this.runtime.getConfig('services.narrative_method_store.url'),
                     { token: this.runtime.service('session').getAuthToken() }
                 );
+                this.nms_base_url = this.runtime.getConfig('services.narrative_method_store.url');
+                this.nms_base_url = this.nms_base_url.substring(0,this.nms_base_url.length-3)
             },
 
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
-                var $mainPanel = $('<div>').addClass('kbcb-mod-main-panel');
+                var $mainPanel = $('<div>').addClass('container');
 
                 var $header = $('<div>').css('margin','1em');
                 var $adminPanel = $('<div>').css('margin','1em');
@@ -471,25 +477,20 @@ define([
                     tag='dev';
                 }
                 for(var m=0; m<m_names.length; m++) {
-                    m_names[m] = self.module_name + '/' + m_names[m];
+                    m_names[m] = self.moduleDetails.info.module_name + '/' + m_names[m];
                 }
 
 
                 var params = { ids: m_names, tag: tag };
                 return self.nms.get_method_brief_info(params)
                     .then(function(info_list) {
-                        //console.log(info_list);
                         self.appList = [];
 
                         for(var k=0; k<info_list.length; k++) {
                             // logic to hide/show certain categories
                             if(self.util.skipApp(info_list[k].categories)) continue;
-                            var m = {
-                                type: 'method',
-                                info: info_list[k],
-                                $div: $('<div>').addClass('kbcb-app')
-                            };
-                            self.util.renderAppCard(m,tag);
+                            
+                            var m = new AppCard('method',info_list[k],tag,self.nms_base_url);
                             self.appList.push(m);
                         }
                     })

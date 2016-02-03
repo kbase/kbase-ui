@@ -114,6 +114,10 @@ body {
     height:100%;
 }
 
+body {
+    overflow-y: scroll;
+}
+
 a:hover, .pointer {
     cursor: hand;
     cursor: pointer;

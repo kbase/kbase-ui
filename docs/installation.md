@@ -133,3 +133,9 @@ Finally we come to the installation of a release. A release is distributed throu
 
 > This section to be done, since we haven't worked this out yet, and do not actually have a release branch.
 
+
+---
+
+[Index](index.md) - [README](../README.md) - [KBase](http://kbase.us)
+
+---

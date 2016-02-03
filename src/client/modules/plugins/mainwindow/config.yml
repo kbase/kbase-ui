@@ -20,12 +20,15 @@ source:
         -
             module: kb_widget_title
             file: titleWidget
+            css: true
         -
             module: kb_widget_buttonbar
             file: buttonbarWidget
+            css: true
         -
             module: kb_widget_logo
             file: logoWidget
+            css: true
         -
             module: kb_widget_menu
             file: menuWidget

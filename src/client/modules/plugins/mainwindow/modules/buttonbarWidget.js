@@ -50,15 +50,19 @@ define([
                     label = '';
                     labelStyle.fontSize = '150%';
                 }
+                
+                buttonAttribs = {
+                    dataButton: buttonDef.name,
+                    disabled: buttonDef.disabled,
+                    class: ['btn', 'btn-' + (buttonDef.style || 'default'), 'navbar-btn', 'kb-nav-btn'].join(' ')
+                };
+                if (buttonDef.toggle) {
+                    buttonAttribs.dataToggle = 'button';
+                }
 
                 if (buttonDef.url) {
                     // a link style button
-                    buttonAttribs = {
-                        dataButton: buttonDef.name,
-                        disabled: buttonDef.disabled,
-                        class: ['btn', 'btn-' + (buttonDef.style || 'default'), 'navbar-btn', 'kb-nav-btn'].join(' '),
-                        href: buttonDef.url
-                    };
+                    buttonAttribs.href = buttonDef.url;
                     if (buttonDef.target) {
                         buttonAttribs.target = buttonDef.target;
                     }
@@ -68,21 +72,16 @@ define([
                     ]);
 
                 } else {
-                    buttonAttribs = {
-                        dataButton: buttonDef.name,
-                        id: w.addDomEvent('click', function (e) {
-                            e.preventDefault();
-                            try {
-                                buttonDef.callback();
-                            } catch (ex) {
-                                console.error('Error running button callback');
-                                console.error(ex);
-                                console.error(buttonDef);
-                            }
-                        }),
-                        disabled: buttonDef.disabled,
-                        class: ['btn', 'btn-' + (buttonDef.style || 'default'), 'navbar-btn', 'kb-nav-btn'].join(' ')
-                    };
+                    buttonAttribs.id = w.addDomEvent('click', function (e) {
+                        e.preventDefault();
+                        try {
+                            buttonDef.callback();
+                        } catch (ex) {
+                            console.error('Error running button callback');
+                            console.error(ex);
+                            console.error(buttonDef);
+                        }
+                    });
                     button = button(buttonAttribs, [
                         div({class: 'fa fa-' + buttonDef.icon, style: labelStyle}),
                         label
@@ -96,7 +95,7 @@ define([
 
             function renderButtonBar(w) {
                 var span = html.tag('span'),
-                    content = span({class: 'navbar-buttons'}, [
+                    content = span({class: 'navbar-buttons kb-widget-buttonbar'}, [
                         w.get('buttons').list.map(function (buttonDef) {
                             switch (buttonDef.type) {
                                 case 'button':

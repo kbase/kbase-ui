@@ -47,21 +47,21 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 0.1.3
+        version: 0.1.6
         cwd: src/plugin
         source:
             bower: {}
     -
         name: dashboard
         globalName: kbase-ui-plugin-dashboard
-        version: 0.1.2
+        version: 0.1.3
         cwd: src/plugin
         source:
             bower: {}
     -
         name: databrowser
         globalName: kbase-ui-plugin-databrowser
-        version: 0.1.1
+        version: 0.1.2
         cwd: src/plugin
         source:
             bower: {}
@@ -75,7 +75,7 @@ plugins:
     -
         name: datawidgets
         globalName: kbase-ui-plugin-datawidgets
-        version: 0.1.3
+        version: 0.1.4
         cwd: src/plugin
         source:
             bower: {}
@@ -91,10 +91,24 @@ plugins:
     -
         name: dataapidemo
         globalName: kbase-ui-plugin-data-api-demo
+        version: 0.1.4
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: shockbrowser
+        globalName: kbase-ui-plugin-shockbrowser
         version: 0.1.1
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: jobbrowser
+        globalName: kbase-ui-plugin-jobbrowser
+        version: 0.1.1
+        cwd: src/plugin
+        source:
+            bower: {}            
 
 # Copy these directories into the modules
 # There are two forms, as for plugins.
@@ -110,16 +124,16 @@ modules:
             bower: {}
     -
         globalName: kbase-common-js
-        version: 0.1.3
-        source:
-            bower: {}
-    -
-        globalName: kbase-service-clients-js
         version: 0.1.6
         source:
             bower: {}
     -
-        globalName: kbase-data-api-js-clients
-        version: 0.1.7
+        globalName: kbase-service-clients-js
+        version: 0.1.11
+        source:
+            bower: {}
+    -
+        globalName: kbase-data-api-client-js
+        version: 0.1.10
         source:
             bower: {}

@@ -10,10 +10,11 @@ define([
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
+    'kb/widget/legacy/kbasePrompt',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
-    function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
+    function ($, NarrativeMethodStore, Catalog, CatalogUtil, KBasePrompt) {
         $.KBWidget({
             name: "KBaseCatalogAppViewer",
             parent: "kbaseAuthenticatedWidget",
@@ -28,7 +29,7 @@ define([
             // clients to the catalog service and the NarrativeMethodStore
             catalog: null,
             nms: null,
-            imageUrl: null,
+            nms_base_url: null,
 
             // narrative method/app info and spec
             appFullInfo: null,
@@ -67,6 +68,8 @@ define([
 
 
                 // initialize and add the main panel
+                //self.$elem.addClass('container');
+
                 self.$loadingPanel = self.util.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
                 var mainPanelElements = self.initMainPanel();
@@ -111,8 +114,8 @@ define([
                     this.runtime.getConfig('services.narrative_method_store.url'),
                     { token: this.runtime.service('session').getAuthToken() }
                 );
-                this.imageUrl = this.runtime.getConfig('services.narrative_method_store.url');
-                this.imageUrl = this.imageUrl.substring(0,this.imageUrl.length-3);
+                this.nms_base_url = this.runtime.getConfig('services.narrative_method_store.url');
+                this.nms_base_url = this.nms_base_url.substring(0,this.nms_base_url.length-3)
             },
 
 
@@ -213,7 +216,7 @@ define([
             },
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
-                var $mainPanel = $('<div>').addClass('kbcb-mod-main-panel');
+                var $mainPanel = $('<div>').addClass('container');
 
                 var $header = $('<div>').css('margin','1em');
                 var $screenshotsPanel = $('<div>').css('margin','1em');
@@ -392,7 +395,7 @@ define([
                                     .on('click', function (e) {
 
                                         var $img = $.jqElem('img')
-                                            .attr('src', self.imageUrl + s.url)
+                                            .attr('src', self.nms_base_url + s.url)
                                             .css('width', '100%');
 
                                         var $prompt = $.jqElem('div').kbasePrompt({body: $img});
@@ -405,7 +408,7 @@ define([
                                     })
                                     .append(
                                         $.jqElem('img')
-                                        .attr('src', self.imageUrl + s.url)
+                                        .attr('src', self.nms_base_url + s.url)
                                         .attr('width', '300')
                                         )
                                     );
@@ -508,19 +511,33 @@ define([
                 var $logoSpan = $('<div>').addClass('kbcb-app-page-logo');
                 // add actual logos here
                 $logoSpan.append('<div class="fa-stack fa-3x"><i class="fa fa-square fa-stack-2x method-icon"></i><i class="fa fa-inverse fa-stack-1x fa-cube"></i></div>')
+                
+                // add actual logos here
+                if(m.icon && self.nms_base_url) {
+                    if(m.icon.url) {
+                        $logoSpan.html($('<img src="'+self.nms_base_url + m.icon.url+'">')
+                                            .css({'max-width':'85%', 'padding':'6px 3px 3px 8px',
+                                                  'max-height': '85%'}));
+                    }
+                }
+
+
+
                 var $titleSpan = $('<div>').addClass('kbcb-app-page-title-panel');
                 
 
                 var versiontag = '';
                 if(self.tag) {
                     if(self.tag=='dev') {
-                        versiontag = ' (dev version)'
+                        versiontag = ' (under development)'
                     } else if(self.tag=='beta') {
-                        versiontag = ' (beta)'
+                        versiontag = ' beta'
                     }
                 }
 
-                $titleSpan.append($('<div>').addClass('kbcb-app-page-title').append(m.name + versiontag));
+                $titleSpan.append($('<div>').addClass('kbcb-app-page-title').append(m.name).append(
+                    $('<span>').css({'font-size':'0.5em','margin-left':'0.5em'})
+                        .append(versiontag)));
                 
 
                 if(self.moduleDetails.info) {
@@ -534,10 +551,6 @@ define([
                     for(var k=0; k<m.authors.length; k++) {
                         if(k>=1) {
                             $authorDiv.append(', ');
-                        }
-                        if(k>=2) {
-                            $authorDiv.append(' +'+(m.authors.length-2)+' more');
-                            break;
                         }
                         $authorDiv.append($('<a href="#people/'+m.authors[k]+'">')
                                             .append(m.authors[k])
@@ -644,7 +657,7 @@ define([
                                     .on('click', function (e) {
 
                                         var $img = $.jqElem('img')
-                                            .attr('src', self.imageUrl + s.url)
+                                            .attr('src', self.nms_base_url + s.url)
                                             .css('width', '100%')
                                             ;
 
@@ -666,7 +679,7 @@ define([
                                     })
                                     .append(
                                         $.jqElem('img')
-                                        .attr('src', self.imageUrl + s.url)
+                                        .attr('src', self.nms_base_url + s.url)
                                         .attr('width', '300')
                                         )
                                     )

@@ -2,19 +2,27 @@ define([
     'bluebird',
     'kb/common/router',
     'kb/common/lang'
-], function (Promise, routerFactory, lang) {
+], function (Promise, Router, lang) {
     function factory(config) {
         var runtime = config.runtime,
-            router = routerFactory.make(config);
+            router = Router.make(config);
 
         function doRoute() {
-            var handler = router.findCurrentRoute();
-            if (!handler) {
-                runtime.send('app', 'route-not-found');
+            var handler;
+            try {
+                handler = router.findCurrentRoute();
+            } catch (ex) {
+                console.error(ex);
+                if (ex instanceof Router.NotFoundException) {
+                    runtime.send('app', 'route-not-found', ex);
+                    return;
+                } else {
+                    throw ex;
+                }
             }
             if (handler.route.authorization) {
                 if (!runtime.getService('session').isLoggedIn()) {
-                    var loginParams = {}
+                    var loginParams = {};
                     if (handler.request.path) {
                         loginParams.nextrequest = JSON.stringify(handler.request);
                     }

@@ -11,6 +11,11 @@ bowerFiles:
             - bluebird.js
         bowerComponent: true
     -
+        name: knockout
+        cwd: dist
+        src: knockout.js
+        bowerComponent: true
+    -
         name: bootstrap
         cwd: dist
         src: "**/*"
@@ -127,8 +132,9 @@ bowerFiles:
             - postal.js        
         bowerComponent: true
     -
-        name: thrift-binary-protocol
-        cwd: src/
-        src: "*.js"
+        # This one is an installable package, kbase style, so we just
+        # copy the whole thing in, and the install.yml says what to do
+        name: kbase-data-client-js
+        src: "**/*"
         bowerComponent: true        
             

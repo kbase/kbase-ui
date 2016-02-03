@@ -33,8 +33,8 @@ var Promise = require('bluebird'),
     glob = Promise.promisify(require('glob').Glob),
     ini = require('ini'),
     underscore = require('underscore'),
-    dir = Promise.promisifyAll(require('node-dir'));
-
+    dir = Promise.promisifyAll(require('node-dir')),
+    util = require('util');
 
 // UTILS
 
@@ -729,7 +729,7 @@ function makeDistBuild(state) {
 
     return fs.copyAsync(root.concat(['build']).join('/'), root.concat(['dist']).join('/'))
         .then(function () {
-            glob(root.concat(['dist', 'client', 'modules', '**', '*.js']).join('/'))
+            return glob(root.concat(['dist', 'client', 'modules', '**', '*.js']).join('/'))
                 .then(function (matches) {
                     return Promise.all(matches.map(function (match) {
                         var result = uglify.minify(match);
@@ -882,7 +882,7 @@ function main(type) {
         })
 
 
-// From here, we can make a dev build, make a release
+        // From here, we can make a dev build, make a release
         .then(function (state) {
             return mutant.copyState(state);
         })
@@ -901,12 +901,25 @@ function main(type) {
             }
             return state;
         })
+        
+        // Here we handle any developer links.
+        //.then(function (state) {
+        //    return mutant.copyState(state);
+        //})
+        //.then(function (state) {
+        //    
+        //})
+        
         .then(function (state) {
             return mutant.finish(state);
         })
         .catch(function (err) {
             console.log('ERROR');
-            console.log(err);
+            // console.log(err);
+            console.log(util.inspect(err, {
+                showHidden: false,
+                depth: 3
+            }));
             console.log(err.stack);
         });
 }

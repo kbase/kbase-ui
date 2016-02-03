@@ -1,8 +1,9 @@
 /*global define*/
 /*jslint white: true*/
 define([
-     'bluebird',
+    'bluebird',
     'app/App',
+    'app/googleAnalytics',
     'kb/common/dom',
     'yaml!config/plugin.yml',
     'yaml!config/settings.yml',
@@ -13,7 +14,7 @@ define([
     'css!app/styles/kb-icons',
     'css!app/styles/kb-ui',
     'css!app/styles/kb-datatables'
-], function (Promise, App, dom, pluginConfig, clientConfig, serviceConfig) {
+], function (Promise, App, ga, dom, pluginConfig, clientConfig, serviceConfig) {
     'use strict';
     Promise.config({
         warnings: true,
@@ -27,7 +28,8 @@ define([
         return;
         // dom.setHtml(dom.qs('#status'), 'started');
     }
-    displayStatus('running');
+    ga.create();
+    ga.send();
 
     return {
         start: function () {

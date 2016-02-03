@@ -8,9 +8,7 @@ define([
     'use strict';
 
     function CatalogUtil() {
-        this.doStuff = function() {
-            alert('stuff');
-        }
+
         // edited from: http://stackoverflow.com/questions/3177836/how-to-format-time-since-xxx-e-g-4-minutes-ago-similar-to-stack-exchange-site
         this.getTimeStampStr = function (objInfoTimeStamp) {
             var date = new Date(objInfoTimeStamp);
@@ -81,132 +79,6 @@ define([
              
         };
 
-
-
-        /* rendering methods that are shared in multiple places */
-
-        this.renderAppCard = function(app, tag) {
-            //console.log(app)
-
-            // Main Container
-            var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover');
-
-            // HEADER - contains logo, title, module link, authors
-            var $topDiv = $('<div>').addClass('clearfix kbcb-app-card-header');
-            var $logoSpan = $('<div>').addClass('col-xs-4 kbcb-app-card-logo');
-            // add actual logos here
-            $logoSpan.append('<div class="fa-stack fa-3x"><i class="fa fa-square fa-stack-2x method-icon"></i><i class="fa fa-inverse fa-stack-1x fa-cube"></i></div>')
-            var $titleSpan = $('<div>').addClass('col-xs-8 kbcb-app-card-title-panel');
-                
-            $titleSpan.append($('<div>').addClass('kbcb-app-card-title').append(app.info.name));
-            if(app.info['module_name']) {
-                $titleSpan.append($('<div>').addClass('kbcb-app-card-module').append(
-                                        $('<a href="#appcatalog/module/'+app.info.module_name+'">')
-                                            .append(app.info.module_name)
-                                            .on('click',function() {
-                                                // have to stop propagation so we don't go to the app page first
-                                                event.stopPropagation();
-                                            })));
-            }
-
-            if(app.type==='method') {
-                if(app.info.authors.length>0) {
-                    var $authorDiv = $('<div>').addClass('kbcb-app-card-authors').append('by ');
-                    for(var k=0; k<app.info.authors.length; k++) {
-                        if(k>=1) {
-                            $authorDiv.append(', ');
-                        }
-                        if(k>=2) {
-                            $authorDiv.append(' +'+(app.info.authors.length-2)+' more');
-                            break;
-                        }
-                        $authorDiv.append($('<a href="#people/'+app.info.authors[k]+'">')
-                                            .append(app.info.authors[k])
-                                            .on('click',function() {
-                                                // have to stop propagation so we don't go to the app page first
-                                                event.stopPropagation();
-                                            }));
-                    }
-                    $titleSpan.append($authorDiv);
-                }
-            }
-
-
-            $appDiv.append(
-                $topDiv
-                    .append($logoSpan)
-                    .append($titleSpan));
-
-
-            // SUBTITLE - on mouseover of info, show subtitle information
-            var $subtitle = $('<div>').addClass('kbcb-app-card-subtitle').append(app.info.subtitle).hide()
-            $appDiv.append($subtitle);
-
-
-            // FOOTER - stars, number of runs, and info mouseover area
-            var $footer = $('<div>').addClass('clearfix kbcb-app-card-footer');
-
-
-            var $starDiv = $('<div>').addClass('col-xs-3').css('text-align','left');
-            var $star = $('<span>').addClass('kbcb-star').append('<i class="fa fa-star"></i>');
-            $star.on('click', function() {
-                event.stopPropagation();
-                alert('You have favorited this app - currently does nothing');
-            });
-            var favoriteCount = Math.floor(Math.random()*100);
-            $footer.append($starDiv.append($star).append('&nbsp;'+favoriteCount));
-            $starDiv.tooltip({title:'A favorite method of '+favoriteCount+' people.', placement:'bottom',
-                                    delay:{show: 400, hide: 40}});
-
-
-            var nRuns = Math.floor(Math.random()*10000);
-            var $nRuns = $('<div>').addClass('col-xs-4').css('text-align','left');
-            $nRuns.append($('<span>').append('<i class="fa fa-share"></i>'));
-            $nRuns.append('&nbsp;'+nRuns);
-            $nRuns.tooltip({title:'Run in a narrative '+nRuns+' times.', placement:'bottom',
-                                    delay:{show: 400, hide: 40}});
-
-            $footer.append($nRuns);
-
-            var $moreInfoDiv = $('<div>').addClass('col-xs-5').addClass('kbcb-info').css('text-align','right');
-            $moreInfoDiv
-                .on('mouseenter', function() {
-                    $topDiv.hide();
-                    $subtitle.fadeIn('fast');
-                })
-                .on('mouseleave', function() {
-                    $subtitle.hide();
-                    $topDiv.fadeIn('fast');
-                });
-            $moreInfoDiv.append($('<span>').append('<i class="fa fa-info"></i>'));
-            $footer.append($moreInfoDiv);
-            $appDiv.append($footer);
-
-
-            $appDiv.on('click', function() {
-                if(app.type === 'method') {
-                    if(app.info.module_name) {
-                        // module name right now is encoded in the ID
-                        //window.location.href = '#appcatalog/app/'+app.info.module_name+'/'+app.info.id;
-                        if(tag) {
-                            window.location.href = '#appcatalog/app/'+app.info.id + '/'+tag;
-                        } else {
-                            window.location.href = '#appcatalog/app/'+app.info.id;
-                        }
-                    } else {
-                        // legacy method, encoded as l.m
-                        window.location.href = '#appcatalog/app/l.m/'+app.info.id;
-                    }
-                } else {
-                    // apps still go to old style page
-                    window.location.href = '#narrativestore/app/'+app.info.id;
-                }
-            });
-
-            // put it all in a container so we can control margins
-            var $appCardContainer = $('<div>').addClass('kbcb-app-card-container');
-            app.$div = $appCardContainer.append($appDiv);
-        };
 
         this.skipApp = function(categories) {
             for(var i=0; i<categories.length; i++) {

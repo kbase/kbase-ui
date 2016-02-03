@@ -37,8 +37,8 @@ define([
                         // w.setState('updated', new Date());
                     })
                     .catch(function (err) {
-                        console.log('ERROR');
-                        console.log(err);
+                        console.error('ERROR');
+                        console.error(err);
                         alert('Error signing out (check console for details)');
                     });
             }

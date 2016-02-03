@@ -32,7 +32,7 @@ docsite:
 menus:
     authenticated: 
         main: [narrative, search, dashboard]
-        developer: [databrowser, typebrowser, dataapidemo, test, catalog, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
+        developer: [databrowser, typebrowser, dataapidemo, test, appcatalog, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
         help: [about-kbase, contact-kbase]
     unauthenticated: 
         main: [search]

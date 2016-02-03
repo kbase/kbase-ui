@@ -80,8 +80,6 @@ define([
 
         // Plugins
         function installPlugins(plugins) {
-            console.log('installing plugins');
-            console.log(plugins);
             return pluginManager.installPlugins(plugins);
         }
 
@@ -128,6 +126,10 @@ define([
             }
             return obj[method].apply(obj, args);
         }
+        
+        function navigate(path) {
+            send('app', 'navigate', path);
+        }
 
         var api = {
             getConfig: getConfig,
@@ -142,6 +144,8 @@ define([
             snd: snd,
             rcv: rcv,
             urcv: urcv,
+            // navigation
+            navigate: navigate,           
             // Services
             addService: function () {
                 return proxyMethod(appServiceManager, 'addService', arguments);
@@ -180,7 +184,7 @@ define([
             });
             appServiceManager.addService('route', {
                 runtime: api,
-                notFoundRoute: {redirect: {path: 'message/notfound'}},
+                // notFoundRoute: {redirect: {path: 'message/notfound'}},
                 defaultRoute: {redirect: {path: 'dashboard'}}
             });
             appServiceManager.addService('menu', {
@@ -212,6 +216,16 @@ define([
             receive('session', 'loggedout', function () {
                 send('app', 'navigate', 'goodbye');
             });
+            
+            receive('app', 'route-not-found', function (info) {
+                // alert('help, the route was not found!: ' + route.path);
+                send('app', 'navigate', {
+                    path: 'message/error/notfound',
+                    params: {
+                        info: JSON.stringify(info)
+                    }
+                });
+            });
 
             // UI should be a service...
 
@@ -222,8 +236,8 @@ define([
                         if (arg.node) {
                             arg.node.innerHTML = arg.content;
                         } else {
-                            console.log('ERROR');
-                            console.log('Invalid node for ui/render');
+                            console.error('ERROR');
+                            console.error('Invalid node for ui/render');
                         }
                     }
                 });
@@ -234,20 +248,16 @@ define([
 
             return appServiceManager.loadServices()
                 .then(function () {
-                    console.log('Services loaded');
                     return installPlugins(config.plugins);
                 })
                 .then(function () {
-                    console.log('Root widget mounted');
                     return appServiceManager.startServices();
                 })
                 .then(function () {
-                    console.log('Plugins installed');
                     return mountRootWidget('root', api);
                 })
                 .then(function () {
                     // getService('heartbeat').start();
-                    console.log('Services started.');
                     // this is a hack for now ... should be a method for service
                     // events to be sent out post root widget mounting.
                     if (appServiceManager.getService('session').isLoggedIn()) {
