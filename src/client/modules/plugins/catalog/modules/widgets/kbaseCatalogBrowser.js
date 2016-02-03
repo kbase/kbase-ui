@@ -108,12 +108,18 @@ define([
 
                     self.processData();
 
-                    self.renderAppList('name_az');
+                    self.updateFavoritesCounts()
+                        .then(function() {
+                            self.hideLoading();
+                            self.renderAppList('favorites');
+                            return self.updateMyFavorites();
+                        }).catch(function (err) {
+                            self.hideLoading();
+                            self.renderAppList('name_az');
+                            console.error('ERROR');
+                            console.error(err);
+                        });
 
-                    self.hideLoading();
-
-                    self.updateFavoritesCounts();
-                    self.updateMyFavorites();
                 });
 
                 return this;
@@ -163,6 +169,8 @@ define([
                 $content.append($ctrList);
 
                 // ORGANIZE BY
+                var $obMyFavs = $('<a>').append('My Favorites')
+                                    .on('click', function() {self.renderAppList('my_favorites')});
                 var $obFavs = $('<a>').append('Favorites Count')
                                     .on('click', function() {self.renderAppList('favorites')});
                 var $obRuns = $('<a>').append('Run Count')
@@ -187,6 +195,8 @@ define([
 
                 $organizeBy
                     .append($('<ul>').addClass('dropdown-menu')
+                        .append($('<li>')
+                            .append($obMyFavs))
                         .append($('<li>')
                             .append($obFavs))
                         .append($('<li>')
@@ -417,7 +427,7 @@ define([
                 var self = this;
 
                 // determine which set of methods to fetch
-                var tag='dev'; // default is dev; it should be 'release'
+                var tag='release'; // default is to show only 'release' tagged modules
                 if(self.options.tag) {
                     tag = self.options.tag;
                     if(tag!=='dev' && tag!=='beta' && tag!=='release') {
@@ -436,10 +446,8 @@ define([
                             if(self.util.skipApp(methods[k].categories)) continue;
 
                             var m = new AppCard('method',methods[k],tag,self.nms_base_url, 
-                                self.toggleFavorite, {catalog:self.catalog, browserWidget:self});
-                            if(!self.runtime.service('session').isLoggedIn()) {
-                                m.deactivateStar();
-                            }
+                                self.toggleFavorite, {catalog:self.catalog, browserWidget:self},
+                                self.runtime.service('session').isLoggedIn());
                             self.appList.push(m);
                         }
                     })
@@ -612,11 +620,6 @@ define([
 
                 self.$appListPanel.children().detach();
 
-                if(!self.options.tag) {
-                    self.$appListPanel.append('<i>Note: temporarily showing dev versions</i><br>')
-                }
-
-
                 // no organization, so show all
                 if(!organizeBy) { return; }
 
@@ -782,9 +785,65 @@ define([
 
                 }
 
-                else if (organizeBy=='favorites') {
-                    self.$appListPanel.append('<span>under construction</span>');
+                else if (organizeBy=='my_favorites') {
+                    // sort by number of stars, then by app name
+                    self.appList.sort(function(a,b) {
+                        var aStars = a.getStarCount();
+                        var bStars = b.getStarCount();
+                        if(aStars>bStars) return -1;
+                        if(bStars>aStars) return 1;
+                        var aName = a.info.name.toLowerCase();
+                        var bName = b.info.name.toLowerCase();
+                        if(aName<bName) return -1;
+                        if(aName>bName) return 1;
+                        return 0;
+                    });
+                    var $mySection = $('<div>').addClass('catalog-section');
+                    var $myDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                    $mySection.append(
+                        $('<div>').css({'color':'#777'})
+                            .append($('<h4>').append('My Favorites')));
+                    $mySection.append($myDiv);
+                    self.$appListPanel.append($mySection);
 
+                    var $otherSection = $('<div>').addClass('catalog-section');
+                    var $otherDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                    $otherSection.append(
+                        $('<div>').css({'color':'#777'})
+                            .append($('<h4>').append('Everything Else')));
+                    $otherSection.append($otherDiv);
+                    self.$appListPanel.append($otherSection);
+                    for(var k=0; k<self.appList.length; k++) {
+                        self.appList[k].clearCardsAddedCount();
+                        if(self.appList[k].isStarOn()) {
+                            $myDiv.append(self.appList[k].getNewCardDiv());
+                        } else {
+                            $otherDiv.append(self.appList[k].getNewCardDiv());
+                        }
+                    }
+
+                }
+
+
+                else if (organizeBy=='favorites') {
+                    // sort by number of stars, then by app name
+                    self.appList.sort(function(a,b) {
+                        var aStars = a.getStarCount();
+                        var bStars = b.getStarCount();
+                        if(aStars>bStars) return -1;
+                        if(bStars>aStars) return 1;
+                        var aName = a.info.name.toLowerCase();
+                        var bName = b.info.name.toLowerCase();
+                        if(aName<bName) return -1;
+                        if(aName>bName) return 1;
+                        return 0;
+                    });
+                    var $listContainer = $('<div>').css({'overflow':'auto', 'padding':'0 0 2em 0'});
+                    for(var k=0; k<self.appList.length; k++) {
+                        self.appList[k].clearCardsAddedCount();
+                        $listContainer.append(self.appList[k].getNewCardDiv());
+                    }
+                    self.$appListPanel.append($listContainer);
                 }
 
                 else if (organizeBy=='runs') {

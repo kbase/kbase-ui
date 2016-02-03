@@ -15,7 +15,7 @@ define([
     //      module_name:
     //      ...
     //     
-    function AppCard(type, info, tag, nms_base_url, favoritesCallback, favoritesCallbackParams) {
+    function AppCard(type, info, tag, nms_base_url, favoritesCallback, favoritesCallbackParams, isLoggedIn) {
 
         this.$divs = [];
         this.info = info;
@@ -23,6 +23,8 @@ define([
         this.tag = tag;
         this.nms_base_url = nms_base_url;
         this.cardsAdded = 0;
+
+        this.isLoggedIn = isLoggedIn;
 
         this.favoritesCallback = favoritesCallback;
         this.favoritesCallbackParams = favoritesCallbackParams;
@@ -207,18 +209,20 @@ define([
 
             if(type==='method') {
                 var $starDiv = $('<div>').addClass('col-xs-3').css('text-align','left');
-                var $star = $('<span>').addClass('kbcb-star kbcb-star-nonfavorite').append('<i class="fa fa-star"></i>');
-                if(this.deactivatedStar) { $star.removeClass('kbcb-star-nonfavorite'); }
+                var $star = $('<span>').addClass('kbcb-star').append('<i class="fa fa-star"></i>');
                 var self = this;
-                $star.on('click', function() {
-                    event.stopPropagation();
-                    if(!self.deactivatedStar && self.favoritesCallback) {
-                        self.favoritesCallback(self.info, self.favoritesCallbackParams)
-                    }
-                });
-                var $starCount = $('<span>').addClass('kbcb-star-count');
-                $starDiv.tooltip({title:'Click on the star to add/remove from your favorites', placement:'right',
+                if(self.isLoggedIn) {
+                    $star.addClass('kbcb-star-nonfavorite');
+                    $star.on('click', function() {
+                        event.stopPropagation();
+                        if(!self.deactivatedStar && self.favoritesCallback) {
+                            self.favoritesCallback(self.info, self.favoritesCallbackParams)
+                        }
+                    });
+                    $starDiv.tooltip({title:'Click on the star to add/remove from your favorites', placement:'right',
                                         delay:{show: 400, hide: 40}});
+                }
+                var $starCount = $('<span>').addClass('kbcb-star-count');
                 if(this.starCount) { $starCount.html('&nbsp;' + this.starCount); }
                 $footer.append($starDiv.append($star).append($starCount));
                 

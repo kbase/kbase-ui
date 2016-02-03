@@ -575,7 +575,8 @@ define([
                             if(self.util.skipApp(info_list[k].categories)) continue;
                             
                             var m = new AppCard('method',info_list[k],tag,self.nms_base_url,
-                                self.toggleFavorite, {catalog:self.catalog, browserWidget:self});
+                                self.toggleFavorite, {catalog:self.catalog, browserWidget:self},
+                                self.runtime.service('session').isLoggedIn());
                             self.appList.push(m);
                         }
                         for(var a=0; a<self.appList.length; a++) {

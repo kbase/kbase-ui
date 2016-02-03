@@ -508,7 +508,6 @@ define([
             updateFavoritesCounts: function() {
                 var self = this;
                 var list_app_favorites = { };
-                console.log(self)
                 if(self.isLegacyMethod) {
                     list_app_favorites['id'] = self.appFullInfo.id;
                 } else if(self.isLegacyApp) {
@@ -518,11 +517,8 @@ define([
                     list_app_favorites['module_name'] = self.moduleDetails.info.module_name;
                 }
 
-                console.log(list_app_favorites);
-
                 return self.catalog.list_app_favorites(list_app_favorites)
                     .then(function (users) {
-                        console.log(users);
                         self.setStarCount(users.length);
                          if(self.runtime.service('session').isLoggedIn()) {
                             var me = self.runtime.service('session').getUsername();
@@ -735,15 +731,18 @@ define([
 
 
                 var $starDiv = $('<div>').css('text-align','left');
-                var $star = $('<span>').addClass('kbcb-star kbcb-star-nonfavorite').append('<i class="fa fa-star"></i>');
-                $star.on('click', function() {
-                    event.stopPropagation();
-                    self.starClick();
-                });
+                var $star = $('<span>').addClass('kbcb-star').append('<i class="fa fa-star"></i>');
+                if(self.runtime.service('session').isLoggedIn()) {
+                    $star.addClass('kbcb-star-nonfavorite');
+                    $star.on('click', function() {
+                        event.stopPropagation();
+                        self.starClick();
+                    });
+                    $starDiv.tooltip({title:'Click on the star to add/remove from your favorites', placement:'right',
+                                        delay:{show: 400, hide: 40}});
+                }
                 var $starCount = $('<span>').addClass('kbcb-star-count');
                 $starDiv.append($star).append($starCount);
-                $starDiv.tooltip({title:'Click on the star to add/remove from your favorites', placement:'right',
-                                        delay:{show: 400, hide: 40}});
 
 
                 var nRuns = Math.floor(Math.random()*10000);
