@@ -95,6 +95,8 @@ define([
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
                     //self.render();
+                    self.updateFavoritesCounts();
+
                     self.hideLoading();
                     self.renderMethod();
                     self.renderInfo();
@@ -225,6 +227,9 @@ define([
                 var $publicationsPanel = $('<div>').css('margin','1em');
                 var $infoPanel = $('<div>').css('margin','1em');
 
+                $mainPanel.append($('<div>').addClass('kbcb-back-link')
+                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                
                 $mainPanel
                     .append($header)
                     .append($screenshotsPanel)
@@ -498,21 +503,37 @@ define([
 
 */
 
+            // This should be refactored, but this is the quick fix to get this working
+            // TODO: pull out the star stuff as a separate widget, and add it here
             updateFavoritesCounts: function() {
-                var self = this
-                var listFavoritesParams = { };
-                return self.catalog.list_favorite_counts(listFavoritesParams)
-                    .then(function (counts) {
-                        for(var k=0; k<counts.length; k++) {
-                            var c = counts[k];
-                            var lookup = c.id;
-                            if(c.module_name_lc != 'nms.legacy') {
-                                lookup = c.module_name_lc + '/' + lookup
-                            }
-                            if(self.appLookup[lookup]) {
-                                self.appLookup[lookup].setStarCount(c.count);
+                var self = this;
+                var list_app_favorites = { };
+                console.log(self)
+                if(self.isLegacyMethod) {
+                    list_app_favorites['id'] = self.appFullInfo.id;
+                } else if(self.isLegacyApp) {
+                    return;
+                } else {
+                    list_app_favorites['id'] = self.appFullInfo.id.split('/')[1];
+                    list_app_favorites['module_name'] = self.moduleDetails.info.module_name;
+                }
+
+                console.log(list_app_favorites);
+
+                return self.catalog.list_app_favorites(list_app_favorites)
+                    .then(function (users) {
+                        console.log(users);
+                        self.setStarCount(users.length);
+                         if(self.runtime.service('session').isLoggedIn()) {
+                            var me = self.runtime.service('session').getUsername();
+                            for(var u=0; u<users.length; users++) {
+                                if(users[u].user == me) {
+                                    self.onStar = true;
+                                    self.$headerPanel.find('.kbcb-star').removeClass('kbcb-star-nonfavorite').addClass('kbcb-star-favorite');
+                                }
                             }
                         }
+
                     })
                     .catch(function (err) {
                         console.error('ERROR');
@@ -522,7 +543,7 @@ define([
 
             // warning!  will not return a promise if the user is not logged in!
             updateMyFavorites: function() {
-                var self = this
+                var self = this;
                 if(self.runtime.service('session').isLoggedIn()) {
                     return self.catalog.list_favorites(self.runtime.service('session').getUsername())
                         .then(function (favorites) {
@@ -537,6 +558,94 @@ define([
                                     self.appLookup[lookup].turnOnStar();
                                 }
                             }
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                }
+            },
+
+            onStar: false,
+            starCount: null,
+            getStarCount: function(count) {
+                if(this.starCount) return this.starCount;
+                return 0;
+            },
+            setStarCount: function(count) {
+                this.starCount = count;
+                if(this.starCount<=0) { this.starCount = null; }
+                if(this.starCount) {
+                    this.$headerPanel.find('.kbcb-star-count').html(count);
+                } else {
+                    this.$headerPanel.find('.kbcb-star-count').empty();
+                }
+            },
+
+            starClick: function() {
+                var self = this;
+                var params = { };
+                if(self.isLegacyMethod) {
+                    params['id'] = self.appFullInfo.id;
+                } else if(self.isLegacyApp) {
+                    return;
+                } else {
+                    params['id'] = self.appFullInfo.id.split('/')[1];
+                    params['module_name'] = self.moduleDetails.info.module_name;
+                }
+                // check if is a favorite
+                if(self.onStar) {
+                    self.catalog.remove_favorite(params)
+                        .then(function () {
+                            self.onStar = false;
+                            self.$headerPanel.find('.kbcb-star').removeClass('kbcb-star-favorite').addClass('kbcb-star-nonfavorite');
+                            self.setStarCount(self.getStarCount()-1);
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                } else {
+                    self.catalog.add_favorite(params)
+                        .then(function () {
+                            self.onStar = true;
+                            self.$headerPanel.find('.kbcb-star').removeClass('kbcb-star-nonfavorite').addClass('kbcb-star-favorite');
+                            self.setStarCount(self.getStarCount()+1);
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                }
+            },
+
+
+            toggleFavorite: function(info, context) {
+                var appCard = this;
+                var params = {};
+                if(info.module_name) {
+                    params['module_name'] = info.module_name;
+                    params['id'] = info.id.split('/')[1]
+                } else {
+                    params['id'] = info.id;
+                }
+
+                // check if is a favorite
+                if(appCard.isStarOn()) {
+                    context.catalog.remove_favorite(params)
+                        .then(function () {
+                            appCard.turnOffStar();
+                            appCard.setStarCount(appCard.getStarCount()-1);
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                        });
+                } else {
+                    context.catalog.add_favorite(params)
+                        .then(function () {
+                            appCard.turnOnStar();
+                            appCard.setStarCount(appCard.getStarCount()+1);
                         })
                         .catch(function (err) {
                             console.error('ERROR');
@@ -626,15 +735,15 @@ define([
 
 
                 var $starDiv = $('<div>').css('text-align','left');
-                var $star = $('<span>').addClass('kbcb-star').append('<i class="fa fa-star"></i>');
+                var $star = $('<span>').addClass('kbcb-star kbcb-star-nonfavorite').append('<i class="fa fa-star"></i>');
                 $star.on('click', function() {
                     event.stopPropagation();
-                    alert('You have favorited this app - currently does nothing');
+                    self.starClick();
                 });
-                var favoriteCount = Math.floor(Math.random()*100);
-                $starDiv.append($star).append('&nbsp;'+favoriteCount);
-                $starDiv.tooltip({title:'A favorite method of '+favoriteCount+' people.', placement:'bottom',
-                                    delay:{show: 400, hide: 40}});
+                var $starCount = $('<span>').addClass('kbcb-star-count');
+                $starDiv.append($star).append($starCount);
+                $starDiv.tooltip({title:'Click on the star to add/remove from your favorites', placement:'right',
+                                        delay:{show: 400, hide: 40}});
 
 
                 var nRuns = Math.floor(Math.random()*10000);
@@ -643,7 +752,9 @@ define([
                 $nRuns.append('&nbsp;'+nRuns);
                 $nRuns.tooltip({title:'Run in a narrative '+nRuns+' times.', placement:'bottom',
                                     delay:{show: 400, hide: 40}});
-
+                if(self.isLegacyMethod || self.isLegacyApp) {
+                    $nRuns.hide();
+                }
 
                 $header.append(
                     $('<div>').addClass('kbcb-app-page-stats-bar').append(

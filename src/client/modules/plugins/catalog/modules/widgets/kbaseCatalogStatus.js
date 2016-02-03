@@ -105,6 +105,9 @@ define([
             initMainPanel: function($appListPanel, $moduleListPanel) {
                 var $mainPanel = $('<div>').addClass('container');
 
+                $mainPanel.append($('<div>').addClass('kbcb-back-link')
+                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                
                 $mainPanel.append($('<h3>').append('Catalog Status:'));
                 var $basicStatusDiv = $('<div>');
                 $mainPanel.append($basicStatusDiv);

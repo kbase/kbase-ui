@@ -158,7 +158,6 @@ define([
                     }
                 }
                 $header.append($owners);
-
                 self.$headerPanel.append($header);
 
 
@@ -437,6 +436,9 @@ define([
                 var $descriptionPanel = $('<div>').css('margin','1em');
                 var $versionsPanel = $('<div>').css('margin','1em');
 
+                $mainPanel.append($('<div>').addClass('kbcb-back-link')
+                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                
                 $mainPanel
                     .append($header)
                     .append($adminPanel)
