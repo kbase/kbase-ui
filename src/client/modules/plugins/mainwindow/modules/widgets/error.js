@@ -102,12 +102,7 @@ define([
 
             // We need to always emit an error to the console. The original
             // error catch may also emit the error to console.error.            
-            console.error('ERROR');
-            console.error(params.error);
             console.error(error);
-            if (params.error.data) {
-                console.error(params.error.data);
-            }
 
             if (error.extra) {
                 error.extended = html.makeObjTable([error.extra], {rotated: true});
