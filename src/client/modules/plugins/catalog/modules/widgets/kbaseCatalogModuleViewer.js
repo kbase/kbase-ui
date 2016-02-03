@@ -59,6 +59,10 @@ define([
                 // initialize and add the main panel
                 self.$loadingPanel = self.util.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
+
+                self.$errorPanel = $('<div>').addClass('danger').hide();
+                self.$elem.append(self.$errorPanel);
+
                 var mainPanelElements = self.initMainPanel();
                 //[$mainPanel, $header, $adminPanel, $appsPanel, $descriptionPanel, $versionsPanel];
                 self.$mainPanel = mainPanelElements[0];
@@ -82,14 +86,16 @@ define([
                 Promise.all(loadingCalls).then(function() {
                     self.render();
                     self.hideLoading();
-
                     self.getAppInfo()
                         .then(function() {
                             var p = Promise.all([self.updateMyFavorites(),self.updateFavoritesCounts()]);
                             self.renderApps();
                             return p;
                         })
-                });
+                });/*.catch(function(err){
+                    self.hideLoading();
+                    self.showError(err)
+                });*/
 
 
                 return this;
@@ -215,7 +221,7 @@ define([
                         for(var v=0; v<versions.length; v++) {
                             $oldReleaseDiv.append(self.renderCollapsableVersionDiv(
                                 versions[v].version,
-                                self.renderVersion(versions[v].version,versions[v])
+                                self.renderVersion(versions[v].git_commit_hash,versions[v])
                             ));
                         }
                         $versionDiv.append(self.renderCollapsableVersionDiv(
@@ -230,12 +236,7 @@ define([
 
             // tag=dev/beta/release/version number, version=the actual info
             renderVersion: function(tag, version) {
-                if(tag) {
-                    if(tag!=='release' && tag!=='beta' && tag!=='dev') {
-                        tag = null;
-                    }
-                }
-
+                
                 var self = this;
                 var git_url = this.moduleDetails.info.git_url;
                 var $verDiv = $('<div>');
@@ -702,7 +703,11 @@ define([
             showError: function (error) {
                 this.$errorPanel.empty();
                 this.$errorPanel.append('<strong>Error when fetching App/Method information.</strong><br><br>');
-                this.$errorPanel.append(error.error.message);
+                if(error.error) {
+                    if(error.error.message){
+                        this.$errorPanel.append(error.error.message);
+                    }
+                }
                 this.$errorPanel.append('<br>');
                 this.$errorPanel.show();
             }
