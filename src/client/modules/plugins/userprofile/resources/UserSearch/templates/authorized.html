@@ -14,7 +14,7 @@
                         {%if result.avatar.gravatar_default and result.email %} 
                         <img src="{{result.email | gravatar(64,"pg", result.avatar.gravatar_default)}}" class="avatar">
                         {% else %}
-                        <img src="{{env.root}}/images/nouserpic.png" style="width: 32px; height: 32px;" class="avatar">
+                        <img src="{{env.pluginPath}}/images/nouserpic.png" style="width: 32px; height: 32px;" class="avatar">
                         {% endif %}
                     #}
                     </td>
