@@ -5,7 +5,9 @@ define([
 ], function (Promise, Router, lang) {
     function factory(config) {
         var runtime = config.runtime,
-            router = Router.make(config);
+            router = Router.make(config),
+            receivers = [],
+            eventListeners = [];
 
         function doRoute() {
             var handler;
@@ -88,50 +90,66 @@ define([
             return installRoutes(pluginConfig);
         }
 
-        runtime.recv('app', 'do-route', function () {
-            doRoute();
-        });
-
-
-        runtime.recv('app', 'new-route', function (data) {
-            if (data.routeHandler.route.redirect) {
-                send('app', 'route-redirect', data);
-            } else if (data.routeHandler.route.widget) {
-                send('app', 'route-widget', data);
-            } else if (data.routeHandler.route.handler) {
-                send('app', 'route-handler', data);
-            }
-        });
-
-        runtime.recv('app', 'route-redirect', function (data) {
-            runtime.send('app', 'navigate', {
-                path: data.routeHandler.route.redirect.path,
-                params: data.routeHandler.route.redirect.params
+        function start() {
+            runtime.recv('app', 'do-route', function () {
+                doRoute();
             });
-        });
-        
-        //runtime.recv('app', 'route-handler', function (data) {
-        //    
-        //})
 
-        runtime.recv('app', 'navigate', function (data) {
-            router.navigateTo(data);
-        });
+            runtime.recv('app', 'new-route', function (data) {
+                if (data.routeHandler.route.redirect) {
+                    send('app', 'route-redirect', data);
+                } else if (data.routeHandler.route.widget) {
+                    send('app', 'route-widget', data);
+                } else if (data.routeHandler.route.handler) {
+                    send('app', 'route-handler', data);
+                }
+            });
 
-        runtime.recv('app', 'redirect', function (data) {
-            router.redirectTo(data.url, data.new_window);
-        });
+            runtime.recv('app', 'route-redirect', function (data) {
+                runtime.send('app', 'navigate', {
+                    path: data.routeHandler.route.redirect.path,
+                    params: data.routeHandler.route.redirect.params
+                });
+            });
 
-        window.addEventListener('hashchange', function (e) {
-            // $(window).on('hashchange', function () {
-            // NB this is called AFTER it has changed. The browser will do nothing by
-            // default
-            doRoute();
-        });
+            runtime.recv('app', 'navigate', function (data) {
+                router.navigateTo(data);
+            });
 
+            runtime.recv('app', 'redirect', function (data) {
+                router.redirectTo(data.url, data.new_window);
+            });
+
+            eventListeners.push({
+                target: window,
+                type: 'hashchange',
+                listener: function (e) {
+                    // $(window).on('hashchange', function () {
+                    // NB this is called AFTER it has changed. The browser will do nothing by
+                    // default
+                    doRoute();
+                }
+            });
+            eventListeners.forEach(function(listener) {
+                listener.target.addEventListener(listener.type, listener.listener);
+            });
+        }
+
+        function stop() {
+            receivers.forEach(function (receiver) {
+                if (receiver) {
+                    runtime.drop(receiver);
+                }
+            });
+            eventListeners.forEach(function (listener) {
+                listener.target.removeEventListener(listener.type, listener.listener);
+            });
+        }
 
         return {
-            pluginHandler: pluginHandler
+            pluginHandler: pluginHandler,
+            start: start,
+            stop: stop
         };
     }
     return {
