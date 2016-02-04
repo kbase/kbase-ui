@@ -47,7 +47,7 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 0.1.7
+        version: 0.1.9
         cwd: src/plugin
         source:
             bower: {}
@@ -76,6 +76,13 @@ plugins:
         name: datawidgets
         globalName: kbase-ui-plugin-datawidgets
         version: 0.1.4
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: data-landing-pages
+        globalName: kbase-ui-plugin-data-landing-pages
+        version: 0.1.0
         cwd: src/plugin
         source:
             bower: {}
