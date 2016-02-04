@@ -10,7 +10,7 @@ define([
         function factory(config) {
             var parent, container, runtime = config.runtime,
                 t = html.tag,
-                p = t('p'), span = t('span'), div = t('div'),
+                p = t('p'), span = t('span'), div = t('div'), a = t('a'),
                 timer;
 
             // VIEW
@@ -20,9 +20,13 @@ define([
                     title: 'Signed Out',
                     content: [
                         p('You are signed out of KBase.'),
-                        p(['In approximately ',
-                            span({dataElement: 'countdown'}),
-                            ' seconds your browser will be redirected to the KBase home page.'
+                        p(['In ',
+                            span({dataElement: 'countdown', style: {color: 'green'}}),
+                            ' seconds your browser will be redirected to the ',
+                            a({href: runtime.getConfig('services.doc_site.url')}, [
+                                'KBase home page'
+                            ]),
+                            '.'
                         ])
                     ]
                 }));
@@ -33,9 +37,9 @@ define([
             }
 
             function countdown(counter) {
-                if (counter <= 0) {
+                if (counter < 0) {
                     runtime.send('app', 'redirect', {
-                        url: 'http://kbase.us'
+                        url: runtime.getConfig('services.doc_site.url')
                     });
                 } else {
                     renderCountdown(counter);
@@ -48,7 +52,7 @@ define([
             // API
             function attach(node) {
                 parent = node;
-                container = parent.appendChild(document.createElement('div'));                
+                container = parent.appendChild(document.createElement('div'));
             }
             function start(params) {
                 if (runtime.service('session').isLoggedIn()) {
