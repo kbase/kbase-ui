@@ -67,4 +67,7 @@ services:
         name: Assembly API 
     genomeAnnotation_api:
         url: <%= genome_annotation_api_url %>
-        name: Genome Annotation API         
+        name: Genome Annotation API
+    doc_site:
+        url: <%= doc_site_url %>
+        name: Documentation and Support Site
