@@ -18,17 +18,18 @@ define([
     props,
     asyncQueue,
     AppServiceManager
-    ) {
+    )
+{
     'use strict';
 
     var moduleVersion = '0.0.1';
 
-    function factory(cfg) {
-        var config = cfg,
-            pluginManager,
-            serviceConfig = cfg.serviceConfig,
-            clientConfig = cfg.clientConfig,
-            clientConfigProps = props.make({data: clientConfig});
+    function factory(config) {
+        var pluginManager,
+            serviceConfig = config.serviceConfig,
+            clientConfig = config.clientConfig,
+            clientConfigProps = props.make({data: clientConfig}),
+            rootNode;
 
         // quick hack:
         clientConfig.services = serviceConfig.services;
@@ -51,15 +52,20 @@ define([
                 handler: fun
             });
         }
+        // The "short" versions of the message functions just use the raw
+        // messenger api, which expects an object argument.
         function rcv(spec) {
             return messenger.receive(spec);
-        }
-        function drop(spec) {
-            urcv(spec);
         }
         function urcv(spec) {
             return messenger.unreceive(spec);
         }
+        function snd(spec) {
+            return messenger.send(spec);
+        }
+
+        // The friendlier more verbose functions take explicit arguments and
+        // packge them up into the messenger api format.
         function send(channel, message, data) {
             return snd({
                 channel: channel,
@@ -67,8 +73,8 @@ define([
                 data: data
             });
         }
-        function snd(spec) {
-            return messenger.send(spec);
+        function drop(spec) {
+            urcv(spec);
         }
         function sendp(channel, message, data) {
             return messenger.sendPromise({
@@ -85,7 +91,6 @@ define([
 
         // Services for plugins
 
-        var rootNode;
         function setRootNode(selector) {
             rootNode = dom.qs(selector);
             if (!rootNode) {
@@ -126,7 +131,7 @@ define([
             }
             return obj[method].apply(obj, args);
         }
-        
+
         function navigate(path) {
             send('app', 'navigate', path);
         }
@@ -145,7 +150,7 @@ define([
             rcv: rcv,
             urcv: urcv,
             // navigation
-            navigate: navigate,           
+            navigate: navigate,
             // Services
             addService: function () {
                 return proxyMethod(appServiceManager, 'addService', arguments);
@@ -189,7 +194,7 @@ define([
             });
             appServiceManager.addService('menu', {
                 runtime: api,
-                menus: cfg.menus
+                menus: config.menus
             });
             appServiceManager.addService('widget', {
                 runtime: api
@@ -212,11 +217,13 @@ define([
             });
 
             // Behavior
-
+            // There are not too many global behaviors, and perhaps there should 
+            // even fewer or none. Most behavior is within services or 
+            // active widgets themselves.
             receive('session', 'loggedout', function () {
                 send('app', 'navigate', 'goodbye');
             });
-            
+
             receive('app', 'route-not-found', function (info) {
                 // alert('help, the route was not found!: ' + route.path);
                 send('app', 'navigate', {
@@ -228,8 +235,8 @@ define([
             });
 
             // UI should be a service...
-
-
+            // NB this was never developed beyond this stage, and should
+            // probably be hunted down and removed.
             receive('ui', 'render', function (arg) {
                 renderQueue.addItem({
                     onRun: function () {
@@ -241,7 +248,6 @@ define([
                         }
                     }
                 });
-
             });
 
             // ROUTING
@@ -257,14 +263,7 @@ define([
                     return mountRootWidget('root', api);
                 })
                 .then(function () {
-                    // getService('heartbeat').start();
-                    // this is a hack for now ... should be a method for service
-                    // events to be sent out post root widget mounting.
-                    if (appServiceManager.getService('session').isLoggedIn()) {
-                        send('session', 'loggedin');
-                    } else {
-                        send('session', 'loggedout');
-                    }
+                    // kick off handling of the current route.
                     send('app', 'do-route');
                     return api;
                 });
