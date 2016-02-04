@@ -48,16 +48,22 @@ define([
                 self.util = new CatalogUtil();
 
                 // handle legacy methods and apps not in an SDK namespace
-                if(options.namespace==='l.m') {
-                    //self.$elem.append('legacy method');
-                    self.isLegacyMethod = true;
-                } else if (options.namespace==='l.a') {
-                    // for now, forward to old style page
-                    self.isLegacyApp = true;
+                if(options.namespace) {
+                    if(options.namespace==='l.m') {
+                        //self.$elem.append('legacy method');
+                        self.isLegacyMethod = true;
+                    } else if (options.namespace==='l.a') {
+                        // for now, forward to old style page
+                        self.isLegacyApp = true;
 
-                    self.$elem.append('&nbsp Legacy apps not supported on this page yet.  Go here for now:' +
-                        '<a href="#narrativestore/app/'+options.id+'">'+options.id+"</a>");
-                    return this;
+                        self.$elem.append('&nbsp Legacy apps not supported on this page yet.  Go here for now:' +
+                            '<a href="#narrativestore/app/'+options.id+'">'+options.id+"</a>");
+                        return this;
+                    }
+                } else {
+                    // assume legacy method if no namespace given
+                    self.isLegacyMethod = true;
+                    options.namespace='l.m';
                 }
 
                 // set some local variables
