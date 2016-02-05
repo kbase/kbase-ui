@@ -105,9 +105,9 @@ define([
             }
             state.modifyItem('menus', function (menus) {
                 if (position === 'top') {
-                    menus[id][section].push(menuItems[item]);
-                } else {
                     menus[id][section].unshift(menuItems[item]);
+                } else {
+                    menus[id][section].push(menuItems[item]);
                 }
                 return menus;
             });
