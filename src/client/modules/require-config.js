@@ -43,6 +43,7 @@ require.config({
         uuid: 'bower_components/node-uuid/uuid',
         numeral: 'bower_components/numeral/numeral',
         'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
+        plotly: 'bower_components/plotly/plotly',
 
         kb_ui: 'css/kb-ui',
         kb_datatables: 'css/kb-datatables',

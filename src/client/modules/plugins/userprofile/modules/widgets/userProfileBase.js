@@ -149,7 +149,7 @@ define([
                         widgetName: this.widgetName,
                         docsite: this.runtime.getConfig('docsite'),
                         root: Plugin.plugin.path,
-                        pluginPath: Plugin.plugin.path,
+                        pluginPath: Plugin.plugin.fullPath,
                         getConfig: function (prop) {
                             return this.runtime.getConfig(prop);
                         }.bind(this)

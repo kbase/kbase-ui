@@ -44,7 +44,8 @@
         "numeral": "1.5.3",
         "blockui": "2.70",
         "q": "2.0.2",
-        "postal": "1.0.7"
+        "postal": "1.0.7",
+        "plotly": "plotly/plotly.js#1.5.1"
     },
     "devDependencies": {},
     "license": "SEE LICENSE IN LICENSE"
