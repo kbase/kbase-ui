@@ -136,5 +136,10 @@ bowerFiles:
         # copy the whole thing in, and the install.yml says what to do
         name: kbase-data-client-js
         src: "**/*"
-        bowerComponent: true        
+        bowerComponent: true   
+    -
+        name: plotly
+        cwd: dist
+        src: plotly.js
+        bowerComponent: true
             
