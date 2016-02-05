@@ -543,7 +543,7 @@ define([
                                     lookup = fav.module_name_lc + '/' + lookup
                                 }
                                 if(self.appLookup[lookup]) {
-                                    self.appLookup[lookup].turnOnStar();
+                                    self.appLookup[lookup].turnOnStar(fav.timestamp);
                                 }
                             }
                         })
@@ -791,6 +791,13 @@ define([
                 else if (organizeBy=='my_favorites') {
                     // sort by number of stars, then by app name
                     self.appList.sort(function(a,b) {
+                        // sort by time favorited
+                        if(a.isStarOn() && b.isStarOn()) {
+                            if(a.getStarTime() > b.getStarTime()) return -1;
+                            if(a.getStarTime() < b.getStarTime()) return 1;
+                        }
+
+                        // otherwise sort by stars
                         var aStars = a.getStarCount();
                         var bStars = b.getStarCount();
                         if(aStars>bStars) return -1;

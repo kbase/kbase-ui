@@ -76,12 +76,17 @@ define([
         this.starCount = null;
         this.onStar = false;
         this.deactivatedStar = false;
+        this.onStarTime = 0;
 
-        this.turnOnStar = function() {
+        /* timestamp => the time at which this was favorited, optional */
+        this.turnOnStar = function(timestamp) {
             this.onStar = true;
             for(var k=0; k<this.$divs.length; k++) {
                 this.$divs[k].find('.kbcb-star')
                     .removeClass('kbcb-star-nonfavorite').addClass('kbcb-star-favorite');
+            }
+            if(timestamp) {
+                this.onStarTime = timestamp;
             }
         };
         this.turnOffStar = function() {
@@ -94,6 +99,9 @@ define([
 
         this.isStarOn = function() {
             return this.onStar;
+        }
+        this.getStarTime = function() {
+            return this.onStarTime;
         }
 
         this.deactivateStar = function() {
