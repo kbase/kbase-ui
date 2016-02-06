@@ -108,14 +108,17 @@ define([
 
                     self.processData();
 
+
                     self.updateFavoritesCounts()
                         .then(function() {
                             self.hideLoading();
                             self.renderAppList('favorites');
+                            self.updateRunStats();
                             return self.updateMyFavorites();
                         }).catch(function (err) {
                             self.hideLoading();
                             self.renderAppList('name_az');
+                            self.updateRunStats();
                             console.error('ERROR');
                             console.error(err);
                         });
@@ -506,6 +509,32 @@ define([
                     });
             },
 
+            updateRunStats: function() {
+                var self = this
+
+                var options = {};
+
+                return self.catalog.get_exec_aggr_stats(options)
+                    .then(function (stats) {
+                        self.runStats = stats;
+                        for(var k=0; k<stats.length; k++) {
+
+                            var lookup = stats[k].full_app_id;
+                            var idTokens = stats[k].full_app_id.split('/');
+                            if( idTokens.length === 2) {
+                                lookup = idTokens[0].toLowerCase() + '/' + idTokens[1];
+                            }
+                            if(self.appLookup[lookup]) {
+                                self.appLookup[lookup].setRunCount(stats[k].number_of_calls);
+                            }
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
 
             updateFavoritesCounts: function() {
                 var self = this
@@ -863,7 +892,27 @@ define([
                 }
 
                 else if (organizeBy=='runs') {
-                    self.$appListPanel.append('<span>under construction</span>');
+
+                    self.$appListPanel.append('<div><i>Note: Run counts for legacy methods released before 2016 are not reported.</i><br><br></div>');
+
+                    // sort by runs, then by app name
+                    self.appList.sort(function(a,b) {
+                        var aRuns = a.getRunCount();
+                        var bRuns = b.getRunCount();
+                        if(aRuns>bRuns) return -1;
+                        if(bRuns>aRuns) return 1;
+                        var aName = a.info.name.toLowerCase();
+                        var bName = b.info.name.toLowerCase();
+                        if(aName<bName) return -1;
+                        if(aName>bName) return 1;
+                        return 0;
+                    });
+                    var $listContainer = $('<div>').css({'overflow':'auto', 'padding':'0 0 2em 0'});
+                    for(var k=0; k<self.appList.length; k++) {
+                        self.appList[k].clearCardsAddedCount();
+                        $listContainer.append(self.appList[k].getNewCardDiv());
+                    }
+                    self.$appListPanel.append($listContainer);
 
                 }
 
@@ -882,7 +931,7 @@ define([
                         $typeDivLookup[types[k]] = $typeDiv;
                         $section.append(
                             $('<div>').css({'color':'#777'})
-                                .append($('<h4>').append(types[k])));
+                                .append($('<h4>').append($('<a href="#spec/type/'+types[k]+'">').append(types[k]))));
                         $section.append($typeDiv)
                         self.$appListPanel.append($section);
                     }
@@ -916,7 +965,7 @@ define([
                         $typeDivLookup[types[k]] = $typeDiv;
                         $section.append(
                             $('<div>').css({'color':'#777'})
-                                .append($('<h4>').append(types[k])));
+                                .append($('<h4>').append($('<a href="#spec/type/'+types[k]+'">').append(types[k]))));
                         $section.append($typeDiv)
                         self.$appListPanel.append($section);
                     }
