@@ -849,7 +849,7 @@ define([
 
 
                 if(self.isLegacyMethod || self.isLegacyApp) {
-                    $nRuns.append("<small>Legacy method - run statistics are not displayed.</small>").css('text-align','left');
+                    $nRuns.append("<small>Run statistics cannot be displayed for this method.</small>").css('text-align','left');
                 }
 
                 $header.append(
@@ -1040,7 +1040,7 @@ define([
                                                 $.jqElem('ul')
                                                 .css('list-style-type', 'none')
                                                 .append($.jqElem('li').append(param.short_hint))
-                                                .append($.jqElem('li').append(param.long_hint))
+                                                .append($.jqElem('li').append(param.description))
                                                 )
                                             )
                                         );
