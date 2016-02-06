@@ -678,9 +678,9 @@ define([
                                     original execution was started through API call without app ID defined),
                                 time_range - one of supported time ranges (currently it could be either '*' for all time
                                     or ISO-encoded week like "2016-W01")
-                                avg_queue_time - average time difference between exec_start_time and creation_time moments
+                                total_queue_time - total time difference between exec_start_time and creation_time moments
                                     defined in seconds since Epoch (POSIX),
-                                avg_exec_time - average time difference between finish_time and exec_start_time moments 
+                                total_exec_time - total time difference between finish_time and exec_start_time moments 
                                     defined in seconds since Epoch (POSIX).
 
                                 typedef structure {
@@ -688,8 +688,8 @@ define([
                                     string time_range;
                                     int number_of_calls;
                                     int number_of_errors;
-                                    float avg_queue_time;
-                                    float avg_exec_time;
+                                    float total_queue_time;
+                                    float total_exec_time;
                                 } ExecAggrStats;
                             */
                             var $row = $('<div>').addClass('row');
@@ -732,7 +732,7 @@ define([
                                 return duration;
 
                             }
-                            var niceExecTime = getNiceDuration(s.avg_exec_time/s.number_of_calls);
+                            var niceExecTime = getNiceDuration(s.total_exec_time/s.number_of_calls);
                             $row
                                 .append($('<div>').addClass('col-xs-2')
                                     .append('<i class="fa fa-clock-o"></i>')
