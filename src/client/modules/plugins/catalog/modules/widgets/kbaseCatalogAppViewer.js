@@ -711,7 +711,7 @@ define([
                                     .append('<i class="fa fa-check"></i>')
                                     .append($('<span>').addClass('kbcb-run-count').append(successPercent.toPrecision(3)+'%'))
                                         .tooltip({title:'Ran sucessfully without error '+successPercent.toPrecision(4)+'% of the time ('+
-                                            goodCalls + '/' + s.number_of_calls + ' runs)', container: 'body', placement:'bottom',
+                                            goodCalls + '/' + s.number_of_calls + ' runs).', container: 'body', placement:'bottom',
                                                     delay:{show: 400, hide: 40}}));
                             
                             function getNiceDuration(seconds) {
@@ -737,7 +737,7 @@ define([
                                 .append($('<div>').addClass('col-xs-2')
                                     .append('<i class="fa fa-clock-o"></i>')
                                     .append($('<span>').addClass('kbcb-run-count').append(niceExecTime))
-                                    .tooltip({title:'Average execution time is '+niceExecTime, container: 'body', placement:'bottom',
+                                    .tooltip({title:'Average execution time is '+niceExecTime +'.', container: 'body', placement:'bottom',
                                                     delay:{show: 400, hide: 40}}));
 
                         } // else do nothing
@@ -838,7 +838,7 @@ define([
                         event.stopPropagation();
                         self.starClick();
                     });
-                    $starDiv.tooltip({title:'Click on the star to add/remove from your favorites', placement:'bottom', container:'body',
+                    $starDiv.tooltip({title:'Click on the star to add/remove from your favorites.', placement:'bottom', container:'body',
                                         delay:{show: 400, hide: 40}});
                 }
                 var $starCount = $('<span>').addClass('kbcb-star-count');
@@ -847,8 +847,9 @@ define([
 
                 var $nRuns = $('<div>').addClass('kbcb-runs').addClass('col-xs-10');
 
+
                 if(self.isLegacyMethod || self.isLegacyApp) {
-                    $nRuns.hide();
+                    $nRuns.append("<small>Legacy method - run statistics are not displayed.</small>").css('text-align','left');
                 }
 
                 $header.append(
