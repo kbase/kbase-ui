@@ -48,16 +48,22 @@ define([
                 self.util = new CatalogUtil();
 
                 // handle legacy methods and apps not in an SDK namespace
-                if(options.namespace==='l.m') {
-                    //self.$elem.append('legacy method');
-                    self.isLegacyMethod = true;
-                } else if (options.namespace==='l.a') {
-                    // for now, forward to old style page
-                    self.isLegacyApp = true;
+                if(options.namespace) {
+                    if(options.namespace==='l.m') {
+                        //self.$elem.append('legacy method');
+                        self.isLegacyMethod = true;
+                    } else if (options.namespace==='l.a') {
+                        // for now, forward to old style page
+                        self.isLegacyApp = true;
 
-                    self.$elem.append('&nbsp Legacy apps not supported on this page yet.  Go here for now:' +
-                        '<a href="#narrativestore/app/'+options.id+'">'+options.id+"</a>");
-                    return this;
+                        self.$elem.append('&nbsp Legacy apps not supported on this page yet.  Go here for now:' +
+                            '<a href="#narrativestore/app/'+options.id+'">'+options.id+"</a>");
+                        return this;
+                    }
+                } else {
+                    // assume legacy method if no namespace given
+                    self.isLegacyMethod = true;
+                    options.namespace='l.m';
                 }
 
                 // set some local variables
@@ -101,6 +107,7 @@ define([
 
                     // must be called after renderMethod, because it relies on elements existing in the dom
                     self.updateFavoritesCounts();
+                    self.updateRunStats();
                 });
 
 
@@ -652,6 +659,97 @@ define([
             },
 
 
+            updateRunStats: function() {
+                var self = this
+
+                var options = { full_app_ids : [self.appFullInfo.id] }; // eventuall add p
+                console.log(options);
+
+                return self.catalog.get_exec_aggr_stats(options)
+                    .then(function (stats) {
+                        // should only get one for now- when we switch to 'per_week' stats, then we will get one record per week
+                        if(stats.length>0) {
+                            var s = stats[0];
+                            console.log('Stats:')
+                            console.log(s);
+                            /*
+                                full_app_id - optional fully qualified method-spec id including module_name prefix followed
+                                    by slash in case of dynamically registered repo (it could be absent or null in case
+                                    original execution was started through API call without app ID defined),
+                                time_range - one of supported time ranges (currently it could be either '*' for all time
+                                    or ISO-encoded week like "2016-W01")
+                                total_queue_time - total time difference between exec_start_time and creation_time moments
+                                    defined in seconds since Epoch (POSIX),
+                                total_exec_time - total time difference between finish_time and exec_start_time moments 
+                                    defined in seconds since Epoch (POSIX).
+
+                                typedef structure {
+                                    string full_app_id;
+                                    string time_range;
+                                    int number_of_calls;
+                                    int number_of_errors;
+                                    float total_queue_time;
+                                    float total_exec_time;
+                                } ExecAggrStats;
+                            */
+                            var $row = $('<div>').addClass('row');
+                            self.$headerPanel.find('.kbcb-runs')
+                                .append($('<div>').addClass('container').append($row))
+
+                            $row
+                                .append($('<div>').addClass('col-xs-2')
+                                    .append('<i class="fa fa-share"></i>')
+                                    .append($('<span>').addClass('kbcb-run-count').append(s.number_of_calls))
+                                    .tooltip({title:'Ran in a Narrative '+s.number_of_calls+' times.', container: 'body', placement:'bottom',
+                                                    delay:{show: 400, hide: 40}}));
+
+                            var goodCalls = s.number_of_calls - s.number_of_errors
+                            var successPercent = ((goodCalls) / s.number_of_calls)*100;
+
+                            $row
+                                .append($('<div>').addClass('col-xs-2')
+                                    .append('<i class="fa fa-check"></i>')
+                                    .append($('<span>').addClass('kbcb-run-count').append(successPercent.toPrecision(3)+'%'))
+                                        .tooltip({title:'Ran sucessfully without error '+successPercent.toPrecision(4)+'% of the time ('+
+                                            goodCalls + '/' + s.number_of_calls + ' runs).', container: 'body', placement:'bottom',
+                                                    delay:{show: 400, hide: 40}}));
+                            
+                            function getNiceDuration(seconds) {
+                                var hours = Math.floor(seconds / 3600);
+                                seconds = seconds - (hours * 3600);
+                                var minutes = Math.floor(seconds / 60);
+                                seconds = seconds - (minutes * 60);
+
+                                var duration = '';
+                                if(hours>0) {
+                                    duration = hours + 'h '+ minutes + 'm';
+                                } else if (minutes>0) {
+                                    duration = minutes + 'm ' + Math.round(seconds) + 's'; 
+                                }
+                                else {
+                                    duration = (Math.round(seconds*100)/100) + 's'; 
+                                }
+                                return duration;
+
+                            }
+                            var niceExecTime = getNiceDuration(s.total_exec_time/s.number_of_calls);
+                            $row
+                                .append($('<div>').addClass('col-xs-2')
+                                    .append('<i class="fa fa-clock-o"></i>')
+                                    .append($('<span>').addClass('kbcb-run-count').append(niceExecTime))
+                                    .tooltip({title:'Average execution time is '+niceExecTime +'.', container: 'body', placement:'bottom',
+                                                    delay:{show: 400, hide: 40}}));
+
+                        } // else do nothing
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+
+
             renderMethod: function () {
                 var self = this;
                 var m = self.appFullInfo;
@@ -730,8 +828,9 @@ define([
                                         )));
 
 
+                var $footerRow = $('<div>').addClass('row');
 
-                var $starDiv = $('<div>').css('text-align','left');
+                var $starDiv = $('<div>').addClass('col-xs-2');
                 var $star = $('<span>').addClass('kbcb-star').append('<i class="fa fa-star"></i>');
                 if(self.runtime.service('session').isLoggedIn()) {
                     $star.addClass('kbcb-star-nonfavorite');
@@ -739,33 +838,25 @@ define([
                         event.stopPropagation();
                         self.starClick();
                     });
-                    $starDiv.tooltip({title:'Click on the star to add/remove from your favorites', placement:'right',
+                    $starDiv.tooltip({title:'Click on the star to add/remove from your favorites.', placement:'bottom', container:'body',
                                         delay:{show: 400, hide: 40}});
                 }
                 var $starCount = $('<span>').addClass('kbcb-star-count');
                 $starDiv.append($star).append($starCount);
 
 
-                var nRuns = Math.floor(Math.random()*10000);
-                var $nRuns = $('<div>').css('text-align','left');
-                $nRuns.append($('<span>').append('<i class="fa fa-share"></i>'));
-                $nRuns.append('&nbsp;'+nRuns);
-                $nRuns.tooltip({title:'Run in a narrative '+nRuns+' times.', placement:'bottom',
-                                    delay:{show: 400, hide: 40}});
+                var $nRuns = $('<div>').addClass('kbcb-runs').addClass('col-xs-10');
+
+
                 if(self.isLegacyMethod || self.isLegacyApp) {
-                    $nRuns.hide();
+                    $nRuns.append("<small>Run statistics cannot be displayed for this method.</small>").css('text-align','left');
                 }
 
                 $header.append(
-                    $('<div>').addClass('kbcb-app-page-stats-bar').append(
-                        $('<table>')
-                            .append($('<tr>')
-                                .append($('<td>')
-                                    .css({'width':'150px', 'vertical-align':'top'})
-                                        .append($starDiv))
-                                .append($('<td>')
-                                        .append($nRuns))
-                                )));
+                    $('<div>').addClass('kbcb-app-page-stats-bar container').append(
+                        $('<div>').addClass('row')
+                            .append($starDiv)
+                            .append($nRuns)));
 
 
                 self.$headerPanel.append($header);
@@ -949,7 +1040,7 @@ define([
                                                 $.jqElem('ul')
                                                 .css('list-style-type', 'none')
                                                 .append($.jqElem('li').append(param.short_hint))
-                                                .append($.jqElem('li').append(param.long_hint))
+                                                .append($.jqElem('li').append(param.description))
                                                 )
                                             )
                                         );
