@@ -7,15 +7,16 @@
  */
 define([
     'jquery',
+    'bluebird',
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
     './app_card',
     'plugins/catalog/modules/widgets/kbaseCatalogRegistration',
     'kb/widget/legacy/authenticatedWidget',
-    'bootstrap',
+    'bootstrap'
 ],
-    function ($, NarrativeMethodStore, Catalog, CatalogUtil, AppCard) {
+    function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil, AppCard) {
         $.KBWidget({
             name: "KBaseCatalogModuleViewer",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
