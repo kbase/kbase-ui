@@ -138,7 +138,7 @@ install:
             id: catalog_registration_widget
             title: App Catalog Module Registration
             config:
-                jqueryName: KBaseCatalogRegistrationViewer
+                jqueryName: KBaseCatalogRegistration
             type: kbwidget
         -
             module: catalog_status_widget
