@@ -52,6 +52,7 @@ plugins:
     -
         name: data-landing-pages
         globalName: kbase-ui-plugin-data-landing-pages
+        # Taxon, Assembly, GenomeAnnotation pages using Data API
         version: 0.1.1
         cwd: src/plugin
         source:
