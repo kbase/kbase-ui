@@ -327,7 +327,8 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
 
     $scope.availableDatabases = [{value: "", label: "Search on selected genomes", selected: true},
       {value: "kbase_nr.faa", label: "KBase Non-redundant Protein Sequences (NR-faa)"},
-      {value: "kbase_nr.ffn", label: "KBase Non-redundant gene sequences (NR-ffn)"}
+      {value: "kbase_nr.ffn", label: "KBase Non-redundant gene sequences (NR-ffn)"},
+      {value: "kbase.fna", label: "KBase genome sequences (fna)"}
     ];
 
     $scope.validateDatabase = function() {
