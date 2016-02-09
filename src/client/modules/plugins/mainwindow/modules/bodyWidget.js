@@ -1,18 +1,14 @@
-/*global define */
-/*jslint white: true, browser: true */
+/*global define*/
+/*jslint white:true,browser: true*/
 define([
     'bluebird',
-    'kb/common/html',
-    'kb_plugin_mainWindow',
     'kb/widget/widgetMount'
 ],
-    function (Promise, html, Plugin, WidgetMount) {
+    function (Promise, WidgetMount) {
         'use strict';
 
-        var widgetMount;
-
         function factory(config) {
-            var widgetMount, runtime = config.runtime;
+            var widgetMount, runtime = config.runtime, routeListener;
             function attach(node) {
                 return Promise.try(function () {
                     widgetMount = WidgetMount.make({
@@ -21,8 +17,8 @@ define([
                     });
                 });
             }
-            function start(params) {
-                config.runtime.recv('app', 'route-widget', function (data) {
+            function start() {
+                routeListener = runtime.recv('app', 'route-widget', function (data) {
                     if (data.routeHandler.route.widget) {
                         widgetMount.unmount()
                             .then(function () {
@@ -33,8 +29,8 @@ define([
                             })
                             .catch(function (err) {
                                 // need a catch-all widget to mount here??
-                                console.log('ERROR mounting widget');
-                                console.log(err);
+                                console.error('ERROR mounting widget');
+                                console.error(err);
                                 widgetMount.unmount()
                                     .then(function () {
                                         return widgetMount.mountWidget('error', {
@@ -43,9 +39,9 @@ define([
                                         });
                                     })
                                     .catch(function (err2) {
-                                        console.log('ERROR mounting error widget!');
-                                        console.log(err2);
-                                        console.log(err);
+                                        console.error('ERROR mounting error widget!');
+                                        console.error(err2);
+                                        console.error(err);
                                     });
                             });
                     } else {
@@ -53,14 +49,16 @@ define([
                     }
                 });
             }
-            function detach() {
-                // should do something here...
+            function stop() {
+                if (routeListener) {
+                    runtime.drop(routeListener);
+                }
             }
 
             return {
                 attach: attach,
                 start: start,
-                detach: detach
+                stop: stop
             };
         }
 
