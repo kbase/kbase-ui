@@ -18,7 +18,8 @@ define([
     'use strict';
     Promise.config({
         warnings: true,
-        longStackTraces: true
+        longStackTraces: true,
+        cancellation: true
     });
     function setErrorField(name, ex) {
         var selector = '[data-field="' + name + '"] > span[data-name="value"]';
