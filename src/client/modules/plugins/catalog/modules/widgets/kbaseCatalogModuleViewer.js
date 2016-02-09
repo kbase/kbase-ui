@@ -7,15 +7,16 @@
  */
 define([
     'jquery',
+    'bluebird',
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
     './app_card',
-    'plugins/catalog/modules/widgets/kbaseCatalogRegistration',
+    'catalog_registration',
     'kb/widget/legacy/authenticatedWidget',
-    'bootstrap',
+    'bootstrap'
 ],
-    function ($, NarrativeMethodStore, Catalog, CatalogUtil, AppCard) {
+    function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil, AppCard) {
         $.KBWidget({
             name: "KBaseCatalogModuleViewer",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
@@ -88,7 +89,11 @@ define([
                     self.hideLoading();
                     self.getAppInfo()
                         .then(function() {
-                            var p = Promise.all([self.updateMyFavorites(),self.updateFavoritesCounts()]);
+                            var p = Promise.all([
+                                    self.updateMyFavorites(),
+                                    self.updateFavoritesCounts(),
+                                    self.updateRunStats()
+                                ]);
                             self.renderApps();
                             return p;
                         })
@@ -447,7 +452,8 @@ define([
                     .append('<hr>')
                     .append($descriptionPanel)
                     .append('<hr>')
-                    .append($versionsPanel);
+                    .append($versionsPanel)
+                    .append('<br><br><br><br><br>');
 
                 return [$mainPanel, $header, $adminPanel, $appsPanel, $descriptionPanel, $versionsPanel];
             },
@@ -544,6 +550,40 @@ define([
                             console.error(err);
                         });
                 }
+            },
+
+            updateRunStats: function() {
+                var self = this
+
+                var ids = [];
+                for(var a in self.appLookup) {
+                    if (!self.appLookup.hasOwnProperty(a)) continue;
+                    ids.push(self.appLookup[a].info.id);
+                }
+
+                var options = { full_app_ids : ids };
+                console.log(options);
+
+                return self.catalog.get_exec_aggr_stats(options)
+                    .then(function (stats) {
+                        console.log(stats);
+                        self.runStats = stats;
+                        for(var k=0; k<stats.length; k++) {
+
+                            var lookup = stats[k].full_app_id;
+                            var idTokens = stats[k].full_app_id.split('/');
+                            if( idTokens.length === 2) {
+                                lookup = idTokens[0].toLowerCase() + '/' + idTokens[1];
+                            }
+                            if(self.appLookup[lookup]) {
+                                self.appLookup[lookup].setRunCount(stats[k].number_of_calls);
+                            }
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
             },
 
 

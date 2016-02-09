@@ -76,12 +76,17 @@ define([
         this.starCount = null;
         this.onStar = false;
         this.deactivatedStar = false;
+        this.onStarTime = 0;
 
-        this.turnOnStar = function() {
+        /* timestamp => the time at which this was favorited, optional */
+        this.turnOnStar = function(timestamp) {
             this.onStar = true;
             for(var k=0; k<this.$divs.length; k++) {
                 this.$divs[k].find('.kbcb-star')
                     .removeClass('kbcb-star-nonfavorite').addClass('kbcb-star-favorite');
+            }
+            if(timestamp) {
+                this.onStarTime = timestamp;
             }
         };
         this.turnOffStar = function() {
@@ -94,6 +99,9 @@ define([
 
         this.isStarOn = function() {
             return this.onStar;
+        }
+        this.getStarTime = function() {
+            return this.onStarTime;
         }
 
         this.deactivateStar = function() {
@@ -123,9 +131,24 @@ define([
             }
         };
 
-        this.setRunCount = function() {
+        this.runCount = null;
 
+        this.setRunCount = function(runs) {
+            this.runCount = runs;
+            if(this.runCount) {
+                for(var k=0; k<this.$divs.length; k++) {
+                    this.$divs[k].find('.kbcb-runs').empty()
+                        .append('<i class="fa fa-share"></i>')
+                        .append($('<span>').addClass('kbcb-run-count').append(this.runCount))
+                        .tooltip({title:'Ran in a Narrative '+this.runCount+' times.', placement:'bottom',container:'body',
+                                        delay:{show: 400, hide: 40}});;
+                }
+            }
         };
+        this.getRunCount = function() {
+            if(this.runCount) return this.runCount;
+            return 0;
+        }
 
 
         /* rendering methods that are shared in multiple places */
@@ -219,7 +242,7 @@ define([
                             self.favoritesCallback(self.info, self.favoritesCallbackParams)
                         }
                     });
-                    $starDiv.tooltip({title:'Click on the star to add/remove from your favorites', placement:'right',
+                    $starDiv.tooltip({title:'Click on the star to add/remove from your favorites', placement:'bottom', container: 'body',
                                         delay:{show: 400, hide: 40}});
                 }
                 var $starCount = $('<span>').addClass('kbcb-star-count');
@@ -233,11 +256,14 @@ define([
             if(this.isSdk) {
                 var nRuns = Math.floor(Math.random()*10000);
                 var $nRuns = $('<div>').addClass('col-xs-3').css('text-align','left');
-                $nRuns.append($('<span>').append('<i class="fa fa-share"></i>'));
-                $nRuns.append('&nbsp;'+nRuns);
-                $nRuns.tooltip({title:'Run in a narrative '+nRuns+' times.', placement:'bottom',
+                $nRuns.append($('<span>').addClass('kbcb-runs'));
+                if(this.nRuns) {
+                    $nRuns
+                        .append('<i class="fa fa-share"></i>')
+                        .append($('<span>').addClass('kbcb-run-count').append(this.nRuns))
+                        .tooltip({title:'Ran in a Narrative '+nRuns+' times.', container: 'body', placement:'bottom',
                                         delay:{show: 400, hide: 40}});
-
+                }
                 $footer.append($nRuns);
             } else {
                 $footer.append($('<div>').addClass('col-xs-3'))
