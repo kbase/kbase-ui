@@ -55,8 +55,7 @@ plugins:
         version: 0.1.1
         cwd: src/plugin
         source:
-            bower:
-                version: eapearson/kbase-ui-plugin-data-landing-pages#v0.1.2
+            bower: {}
                
 # Copy these directories into the modules
 # There are two forms, as for plugins. 
