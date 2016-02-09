@@ -918,7 +918,7 @@ function main(type) {
             // console.log(err);
             console.log(util.inspect(err, {
                 showHidden: false,
-                depth: 3
+                depth: 5
             }));
             console.log(err.stack);
         });

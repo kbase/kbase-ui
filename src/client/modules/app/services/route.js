@@ -117,7 +117,7 @@ define([
             });
 
             runtime.recv('app', 'redirect', function (data) {
-                router.redirectTo(data.url, data.new_window);
+                router.redirectTo(data.url, data.new_window || data.newWindow);
             });
 
             eventListeners.push({
