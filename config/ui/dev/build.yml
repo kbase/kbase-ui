@@ -88,7 +88,7 @@ plugins:
         cwd: src/plugin
         source:
             bower: 
-                version: eapearson/kbase-ui-plugin-data-landing-pages#v0.1.1
+                version: eapearson/kbase-ui-plugin-data-landing-pages#v0.1.2
     -
         name: dataapidemo
         globalName: kbase-ui-plugin-data-api-demo
