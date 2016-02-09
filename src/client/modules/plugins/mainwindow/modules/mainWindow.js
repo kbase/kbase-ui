@@ -44,21 +44,21 @@ define([
             function renderNavbar() {
                 var div = html.tag('div'),
                     cellStyle = {
-                            padding: '4px', 
-                            display: 'inline-block', 
-                            height: '100%', 
-                            verticalAlign: 'top'
-                        },
-                    content = div({style: {position: 'relative', height: '100%'}, class: 'kb-widget-mainWindow'}, [
-                        div({style: cellStyle, id: widgetSet.addWidget('menu')}),
-                        div({style: cellStyle, id: widgetSet.addWidget('logo')}),
-                        div({style: cellStyle, id: widgetSet.addWidget('title')}),
-                        div({style: {position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top'}}, [
-                            div({style: cellStyle, id: widgetSet.addWidget('buttonbar')}),
-                            div({style: {borderLeft: '0px #EEE solid', borderRight: '0px #EEE solid', padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top', width: '100px'}, id: widgetSet.addWidget('notification')}),
-                            div({style: cellStyle, class: 'navbar-right', id: widgetSet.addWidget('login')})
-                        ])
-                    ]);
+                        padding: '4px',
+                        display: 'inline-block',
+                        height: '100%',
+                        verticalAlign: 'top'
+                    },
+                content = div({style: {position: 'relative', height: '100%'}, class: 'kb-widget-mainWindow'}, [
+                    div({style: cellStyle, id: widgetSet.addWidget('menu')}),
+                    div({style: cellStyle, id: widgetSet.addWidget('logo')}),
+                    div({style: cellStyle, id: widgetSet.addWidget('title')}),
+                    div({style: {position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top'}}, [
+                        div({style: cellStyle, id: widgetSet.addWidget('buttonbar')}),
+                        div({style: {borderLeft: '0px #EEE solid', borderRight: '0px #EEE solid', padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top', width: '100px'}, id: widgetSet.addWidget('notification')}),
+                        div({style: cellStyle, class: 'navbar-right', id: widgetSet.addWidget('login')})
+                    ])
+                ]);
                 return content;
             }
 
@@ -75,101 +75,37 @@ define([
             }
 
             function attach(node) {
-                return new Promise(function (resolve) {
-                    mount = node;
-                    container = dom.createElement('div');
-                    mount.appendChild(container);
-
-                    resolve();
-                });
+                mount = node;
+                container = dom.createElement('div');
+                mount.appendChild(container);
             }
 
             function start(params) {
-                return new Promise(function (resolve, reject) {
-                    container.innerHTML = renderLayout();
-                    widgetSet.init()
-                        .then(function () {
-                            return widgetSet.attach(container);
-                        })
-                        .then(function () {
-                            return widgetSet.start(params);
-                        })
-                        .then(function () {
-                            /*return R.snd({
-                             channel: 'ui',
-                             message: 'setTitle',
-                             data: 'HAL, this is Dave.'
-                             })
-                             */
-                            // runtime.send('ui', 'setTitle', 'HAL, this is ... Dave.');
-                            /*
-                             * no, the app should set any default menu items and menus
-                             runtime.getConfig('navbar.menu.available_items').forEach(function (item) {
-                             runtime.send('ui', 'addMenuItem', item);
-                             });
-                             runtime.getConfig('navbar.menu.menus').forEach(function (menu) {
-                             menu.items.forEach(function (item) {
-                             runtime.send('ui', 'addToMenu', {
-                             id: menu.id,
-                             item: item
-                             });
-                             });
-                             });
-                             */
-                        })
-                        .then(function () {
-                            resolve();
-                        })
-                        .catch(function (err) {
-                            reject(err);
-                        });
-                });
+                container.innerHTML = renderLayout();
+                return widgetSet.init()
+                    .then(function () {
+                        return widgetSet.attach(container);
+                    })
+                    .then(function () {
+                        return widgetSet.start(params);
+                    });
             }
 
             function run(params) {
-                return new Promise(function (resolve, reject) {
-                    widgetSet.run(params)
-                        .then(function () {
-                            resolve();
-                        })
-                        .catch(function (err) {
-                            reject(err);
-                        });
-                });
+                return widgetSet.run(params);
             }
             function stop() {
-                return new Promise(function (resolve) {
-                    widgetSet.stop()
-                        .then(function () {
-                            resolve();
-                        })
-                        .catch(function (err) {
-                            reject(err);
-                        });
-                });
+                return widgetSet.stop();
             }
             function detach() {
-                return new Promise(function (resolve) {
-                    widgetSet.detach()
-                        .then(function () {
-                            mount.removeChild(container);
-                            resolve();
-                        })
-                        .catch(function (err) {
-                            reject(err);
-                        });
-                });
+                return widgetSet.detach()
+                    .then(function () {
+                        mount.removeChild(container);
+                        resolve();
+                    });
             }
             function destroy() {
-                return new Promise(function (resolve) {
-                    widgetSet.destroy()
-                        .then(function () {
-                            resolve();
-                        })
-                        .catch(function (err) {
-                            reject(err);
-                        });
-                });
+                return widgetSet.destroy();
             }
 
             return {
