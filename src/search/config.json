@@ -1,5 +1,5 @@
 {
-   "setup": "prod",
+   "setup": "ci",
 
    "prod": {
       "workspace_url": "https://kbase.us/services/ws/",
