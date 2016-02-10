@@ -12,7 +12,7 @@ define([
     'kb/service/client/catalog',
     './catalog_util',
     './app_card',
-    'catalog_registration',
+    'catalog_registration_widget',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap'
 ],
