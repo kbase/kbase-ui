@@ -2,7 +2,7 @@
 ui:
     images:
         spinner:
-            url: /ui-common/assets/img/ajax-loader.gif
+            url: /images/ajax-loader.gif  
     constants:
         client_timeout: 900000,
         session_max_age: 5184000
