@@ -71,3 +71,19 @@ services:
     doc_site:
         url: <%= doc_site_url %>
         name: Documentation and Support Site
+        
+resources:
+    docSite:
+        base:
+            url: <%= doc_site_url %>
+    userAccount:
+        resetPassword: 
+            url: <%= reset_password_url %>
+        update_profile: 
+            url: <%= update_profile_url %> 
+        access:
+            url: <%= user_account_url %>
+        signup:
+            url: <%= signup_url %>
+    status_page: <%= status_page_url %>
+    submit_jira_ticket: <%= submit_jira_ticket_url %>

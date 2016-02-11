@@ -32,7 +32,7 @@ define([
 
                     if (this.runtime.service('session').isLoggedIn()) {
                         if (this.runtime.hasConfig('services.user_profile.url')) {
-                            this.userProfileClient = new UserProfileService(this.runtime.getConfig('user_profile_url'), {
+                            this.userProfileClient = new UserProfileService(this.runtime.config('services.user_profile.url'), {
                                 token: this.runtime.service('session').getAuthToken()
                             });
                         } else {
