@@ -188,7 +188,7 @@ define([
                 $titleSpan.append($('<div>').addClass('kbcb-app-card-module').append(
                                         $('<a href="#appcatalog/module/'+info.module_name+'">')
                                             .append(info.module_name)
-                                            .on('click',function() {
+                                            .on('click',function(event) {
                                                 // have to stop propagation so we don't go to the app page first
                                                 event.stopPropagation();
                                             })));
@@ -207,7 +207,7 @@ define([
                         }
                         $authorDiv.append($('<a href="#people/'+info.authors[k]+'">')
                                             .append(info.authors[k])
-                                            .on('click',function() {
+                                            .on('click',function(event) {
                                                 // have to stop propagation so we don't go to the app page first
                                                 event.stopPropagation();
                                             }));
@@ -236,7 +236,7 @@ define([
                 var self = this;
                 if(self.isLoggedIn) {
                     $star.addClass('kbcb-star-nonfavorite');
-                    $star.on('click', function() {
+                    $star.on('click', function(event) {
                         event.stopPropagation();
                         if(!self.deactivatedStar && self.favoritesCallback) {
                             self.favoritesCallback(self.info, self.favoritesCallbackParams)

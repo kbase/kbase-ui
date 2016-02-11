@@ -806,7 +806,7 @@ define([
                         }
                         $authorDiv.append($('<a href="#people/'+m.authors[k]+'">')
                                             .append(m.authors[k])
-                                            .on('click',function() {
+                                            .on('click',function(event) {
                                                 // have to stop propagation so we don't go to the app page first
                                                 event.stopPropagation();
                                             }));
@@ -834,7 +834,7 @@ define([
                 var $star = $('<span>').addClass('kbcb-star').append('<i class="fa fa-star"></i>');
                 if(self.runtime.service('session').isLoggedIn()) {
                     $star.addClass('kbcb-star-nonfavorite');
-                    $star.on('click', function() {
+                    $star.on('click', function(event) {
                         event.stopPropagation();
                         self.starClick();
                     });
