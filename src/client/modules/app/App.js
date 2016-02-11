@@ -32,7 +32,9 @@ define([
             rootNode;
 
         // quick hack:
-        clientConfig.services = serviceConfig.services;
+        Object.keys(serviceConfig).forEach(function (key) {
+            clientConfig[key] = serviceConfig[key];
+        });
 
         function getConfig(prop, defaultValue) {
             return clientConfigProps.getItem(prop, defaultValue);
