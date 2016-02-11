@@ -133,8 +133,9 @@
                         <label for="sequence" class="col-sm-2 control-label">Sequence:</label>
                         <div class="col-sm-10">
                             <textarea id="sequence" class="form-control" style="font-family:monospace; font-size:12px;" rows="10" autofocus required
-                                      ng-model="options.searchOptions.general.sequence" placeholder="FASTA sequence to search"></textarea>
-                            <div ng-show="options.searchOptions.general.sequence_invalid" class="bg-danger text-danger">This may not match to FASTA sequence format or contain more than one sequence</div>
+                                      ng-change="onSequenceChange()"
+                                      ng-model="options.searchOptions.general.sequence" placeholder="Paste one nucleotide or protein fasta sequence to search"></textarea>
+                            <div ng-show="options.searchOptions.ui.sequence_invalid" class="bg-danger text-danger">{{options.searchOptions.ui.sequence_message}}</div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -143,28 +144,31 @@
                             <select id="database" class="form-control" ng-model="options.searchOptions.general.database" ng-change="validateDatabase()">
                                 <option ng-repeat="db in availableDatabases" ng-selected="db.selected" value="{{db.value}}">{{db.label}}</option>
                             </select>
-                            <div ng-hide="options.searchOptions.general.database==''" class="text-center"><strong>This may take a few minutes.</strong></div>
+                            <div class="text-left"><strong>Search may take a few minutes.</strong></div>
                         </div>
                     </div>
-                    <fieldset ng-disabled="options.searchOptions.general.useDatabase">
                     <div class="form-group">
-                        <label for="database" class="col-sm-2 control-label">Search Type:</label>
+                        <div class="col-md-12 kb-method-advanced-options-controller" ng-hide="options.searchOptions.ui.show_advance_options" ng-click="options.searchOptions.ui.show_advance_options=true;">Show advanced options</div>
+                        <div class="col-md-12 kb-method-advanced-options-controller" ng-show="options.searchOptions.ui.show_advance_options" ng-click="options.searchOptions.ui.show_advance_options=false;">Hide advanced options</div>
+                    </div>
+                    <div class="form-group" ng-show="options.searchOptions.ui.show_advance_options">
+                        <label for="database" class="col-sm-2 control-label">Search for:</label>
                         <div class="col-sm-10">
                           <div class="radio">
                             <label>
                               <input type="radio" name="searchtype" ng-model="options.searchOptions.general.searchtype" value="contigs" />
-                              Genomic Sequences (contigs)
+                              Genomic sequences (contigs)
                             </label>
                           </div>
                           <div class="radio">
                             <label>
                               <input type="radio" name="searchtype" ng-model="options.searchOptions.general.searchtype" value="features" checked="checked"/>
-                              Genomic Features (genes or proteins)
+                              Genomic features (genes or proteins)
                             </label>
                           </div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" ng-show="options.searchOptions.ui.show_advance_options">
                         <label class="col-sm-2 control-label">Genomes:</label>
                         <div class="col-sm-10">
                             <div ng-repeat="item in targetGenomes" style="padding:0 0 5px 0">
@@ -174,14 +178,13 @@
                                     typeahead-loading="loading..." typeahead-min-length="4" typeahead-wait-ms="500"
                                     typeahead-on-select="onGenomeNameSelect($item, $model, $label, {{item.key}})">
 
-                                <button ng-hide="item.key > 0" type="button" class="btn" ng-click="addGenomeInputBox()">More</button>
-                                <button ng-hide="item.key == 0" type="button" class="btn" ng-click="removeGenomeInputBox(item)">Remove</button>
+                                <button ng-hide="item.key == 0" type="button" class="btn btn-sm glyphicon glyphicon-minus" ng-click="removeGenomeInputBox(item)"></button>
+                                <button ng-show="item.key == max_key_value" type="button" class="btn btn-sm glyphicon glyphicon-plus" ng-click="addGenomeInputBox()"></button>
                             </div>
-                            <div ng-show="options.searchOptions.general.database == '' && options.searchOptions.general.genome_ids_invalid" class="bg-danger text-danger">At least one genome should be selected.</div>
+                            <div ng-show="options.searchOptions.general.database == '' && options.searchOptions.ui.genome_ids_invalid" class="bg-danger text-danger">At least one genome should be selected.</div>
                         </div>
                     </div>
-                    </fieldset>
-                    <div class="form-group">
+                    <div class="form-group" ng-show="options.searchOptions.ui.show_advance_options">
                         <label for="program" class="col-sm-2 control-label">Program:</label>
                         <div class="col-sm-10">
                             <select class="form-control" id="program" ng-model="options.searchOptions.general.program">
@@ -189,7 +192,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" ng-show="options.searchOptions.ui.show_advance_options">
                         <label for="max_hit" class="col-sm-4 control-label">Max target sequences:</label>
                         <div class="col-sm-2">
                             <select class="form-control" id="max_hit" ng-model="options.searchOptions.general.max_hit">
