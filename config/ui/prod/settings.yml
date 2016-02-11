@@ -32,10 +32,10 @@ docsite:
 
 menus:
     authenticated: 
-        main: [dashboard, search, narrative]
+        main: [narrative, appcatalog, search, dashboard]
         developer: []
         help: [contact-kbase, about-kbase]
     unauthenticated: 
-        main: [search]
+        main: [appcatalog, search]
         developer: []
         help: [contact-kbase, about-kbase]
