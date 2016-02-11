@@ -182,20 +182,23 @@ homologyApp.service('homologyOptionsService', function homologyOptionsService() 
         related: {},
         numPageLinks : 10,
         defaultSearchOptions : {
-                                "general": {
-                                    "itemsPerPage": 10,
-                                    "program": "blastp",
-                                    "database": "",
-                                    "searchtype": "features",
-                                    "genome_ids": [],
-                                    "max_hit": 10,
-                                    "evalue": "1e-5",
-                                    "sequence_invalid": false,
-                                    "genome_ids_invalid": false,
-                                    "useDatabase": false
-                                },
-                                "perCategory": {"features":{}}
-                               },
+            "general": {
+                "itemsPerPage": 10,
+                "program": "blastp",
+                "database": "kbase_nr.ffn",
+                "searchtype": "features",
+                "genome_ids": [],
+                "max_hit": 100,
+                "evalue": "1"
+            },
+            "ui": {
+                "sequence_message": "",
+                "sequence_invalid": false,
+                "genome_ids_invalid": false,
+                "show_advance_options": false
+            },
+            "perCategory": {"features":{}}
+        },
         categoryCounts : {},
         searchOptions : this.defaultSearchOptions,
         defaultMessage : "KBase is processing your request...",
@@ -276,19 +279,18 @@ homologyApp.filter('displayPairwiseComparison', function($sce) {
 });
 
 homologyApp.filter('buildFeatureLink', function($sce){
-  return function(feature_id){
-    var genome_id = feature_id.split('.peg')[0];
+  return function(row){
     var version = "KBasePublicGenomesV5";
 
-    return $sce.trustAsHtml('<a href="/#/dataview/' + version + '/' + genome_id + '?sub=Feature&subid=' + feature_id + '" target=_blank>' + feature_id + '</a>');
+    return $sce.trustAsHtml('<a href="/#/dataview/' + version + '/' + row.genome_id + '?sub=Feature&subid=' + row.feature_id + '" target=_blank>' + row.function + '</a>');
   }
 });
 
 homologyApp.filter('buildGenomeLink', function($sce){
-  return function(genome){
+  return function(row){
     var version = "KBasePublicGenomesV5";
 
-    return $sce.trustAsHtml('<a href="/#/dataview/' + version + '/' + genome.genome_id + '" target=_blank>' + genome.genome_name + '</a>');
+    return $sce.trustAsHtml('<a href="/#/dataview/' + version + '/' + row.genome_id + '" target=_blank>' + row.genome_name + '</a>');
   }
 });
 
@@ -325,46 +327,40 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         }
     });
 
-    $scope.availableDatabases = [{value: "", label: "Search on selected genomes", selected: true},
-      {value: "kbase_nr.faa", label: "KBase Non-redundant Protein Sequences (NR-faa)"},
-      {value: "kbase_nr.ffn", label: "KBase Non-redundant gene sequences (NR-ffn)"},
+    $scope.availableDatabases = [
+      {value: "kbase_nr.faa", label: "KBase non-redundant protein sequences (NR-faa)"},
+      {value: "kbase_nr.ffn", label: "KBase non-redundant gene sequences (NR-ffn)", selected: true},
       {value: "kbase.fna", label: "KBase genome sequences (fna)"}
     ];
 
-    $scope.validateDatabase = function() {
-      // console.log($scope.options.searchOptions.general.database, $scope.options.searchOptions.general.useDatabase);
-      if ($scope.options.searchOptions.general.database != "") {
-        // disable genome selector
-        $scope.options.searchOptions.general.useDatabase = true;
-      }
-      else {
-        $scope.options.searchOptions.general.useDatabase = false;
-      }
-    };
-
-    $scope.availablePrograms = [{value: "blastn", label: "blastn"},
-        {value: "blastp", label: "blastp", selected:true},
+    $scope.availablePrograms = [{value: "blastn", label: "blastn", selected: true},
+        {value: "blastp", label: "blastp"},
         {value: "blastx", label: "blastx"},
         {value: "tblastn", label: "tblastn"},
         {value: "tblastx", label: "tblastx"}
     ];
 
     $scope.targetSequences = [{value:1, label:"1"},
-        {value: 10, label: "10", selected: true},
-        {value: 100, label: "100"},
+        {value: 10, label: "10"},
+        {value: 100, label: "100", selected: true},
         {value: 1000, label: "1000"}
     ];
 
     // controls for genome name input boxes
     $scope.targetGenomes = [{key:0}];
+    $scope.max_key_value = 0;
 
     $scope.addGenomeInputBox = function() {
         var last = $scope.targetGenomes[$scope.targetGenomes.length-1];
+        $scope.max_key_value = last.key + 1;
         $scope.targetGenomes.push({key: (last.key + 1)});
     };
 
     $scope.removeGenomeInputBox = function(item) {
       $scope.targetGenomes = $scope.targetGenomes.filter(function(i){
+          if (i.key != item.key) {
+              $scope.max_key_value = i.key;
+          }
           return (i.key != item.key);
       });
     };
@@ -375,7 +371,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 category: 'genomes',
                 itemsPerPage: 20,
                 page: 1,
-                q: name
+                q: name + '*'
             }
         }).then(function(response){
             return response.data.items.map(function(genome){
@@ -533,47 +529,73 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         return promise;
     };
 
+    $scope.hasMultipleFastaSequence = function(sequence){
+        return (sequence.indexOf('>') === sequence.lastIndexOf('>'));
+    };
+
+    $scope.isNucleotideFastaSequence = function(sequence){
+        var patternFastaHeader = /^>.*\n/gi;
+        var patternDnaSequence = /[atcgn\n\s]/gi;
+
+        return (sequence.replace(patternFastaHeader, '').replace(patternDnaSequence, '').length === 0);
+    };
+
+    $scope.setDefaultParameters = function(sequence_type){
+        if (sequence_type === 'nucleotide') {
+            $scope.options.searchOptions.general.database = 'kbase_nr.ffn';
+            $scope.options.searchOptions.general.program = 'blastn';
+        } else {
+            // protein
+            $scope.options.searchOptions.general.database = 'kbase_nr.faa';
+            $scope.options.searchOptions.general.program = 'blastp';
+        }
+    };
+
+    $scope.onSequenceChange = function() {
+        if ($scope.options.searchOptions.general.sequence === undefined) return;
+        var sequence_type = $scope.isNucleotideFastaSequence($scope.options.searchOptions.general.sequence)?"nucleotide":"protein";
+        $scope.setDefaultParameters(sequence_type);
+    };
+
     $scope.getHomologyResults = function(options){
 
-        // TODO: implement validation with proper message
-        // 1. sequence should have only one fasta
-        // 2. when genomes are not added and database == "", send message
-        //console.log($scope.targetGenomes);
         var method = "", params = null;
 
+        // check sequence
         if (options.sequence) {
-            if (options.sequence.indexOf('>') >= 0 &&
-                options.sequence.indexOf('>') === options.sequence.lastIndexOf('>')) {
-				// contains only one >. pass
-                $scope.options.searchOptions.general.sequence_invalid = false;
+            if ($scope.hasMultipleFastaSequence(options.sequence)) {
+                $scope.options.searchOptions.ui.sequence_invalid = false;
             } else {
                 angular.element.find('#sequence')[0].focus();
-				$scope.options.searchOptions.general.sequence_invalid = true;
+				$scope.options.searchOptions.ui.sequence_invalid = true;
+                $scope.options.searchOptions.ui.sequence_message = "contains more than one sequence";
                 return;
             }
         }
 
-        if (options.useDatabase) {
+        // check genome list
+        var genomeIds = $scope.targetGenomes.map(function(genome){
+            return genome.genome_id;
+        }).filter(function(id){
+            return id != undefined;
+        });
+
+        if (genomeIds.length == 0) {
           // database search
           method = "HomologyService.blast_fasta_to_database";
-          params = [options.sequence, options.program, options.database, options.evalue, options.max_hit, 70];
+          params = [options.sequence, options.program, options.database, options.evalue, options.max_hit, 0];
         }
         else {
-          // genome search
-          var genomeIds = $scope.targetGenomes.map(function(genome){
-             return genome.genome_id;
-          }).filter(function(id){
-              return id != undefined;
-          });
-          if (genomeIds.length == 0) {
-              angular.element.find('#genomes_0')[0].focus();
-              $scope.options.searchOptions.general.genome_ids_invalid = true;
-              return;
-          } else {
-              $scope.options.searchOptions.general.genome_ids_invalid = false;
-          }
+
+          //if (genomeIds.length == 0) {
+          //    angular.element.find('#genomes_0')[0].focus();
+          //    $scope.options.searchOptions.ui.genome_ids_invalid = true;
+          //    return;
+          //} else {
+              $scope.options.searchOptions.ui.genome_ids_invalid = false;
+          //}
           method = "HomologyService.blast_fasta_to_genomes";
-          params = [options.sequence, options.program, genomeIds, options.searchtype, options.evalue, options.max_hit, 70];
+          params = [options.sequence, options.program, genomeIds, options.searchtype, options.evalue, options.max_hit, 0];
         }
 
         $("#loading_message_text").html(options.defaultMessage);
@@ -624,7 +646,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             console.log(error);
 
             $scope.options.resultJSON.totalResults = 0;
-            $scope.options.errorMessage = error.error.message;
+            $scope.options.errorMessage = error.error.message || error.error;
             $scope.options.resultsAvailable = false;
             $scope.$apply();
             $.unblockUI();
@@ -649,7 +671,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 "position": (index + 1),
                 "qseqid": query_id,
                 "sseqid": target_id,
-                "pident": parseInt(Number(hit.hsps[0].identity / hit.len * 10000))/100,
+                "pident": parseInt(Number(hit.hsps[0].identity / hit.len * 10000))/100 + '%',
                 "length": hit.len,
                 "qstart": hit.hsps[0].query_from,
                 "qend": hit.hsps[0].query_to,

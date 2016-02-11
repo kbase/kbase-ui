@@ -928,25 +928,12 @@ table.search-transfer-table {
     margin-right: 10px;
 }
 
-.homology_query_seq_header {
-    width: 131px;
-}
-
-.homology_subj_seq_header {
-    width: 151px;
-}
-
-.homology_subj_seq_field {
-    width: 140px;
-    margin-right: 9px;
-}
-
 .homology_function_header {
-    width: 200px;
+    width: 351px;
 }
 
 .homology_function_field {
-    width: 190px;
+    width: 339px;
     margin-right: 9px;
 }
 
