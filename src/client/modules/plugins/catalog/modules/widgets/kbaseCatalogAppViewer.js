@@ -1021,12 +1021,23 @@ define([
                                     var types = '';
 
                                     if (param.text_options && param.text_options.valid_ws_types) {
-                                        types = $.jqElem('i')
-                                            .append(' ' + param.text_options.valid_ws_types.join(', '))
-                                            ;
+                                        types = $.jqElem('i').append(' ');
+                                        for(var ty=0; ty<param.text_options.valid_ws_types.length; ty++) {
+                                            if(ty>0) { types.append(', '); }
+                                            var typeName = param.text_options.valid_ws_types[ty];
+                                            types.append('<a href="#spec/type/'+typeName+'">' + typeName + '</a>');
+                                        }
                                     }
 
                                     var $li = $.jqElem('li');//.append('Parameter ' + (idx + 1)));
+
+                                    // only show both if they are different
+                                    var description= param.short_hint;
+                                    console.log(param.short_hint)
+                                    console.log(param.description)
+                                    if(param.short_hint.trim() !== param.description.trim()) {
+                                        description = description + "<br>"+param.description;
+                                    }
                                     $li.append(
                                         $.jqElem('ul')
                                         .css('list-style-type', 'none')
@@ -1039,8 +1050,7 @@ define([
                                             .append(
                                                 $.jqElem('ul')
                                                 .css('list-style-type', 'none')
-                                                .append($.jqElem('li').append(param.short_hint))
-                                                .append($.jqElem('li').append(param.description))
+                                                .append($.jqElem('li').append(description))
                                                 )
                                             )
                                         );
