@@ -467,7 +467,7 @@ define([
 
             // Do we really need a guard here? If there is no kb.urls, the deploy is pretty broken...
             var introText = _.template(introTemplate)({
-                docBaseUrl: runtime.getConfig('docsite.baseUrl')
+                docBaseUrl: runtime.getConfig('resources.docSite.base.url')
             });
 
             function createTempNarrative(params) {
