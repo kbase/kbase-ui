@@ -7,7 +7,7 @@ node_modules
 
 # IDEs
 # put your ide here 
-/nbproject
+nbproject
 
 # Build artifacts
 /build/dist

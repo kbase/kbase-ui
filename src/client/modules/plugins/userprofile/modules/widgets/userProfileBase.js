@@ -147,9 +147,9 @@ define([
                     this.context.env = {
                         widgetTitle: this.widgetTitle,
                         widgetName: this.widgetName,
-                        docsite: this.runtime.getConfig('docsite'),
+                        docsite: this.runtime.getConfig('resources.docSite.base.url'),
                         root: Plugin.plugin.path,
-                        pluginPath: Plugin.plugin.path,
+                        pluginPath: Plugin.plugin.fullPath,
                         getConfig: function (prop) {
                             return this.runtime.getConfig(prop);
                         }.bind(this)
@@ -651,7 +651,7 @@ define([
             },
             loadCSS: {
                 value: function () {
-                    this.loadCSSResource(Plugin.plugin.path + this.widgetName + '/style.css');
+                    this.loadCSSResource([Plugin.plugin.fullPath, this.widgetName, 'style.css'].join('/'));
                 }
             },
             renderMessages: {

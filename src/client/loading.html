@@ -2,14 +2,14 @@
 <html>
     <head>
         <title>KBase Narrative Interface</title>
-        <link rel="icon" type="image/x-icon" href="/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
         <script src="/modules/bower_components/requirejs/require.js"></script>
-        <script src="/require-config.js"></script>
+        <script src="/modules/require-config.js"></script>
     </head>
     <body>
         <div style="text-align:center;">
             <div style="margin-top: 20%">
-                <img id="loader" src="/kbase_animated_logo.gif"></img>
+                <img id="loader" src="/images/kbase_animated_logo.gif"></img>
                 <div id="text" style="font-size:146.5%; color:#006698; font-family:'OxygenBold', Arial, sans-serif">
                     <br>
                     Starting a new Narrative session for you
@@ -71,7 +71,7 @@
             }
             
             // in case the server didn't get the memo that this is supposed to be https!
-            // narrativeUrl = narrativeUrl.replace(/https?\:/, window.location.protocol);
+            narrativeUrl = narrativeUrl.replace(/https?\:/, window.location.protocol);
 
             // TODO: use Promise to improve the flow.
             var interval = null;
@@ -130,7 +130,7 @@
                             siteError = true;
                             if (interval) {
                                 clearInterval(interval);
-                            }                            
+                            }
                         } else if (error.status === 0) {
                             // No authorization
                             var msg = '<p>There is a problem accessing the narrative. Please return to the KBase UI to log in.</p>' +
@@ -139,7 +139,7 @@
                             siteError = true;
                             if (interval) {
                                 clearInterval(interval);
-                            }                            
+                            }
                         }
                         numTries++;
                     },
@@ -154,7 +154,7 @@
                         var ua = navigator.userAgent.toLowerCase();
                         if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {
                             $('#text').html('<br><a href="' + narrativeUrl + '?">Click here to enter the Narrative Interface!</a>');
-                            $('#loader').attr('src', 'functional-site/assets/images/doodle.png')
+                            $('#loader').attr('src', '/images/doodle.png')
                         } else {
                             window.location.replace(narrativeUrl);
                         }

@@ -7,10 +7,10 @@ a.search-selected-category-link:active { color: #468847; }
 a.search-selected-category-link:visited { color: #468847; }
 
 a.search-category-link {
-/*    white-space: pre-wrap; */ /* css-3 */    
+/*    white-space: pre-wrap; */ /* css-3 */
 /*    white-space: -moz-pre-wrap; */ /* Mozilla, since 1999 */
-/*    white-space: -pre-wrap; */ /* Opera 4-6 */    
-/*    white-space: -o-pre-wrap; */ /* Opera 7 */    
+/*    white-space: -pre-wrap; */ /* Opera 4-6 */
+/*    white-space: -o-pre-wrap; */ /* Opera 7 */
     word-wrap: break-word; /* Internet Explorer 5.5+ */
     padding-left: 0px;
 }
@@ -147,7 +147,7 @@ span .badge {
 .search-navbar-title {
     padding-left: 40px;
     font-size: 20px;
-    color: gray;    
+    color: gray;
 }
 
 /*** Login ***/
@@ -234,7 +234,7 @@ span .badge {
 
 
 /*** Selections ***/
-      
+
 .search-selections-title h3 {
     font-size: medium;
     color: gray;
@@ -306,7 +306,7 @@ span .badge {
     background-image: -webkit-linear-gradient(top, #fcf8e3 0%, #fefcf5 100%);
     background-image: linear-gradient(to bottom, #fcf8e3 0%, #fefcf5 100%);
     background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fcf8e3', endColorstr='#fefcf5', GradientType=0);    
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fcf8e3', endColorstr='#fefcf5', GradientType=0);
 }
 
 .panel-filter-content {
@@ -527,7 +527,7 @@ table.search-transfer-table {
     width: 77px;
 }
 
-.search-result-row-even {    
+.search-result-row-even {
     #background-color: #efefef;
     background-color: #f5f5f5;
     width: 100%;
@@ -620,7 +620,7 @@ table.search-transfer-table {
     background-image: -webkit-linear-gradient(top, #fcf8e3 0%, #fefcf5 100%);
     background-image: linear-gradient(to bottom, #fcf8e3 0%, #fefcf5 100%);
     background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fcf8e3', endColorstr='#fefcf5', GradientType=0);        
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fcf8e3', endColorstr='#fefcf5', GradientType=0);
 }
 
 .search-result-column-header-toggle.disabled {
@@ -661,7 +661,7 @@ table.search-transfer-table {
     background-image: -webkit-linear-gradient(top, #fcf8e3 0%, #fefcf5 100%);
     background-image: linear-gradient(to bottom, #fcf8e3 0%, #fefcf5 100%);
     background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fcf8e3', endColorstr='#fefcf5', GradientType=0);        
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fcf8e3', endColorstr='#fefcf5', GradientType=0);
 }
 
 .search-result-column-header-btn.disabled {
@@ -676,7 +676,7 @@ table.search-transfer-table {
     text-align: left;
 }
 
-.search-result-column-header-btn:hover, 
+.search-result-column-header-btn:hover,
 .search-result-column-header-btn:focus,
 .search-result-column-header-btn:active,
 .search-result-column-header-btn.active,
@@ -694,7 +694,7 @@ table.search-transfer-table {
     background-image: -webkit-linear-gradient(top, #fcf8e3 0%, #fefcf5 100%);
     background-image: linear-gradient(to bottom, #fcf8e3 0%, #fefcf5 100%);
     background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fcf8e3', endColorstr='#fefcf5', GradientType=0);        
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fcf8e3', endColorstr='#fefcf5', GradientType=0);
 }
 
 .search-checkbox {
@@ -712,7 +712,7 @@ table.search-transfer-table {
 
 .search-result-row {
     margin-left: 0px;
-    padding: 0px;    
+    padding: 0px;
     border-top: 1px solid #c09853;
 }
 
@@ -928,30 +928,21 @@ table.search-transfer-table {
     margin-right: 10px;
 }
 
-.homology_query_seq_header {
-    width: 131px;
+.homology_function_header {
+    width: 351px;
 }
 
-.homology_query_seq_field {
-    width: 120px;
+.homology_function_field {
+    width: 339px;
     margin-right: 9px;
 }
 
-.homology_subj_seq_header {
-    width: 211px;
+.homology_string_header {
+    width: 190px;
 }
 
-.homology_subj_seq_field {
-    width: 200px;
-    margin-right: 9px;
-}
-
-.homology_position_header {
-    width: 50px;
-}
-
-.homology_position_field {
-    width: 40px;
+.homology_string_field {
+    width: 180px;
     margin-right: 9px;
 }
 

@@ -9,7 +9,7 @@ define([
         function myWidget(config) {
             function render(title) {
                 var div = html.tag('div');
-                return div({style: {fontWeight: 'bold', fontSize: '150%', margin: '15px 0 0 15px'}}, [
+                return div({class: 'kb-widget-title'}, [
                     title
                 ]);
             }
@@ -21,9 +21,6 @@ define([
                         // We use the widget convenience function in order to 
                         // get automatic event listener cleanup. We could almost
                         // as easily do this ourselves.
-//                        w.recv('title', 'set', function (data) {
-//                            w.setHtml(render(data));
-//                        });
                         this.recv('ui', 'setTitle', function (data) {
                             this.set('title', data);
                         }.bind(this));

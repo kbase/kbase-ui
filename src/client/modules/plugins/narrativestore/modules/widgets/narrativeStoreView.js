@@ -7,7 +7,7 @@
  */
 define([
     'jquery',
-    'kb/service/client/NarrativeMethodStore',
+    'kb/service/client/narrativeMethodStore',
     'kb/widget/legacy/authenticatedWidget',
 ],
     function ($, NarrativeMethodStore) {
@@ -15,6 +15,7 @@ define([
             name: "KBaseNarrativeStoreView",
             parent: "kbaseAuthenticatedWidget",
             options: {
+                namespace: null, // generally a module name
                 type: null, // either app or method
                 id: null
             },
@@ -43,10 +44,16 @@ define([
                 console.log('Narrative Store');
                 console.log(options);
 
+                if (options.namespace) {
+                    this.options.id = this.options.namespace + '/' + this.options.id;
+                }
+
                 if (options.type === 'app') {
                     this.fetchAppInfoAndRender();
                 } else if (options.type === 'method') {
-                    this.fetchMethodInfoAndRender();
+                    // redirect to app catalog
+                    window.location.replace('#appcatalog/app/'+this.options.id);
+                    //this.fetchMethodInfoAndRender();
                 } else {
                     this.showError({error: {message: 'Must specify either "app" or "method" in url, as in narrativestore/app/app_id.'}});
                 }
@@ -84,6 +91,9 @@ define([
 
                         self.$narMethodStoreInfo.append(
                             $('<table>').css({border: '1px solid #bbb', margin: '10px', padding: '10px'})
+                            /*.append($('<tr>')
+                                .append($('<th>').append('Method Store URL  '))
+                                .append($('<td>').append(self.runtime.getConfig('services.narrative_method_store.url'))))*/
                             .append($('<tr>')
                                 .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Yaml/Spec Location '))
                                 .append($('<td>').append('<a href="' + url + '" target="_blank">' + url + "</a>")))
@@ -203,6 +213,7 @@ define([
                     $.jqElem('div')
                     .addClass('col-md-4')
                     .css('text-align', 'right')
+                    /* disable launching an App in a new Narrative
                     .append(
                         $.jqElem('div')
                         .addClass('btn-group')
@@ -214,7 +225,7 @@ define([
                                 .append('<span class="fa fa-plus"></span> Launch in New Narrative')
                                 )
                             )
-                        )
+                        )*/
                     ;
 
                 $header.append($basicInfo);
@@ -304,7 +315,6 @@ define([
                                     .append(
                                         $.jqElem('a')
                                         .attr('href', "#narrativestore/method/" + method_spec.id)
-                                        .attr('target', '_blank')
                                         .append(method_spec.name)
                                         )
                                     .append(
@@ -327,7 +337,6 @@ define([
                     self.$mainPanel.find('[data-method-id]'),
                     function (idx, link) {
                         var method_id = $(link).data('method-id');
-                        $(link).attr('target', '_blank');
                         $(link).attr('href', "#/narrativestore/method/" + method_id);
                     }
                 );
@@ -646,7 +655,6 @@ define([
                     self.$mainPanel.find('[data-method-id]'),
                     function (idx, link) {
                         var method_id = $(link).data('method-id');
-                        $(link).attr('target', '_blank');
                         $(link).attr('href', "#/narrativestore/method/" + method_id);
                     }
                 );

@@ -4,13 +4,10 @@ require(['require-config'], function() {
     'use strict';
     require(['app/main'], function (main) {
         main.start()
-            .then(function () {
-                console.log('app has started!');
-            })
             .catch(function (err) {
-                document.getElementById('root').innerHTML = 'My gosh, I am not a happy camper. Please check the browser console.';
-                console.log('app is unhappy :(');
-                console.log(err);
+                document.getElementById('root').innerHTML = 'Error starting KBase UI. Please consult the browser error log.';
+                console.error('app is unhappy :(');
+                console.error(err);
             });
     });
 });

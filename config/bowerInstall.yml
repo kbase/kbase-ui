@@ -11,6 +11,11 @@ bowerFiles:
             - bluebird.js
         bowerComponent: true
     -
+        name: knockout
+        cwd: dist
+        src: knockout.js
+        bowerComponent: true
+    -
         name: bootstrap
         cwd: dist
         src: "**/*"
@@ -83,6 +88,13 @@ bowerFiles:
             - css/datatables-bootstrap3.css
             - js/datatables-bootstrap3.js
         bowerComponent: true
+    - 
+        name: google-code-prettify
+        cwd: src
+        src:
+            - prettify.js
+            - prettify.css
+        bowerComponent: true        
     -
         dir: d3-plugins-sankey
         src:
@@ -104,7 +116,7 @@ bowerFiles:
             - languages/*.js
         bowerComponent: true
     -
-        name: blockUI
+        name: blockui
         src:
             - jquery.blockUI.js
         bowerComponent: true
@@ -118,5 +130,16 @@ bowerFiles:
         cwd: lib
         src: 
             - postal.js        
+        bowerComponent: true
+    -
+        # This one is an installable package, kbase style, so we just
+        # copy the whole thing in, and the install.yml says what to do
+        name: kbase-data-client-js
+        src: "**/*"
+        bowerComponent: true   
+    -
+        name: plotly
+        cwd: dist
+        src: plotly.js
         bowerComponent: true
             

@@ -28,7 +28,9 @@ install:
                 jqueryName: KBaseNarrativeStoreView
             type: kbwidget
     routes:
-            -
-                path: ['narrativestore', {type: param, name: type}, {type: param, name: id}]
-                widget: narrativeStore_panel
-    
+        -
+            path: ['narrativestore', {type: param, name: type}, {type: param, name: id}]
+            widget: narrativeStore_panel
+        -
+            path: ['narrativestore', {type: param, name: type}, {type: param, name: namespace}, {type: param, name: id}]
+            widget: narrativeStore_panel

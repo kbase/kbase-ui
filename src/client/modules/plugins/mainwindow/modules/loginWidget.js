@@ -37,17 +37,20 @@ define([
                         // w.setState('updated', new Date());
                     })
                     .catch(function (err) {
-                        console.log('ERROR');
-                        console.log(err);
+                        console.error('ERROR');
+                        console.error(err);
                         alert('Error signing out (check console for details)');
                     });
             }
             function renderAvatar(widget) {
-                var profile = widget.get('userProfile');
+                var profile = widget.get('userProfile'),
+                    defaultAvatarUrl = Plugin.plugin.fullPath + '/images/nouserpic.png',
+                    avatarUrl;
                 if (profile) {
-                    return img({src: profile.getAvatarURL(), style: 'width: 40px;', class: 'login-button-avatar', 'data-element': 'avatar'});
+                    avatarUrl = profile.getAvatarURL() || defaultAvatarUrl;
+                    return img({src: avatarUrl, style: 'width: 40px;', class: 'login-button-avatar', 'data-element': 'avatar'});
                 }
-                return img({src: Plugin.plugin.path + '/images/nouserpic.png', style: 'width: 40px;', class: 'login-button-avatar', 'data-element': 'avatar'});
+                return img({src: defaultAvatarUrl, style: 'width: 40px;', class: 'login-button-avatar', 'data-element': 'avatar'});
             }
             function renderLogin(widget) {
                 if (runtime.service('session').isLoggedIn()) {

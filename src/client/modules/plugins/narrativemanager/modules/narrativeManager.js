@@ -5,7 +5,7 @@ define([
     'underscore',
     'bluebird',
     'kb/service/client/workspace',
-    'kb/service/client/NarrativeMethodStore',
+    'kb/service/client/narrativeMethodStore',
     'kb/service/utils'
 ],
     function ($, _, Promise, Workspace, NarrativeMethodStore, serviceUtils) {
@@ -313,12 +313,9 @@ define([
                         cellData = gatherCellData(cells, specMapping, parameters),
                             narrativeObject = {
                                 nbformat_minor: 0,
-                                worksheets: [{
-                                        cells: cellData,
-                                        metadata: {}
-                                    }],
+                                cells: cellData,
                                 metadata: metadata,
-                                nbformat: 3
+                                nbformat: 4
                             },
                         // setup external string to string metadata for the WS object
                         metadataExternal = {};
@@ -470,7 +467,7 @@ define([
 
             // Do we really need a guard here? If there is no kb.urls, the deploy is pretty broken...
             var introText = _.template(introTemplate)({
-                docBaseUrl: runtime.getConfig('docsite.baseUrl')
+                docBaseUrl: runtime.getConfig('resources.docSite.base.url')
             });
 
             function createTempNarrative(params) {
