@@ -135,6 +135,7 @@ homologyApp.service('homologyOptionsService', function homologyOptionsService() 
             size: 0,
             all: false,
             data: {},
+            view: {},
             types: {
                 'features': {all: false, size: 0, markers: {}},
                 'genomes': {all: false, size: 0, markers: {}}
@@ -364,7 +365,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     ];
 
     $scope.availablePrograms = [
-        {value: "blastn", label: "blastn - search a nucleotide database using a nucleotide query", selected: true},
+        {value: "blastn", label: "blastn - search a nucleotide database using a nucleotide query"},
         {value: "blastp", label: "blastp - search protein database using a protein query"},
         {value: "blastx", label: "blastx - search protein database using a translated nucleotide query"},
         {value: "tblastn", label: "tblastn - search translated nucleotide database using a protein query"},
@@ -1715,6 +1716,15 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         }
 
         $scope.saveUserState();
+    };
+
+    $scope.toggleExpandView = function(id) {
+        console.log($scope.options.userState.session.viewType != 'expanded', $scope.options.userState.session.data_cart.view[id]);
+        if (!$scope.options.userState.session.data_cart.view.hasOwnProperty(id)) {
+            $scope.options.userState.session.data_cart.view[id] = true;
+        } else {
+            delete $scope.options.userState.session.data_cart.view[id];
+        }
     };
 
     $scope.selectCheckbox = function(id, item) {

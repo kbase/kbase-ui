@@ -191,7 +191,7 @@
                         <label for="program" class="col-sm-2 control-label">Program:</label>
                         <div class="col-sm-10">
                             <select class="form-control" id="program" ng-model="options.searchOptions.general.program" ng-change="onProgramChange()">
-                                <option ng-repeat="prog in availablePrograms" ng-selected="prog.selected" value="{{prog.value}}">{{prog.label}}</option>
+                                <option ng-repeat="prog in availablePrograms" value="{{prog.value}}">{{prog.label}}</option>
                             </select>
                             <div ng-show="options.searchOptions.ui.program_message !=''" class="bg-danger text-danger">{{options.searchOptions.ui.program_message}}</div>
                         </div>

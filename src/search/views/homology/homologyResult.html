@@ -22,12 +22,16 @@
                         <span class="glyphicon" ng-class="{'glyphicon-unchecked': !options.userState.session.data_cart.data[item.row_id], 'glyphicon-check': options.userState.session.data_cart.data[item.row_id]}"/>
                     </a>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 search-result-position" ng-show="options.userState.session.token">{{item.position}}.</div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 search-result-position" ng-show="options.userState.session.token">{{item.position}}.
+                    <a ng-click="toggleExpandView(item.position)" class="search-checkbox-link">
+                        <span class="glyphicon" style="float:right; margin-right: 10px" ng-class="{'glyphicon-expand': !options.userState.session.data_cart.view[item.position], 'glyphicon-collapse-up': options.userState.session.data_cart.view[item.position]}"/>
+                    </a>
+                </div>
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 search-result-position-loggedOut" ng-show="!options.userState.session.token">{{item.position}}.</div>
 
                 <div ng-include="options.templates.rows"></div>
             </div>
-            <div collapse="options.userState.session.viewType != 'expanded'" class="search-typedRecord-expanded row">
+            <div collapse="options.userState.session.viewType != 'expanded' && !options.userState.session.data_cart.view[item.position]" class="search-typedRecord-expanded row">
                 <div class="well search-result-column-expanded">
                     <table class="search-result-expanded-entry" ng-include="options.templates.expanded">
                     </table>
