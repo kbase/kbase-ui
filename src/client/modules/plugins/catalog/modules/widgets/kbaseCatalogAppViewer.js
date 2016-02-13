@@ -278,9 +278,9 @@ define([
 
                             self.$infoPanel.append(
                                 $('<table>').css({border: '1px solid #bbb', margin: '10px', padding: '10px'})
-                                .append($('<tr>')
+                                /*.append($('<tr>')
                                     .append($('<th>').append('NMS Store URL  '))
-                                    .append($('<td>').append(self.runtime.getConfig('services.narrative_method_store.url'))))
+                                    .append($('<td>').append(self.runtime.getConfig('services.narrative_method_store.url'))))*/
                                 .append($('<tr>')
                                     .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Yaml/Spec Location '))
                                     .append($('<td>').append('<a href="' + url + '" target="_blank">' + url + "</a>")))
@@ -806,7 +806,7 @@ define([
                         }
                         $authorDiv.append($('<a href="#people/'+m.authors[k]+'">')
                                             .append(m.authors[k])
-                                            .on('click',function() {
+                                            .on('click',function(event) {
                                                 // have to stop propagation so we don't go to the app page first
                                                 event.stopPropagation();
                                             }));
@@ -834,7 +834,7 @@ define([
                 var $star = $('<span>').addClass('kbcb-star').append('<i class="fa fa-star"></i>');
                 if(self.runtime.service('session').isLoggedIn()) {
                     $star.addClass('kbcb-star-nonfavorite');
-                    $star.on('click', function() {
+                    $star.on('click', function(event) {
                         event.stopPropagation();
                         self.starClick();
                     });
@@ -1021,12 +1021,23 @@ define([
                                     var types = '';
 
                                     if (param.text_options && param.text_options.valid_ws_types) {
-                                        types = $.jqElem('i')
-                                            .append(' ' + param.text_options.valid_ws_types.join(', '))
-                                            ;
+                                        types = $.jqElem('i').append(' ');
+                                        for(var ty=0; ty<param.text_options.valid_ws_types.length; ty++) {
+                                            if(ty>0) { types.append(', '); }
+                                            var typeName = param.text_options.valid_ws_types[ty];
+                                            types.append('<a href="#spec/type/'+typeName+'">' + typeName + '</a>');
+                                        }
                                     }
 
                                     var $li = $.jqElem('li');//.append('Parameter ' + (idx + 1)));
+
+                                    // only show both if they are different
+                                    var description= param.short_hint;
+                                    console.log(param.short_hint)
+                                    console.log(param.description)
+                                    if(param.short_hint.trim() !== param.description.trim()) {
+                                        description = description + "<br>"+param.description;
+                                    }
                                     $li.append(
                                         $.jqElem('ul')
                                         .css('list-style-type', 'none')
@@ -1039,8 +1050,7 @@ define([
                                             .append(
                                                 $.jqElem('ul')
                                                 .css('list-style-type', 'none')
-                                                .append($.jqElem('li').append(param.short_hint))
-                                                .append($.jqElem('li').append(param.description))
+                                                .append($.jqElem('li').append(description))
                                                 )
                                             )
                                         );

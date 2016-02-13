@@ -147,7 +147,7 @@ define([
                     this.context.env = {
                         widgetTitle: this.widgetTitle,
                         widgetName: this.widgetName,
-                        docsite: this.runtime.getConfig('docsite'),
+                        docsite: this.runtime.getConfig('resources.docSite.base.url'),
                         root: Plugin.plugin.path,
                         pluginPath: Plugin.plugin.fullPath,
                         getConfig: function (prop) {

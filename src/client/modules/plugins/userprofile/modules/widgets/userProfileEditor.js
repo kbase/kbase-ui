@@ -889,7 +889,7 @@ define([
                             icon: 'wrench',
                             callback: function () {
                                 this.runtime.send('app', 'redirect', {
-                                    url: 'https://gologin.kbase.us/Dashboard',
+                                    url: this.runtime.config('resources.userAccount.access.url'),
                                     new_window: true
                                 })
                             }.bind(this)
@@ -904,40 +904,6 @@ define([
                                 widget.renderEditView();
                             }.bind(this)
                         });
-//                        R.send('navbar', 'addButton', {
-//                            name: 'test',
-//                            label: 'Test Button',
-//                            style: 'primary',
-//                            icon: 'comment', 
-//                            callback: function () {
-//                                alert('clicked me');
-//                            }
-//                        });
-
-                        /*navbar.clearButtons();
-                         navbar.addButton({
-                         name: 'edit',
-                         label: 'Edit',
-                         style: 'primary',
-                         icon: 'edit',
-                         callback: function () {
-                         widget.clearMessages();
-                         widget.renderEditView();
-                         }.bind(this)
-                         });
-                         navbar.addButton({
-                         name: 'test',
-                         label: 'Test Button',
-                         style: 'primary',
-                         icon: 'comment', 
-                         callback: function () {
-                         alert('clicked me');
-                         }
-                         });*/
-
-
-                        //navbar.render();
-                        // alert('rendered?');
 
                         // NAVBAR.setTitle('Viewing your profile');
                         /*NAVBAR.clearButtons();

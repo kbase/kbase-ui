@@ -23,7 +23,7 @@ define([
                         p(['In ',
                             span({dataElement: 'countdown', style: {color: 'green'}}),
                             ' seconds your browser will be redirected to the ',
-                            a({href: runtime.getConfig('services.doc_site.url')}, [
+                            a({href: runtime.getConfig('resources.docSite.base.url')}, [
                                 'KBase home page'
                             ]),
                             '.'
@@ -39,7 +39,7 @@ define([
             function countdown(counter) {
                 if (counter < 0) {
                     runtime.send('app', 'redirect', {
-                        url: runtime.getConfig('services.doc_site.url')
+                        url: runtime.getConfig('resources.docSite.base.url')
                     });
                 } else {
                     renderCountdown(counter);
