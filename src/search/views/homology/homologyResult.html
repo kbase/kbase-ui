@@ -2,7 +2,7 @@
     <div class="row search-result-column-header-row">
         <div class="btn-group search-result-column-header-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="btn-group search-result-column-header search-result-select-all col-xs-1 col-sm-1 col-md-1 col-lg-1" ng-show="options.userState.session.token">
-                <button type="button" class="btn btn-default search-result-column-header-toggle" ng-click="toggleAll(options.resultJSON.items)" data-toggle="tooltip" data-placement="top" tooltip="Select all results on this page." tooltip-placement="top">
+                <button type="button" class="btn btn-default search-result-column-header-toggle" ng-click="toggleAll(options.resultJSON.items)" data-toggle="tooltip" data-placement="top" tooltip="{{options.searchOptions.ui.tooltip_message}}" tooltip-placement="top">
                     <div><strong>In Cart</strong></div>
                     <span class="glyphicon" ng-class="{'glyphicon-check': options.userState.session.selectAll[options.currentURL][options.currentItemRange],'glyphicon-unchecked': !options.userState.session.selectAll[options.currentURL][options.currentItemRange]}"></span>
                 </button>

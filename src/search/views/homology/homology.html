@@ -134,17 +134,18 @@
                         <div class="col-sm-10">
                             <textarea id="sequence" class="form-control" style="font-family:monospace; font-size:12px;" rows="10" autofocus required
                                       ng-change="onSequenceChange()"
-                                      ng-model="options.searchOptions.general.sequence" placeholder="Paste one nucleotide or protein fasta sequence to search"></textarea>
+                                      ng-model="options.searchOptions.general.sequence" placeholder="Enter a query nucleotide or protein sequence to search. Multiple query sequences are currently not supported."></textarea>
                             <div ng-show="options.searchOptions.ui.sequence_invalid" class="bg-danger text-danger">{{options.searchOptions.ui.sequence_message}}</div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="database" class="col-sm-2 control-label">Database:</label>
                         <div class="col-sm-10">
-                            <select id="database" class="form-control" ng-model="options.searchOptions.general.database" ng-change="validateDatabase()">
+                            <select id="database" class="form-control" ng-model="options.searchOptions.general.database" ng-change="onDatabaseChange()">
                                 <option ng-repeat="db in availableDatabases" ng-selected="db.selected" value="{{db.value}}">{{db.label}}</option>
                             </select>
-                            <div class="text-left"><strong>Search may take a few minutes.</strong></div>
+                            <div class="text-left" ng-show="options.searchOptions.general.useDatabase"><strong>Search may take a few minutes.</strong></div>
+                            <div ng-show="options.searchOptions.ui.database_message !=''" class="bg-danger text-danger">{{options.searchOptions.ui.database_message}}</div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -152,27 +153,10 @@
                         <div class="col-md-12 kb-method-advanced-options-controller" ng-show="options.searchOptions.ui.show_advance_options" ng-click="options.searchOptions.ui.show_advance_options=false;">Hide advanced options</div>
                     </div>
                     <div class="form-group" ng-show="options.searchOptions.ui.show_advance_options">
-                        <label for="database" class="col-sm-2 control-label">Search for:</label>
-                        <div class="col-sm-10">
-                          <div class="radio">
-                            <label>
-                              <input type="radio" name="searchtype" ng-model="options.searchOptions.general.searchtype" value="contigs" />
-                              Genomic sequences (contigs)
-                            </label>
-                          </div>
-                          <div class="radio">
-                            <label>
-                              <input type="radio" name="searchtype" ng-model="options.searchOptions.general.searchtype" value="features" checked="checked"/>
-                              Genomic features (genes or proteins)
-                            </label>
-                          </div>
-                        </div>
-                    </div>
-                    <div class="form-group" ng-show="options.searchOptions.ui.show_advance_options">
                         <label class="col-sm-2 control-label">Genomes:</label>
                         <div class="col-sm-10">
                             <div ng-repeat="item in targetGenomes" style="padding:0 0 5px 0">
-                                <input id="genomes_{{item.key}}" class="form-control" style="width:414px;display:inline-block" type="text" placeholder="Search by Genome Name"
+                                <input id="genomes_{{item.key}}" class="form-control" style="width:414px;display:inline-block" type="text" placeholder="Enter genome name - completions will be suggested"
                                     ng-model="selectedGenome"
                                     typeahead="genome as genome.label for genome in getGenomeName($viewValue) | filter:$viewValue"
                                     typeahead-loading="loading..." typeahead-min-length="4" typeahead-wait-ms="500"
@@ -185,21 +169,39 @@
                         </div>
                     </div>
                     <div class="form-group" ng-show="options.searchOptions.ui.show_advance_options">
+                        <label for="database" class="col-sm-2 control-label">Search for:</label>
+                        <div class="col-sm-10">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="searchtype" ng-model="options.searchOptions.general.searchtype" value="contigs" />
+                                    Genomic sequences (contigs)
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="searchtype" ng-model="options.searchOptions.general.searchtype" value="features" checked="checked"/>
+                                    Genomic features (genes or proteins)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="options.searchOptions.ui.show_advance_options">
                         <label for="program" class="col-sm-2 control-label">Program:</label>
                         <div class="col-sm-10">
                             <select class="form-control" id="program" ng-model="options.searchOptions.general.program">
                                 <option ng-repeat="prog in availablePrograms" ng-selected="prog.selected" value="{{prog.value}}">{{prog.label}}</option>
                             </select>
+                            <div ng-show="options.searchOptions.ui.program_message !=''" class="bg-danger text-danger">{{options.searchOptions.ui.program_message}}</div>
                         </div>
                     </div>
                     <div class="form-group" ng-show="options.searchOptions.ui.show_advance_options">
-                        <label for="max_hit" class="col-sm-4 control-label">Max target sequences:</label>
+                        <label for="max_hit" class="col-sm-2 control-label">Max hits:</label>
                         <div class="col-sm-2">
                             <select class="form-control" id="max_hit" ng-model="options.searchOptions.general.max_hit">
                                 <option ng-repeat="level in targetSequences" ng-selected="level.selected" value="{{level.value}}">{{level.label}}</option>
                             </select>
                         </div>
-                        <label for="evalue" class="col-sm-4 control-label">Expect threshold:</label>
+                        <label for="evalue" class="col-sm-6 control-label">E value threshold:</label>
                         <div class="col-sm-2">
                             <input type="text" id="evalue" class="form-control" value="1e-10" ng-model="options.searchOptions.general.evalue" />
                         </div>

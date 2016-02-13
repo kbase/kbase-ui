@@ -928,31 +928,40 @@ table.search-transfer-table {
     margin-right: 10px;
 }
 
+.homology_genome_header_large {
+    width: 371px;
+}
+
+.hoomlogy_genome_field_large {
+    width: 359px;
+    margin-right: 9px;
+}
+
 .homology_function_header {
-    width: 351px;
+    width: 211px;
 }
 
 .homology_function_field {
-    width: 339px;
+    width: 199px;
     margin-right: 9px;
 }
 
 .homology_string_header {
-    width: 190px;
+    width: 160px;
 }
 
 .homology_string_field {
-    width: 180px;
+    width: 150px;
     margin-right: 9px;
 }
 
 .homology_numeric_header {
-    width: 60px;
+    width: 70px;
 }
 
 .homology_numeric_field {
-    width: 50px;
-    margin-right: 9px;
+    width: 59px;
+    margin-right: 8px;
 }
 
 .domain-header {
