@@ -588,6 +588,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         // suggest program based on the selection
         switch ($scope.options.searchOptions.general.database){
             case "":
+                $scope.options.searchOptions.ui.database_message = '';
                 $scope.options.searchOptions.ui.show_advance_options = true;
                 $scope.options.searchOptions.general.useDatabase = false;
                 break;
@@ -603,6 +604,39 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             default:
                 break;
         }
+        if ($scope.options.searchOptions.general.sequence !== '' && $scope.options.searchOptions.general.database !== '') {
+            var sequence_type = $scope.isNucleotideFastaSequence($scope.options.searchOptions.general.sequence)?"nucleotide":"protein";
+            if ($scope.validateDatabaseWithSequenceType(sequence_type, $scope.options.searchOptions.general.database)) {
+                $scope.options.searchOptions.ui.database_message = '';
+            } else {
+                angular.element.find('#database')[0].focus();
+                $scope.options.searchOptions.ui.database_message = 'Database does not match to the query sequence type.';
+                return;
+            }
+        }
+    };
+
+    $scope.onProgramChange = function(){
+        if ($scope.options.searchOptions.general.sequence !== '') {
+            var sequence_type = $scope.isNucleotideFastaSequence($scope.options.searchOptions.general.sequence)?"nucleotide":"protein";
+            if ($scope.validateProgramWithSequenceType(sequence_type, $scope.options.searchOptions.general.program)) {
+                $scope.options.searchOptions.ui.program_message = '';
+            } else {
+                $scope.options.searchOptions.ui.show_advance_options = true;
+                angular.element.find('#program')[0].focus();
+                $scope.options.searchOptions.ui.program_message = 'Program does not match to the query sequence type.';
+            }
+        }
+    };
+
+    $scope.validateDatabaseWithSequenceType = function(sequence_type, database) {
+        return (sequence_type === 'nucleotide' && ['kbase_nr.ffn', 'kbase.fna'].indexOf(database) > -1)
+            || (sequence_type === 'protein' && ['kbase_nr.faa'].indexOf(database) > -1);
+    };
+
+    $scope.validateProgramWithSequenceType = function(sequence_type, program) {
+        return (sequence_type === 'nucleotide' && ['blastn', 'blastx', 'tblastx'].includes(program))
+            || (sequence_type === 'protein' && ['blastp', 'tblastn'].includes(program));
     };
 
     $scope.onSequenceChange = function(){
@@ -631,8 +665,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             var sequence_type = $scope.isNucleotideFastaSequence($scope.options.searchOptions.general.sequence)?"nucleotide":"protein";
 
             if (options.useDatabase) {
-                if ((sequence_type === 'nucleotide' && ['kbase_nr.ffn', 'kbase.fna'].includes(options.database))
-                    || (sequence_type === 'protein' && ['kbase_nr.faa'].includes(options.database))) {
+                if ($scope.validateDatabaseWithSequenceType(sequence_type, options.database)) {
                     // pass
                     $scope.options.searchOptions.ui.database_message = '';
                 } else {
@@ -643,8 +676,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             }
 
             // check whether sequence type matches to program selection
-            if ((sequence_type === 'nucleotide' && ['blastn', 'blastx', 'tblastx'].includes(options.program))
-                || (sequence_type === 'protein' && ['blastp', 'tblastn'].includes(options.program))) {
+            if ($scope.validateProgramWithSequenceType(sequence_type, options.program)) {
                 // pass
                 $scope.options.searchOptions.ui.program_message = '';
             } else {
@@ -759,7 +791,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         var hits = search.hits;
         var query_id = search.query_id;
         var query_length = search.query_len;
-        var object_type = report.search_target.db.includes('.ffn')?"KBaseSearch.Feature":"KBaseSearch.Genome";
+        var object_type = report.search_target.db.includes('.fna')?"KBaseSearch.Genome":"KBaseSearch.Feature";
         $scope.options.searchOptions.ui.object_type = object_type;
         if (object_type === 'KBaseSearch.Feature') {
             $scope.options.searchOptions.ui.tooltip_message = 'Select all features on this page.';
