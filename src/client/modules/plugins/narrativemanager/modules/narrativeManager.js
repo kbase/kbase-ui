@@ -238,7 +238,7 @@ define([
                             cell_data.push(buildAppCell(cell_data.length, specMapping.apps[cell.app], parameters));
                         } else if (cell.method) {
                             //this will only work with a 1 method narrative
-                            cell_data.push(buildMethodCell(cell_data.length, specMapping.methods[cells.method], parameters));
+                            cell_data.push(buildMethodCell(cell_data.length, specMapping.methods[cell.method], parameters));
                         } else if (cell.markdown) {
                             cell_data.push({cell_type: 'markdown', source: cell.markdown, metadata: {}});
                         } else {
