@@ -4,12 +4,11 @@
       <a href="/search/#/homology/" ng-click="showMatches = !showMatches">Number of matches: {{item.detail.match_count}}</a>
       <ul ng-show="showMatches">
         <li ng-repeat="match in item.detail.matches">
-          <span ng-bind-html="match[0] | buildFeatureLink"></span>
-          &nbsp; {{match[1].function}}
+          <span ng-bind-html="{feature_id:match[0], function:match[1].function, genome_id:match[1].genome_id} | buildFeatureLink"></span>
           &nbsp; <span ng-bind-html="match[1] | buildGenomeLink"><span>
         </li>
       </ul>
     </div>
-    <pre>{{item.detail | displayPairwiseComparison}}</pre>
+    <div ng-bind-html="item.detail | displayPairwiseComparison"></div>
   </td>
 </tr>
