@@ -232,7 +232,8 @@ define([
                     path: 'message/error/notfound',
                     params: {
                         info: JSON.stringify(info)
-                    }
+                    },
+                    replace: true
                 });
             });
 
