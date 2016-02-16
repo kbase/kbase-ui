@@ -187,7 +187,7 @@ homologyApp.service('homologyOptionsService', function homologyOptionsService() 
         defaultSearchOptions : {
             "general": {
                 "itemsPerPage": 10,
-                "program": "blastp",
+                "program": "blastn",
                 "database": "kbase_nr.ffn",
                 "searchtype": "features",
                 "genome_ids": [],
@@ -359,7 +359,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
 
     $scope.availableDatabases = [
       {value: "kbase_nr.faa", label: "KBase non-redundant protein sequences (NR-faa)"},
-      {value: "kbase_nr.ffn", label: "KBase non-redundant gene sequences (NR-ffn)", selected: true},
+      {value: "kbase_nr.ffn", label: "KBase non-redundant gene sequences (NR-ffn)"},
       {value: "kbase.fna", label: "KBase genome sequences (fna)"},
       {value: "", label: "Search within select genomes"}
     ];
@@ -391,12 +391,22 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     };
 
     $scope.removeGenomeInputBox = function(item) {
-      $scope.targetGenomes = $scope.targetGenomes.filter(function(i){
-          if (i.key != item.key) {
-              $scope.max_key_value = i.key;
-          }
-          return (i.key != item.key);
-      });
+        var idx = $scope.targetGenomes.indexOf(item);
+        if (item.key == 0) {
+            delete $scope.targetGenomes[idx].genome_id;
+            angular.element.find('#genomes_0')[0].value = '';
+            $scope.max_key_value = 0;
+        }else{
+            $scope.targetGenomes.splice(idx, 1);
+            if (item.key == $scope.max_key_value){
+                $scope.max_key_value = 0;
+                $scope.targetGenomes.forEach(function(item){
+                    if($scope.max_key_value < item.key){
+                        $scope.max_key_value = item.key;
+                    }
+                });
+            }
+        }
     };
 
     $scope.getGenomeName = function(name) {
@@ -618,15 +628,22 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     };
 
     $scope.onProgramChange = function(){
-        if ($scope.options.searchOptions.general.sequence !== '') {
-            var sequence_type = $scope.isNucleotideFastaSequence($scope.options.searchOptions.general.sequence)?"nucleotide":"protein";
-            if ($scope.validateProgramWithSequenceType(sequence_type, $scope.options.searchOptions.general.program)) {
+        if ($scope.options.searchOptions.general.sequence !== undefined){
+            var sequence_type = $scope.isNucleotideFastaSequence($scope.options.searchOptions.general.sequence) ? "nucleotide" : "protein";
+            if($scope.validateProgramWithSequenceType(sequence_type, $scope.options.searchOptions.general.program)){
                 $scope.options.searchOptions.ui.program_message = '';
-            } else {
+            }else{
                 $scope.options.searchOptions.ui.show_advance_options = true;
                 angular.element.find('#program')[0].focus();
                 $scope.options.searchOptions.ui.program_message = 'Program does not match to the query sequence type.';
             }
+        }
+        if ($scope.validateProgramWithDatabase($scope.options.searchOptions.general.useDatabase, $scope.options.searchOptions.general.program)){
+            $scope.options.searchOptions.ui.program_message = '';
+        } else {
+            $scope.options.searchOptions.ui.show_advance_options = true;
+            angular.element.find('#program')[0].focus();
+            $scope.options.searchOptions.ui.program_message = 'tblastx and tblastn are supported only against select genome(s)';
         }
     };
 
@@ -638,6 +655,10 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     $scope.validateProgramWithSequenceType = function(sequence_type, program) {
         return (sequence_type === 'nucleotide' && ['blastn', 'blastx', 'tblastx'].includes(program))
             || (sequence_type === 'protein' && ['blastp', 'tblastn'].includes(program));
+    };
+
+    $scope.validateProgramWithDatabase = function(useDatabase, program) {
+        return !(useDatabase && ['tblastx', 'tblastn'].indexOf(program) > -1)
     };
 
     $scope.onSequenceChange = function(){
@@ -688,9 +709,9 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             }
 
             // check whether program tblastx/tblastn is selected with nr database.
-            if (['tblastx', 'tblastn'].includes(options.program) && options.useDatabase){
+            if ($scope.validateProgramWithDatabase(options.useDatabase, options.program)){
                 angular.element.find('#database')[0].focus();
-                $scope.options.searchOptions.ui.program_message = 'tblastx or tblastn supports only against select genome(s).';
+                $scope.options.searchOptions.ui.program_message = 'tblastx and tblastn are supported only against select genome(s).';
                 return;
             }
         }
@@ -1719,7 +1740,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     };
 
     $scope.toggleExpandView = function(id) {
-        console.log($scope.options.userState.session.viewType != 'expanded', $scope.options.userState.session.data_cart.view[id]);
+        //console.log($scope.options.userState.session.viewType != 'expanded', $scope.options.userState.session.data_cart.view[id]);
         if (!$scope.options.userState.session.data_cart.view.hasOwnProperty(id)) {
             $scope.options.userState.session.data_cart.view[id] = true;
         } else {
