@@ -225,8 +225,6 @@ define([
                             }
                             self.allStats.push(stat);
                         }
-
-                        console.log(stats);
                     })
                     .catch(function (err) {
                         console.error('ERROR');
