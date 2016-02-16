@@ -264,7 +264,7 @@ homologyApp.service('homologyOptionsService', function homologyOptionsService() 
 
 /* Filters */
 homologyApp.filter('displayPairwiseComparison', function($sce) {
-   return function(detail){
+   return function(detail, scope){
        var outputDiv = [];
 
        detail.hsps.forEach(function(hsp){
@@ -276,7 +276,7 @@ homologyApp.filter('displayPairwiseComparison', function($sce) {
            // header
            output.push([
                'Score: ' + Math.round(hsp.bit_score) + ' bits(' + hsp.score + ')',
-               'Expect: ' + hsp.evalue,
+               'Expect: ' + scope.formatEvalue(hsp.evalue),
                hsp.hit_strand?'Strand: ' + hsp.hit_strand + '/' + hsp.query_strand:''
            ].join('    '));
            output.push([
