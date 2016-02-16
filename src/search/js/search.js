@@ -1421,7 +1421,7 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
         //console.log($scope.options.userState.session.data_cart.data[n]["genome_id"] + ".featureset");
         
         return $scope.workspace_service.get_object_subset([{"name": $scope.options.userState.session.data_cart.data[n]["genome_id"] + ".featureset",
-                                                            "workspace": $scope.options.userState.session.data_cart.data[n]["workspace_name"].split("Rich").join(""), 
+                                                            "workspace": $scope.options.userState.session.data_cart.data[n]["workspace_name"], 
                                                             "included": ["/features/" + split_id[2]]
                                                           }])
             .fail(function (xhr, status, error) {
