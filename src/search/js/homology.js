@@ -709,7 +709,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             }
 
             // check whether program tblastx/tblastn is selected with nr database.
-            if ($scope.validateProgramWithDatabase(options.useDatabase, options.program)){
+            if (!$scope.validateProgramWithDatabase(options.useDatabase, options.program)){
                 angular.element.find('#database')[0].focus();
                 $scope.options.searchOptions.ui.program_message = 'tblastx and tblastn are supported only against select genome(s).';
                 return;
