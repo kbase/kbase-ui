@@ -275,9 +275,13 @@ homologyApp.filter('displayPairwiseComparison', function($sce) {
 
            // header
            output.push([
+               'Query length: ' + detail.query_len,
+               'Subject length: ' + detail.subject_len
+           ].join('    '));
+           output.push([
                'Score: ' + Math.round(hsp.bit_score) + ' bits(' + hsp.score + ')',
                'Expect: ' + scope.formatEvalue(hsp.evalue),
-               hsp.hit_strand?'Strand: ' + hsp.hit_strand + '/' + hsp.query_strand:''
+               hsp.hit_strand?'Strand: ' + hsp.query_strand + '/' + hsp.hit_strand:''
            ].join('    '));
            output.push([
                'Identities: ' + hsp.identity + '/' + hsp.align_len + '(' + Math.round(hsp.identity / hsp.align_len * 100) +'%)',
@@ -289,15 +293,27 @@ homologyApp.filter('displayPairwiseComparison', function($sce) {
            var query_pos = hsp.query_from;
            var hit_pos = hsp.hit_from;
            for(var i = 0, n = qSeqArr.length; i < n; i++){
-               var query_from = String('    ' + query_pos).slice(-4);
-               var query_to   = query_pos + qSeqArr[i].match(/[A-Z]/gi).length - 1;
-               var hit_from = String('    ' + hit_pos).slice(-4);
-               var hit_to   = hit_pos + hSeqArr[i].match(/[A-Z]/gi).length - 1;
-               query_pos = query_to + 1;
-               hit_pos = hit_to + 1;
+               var query_from = String('        ' + query_pos).slice(-8);
+               var hit_from = String('        ' + hit_pos).slice(-8);
+
+               var query_to, hit_to;
+               if (hsp.query_strand === 'Plus'){
+                   query_to = query_pos + qSeqArr[i].match(/[A-Z]/gi).length - 1;
+                   query_pos = query_to + 1;
+               } else {
+                   query_to = query_pos - qSeqArr[i].match(/[A-Z]/gi).length + 1;
+                   query_pos = query_to - 1;
+               }
+               if (hsp.hit_strand === 'Plus'){
+                   hit_to = hit_pos + hSeqArr[i].match(/[A-Z]/gi).length - 1;
+                   hit_pos = hit_to + 1;
+               } else {
+                   hit_to = hit_pos - hSeqArr[i].match(/[A-Z]/gi).length + 1;
+                   hit_pos = hit_to - 1;
+               }
 
                output.push(['Query', query_from, qSeqArr[i], query_to].join('  '));
-               output.push(['     ', '    ', mlArr[i], '    '].join('  '));
+               output.push(['     ', '        ', mlArr[i], '    '].join('  '));
                output.push(['Sbjct', hit_from, hSeqArr[i], hit_to].join('  '));
                output.push('\n');
            }
@@ -836,8 +852,8 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 "qseqid": query_id,
                 "sseqid": target_id,
                 "pident": Math.round(hit.hsps[0].identity / hit.hsps[0].align_len * 100) + '%',
-                "query_coverage": Math.round((hit.hsps[0].query_to - hit.hsps[0].query_from + 1) / query_length * 100) + '%',
-                "subject_coverage": Math.round((hit.hsps[0].hit_to - hit.hsps[0].hit_from + 1) / hit.len * 100) + '%',
+                "query_coverage": Math.round((Math.abs(hit.hsps[0].query_to - hit.hsps[0].query_from) + 1) / query_length * 100) + '%',
+                "subject_coverage": Math.round((Math.abs(hit.hsps[0].hit_to - hit.hsps[0].hit_from) + 1) / hit.len * 100) + '%',
                 "length": hit.len,
                 "evalue": $scope.formatEvalue(hit.hsps[0]['evalue']),
                 "bitscore": Math.round(hit.hsps[0].bit_score),
@@ -848,7 +864,9 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 "detail": {
                     "match_count": metadata[target_id].match_count || 0,
                     "matches": identical[target_id] || [],
-                    "hsps": hit.hsps
+                    "hsps": hit.hsps,
+                    "query_len": query_length,
+                    "subject_len": hit.len
                 }
            });
         });
