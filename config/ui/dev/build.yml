@@ -20,8 +20,6 @@ plugins:
         narrativemanager
     -
         catalog
-    -
-        narrativestore
     # external:
     # These are shared with production
     -
@@ -111,7 +109,7 @@ plugins:
             bower: {}
     -
         name: methodview
-        globalName: kbase-ui-plugin-methodivew
+        globalName: kbase-ui-plugin-methodview
         version: 1.0.0
         cwd: src/plugin
         source:
