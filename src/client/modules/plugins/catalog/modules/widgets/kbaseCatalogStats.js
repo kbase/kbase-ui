@@ -71,13 +71,39 @@ define([
             render: function() {
                 var self = this;
 
-                var $table = $('<table>').addClass('table');
+                var $table = $('<table>').addClass('table').css('width','100%');
 
 
                 var $container = $('<div>').addClass('container')
                         .append($('<div>').addClass('row')
                             .append($('<div>').addClass('col-md-12')
                                 .append($table)));
+
+
+                // Custom data tables sorting function, that takes a number in an html comment
+                // and sorts numerically by that number
+                $.extend( $.fn.dataTableExt.oSort, {
+                    "hidden-number-stats-pre": function ( a ) {
+                        // extract out the first comment if it exists, then parse as number
+                        var t = a.split('-->');
+                        if(t.length>1) {
+                            var t2 = t[0].split('<!--');
+                            if(t2.length>1) {
+                                return Number(t2[1]);
+                            }
+                        }
+                        return Number(a);
+                    },
+                 
+                    "hidden-number-stats-asc": function( a, b ) {
+                        return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+                    },
+                 
+                    "hidden-number-stats-desc": function(a,b) {
+                        return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+                    }
+                } );
+
 
                 var tblSettings = {
                     "bFilter": true,
@@ -86,7 +112,7 @@ define([
                     "sDom": 'ft<ip>',
                     "aaSorting": [[ 2, "dsc" ], [1, "asc"]],
                     "columns": [
-                        {sTitle: "ID", data: "id"},
+                        {sTitle: 'ID', data: "id"},
                         {sTitle: "Module", data: "module"},
                         {sTitle: "Total Runs", data: "nCalls"},
                         {sTitle: "Errors", data: "nErrors"},
@@ -95,9 +121,13 @@ define([
                         {sTitle: "Avg Queue Time", data: "meanQueueTime"},
                         {sTitle: "Total Run Time", data: "totalRunTime"}
                     ],
+                    "columnDefs": [
+                        { "type": "hidden-number-stats", targets: [5,6,7] }
+                    ],
                     "data": self.allStats
                 };
                 $table.DataTable(tblSettings);
+                $table.find('th').css('cursor','pointer');
 
                 self.$basicStatsDiv.append($container);
 
@@ -180,20 +210,21 @@ define([
                             var goodCalls = s.number_of_calls - s.number_of_errors
                             var successPercent = ((goodCalls) / s.number_of_calls)*100;
 
+                            var meanRunTime = s.total_exec_time/s.number_of_calls;
+                            var meanQueueTime = s.total_queue_time/s.number_of_calls;
+
                             var stat = {
                                 id: '<a href="#appcatalog/app/'+s.full_app_id+'/dev">'+id+'</a>',
                                 module: '<a href="#appcatalog/module/'+s.module_name+'">'+s.module_name+'</a>',
                                 nCalls: s.number_of_calls,
                                 nErrors: s.number_of_errors,
                                 success: successPercent.toPrecision(3),
-                                meanRunTime:  self.getNiceDuration(s.total_exec_time/s.number_of_calls),
-                                meanQueueTime: self.getNiceDuration(s.total_queue_time/s.number_of_calls),
-                                totalRunTime: self.getNiceDuration(s.total_exec_time),
+                                meanRunTime:  '<!--'+meanRunTime+'-->'+ self.getNiceDuration(meanRunTime),
+                                meanQueueTime: '<!--'+meanQueueTime+'-->'+ self.getNiceDuration(meanQueueTime),
+                                totalRunTime: '<!--'+s.total_exec_time+'-->'+self.getNiceDuration(s.total_exec_time),
                             }
                             self.allStats.push(stat);
                         }
-
-                        console.log(stats);
                     })
                     .catch(function (err) {
                         console.error('ERROR');
