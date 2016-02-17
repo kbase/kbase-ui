@@ -18,8 +18,6 @@ plugins:
         narrativemanager
     -
         catalog
-    -
-        narrativestore
     # external:
     -
         name: viswidgets
@@ -32,13 +30,13 @@ plugins:
         name: typeview
         globalName: kbase-ui-plugin-typeview
         cwd: src/plugin
-        version: 1.0.0
+        version: 1.0.1
         source:
             bower: {}
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 1.0.4
+        version: 1.0.5
         cwd: src/plugin
         source:
             bower: {}
@@ -52,7 +50,7 @@ plugins:
     -
         name: dashboard
         globalName: kbase-ui-plugin-dashboard
-        version: 1.0.0
+        version: 1.0.1
         cwd: src/plugin
         source:
             bower: {}
@@ -63,6 +61,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: methodview
+        globalName: kbase-ui-plugin-methodview
+        version: 1.0.0
+        cwd: src/plugin
+        source:
+            bower: {}            
                
 # Copy these directories into the modules
 # There are two forms, as for plugins. 
@@ -73,17 +78,17 @@ plugins:
 modules:
     -
         globalName: kbase-ui-widget
-        version: 1.0.2
+        version: 1.0.3
         source:
             bower: {}
     -
         globalName: kbase-common-js
-        version: 1.1.0
+        version: 1.1.1
         source:
             bower: {}
     -
         globalName: kbase-service-clients-js
-        version: 1.0.1
+        version: 1.1.1
         source:
             bower: {}
     -

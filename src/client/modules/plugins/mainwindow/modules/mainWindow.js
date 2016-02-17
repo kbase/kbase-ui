@@ -67,6 +67,7 @@ define([
                 return div({id: 'wrap'}, [
                     div({id: 'content'}, [
                         div({class: 'navbar navbar-kbase navbar-fixed-top', id: 'kbase-navbar', style: 'padding: 0'}, renderNavbar()),
+                        div({class: 'kb-mainwindow-alert'}, div({id: widgetSet.addWidget('kb_mainWindow_alert')})),
                         div({class: 'kb-mainwindow-body', style: {'padding-top': '1em'}}, [
                             div({id: widgetSet.addWidget('body')})
                         ])
