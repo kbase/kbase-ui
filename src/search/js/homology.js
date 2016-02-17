@@ -631,29 +631,9 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             default:
                 break;
         }
-        if ($scope.options.searchOptions.general.sequence !== '' && $scope.options.searchOptions.general.database !== '') {
-            var sequence_type = $scope.isNucleotideFastaSequence($scope.options.searchOptions.general.sequence)?"nucleotide":"protein";
-            if ($scope.validateDatabaseWithSequenceType(sequence_type, $scope.options.searchOptions.general.database)) {
-                $scope.options.searchOptions.ui.database_message = '';
-            } else {
-                angular.element.find('#database')[0].focus();
-                $scope.options.searchOptions.ui.database_message = 'Database does not match to the query sequence type.';
-                return;
-            }
-        }
     };
 
     $scope.onProgramChange = function(){
-        if ($scope.options.searchOptions.general.sequence !== undefined){
-            var sequence_type = $scope.isNucleotideFastaSequence($scope.options.searchOptions.general.sequence) ? "nucleotide" : "protein";
-            if($scope.validateProgramWithSequenceType(sequence_type, $scope.options.searchOptions.general.program)){
-                $scope.options.searchOptions.ui.program_message = '';
-            }else{
-                $scope.options.searchOptions.ui.show_advance_options = true;
-                angular.element.find('#program')[0].focus();
-                $scope.options.searchOptions.ui.program_message = 'Program does not match to the query sequence type.';
-            }
-        }
         if ($scope.validateProgramWithDatabase($scope.options.searchOptions.general.useDatabase, $scope.options.searchOptions.general.program)){
             $scope.options.searchOptions.ui.program_message = '';
         } else {
@@ -663,14 +643,66 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         }
     };
 
-    $scope.validateDatabaseWithSequenceType = function(sequence_type, database) {
-        return (sequence_type === 'nucleotide' && ['kbase_nr.ffn', 'kbase.fna'].indexOf(database) > -1)
-            || (sequence_type === 'protein' && ['kbase_nr.faa'].indexOf(database) > -1);
+    $scope.validateDatabaseProgramWithSequenceType = function(sequence_type, database, program){
+        var isValid = false;
+        const seq_type_na = 'nucleotide', seq_type_aa = 'protein';
+        const db_type_na = ['kbase_nr.ffn', 'kbase.fna'], db_type_aa = ['kbase_nr.faa'];
+        switch (program) {
+            case "blastn":
+                // Search a nucleotide database using a nucleotide query
+                isValid = (sequence_type === seq_type_na && db_type_na.indexOf(database) > -1);
+                break;
+            case "blastp":
+                // Search protein database using a protein query
+                isValid = (sequence_type === seq_type_aa && db_type_aa.indexOf(database) > -1);
+                break;
+            case "blastx":
+                // Search protein database using a translated nucleotide query
+                isValid = (sequence_type === seq_type_na && db_type_aa.indexOf(database) > -1);
+                break;
+            case "tblastn":
+                // Search translated nucleotide database using a protein query
+                isValid = (sequence_type === seq_type_aa && database === '');
+                break;
+            case "tlastx":
+                // Search translated nucleotide database using a translated nucleotide query
+                isValid = (sequence_type === seq_type_na && database === '');
+                break;
+            default:
+                break;
+        }
+        return isValid;
     };
 
-    $scope.validateProgramWithSequenceType = function(sequence_type, program) {
-        return (sequence_type === 'nucleotide' && ['blastn', 'blastx', 'tblastx'].includes(program))
-            || (sequence_type === 'protein' && ['blastp', 'tblastn'].includes(program));
+    $scope.validateSearchforProgramWithSequenceType = function(sequence_type, search_for, program){
+        var isValid = false;
+        const seq_type_na = 'nucleotide', seq_type_aa = 'protein';
+        const db_type_na = ['contigs', 'features'], db_type_aa = ['features'];
+        switch (program) {
+            case "blastn":
+                // Search a nucleotide database using a nucleotide query
+                isValid = (sequence_type === seq_type_na && db_type_na.indexOf(search_for) > -1);
+                break;
+            case "blastp":
+                // Search protein database using a protein query
+                isValid = (sequence_type === seq_type_aa && db_type_aa.indexOf(search_for) > -1);
+                break;
+            case "blastx":
+                // Search protein database using a translated nucleotide query
+                isValid = (sequence_type === seq_type_na && db_type_aa.indexOf(search_for) > -1);
+                break;
+            case "tblastn":
+                // Search translated nucleotide database using a protein query
+                isValid = (sequence_type === seq_type_aa && db_type_na.indexOf(search_for) > -1);
+                break;
+            case "tblastx":
+                // Search translated nucleotide database using a translated nucleotide query
+                isValid = (sequence_type === seq_type_na && db_type_na.indexOf(search_for) > -1);
+                break;
+            default:
+                break;
+        }
+        return isValid;
     };
 
     $scope.validateProgramWithDatabase = function(useDatabase, program) {
@@ -699,29 +731,31 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 return;
             }
 
-            // check whether sequence type matches to database selection
+            // check whether sequence type matches to database and program selection
             var sequence_type = $scope.isNucleotideFastaSequence($scope.options.searchOptions.general.sequence)?"nucleotide":"protein";
 
             if (options.useDatabase) {
-                if ($scope.validateDatabaseWithSequenceType(sequence_type, options.database)) {
+                if ($scope.validateDatabaseProgramWithSequenceType(sequence_type, options.database, options.program)) {
                     // pass
                     $scope.options.searchOptions.ui.database_message = '';
+                    $scope.options.searchOptions.ui.program_message = '';
                 } else {
                     angular.element.find('#database')[0].focus();
                     $scope.options.searchOptions.ui.database_message = 'Database does not match to the query sequence type.';
+                    $scope.options.searchOptions.ui.program_message = 'Program does not match to the query sequence type.';
                     return;
                 }
-            }
-
-            // check whether sequence type matches to program selection
-            if ($scope.validateProgramWithSequenceType(sequence_type, options.program)) {
-                // pass
-                $scope.options.searchOptions.ui.program_message = '';
             } else {
-                $scope.options.searchOptions.ui.show_advance_options = true;
-                angular.element.find('#program')[0].focus();
-                $scope.options.searchOptions.ui.program_message = 'Program does not match to the query sequence type.';
-                return;
+                if ($scope.validateSearchforProgramWithSequenceType(sequence_type, options.searchtype, options.program)) {
+                    // pass
+                    $scope.options.searchOptions.ui.database_message = '';
+                    $scope.options.searchOptions.ui.program_message = '';
+                } else {
+                    $scope.options.searchOptions.ui.show_advance_options = true;
+                    angular.element.find('#program')[0].focus();
+                    $scope.options.searchOptions.ui.program_message = 'Program does not match to the query sequence type.';
+                    return;
+                }
             }
 
             // check whether program tblastx/tblastn is selected with nr database.
