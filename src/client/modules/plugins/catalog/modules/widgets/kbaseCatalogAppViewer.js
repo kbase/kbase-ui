@@ -75,6 +75,8 @@ define([
 
                 // initialize and add the main panel
                 //self.$elem.addClass('container');
+                self.$errorPanel = $('<div>');
+                self.$elem.append(self.$errorPanel);
 
                 self.$loadingPanel = self.util.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
@@ -108,6 +110,8 @@ define([
                     // must be called after renderMethod, because it relies on elements existing in the dom
                     self.updateFavoritesCounts();
                     self.updateRunStats();
+                }).catch(function() {
+                    self.hideLoading();
                 });
 
 
@@ -153,6 +157,7 @@ define([
                     .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
+                        self.showError(err);
                     });
             },
             getAppSpec: function() {
@@ -178,6 +183,7 @@ define([
                     .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
+                        self.showError(err);
                     });
             },
 
@@ -222,6 +228,7 @@ define([
                     .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
+                        self.showError(err);
                     });
             },
 
@@ -259,6 +266,24 @@ define([
                 var self = this;
                 self.$loadingPanel.hide();
                 self.$mainPanel.show();
+            },
+
+            showError: function (error) {
+                this.$errorPanel.empty();
+
+                var $alert = $('<div>').addClass('col-md-12 alert alert-danger');
+                this.$errorPanel.append($('<div>').addClass('container')
+                                            .append($('<div>').addClass('row')
+                                                .append($alert)));
+
+                $alert.append('<strong>Error when fetching Module information.</strong><br><br>');
+                if(error.error) {
+                    if(error.error.message){
+                        $alert.append(error.error.message);
+                    }
+                }
+                $alert.append('<br>');
+                this.$errorPanel.show();
             },
 
 
