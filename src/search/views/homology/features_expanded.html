@@ -1,7 +1,10 @@
 <tr ng-if="item.detail">
   <td class="search-result-column-expanded-entry-cell">
     <div ng-if="item.detail.match_count > 1">
-      <a href="/search/#/homology/" ng-click="showMatches = !showMatches">Number of matches: {{item.detail.match_count}}</a>
+      <a ng-click="showMatches = !showMatches">
+        <span>Number of matches: {{item.detail.match_count}}</span>
+        <span class="glyphicon" ng-class="{'glyphicon-expand': !showMatches, 'glyphicon-collapse-up': showMatches}"/>
+      </a>
       <ul ng-show="showMatches">
         <li ng-repeat="match in item.detail.matches">
           <span ng-bind-html="{feature_id:match[0], function:match[1].function, genome_id:match[1].genome_id} | buildFeatureLink"></span>
