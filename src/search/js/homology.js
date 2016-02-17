@@ -443,6 +443,8 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     $scope.onGenomeNameSelect = function($item, $model, $label, idx) {
         //console.log($item, $model, $label, idx);
         $scope.targetGenomes[idx].genome_id = $item.id;
+        // trigger database selection to 'Search within select genome(s)'
+        $scope.options.searchOptions.general.database = '';
     };
     // end of controls for genome name input boxes
 
