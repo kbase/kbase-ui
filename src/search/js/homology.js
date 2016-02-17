@@ -766,27 +766,23 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             }
         }
 
-        if ($scope.options.searchOptions.general.useDatabase) {
+        var genomeIds = $scope.targetGenomes.map(function(genome){
+            return genome.genome_id;
+        }).filter(function(id){
+            return id != undefined;
+        });
+
+        if (genomeIds.length == 0 && options.useDatabase) {
             // database search
             method = "HomologyService.blast_fasta_to_database";
             params = [options.sequence, options.program, options.database, options.evalue, options.max_hit, 0];
         }
-        else {
-            var genomeIds = $scope.targetGenomes.map(function(genome){
-                return genome.genome_id;
-            }).filter(function(id){
-                return id != undefined;
-            });
-
-            //console.log($scope.targetGenomes, genomeIds);
-
-            if (genomeIds.length == 0) {
-                angular.element.find('#genomes_0')[0].focus();
-                $scope.options.searchOptions.ui.genome_ids_invalid = true;
-                return;
-            } else {
-              $scope.options.searchOptions.ui.genome_ids_invalid = false;
-            }
+        else if (genomeIds.length == 0 && options.useDatabase == false) {
+            angular.element.find('#genomes_0')[0].focus();
+            $scope.options.searchOptions.ui.genome_ids_invalid = true;
+            return;
+        } else {
+            $scope.options.searchOptions.ui.genome_ids_invalid = false;
 
             method = "HomologyService.blast_fasta_to_genomes";
             params = [options.sequence, options.program, genomeIds, options.searchtype, options.evalue, options.max_hit, 0];
