@@ -880,7 +880,7 @@ define([
                         this.places.title.html('You - ' + this.userProfile.getProp('user.realname') + ' (' + this.userProfile.getProp('user.username') + ')');
 
                         this.runtime.send('ui', 'clearButtons');
-                        this.runtime.send('ui', 'setTitle', 'Viewing your profile');
+                        this.runtime.send('ui', 'setTitle', 'Your Profile');
 
                         this.runtime.send('ui', 'addButton', {
                             name: 'account',
@@ -944,7 +944,7 @@ define([
                     } else {
                         var title = this.userProfile.getProp('user.realname') + ' (' + this.userProfile.getProp('user.username') + ')';
                         this.places.title.html(title);
-                        this.runtime.send('ui', 'setTitle', 'Viewing profile for ' + title);
+                        this.runtime.send('ui', 'setTitle', 'Viewing Profile for ' + title);
                     }
                     this.renderPicture();
                     this.places.content.html(this.renderTemplate('view'));
