@@ -22,8 +22,14 @@ define([
                         // get automatic event listener cleanup. We could almost
                         // as easily do this ourselves.
                         this.recv('ui', 'setTitle', function (data) {
+                            if (typeof data !== 'string') {
+                                return;
+                            }
                             this.set('title', data);
-                            window.document.title = data + ' | KBase';
+                            var anonDiv = document.createElement('div'), text;
+                            anonDiv.innerHTML = data;
+                            text = anonDiv.textContent || '';
+                            window.document.title = text + ' | KBase';
                         }.bind(this));
                     },
                     render: function () {
