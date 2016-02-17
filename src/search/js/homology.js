@@ -1197,6 +1197,9 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     $scope.setView = function (type) {
         //console.log("Setting " + type);
         $scope.options.userState.session.viewType = type;
+        if (type === 'compact') {
+            $scope.options.userState.session.data_cart.view = [];
+        }
     };
 
 
