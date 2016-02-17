@@ -907,7 +907,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             //console.log(hit);
             var target_id = hit.description[0].id;
             entries.push({
-                "row_id": object_type === 'feature' ? target_id : metadata[target_id].genome_id,
+                "row_id": object_type === 'KBaseSearch.Feature' ? target_id : metadata[target_id].genome_id,
                 "object_type": object_type,
                 "position": (index + 1),
                 "qseqid": query_id,
