@@ -445,6 +445,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         $scope.targetGenomes[idx].genome_id = $item.id;
         // trigger database selection to 'Search within select genome(s)'
         $scope.options.searchOptions.general.database = '';
+        $scope.options.searchOptions.general.useDatabase = false;
     };
     // end of controls for genome name input boxes
 
@@ -707,6 +708,22 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         return isValid;
     };
 
+    $scope.validateSearchfor = function(sequence_type, search_for, program) {
+        var isValid = $scope.validateSearchforProgramWithSequenceType(sequence_type, search_for, program);
+        var isInValidGenomicSequence = false;
+        switch (program) {
+            case "blastp":
+            case "blastx":
+                if (!isValid && search_for === 'contigs') {
+                    isInValidGenomicSequence = true;
+                }
+                break;
+            default:
+                break;
+        }
+        return !isInValidGenomicSequence;
+    };
+
     $scope.validateProgramWithDatabase = function(useDatabase, program) {
         return !(useDatabase && ['tblastx', 'tblastn'].indexOf(program) > -1)
     };
@@ -748,6 +765,17 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                     return;
                 }
             } else {
+                // blast against genomes
+
+                if ($scope.validateSearchfor(sequence_type, options.searchtype, options.program)) {
+                    // pass
+                    $scope.options.searchOptions.ui.searchtype_message = '';
+                } else {
+                    $scope.options.searchOptions.ui.show_advance_options = true;
+                    angular.element.find('[name=searchtype]')[0].focus();
+                    $scope.options.searchOptions.ui.searchtype_message = 'Genomic sequences (contigs) is only available only for nucleotide databases';
+                    return;
+                }
                 if ($scope.validateSearchforProgramWithSequenceType(sequence_type, options.searchtype, options.program)) {
                     // pass
                     $scope.options.searchOptions.ui.database_message = '';
