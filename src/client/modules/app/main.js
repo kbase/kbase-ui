@@ -50,6 +50,22 @@ define([
                 },
                 plugins: pluginConfig.plugins,
                 menus: clientConfig.menus
+            })
+            .then(function (runtime) {
+                switch (serviceConfig.deploy.environment) {
+                    case 'ci':
+                        runtime.send('ui', 'alert', {
+                            type: 'danger', 
+                            message: 'You are operating in the Continuous Integration (CI) environment'
+                        });
+                        break;
+                    case 'next':
+                        runtime.send('ui', 'alert', {
+                            type: 'warning', 
+                            message: 'You are operating in the Next environment'
+                        });
+                        break;
+                }
             });
         }
     };

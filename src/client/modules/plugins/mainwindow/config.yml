@@ -96,3 +96,7 @@ install:
             module: kb_widget_error
             id: error
             type: factory
+        -
+            module: plugins/mainwindow/modules/widgets/alert
+            id: kb_mainWindow_alert
+            type: factory
