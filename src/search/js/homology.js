@@ -286,7 +286,8 @@ homologyApp.filter('displayPairwiseComparison', function($sce) {
            output.push([
                'Identities: ' + hsp.identity + '/' + hsp.align_len + '(' + Math.round(hsp.identity / hsp.align_len * 100) +'%)',
                hsp.positive?'Positives: ' + hsp.positive + '/' + hsp.align_len + '(' + Math.round(hsp.positive / hsp.align_len * 100) + '%)':'',
-               'Gaps: ' + hsp.gaps + '/' + hsp.align_len + '(' + Math.round(hsp.gaps / hsp.align_len * 100) + '%)'
+               'Gaps: ' + hsp.gaps + '/' + hsp.align_len + '(' + Math.round(hsp.gaps / hsp.align_len * 100) + '%)',
+               hsp.hit_frame?'Frame:' + (hsp.query_frame?hsp.query_frame + '/':'') + hsp.hit_frame :''
            ].join('    '));
            output.push('\n');
 
@@ -297,14 +298,14 @@ homologyApp.filter('displayPairwiseComparison', function($sce) {
                var hit_from = String('        ' + hit_pos).slice(-8);
 
                var query_to, hit_to;
-               if (hsp.query_strand === 'Plus'){
+               if (hsp.query_strand == undefined || hsp.query_strand === 'Plus'){
                    query_to = query_pos + qSeqArr[i].match(/[A-Z]/gi).length - 1;
                    query_pos = query_to + 1;
                } else {
                    query_to = query_pos - qSeqArr[i].match(/[A-Z]/gi).length + 1;
                    query_pos = query_to - 1;
                }
-               if (hsp.hit_strand === 'Plus'){
+               if (hsp.hit_strand == undefined || hsp.hit_strand === 'Plus'){
                    hit_to = hit_pos + hSeqArr[i].match(/[A-Z]/gi).length - 1;
                    hit_pos = hit_to + 1;
                } else {
