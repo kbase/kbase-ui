@@ -23,6 +23,7 @@ define([
                         // as easily do this ourselves.
                         this.recv('ui', 'setTitle', function (data) {
                             this.set('title', data);
+                            window.document.title = data + ' | KBase';
                         }.bind(this));
                     },
                     render: function () {
