@@ -287,7 +287,9 @@ homologyApp.filter('displayPairwiseComparison', function($sce) {
                'Identities: ' + hsp.identity + '/' + hsp.align_len + '(' + Math.round(hsp.identity / hsp.align_len * 100) +'%)',
                hsp.positive?'Positives: ' + hsp.positive + '/' + hsp.align_len + '(' + Math.round(hsp.positive / hsp.align_len * 100) + '%)':'',
                'Gaps: ' + hsp.gaps + '/' + hsp.align_len + '(' + Math.round(hsp.gaps / hsp.align_len * 100) + '%)',
-               hsp.hit_frame?'Frame:' + (hsp.query_frame?hsp.query_frame + '/':'') + hsp.hit_frame :''
+               (hsp.query_frame || hsp.hit_frame)?('Frame: ' + (hsp.query_frame?hsp.query_frame:'')
+               + ((hsp.query_frame && hsp.hit_frame)?'/':'')
+               + (hsp.hit_frame?hsp.hit_frame:'')):''
            ].join('    '));
            output.push('\n');
 
