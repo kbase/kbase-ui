@@ -880,6 +880,8 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         if (evalue.toString().includes('e')) {
             var val = evalue.toString().split('e');
             return parseInt(val[0]) + 'e' + val[1];
+        } else if (evalue !== 0) {
+            return evalue.toFixed(4);
         } else {
             return evalue;
         }
