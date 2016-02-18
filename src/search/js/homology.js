@@ -201,7 +201,7 @@ homologyApp.service('homologyOptionsService', function homologyOptionsService() 
                 "genome_ids_invalid": false,
                 "show_advance_options": false
             },
-            "perCategory": {"features":{}}
+            "perCategory": {"features":{}, "genomes":{}}
         },
         categoryCounts : {},
         searchOptions : this.defaultSearchOptions,
@@ -898,8 +898,10 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         $scope.options.searchOptions.ui.object_type = object_type;
         if (object_type === 'KBaseSearch.Feature') {
             $scope.options.searchOptions.ui.tooltip_message = 'Select all features on this page.';
+            $scope.options.selectedCategory = "features";
         } else if (object_type === 'KBaseSearch.Genome') {
             $scope.options.searchOptions.ui.tooltip_message = 'Select all genomes on this page.';
+            $scope.options.selectedCategory = "genomes";
         } else {
             $scope.options.searchOptions.ui.tooltip_message = 'Select all results on this page.';
         }
