@@ -36,16 +36,53 @@ define([
 
         // list for request fetch the user profile
         function start() {
+
+            runtime.recv('profile', 'check', function () {
+                return loadProfile()
+                    .then(function (profile) {
+                        state.setItem('userprofile', profile);
+                        runtime.send('profile', 'loaded', profile);
+                    })
+                    .done();
+            });
+
             runtime.getService('session').onChange(function (loggedIn) {
                 if (loggedIn) {
                     loadProfile()
                         .then(function (profile) {
-                            state.setItem('userprofile', profile);
-                            return null;
+                            var profileState = profile.getProfileStatus();
+                            switch (profileState) {
+                                case 'stub':
+                                case 'profile':
+                                    state.setItem('userprofile', profile);
+                                    // AppState.setItem('userprofile', profile);
+                                    // Postal.channel('session').publish('profile.loaded', {profile: profile});
+                                    break;
+                                case 'none':
+                                    return profile.createStubProfile({createdBy: 'session'})
+                                        .then(function (profile) {
+                                            state.setItem('userprofile', profile);
+                                            //AppState.setItem('userprofile', profile);
+                                            //Postal.channel('session').publish('profile.loaded', {profile: profile});
+                                        })
+                                        .catch(function (err) {
+                                            // Postal.channel('session').publish('profile.loadfailure', {error: err});
+                                            // TODO: global error handler!?!?!?
+                                            // Send to alert?
+                                            console.error(err);
+                                            runtime.send('ui', 'alert', {
+                                                type: 'error',
+                                                message: 'Error loading profile - could not create stub'
+                                            });
+                                        });
+                                    break;
+                                default:
+                                    runtime.send('ui', 'alert', 'Error loading profile - invalid state ' + profileState);
+                            }
                         })
                         .catch(function (err) {
-                            console.log('ERROR starting profile app service');
-                            console.log(err);
+                            console.error('ERROR starting profile app service');
+                            console.error(err);
                         });
                 } else {
                     state.setItem('userprofile', null);
@@ -77,8 +114,8 @@ define([
                     fun(value);
                 },
                 onError: function (err) {
-                    console.log('ERROR in user profile service');
-                    console.log(err);
+                    console.error('ERROR in user profile service');
+                    console.error(err);
                     if (errFun) {
                         errFun(err);
                     }

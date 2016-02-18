@@ -691,45 +691,60 @@ define([
                 }
             },
             addSuccessMessage: {
-                value: function (title, message) {
-                    if (message === undefined) {
-                        message = title;
-                        title = '';
-                    }
-                    this.messages.push({
+                value: function (message) {
+                    
+                    this.runtime.send('ui', 'alert', {
                         type: 'success',
-                        title: title,
                         message: message
                     });
-                    this.renderMessages();
+                    
+//                    
+//                    if (message === undefined) {
+//                        message = title;
+//                        title = '';
+//                    }
+//                    this.messages.push({
+//                        type: 'success',
+//                        title: title,
+//                        message: message
+//                    });
+//                    this.renderMessages();
                 }
             },
             addWarningMessage: {
-                value: function (title, message) {
-                    if (message === undefined) {
-                        message = title;
-                        title = '';
-                    }
-                    this.messages.push({
+                value: function (message) {
+                     this.runtime.send('ui', 'alert', {
                         type: 'warning',
-                        title: title,
                         message: message
                     });
-                    this.renderMessages();
+//                    if (message === undefined) {
+//                        message = title;
+//                        title = '';
+//                    }
+//                    this.messages.push({
+//                        type: 'warning',
+//                        title: title,
+//                        message: message
+//                    });
+//                    this.renderMessages();
                 }
             },
             addErrorMessage: {
-                value: function (title, message) {
-                    if (message === undefined) {
-                        message = title;
-                        title = '';
-                    }
-                    this.messages.push({
+                value: function (message) {
+                     this.runtime.send('ui', 'alert', {
                         type: 'error',
-                        title: title,
                         message: message
                     });
-                    this.renderMessages();
+//                    if (message === undefined) {
+//                        message = title;
+//                        title = '';
+//                    }
+//                    this.messages.push({
+//                        type: 'error',
+//                        title: title,
+//                        message: message
+//                    });
+//                    this.renderMessages();
                 }
             },
             makeWorkspaceObjectId: {
