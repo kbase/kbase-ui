@@ -18,9 +18,6 @@ define([
             name: "KBaseCatalogAdmin",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
             options: {
-                module_names: null,
-                limit: 20,
-                skip: 0
             },
 
             // clients to the catalog service and the NarrativeMethodStore
@@ -59,19 +56,18 @@ define([
                 self.$basicStatusDiv = mainPanelElements[1];
                 self.$pendingReleaseDiv = mainPanelElements[2];
                 self.$devListDiv = mainPanelElements[3];
+                self.$moduleList = mainPanelElements[4];
                 self.$elem.append(self.$mainPanel);
                 self.showLoading();
-
-                var modules = [];
-                if(self.options.module_names) {
-                    modules = self.options.module_names.split(';');
-                }
 
                 // get the module information
                 var loadingCalls = [];
                 loadingCalls.push(self.getDevList());
                 loadingCalls.push(self.getCatalogVersion());
                 loadingCalls.push(self.getModuleList());
+                loadingCalls.push(self.getReleasedModuleList());
+                loadingCalls.push(self.getUnreleasedModuleList());
+
                 loadingCalls.push(self.getPendingReleases());
 
                 // when we have it all, then render the list
@@ -88,6 +84,7 @@ define([
                 self.renderBasicStatus();
                 self.renderPendingRelease();
                 self.renderDevList();
+                self.renderModuleList();
             },
 
 
@@ -121,11 +118,17 @@ define([
                 $mainPanel.append($('<h4>').append('Approved Developers:'));
                 var $approvedDevelopers = $('<div>');
                 $mainPanel.append($approvedDevelopers);
+                $mainPanel.append('<br>');
+
+                $mainPanel.append($('<h4>').append('Module List:'));
+                var $moduleList = $('<div>');
+                $mainPanel.append($moduleList);
+                $mainPanel.append('<br>');
 
 
                 $mainPanel.append('<br><br>');
 
-                return [$mainPanel, $basicStatusDiv, $pendingReleaseDiv, $approvedDevelopers];
+                return [$mainPanel, $basicStatusDiv, $pendingReleaseDiv, $approvedDevelopers, $moduleList];
             },
 
             initLoadingPanel: function() {
@@ -169,6 +172,148 @@ define([
                     });
             },
 
+
+            renderModuleList: function() {
+                var self = this;
+
+
+                var $activateModule = $('<div>').css('margin','1em');
+                self.$moduleList.append($activateModule);
+                var $deleteModule = $('<div>').css('margin','1em');
+                self.$moduleList.append($deleteModule);
+                var $modList = $('<div>').css('margin','1em');
+                self.$moduleList.append($modList);
+
+
+                // Module Activation / Deactivation
+                var $modNameAct = $('<input type="text" size="50">').addClass('form-control').css('margin','4px');
+                var $activate = $('<button>').addClass('btn btn-default').append($('<i>').addClass('fa fa-thumbs-o-up')).tooltip({title:'activate'});
+                var $deactivate = $('<button>').addClass('btn btn-default').append($('<i>').addClass('fa fa-thumbs-o-down')).tooltip({title:'deactivate'});
+                var $actResult = $('<div>');
+
+                $activateModule.append($('<b>').append('Activate / Deactivate Module:')).append('<br>')
+                $activateModule.append(
+                    $('<div>').addClass('input-group').css('width','35%')
+                        .append($modNameAct)
+                        .append($('<span>').addClass('input-group-btn')
+                            .append($activate).append($deactivate)))
+                    .append($actResult);
+                $activate.on('click', function() {
+                    var modName = $modNameAct.val();
+                    $modNameAct.val('');
+                    $actResult.empty();
+                    self.catalog.set_to_active({module_name:modName})
+                        .then(function () {
+                            $actResult.prepend($('<div role=alert>').addClass('alert alert-success')
+                                .append('<b>Success.</b> The module '+modName+' was set to Active. Refresh this page to update the list.'));
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                            $actResult.prepend($('<div role=alert>').addClass('alert alert-danger')
+                                .append('<b>Error:</b> '+err.error.message));
+                        });
+                });
+                $deactivate.on('click', function() {
+                    var modName = $modNameAct.val();
+                    $modNameAct.val('');
+                    $actResult.empty();
+                    self.catalog.set_to_inactive({module_name:modName})
+                        .then(function () {
+                            $actResult.prepend($('<div role=alert>').addClass('alert alert-success')
+                                .append('<b>Success.</b> The module '+modName+' was set to Inactive. Refresh this page to update the list.'));
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                            $actResult.prepend($('<div role=alert>').addClass('alert alert-danger')
+                                .append('<b>Error:</b> '+err.error.message));
+                        });
+                });
+
+
+
+                // Module Deletion
+                var $modNameDel = $('<input type="text" size="50">').addClass('form-control').css('margin','4px');
+                var $trash = $('<button>').addClass('btn btn-default').append($('<i>').addClass('fa fa-trash'));
+                var $result = $('<div>');
+
+                $deleteModule.append($('<b>').append('Delete Module (only allowed if not yet released):')).append('<br>')
+                $deleteModule.append(
+                    $('<div>').addClass('input-group').css('width','35%')
+                        .append($modNameDel)
+                        .append($('<span>').addClass('input-group-btn')
+                            .append($trash)))
+                    .append($result);
+                $trash.on('click', function() {
+                    $result.empty();
+
+                    var modName = $modNameDel.val();
+                    $modNameDel.val('');
+                    var $confirm = $('<button>').addClass('btn btn-danger').append('Confirm deletion of '+modName+'?' );
+                    $result.append($confirm);
+                    var $cancel = $('<button>').addClass('btn btn-default').append('Nevermind.' );
+                    $result.append($cancel);
+                    $cancel.on('click',function() {
+                        $result.empty();
+                    });
+
+
+                    $confirm.on('click', function() {
+                        $confirm.hide();
+                        self.catalog.delete_module({module_name:modName})
+                            .then(function () {
+                                $result.prepend($('<div role=alert>').addClass('alert alert-success')
+                                    .append('<b>Success.</b> The module '+modName+' was deleted. Refresh this page to update the list.'));
+                            })
+                            .catch(function (err) {
+                                console.error('ERROR');
+                                console.error(err);
+                                $result.prepend($('<div role=alert>').addClass('alert alert-danger')
+                                    .append('<b>Error:</b> '+err.error.message));
+                            });
+                    });
+                });
+
+                $modList.append('<i> '+self.released_modules.length+' Released Modules</i><br>');
+                $tbl = $('<table>').addClass('table table-hover table-condensed');
+                for(var k=0; k<self.released_modules.length; k++) {
+                    $tbl.append(
+                        $('<tr>')
+                            .append($('<td>')
+                                .append($('<a href="#appcatalog/module/'+self.released_modules[k].module_name+'">').append(self.released_modules[k].module_name)))
+                            .append($('<td>')
+                                .append($('<a href="'+self.released_modules[k].git_url+'">').append(self.released_modules[k].git_url))));
+                }
+                $modList.append($tbl);
+
+                $modList.append('<i> '+self.unreleased_modules.length+' Unreleased Modules</i><br>');
+                $tbl = $('<table>').addClass('table table-hover table-condensed');
+                for(var k=0; k<self.unreleased_modules.length; k++) {
+                    $tbl.append(
+                        $('<tr>')
+                            .append($('<td>')
+                                .append($('<a href="#appcatalog/module/'+self.unreleased_modules[k].module_name+'">').append(self.unreleased_modules[k].module_name)))
+                            .append($('<td>')
+                                .append($('<a href="'+self.unreleased_modules[k].git_url+'">').append(self.unreleased_modules[k].git_url))));
+                }
+                $modList.append($tbl);
+
+                $modList.append('<i> '+self.inactive_modules.length+' Inactive Modules</i><br>');
+                $tbl = $('<table>').addClass('table table-hover table-condensed');
+                for(var k=0; k<self.inactive_modules.length; k++) {
+                    $tbl.append(
+                        $('<tr>')
+                            .append($('<td>')
+                                .append($('<a href="#appcatalog/module/'+self.inactive_modules[k].module_name+'">').append(self.inactive_modules[k].module_name)))
+                            .append($('<td>')
+                                .append($('<a href="'+self.inactive_modules[k].git_url+'">').append(self.inactive_modules[k].git_url))));
+                }
+                $modList.append($tbl);
+
+
+            },
+
             renderPendingRelease: function() {
                 var self = this;
 
@@ -190,7 +335,7 @@ define([
                             $li.append(mod.git_commit_hash + ' - '+mod.git_commit_message+'<br>');
                             $li.append('owners: [')
                             for(var owner=0; owner<mod.owners.length; owner++) {
-                                if(owner>0) { $ul.append(', ') }
+                                if(owner>0) { $li.append(', ') }
                                 $li.append('<a href="#people/'+mod.owners[owner]+'">'+mod.owners[owner]+'</a>');
                             }
                             $li.append(']<br>');
@@ -303,7 +448,6 @@ define([
                 var $trash = $('<button>').addClass('btn btn-default').append($('<i>').addClass('fa fa-trash'));
                 var $result = $('<div>');
 
-
                 $addDev.append($('<b>').append('Add/Remove Developer:')).append('<br>')
                 $addDev.append(
                     $('<div>').addClass('input-group').css('width','35%')
@@ -398,11 +542,75 @@ define([
                     });
             },
 
+
+            getReleasedModuleList: function() {
+                var self = this
+
+                return self.catalog.list_basic_module_info({
+                        include_unreleased:0,
+                        include_released:1
+                    })
+                    .then(function (module_list) {
+                        var good_modules = []
+                        for(var k=0; k<module_list.length; k++) {
+                            if(module_list[k].module_name) {
+                                good_modules.push(module_list[k]);
+                            }
+                        }
+                        good_modules.sort(function(a, b) {
+                            if(a.module_name.toLowerCase() < b.module_name.toLowerCase()){
+                                return -1;
+                            } else if(a.module_name.toLowerCase() > b.module_name.toLowerCase()){
+                                return 1;
+                            }
+                            return 0;
+                        });
+
+                        self.released_modules = good_modules;
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+            getUnreleasedModuleList: function() {
+                var self = this
+
+                return self.catalog.list_basic_module_info({
+                        include_unreleased:1,
+                        include_released:0
+                    })
+                    .then(function (module_list) {
+                        var good_modules = []
+                        for(var k=0; k<module_list.length; k++) {
+                            if(module_list[k].module_name) {
+                                good_modules.push(module_list[k]);
+                            }
+                        }
+                        good_modules.sort(function(a, b) {
+                            if(a.module_name.toLowerCase() < b.module_name.toLowerCase()){
+                                return -1;
+                            } else if(a.module_name.toLowerCase() > b.module_name.toLowerCase()){
+                                return 1;
+                            }
+                            return 0;
+                        });
+
+                        self.unreleased_modules = good_modules;
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
             getModuleList: function() {
                 var self = this
 
                 return self.catalog.list_basic_module_info({
-                        include_unreleased:1
+                        include_unreleased:1,
+                        include_released:1
                     })
                     .then(function (module_list) {
                         var good_modules = []
@@ -421,6 +629,49 @@ define([
                         });
 
                         self.module_list = good_modules;
+
+                        // get the inactive module list by getting everything, and showing only those on this list
+                        // and not in self.module_list; need to improve this catalog API method!!
+                        return self.catalog.list_basic_module_info({
+                                    include_disabled:1,
+                                    include_unreleased:1,
+                                    include_released:1,
+                                })
+                                .then(function (module_list) {
+                                    var good_modules = []
+                                    for(var k=0; k<module_list.length; k++) {
+                                        if(module_list[k].module_name) {
+                                            var found = false;
+                                            for(var j=0; j<self.module_list.length; j++) {
+                                                if(module_list[k].module_name === self.module_list[j].module_name) {
+                                                    found = true;
+                                                    break;
+                                                }
+                                            }
+                                            if(found) {
+                                                continue;
+                                            }
+                                            good_modules.push(module_list[k]);
+                                        }
+                                    }
+                                    good_modules.sort(function(a, b) {
+                                        if(a.module_name.toLowerCase() < b.module_name.toLowerCase()){
+                                            return -1;
+                                        } else if(a.module_name.toLowerCase() > b.module_name.toLowerCase()){
+                                            return 1;
+                                        }
+                                        return 0;
+                                    });
+
+                                    self.inactive_modules = good_modules;
+                                })
+                                .catch(function (err) {
+                                    console.error('ERROR');
+                                    console.error(err);
+                                });
+
+
+
                     })
                     .catch(function (err) {
                         console.error('ERROR');

@@ -133,6 +133,7 @@ define(['jquery',
                         }
 
                     }, function(error) {
+                        self.loading(false);
                         console.error(error);
                         self.$log_window.val('Error fetching log: '+ error.error.error);
                     });
@@ -193,6 +194,6 @@ define(['jquery',
         hideMessage: function() {
             this.$messagePane.hide();
             this.$messagePane.empty();
-        }     
+        }
     });
 });

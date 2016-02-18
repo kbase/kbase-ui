@@ -264,7 +264,7 @@ homologyApp.service('homologyOptionsService', function homologyOptionsService() 
 
 /* Filters */
 homologyApp.filter('displayPairwiseComparison', function($sce) {
-   return function(detail){
+   return function(detail, scope){
        var outputDiv = [];
 
        detail.hsps.forEach(function(hsp){
@@ -275,29 +275,46 @@ homologyApp.filter('displayPairwiseComparison', function($sce) {
 
            // header
            output.push([
+               'Query length: ' + detail.query_len,
+               'Subject length: ' + detail.subject_len
+           ].join('    '));
+           output.push([
                'Score: ' + Math.round(hsp.bit_score) + ' bits(' + hsp.score + ')',
-               'Expect: ' + hsp.evalue,
-               hsp.hit_strand?'Strand: ' + hsp.hit_strand + '/' + hsp.query_strand:''
+               'Expect: ' + scope.formatEvalue(hsp.evalue),
+               hsp.hit_strand?'Strand: ' + hsp.query_strand + '/' + hsp.hit_strand:''
            ].join('    '));
            output.push([
                'Identities: ' + hsp.identity + '/' + hsp.align_len + '(' + Math.round(hsp.identity / hsp.align_len * 100) +'%)',
                hsp.positive?'Positives: ' + hsp.positive + '/' + hsp.align_len + '(' + Math.round(hsp.positive / hsp.align_len * 100) + '%)':'',
-               'Gaps: ' + hsp.gaps + '/' + hsp.align_len + '(' + Math.round(hsp.gaps / hsp.align_len * 100) + '%)'
+               'Gaps: ' + hsp.gaps + '/' + hsp.align_len + '(' + Math.round(hsp.gaps / hsp.align_len * 100) + '%)',
+               hsp.hit_frame?'Frame:' + (hsp.query_frame?hsp.query_frame + '/':'') + hsp.hit_frame :''
            ].join('    '));
            output.push('\n');
 
            var query_pos = hsp.query_from;
            var hit_pos = hsp.hit_from;
            for(var i = 0, n = qSeqArr.length; i < n; i++){
-               var query_from = String('    ' + query_pos).slice(-4);
-               var query_to   = query_pos + qSeqArr[i].match(/[A-Z]/gi).length - 1;
-               var hit_from = String('    ' + hit_pos).slice(-4);
-               var hit_to   = hit_pos + hSeqArr[i].match(/[A-Z]/gi).length - 1;
-               query_pos = query_to + 1;
-               hit_pos = hit_to + 1;
+               var query_from = String('        ' + query_pos).slice(-8);
+               var hit_from = String('        ' + hit_pos).slice(-8);
+
+               var query_to, hit_to;
+               if (hsp.query_strand == undefined || hsp.query_strand === 'Plus'){
+                   query_to = query_pos + qSeqArr[i].match(/[A-Z]/gi).length - 1;
+                   query_pos = query_to + 1;
+               } else {
+                   query_to = query_pos - qSeqArr[i].match(/[A-Z]/gi).length + 1;
+                   query_pos = query_to - 1;
+               }
+               if (hsp.hit_strand == undefined || hsp.hit_strand === 'Plus'){
+                   hit_to = hit_pos + hSeqArr[i].match(/[A-Z]/gi).length - 1;
+                   hit_pos = hit_to + 1;
+               } else {
+                   hit_to = hit_pos - hSeqArr[i].match(/[A-Z]/gi).length + 1;
+                   hit_pos = hit_to - 1;
+               }
 
                output.push(['Query', query_from, qSeqArr[i], query_to].join('  '));
-               output.push(['     ', '    ', mlArr[i], '    '].join('  '));
+               output.push(['     ', '        ', mlArr[i], '    '].join('  '));
                output.push(['Sbjct', hit_from, hSeqArr[i], hit_to].join('  '));
                output.push('\n');
            }
@@ -427,6 +444,9 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     $scope.onGenomeNameSelect = function($item, $model, $label, idx) {
         //console.log($item, $model, $label, idx);
         $scope.targetGenomes[idx].genome_id = $item.id;
+        // trigger database selection to 'Search within select genome(s)'
+        $scope.options.searchOptions.general.database = '';
+        $scope.options.searchOptions.general.useDatabase = false;
     };
     // end of controls for genome name input boxes
 
@@ -615,29 +635,9 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             default:
                 break;
         }
-        if ($scope.options.searchOptions.general.sequence !== '' && $scope.options.searchOptions.general.database !== '') {
-            var sequence_type = $scope.isNucleotideFastaSequence($scope.options.searchOptions.general.sequence)?"nucleotide":"protein";
-            if ($scope.validateDatabaseWithSequenceType(sequence_type, $scope.options.searchOptions.general.database)) {
-                $scope.options.searchOptions.ui.database_message = '';
-            } else {
-                angular.element.find('#database')[0].focus();
-                $scope.options.searchOptions.ui.database_message = 'Database does not match to the query sequence type.';
-                return;
-            }
-        }
     };
 
     $scope.onProgramChange = function(){
-        if ($scope.options.searchOptions.general.sequence !== undefined){
-            var sequence_type = $scope.isNucleotideFastaSequence($scope.options.searchOptions.general.sequence) ? "nucleotide" : "protein";
-            if($scope.validateProgramWithSequenceType(sequence_type, $scope.options.searchOptions.general.program)){
-                $scope.options.searchOptions.ui.program_message = '';
-            }else{
-                $scope.options.searchOptions.ui.show_advance_options = true;
-                angular.element.find('#program')[0].focus();
-                $scope.options.searchOptions.ui.program_message = 'Program does not match to the query sequence type.';
-            }
-        }
         if ($scope.validateProgramWithDatabase($scope.options.searchOptions.general.useDatabase, $scope.options.searchOptions.general.program)){
             $scope.options.searchOptions.ui.program_message = '';
         } else {
@@ -647,14 +647,82 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         }
     };
 
-    $scope.validateDatabaseWithSequenceType = function(sequence_type, database) {
-        return (sequence_type === 'nucleotide' && ['kbase_nr.ffn', 'kbase.fna'].indexOf(database) > -1)
-            || (sequence_type === 'protein' && ['kbase_nr.faa'].indexOf(database) > -1);
+    $scope.validateDatabaseProgramWithSequenceType = function(sequence_type, database, program){
+        var isValid = false;
+        const seq_type_na = 'nucleotide', seq_type_aa = 'protein';
+        const db_type_na = ['kbase_nr.ffn', 'kbase.fna'], db_type_aa = ['kbase_nr.faa'];
+        switch (program) {
+            case "blastn":
+                // Search a nucleotide database using a nucleotide query
+                isValid = (sequence_type === seq_type_na && db_type_na.indexOf(database) > -1);
+                break;
+            case "blastp":
+                // Search protein database using a protein query
+                isValid = (sequence_type === seq_type_aa && db_type_aa.indexOf(database) > -1);
+                break;
+            case "blastx":
+                // Search protein database using a translated nucleotide query
+                isValid = (sequence_type === seq_type_na && db_type_aa.indexOf(database) > -1);
+                break;
+            case "tblastn":
+                // Search translated nucleotide database using a protein query
+                isValid = (sequence_type === seq_type_aa && database === '');
+                break;
+            case "tlastx":
+                // Search translated nucleotide database using a translated nucleotide query
+                isValid = (sequence_type === seq_type_na && database === '');
+                break;
+            default:
+                break;
+        }
+        return isValid;
     };
 
-    $scope.validateProgramWithSequenceType = function(sequence_type, program) {
-        return (sequence_type === 'nucleotide' && ['blastn', 'blastx', 'tblastx'].includes(program))
-            || (sequence_type === 'protein' && ['blastp', 'tblastn'].includes(program));
+    $scope.validateSearchforProgramWithSequenceType = function(sequence_type, search_for, program){
+        var isValid = false;
+        const seq_type_na = 'nucleotide', seq_type_aa = 'protein';
+        const db_type_na = ['contigs', 'features'], db_type_aa = ['features'];
+        switch (program) {
+            case "blastn":
+                // Search a nucleotide database using a nucleotide query
+                isValid = (sequence_type === seq_type_na && db_type_na.indexOf(search_for) > -1);
+                break;
+            case "blastp":
+                // Search protein database using a protein query
+                isValid = (sequence_type === seq_type_aa && db_type_aa.indexOf(search_for) > -1);
+                break;
+            case "blastx":
+                // Search protein database using a translated nucleotide query
+                isValid = (sequence_type === seq_type_na && db_type_aa.indexOf(search_for) > -1);
+                break;
+            case "tblastn":
+                // Search translated nucleotide database using a protein query
+                isValid = (sequence_type === seq_type_aa && db_type_na.indexOf(search_for) > -1);
+                break;
+            case "tblastx":
+                // Search translated nucleotide database using a translated nucleotide query
+                isValid = (sequence_type === seq_type_na && db_type_na.indexOf(search_for) > -1);
+                break;
+            default:
+                break;
+        }
+        return isValid;
+    };
+
+    $scope.validateSearchfor = function(sequence_type, search_for, program) {
+        var isValid = $scope.validateSearchforProgramWithSequenceType(sequence_type, search_for, program);
+        var isInValidGenomicSequence = false;
+        switch (program) {
+            case "blastp":
+            case "blastx":
+                if (!isValid && search_for === 'contigs') {
+                    isInValidGenomicSequence = true;
+                }
+                break;
+            default:
+                break;
+        }
+        return !isInValidGenomicSequence;
     };
 
     $scope.validateProgramWithDatabase = function(useDatabase, program) {
@@ -683,29 +751,42 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 return;
             }
 
-            // check whether sequence type matches to database selection
+            // check whether sequence type matches to database and program selection
             var sequence_type = $scope.isNucleotideFastaSequence($scope.options.searchOptions.general.sequence)?"nucleotide":"protein";
 
             if (options.useDatabase) {
-                if ($scope.validateDatabaseWithSequenceType(sequence_type, options.database)) {
+                if ($scope.validateDatabaseProgramWithSequenceType(sequence_type, options.database, options.program)) {
                     // pass
                     $scope.options.searchOptions.ui.database_message = '';
+                    $scope.options.searchOptions.ui.program_message = '';
                 } else {
                     angular.element.find('#database')[0].focus();
                     $scope.options.searchOptions.ui.database_message = 'Database does not match to the query sequence type.';
+                    $scope.options.searchOptions.ui.program_message = 'Program does not match to the query sequence type.';
                     return;
                 }
-            }
-
-            // check whether sequence type matches to program selection
-            if ($scope.validateProgramWithSequenceType(sequence_type, options.program)) {
-                // pass
-                $scope.options.searchOptions.ui.program_message = '';
             } else {
-                $scope.options.searchOptions.ui.show_advance_options = true;
-                angular.element.find('#program')[0].focus();
-                $scope.options.searchOptions.ui.program_message = 'Program does not match to the query sequence type.';
-                return;
+                // blast against genomes
+
+                if ($scope.validateSearchfor(sequence_type, options.searchtype, options.program)) {
+                    // pass
+                    $scope.options.searchOptions.ui.searchtype_message = '';
+                } else {
+                    $scope.options.searchOptions.ui.show_advance_options = true;
+                    angular.element.find('[name=searchtype]')[0].focus();
+                    $scope.options.searchOptions.ui.searchtype_message = 'Genomic sequences (contigs) is only available only for nucleotide databases';
+                    return;
+                }
+                if ($scope.validateSearchforProgramWithSequenceType(sequence_type, options.searchtype, options.program)) {
+                    // pass
+                    $scope.options.searchOptions.ui.database_message = '';
+                    $scope.options.searchOptions.ui.program_message = '';
+                } else {
+                    $scope.options.searchOptions.ui.show_advance_options = true;
+                    angular.element.find('#program')[0].focus();
+                    $scope.options.searchOptions.ui.program_message = 'Program does not match to the query sequence type.';
+                    return;
+                }
             }
 
             // check whether program tblastx/tblastn is selected with nr database.
@@ -716,27 +797,23 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             }
         }
 
-        if ($scope.options.searchOptions.general.useDatabase) {
+        var genomeIds = $scope.targetGenomes.map(function(genome){
+            return genome.genome_id;
+        }).filter(function(id){
+            return id != undefined;
+        });
+
+        if (genomeIds.length == 0 && options.useDatabase) {
             // database search
             method = "HomologyService.blast_fasta_to_database";
             params = [options.sequence, options.program, options.database, options.evalue, options.max_hit, 0];
         }
-        else {
-            var genomeIds = $scope.targetGenomes.map(function(genome){
-                return genome.genome_id;
-            }).filter(function(id){
-                return id != undefined;
-            });
-
-            //console.log($scope.targetGenomes, genomeIds);
-
-            if (genomeIds.length == 0) {
-                angular.element.find('#genomes_0')[0].focus();
-                $scope.options.searchOptions.ui.genome_ids_invalid = true;
-                return;
-            } else {
-              $scope.options.searchOptions.ui.genome_ids_invalid = false;
-            }
+        else if (genomeIds.length == 0 && options.useDatabase == false) {
+            angular.element.find('#genomes_0')[0].focus();
+            $scope.options.searchOptions.ui.genome_ids_invalid = true;
+            return;
+        } else {
+            $scope.options.searchOptions.ui.genome_ids_invalid = false;
 
             method = "HomologyService.blast_fasta_to_genomes";
             params = [options.sequence, options.program, genomeIds, options.searchtype, options.evalue, options.max_hit, 0];
@@ -830,14 +907,14 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             //console.log(hit);
             var target_id = hit.description[0].id;
             entries.push({
-                "row_id": object_type === 'feature' ? target_id : metadata[target_id].genome_id,
+                "row_id": object_type === 'KBaseSearch.Feature' ? target_id : metadata[target_id].genome_id,
                 "object_type": object_type,
                 "position": (index + 1),
                 "qseqid": query_id,
                 "sseqid": target_id,
                 "pident": Math.round(hit.hsps[0].identity / hit.hsps[0].align_len * 100) + '%',
-                "query_coverage": Math.round((hit.hsps[0].query_to - hit.hsps[0].query_from + 1) / query_length * 100) + '%',
-                "subject_coverage": Math.round((hit.hsps[0].hit_to - hit.hsps[0].hit_from + 1) / hit.len * 100) + '%',
+                "query_coverage": Math.round((Math.abs(hit.hsps[0].query_to - hit.hsps[0].query_from) + 1) / query_length * 100) + '%',
+                "subject_coverage": Math.round((Math.abs(hit.hsps[0].hit_to - hit.hsps[0].hit_from) + 1) / hit.len * 100) + '%',
                 "length": hit.len,
                 "evalue": $scope.formatEvalue(hit.hsps[0]['evalue']),
                 "bitscore": Math.round(hit.hsps[0].bit_score),
@@ -848,7 +925,9 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 "detail": {
                     "match_count": metadata[target_id].match_count || 0,
                     "matches": identical[target_id] || [],
-                    "hsps": hit.hsps
+                    "hsps": hit.hsps,
+                    "query_len": query_length,
+                    "subject_len": hit.len
                 }
            });
         });
@@ -1118,6 +1197,9 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     $scope.setView = function (type) {
         //console.log("Setting " + type);
         $scope.options.userState.session.viewType = type;
+        if (type === 'compact') {
+            $scope.options.userState.session.data_cart.view = [];
+        }
     };
 
 

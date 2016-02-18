@@ -61,9 +61,8 @@ define([
                 self.$loadingPanel = self.util.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
 
-                self.$errorPanel = $('<div>').addClass('danger').hide();
+                self.$errorPanel = $('<div>');
                 self.$elem.append(self.$errorPanel);
-
                 var mainPanelElements = self.initMainPanel();
                 //[$mainPanel, $header, $adminPanel, $appsPanel, $descriptionPanel, $versionsPanel];
                 self.$mainPanel = mainPanelElements[0];
@@ -97,10 +96,9 @@ define([
                             self.renderApps();
                             return p;
                         })
-                });/*.catch(function(err){
+                }).catch(function(err){
                     self.hideLoading();
-                    self.showError(err)
-                });*/
+                });
 
 
                 return this;
@@ -525,6 +523,7 @@ define([
                     .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
+                        self.showError(err);
                     });
             },
 
@@ -548,6 +547,7 @@ define([
                         .catch(function (err) {
                             console.error('ERROR');
                             console.error(err);
+                            self.showError(err);
                         });
                 }
             },
@@ -583,6 +583,7 @@ define([
                     .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
+                        self.showError(err);
                     });
             },
 
@@ -631,10 +632,12 @@ define([
                                 }
                             }
                         }
+                        return Promise.try(function() {});
                     })
                     .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
+                        self.showError(err);
                     });
 
             },
@@ -678,6 +681,7 @@ define([
                     .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
+                        self.showError(err);
                     });
             },
 
@@ -710,6 +714,7 @@ define([
                     .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
+                        self.showError(err);
                     });
             },
 
@@ -736,19 +741,26 @@ define([
                     .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
+                        self.showError(err);
                     });
             },
 
 
             showError: function (error) {
                 this.$errorPanel.empty();
-                this.$errorPanel.append('<strong>Error when fetching App/Method information.</strong><br><br>');
+
+                var $alert = $('<div>').addClass('col-md-12 alert alert-danger');
+                this.$errorPanel.append($('<div>').addClass('container')
+                                            .append($('<div>').addClass('row')
+                                                .append($alert)));
+
+                $alert.append('<strong>Error when fetching Module information.</strong><br><br>');
                 if(error.error) {
                     if(error.error.message){
-                        this.$errorPanel.append(error.error.message);
+                        $alert.append(error.error.message);
                     }
                 }
-                this.$errorPanel.append('<br>');
+                $alert.append('<br>');
                 this.$errorPanel.show();
             }
         });
