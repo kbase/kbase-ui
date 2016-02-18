@@ -1797,6 +1797,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             all: false,
             size: 0,
             data: {},
+            view: {},
             types: {
                 'genomes': {all: false, size: 0, markers: {}},
                 'features': {all: false, size: 0, markers: {}}
