@@ -193,7 +193,8 @@ homologyApp.service('homologyOptionsService', function homologyOptionsService() 
                 "genome_ids": [],
                 "max_hit": 50,
                 "evalue": "10",
-                "useDatabase": true
+                "useDatabase": true,
+                "defaultMessage": "Searching..."
             },
             "ui": {
                 "sequence_message": "",
