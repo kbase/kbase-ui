@@ -201,7 +201,7 @@ homologyApp.service('homologyOptionsService', function homologyOptionsService() 
                 "genome_ids_invalid": false,
                 "show_advance_options": false
             },
-            "perCategory": {"features":{}}
+            "perCategory": {"features":{}, "genomes":{}}
         },
         categoryCounts : {},
         searchOptions : this.defaultSearchOptions,
@@ -287,7 +287,9 @@ homologyApp.filter('displayPairwiseComparison', function($sce) {
                'Identities: ' + hsp.identity + '/' + hsp.align_len + '(' + Math.round(hsp.identity / hsp.align_len * 100) +'%)',
                hsp.positive?'Positives: ' + hsp.positive + '/' + hsp.align_len + '(' + Math.round(hsp.positive / hsp.align_len * 100) + '%)':'',
                'Gaps: ' + hsp.gaps + '/' + hsp.align_len + '(' + Math.round(hsp.gaps / hsp.align_len * 100) + '%)',
-               hsp.hit_frame?'Frame:' + (hsp.query_frame?hsp.query_frame + '/':'') + hsp.hit_frame :''
+               (hsp.query_frame || hsp.hit_frame)?('Frame: ' + (hsp.query_frame?hsp.query_frame:'')
+               + ((hsp.query_frame && hsp.hit_frame)?'/':'')
+               + (hsp.hit_frame?hsp.hit_frame:'')):''
            ].join('    '));
            output.push('\n');
 
@@ -878,6 +880,8 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         if (evalue.toString().includes('e')) {
             var val = evalue.toString().split('e');
             return parseInt(val[0]) + 'e' + val[1];
+        } else if (evalue !== 0) {
+            return evalue.toFixed(4);
         } else {
             return evalue;
         }
@@ -894,8 +898,10 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         $scope.options.searchOptions.ui.object_type = object_type;
         if (object_type === 'KBaseSearch.Feature') {
             $scope.options.searchOptions.ui.tooltip_message = 'Select all features on this page.';
+            $scope.options.selectedCategory = "features";
         } else if (object_type === 'KBaseSearch.Genome') {
             $scope.options.searchOptions.ui.tooltip_message = 'Select all genomes on this page.';
+            $scope.options.selectedCategory = "genomes";
         } else {
             $scope.options.searchOptions.ui.tooltip_message = 'Select all results on this page.';
         }
@@ -908,6 +914,8 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             var target_id = hit.description[0].id;
             entries.push({
                 "row_id": object_type === 'KBaseSearch.Feature' ? target_id : metadata[target_id].genome_id,
+                "workspace_name": object_type === 'KBaseSearch.Feature' ? 'KBasePublicRichGenomesV5': 'KBasePublicGenomesV5',
+                "object_id": object_type === 'KBaseSearch.Feature' ? '/features/' + target_id : '',
                 "object_type": object_type,
                 "position": (index + 1),
                 "qseqid": query_id,
@@ -1284,11 +1292,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
 
 
     $scope.copyGenome = function(n) {
-        var workspace_name = "KBasePublicGenomesV5";
-        return $scope.workspace_service.get_object_info([
-                {"name": $scope.options.userState.session.data_cart.data[n]["genome_id"],
-                "workspace": workspace_name}
-        ])
+        return $scope.workspace_service.get_object_info([{"name": $scope.options.userState.session.data_cart.data[n]["genome_id"], "workspace": $scope.options.userState.session.data_cart.data[n]["workspace_name"].split("Rich").join("")}])
             .fail(function (xhr, status, error) {
                 console.log(xhr);
                 console.log(status);
@@ -1303,14 +1307,14 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 var copy_genome = function () {
                     $scope.workspace_service.copy_object({
                         "from": {
-                                 "workspace": workspace_name,
-                                 "name": info[0][1]
-                                },
+                            "workspace": $scope.options.userState.session.data_cart.data[n]["workspace_name"].split("Rich").join(""),
+                            "name": info[0][1]
+                        },
                         "to": {
-                               "workspace": $scope.options.userState.session.selectedWorkspace,
-                               "name": info[0][1]
-                              }
-                        }, success, error);
+                            "workspace": $scope.options.userState.session.selectedWorkspace,
+                            "name": info[0][1]
+                        }
+                    }, success, error);
                 };
 
 
@@ -1342,8 +1346,8 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                     console.log(result);
 
                     $scope.transferError($scope.options.userState.session.data_cart.data[n]["object_name"],
-                                         $scope.options.userState.session.data_cart.data[n]["object_id"],
-                                         result);
+                        $scope.options.userState.session.data_cart.data[n]["object_id"],
+                        result);
                 }
 
                 $scope.options.transferRequests += 1;
@@ -1354,22 +1358,20 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     };
 
 
+    $scope.copyGenomeSet = function(n) {
+
+    };
 
     $scope.copyFeature = function(n) {
         //console.log($scope.options.userState.session.data_cart.data[n]["object_id"]);
-        //console.log($scope.options.userState.session.data_cart.data[n]);
-        // var split_id = $scope.options.userState.session.data_cart.data[n]["object_id"].split('/');
-        var feature_id = $scope.options.userState.session.data_cart.data[n]["feature_id"];
-        var workspace_name = "KBasePublicGenomesV5";
+        var split_id = $scope.options.userState.session.data_cart.data[n]["object_id"].split('/');
         //console.log("/features/" + split_id[2]);
         //console.log($scope.options.userState.session.data_cart.data[n]["genome_id"] + ".featureset");
 
         return $scope.workspace_service.get_object_subset([{"name": $scope.options.userState.session.data_cart.data[n]["genome_id"] + ".featureset",
-                                                            // "workspace": $scope.options.userState.session.data_cart.data[n]["workspace_name"].split("Rich").join(""),
-                                                            // "included": ["/features/" + split_id[2]]
-                                                            "workspace": workspace_name,
-                                                            "included": ["/features/" + feature_id]
-                                                          }])
+                "workspace": $scope.options.userState.session.data_cart.data[n]["workspace_name"],
+                "included": ["/features/" + split_id[2]]
+            }])
             .fail(function (xhr, status, error) {
                 console.log(xhr);
                 console.log(status);
@@ -1396,10 +1398,10 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                             }
                             else if (p === "location") {
                                 var sortedOrdinals = feature_source_obj[p].sort(function (a,b) {
-                                                          if (a[4] < b[4]) return -1;
-                                                          if (a[4] > b[4]) return 1;
-                                                          return 0;
-                                                      });
+                                    if (a[4] < b[4]) return -1;
+                                    if (a[4] > b[4]) return 1;
+                                    return 0;
+                                });
 
                                 feature_dest_obj[p] = [];
                                 for (var i = sortedOrdinals.length - 1; i >= 0; i--) {
@@ -1435,16 +1437,16 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 // wrap this in a function so that we can retry on failure
                 var save_feature = function () {
                     $scope.workspace_service.save_objects({"workspace": $scope.options.userState.session.selectedWorkspace,
-                                                           "objects": [{"data": feature_dest_obj,
-                                                                        "type": "KBaseGenomes.Feature",
-                                                                        "name": feature_source_obj["feature_id"],
-                                                                        "provenance": [{"time": new Date().toISOString().split('.')[0] + "+0000",
-                                                                                        "service": "KBase Search",
-                                                                                        "description": "Created from a Public Genome Feature",
-                                                                                        "input_ws_objects": []}],
-                                                                        "meta": {}
-                                                                       }]
-                                                           })
+                            "objects": [{"data": feature_dest_obj,
+                                "type": "KBaseGenomes.Feature",
+                                "name": feature_source_obj["feature_id"],
+                                "provenance": [{"time": new Date().toISOString().split('.')[0] + "+0000",
+                                    "service": "KBase Search",
+                                    "description": "Created from a Public Genome Feature",
+                                    "input_ws_objects": []}],
+                                "meta": {}
+                            }]
+                        })
                         .fail(function (xhr, status, error) {
                             if (tries < max_tries) {
                                 tries += 1;
@@ -1554,11 +1556,11 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                     if ($scope.options.userState.session.data_cart.data[ws_objects[i]].hasOwnProperty("object_name") === true) {
                         //console.log($scope.options.userState.session.data_cart.data[ws_objects[i]]);
                         ws_requests.push($scope.copyTypedObject(
-                                                ws_objects[i],
-                                                $scope.options.userState.session.data_cart.data[ws_objects[i]]["object_name"],
-                                                $scope.options.userState.session.data_cart.data[ws_objects[i]]["object_id"],
-                                                $scope.options.userState.session.data_cart.data[ws_objects[i]]["workspace_name"],
-                                                $scope.options.userState.session.selectedWorkspace).then(function () {;}));
+                            ws_objects[i],
+                            $scope.options.userState.session.data_cart.data[ws_objects[i]]["object_name"],
+                            $scope.options.userState.session.data_cart.data[ws_objects[i]]["object_id"],
+                            $scope.options.userState.session.data_cart.data[ws_objects[i]]["workspace_name"],
+                            $scope.options.userState.session.selectedWorkspace).then(function () {;}));
                     }
                     else if ($scope.options.userState.session.data_cart.data[ws_objects[i]].hasOwnProperty("object_id") === true) {
                         console.log($scope.options.userState.session.data_cart.data[ws_objects[i]]);
@@ -1571,11 +1573,11 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                             })
                             .done(function (info, status, xhr) {
                                 ws_requests.push($scope.copyTypedObject(
-                                                    ws_objects[i],
-                                                    info[0][1],
-                                                    $scope.options.userState.session.data_cart.data[ws_objects[i]]["object_id"],
-                                                    $scope.options.userState.session.data_cart.data[ws_objects[i]]["workspace_name"],
-                                                    $scope.options.userState.session.selectedWorkspace).then(function () {;}));
+                                    ws_objects[i],
+                                    info[0][1],
+                                    $scope.options.userState.session.data_cart.data[ws_objects[i]]["object_id"],
+                                    $scope.options.userState.session.data_cart.data[ws_objects[i]]["workspace_name"],
+                                    $scope.options.userState.session.selectedWorkspace).then(function () {;}));
                             });
                     }
                     else {
@@ -1591,11 +1593,11 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                         function (info) {
                             for (var i = $scope.options.userState.longterm.workspaces.length - 1; i >= 0; i--) {
                                 if ($scope.options.userState.longterm.workspaces[i][1] === $scope.options.userState.session.selectedWorkspace) {
-                                     $scope.$apply(function () {
-                                         $scope.options.userState.longterm.workspaces[i][4] = info[4];
-                                     });
+                                    $scope.$apply(function () {
+                                        $scope.options.userState.longterm.workspaces[i][4] = info[4];
+                                    });
 
-                                     break;
+                                    break;
                                 }
                             }
 
@@ -1702,11 +1704,11 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                     function (info) {
                         for (var i = $scope.options.userState.longterm.workspaces.length - 1; i >= 0; i--) {
                             if ($scope.options.userState.longterm.workspaces[i][1] === $scope.options.userState.session.selectedWorkspace) {
-                                 $scope.$apply(function () {
-                                     $scope.options.userState.longterm.workspaces[i][4] = info[4];
-                                 });
+                                $scope.$apply(function () {
+                                    $scope.options.userState.longterm.workspaces[i][4] = info[4];
+                                });
 
-                                 break;
+                                break;
                             }
                         }
 
@@ -1773,7 +1775,11 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
     };
 
     $scope.removeSelection = function(n) {
-        if (n.object_type.indexOf(".Feature") > -1) {
+        if (n.object_type.indexOf(".Genome") > -1) {
+            delete $scope.options.userState.session.data_cart.types['genomes'].markers[n.row_id];
+            $scope.options.userState.session.data_cart.types['genomes'].size -= 1;
+        }
+        else if (n.object_type.indexOf(".Feature") > -1) {
             delete $scope.options.userState.session.data_cart.types['features'].markers[n.row_id];
             $scope.options.userState.session.data_cart.types['features'].size -= 1;
         }
@@ -1791,7 +1797,9 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             all: false,
             size: 0,
             data: {},
+            view: {},
             types: {
+                'genomes': {all: false, size: 0, markers: {}},
                 'features': {all: false, size: 0, markers: {}}
             }
         };
@@ -1832,7 +1840,26 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
 
     $scope.selectCheckbox = function(id, item) {
         if (!$scope.options.userState.session.data_cart.data.hasOwnProperty(id)) {
-            if (item.object_type.indexOf(".Feature") > -1) {
+            if (item.object_type.indexOf(".Genome") > -1) {
+                $scope.options.userState.session.data_cart.size += 1;
+                $scope.options.userState.session.data_cart.data[id] = {
+                    "workspace_name": item.workspace_name,
+                    "object_type": item.object_type,
+                    "object_id": item.object_id,
+                    "row_id": item.row_id,
+                    "genome_id": item.genome_id,
+                    "scientific_name": item.genome_name,
+                    "domain": item.domain,
+                    "gc_content": item.gc_content,
+                    "num_contigs": item.num_contigs,
+                    "num_cds": item.num_cds,
+                    "genome_dna_size": item.genome_dna_size,
+                    "cart_selected": false
+                };
+                $scope.options.userState.session.data_cart.types['genomes'].markers[id] = {};
+                $scope.options.userState.session.data_cart.types['genomes'].size += 1;
+            }
+            else if (item.object_type.indexOf(".Feature") > -1) {
                 $scope.options.userState.session.data_cart.size += 1;
                 $scope.options.userState.session.data_cart.data[id] = {
                     "workspace_name": item.workspace_name,
@@ -1852,25 +1879,6 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 $scope.options.userState.session.data_cart.types['features'].markers[id] = {};
                 $scope.options.userState.session.data_cart.types['features'].size += 1;
             }
-            else if (item.object_type.indexOf(".Genome") > -1) {
-                $scope.options.userState.session.data_cart.size += 1;
-                $scope.options.userState.session.data_cart.data[id] = {
-                    "workspace_name": item.workspace_name,
-                    "object_type": item.object_type,
-                    "object_id": item.object_id,
-                    "row_id": item.row_id,
-                    "genome_id": item.genome_id,
-                    "scientific_name": item.genome_name,
-                    "domain": item.domain,
-                    "gc_content": item.gc_content,
-                    "num_contigs": item.num_contigs,
-                    "num_cds": item.num_cds,
-                    "genome_dna_size": item.genome_dna_size,
-                    "cart_selected": false
-                };
-                $scope.options.userState.session.data_cart.types['genomes'].markers[id] = {};
-                $scope.options.userState.session.data_cart.types['genomes'].size += 1;
-            }
             else {
                 throw Error("Trying to add unknown type!");
             }
@@ -1882,13 +1890,13 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
             delete $scope.options.userState.session.data_cart.data[id];
             $scope.options.userState.session.data_cart.size -= 1;
 
-            if (item.object_type.indexOf(".Feature") > -1) {
-                delete $scope.options.userState.session.data_cart.types['features'].markers[id];
-                $scope.options.userState.session.data_cart.types['features'].size -= 1;
-            }
-            else if (item.object_type.indexOf(".Genome") > -1) {
+            if (item.object_type.indexOf(".Genome") > -1) {
                 delete $scope.options.userState.session.data_cart.types['genomes'].markers[id];
                 $scope.options.userState.session.data_cart.types['genomes'].size -= 1;
+            }
+            else if (item.object_type.indexOf(".Feature") > -1) {
+                delete $scope.options.userState.session.data_cart.types['features'].markers[id];
+                $scope.options.userState.session.data_cart.types['features'].size -= 1;
             }
             else {
                 throw Error("Trying to delete unknown type!");
@@ -2097,15 +2105,15 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         for (var d in $scope.options.userState.session.data_cart.data) {
             if ($scope.options.userState.session.data_cart.data[d].object_type.indexOf(".Genome") > -1) {
                 objects.push({"workspace": $scope.options.userState.session.selectedWorkspace,
-                              "name": $scope.options.userState.session.data_cart.data[d].genome_id});
+                    "name": $scope.options.userState.session.data_cart.data[d].genome_id});
             }
             else if ($scope.options.userState.session.data_cart.data[d].object_type.indexOf(".Feature") > -1) {
                 objects.push({"workspace": $scope.options.userState.session.selectedWorkspace,
-                              "name": $scope.options.userState.session.data_cart.data[d].feature_id});
+                    "name": $scope.options.userState.session.data_cart.data[d].feature_id});
             }
             else {
                 objects.push({"workspace": $scope.options.userState.session.selectedWorkspace,
-                              "name": $scope.options.userState.session.data_cart.data[d].object_name});
+                    "name": $scope.options.userState.session.data_cart.data[d].object_name});
             }
 
             object_map[i] = d;
@@ -2114,21 +2122,21 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
 
         return $scope.workspace_service.get_object_info_new({"objects": objects, "ignoreErrors": 1})
             .then(
-            function (results) {
-                $scope.$apply(function () {
-                    for (var i = object_map.length - 1; i > -1; i--) {
-                        if (results[i] !== null) {
-                            $scope.options.duplicates[object_map[i]] = {};
+                function (results) {
+                    $scope.$apply(function () {
+                        for (var i = object_map.length - 1; i > -1; i--) {
+                            if (results[i] !== null) {
+                                $scope.options.duplicates[object_map[i]] = {};
+                            }
+                            else {
+                                delete $scope.options.duplicates[object_map[i]];
+                            }
                         }
-                        else {
-                            delete $scope.options.duplicates[object_map[i]];
-                        }
-                    }
+                    });
+                },
+                function (error) {
+                    console.log(error);
                 });
-            },
-            function (error) {
-                console.log(error);
-            });
     };
 
 
@@ -2141,15 +2149,15 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
 
         if ($scope.options.userState.session.data_cart.data[id].object_type.indexOf(".Genome") > -1) {
             checkObject = {"workspace": $scope.options.userState.session.selectedWorkspace,
-                           "name": $scope.options.userState.session.data_cart.data[id].genome_id};
+                "name": $scope.options.userState.session.data_cart.data[id].genome_id};
         }
         else if ($scope.options.userState.session.data_cart.data[id].object_type.indexOf(".Feature") > -1) {
             checkObject = {"workspace": $scope.options.userState.session.selectedWorkspace,
-                           "name": $scope.options.userState.session.data_cart.data[id].feature_id};
+                "name": $scope.options.userState.session.data_cart.data[id].feature_id};
         }
         else {
             checkObject = {"workspace": $scope.options.userState.session.selectedWorkspace,
-                           "name": $scope.options.userState.session.data_cart.data[id].object_name};
+                "name": $scope.options.userState.session.data_cart.data[id].object_name};
         }
 
         return $scope.workspace_service.get_object_info_new({"objects": [checkObject], "ignoreErrors": 1}).then(

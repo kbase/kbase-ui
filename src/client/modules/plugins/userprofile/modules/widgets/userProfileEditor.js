@@ -59,15 +59,24 @@ define([
                 value: function () {
                     // Show the user we are doing something, since we are about to launch a 
                     // query for profile data.
+                    var widget = this;
                     this.setupUI();
                     this.renderWaitingView();
                     this.setInitialState()
                         .then(function () {
-                            return this.refresh();
-                        }.bind(this))
+                            return widget.refresh();
+                        })
+                        .then(function () {
+                            widget.runtime.recv('profile', 'loaded', function (profile) {
+                                widget.userProfile = profile;
+                                // widget.runtime.send('ui', 'alert', 'Hey, new profile loaded');
+                                // alert('hey, new profile loaded');
+                                widget.refresh();
+                            });
+                        })                        
                         .catch(function (err) {
-                            this.renderErrorView(err);
-                        }.bind(this));
+                            widget.renderErrorView(err);
+                        });
                     return this;
                 }
             },
@@ -611,13 +620,13 @@ define([
                     try {
                         var profileFromForm = this.formToObject(schema);
                     } catch (e) {
-                        this.addErrorMessage('Error', 'There was an error processing the form: ' + e + '. Please check the form for errors, correct them, and try saving again.');
+                        this.addErrorMessage('There was an error processing the form: ' + e + '. Please check the form for errors, correct them, and try saving again.');
                         return false;
                     }
 
                     // SAVING
                     if (this.formHasError) {
-                        this.addErrorMessage('Not Saved', 'Your changes cannot be saved due to one or more errors. Please review the form, make the required corrections, and try again.');
+                        this.addErrorMessage('Your changes cannot be saved due to one or more errors. Please review the form, make the required corrections, and try again.');
                         return false;
                     } else {
                         this.userProfile.updateProfile(profileFromForm);
@@ -674,6 +683,7 @@ define([
             renderErrorView: {
                 value: function (data) {
                     // Make sure we have the standard panel layout.
+                    console.error(data);
 
                     var title;
                     if (typeof data === 'string') {
@@ -815,6 +825,7 @@ define([
                     // Generate initial view based on the current state of this widget.
                     // Head off at the pass -- if not logged in, can't show profile.
                     var state = this.getProfileStatus();
+                    this.runtime.send('ui', 'clearButtons');
                     switch (state) {
                         case 'notloggedin':
                             // NOT LOGGED IN
@@ -894,7 +905,25 @@ define([
                                 })
                             }.bind(this)
                         });
+                       
                         this.runtime.send('ui', 'addButton', {
+                            name: 'delete',
+                            label: 'Delete Profile',
+                            style: 'default',
+                            icon: 'trash-o',
+                            callback: function () {
+                                widget.clearMessages();
+                                var modal = $('.UserProfileWidget [data-widget-modal="confirm-optout"]').modal('show');
+                                // NB the deny button is already wired as [data-dismiss="modal"] which will 
+                                // close the modal, and without further intervention, do nothing.
+                                modal.find('[data-widget-modal-control="confirm"]').on('click', function (e) {
+                                    modal.modal('hide').on('hidden.bs.modal', function (e) {
+                                        widget.deleteProfile();
+                                    });
+                                });
+                            }.bind(this)
+                        });
+                         this.runtime.send('ui', 'addButton', {
                             name: 'edit',
                             label: 'Edit Profile',
                             style: 'primary',
@@ -1015,6 +1044,7 @@ define([
                     this.userProfile.deleteUserdata()
                         .then(function () {
                             this.runtime.send('session', 'profile.saved');
+                            this.runtime.send('profile', 'check');
                             this.addSuccessMessage('Your profile has been successfully removed.');
                             this.render();
                         }.bind(this))
@@ -1053,9 +1083,10 @@ define([
                                     .then(function () {
                                         W.changed = false;
                                         W.renderViewEditLayout();
-                                        W.addSuccessMessage('Success!', 'Your user profile has been updated.');
+                                        W.addSuccessMessage('Your user profile has been updated.');
                                         W.renderInfoView();
                                         W.runtime.send('session', 'profile.saved');
+                                        W.runtime.send('profile', 'check');
                                     })
                                     .catch(function (err) {
                                         W.renderErrorView(err);
@@ -1251,9 +1282,9 @@ define([
                         $('[data-button="create-profile"]').on('click', function (e) {
                             widget.userProfile.createProfile()
                                 .then(function () {
-                                    this.runtime.send('session', 'profile.saved');
+                                    widget.runtime.send('session', 'profile.saved');
                                     widget.clearMessages();
-                                    widget.addSuccessMessage('Success!', 'Your user profile has been created.');
+                                    widget.addSuccessMessage('Your user profile has been created.');
                                     widget.render();
                                 })
                                 .catch(function (err) {

@@ -138,7 +138,18 @@ function (html, $, Promise, Plugin) {
 
             return div({class: 'container', style: 'margin-top: 4em', id: panelId}, [
                 div({}, [
-                    div({style: 'position:absolute; background-image: url(' + doodlePath + '); background-repeat:no-repeat; background-size:35%; top:0; left:0; bottom: 0; right: 0; opacity: 0.1'})
+                    div({style: {
+                            position: 'absolute',
+                            backgroundImage: 'url(' + doodlePath + ')',
+                            backgroundRepeat: 'no-repeat',
+                            backgroundSize: '35%',
+                            top: '0',
+                            left: '0',
+                            bottom: '0',
+                            right: '0',
+                            opacity: '0.1',
+                            zIndex: '-1000'
+                        }})
                 ]),
                 div({class: 'row'}, [
                     div({class: 'col-sm-7 col-sm-offset-1'}, [

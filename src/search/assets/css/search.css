@@ -929,21 +929,21 @@ table.search-transfer-table {
 }
 
 .homology_genome_header_large {
-    width: 371px;
+    width: 360px;
 }
 
-.hoomlogy_genome_field_large {
-    width: 359px;
-    margin-right: 9px;
+.homology_genome_field_large {
+    width: 355px;
+    margin-right: 4px;
 }
 
 .homology_function_header {
-    width: 211px;
+    width: 200px;
 }
 
 .homology_function_field {
-    width: 199px;
-    margin-right: 9px;
+    width: 195px;
+    margin-right: 4px;
 }
 
 .homology_string_header {
@@ -951,8 +951,8 @@ table.search-transfer-table {
 }
 
 .homology_string_field {
-    width: 150px;
-    margin-right: 9px;
+    width: 155px;
+    margin-right: 4px;
 }
 
 .homology_numeric_header {
@@ -960,8 +960,8 @@ table.search-transfer-table {
 }
 
 .homology_numeric_field {
-    width: 59px;
-    margin-right: 8px;
+    width: 65px;
+    margin-right: 4px;
 }
 
 .domain-header {

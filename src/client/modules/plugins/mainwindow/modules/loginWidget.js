@@ -17,7 +17,7 @@ define([
                     name: 'RuntimeMissing',
                     message: 'The runtime argument is required but is missing',
                     suggestion: 'This is an application error, and no fault of yours.'
-                }
+                };
             }
 
             var button = html.tag('button'),
