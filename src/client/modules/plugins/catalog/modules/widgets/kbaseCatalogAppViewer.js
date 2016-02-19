@@ -7,6 +7,7 @@
  */
 define([
     'jquery',
+    'bluebird',
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
@@ -14,7 +15,7 @@ define([
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
-    function ($, NarrativeMethodStore, Catalog, CatalogUtil, KBasePrompt) {
+    function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil, KBasePrompt) {
         $.KBWidget({
             name: "KBaseCatalogAppViewer",
             parent: "kbaseAuthenticatedWidget",
@@ -93,26 +94,31 @@ define([
                 self.$elem.append(self.$mainPanel);
                 self.showLoading();
 
-                // get the module information
-                var loadingCalls = [];
+                // get the module information first, then get the app spec info
                 self.moduleDetails = { info:null, versions:null };
-                loadingCalls.push(self.getModuleInfo());
-                loadingCalls.push(self.getAppFullInfo());
-                loadingCalls.push(self.getAppSpec());
+                self.getModuleInfo()
+                    .then(function() {
+                        var loadingCalls = [];
+                        loadingCalls.push(self.getAppFullInfo());
+                        loadingCalls.push(self.getAppSpec());
 
-                // when we have it all, then render the list
-                Promise.all(loadingCalls).then(function() {
-                    //self.render();
-                    self.hideLoading();
-                    self.renderMethod();
-                    self.renderInfo();
+                        // when we have it all, then render the list
+                        Promise.all(loadingCalls).then(function() {
+                            //self.render();
+                            self.hideLoading();
+                            self.renderMethod();
+                            self.renderInfo();
 
-                    // must be called after renderMethod, because it relies on elements existing in the dom
-                    self.updateFavoritesCounts();
-                    self.updateRunStats();
-                }).catch(function() {
-                    self.hideLoading();
-                });
+                            // must be called after renderMethod, because it relies on elements existing in the dom
+                            self.updateFavoritesCounts();
+                            self.updateRunStats();
+                            return Promise.try(function() {});
+                        }).catch(function() {
+                            self.hideLoading();
+                        });
+                    })
+
+               
 
 
                 return this;
@@ -141,7 +147,7 @@ define([
                 if(self.isLegacyMethod) {
                     params.ids = [self.id];
                 } else if(self.isLegacyApp) {
-                    return;
+                    return Promise.try(function() {});
                 } else {
                     // new sdk method
                     params.ids = [self.module_name + '/' + self.id];
@@ -167,7 +173,7 @@ define([
                 if(self.isLegacyMethod) {
                     params.ids = [self.id];
                 } else if(self.isLegacyApp) {
-                    return;
+                    return Promise.try(function() {});
                 } else {
                     // new sdk method
                     params.ids = [self.module_name + '/' + self.id];
@@ -191,8 +197,8 @@ define([
             getModuleInfo: function() {
                 var self = this;
 
-                if(self.isLegacyMethod) return;
-                if(self.isLegacyApp) return;
+                if(self.isLegacyMethod) return Promise.try(function() {});
+                if(self.isLegacyApp) return Promise.try(function() {});
 
                 var moduleSelection = {
                     module_name: self.module_name
@@ -213,6 +219,14 @@ define([
                             ModuleVersionInfo beta;
                             ModuleVersionInfo dev;
                         } ModuleInfo;*/
+
+                        // make sure the ID and module name case is correct
+                        var idTokens = self.id.split('/');
+                        if(idTokens.length==2) {
+                            self.id = info.module_name + '/' + idTokens[1];
+                        }
+                        self.module_name = info.module_name;
+
                         self.moduleDetails.info = info;
                         var git_url = self.moduleDetails.info.git_url;
                         self.moduleDetails.info['original_git_url'] = self.moduleDetails.info.git_url;
@@ -292,7 +306,7 @@ define([
                 var self = this;
 
                 if(self.isLegacyMethod) {
-                    self.nms.status()
+                    return self.nms.status()
                         .then( function(status) {
                             var url = status.git_spec_url + "/tree/" + status.git_spec_branch;
                             url += "/methods/" + self.options.id;
@@ -315,7 +329,7 @@ define([
                                 );
                         });
                 }
-
+                return Promise.try(function() {});
 
                 /*if(self.isGithub) {
                     var url = self.moduleDetails.info.git_url + ;
@@ -1058,8 +1072,6 @@ define([
 
                                     // only show both if they are different
                                     var description= param.short_hint;
-                                    console.log(param.short_hint)
-                                    console.log(param.description)
                                     if(param.short_hint.trim() !== param.description.trim()) {
                                         description = description + "<br>"+param.description;
                                     }
