@@ -471,6 +471,7 @@ define([
                     .then(function (apps) {
                         //console.log(apps);
                         for(var k=0; k<apps.length; k++) {
+                            if(self.util.skipApp(apps[k].categories)) continue;
                             var a = new AppCard('app',apps[k],null,self.nms_base_url);
                             self.appList.push(a);
                         }
