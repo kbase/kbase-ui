@@ -397,7 +397,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         {value: 10, label: "10"},
         {value: 50, label: "50", selected: true},
         {value: 100, label: "100"},
-        {value: 1000, label: "250"}
+        {value: 250, label: "250"}
     ];
 
     // controls for genome name input boxes
