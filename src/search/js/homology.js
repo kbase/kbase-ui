@@ -777,7 +777,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 } else {
                     $scope.options.searchOptions.ui.show_advance_options = true;
                     angular.element.find('[name=searchtype]')[0].focus();
-                    $scope.options.searchOptions.ui.searchtype_message = 'Genomic sequences (contigs) is only available only for nucleotide databases';
+                    $scope.options.searchOptions.ui.searchtype_message = 'Genomic sequences (contigs) is available only for nucleotide databases';
                     return;
                 }
                 if ($scope.validateSearchforProgramWithSequenceType(sequence_type, options.searchtype, options.program)) {
