@@ -139,6 +139,6 @@ modules:
             bower: {}
     -
         globalName: kbase-data-api-client-js
-        version: 1.0.0
+        version: 1.0.1
         source:
             bower: {}
