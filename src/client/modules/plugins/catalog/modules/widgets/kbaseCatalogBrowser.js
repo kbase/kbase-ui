@@ -163,6 +163,11 @@ define([
                 $searchBox.on('input',
                     function() {
                         self.filterApps($searchBox.val());
+                    })
+                    .bind('keypress',function(e) {
+                        if (e.keyCode === 13) {
+                            return false;
+                        }
                     });
                 $content.append($('<form>').addClass('navbar-form navbar-left')
                                     .append($('<div>').addClass('form-group')
