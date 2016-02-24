@@ -10,6 +10,7 @@
 
 define([
     'jquery',
+    'bluebird',
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
@@ -18,7 +19,7 @@ define([
     'bootstrap',
     'datatables_bootstrap',
 ],
-    function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
+    function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil) {
         $.KBWidget({
             name: "KBaseCatalogStats",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
@@ -35,6 +36,8 @@ define([
             $basicStatsDiv: null,
 
             allStats: null,
+
+            adminStats : null,
 
             init: function (options) {
                 this._super(options);
@@ -58,6 +61,7 @@ define([
                 // get the module information
                 var loadingCalls = [];
                 loadingCalls.push(self.getStats());
+                loadingCalls.push(self.getAdminStats());
 
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
@@ -131,6 +135,35 @@ define([
 
                 self.$basicStatsDiv.append($container);
 
+                if(self.isAdmin) {
+                    var $adminTable = $('<table>').addClass('table').css('width','100%');
+
+
+                    var $adminContainer = $('<div>').addClass('container')
+                            .append($('<div>').addClass('row')
+                                .append($('<div>').addClass('col-md-12')
+                                    .append('<h4>Admin Accessible Stats</h4>')
+                                    .append($adminTable)));
+
+                    var adminTblSettings = {
+                        "bFilter": true,
+                        "sPaginationType": "full_numbers",
+                        "iDisplayLength": 100,
+                        "sDom": 'ft<ip>',
+                        "aaSorting": [[ 3, "dsc" ], [1, "asc"]],
+                        "columns": [
+                            {sTitle: 'User', data: "u"},
+                            {sTitle: "Id", data: "id"},
+                            {sTitle: "Module", data: "module"},
+                            {sTitle: "Total Runs", data: "n"}
+                        ],
+                        "data": self.adminStats
+                    };
+                    $adminTable.DataTable(adminTblSettings);
+                    $adminTable.find('th').css('cursor','pointer');
+
+                    self.$basicStatsDiv.append($adminContainer);
+                }
             },
 
 
@@ -230,7 +263,82 @@ define([
                         console.error('ERROR');
                         console.error(err);
                     });
+            },
+
+
+            getAdminStats: function() {
+                var self = this;
+
+
+                return self.checkIsAdmin()
+                    .then(function() {
+                        if(self.isAdmin) {
+                            return self.catalog.get_exec_aggr_table({})
+                                .then(function (adminStats) {
+
+                                    console.log(adminStats);
+                                    self.adminStats = [];
+
+                                    for(var k=0; k<adminStats.length; k++) {
+                                        var s = adminStats[k];
+
+                                        var id = s.app;
+                                        var module = 'l.m';
+                                        if(id) {
+                                            if(s.app.split('/').length==2) {
+                                                module = s.app.split('/')[0];
+                                                id = s.app.split('/')[1];
+                                            }
+                                            id = '<a href="#appcatalog/app/'+module+'/'+id+'/dev">'+id+'</a>';
+                                            module = '<a href="#appcatalog/module/'+module+'">'+module+'</a>';
+                                        } else {
+                                            if(s.func) {
+                                                id = 'API Call: ' + s.func;
+                                            } else {
+                                                id = 'API Call: unknown!';
+                                            }
+                                            if(s.func_mod) {
+                                                module = 'API Call: ' +s.func_mod;
+                                            } else {
+                                                module = 'API Call: unknown!';
+                                            }
+                                        }
+
+                                        var stat = {
+                                            id: id,
+                                            module: module,
+                                            n: s.n,
+                                            u: '<a href="#appcatalog/people/'+s.user+'">'+s.user+'</a>'
+                                        }
+                                        self.adminStats.push(stat);
+                                    }
+                                });
+                        } else {
+                            return Promise.try(function() {});
+                        }
+                    }).catch(function(err) {
+                        // do nothing if this fails
+                        console.error(err)
+                        return Promise.try(function() {});
+                    });
+            },
+
+            checkIsAdmin: function() {
+                var self = this
+                self.isAdmin = false;
+
+                var me = self.runtime.service('session').getUsername();
+                return self.catalog.is_admin(me)
+                    .then(function (result) {
+                        if(result) {
+                            self.isAdmin = true;
+                        }
+                    }).catch(function() {
+                        return Promise.try(function() {});
+                    });
             }
+
+
         });
     });
 
