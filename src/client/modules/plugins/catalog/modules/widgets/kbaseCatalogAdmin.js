@@ -38,6 +38,8 @@ define([
             catalog_version: null,
             requested_releases: null,
 
+            isAdmin: null,
+
             init: function (options) {
                 this._super(options);
                 
@@ -47,6 +49,8 @@ define([
                 self.runtime = options.runtime;
                 self.setupClients();
                 self.util = new CatalogUtil();
+
+                self.isAdmin = false;
 
                 // initialize and add the main panel
                 self.$loadingPanel = self.initLoadingPanel();
@@ -72,6 +76,7 @@ define([
                 loadingCalls.push(self.getPendingReleases());
 
                 loadingCalls.push(self.getClientGroups());
+                loadingCalls.push(self.checkIsAdmin());
 
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
@@ -188,10 +193,12 @@ define([
 
 
                 var $activateModule = $('<div>').css('margin','1em');
-                self.$moduleList.append($activateModule);
                 var $deleteModule = $('<div>').css('margin','1em');
-                self.$moduleList.append($deleteModule);
                 var $modList = $('<div>').css('margin','1em');
+                if(self.isAdmin) {
+                    self.$moduleList.append($activateModule);
+                    self.$moduleList.append($deleteModule);
+                }
                 self.$moduleList.append($modList);
 
 
@@ -415,9 +422,11 @@ define([
                                 $resultDiv.prepend($reason);
                             });
 
-                            $li.append($approveBtn);
-                            $li.append($denyBtn);
-                            $li.append($resultDiv);
+                            if(self.isAdmin) {
+                                $li.append($approveBtn);
+                                $li.append($denyBtn);
+                                $li.append($resultDiv);
+                            }
                             $li.append('<br>');
 
                             $ul.append($li);
@@ -449,7 +458,10 @@ define([
                 var $addDev = $('<div>').css('margin','1em');
                 var $devList = $('<div>').css('margin','1em');
 
-                self.$devListDiv.append($addDev);
+                if(self.isAdmin) {
+                    self.$devListDiv.append($addDev);
+                }
+
                 self.$devListDiv.append($devList);
 
 
@@ -515,7 +527,10 @@ define([
                 var $modifyGroup = $('<div>').css('margin','1em');
                 var $groupList = $('<div>').css('margin','1em');
 
-                self.$clientGroupList.append($modifyGroup);
+
+                if(self.isAdmin) {
+                    self.$clientGroupList.append($modifyGroup);
+                }
                 self.$clientGroupList.append($groupList);
 
 
@@ -793,6 +808,23 @@ define([
 
 
 
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+            checkIsAdmin: function() {
+                var self = this
+
+                var me = self.runtime.service('session').getUsername();
+                return self.catalog.is_admin(me)
+                    .then(function (result) {
+                        if(result) {
+                            self.isAdmin = true;
+                        }
+                        console.log(result)
                     })
                     .catch(function (err) {
                         console.error('ERROR');
