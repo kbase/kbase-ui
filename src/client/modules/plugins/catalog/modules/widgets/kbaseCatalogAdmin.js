@@ -824,7 +824,6 @@ define([
                         if(result) {
                             self.isAdmin = true;
                         }
-                        console.log(result)
                     })
                     .catch(function (err) {
                         console.error('ERROR');
