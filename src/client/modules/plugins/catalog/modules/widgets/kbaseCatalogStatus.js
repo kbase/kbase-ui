@@ -158,7 +158,7 @@ define([
                         $li.append(mod.git_commit_hash + ' - '+mod.git_commit_message+'<br>');
                         $li.append('owners: [')
                         for(var owner=0; owner<mod.owners.length; owner++) {
-                            if(owner>0) { $ul.append(', ') }
+                            if(owner>0) { $li.append(', ') }
                             $li.append('<a href="#people/'+mod.owners[owner]+'">'+mod.owners[owner]+'</a>');
                         }
                         $li.append(']<br>');

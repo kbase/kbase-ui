@@ -68,6 +68,7 @@ define([
                     metabolic_modeling : 'Metabolic Modeling',
                     comparative_genomics : 'Comparative Genomics',
                     expression : 'Expression',
+                    communities : 'Communities',
                     util : 'Utilities'
                 };
 
@@ -162,6 +163,11 @@ define([
                 $searchBox.on('input',
                     function() {
                         self.filterApps($searchBox.val());
+                    })
+                    .bind('keypress',function(e) {
+                        if (e.keyCode === 13) {
+                            return false;
+                        }
                     });
                 $content.append($('<form>').addClass('navbar-form navbar-left')
                                     .append($('<div>').addClass('form-group')
@@ -471,6 +477,7 @@ define([
                     .then(function (apps) {
                         //console.log(apps);
                         for(var k=0; k<apps.length; k++) {
+                            if(self.util.skipApp(apps[k].categories)) continue;
                             var a = new AppCard('app',apps[k],null,self.nms_base_url);
                             self.appList.push(a);
                         }

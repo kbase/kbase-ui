@@ -38,6 +38,8 @@ define([
             catalog_version: null,
             requested_releases: null,
 
+            isAdmin: null,
+
             init: function (options) {
                 this._super(options);
                 
@@ -48,6 +50,8 @@ define([
                 self.setupClients();
                 self.util = new CatalogUtil();
 
+                self.isAdmin = false;
+
                 // initialize and add the main panel
                 self.$loadingPanel = self.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
@@ -57,6 +61,7 @@ define([
                 self.$pendingReleaseDiv = mainPanelElements[2];
                 self.$devListDiv = mainPanelElements[3];
                 self.$moduleList = mainPanelElements[4];
+                self.$clientGroupList = mainPanelElements[5];
                 self.$elem.append(self.$mainPanel);
                 self.showLoading();
 
@@ -69,6 +74,9 @@ define([
                 loadingCalls.push(self.getUnreleasedModuleList());
 
                 loadingCalls.push(self.getPendingReleases());
+
+                loadingCalls.push(self.getClientGroups());
+                loadingCalls.push(self.checkIsAdmin());
 
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
@@ -85,6 +93,7 @@ define([
                 self.renderPendingRelease();
                 self.renderDevList();
                 self.renderModuleList();
+                self.renderClientGroupList();
             },
 
 
@@ -125,10 +134,16 @@ define([
                 $mainPanel.append($moduleList);
                 $mainPanel.append('<br>');
 
+                $mainPanel.append($('<h4>').append('Client Groups:'));
+                var $clientGroups = $('<div>');
+                $mainPanel.append($clientGroups);
+                $mainPanel.append('<br>');
+
+
 
                 $mainPanel.append('<br><br>');
 
-                return [$mainPanel, $basicStatusDiv, $pendingReleaseDiv, $approvedDevelopers, $moduleList];
+                return [$mainPanel, $basicStatusDiv, $pendingReleaseDiv, $approvedDevelopers, $moduleList, $clientGroups];
             },
 
             initLoadingPanel: function() {
@@ -178,10 +193,12 @@ define([
 
 
                 var $activateModule = $('<div>').css('margin','1em');
-                self.$moduleList.append($activateModule);
                 var $deleteModule = $('<div>').css('margin','1em');
-                self.$moduleList.append($deleteModule);
                 var $modList = $('<div>').css('margin','1em');
+                if(self.isAdmin) {
+                    self.$moduleList.append($activateModule);
+                    self.$moduleList.append($deleteModule);
+                }
                 self.$moduleList.append($modList);
 
 
@@ -238,7 +255,7 @@ define([
                 var $trash = $('<button>').addClass('btn btn-default').append($('<i>').addClass('fa fa-trash'));
                 var $result = $('<div>');
 
-                $deleteModule.append($('<b>').append('Delete Module (only allowed if not yet released):')).append('<br>')
+                $deleteModule.append($('<b>').append('Delete Module:')).append(' (only allowed if not yet released):').append('<br>')
                 $deleteModule.append(
                     $('<div>').addClass('input-group').css('width','35%')
                         .append($modNameDel)
@@ -405,9 +422,11 @@ define([
                                 $resultDiv.prepend($reason);
                             });
 
-                            $li.append($approveBtn);
-                            $li.append($denyBtn);
-                            $li.append($resultDiv);
+                            if(self.isAdmin) {
+                                $li.append($approveBtn);
+                                $li.append($denyBtn);
+                                $li.append($resultDiv);
+                            }
                             $li.append('<br>');
 
                             $ul.append($li);
@@ -439,7 +458,10 @@ define([
                 var $addDev = $('<div>').css('margin','1em');
                 var $devList = $('<div>').css('margin','1em');
 
-                self.$devListDiv.append($addDev);
+                if(self.isAdmin) {
+                    self.$devListDiv.append($addDev);
+                }
+
                 self.$devListDiv.append($devList);
 
 
@@ -490,6 +512,94 @@ define([
             },
 
 
+            refreshClientGroups: function() {
+                var self = this;
+                self.$clientGroupList.empty();
+                return self.getClientGroups()
+                    .then(function() {
+                        self.renderClientGroupList();
+                    });
+            },
+
+            renderClientGroupList: function() {
+                var self = this;
+
+                var $modifyGroup = $('<div>').css('margin','1em');
+                var $groupList = $('<div>').css('margin','1em');
+
+
+                if(self.isAdmin) {
+                    self.$clientGroupList.append($modifyGroup);
+                }
+                self.$clientGroupList.append($groupList);
+
+
+                var $appId = $('<input type="text" size="50" placeholder="module_name/app_id">').addClass('form-control').css('margin','4px');
+                var $groups = $('<input type="text" size="50" placeholder="group1,group2, ...">').addClass('form-control').css('margin','4px');
+
+                var $modify = $('<button>').addClass('btn btn-default').append($('<i>').addClass('fa fa-plus')).css('margin-left','10px');
+
+                var $result = $('<div>');
+
+                $modifyGroup.append($('<b>').append('Modify App Client Groups:')).append(' (leave groups blank to reset to default)').append('<br>')
+                $modifyGroup.append(
+                    $('<div>').addClass('input-group').css('width','35%')
+                        .append($appId)
+                        .append($groups)
+                        .append($('<span>').addClass('input-group-btn')
+                            .append($modify)))
+                    .append($result);
+                $modify.on('click', function() {
+                    var appId = $appId.val();
+                    var groups = $groups.val();
+                    $groups.val('');
+                    var groupsList = [];
+                    var gList = groups.split(',')
+                    for(var k=0; k<gList.length; k++) {
+                        var cli_grp = gList[k].trim();
+                        if(cli_grp) {
+                            groupsList.push(cli_grp);
+                        }
+                    }
+
+                    self.catalog.set_client_group( { app_id:appId, client_groups:groupsList } )
+                        .then(function () {
+                            $result.empty();
+                            return self.refreshClientGroups();
+                        })
+                        .catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                            $result.prepend($('<div role=alert>').addClass('alert alert-danger')
+                                .append('<b>Error:</b> '+err.error.message));
+                        })
+                });
+
+
+                var $tbl = $('<table>').addClass('table table-hover table-condensed');
+                for(var k=0; k<self.client_groups.length; k++) {
+
+                    // loop to get client group string
+                    var cliGroupString = '';
+                    for(var i=0; i<self.client_groups[k].client_groups.length; i++) {
+                        if(i>0) { cliGroupString += ", "}
+                        cliGroupString += self.client_groups[k].client_groups[i];
+                    }
+
+                    $tbl.append(
+                        $('<tr>')
+                            .append($('<td>')
+                                .append($('<a href="#appcatalog/app/'+self.client_groups[k].app_id+'/dev">').append(self.client_groups[k].app_id)))
+                            .append($('<td>')
+                                .append(cliGroupString)));
+                }
+                $groupList.append($tbl);
+
+
+            },
+
+
+
             getCatalogVersion: function() {
                 var self = this
 
@@ -535,6 +645,32 @@ define([
                 return self.catalog.list_approved_developers()
                     .then(function (devs) {
                         self.dev_list = devs;
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+            getClientGroups: function() {
+                var self = this
+                self.client_groups = [];
+                return self.catalog.get_client_groups({})
+                    .then(function (groups) {
+
+                        var non_empty_groups = [];
+                        for(var k=0; k<groups.length; k++) {
+                            if(groups[k].client_groups.length>0) {
+                                non_empty_groups.push(groups[k]);
+                            }
+                        }
+                        non_empty_groups.sort(function(a,b) {
+                            if(a.app_id < b.app_id) return -1;
+                            if(a.app_id > b.app_id) return 1;
+                            return 0;
+                        });
+
+                        self.client_groups = non_empty_groups;
                     })
                     .catch(function (err) {
                         console.error('ERROR');
@@ -672,6 +808,22 @@ define([
 
 
 
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+            checkIsAdmin: function() {
+                var self = this
+
+                var me = self.runtime.service('session').getUsername();
+                return self.catalog.is_admin(me)
+                    .then(function (result) {
+                        if(result) {
+                            self.isAdmin = true;
+                        }
                     })
                     .catch(function (err) {
                         console.error('ERROR');

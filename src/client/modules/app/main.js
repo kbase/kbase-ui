@@ -55,7 +55,7 @@ define([
                 switch (serviceConfig.deploy.environment) {
                     case 'ci':
                         runtime.send('ui', 'alert', {
-                            type: 'danger', 
+                            type: 'success', 
                             message: 'You are operating in the Continuous Integration (CI) environment'
                         });
                         break;

@@ -193,7 +193,8 @@ homologyApp.service('homologyOptionsService', function homologyOptionsService() 
                 "genome_ids": [],
                 "max_hit": 50,
                 "evalue": "10",
-                "useDatabase": true
+                "useDatabase": true,
+                "defaultMessage": "Searching..."
             },
             "ui": {
                 "sequence_message": "",
@@ -396,7 +397,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
         {value: 10, label: "10"},
         {value: 50, label: "50", selected: true},
         {value: 100, label: "100"},
-        {value: 1000, label: "250"}
+        {value: 250, label: "250"}
     ];
 
     // controls for genome name input boxes
@@ -776,7 +777,7 @@ homologyApp.controller('homologyController', function searchCtrl($rootScope, $sc
                 } else {
                     $scope.options.searchOptions.ui.show_advance_options = true;
                     angular.element.find('[name=searchtype]')[0].focus();
-                    $scope.options.searchOptions.ui.searchtype_message = 'Genomic sequences (contigs) is only available only for nucleotide databases';
+                    $scope.options.searchOptions.ui.searchtype_message = 'Genomic sequences (contigs) is available only for nucleotide databases';
                     return;
                 }
                 if ($scope.validateSearchforProgramWithSequenceType(sequence_type, options.searchtype, options.program)) {

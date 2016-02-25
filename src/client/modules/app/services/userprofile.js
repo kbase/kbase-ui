@@ -60,6 +60,9 @@ define([
                                     break;
                                 case 'none':
                                     return profile.createStubProfile({createdBy: 'session'})
+                                        .then(function () {
+                                            return profile.loadProfile();
+                                        })
                                         .then(function (profile) {
                                             state.setItem('userprofile', profile);
                                             //AppState.setItem('userprofile', profile);
