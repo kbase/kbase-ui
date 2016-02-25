@@ -2,7 +2,7 @@
 ui:
     images:
         spinner:
-            url: /ui-common/assets/img/ajax-loader.gif
+            url: /images/ajax-loader.gif                
     constants:
         client_timeout: 900000,
         session_max_age: 5184000
@@ -31,10 +31,10 @@ docsite:
         browser_support: /supported-browsers
 menus:
     authenticated: 
-        main: [narrative, search, dashboard]
-        developer: [databrowser, typebrowser, test, catalog, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
-        help: [about-kbase, contact-kbase]
+        main: [narrative, appcatalog, search, dashboard]
+        developer: [databrowser, typebrowser, dataapidemo, test, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
+        help: [contact-kbase, about-kbase]
     unauthenticated: 
-        main: [search]
+        main: [appcatalog, search]
         developer: []
-        help: [about-kbase, contact-kbase]
+        help: [contact-kbase, about-kbase]

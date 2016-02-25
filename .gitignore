@@ -7,7 +7,7 @@ node_modules
 
 # IDEs
 # put your ide here 
-/nbproject
+nbproject
 
 # Build artifacts
 /build/dist
@@ -20,3 +20,4 @@ node_modules
 /dev/config
 /dev/test
 /dev/test-coverage
+/install/temp

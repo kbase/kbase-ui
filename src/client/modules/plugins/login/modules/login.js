@@ -134,20 +134,39 @@ function (html, $, Promise, Plugin) {
                     nextURL = 'next url';
 
             eventMan.reset();
-            var doodlePath = Plugin.plugin.path + '/images/doodle.png';
+            var doodlePath = Plugin.plugin.fullPath + '/doodle.png';
 
             return div({class: 'container', style: 'margin-top: 4em', id: panelId}, [
                 div({}, [
-                    div({style: 'position:absolute; background-image: url(' + doodlePath + '); background-repeat:no-repeat; background-size:35%; top:0; left:0; bottom: 0; right: 0; opacity: 0.1'})
+                    div({style: {
+                            position: 'absolute',
+                            backgroundImage: 'url(' + doodlePath + ')',
+                            backgroundRepeat: 'no-repeat',
+                            backgroundSize: '35%',
+                            top: '0',
+                            left: '0',
+                            bottom: '0',
+                            right: '0',
+                            opacity: '0.1',
+                            zIndex: '-1000'
+                        }})
                 ]),
                 div({class: 'row'}, [
                     div({class: 'col-sm-7 col-sm-offset-1'}, [
                         h1({style: 'font-size:1.6em'}, ['Welcome to the KBase Search and Narrative Interface']),
-                        p({}, 'After signing in you can upload your own experimental data or find data integrated from external resources or shared by other users. You can then perform, organize, and share sophisticated comparative genomics and systems biology analyses by creating Narratives.'),
-                        p({}, 'Narratives are user-created interactive, dynamic, and shareable documents that are KBase’s way of making systems biology research transparent, reproducible, and reusable.'),
-                        p({}, 'The Narrative Interface lets you customize and execute a set of ordered KBase analyses to create your own Narratives that include your analysis steps, commentary, visualizations, and custom scripts.'),
-                        p({}, 'Want to learn more? We have an extensive and growing <a href="http://kbase.us/tutorials">library of tutorials</a> that show you how to use KBase’s new apps to analyze your data.'),
-                        p({}, 'To become familiar with the user interface, try the <a href="http://kbase.us/narrative-guide">Narrative Interface User Guide</a> or the <a href="https://youtu.be/6ql7HAUzU7U">Narrative Interface video tutorial</a>.')
+                        p('After signing in you can upload your own experimental data or find data integrated from external resources or shared by other users. You can then perform, organize, and share sophisticated comparative genomics and systems biology analyses by creating Narratives.'),
+                        p('Narratives are user-created interactive, dynamic, and shareable documents that are KBase’s way of making systems biology research transparent, reproducible, and reusable.'),
+                        p('The Narrative Interface lets you customize and execute a set of ordered KBase analyses to create your own Narratives that include your analysis steps, commentary, visualizations, and custom scripts.'),
+                        p([
+                            'Want to learn more? We have an extensive and growing ', 
+                            a({href: [runtime.config('resources.docSite.base.url'), 'tutorials'].join('/')}, 'library of tutorials') ,
+                            ' that show you how to use KBase’s new apps to analyze your data.'
+                        ]),
+                        p([
+                            'To become familiar with the user interface, try the ', 
+                            a({href: [runtime.config('resources.docSite.base.url'), 'narrative-guide'].join('/')}, 'Narrative Interface User Guide'), 
+                            ' or the <a href="https://youtu.be/6ql7HAUzU7U">Narrative Interface video tutorial</a>.'
+                        ])
                     ]),
                     div({class: 'col-sm-3'}, [
                         div({class: 'well well-kbase'}, [
@@ -173,9 +192,9 @@ function (html, $, Promise, Plugin) {
                                     div({'data-element': 'error', class: 'alert alert-danger alert-kbase', style: 'display:none; margin-top: 1em'})
                                 ]),
                                 div({class: 'form-group', style: 'margin-top: 3em; margin-bottom: 0;'}, [
-                                    a({target: '_blank', href: 'https://gologin.kbase.us/Signup', class: 'btn btn-block btn-link'}, 'New to KBase? Sign Up'),
-                                    a({target: '_blank', href: 'https://gologin.kbase.us/ResetPassword', class: 'btn btn-block btn-link'}, 'Forgot your password?'),
-                                    a({target: '_blank', href: 'http://kbase.us/login-help', class: 'btn btn-block btn-link'}, 'Help')
+                                    a({target: '_blank', href: runtime.config('resources.userAccount.signup.url'), class: 'btn btn-block btn-link'}, 'New to KBase? Sign Up'),
+                                    a({target: '_blank', href: runtime.config('resources.userAccount.resetPassword.url'), class: 'btn btn-block btn-link'}, 'Forgot your password?'),
+                                    a({target: '_blank', href: [runtime.config('resources.docSite.base.url'), 'login-help'].join('/'), class: 'btn btn-block btn-link'}, 'Help')
                                 ])
                             ])
                         ])
@@ -207,8 +226,6 @@ function (html, $, Promise, Plugin) {
                 if (params.nextrequest) {
                     nextRequest = JSON.parse(params.nextrequest);
                 }
-                console.log('next request is');
-                console.log(params);
             });
         }
 

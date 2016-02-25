@@ -1,5 +1,17 @@
-<tr ng-if="item.pairewise">
-    <td class="search-result-column-expanded-entry-cell">
-        <pre>{{item.pairewise | displayPairwiseComparison}}</pre>
-    </td>
+<tr ng-if="item.detail">
+  <td class="search-result-column-expanded-entry-cell">
+    <div ng-if="item.detail.match_count > 1">
+      <a ng-click="showMatches = !showMatches">
+        <span>Number of matches: {{item.detail.match_count}}</span>
+        <span class="glyphicon" ng-class="{'glyphicon-expand': !showMatches, 'glyphicon-collapse-up': showMatches}"/>
+      </a>
+      <ul ng-show="showMatches">
+        <li ng-repeat="match in item.detail.matches">
+          <span ng-bind-html="{feature_id:match[0], function:match[1].function, genome_id:match[1].genome_id} | buildFeatureLink"></span>
+          &nbsp; <span ng-bind-html="match[1] | buildGenomeLink"><span>
+        </li>
+      </ul>
+    </div>
+    <div ng-bind-html="item.detail | displayPairwiseComparison:this"></div>
+  </td>
 </tr>

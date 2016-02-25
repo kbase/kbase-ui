@@ -1,8 +1,9 @@
 /*global define*/
 /*jslint white: true*/
 define([
-     'bluebird',
+    'bluebird',
     'app/App',
+    'app/googleAnalytics',
     'kb/common/dom',
     'yaml!config/plugin.yml',
     'yaml!config/settings.yml',
@@ -13,11 +14,12 @@ define([
     'css!app/styles/kb-icons',
     'css!app/styles/kb-ui',
     'css!app/styles/kb-datatables'
-], function (Promise, App, dom, pluginConfig, clientConfig, serviceConfig) {
+], function (Promise, App, ga, dom, pluginConfig, clientConfig, serviceConfig) {
     'use strict';
     Promise.config({
         warnings: true,
-        longStackTraces: true
+        longStackTraces: true,
+        cancellation: true
     });
     function setErrorField(name, ex) {
         var selector = '[data-field="' + name + '"] > span[data-name="value"]';
@@ -27,7 +29,8 @@ define([
         return;
         // dom.setHtml(dom.qs('#status'), 'started');
     }
-    displayStatus('running');
+    ga.create();
+    ga.send();
 
     return {
         start: function () {
@@ -47,6 +50,22 @@ define([
                 },
                 plugins: pluginConfig.plugins,
                 menus: clientConfig.menus
+            })
+            .then(function (runtime) {
+                switch (serviceConfig.deploy.environment) {
+                    case 'ci':
+                        runtime.send('ui', 'alert', {
+                            type: 'success', 
+                            message: 'You are operating in the Continuous Integration (CI) environment'
+                        });
+                        break;
+                    case 'next':
+                        runtime.send('ui', 'alert', {
+                            type: 'warning', 
+                            message: 'You are operating in the Next environment'
+                        });
+                        break;
+                }
             });
         }
     };

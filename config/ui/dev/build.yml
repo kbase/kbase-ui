@@ -19,84 +19,101 @@ plugins:
     -
         narrativemanager
     -
-        narrativestore
+        catalog
     # external:
-    -
-        name: viswidgetdemo
-        globalName: kbase-ui-plugin-demo-vis-widget
-        cwd: src/plugin
-        version: 0.1.1
-        source:
-            bower: {}
+    # These are shared with production
     -
         name: viswidgets
         globalName: kbase-ui-plugin-vis-widgets
         cwd: src/plugin
-        version: 0.1.1
+        version: 1.0.0
         source:
             bower: {}
     -
         name: typeview
         globalName: kbase-ui-plugin-typeview
-        version: 0.1.1
+        cwd: src/plugin
+        version: 1.0.1
         source:
             bower: {}
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 0.1.2
+        version: 1.0.9
         cwd: src/plugin
         source:
             bower: {}
     -
         name: dashboard
         globalName: kbase-ui-plugin-dashboard
-        version: 0.1.1
+        version: 1.1.3
         cwd: src/plugin
+        source:
+            bower: {}
+    # These are just developer
+    -
+        name: viswidgetdemo
+        globalName: kbase-ui-plugin-demo-vis-widget
+        cwd: src/plugin
+        version: 1.0.0
         source:
             bower: {}
     -
         name: databrowser
         globalName: kbase-ui-plugin-databrowser
-        version: 0.1.1
+        version: 1.0.0
         cwd: src/plugin
         source:
             bower: {}
     -
         name: typebrowser
         globalName: kbase-ui-plugin-typebrowser
-        version: 0.1.2
+        version: 1.0.0
         cwd: src/plugin
         source:
             bower: {}
     -
         name: datawidgets
         globalName: kbase-ui-plugin-datawidgets
-        version: 0.1.3
+        version: 0.1.6
         cwd: src/plugin
         source:
             bower: {}
-    #-
-    #    globalName: taxon
-    #    #bower:
-    #    #     globalName: kbase-ui-plugin-taxon
-    #    #     version: eapearson/kbase-ui-plugin-taxon#master
-    #    directory:
-    #        path: kbase-ui-plugin-taxon
-    #    copy:
-    #        path: src/plugin
+    -
+        name: data-landing-pages
+        globalName: kbase-ui-plugin-data-landing-pages
+        version: 0.2.0
+        cwd: src/plugin
+        source:
+            bower: {}
     -
         name: dataapidemo
         globalName: kbase-ui-plugin-data-api-demo
-        version: 0.1.0
+        version: 0.1.5
         cwd: src/plugin
         source:
-            bower:
-                version: eapearson/kbase-ui-plugin-data-api-demo#master
-            # directory:
-                # This is where to find repos; it will be the level above kbase-ui
-                # if not specified, or may be overridden in the dev config.
-                # root: /Users/erik/work/kbase/sprints/data-api-widgets
+            bower: {}
+    -
+        name: shockbrowser
+        globalName: kbase-ui-plugin-shockbrowser
+        version: 0.1.2
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: jobbrowser
+        globalName: kbase-ui-plugin-jobbrowser
+        version: 0.1.2
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: methodview
+        globalName: kbase-ui-plugin-methodview
+        version: 1.0.1
+        cwd: src/plugin
+        source:
+            bower: {}
 
 # Copy these directories into the modules
 # There are two forms, as for plugins.
@@ -107,21 +124,21 @@ plugins:
 modules:
     -
         globalName: kbase-ui-widget
-        version: 0.1.4
+        version: 1.0.3
         source:
             bower: {}
     -
         globalName: kbase-common-js
-        version: 0.1.3
+        version: 1.1.1
         source:
             bower: {}
     -
         globalName: kbase-service-clients-js
-        version: 0.1.4
+        version: 1.2.3
         source:
             bower: {}
     -
-        globalName: kbase-data-api-js-clients
-        version: 0.1.4
+        globalName: kbase-data-api-client-js
+        version: 1.0.1
         source:
             bower: {}

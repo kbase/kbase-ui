@@ -1,0 +1,233 @@
+## Welcome Panel
+---
+package:
+    name: AppCatalog
+    description: KBase App Catalog
+    author: Michael Sneddon
+    date: January 2015
+    version: 0.0.1
+source:
+    modules:
+        # not sure what modules are, but here is one per factory
+        -
+            module: catalog_home
+            file: catalog_home
+        -
+            module: catalog_app_viewer
+            file: catalog_app_viewer
+        -
+            module: catalog_module_viewer
+            file: catalog_module_viewer
+        -
+            module: catalog_module_dev_viewer
+            file: catalog_module_dev_viewer
+        -
+            module: catalog_registration
+            file: catalog_registration
+        -
+            module: catalog_status
+            file: catalog_status
+        -
+            module: catalog_util
+            file: catalog_util
+        -
+            module: catalog_admin
+            file: catalog_admin
+        -
+            module: catalog_stats
+            file: catalog_stats
+        - 
+            module: app_card
+            file: app_card
+
+        # here is one per widget
+        -
+            module: catalog_home_widget
+            file: widgets/kbaseCatalogBrowser
+        -
+            module: catalog_app_viewer_widget
+            file: widgets/kbaseCatalogAppViewer
+        -
+            module: catalog_module_viewer_widget
+            file: widgets/kbaseCatalogModuleViewer
+        -
+            module: catalog_module_dev_viewer_widget
+            file: widgets/kbaseCatalogModuleDevViewer
+        -
+            module: catalog_registration_widget
+            file: widgets/kbaseCatalogRegistration
+        -
+            module: catalog_status_widget
+            file: widgets/kbaseCatalogStatus
+        -
+            module: catalog_admin_widget
+            file: widgets/kbaseCatalogAdmin
+        -
+            module: catalog_stats_widget
+            file: widgets/kbaseCatalogStats
+        -
+            module: catalog_view_sdk_registration_log_widget
+            file: widgets/kbaseViewSDKRegistrationLog
+
+    styles:
+        -
+            file: catalog_styles
+install:
+    # Register the welcome widget
+    widgets:
+        - 
+            module: catalog_home
+            id: catalog_home
+            type: factory
+        - 
+            module: catalog_app_viewer
+            id: catalog_app_viewer
+            type: factory
+        - 
+            module: catalog_module_viewer
+            id: catalog_module_viewer
+            type: factory
+        - 
+            module: catalog_module_dev_viewer
+            id: catalog_module_dev_viewer
+            type: factory
+        - 
+            module: catalog_registration
+            id: catalog_registration
+            type: factory
+        - 
+            module: catalog_status
+            id: catalog_status
+            type: factory
+        - 
+            module: catalog_admin
+            id: catalog_admin
+            type: factory
+        - 
+            module: catalog_stats
+            id: catalog_stats
+            type: factory
+        - 
+            module: catalog_util
+            id: catalog_util
+            type: widget
+        - 
+            module: app_card
+            id: app_card
+            type: widget
+        -
+            module: catalog_home_widget
+            id: catalog_browser
+            title: App Catalog
+            config:
+                jqueryName: KBaseCatalogBrowser
+            type: kbwidget
+        -
+            module: catalog_app_viewer_widget
+            id: catalog_app_viewer_widget
+            title: App Catalog
+            config:
+                jqueryName: KBaseCatalogAppViewer
+            type: kbwidget
+        -
+            module: catalog_module_viewer_widget
+            id: catalog_module_viewer_widget
+            title: App Catalog
+            config:
+                jqueryName: KBaseCatalogModuleViewer
+            type: kbwidget
+        -
+            module: catalog_module_dev_viewer_widget
+            id: catalog_module_dev_viewer_widget
+            title: App Catalog
+            config:
+                jqueryName: KBaseCatalogModuleDevViewer
+            type: kbwidget
+        -
+            module: catalog_registration_widget
+            id: catalog_registration_widget
+            title: App Catalog Module Registration
+            config:
+                jqueryName: KBaseCatalogRegistration
+            type: kbwidget
+        -
+            module: catalog_status_widget
+            id: catalog_status_widget
+            title: App Catalog Status
+            config:
+                jqueryName: KBaseCatalogStatusViewer
+            type: kbwidget
+        -
+            module: catalog_admin_widget
+            id: catalog_admin_widget
+            title: App Catalog Admin
+            config:
+                jqueryName: KBaseCatalogAdmin
+            type: kbwidget
+        -
+            module: catalog_stats_widget
+            id: catalog_stats_widget
+            title: App Catalog Stats
+            config:
+                jqueryName: KBaseCatalogStats
+            type: kbwidget
+        -
+            module: catalog_view_sdk_registration_log_widget
+            id: catalog_view_sdk_registration_log_widget
+            title: App Catalog Module Registration Log
+            config:
+                jqueryName: KBaseViewSDKRegistrationLog
+            type: kbwidget
+
+
+
+    # Set up a route to install that widget in the main body view
+    routes:
+        -
+            path: ['appcatalog']
+            widget: catalog_home
+        -
+            path: ['appcatalog', 'browse']
+            widget: catalog_home
+        -
+            path: ['appcatalog', 'browse', {type: param, name: tag}]
+            widget: catalog_home
+        -
+            path: ['appcatalog', 'module', {type: param, name: module_name}]
+            widget: catalog_module_viewer
+        #-
+        #    path: ['appcatalog', 'app', {type: param, name: id}]
+        #    widget: catalog_app_viewer
+        -
+            path: ['appcatalog', 'app', {type: param, name: namespace}, {type: param, name: id}]
+            widget: catalog_app_viewer
+        -
+            path: ['appcatalog', 'app', {type: param, name: namespace}, {type: param, name: id}, {type: param, name: tag}]
+            widget: catalog_app_viewer
+        -
+            path: ['appcatalog', 'register']
+            widget: catalog_registration
+        -
+            path: ['appcatalog', 'register', {type: param, name: registration_id }]
+            widget: catalog_registration
+        -
+            path: ['appcatalog', 'status']
+            widget: catalog_status
+        -
+            path: ['appcatalog', 'status', {type: param, name: module_names }]
+            widget: catalog_status
+        -
+            path: ['appcatalog', 'admin']
+            widget: catalog_admin
+        -
+            path: ['appcatalog', 'stats']
+            widget: catalog_stats
+    menus:
+        -
+            name: appcatalog
+            definition:
+                path: ['appcatalog']
+                label: App Catalog
+                icon: book
+
+

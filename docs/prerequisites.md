@@ -1,12 +1,20 @@
 # Prerequisites
 
-In order to run the KBase UI you will need a web server which can serve up typical web file types. It will need to point to a single directory, and probably require almost no configuration. The [installation](installation.md) instructions describe how to set up the two supported configurations, nginx and nodejs. In production, KBase uses nginx as the web server front end, and in development nodejs is preferred since it is included and can be quickly started, stopped, and requires no additional system software.
+In order to run the KBase UI you will need:
+
+- standard javascript development tools to build the app,
+- a web server which can serve up typical web file types
 
 For development, you will need a common Javascript development toolchain, described below.
 
-## System Requirements
+> Note: In the future we may provide the web app files in a pre-built state, but for now you need to build the runnable app from source.
 
-The kbase-ui should build and run on any modern system: Mac OS X, Linux, FreeBSD, Windows.
+KBase UI ships with a small testing web server running under *nodejs*, buf if you are doing continual development, already have a testing server, or any number of other cases, you may wish to use a system-level server. In production, KBase uses nginx as the web server front end, and in development nodejs is preferred since it is included and can be quickly started, stopped, and requires no additional system software.
+
+
+## Overview
+
+The KBase UI should build and run on any modern system: Mac OS X, Linux, FreeBSD, Windows.
 
 At the system level, you will need to install the following packages:
 
@@ -14,7 +22,11 @@ At the system level, you will need to install the following packages:
 - nodejs
 - npm
 
-These are only required for installation, and the KBse build tools are not super-sensitive to the precise version, as long as they are relatively recent. git is very stable, but nodejs is evolving rapidly and undergoes periodic major version shifts. As of this writing, we are using nodejs 4.2.3, so the version 4 line, although version 5.3.0 is out. We experienced failures with version 5, and have not attempted again.
+and for deployment
+
+- nginx
+
+These are only required for installation, and the KBase build tools are not super-sensitive to the precise version, as long as they are relatively recent. *git* is very stable, but *nodejs* is evolving rapidly and undergoes periodic major version bumps with accompanying breakage. As of this writing, we are using *nodejs* 4.2.3.
 
 Installation of system level packages depends on ... the system you use, of course. Even within a platform there may be multiple ways to install a given package. In this document we provide instructions for installation on platforms in use at KBase using methods that we have employed.
 
@@ -22,7 +34,7 @@ Installation of system level packages depends on ... the system you use, of cour
 
 There are three main ways to install these tools natively on a Mac:
 
-- Regular Mac installation packages
+- Native Mac installation packages
 - Macports
 - Homebrew
 
@@ -31,9 +43,9 @@ There are three main ways to install these tools natively on a Mac:
 The requisite development packages are available as regualar Mac packages. This is surely the easiest way to get started. However, if you are going to be installing other Unixy tools, or have one of the following package managers installed, either Macports or Homebrew may be preferable, and are not much more difficult.
 
 
-### Regular packages
+### Native Packages
 
-Installation of regular Mac packages should put you in good stead. Just follow the links and follow the instructions.
+Installation of native Mac packages should put you in good stead. Just follow the links and instructions therein.
 
 #### 1) Git
 
@@ -47,7 +59,7 @@ As of this time, please use the version 4 (e.g. 4.2.3) branch of NodeJS.
 
 #### 3) npm packages
 
-From the Mac Terminal enter these commands:
+After nodejs is installed, from the Mac Terminal enter these commands:
 
 ```
 sudo npm install -g phantomjs
@@ -74,7 +86,8 @@ open Terminal and issue the following commands:
 sudo port install npm phantomjs
 ```
 
-You may optionally install these tools globally. They will be installed locally and used internally by the Makefile, but if you anticipate using these tools from the command line you will have an easier time installing them globally.
+#### optional
+You may optionally install these tools globally. They will be installed locally and used by the build process, but if you anticipate using these tools from the command line you will have an easier time installing them globally.
 
 ```
 sudo npm install -g bower
@@ -82,7 +95,7 @@ sudo npm install -g grunt-cli
 sudo npm install -g karma-cli
 ```
 
-> Note that phantomjs is not installed through npm, but may be (as in the regular package instructions). It is simply an option whether one wants to install a binary like phantomjs with npm or as a native package. You can inspect the version of each and see if one is more appropriate.
+> Note that phantomjs is installed as system binary, not through npm. Phantomjs itself is a little unstable, and contains dependencies which are not always met or installed by npm -- by the time you read this the npm install may work just fine.
 
 ### Homebrew
 
@@ -102,50 +115,79 @@ Occasionally you may be prompted for an admin account authorization if you are u
 
 ### Ubuntu
 
+> to be done, but see the Vagrant directions below.
+
+## xxxBSD
+
+### FreeBSD
+
 > to be done
 
-### ??
+- Erik's notes: I tried a FreeBSD install last weekend (Jan 2016) and got stuck on phantomjs. I did not put more time into it.
 
-### Vagrant on Mac
+### Vagrant with Ubuntu on Mac
 
 > This section needs to be ironed out.
 
 Using Vagrant, or a virtual machine directly, is a great way to test the canonical installation environment for KBase UI, which is Ubunto 14.04 (as of the time of writing.) It is also a great way to shake out prerequisites, to test out changes to prerequisites, and to generally create an isolated runtime, since you may not want to remove the requisite packages in your native working environment.
 
-First get a working VM up and running:
+> Note: if you develop on Mac, it is also a requirement before submitting a PR to clone your prepared repo into an Ubuntu 14.04 environment and perform both unit and visual testing. This is due to, amongst other things, the need to file references which are case insensitive on Mac do not break on case sensitve Linux filesystems.
+
+#### 1) First get a working VM up and running:
 
 ```
 vagrant init ubuntu/trusty64
 vagrant up
 vagrant ssh
 sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get dist-upgrade
+sudo apt-get upgrade -y
+sudo apt-get dist-upgrade -y
 exit
 vagrant reload
 vagrant ssh
 ```
 
-The node with Ubuntu is very old -- antique by node standards -- and will not work with kbase-ui requirements.
+#### 2) You'll also need to expose your VM's IP address to your Mac. Here is one quick'n'dirty way:
 
-get the NodeSource PPA:
-
-```
-curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
-```
-
-and build tools
-
-this is for npm modules which include c-compilable code (e.g. phantomjs)
+- Use the following line to enable DHCP in your Vagrantfile. You can place it right below the commented out private_network config line
 
 ```
-apt-get install build-essential
+config.vm.network "private_network", type: "dhcp"
 ```
 
-this is for phantomjs -- a hidden dependency
+- Restart your vm
 
 ```
-sudo apt-get install libfontconfig1
+vagrant reload
 ```
 
-You are now ready to install use kbase-ui
+- Inside your VM, note the IP address of the exposed virtual network interface:
+
+```
+vagrant ssh
+ifconfig
+```
+
+This will probably be eth1 and look something like this:
+
+```
+eth1      Link encap:Ethernet  HWaddr 08:00:27:02:e0:08
+          inet addr:172.28.128.5  Bcast:172.28.128.255  Mask:255.255.255.0
+```
+
+
+- Back on your host, create a new ip to host mapping. On Mac this is ```/etc/hosts``` as you might expect. The hosts name needs to match the host you choose in the nginx configuration (as described in [Quick Deploy](quick-deploy.md)).
+
+
+```
+172.28.128.5 dev.kbase.us
+```
+ 
+
+#### 3) See the [Quick Deploy](quick-deploy.md) doc for concise instructions on installation of requisite dependencies and kbase-ui itself.
+
+---
+
+[Index](index.md) - [README](../README.md) - [KBase](http://kbase.us)
+
+---

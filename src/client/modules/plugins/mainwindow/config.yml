@@ -20,12 +20,15 @@ source:
         -
             module: kb_widget_title
             file: titleWidget
+            css: true
         -
             module: kb_widget_buttonbar
             file: buttonbarWidget
+            css: true
         -
             module: kb_widget_logo
             file: logoWidget
+            css: true
         -
             module: kb_widget_menu
             file: menuWidget
@@ -92,4 +95,8 @@ install:
         -
             module: kb_widget_error
             id: error
+            type: factory
+        -
+            module: plugins/mainwindow/modules/widgets/alert
+            id: kb_mainWindow_alert
             type: factory
