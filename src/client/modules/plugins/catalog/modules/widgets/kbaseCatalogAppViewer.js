@@ -569,7 +569,7 @@ define([
                         self.setStarCount(users.length);
                          if(self.runtime.service('session').isLoggedIn()) {
                             var me = self.runtime.service('session').getUsername();
-                            for(var u=0; u<users.length; users++) {
+                            for(var u=0; u<users.length; u++) {
                                 if(users[u].user == me) {
                                     self.onStar = true;
                                     self.$headerPanel.find('.kbcb-star').removeClass('kbcb-star-nonfavorite').addClass('kbcb-star-favorite');
