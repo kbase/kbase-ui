@@ -55,16 +55,22 @@ define([
                 switch (serviceConfig.deploy.environment) {
                     case 'ci':
                         runtime.send('ui', 'alert', {
-                            type: 'success', 
+                            type: 'info', 
                             message: 'You are operating in the Continuous Integration (CI) environment'
                         });
                         break;
                     case 'next':
                         runtime.send('ui', 'alert', {
-                            type: 'warning', 
+                            type: 'info', 
                             message: 'You are operating in the Next environment'
                         });
                         break;
+                    case 'appdev':
+                        runtime.send('ui', 'alert', {
+                            type: 'info', 
+                            message: 'You are operating in the AppDev environment'
+                        });
+                        break;    
                 }
             });
         }
