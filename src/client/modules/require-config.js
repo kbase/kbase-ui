@@ -3,11 +3,11 @@ require.config({
     baseUrl: '/modules',
     catchError: true,
     onError: function (err) {
-        console.log(err.requireType);
+        console.error('REQUIRE ERROR');
+        console.error(err.requireType);
         if (err.requireType === 'timeout') {
-            console.log('modules: ' + err.requireModules);
+            console.error('modules: ', err.requireModules);
         }
-
         throw err;
     },
     paths: {
