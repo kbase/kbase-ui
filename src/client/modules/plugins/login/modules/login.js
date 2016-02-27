@@ -156,11 +156,15 @@ function (html, $, Promise, Plugin) {
                         h1({style: 'font-size:1.6em'}, ['Welcome to the KBase Narrative Interface']),
                         p('After signing in you can upload your own experimental data or find data integrated from external resources or shared by other users. You can then perform, organize, and share sophisticated comparative genomics and systems biology analyses by creating Narratives.'),
                         p('Narratives are user-created interactive, dynamic, and shareable documents that are KBase’s way of making systems biology research transparent, reproducible, and reusable.'),
-                        p('The Narrative Interface lets you customize and execute a set of ordered KBase analyses to create your own Narratives that include your analysis steps, commentary, visualizations, and custom scripts.'),
+                        p([
+                            'The Narrative Interface lets you customize and execute a set of ordered ',
+                            a({href: [runtime.config('resources.docSite.base.url'), 'apps'].join('/')}, 'KBase apps'),
+                            ' to create your own Narratives that include your analysis steps, commentary, visualizations, and custom scripts.'
+                        ]),
                         p([
                             'Want to learn more? We have an extensive and growing ', 
                             a({href: [runtime.config('resources.docSite.base.url'), 'tutorials'].join('/')}, 'library of tutorials') ,
-                            ' that show you how to use KBase’s new apps to analyze your data.'
+                            ' that show you how to use KBase apps to analyze your data.'
                         ]),
                         p([
                             'To become familiar with the user interface, try the ', 
