@@ -588,6 +588,9 @@ function setupBuild(state) {
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
         .then(function () {
+            return configureSearch(state);
+        })
+        .then(function () {
             return fs.moveAsync(root.concat(['bower.json']).join('/'), root.concat(['build', 'bower.json']).join('/'));
         })
         .then(function () {
@@ -608,6 +611,19 @@ function setupBuild(state) {
         .then(function () {
             return state;
         });
+}
+
+function configureSearch(state) {
+    return fs.readJson(state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/'),
+        function(err, config) {
+            var target = state.config.targets.deploy;
+            console.log(state);
+            console.log('SEARCH CONFIG: ' + config.setup);
+            config.setup = target;
+            return fs.outputJson(state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/'), config);
+        }
+    );
+
 }
 
 function fetchPackagesWithBower(state) {
