@@ -613,17 +613,19 @@ function setupBuild(state) {
         });
 }
 
+/**
+ * Returns a Promise that sets the search config 'setup' to use the right target based on this build config.
+ * Any errors are expected to be caught by the caller's catch().
+ */
 function configureSearch(state) {
-    return fs.readJson(state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/'),
+    var configFile = state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/');
+    return fs.readJson(configFile,
         function(err, config) {
             var target = state.config.targets.deploy;
-            console.log(state);
-            console.log('SEARCH CONFIG: ' + config.setup);
             config.setup = target;
-            return fs.outputJson(state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/'), config);
+            return fs.outputJson(configFile, config);
         }
     );
-
 }
 
 function fetchPackagesWithBower(state) {
