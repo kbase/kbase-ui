@@ -107,13 +107,15 @@ define([
             return new Promise(function (resolve, reject) {
                 startOrCreateEmptyNarrative(params)
                     .then(function (result) {
-                        container.innerHTML = div([
-                            p('Should have opened your narrative.'),
-                            p('If it did not happen, use this link:'),
-                            p(a({href: result.redirect.url, target: '_blank'}, [
-                                'Open Your New Narrative: ',
-                                result.redirect.url
-                            ]))
+                        container.innerHTML = div({class: 'container-fluid'}, [
+                            div({class: 'col-md-12'}, [
+                                p('Should have opened your narrative.'),
+                                p('If it did not happen, use this link:'),
+                                p(a({href: result.redirect.url, target: '_blank'}, [
+                                    'Open Your New Narrative: ',
+                                    result.redirect.url
+                                ]))
+                            ])
                         ]);
                         runtime.send('app', 'redirect', {
                             url: result.redirect.url,

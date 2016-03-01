@@ -4,14 +4,16 @@
         <title>KBase | Interface</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="/fallback.js"></script>
         <script src="/mustard.js"></script>
+        <script src="/require-config.js"></script>
+        <script src="/modules/bower_components/requirejs/require.js" data-main="startup"></script>
     </style>
 </head>
 <body class="kbase-ui">
     <div id="root"></div>
     <div id="error"></div>
     <div id="status"></div>
-    <script src="/modules/bower_components/requirejs/require.js" data-main="modules/startup"></script>
     <noscript>
     <h1>Javascript Required</h1>
     <p>
