@@ -158,17 +158,17 @@ function (html, $, Promise, Plugin) {
                         p('Narratives are user-created interactive, dynamic, and shareable documents that are KBase’s way of making systems biology research transparent, reproducible, and reusable.'),
                         p([
                             'The Narrative Interface lets you customize and execute a set of ordered ',
-                            a({href: [runtime.config('resources.docSite.base.url'), 'apps'].join('/')}, 'KBase apps'),
+                            a({href: runtime.config('resources.documentation.apps.url')}, 'KBase apps'),
                             ' to create your own Narratives that include your analysis steps, commentary, visualizations, and custom scripts.'
                         ]),
                         p([
                             'Want to learn more? We have an extensive and growing ', 
-                            a({href: [runtime.config('resources.docSite.base.url'), 'tutorials'].join('/')}, 'library of tutorials') ,
+                            a({href: runtime.config('resources.documentation.tutorials.url')}, 'library of tutorials') ,
                             ' that show you how to use KBase apps to analyze your data.'
                         ]),
                         p([
                             'To become familiar with the user interface, try the ', 
-                            a({href: [runtime.config('resources.docSite.base.url'), 'narrative-guide'].join('/')}, 'Narrative Interface User Guide'), 
+                            a({href: runtime.config('resources.documentation.narrativeGuide.url')}, 'Narrative Interface User Guide'), 
                             ' or the <a href="https://youtu.be/6ql7HAUzU7U">Narrative Interface video tutorial</a>.'
                         ])
                     ]),
@@ -196,9 +196,9 @@ function (html, $, Promise, Plugin) {
                                     div({'data-element': 'error', class: 'alert alert-danger alert-kbase', style: 'display:none; margin-top: 1em'})
                                 ]),
                                 div({class: 'form-group', style: 'margin-top: 3em; margin-bottom: 0;'}, [
-                                    a({target: '_blank', href: runtime.config('resources.userAccount.signup.url'), class: 'btn btn-block btn-link'}, 'New to KBase? Sign Up'),
+                                    a({target: '_blank', href: runtime.config('resources.userAccount.signUp.url'), class: 'btn btn-block btn-link'}, 'New to KBase? Sign Up'),
                                     a({target: '_blank', href: runtime.config('resources.userAccount.resetPassword.url'), class: 'btn btn-block btn-link'}, 'Forgot your password?'),
-                                    a({target: '_blank', href: [runtime.config('resources.docSite.base.url'), 'login-help'].join('/'), class: 'btn btn-block btn-link'}, 'Help')
+                                    a({target: '_blank', href: runtime.config('resources.documentation.loginHelp.url'), class: 'btn btn-block btn-link'}, 'Help')
                                 ])
                             ])
                         ])
