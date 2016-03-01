@@ -49,9 +49,9 @@
         cleanBrowser();
         root.document.title = 'Application Error - KBase';
         root.document.body.innerHTML =
-            '<div style="font: normal normal normal normal 16px 1.5 Arial,sans-serif;">' +
+            '<div style="font-size: 16px; font-family: Arial,sans-serif;">' +
             // header with kbase icon, title, and menu
-            '  <div style="position: relative; height: 50px; width: 100%; background-color: #FC7979; line-height: 50px">' +
+            '  <div style="position: relative; height: 50px; width: 100%; background-color: #F0ADAD; line-height: 50px">' +
             '    <div style="position: absolute; top: 2px; left: 2px; width: 46px; height: 46px;">' +
             '      <a href="http://kbase.us"><img src="/images/kbase_logo.png" style="display: block;"></a>' +
             '    </div>' +
@@ -80,8 +80,8 @@
             referencesSection = '';
         }
         var errorBody = 
-            '<div style="border: 1px red solid; padding: 4px; margin: 4px;">' +
-            '  <div style="font-weight: bold; color: red; padding: 4px; margin-bottom: 1em;">Error # ' + String(errorCount) + '</div>' +
+            '<div style="border: 1px #E04343 solid; padding: 4px; margin: 4px;">' +
+            '  <div style="font-weight: bold; color: #E04343; padding: 4px; margin-bottom: 1em;">Error # ' + String(errorCount) + '</div>' +
             '  <h2>' + title + '</h2>' + 
             '  <div>' + content + '</div>' + 
             '  <div>' + referencesSection + '</div></div>' +
