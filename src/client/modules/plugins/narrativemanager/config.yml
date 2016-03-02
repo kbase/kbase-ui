@@ -34,6 +34,7 @@ install:
     routes:
         -
             path: [narrativemanager, start]
+            authorization: true
             queryParams:
                 app: {}
                 method: {}
@@ -42,6 +43,7 @@ install:
             widget: narrativeManager_start
         -
             path: [narrativemanager, new]
+            authorization: true
             queryParams:
                 app: {}
                 method: {}

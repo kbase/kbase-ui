@@ -33,20 +33,20 @@ plugins:
         name: typeview
         globalName: kbase-ui-plugin-typeview
         cwd: src/plugin
-        version: 1.0.1
+        version: 1.0.2
         source:
             bower: {}
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 1.0.9
+        version: 1.0.10
         cwd: src/plugin
         source:
             bower: {}
     -
         name: dashboard
         globalName: kbase-ui-plugin-dashboard
-        version: 1.1.3
+        version: 1.1.5
         cwd: src/plugin
         source:
             bower: {}
@@ -129,12 +129,12 @@ modules:
             bower: {}
     -
         globalName: kbase-common-js
-        version: 1.1.1
+        version: 1.2.0
         source:
             bower: {}
     -
         globalName: kbase-service-clients-js
-        version: 1.2.3
+        version: 1.2.4
         source:
             bower: {}
     -
@@ -142,3 +142,4 @@ modules:
         version: 1.0.1
         source:
             bower: {}
+    

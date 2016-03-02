@@ -1,15 +1,6 @@
-'use strict';
-require.config({
+var require = {
     baseUrl: '/modules',
     catchError: true,
-    onError: function (err) {
-        console.log(err.requireType);
-        if (err.requireType === 'timeout') {
-            console.log('modules: ' + err.requireModules);
-        }
-
-        throw err;
-    },
     paths: {
         // External Dependencies
         // ----------------------
@@ -19,6 +10,7 @@ require.config({
         json: 'bower_components/requirejs-json/json',
         yaml: 'bower_components/require-yaml/yaml',
         'js-yaml': 'bower_components/js-yaml/js-yaml',
+        esprima: 'bower_components/esprima/esprima',
         csv: 'bower_components/kbase-common-js/dist/kb/common/requirejs-csv',
         jquery: 'bower_components/jquery/jquery',
         bluebird: 'bower_components/bluebird/bluebird',
@@ -44,18 +36,10 @@ require.config({
         numeral: 'bower_components/numeral/numeral',
         'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
         plotly: 'bower_components/plotly/plotly',
-
         kb_ui: 'css/kb-ui',
         kb_datatables: 'css/kb-datatables',
         kb_bootstrap: 'css/kb-bootstrap',
-        kb_icons: 'css/kb-icons',
-        
-        // This really should be brought in somehow else.
-        // Perhaps namespace it???
-        //thrift: 'bower_components/thrift-binary-protocol/thrift-core',
-        //thrift_transport_xhr: 'bower_components/thrift-binary-protocol/thrift-transport-xhr',
-        //thrift_protocol_binary: 'bower_components/thrift-binary-protocol/thrift-protocol-binary',
-
+        kb_icons: 'css/kb-icons'
     },
     shim: {
         bootstrap: {
@@ -75,4 +59,4 @@ require.config({
             'promise': 'bluebird'
         }
     }
-});
+};

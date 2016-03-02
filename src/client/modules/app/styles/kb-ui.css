@@ -812,3 +812,7 @@ div::-webkit-scrollbar-thumb {
     margin: 10px 0 0 50px;
 }
 
+/* provide underlines in prettyprinted links */
+.prettyprinted a {
+    text-decoration: underline;
+}
