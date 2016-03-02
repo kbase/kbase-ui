@@ -13,6 +13,10 @@
                     return;
                 }
                 break;
+            case 'require':
+                console.error('Error in require-loaded code');
+                console.error(err);
+                return;
             case 'scripterror':
                 if (err.requireModules) {
                     if (err.requireModules.some(function (moduleName) {
@@ -35,6 +39,14 @@
                     }
                 }
                 break;            
+            case 'define':
+            case 'fromtexteval':
+            case 'mismatch':
+            case 'requireargs':
+            case 'nodefine':
+            case 'importscripts':
+            case 'timeout':
+                break;
         }
 
 //        console.error('AMD Error');
