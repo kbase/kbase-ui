@@ -213,6 +213,9 @@ define([
             appServiceManager.addService('userprofile', {
                 runtime: api
             });
+            appServiceManager.addService('analytics', {
+                runtime: api
+            });
 
             pluginManager = pluginManagerFactory.make({
                 runtime: api
@@ -267,6 +270,7 @@ define([
                 })
                 .then(function () {
                     // kick off handling of the current route.
+                    api.service('analytics').page();
                     send('app', 'do-route');
                     return api;
                 });
