@@ -98,5 +98,8 @@ resources:
             url: <%= signup_url %>
     status_page: <%= status_page_url %>
     submit_jira_ticket: <%= submit_jira_ticket_url %>
+    googleAnalytics:
+        code: <%= google_analytics_code %>
 deploy:
     environment: <%= deploy_environment %>
+    hostname: <%= deploy_hostname %>
