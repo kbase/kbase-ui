@@ -3,7 +3,7 @@
 define([
     'bluebird',
     'app/App',
-    'app/analytics',
+    // 'app/analytics',
     'kb/common/dom',
     'yaml!config/plugin.yml',
     'yaml!config/settings.yml',
@@ -14,7 +14,7 @@ define([
     'css!app/styles/kb-icons',
     'css!app/styles/kb-ui',
     'css!app/styles/kb-datatables'
-], function (Promise, App, Analytics, dom, pluginConfig, clientConfig, serviceConfig) {
+], function (Promise, App, dom, pluginConfig, clientConfig, serviceConfig) {
     'use strict';
     Promise.config({
         warnings: true,
@@ -29,8 +29,8 @@ define([
         return;
         // dom.setHtml(dom.qs('#status'), 'started');
     }
-    Analytics.create();
-    Analytics.send();
+    //Analytics.create();
+    //Analytics.send();
 
     return {
         start: function () {
