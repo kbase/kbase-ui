@@ -12,6 +12,7 @@
 	</div>
 </div>
 
+{% if state.collaborators | length > 0 %}
 <table class="table table-bordered table-striped" id="collaborator_table_{{generatedId}}">
 	<thead>
 	<tr>
@@ -30,22 +31,33 @@
 {% endfor %}
 	</tbody>
 </table>
+{% else %}
+  You do not have any collaborators in common with this user.
+{% endif %}
 
 <script>
 require(['jquery', 'datatables','datatables_bootstrap'], function ($) {
-    $('#collaborator_table_{{env.generatedId}}').dataTable({
-        initComplete: function (settings) {
-            var api = this.api();
-            var rowCount = api.data().length;
-            var pageSize = api.page.len();
-            var wrapper = api.settings()[0].nTableWrapper;
-            if (rowCount <= pageSize) {
-                $(wrapper).find('.dataTables_length').hide();
-                $(wrapper).find('.dataTables_filter').hide();
-                $(wrapper).find('.dataTables_paginate').hide();
-                $(wrapper).find('.dataTables_info').hide();
-            }
+    try {
+        var table = $('#collaborator_table_{{env.generatedId}}');
+        if (table.get(0)) {
+            table.dataTable({
+                initComplete: function (settings) {
+                    var api = this.api();
+                    var rowCount = api.data().length;
+                    var pageSize = api.page.len();
+                    var wrapper = api.settings()[0].nTableWrapper;
+                    if (rowCount <= pageSize) {
+                        $(wrapper).find('.dataTables_length').hide();
+                        $(wrapper).find('.dataTables_filter').hide();
+                        $(wrapper).find('.dataTables_paginate').hide();
+                        $(wrapper).find('.dataTables_info').hide();
+                    }
+                }
+            });
         }
-    });
+    } catch (err) {
+        console.error('ERROR rendering collaborators table');
+        console.error(err);
+    }
 });
 </script>

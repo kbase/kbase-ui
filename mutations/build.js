@@ -588,6 +588,9 @@ function setupBuild(state) {
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
         .then(function () {
+            return configureSearch(state);
+        })
+        .then(function () {
             return fs.moveAsync(root.concat(['bower.json']).join('/'), root.concat(['build', 'bower.json']).join('/'));
         })
         .then(function () {
@@ -608,6 +611,21 @@ function setupBuild(state) {
         .then(function () {
             return state;
         });
+}
+
+/**
+ * Returns a Promise that sets the search config 'setup' to use the right target based on this build config.
+ * Any errors are expected to be caught by the caller's catch().
+ */
+function configureSearch(state) {
+    var configFile = state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/');
+    return fs.readJson(configFile,
+        function(err, config) {
+            var target = state.config.targets.deploy;
+            config.setup = target;
+            return fs.outputJson(configFile, config);
+        }
+    );
 }
 
 function fetchPackagesWithBower(state) {

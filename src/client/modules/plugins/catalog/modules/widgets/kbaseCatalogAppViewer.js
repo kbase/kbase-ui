@@ -103,7 +103,7 @@ define([
                         loadingCalls.push(self.getAppSpec());
 
                         // when we have it all, then render the list
-                        Promise.all(loadingCalls).then(function() {
+                        return Promise.all(loadingCalls).then(function() {
                             //self.render();
                             self.hideLoading();
                             self.renderMethod();
@@ -112,15 +112,11 @@ define([
                             // must be called after renderMethod, because it relies on elements existing in the dom
                             self.updateFavoritesCounts();
                             self.updateRunStats();
-                            return Promise.try(function() {});
+                            return null;
                         }).catch(function() {
                             self.hideLoading();
                         });
-                    })
-
-               
-
-
+                    });
                 return this;
             },
 
@@ -159,11 +155,13 @@ define([
                         console.log('Method full info:')
                         console.log(info_list);
                         self.appFullInfo = info_list[0];
+                        return null;
                     })
                     .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                         self.showError(err);
+                        return err;
                     });
             },
             getAppSpec: function() {
@@ -569,7 +567,7 @@ define([
                         self.setStarCount(users.length);
                          if(self.runtime.service('session').isLoggedIn()) {
                             var me = self.runtime.service('session').getUsername();
-                            for(var u=0; u<users.length; users++) {
+                            for(var u=0; u<users.length; u++) {
                                 if(users[u].user == me) {
                                     self.onStar = true;
                                     self.$headerPanel.find('.kbcb-star').removeClass('kbcb-star-nonfavorite').addClass('kbcb-star-favorite');
