@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>KBase Narrative Interface</title>
-        <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="/favicon.ico">
         <script src="/require-config.js"></script>
         <script src="/modules/bower_components/requirejs/require.js"></script>
     </head>
@@ -154,7 +154,7 @@
                         var ua = navigator.userAgent.toLowerCase();
                         if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {
                             $('#text').html('<br><a href="' + narrativeUrl + '?">Click here to enter the Narrative Interface!</a>');
-                            $('#loader').attr('src', '/images/doodle.png')
+                            $('#loader').attr('src', '/modules/plugin/login/resources/doodle.png');
                         } else {
                             window.location.replace(narrativeUrl);
                         }
