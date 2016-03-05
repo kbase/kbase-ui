@@ -56,19 +56,22 @@ define([
                     case 'ci':
                         runtime.send('ui', 'alert', {
                             type: 'info', 
-                            message: 'You are operating in the Continuous Integration (CI) environment'
+                            message: 'You are operating in the Continuous Integration (CI) environment',
+                            icon: 'flask'
                         });
                         break;
                     case 'next':
                         runtime.send('ui', 'alert', {
                             type: 'info', 
-                            message: 'You are operating in the Next environment'
+                            message: 'You are operating in the Next environment',
+                            icon: 'bullseye'
                         });
                         break;
                     case 'appdev':
                         runtime.send('ui', 'alert', {
                             type: 'info', 
-                            message: 'You are operating in the AppDev environment'
+                            message: 'You are operating in the AppDev environment',
+                            icon: 'wrench'
                         });
                         break;    
                 }
