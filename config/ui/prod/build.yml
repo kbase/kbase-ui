@@ -23,7 +23,7 @@ plugins:
         name: viswidgets
         globalName: kbase-ui-plugin-vis-widgets
         cwd: src/plugin
-        version: 1.0.0
+        version: 1.1.3
         source:
             bower: {}
     -
@@ -36,7 +36,7 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 1.0.9
+        version: 1.1.0
         cwd: src/plugin
         source:
             bower: {}
@@ -78,7 +78,7 @@ plugins:
 modules:
     -
         globalName: kbase-ui-widget
-        version: 1.0.3
+        version: 1.0.5
         source:
             bower: {}
     -
