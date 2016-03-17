@@ -57,7 +57,7 @@ plugins:
     -
         name: data-landing-pages
         globalName: kbase-ui-plugin-data-landing-pages
-        version: 0.2.1
+        version: 0.3.0
         cwd: src/plugin
         source:
             bower: {}
@@ -93,6 +93,6 @@ modules:
             bower: {}
     -
         globalName: kbase-data-api-client-js
-        version: 1.0.2
+        version: 1.0.3
         source:
             bower: {}
