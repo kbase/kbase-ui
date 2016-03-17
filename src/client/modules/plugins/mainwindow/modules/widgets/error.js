@@ -96,7 +96,7 @@ define([
             } else {
                 error = {
                     type: 'Unknown',
-                    message: error.message
+                    message: error && error.message
                 };
             }
 
