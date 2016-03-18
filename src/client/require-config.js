@@ -32,14 +32,17 @@ var require = {
         handlebars: 'bower_components/handlebars/handlebars',
         nunjucks: 'bower_components/nunjucks/nunjucks',
         font_awesome: 'bower_components/font-awesome/css/font-awesome',
-        uuid: 'bower_components/node-uuid/uuid',
+        // uuid: 'bower_components/pure-uuid/uuid',
+        uuid: 'bower_components/pure-uuid/uuid',
         numeral: 'bower_components/numeral/numeral',
         'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
         plotly: 'bower_components/plotly/plotly',
         kb_ui: 'css/kb-ui',
         kb_datatables: 'css/kb-datatables',
         kb_bootstrap: 'css/kb-bootstrap',
-        kb_icons: 'css/kb-icons'
+        kb_icons: 'css/kb-icons',
+        highlight: 'bower_components/highlightjs/highlight.pack',
+        highlight_css: 'bower_components/highlightjs/styles/tomorrow'
     },
     shim: {
         bootstrap: {
@@ -51,6 +54,9 @@ var require = {
         d3_sankey: {
             deps: ['d3', 'css!d3_sankey_css']
                 // deps: ['d3', 'css!d3_sankey_css', 'css!kb/style/sankey']
+        },
+        highlight: {
+            deps: ['css!highlight_css']
         }
     },
     map: {
