@@ -66,6 +66,21 @@ define([
                     });
             });
         }
+        
+        function wrapPanel(content) {
+            var div = html.tag('div');
+            return div({class: 'container-fluid'}, [
+                div({class: 'row'}, [
+                    div({class: 'col-md-12'}, [
+                        content
+                    ])
+                ])
+            ]);
+        }
+
+
+        
+        // API
 
         function attach(node) {
             mount = node;
@@ -77,15 +92,15 @@ define([
             var div = html.tag('div'),
                 a = html.tag('a'),
                 p = html.tag('p');
-            container.innerHTML = html.loading('Creating a new Narrative for you...');
+            container.innerHTML = wrapPanel(html.loading('Creating a new Narrative for you...'));
             return new Promise(function (resolve, reject) {
                 createNewNarrative(params)
                     .then(function (result) {
-                        container.innerHTML = div([
-                            p('Should have created and opened a new narrative.'),
-                            p('If it did not happen, use this link:'),
+                        container.innerHTML = wrapPanel([
+                            p('Opening your new Narrative.'),
+                            p('If the Narrative did not open, use this link'),
                             p(a({href: result.redirect.url, target: '_blank'}, [
-                                'Open Your New Narrative: ',
+                                'Open your new Narrative: ',
                                 result.redirect.url
                             ]))
                         ]);
