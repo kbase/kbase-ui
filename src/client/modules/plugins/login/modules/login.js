@@ -136,7 +136,7 @@ function (html, $, Promise, Plugin) {
             eventMan.reset();
             var doodlePath = Plugin.plugin.fullPath + '/doodle.png';
 
-            return div({class: 'container', style: 'margin-top: 4em', id: panelId}, [
+            return div({class: 'container', style: 'margin-top: 4em', dataWidget: 'login', id: panelId}, [
                 div({}, [
                     div({style: {
                             position: 'absolute',
@@ -179,10 +179,10 @@ function (html, $, Promise, Plugin) {
                                 input({type: 'hidden', value: nextURL}),
                                 legend({style: 'text-align: center'}, 'KBase Sign In'),
                                 div({class: 'form-group'}, [
-                                    input({name: 'username', type: 'text', placeholder: 'username', id: 'kbase_username', class: 'form-control form-control-kbase', tabindex: '1'})
+                                    input({name: 'username', type: 'text', placeholder: 'username', id: 'kbase_username', dataElement: 'username', autocomplete: 'off', class: 'form-control form-control-kbase', tabindex: '1'})
                                 ]),
                                 div({class: 'form-group'}, [
-                                    input({name: 'password', type: 'password', placeholder: 'password', id: 'kbase_password', class: 'form-control form-control-kbase', tabindex: '2'})
+                                    input({name: 'password', type: 'password', placeholder: 'password', id: 'kbase_password', dataElement: 'password', autocomplete: 'off', class: 'form-control form-control-kbase', tabindex: '2'})
                                 ]),
                                 div({class: 'form-group'}, [
                                     button({id: 'signinbtn', type: 'submit', class: 'btn btn-primary btn-block btn-kbase', tabindex: '3', 'data-element': 'sign-in'}, [
@@ -222,10 +222,13 @@ function (html, $, Promise, Plugin) {
         function start(params) {
             return Promise.try(function () {
                 runtime.send('ui', 'setTitle', 'Sign in to KBase');
-                runtime.send('ui', 'render', {
-                    node: container,
-                    content: renderForm()
-                });
+                container.innerHTML = renderForm();
+                //runtime.send('ui', 'render', {
+                //    node: container,
+                //    content: renderForm()
+                //});
+                console.log(container.querySelector('[data-element="username"]'));
+                container.querySelector('[data-element="username"]').focus();
                 eventMan.attach($container);
                 if (params.nextrequest) {
                     nextRequest = JSON.parse(params.nextrequest);

@@ -72,8 +72,8 @@ define([
             } else if (isType(params.error, serviceError)) {
                 error = {
                     type: params.error.error.name,
-                    message: params.error.error.error,
-                    reason: params.error.error.message
+                    message: params.error.error.message,
+                    reason: params.error.error.error
                 };
             } else if (isType(params.error, uiError)) {
                 // hope it is a compatible obje
@@ -108,7 +108,7 @@ define([
                 error.extended = html.makeObjTable([error.extra], {rotated: true});
             }
 
-            return div({class: 'container-fluid'}, html.makePanel({
+            return div({class: 'container-fluid', dataWidget: 'error'}, html.makePanel({
                 title: params.title,
                 class: 'danger',
                 content: html.makeObjTable([error], {rotated: true})
