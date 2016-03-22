@@ -103,3 +103,5 @@ resources:
 deploy:
     environment: <%= deploy_environment %>
     hostname: <%= deploy_hostname %>
+    icon: <%= deploy_icon %>
+    name: <%= deploy_name %>
