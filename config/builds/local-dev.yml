@@ -1,0 +1,13 @@
+## Global Build Config
+---
+targets:
+    ui: dev
+    deploy: local-dev
+build:
+    dist: false
+    temp: ../temp
+bower:
+    offline: false
+debug: false
+server:
+    port: 8080
