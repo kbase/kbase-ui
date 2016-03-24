@@ -53,27 +53,15 @@ define([
             })
             .then(function (runtime) {
                 switch (serviceConfig.deploy.environment) {
-                    case 'ci':
-                        runtime.send('ui', 'alert', {
-                            type: 'info', 
-                            message: 'You are operating in the Continuous Integration (CI) environment',
-                            icon: 'flask'
-                        });
+                    case 'prod':
+                        // do nothing
                         break;
-                    case 'next':
+                    default:
                         runtime.send('ui', 'alert', {
-                            type: 'info', 
-                            message: 'You are operating in the Next environment',
-                            icon: 'bullseye'
+                            type: 'info',
+                            message: 'You are operating in the ' + serviceConfig.deploy.name + ' environment',
+                            icon: serviceConfig.deploy.icon
                         });
-                        break;
-                    case 'appdev':
-                        runtime.send('ui', 'alert', {
-                            type: 'info', 
-                            message: 'You are operating in the AppDev environment',
-                            icon: 'wrench'
-                        });
-                        break;    
                 }
             });
         }
