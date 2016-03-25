@@ -19,7 +19,7 @@ rm -rf kbase-ui
 Clone kbase-ui. Note that we do not checkout the develop branch.
 
 ```
-git clone https://github.com/kbase/kbase-us
+git clone https://github.com/kbase/kbase-ui
 ```
 
 Then fetch and checkout the PR. 
@@ -47,3 +47,8 @@ make init
 make build config=ci
 sudo ./deploy.sh
 ```
+
+## Or just test from your repo!
+
+If the repo and branch you are about to PR from is up to date with upstream, you can also just test from there.
+
