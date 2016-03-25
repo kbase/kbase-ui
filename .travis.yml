@@ -2,8 +2,9 @@ sudo: false
 language: node_js
 node_js:
   - "0.12"
-  # NB this should be 4.2, which is the LTS for node; they are working on it.
-  - "4.1"
+  # NB this should be 4.4, we just have to check in occasionally to see if they
+  # support it yet.
+  - "4.2"
 #cache:
 #  directories:
 #  - bower_components
