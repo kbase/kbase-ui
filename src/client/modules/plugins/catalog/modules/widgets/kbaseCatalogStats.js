@@ -276,7 +276,7 @@ define([
                             return self.catalog.get_exec_aggr_table({})
                                 .then(function (adminStats) {
 
-                                    console.log(adminStats);
+                                    //console.log(adminStats);
                                     self.adminStats = [];
 
                                     for(var k=0; k<adminStats.length; k++) {
@@ -308,7 +308,7 @@ define([
                                             id: id,
                                             module: module,
                                             n: s.n,
-                                            u: '<a href="#appcatalog/people/'+s.user+'">'+s.user+'</a>'
+                                            u: '<a href="#people/'+s.user+'">'+s.user+'</a>'
                                         }
                                         self.adminStats.push(stat);
                                     }
