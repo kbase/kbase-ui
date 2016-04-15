@@ -1,19 +1,16 @@
-/*global
- define
- */
-/*jslint
- browser: true,
- white: true
- */
+/*global define*/
+/*jslint browser: true, white: true*/
 define([
+    'bluebird',
     'jquery',
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
     'kb/widget/legacy/authenticatedWidget',
-    'bootstrap',
+    'bootstrap'
 ],
-    function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
+    function (Promise, $, NarrativeMethodStore, Catalog, CatalogUtil) {
+        'use strict';
         $.KBWidget({
             name: "KBaseCatalogStatus",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
@@ -156,9 +153,11 @@ define([
                         $li.append('<a href="#appcatalog/module/'+mod.module_name+'">'+mod.module_name+'</a>');
                         $li.append('- <a href="'+mod.git_url+'">'+mod.git_url+'</a><br>');
                         $li.append(mod.git_commit_hash + ' - '+mod.git_commit_message+'<br>');
-                        $li.append('owners: [')
+                        $li.append('owners: [');
                         for(var owner=0; owner<mod.owners.length; owner++) {
-                            if(owner>0) { $li.append(', ') }
+                            if(owner>0) { 
+                                $li.append(', ');
+                            }
                             $li.append('<a href="#people/'+mod.owners[owner]+'">'+mod.owners[owner]+'</a>');
                         }
                         $li.append(']<br>');
@@ -175,7 +174,7 @@ define([
             renderControlPanel: function() {
                 var self = this;
 
-                var $filterModules = $('<select>').addClass('form-control')
+                var $filterModules = $('<select>').addClass('form-control');
                 $filterModules.append('<option value="All.Modules">All Modules</option>');
                 for(var k=0; k<self.module_list.length; k++) {
                     var m = self.module_list[k].module_name;
@@ -319,7 +318,7 @@ define([
 
 
             getCatalogVersion: function() {
-                var self = this
+                var self = this;
 
                 var moduleSelection = {
                     module_name: self.module_name
@@ -336,7 +335,7 @@ define([
             },
 
             getPendingReleases: function() {
-                var self = this
+                var self = this;
 
                 /* typedef structure {
                     string module_name;
@@ -358,7 +357,7 @@ define([
 
 
             getBuildStatus: function(skip, limit, module_names) {
-                var self = this
+                var self = this;
 
                 var build_filter = {
                     skip: skip,
@@ -388,13 +387,13 @@ define([
             },
 
             getModuleList: function() {
-                var self = this
+                var self = this;
 
                 return self.catalog.list_basic_module_info({
                         include_unreleased:1
                     })
                     .then(function (module_list) {
-                        var good_modules = []
+                        var good_modules = [];
                         for(var k=0; k<module_list.length; k++) {
                             if(module_list[k].module_name) {
                                 good_modules.push(module_list[k]);
@@ -427,6 +426,3 @@ define([
             }
         });
     });
-
-
-
