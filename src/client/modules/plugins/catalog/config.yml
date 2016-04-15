@@ -155,7 +155,7 @@ install:
             id: catalog_status_widget
             title: App Catalog Status
             config:
-                jqueryName: KBaseCatalogStatusViewer
+                jqueryName: KBaseCatalogStatus
             type: kbwidget
         -
             module: catalog_admin_widget
