@@ -71,6 +71,9 @@ services:
     doc_site:
         url: <%= doc_site_url %>
         name: Documentation and Support Site
+    service_wizard:
+        url: <%= service_wizard_url %>
+        name: Service Wizard
         
 resources:
     docSite:
