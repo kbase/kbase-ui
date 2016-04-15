@@ -4,7 +4,7 @@ package:
     name: AppCatalog
     description: KBase App Catalog
     author: Michael Sneddon
-    date: January 2015
+    date: January 2016
     version: 0.0.1
 source:
     modules:
@@ -27,6 +27,9 @@ source:
         -
             module: catalog_status
             file: catalog_status
+        -
+            module: catalog_service
+            file: catalog_service
         -
             module: catalog_util
             file: catalog_util
@@ -59,6 +62,9 @@ source:
         -
             module: catalog_status_widget
             file: widgets/kbaseCatalogStatus
+        -
+            module: catalog_service_widget
+            file: widgets/kbaseCatalogService
         -
             module: catalog_admin_widget
             file: widgets/kbaseCatalogAdmin
@@ -106,6 +112,10 @@ install:
         - 
             module: catalog_stats
             id: catalog_stats
+            type: factory
+        - 
+            module: catalog_service
+            id: catalog_service
             type: factory
         - 
             module: catalog_util
@@ -156,6 +166,13 @@ install:
             title: App Catalog Status
             config:
                 jqueryName: KBaseCatalogStatus
+            type: kbwidget
+        -
+            module: catalog_service_widget
+            id: catalog_service_widget
+            title: App Catalog Services
+            config:
+                jqueryName: KBaseCatalogService
             type: kbwidget
         -
             module: catalog_admin_widget
@@ -216,6 +233,10 @@ install:
         -
             path: ['appcatalog', 'status', {type: param, name: module_names }]
             widget: catalog_status
+
+        -
+            path: ['appcatalog', 'service']
+            widget: catalog_service
         -
             path: ['appcatalog', 'admin']
             widget: catalog_admin
