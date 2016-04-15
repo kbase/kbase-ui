@@ -40,6 +40,45 @@
          }
       }
    },
+   "next": {
+      "workspace_url": "https://next.kbase.us/services/ws/",
+      "fba_url": "https://next.kbase.us/services/KBaseFBAModeling/",
+      "user_job_state_url": "https://next.kbase.us/services/userandjobstate",
+      "search_url": "https://next.kbase.us/services/search/",
+      "homology_service_url": "https://ci.kbase.us/services/homology_service/",
+      "user_profile_url": "https://next.kbase.us/services/user_profile/rpc",
+      "login_url": "https://kbase.us/services/authorization/Sessions/Login",
+      "narrative_method_store_url": "https://next.kbase.us/services/narrative_method_store/rpc",
+      "awe": "https://next.kbase.us/services/awe-api", 
+      "data_import_export": "https://next.kbase.us/services/data_import_export", 
+      "gene_families": "https://next.kbase.us/services/gene_families", 
+      "genomeCmp": "https://next.kbase.us/services/genome_comparison/jsonrpc", 
+      "shock": "https://next.kbase.us/services/shock-api", 
+      "transform": "https://next.kbase.us/services/transform", 
+      "trees": "https://next.kbase.us/services/trees", 
+      "user_profile": "https://next.kbase.us/services/user_profile/rpc", 
+      "feature_values": "https://next.kbase.us/services/feature_values/jsonrpc",
+      "dashboard_metrics_url": "/userMetrics",
+      "session": {
+         "cookie": {
+            "max-age": 5184000
+         }
+      },
+      "kbase_clients": {
+         "defaults": {
+            "timeout": 900000
+         }
+      },
+      "docsite": {
+         "baseUrl": "http://kbase.us",
+         "host": "kbase.us",
+         "paths": {
+            "about": "/what-is-kbase",
+            "contact": "/contact-us",
+            "browserSupport": "/supported-browsers"
+         }
+      }
+   },
    "ci": {
       "workspace_url": "https://ci.kbase.us/services/ws/",
       "fba_url": "https://ci.kbase.us/services/KBaseFBAModeling/",

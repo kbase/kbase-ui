@@ -7,50 +7,19 @@
  */
 define([
     'kb/common/html',
+    'kb/common/domEvent',
     'jquery',
     'bluebird',
     'kb_plugin_login'
 ],
-function (html, $, Promise, Plugin) {
+function (html, domEvent, $, Promise, Plugin) {
     'use strict';
 
-    var panelId = html.genId();
-
-    function EventMan() {
-        var events = [];
-        function add(type, handler, data) {
-            var id = html.genId();
-            events.push({
-                type: type,
-                selector: '#' + id,
-                handler: handler,
-                data: data
-            });
-            return id;
-        }
-        function attachEvents($container) {
-            events.forEach(function (event) {
-                $container.on(event.type, event.selector, event.data, event.handler);
-            });
-        }
-        function reset($container) {
-            events.forEach(function (event) {
-                if (event.listener) {
-                    $container.off(event.type, event.selector);
-                }
-            });
-            events = [];
-        }
-        return {
-            add: add,
-            attach: attachEvents,
-            reset: reset
-        };
-    }
 
     function widget(config) {
-        var mount, container, $container, runtime = config.runtime,
-            nextRequest;
+        var mount, container, runtime = config.runtime,
+            nextRequest,
+            events;
 
         // This should be somewhere else, and handle all types of fields
         // I'm sure we've done this already.
@@ -114,8 +83,31 @@ function (html, $, Promise, Plugin) {
                     })
                     .done();
         }
-
-        var eventMan = EventMan();
+        
+        var currentUsername; 
+        function handleUsernameKeyup(e) {
+            e.preventDefault();
+            
+            // validate the username!
+            var potentialUsername = e.target.value,
+                messageElement = container.querySelector('[data-element="username-message"]'),
+                invalidCharsRe = /[\s@]/,
+                message;
+            
+            currentUsername = potentialUsername;
+            if (currentUsername && currentUsername.length > 0) {                
+                if (invalidCharsRe.test(currentUsername)) {
+                    message = 'Invalid characters in username: spaces and @ are not allowed';
+                    messageElement.innerHTML = message;
+                    messageElement.style.display = 'block';
+                    messageElement.classList.add('alert-danger');
+                    return;
+                }
+            }
+            messageElement.innerHTML = '';
+            messageElement.style.display = 'none';
+            messageElement.classList.remove('alert-danger');
+        }
 
         function renderForm() {
             var form = html.tag('form'),
@@ -133,10 +125,10 @@ function (html, $, Promise, Plugin) {
             var nextPath = 'next path',
                     nextURL = 'next url';
 
-            eventMan.reset();
+            // eventMan.reset();
             var doodlePath = Plugin.plugin.fullPath + '/doodle.png';
 
-            return div({class: 'container', style: 'margin-top: 4em', id: panelId}, [
+            return div({class: 'container', style: 'margin-top: 4em', dataWidget: 'login'}, [
                 div({}, [
                     div({style: {
                             position: 'absolute',
@@ -158,31 +150,32 @@ function (html, $, Promise, Plugin) {
                         p('Narratives are user-created interactive, dynamic, and shareable documents that are KBase’s way of making systems biology research transparent, reproducible, and reusable.'),
                         p([
                             'The Narrative Interface lets you customize and execute a set of ordered ',
-                            a({href: [runtime.config('resources.docSite.base.url'), 'apps'].join('/')}, 'KBase apps'),
+                            a({href: runtime.config('resources.documentation.apps.url')}, 'KBase apps'),
                             ' to create your own Narratives that include your analysis steps, commentary, visualizations, and custom scripts.'
                         ]),
                         p([
                             'Want to learn more? We have an extensive and growing ', 
-                            a({href: [runtime.config('resources.docSite.base.url'), 'tutorials'].join('/')}, 'library of tutorials') ,
+                            a({href: runtime.config('resources.documentation.tutorials.url')}, 'library of tutorials') ,
                             ' that show you how to use KBase apps to analyze your data.'
                         ]),
                         p([
                             'To become familiar with the user interface, try the ', 
-                            a({href: [runtime.config('resources.docSite.base.url'), 'narrative-guide'].join('/')}, 'Narrative Interface User Guide'), 
+                            a({href: runtime.config('resources.documentation.narrativeGuide.url')}, 'Narrative Interface User Guide'), 
                             ' or the <a href="https://youtu.be/6ql7HAUzU7U">Narrative Interface video tutorial</a>.'
                         ])
                     ]),
                     div({class: 'col-sm-3'}, [
                         div({class: 'well well-kbase'}, [
-                            form({class: 'form login-form', id: eventMan.add('submit', handleLogin)}, [
+                            form({class: 'form login-form', id: events.addEvent('submit', handleLogin)}, [
                                 input({type: 'hidden', value: nextPath}),
                                 input({type: 'hidden', value: nextURL}),
                                 legend({style: 'text-align: center'}, 'KBase Sign In'),
                                 div({class: 'form-group'}, [
-                                    input({name: 'username', type: 'text', placeholder: 'username', id: 'kbase_username', class: 'form-control form-control-kbase', tabindex: '1'})
+                                    input({name: 'username', type: 'text', placeholder: 'username', id: events.addEvent('keyup', handleUsernameKeyup), dataElement: 'username', autocomplete: 'off', class: 'form-control form-control-kbase', tabindex: '1'}),
+                                    div({dataElement: 'username-message', class: 'alert', style: {display: 'none'}})
                                 ]),
                                 div({class: 'form-group'}, [
-                                    input({name: 'password', type: 'password', placeholder: 'password', id: 'kbase_password', class: 'form-control form-control-kbase', tabindex: '2'})
+                                    input({name: 'password', type: 'password', placeholder: 'password', id: 'kbase_password', dataElement: 'password', autocomplete: 'off', class: 'form-control form-control-kbase', tabindex: '2'})
                                 ]),
                                 div({class: 'form-group'}, [
                                     button({id: 'signinbtn', type: 'submit', class: 'btn btn-primary btn-block btn-kbase', tabindex: '3', 'data-element': 'sign-in'}, [
@@ -196,9 +189,9 @@ function (html, $, Promise, Plugin) {
                                     div({'data-element': 'error', class: 'alert alert-danger alert-kbase', style: 'display:none; margin-top: 1em'})
                                 ]),
                                 div({class: 'form-group', style: 'margin-top: 3em; margin-bottom: 0;'}, [
-                                    a({target: '_blank', href: runtime.config('resources.userAccount.signup.url'), class: 'btn btn-block btn-link'}, 'New to KBase? Sign Up'),
+                                    a({target: '_blank', href: runtime.config('resources.userAccount.signUp.url'), class: 'btn btn-block btn-link'}, 'New to KBase? Sign Up'),
                                     a({target: '_blank', href: runtime.config('resources.userAccount.resetPassword.url'), class: 'btn btn-block btn-link'}, 'Forgot your password?'),
-                                    a({target: '_blank', href: [runtime.config('resources.docSite.base.url'), 'login-help'].join('/'), class: 'btn btn-block btn-link'}, 'Help')
+                                    a({target: '_blank', href: runtime.config('resources.documentation.loginHelp.url'), class: 'btn btn-block btn-link'}, 'Help')
                                 ])
                             ])
                         ])
@@ -214,7 +207,8 @@ function (html, $, Promise, Plugin) {
             return Promise.try(function () {
                 mount = node;
                 container = document.createElement('div');
-                $container = $(container);
+                // $container = $(container);
+                events = domEvent.make(container);
                 mount.appendChild(container);
             });
         }
@@ -222,34 +216,32 @@ function (html, $, Promise, Plugin) {
         function start(params) {
             return Promise.try(function () {
                 runtime.send('ui', 'setTitle', 'Sign in to KBase');
-                runtime.send('ui', 'render', {
-                    node: container,
-                    content: renderForm()
-                });
-                eventMan.attach($container);
+                events.detachEvents();
+                container.innerHTML = renderForm();
+                events.attachEvents();
+
+                container.querySelector('[data-element="username"]').focus();
                 if (params.nextrequest) {
-                    nextRequest = JSON.parse(params.nextrequest);
+                    try {
+                        nextRequest = JSON.parse(params.nextrequest);
+                    } catch (ex) {
+                        console.error('Error parsing nextrequest', ex);
+                    }
                 }
             });
         }
 
-        function stop() {
-            return Promise.try(function () {
-                eventMan.reset($container);
-            });
-        }
-
         function detach() {
-            return Promise.try(function () {
+            events.detachEvents();
+            if (container) {
                 mount.removeChild(container);
-            });
+            }
         }
 
         return {
             attach: attach,
             detach: detach,
-            start: start,
-            stop: stop
+            start: start
         };
     }
 

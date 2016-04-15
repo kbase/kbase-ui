@@ -1,0 +1,13 @@
+## Global Build Config
+---
+targets:
+    ui: dev
+    deploy: narrative-dev
+build:
+    dist: true
+    temp: ../temp
+bower:
+    offline: false
+debug: false
+server:
+    port: 8080

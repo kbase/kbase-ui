@@ -1,15 +1,6 @@
-'use strict';
-require.config({
+var require = {
     baseUrl: '/modules',
     catchError: true,
-    onError: function (err) {
-        console.error('REQUIRE ERROR');
-        console.error(err.requireType);
-        if (err.requireType === 'timeout') {
-            console.error('modules: ', err.requireModules);
-        }
-        throw err;
-    },
     paths: {
         // External Dependencies
         // ----------------------
@@ -19,6 +10,7 @@ require.config({
         json: 'bower_components/requirejs-json/json',
         yaml: 'bower_components/require-yaml/yaml',
         'js-yaml': 'bower_components/js-yaml/js-yaml',
+        esprima: 'bower_components/esprima/esprima',
         csv: 'bower_components/kbase-common-js/dist/kb/common/requirejs-csv',
         jquery: 'bower_components/jquery/jquery',
         bluebird: 'bower_components/bluebird/bluebird',
@@ -40,22 +32,17 @@ require.config({
         handlebars: 'bower_components/handlebars/handlebars',
         nunjucks: 'bower_components/nunjucks/nunjucks',
         font_awesome: 'bower_components/font-awesome/css/font-awesome',
-        uuid: 'bower_components/node-uuid/uuid',
+        // uuid: 'bower_components/pure-uuid/uuid',
+        uuid: 'bower_components/pure-uuid/uuid',
         numeral: 'bower_components/numeral/numeral',
         'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
         plotly: 'bower_components/plotly/plotly',
-
         kb_ui: 'css/kb-ui',
         kb_datatables: 'css/kb-datatables',
         kb_bootstrap: 'css/kb-bootstrap',
         kb_icons: 'css/kb-icons',
-        
-        // This really should be brought in somehow else.
-        // Perhaps namespace it???
-        //thrift: 'bower_components/thrift-binary-protocol/thrift-core',
-        //thrift_transport_xhr: 'bower_components/thrift-binary-protocol/thrift-transport-xhr',
-        //thrift_protocol_binary: 'bower_components/thrift-binary-protocol/thrift-protocol-binary',
-
+        highlight: 'bower_components/highlightjs/highlight.pack',
+        highlight_css: 'bower_components/highlightjs/styles/tomorrow'
     },
     shim: {
         bootstrap: {
@@ -67,6 +54,9 @@ require.config({
         d3_sankey: {
             deps: ['d3', 'css!d3_sankey_css']
                 // deps: ['d3', 'css!d3_sankey_css', 'css!kb/style/sankey']
+        },
+        highlight: {
+            deps: ['css!highlight_css']
         }
     },
     map: {
@@ -75,4 +65,4 @@ require.config({
             'promise': 'bluebird'
         }
     }
-});
+};

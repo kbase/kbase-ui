@@ -20,7 +20,7 @@ This directory will contain the kbase-ui repo and any other related repos or fil
 For example:
 
 ```
-kbase-working-dir
+dev
   kbase-ui
   kbase-ui-plugin-my-plugin
   kbase-ui-plugin-my-other-plugin

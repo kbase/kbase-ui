@@ -73,34 +73,34 @@ function main(type) {
             path: mutant.rtrunc(process.cwd().split('/'), 1)
         }
     })
-        .then(function (state) {
-            return loadBuildConfig(state);
-        })
-        .then(function (state) {
-            return [state, loadDeployConfig(state)];
-        })
-        .spread(function (state) {
-            var deployConfig = state.config.kbDeployConfig['kbase-ui'].deploy_target,
-                deployPath = deployConfig.split('/');
+    .then(function (state) {
+        return loadBuildConfig(state);
+    })
+    .then(function (state) {
+        return [state, loadDeployConfig(state)];
+    })
+    .spread(function (state) {
+        var deployConfig = state.config.kbDeployConfig['kbase-ui'].deploy_target,
+            deployPath = deployConfig.split('/');
 
-            state.deployPath = deployPath;
+        state.deployPath = deployPath;
 
-            // Ensure the directory is there, yet has no files.
-            return [state, mutant.ensureEmptyDir(deployPath)];
-        })
-        .spread(function (state) {
-            var sourceDir = state.environment.path.concat(['build', 'dist', 'client']),
-                destDir = state.deployPath;
+        // Ensure the directory is there, yet has no files.
+        return [state, mutant.ensureEmptyDir(deployPath)];
+    })
+    .spread(function (state) {
+        var sourceDir = state.environment.path.concat(['build', 'dist', 'client']),
+            destDir = state.deployPath;
 
-            return [state, mutant.copyFiles(sourceDir, destDir, '**/*')];
-        })
-        .spread(function (state) {
-            console.log('Successfully deployed to ' + state.deployPath.join('/'));
-        })
-        .catch(function (err) {
-            console.log('ERROR');
-            console.log(err);
-        });
+        return [state, mutant.copyFiles(sourceDir, destDir, '**/*')];
+    })
+    .spread(function (state) {
+        console.log('Successfully deployed to ' + state.deployPath.join('/'));
+    })
+    .catch(function (err) {
+        console.log('ERROR');
+        console.log(err);
+    });
 }
 
 

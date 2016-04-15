@@ -238,7 +238,8 @@ define([
 
                     this.setInitialState()
                         .then(function () {
-                            return this.refresh();
+                            this.refresh();
+                            return null;
                         }.bind(this))
                         .catch(function (err) {
                             this.setError(err);
@@ -304,7 +305,7 @@ define([
             setParam: {
                 value: function (path, value) {
                     Utils.setProp(this.params, path, value);
-                    this.refresh().done();
+                    this.refresh();
                 }
             },
             getParam: {
@@ -316,7 +317,8 @@ define([
                 value: function () {
                     this.setInitialState()
                         .then(function () {
-                            return this.refresh();
+                            this.refresh();
+                            return null;
                         }.bind(this))
                         .catch(function (err) {
                             this.setError(err);
@@ -325,17 +327,12 @@ define([
             },
             refresh: {
                 value: function () {
-                    return new Promise(function (resolve) {
-                        if (!this.refreshTimer) {
-                            this.refreshTimer = window.setTimeout(function () {
-                                this.refreshTimer = null;
-                                this.render();
-                                resolve();
-                            }.bind(this), 0);
-                        } else {
-                            resolve();
-                        }
-                    }.bind(this));
+                    if (!this.refreshTimer) {
+                        this.refreshTimer = window.setTimeout(function () {
+                            this.refreshTimer = null;
+                            this.render();
+                        }.bind(this), 0);
+                    }
                 }
             },
             // STATE CHANGES
@@ -350,13 +347,7 @@ define([
                 value: function (path, value, norefresh) {
                     Utils.setProp(this.state, path, value);
                     if (!norefresh) {
-                        this.refresh()
-                            .then(function () {
-                                return null;
-                            })
-                            .catch(function (err) {
-                                // do something.
-                            });
+                        this.refresh();
                     }
                 }
             },
@@ -380,7 +371,7 @@ define([
                         message: errorText,
                         original: errorValue
                     }
-                    this.refresh().done();
+                    this.refresh();
                 }
             },
             checkState: {
@@ -411,6 +402,7 @@ define([
                     })
                         .then(function () {
                             this.refresh();
+                            return null;
                         }.bind(this));
                 }
             },
@@ -422,6 +414,7 @@ define([
                         force: true
                     }).then(function () {
                         this.refresh();
+                        return null;
                     }.bind(this));
                 }
             },
@@ -692,12 +685,12 @@ define([
             },
             addSuccessMessage: {
                 value: function (message) {
-                    
+
                     this.runtime.send('ui', 'alert', {
                         type: 'success',
                         message: message
                     });
-                    
+
 //                    
 //                    if (message === undefined) {
 //                        message = title;
@@ -713,7 +706,7 @@ define([
             },
             addWarningMessage: {
                 value: function (message) {
-                     this.runtime.send('ui', 'alert', {
+                    this.runtime.send('ui', 'alert', {
                         type: 'warning',
                         message: message
                     });
@@ -731,7 +724,7 @@ define([
             },
             addErrorMessage: {
                 value: function (message) {
-                     this.runtime.send('ui', 'alert', {
+                    this.runtime.send('ui', 'alert', {
                         type: 'error',
                         message: message
                     });
