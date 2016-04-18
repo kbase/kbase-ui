@@ -136,7 +136,12 @@ define([
             renderServiceStatusList: function(data) {
                 var self = this;
 
-                console.log('data',data)
+                console.log('status data',data)
+                var sDom = 'iftp';
+                if(data.length<100) {
+                    sDom = 'ift'
+                }
+
                 var $table = $('<table>').addClass('table').css('width','100%');
 
                 var $container = $('<div>').addClass('container')
@@ -148,10 +153,11 @@ define([
                     "bFilter": true,
                     "sPaginationType": "full_numbers",
                     "iDisplayLength": 100,
-                    "sDom": 'ft<ip>',
+                    "sDom": sDom,
                     "aaSorting": [[ 2, "dsc" ], [1, "asc"]],
                     "columns": [
                         {sTitle: "Module", data: "module_name"},
+                        {sTitle: "Version", data: "version"},
                         {sTitle: "Status", data: "status"},
                         {sTitle: "Up?", data: "up"},
                         {sTitle: "Health", data: "health"},
@@ -166,28 +172,59 @@ define([
                     "data": data,
                     "fnCreatedRow": function( nRow, aData, iDataIndex ) {
 
+                        $('td:eq(0)', nRow).html('<a href="#appcatalog/module/'+aData['module_name']+'">'+aData['module_name']+'</a>');
 
-                       $('td:eq(5)', nRow).html('<a href="'+aData['url']+'">'+aData['url']+'</a>');
+                        $('td:eq(6)', nRow).html('<div style="width:250px"><a href="'+aData['url']+'">'+aData['url']+'</a></div>');
 
+                        if(aData['health'] === 'healthy') {
+                            $('td:eq(4)', nRow).html('<span class="label label-success">healthy</span>');
+                        } else {
+                            $('td:eq(4)', nRow).html('<span class="label label-danger">'+aData['health']+'</span>');
+                        }
 
-                        var $startBtn = $("<button>").addClass("btn btn-danger").append('stop')
-                            .on('click', function() {
-                                self.start(aData);
-                            });
-                       $('td:eq(6)', nRow).html($startBtn);
+                        if(aData['version'] != 'unknown') {
+                            if(aData['up']) {
+                                var $stopBtn = $("<button>").addClass("btn btn-default").append('stop')
+                                    .on('click', function() {
+                                        self.stop(aData, this);
+                                    });
+                                $('td:eq(7)', nRow).html($stopBtn);
+                            } else {
+                                var $startBtn = $("<button>").addClass("btn btn-default").append('start')
+                                    .on('click', function() {
+                                        self.start(aData, this);
+                                    });
+                                $('td:eq(7)', nRow).html($startBtn);
+                            }
+                        }
                     }
                 };
                 $table.DataTable(tblSettings);
                 $table.find('th').css('cursor','pointer');
 
+                self.$serviceStatusDiv.append('<br>');
                 self.$serviceStatusDiv.append($container);
 
             },
 
 
+            refreshServiceStatus: function() {
+                var self = this;
+                self.status_data = [];
+                self.$serviceStatusDiv.empty();
+                self.getServiceStatus().then(function () {
+                    self.renderServiceStatusList(self.status_data)
+                });
+            },
+
 
             renderServiceModuleAvailableList: function(title, data, keepOpen) {
                 var self = this;
+
+                var sDom = 'iftp';
+                if(data.length<100) {
+                    sDom = 'ift'
+                }
 
                 var $table = $('<table>').addClass('table').css('width','100%');
 
@@ -200,10 +237,10 @@ define([
                     "bFilter": true,
                     "sPaginationType": "full_numbers",
                     "iDisplayLength": 100,
-                    "sDom": 'ft<ip>',
+                    "sDom": sDom,
                     "aaSorting": [[ 2, "dsc" ], [1, "asc"]],
                     "columns": [
-                        {sTitle: "Module", data: "module_name"},
+                        {sTitle: "Module", data: "module_name_link"},
                         {sTitle: "Version", data: "version"},
                         {sTitle: "Git Hash", data: "git_commit_hash"},
                         {
@@ -216,7 +253,7 @@ define([
                     "fnCreatedRow": function( nRow, aData, iDataIndex ) {
                         var $startBtn = $("<button>").addClass("btn btn-success").append('start')
                             .on('click', function() {
-                                self.start(aData);
+                                self.start(aData, this);
                             });
                        $('td:eq(3)', nRow).html($startBtn);
                     }
@@ -248,8 +285,49 @@ define([
                 self.$serviceListDiv.append($div);
             },
 
-            start: function(data) {
-                console.log(data);
+            start: function(data, btn) {
+                if(data['hash']) {
+                    data['git_commit_hash'] = data['hash']
+                }
+                $(btn).prop('disabled', true);
+                $(btn).text('starting...');
+
+                var self = this;
+                console.log('starting: ', data);
+                return self.wizard.start({
+                        'module_name': data['module_name'],
+                        'version': data['git_commit_hash']
+                    })
+                    .then(function () {
+                        $(btn).text('done.');
+                        console.log('success.')
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
+            stop: function(data, btn) {
+                if(data['hash']) {
+                    data['git_commit_hash'] = data['hash']
+                }
+                $(btn).prop('disabled', true);
+                $(btn).text('stopping...');
+                var self = this;
+                console.log('stopping: ', data);
+                return self.wizard.stop({
+                        'module_name': data['module_name'],
+                        'version': data['git_commit_hash']
+                    })
+                    .then(function () {
+                        $(btn).text('done.');
+                        console.log('success.')
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
             },
 
 
@@ -266,16 +344,23 @@ define([
                     this.runtime.getConfig('services.service_wizard.url'),
                     { token: this.runtime.service('session').getAuthToken() }
                 );
-                console.log(this.wizard)
             },
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
+                var self = this;
                 var $mainPanel = $('<div>').addClass('container');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
                         .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
                 
                 $mainPanel.append($('<h3>').append('Catalog Service Status:'));
+
+
+                var $statusRefresh = $('<button>').addClass('btn btn-default')
+                                        .append($('<i class="fa fa-refresh" aria-hidden="true">'))
+                                        .append('&nbsp;&nbspRefresh');
+                $statusRefresh.on('click', function() { self.refreshServiceStatus(); })
+                $mainPanel.append($statusRefresh);
                 var $serviceStatusDiv = $('<div>');
                 $mainPanel.append($serviceStatusDiv);
 
@@ -305,7 +390,7 @@ define([
 
 
            
-            getServiceStatus: function(tag) {
+            getServiceStatus: function() {
                 var self = this;
                 return self.wizard.list_service_status({})
                     .then(function (service_status_list) {
