@@ -303,6 +303,7 @@ define([
                         console.log('success.')
                     })
                     .catch(function (err) {
+                        $(btn).text('error: check browser console.');
                         console.error('ERROR');
                         console.error(err);
                     });
@@ -325,6 +326,7 @@ define([
                         console.log('success.')
                     })
                     .catch(function (err) {
+                        $(btn).text('error: check browser console.');
                         console.error('ERROR');
                         console.error(err);
                     });
