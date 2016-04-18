@@ -370,6 +370,9 @@ define([
                 var $serviceListDiv = $('<div>').addClass('row kbcb-ctr-toolbar');
                 $mainPanel.append($serviceListDiv);
 
+
+                $mainPanel.append('<br><br><br><br><br>');
+
                 return [$mainPanel, $serviceStatusDiv, $serviceListDiv];
             },
 
