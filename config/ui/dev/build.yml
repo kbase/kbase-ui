@@ -79,13 +79,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
-    -
-        name: data-landing-pages
-        globalName: kbase-ui-plugin-data-landing-pages
-        version: 0.3.0
-        cwd: src/plugin
-        source:
-            bower: {}
+    #-
+    #    name: data-landing-pages
+    #    globalName: kbase-ui-plugin-data-landing-pages
+    #    version: 0.3.0
+    #    cwd: src/plugin
+    #    source:
+    #        bower: {}
     -
         name: dataapidemo
         globalName: kbase-ui-plugin-data-api-demo
