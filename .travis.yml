@@ -1,9 +1,12 @@
 sudo: false
 language: node_js
+
+# Note that travis-ci docs do not always reflect the current state of
+# node_js support. E.g. at the moment the docs say 4.2 is the latest on the 4.X 
+# branch, but it is actually 4.4
 node_js:
-  - "0.12"
-  # NB this should be 4.2, which is the LTS for node; they are working on it.
-  - "4.1"
+  - "4.4"
+  
 #cache:
 #  directories:
 #  - bower_components

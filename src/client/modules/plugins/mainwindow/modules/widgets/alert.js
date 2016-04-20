@@ -34,7 +34,14 @@ define([
                     button({type: 'button', class: 'close', dataDismiss: 'alert', ariaLabel: 'Close'}, [
                         span({ariaHidden: 'true'}, '&times;')
                     ]),
-                    div({dataElement: 'message'}, alert.message)
+                    div([
+                        (function () {
+                            if (alert.icon) {
+                                return div({style: {float: 'left', margin: '0 4px 4px 0'}}, span({class: 'fa fa-2x fa-' + alert.icon}));
+                            }
+                        }()),
+                        div({dataElement: 'message'}, alert.message)
+                    ])
                 ]);
             }
 

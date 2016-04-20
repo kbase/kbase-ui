@@ -38,7 +38,7 @@ bowerFiles:
         cwd: dist
         bowerComponent: true
     -
-        dir: node-uuid
+        dir: pure-uuid
         src:
             - uuid.js
         bowerComponent: true
@@ -130,6 +130,12 @@ bowerFiles:
         cwd: lib
         src: 
             - postal.js        
+        bowerComponent: true
+    -
+        dir: highlightjs
+        src:
+            - highlight.pack.js   
+            - styles/*
         bowerComponent: true
     -
         # This one is an installable package, kbase style, so we just

@@ -107,6 +107,8 @@ define([
             if (!rootNode) {
                 throw new Error('Cannot set root widget without a root node');
             }
+            // remove anything on the root mount, such as a waiter.
+            rootNode.innerHTML = '';
             if (!rootMount) {
                 // create the root mount.
                 rootMount = widgetMountFactory.make({
@@ -270,7 +272,9 @@ define([
                 })
                 .then(function () {
                     // kick off handling of the current route.
-                    api.service('analytics').page();
+                    api.service('analytics').pageView('/index');
+                    // remove the loading status.
+                    
                     send('app', 'do-route');
                     return api;
                 });
