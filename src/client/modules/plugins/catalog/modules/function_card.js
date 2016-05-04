@@ -247,11 +247,11 @@ define([
 
 
             $appDiv.on('click', function() {
-                        if(tag) {
-                            window.location.href = '#catalog/functions/'+info.id + '/'+tag;
-                        } else {
-                            window.location.href = '#catalog/functions/'+info.id;
-                        }
+                if(info.git_commit_hash) {
+                    window.location.href = '#catalog/functions/'+info.module_name + '/' + info.function_id + '/' +info.git_commit_hash;
+                } else {
+                    window.location.href = '#catalog/functions/'+info.module_name + '/' + info.function_id;
+                }
             });
 
             // put it all in a container so we can control margins

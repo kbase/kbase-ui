@@ -18,6 +18,10 @@ source:
             module: catalog_function_browser
             file: catalog_function_browser
 
+        -
+            module: catalog_function_viewer
+            file: catalog_function_viewer
+
 
 
         -
@@ -89,6 +93,9 @@ source:
         -
             module: catalog_function_browser_widget
             file: widgets/kbaseCatalogFunctionBrowser
+        -
+            module: catalog_function_viewer_widget
+            file: widgets/kbaseCatalogFunctionViewer
 
     styles:
         -
@@ -129,6 +136,12 @@ install:
             module: catalog_function_browser
             id: catalog_function_browser
             type: factory
+
+        - 
+            module: catalog_function_viewer
+            id: catalog_function_viewer
+            type: factory
+
         - 
             module: catalog_stats
             id: catalog_stats
@@ -228,6 +241,13 @@ install:
             config:
                 jqueryName: KBaseViewSDKRegistrationLog
             type: kbwidget
+        -
+            module: catalog_function_viewer_widget
+            id: catalog_function_viewer_widget
+            title: App Catalog
+            config:
+                jqueryName: KBaseCatalogFunctionViewer
+            type: kbwidget
 
 
 
@@ -257,12 +277,8 @@ install:
             path: ['catalog', 'functions', {type: param, name: module}, {type: param, name: function_id}]
             widget: catalog_function_viewer
         -   
-            path: ['catalog', 'functions', {type: param, name: module}, {type: param, name: function_id}, {type:param, name:version}]
+            path: ['catalog', 'functions', {type: param, name: module}, {type: param, name: function_id}, {type: param, name: ver} ]
             widget: catalog_function_viewer
-
-
-
-
 
 
         -
