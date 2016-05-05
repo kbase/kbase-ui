@@ -11,7 +11,7 @@ define([
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
-    'kb/widget/legacy/kbasePrompt',
+    'kb/widget/legacy/prompt',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
