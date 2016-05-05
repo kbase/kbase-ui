@@ -57,14 +57,13 @@ define([
                 self.$loadingPanel = self.util.initLoadingPanel();
                 self.$elem.append(self.$loadingPanel);
                 var mainPanelElements = self.initMainPanel();
-                // [$mainPanel, $header, $screenshotsPanel, $descriptionPanel, $paramsPanel, $publicationsPanel, $infoPanel];
+                // [$mainPanel, $header, $descriptionPanel, $paramsPanel, $specPanel, $infoPanel];
                 self.$mainPanel = mainPanelElements[0];
                 self.$headerPanel = mainPanelElements[1];
-                self.$screenshotsPanel = mainPanelElements[2];
-                self.$descriptionPanel = mainPanelElements[3];
-                self.$paramsPanel = mainPanelElements[4];
-                self.$publicationsPanel = mainPanelElements[5];
-                self.$infoPanel = mainPanelElements[6];
+                self.$descriptionPanel = mainPanelElements[2];
+                self.$paramsPanel = mainPanelElements[3];
+                self.$specPanel = mainPanelElements[4];
+                self.$infoPanel = mainPanelElements[5];
 
                 self.$elem.append(self.$mainPanel);
                 self.showLoading();
@@ -72,12 +71,10 @@ define([
                 // get the module information first, then get the app spec info
                 self.getFunctionInfo()
                     .then(function() {
-
                         self.hideLoading();
                         if(self.functionInfo) {
                             self.renderInfo();
                         }
-
                     });
                 return this;
             },
@@ -119,8 +116,29 @@ define([
                             return;
                         }
                         self.functionInfo = info_list[0];
+                        return self.getModuleInfo(self.functionInfo.info.module_name);
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                        self.showError(err);
+                        return err;
+                    });
+            },
 
-                        return;
+
+            getModuleInfo: function(module_name) {
+                var self = this;
+                return self.catalog.get_module_info({module_name:module_name})
+                    .then(function(module_info) {
+
+                        if(!module_info === 0 ) {
+                            console.error('ERROR: could not fetch module information');
+                            self.showError({error:{message:'Module not found.'}});
+                            return;
+                        }
+                        self.moduleInfo = module_info;
+                        console.log(module_info)
                     })
                     .catch(function (err) {
                         console.error('ERROR');
@@ -135,10 +153,9 @@ define([
                 var $mainPanel = $('<div>').addClass('container');
 
                 var $header = $('<div>').css('margin','1em');
-                var $screenshotsPanel = $('<div>').css('margin','1em');
                 var $descriptionPanel = $('<div>').css('margin','1em');
                 var $paramsPanel = $('<div>').css('margin','1em');
-                var $publicationsPanel = $('<div>').css('margin','1em');
+                var $specPanel = $('<div>').css('margin','1em');
                 var $infoPanel = $('<div>').css('margin','1em');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
@@ -146,14 +163,13 @@ define([
                 
                 $mainPanel
                     .append($header)
-                    .append($screenshotsPanel)
                     .append($descriptionPanel)
                     .append($paramsPanel)
-                    .append($publicationsPanel)
+                    .append($specPanel)
                     .append($infoPanel)
                     .append('<br><br><br>');
 
-                return [$mainPanel, $header, $screenshotsPanel, $descriptionPanel, $paramsPanel, $publicationsPanel, $infoPanel];
+                return [$mainPanel, $header, $descriptionPanel, $paramsPanel, $specPanel, $infoPanel];
             },
 
             showLoading: function() {
@@ -294,7 +310,21 @@ define([
                             )
                         .append($.jqElem('hr'))
 
-
+                if(self.moduleInfo) {
+                    var git_url = self.moduleInfo.git_url;
+                    if(git_url.indexOf('.git', git_url.length - '.git'.length) !== -1) {
+                        git_url = git_url.substring(0, git_url.length - '.git'.length);
+                    }
+                    var $gitDiv = $('<div>');
+                    if(git_url.indexOf('github.com') > -1) {
+                        $gitDiv.append('<b>Github Source Commit:</b>&nbsp; &nbsp; <a href="'+git_url+'/tree/' + self.functionInfo.info.git_commit_hash+
+                            '" target="_blank">'+git_url + '/tree/' + self.functionInfo.info.git_commit_hash+'</a><br>');
+                    } else {
+                        $gitDiv.append('<b>Git URL:</b> ' + git_url+'<br>');
+                        $gitDiv.append('<b>Source Commit:</b> ' + version.git_commit_hash+'<br>');
+                    }
+                    self.$infoPanel.append($gitDiv);
+                }
             }
         });
     });
