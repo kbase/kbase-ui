@@ -107,15 +107,14 @@ define([
 
                 return self.catalog.get_local_function_details({functions:[params]})
                     .then(function(info_list) {
-                        console.log('Method full info:')
-                        console.log(info_list);
-
                         if(info_list.length === 0 ) {
                             console.error('ERROR: could not find function');
                             self.showError({error:{message:'Function not found.'}});
                             return;
                         }
                         self.functionInfo = info_list[0];
+                        console.log('Function full info:')
+                        console.log(self.functionInfo);
                         return self.getModuleInfo(self.functionInfo.info.module_name);
                     })
                     .catch(function (err) {
@@ -138,7 +137,8 @@ define([
                             return;
                         }
                         self.moduleInfo = module_info;
-                        console.log(module_info)
+                        console.log('Module full info:')
+                        console.log(self.moduleInfo);
                     })
                     .catch(function (err) {
                         console.error('ERROR');

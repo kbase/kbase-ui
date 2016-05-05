@@ -163,6 +163,12 @@ define([
             $titleSpan.append($('<div>').addClass('kbcb-function-prototype-title').css({'margin':'4px'})
                 .append('funcdef <span style="font-weight:bold">'+info.function_id+'</span>(...)'));
 
+            var release_tag = '';
+            if(info.release_tag) {
+                if(info.release_tag == 'beta' || info.release_tag == 'dev') {
+                    release_tag = ' '+info.release_tag;
+                }
+            }
             $titleSpan.append($('<div>').addClass('kbcb-app-card-module').css({'padding-top':'4px'}).append(
                                     $('<a href="#appcatalog/module/'+info.module_name+'">')
                                         .append(info.module_name)
@@ -170,7 +176,7 @@ define([
                                             // have to stop propagation so we don't go to the app page first
                                             event.stopPropagation();
                                         }))
-                                    .append(' v'+info.version)
+                                    .append(' v'+info.version + release_tag)
                             );
 
             
