@@ -11,11 +11,10 @@ define([
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
-    'kb/widget/legacy/kbasePrompt',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
-    function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil, KBasePrompt) {
+    function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil) {
         $.KBWidget({
             name: "KBaseCatalogFunctionViewer",
             parent: "kbaseAuthenticatedWidget",
