@@ -79,6 +79,11 @@
     overflow:hidden;*/
 }
 
+.kbcb-function-prototype-title {
+    font-size:0.8em;
+    font-family:courier, "courier new", monospace;
+}
+
 .kbcb-app-card-module {
     font-size:0.8em;
 }
