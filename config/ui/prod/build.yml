@@ -67,10 +67,17 @@ plugins:
         version: 1.0.1
         cwd: src/plugin
         source:
-            bower: {}            
-               
+            bower: {}
+    -
+        name: ontology-widgets
+        globalName: kbase-ui-plugin-ontology-widgets
+        version: 0.1.0
+        cwd: src/plugin
+        source:
+            bower: {}
+
 # Copy these directories into the modules
-# There are two forms, as for plugins. 
+# There are two forms, as for plugins.
 # a bower: section will specify a bower dependency
 # a copy: section will specify a directory to copy literally into modules
 # a link: section will specify a directory to link into modules
