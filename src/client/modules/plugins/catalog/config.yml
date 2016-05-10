@@ -11,7 +11,19 @@ source:
         # not sure what modules are, but here is one per factory
         -
             module: catalog_home
-            file: catalog_home
+            file: catalog_app_browser
+
+
+        -
+            module: catalog_function_browser
+            file: catalog_function_browser
+
+        -
+            module: catalog_function_viewer
+            file: catalog_function_viewer
+
+
+
         -
             module: catalog_app_viewer
             file: catalog_app_viewer
@@ -42,6 +54,10 @@ source:
         - 
             module: app_card
             file: app_card
+
+        - 
+            module: function_card
+            file: function_card
 
         # here is one per widget
         -
@@ -74,6 +90,12 @@ source:
         -
             module: catalog_view_sdk_registration_log_widget
             file: widgets/kbaseViewSDKRegistrationLog
+        -
+            module: catalog_function_browser_widget
+            file: widgets/kbaseCatalogFunctionBrowser
+        -
+            module: catalog_function_viewer_widget
+            file: widgets/kbaseCatalogFunctionViewer
 
     styles:
         -
@@ -109,6 +131,17 @@ install:
             module: catalog_admin
             id: catalog_admin
             type: factory
+
+        - 
+            module: catalog_function_browser
+            id: catalog_function_browser
+            type: factory
+
+        - 
+            module: catalog_function_viewer
+            id: catalog_function_viewer
+            type: factory
+
         - 
             module: catalog_stats
             id: catalog_stats
@@ -125,12 +158,25 @@ install:
             module: app_card
             id: app_card
             type: widget
+
+        - 
+            module: function_card
+            id: function_card
+            type: widget
         -
             module: catalog_home_widget
             id: catalog_browser
             title: App Catalog
             config:
                 jqueryName: KBaseCatalogBrowser
+            type: kbwidget
+
+        -
+            module: catalog_function_browser_widget
+            id: catalog_function_browser_widget
+            title: Developer Function Catalog
+            config:
+                jqueryName: kbaseCatalogFunctionBrowser
             type: kbwidget
         -
             module: catalog_app_viewer_widget
@@ -195,11 +241,46 @@ install:
             config:
                 jqueryName: KBaseViewSDKRegistrationLog
             type: kbwidget
+        -
+            module: catalog_function_viewer_widget
+            id: catalog_function_viewer_widget
+            title: App Catalog
+            config:
+                jqueryName: KBaseCatalogFunctionViewer
+            type: kbwidget
 
 
 
     # Set up a route to install that widget in the main body view
     routes:
+
+
+        # slowly migrate to the base url of catalog
+        #  #catalog/apps
+        #  #catalog/modules
+        #  #catalog/functions
+        #  #catalog/widgets
+        #  #catalog/services
+        #
+
+
+        #-
+        #    path: ['catalog']
+        #    widget: catalog_index
+
+
+        # function catalog
+        -
+            path: ['catalog', 'functions']
+            widget: catalog_function_browser
+        -   
+            path: ['catalog', 'functions', {type: param, name: module}, {type: param, name: function_id}]
+            widget: catalog_function_viewer
+        -   
+            path: ['catalog', 'functions', {type: param, name: module}, {type: param, name: function_id}, {type: param, name: ver} ]
+            widget: catalog_function_viewer
+
+
         -
             path: ['appcatalog']
             widget: catalog_home
