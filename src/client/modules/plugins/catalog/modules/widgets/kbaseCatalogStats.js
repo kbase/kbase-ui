@@ -75,13 +75,7 @@ define([
             render: function() {
                 var self = this;
 
-                var $table = $('<table>').addClass('table').css('width','100%');
-
-
-                var $container = $('<div>').addClass('container')
-                        .append($('<div>').addClass('row')
-                            .append($('<div>').addClass('col-md-12')
-                                .append($table)));
+               
 
 
                 // Custom data tables sorting function, that takes a number in an html comment
@@ -108,6 +102,77 @@ define([
                     }
                 } );
 
+                if(self.isAdmin) {
+
+                    var $adminUserStatsTable = $('<table>').addClass('table').css('width','100%');
+                    var $adminRecentRunsTable = $('<table>').addClass('table').css('width','100%');
+
+
+                    var $adminContainer = $('<div>').addClass('container')
+                            .append($('<div>').addClass('row')
+                                .append($('<div>').addClass('col-md-12')
+                                    .append('<h4>(Admin View) Recent Runs (completed in last 48h):</h4>')
+                                    .append($adminRecentRunsTable)
+                                    .append('<br><br>')
+                                    .append('<h4>(Admin View) User Run Summary:</h4>')
+                                    .append($adminUserStatsTable)
+                                    .append('<br><br>')
+                                    .append('<h4>Public Stats:</h4>')));
+
+                    var adminRecentRunsTblSettings = {
+                        "bFilter": true,
+                        "sPaginationType": "full_numbers",
+                        "iDisplayLength": 50,
+                        "sDom": 'ft<ip>',
+                        "aaSorting": [[ 3, "dsc" ]],
+                        "columns": [
+                            {sTitle: 'User', data: "user_id"},
+                            {sTitle: "App Id", data: "app_id"},
+                            {sTitle: "Module", data: "app_module_name"},
+                            {sTitle: "Submission Time", data: "creation_time"},
+                            {sTitle: "Start Time", data: "exec_start_time"},
+                            {sTitle: "End Time", data: "finish_time"},
+                            {sTitle: "Run Time", data: "run_time"},
+                            {sTitle: "Result", data: "result"},
+                        ],
+                        "columnDefs": [
+                            { "type": "hidden-number-stats", targets: [6] }
+                        ],
+                        "data": self.adminRecentRuns
+                    };
+                    $adminRecentRunsTable.DataTable(adminRecentRunsTblSettings);
+                    $adminRecentRunsTable.find('th').css('cursor','pointer');
+
+
+
+                    var adminUserStatsTblSettings = {
+                        "bFilter": true,
+                        "sPaginationType": "full_numbers",
+                        "iDisplayLength": 50,
+                        "sDom": 'ft<ip>',
+                        "aaSorting": [[ 3, "dsc" ], [1, "asc"]],
+                        "columns": [
+                            {sTitle: 'User', data: "u"},
+                            {sTitle: "App Id", data: "id"},
+                            {sTitle: "Module", data: "module"},
+                            {sTitle: "Total Runs", data: "n"}
+                        ],
+                        "data": self.adminStats
+                    };
+                    $adminUserStatsTable.DataTable(adminUserStatsTblSettings);
+                    $adminUserStatsTable.find('th').css('cursor','pointer');
+
+                    self.$basicStatsDiv.append($adminContainer);
+
+                }
+
+
+                var $table = $('<table>').addClass('table').css('width','100%');
+
+                var $container = $('<div>').addClass('container')
+                        .append($('<div>').addClass('row')
+                            .append($('<div>').addClass('col-md-12')
+                                .append($table)));
 
                 var tblSettings = {
                     "bFilter": true,
@@ -135,64 +200,7 @@ define([
 
                 self.$basicStatsDiv.append($container);
 
-                if(self.isAdmin) {
-                    var $adminUserStatsTable = $('<table>').addClass('table').css('width','100%');
-                    var $adminRecentRunsTable = $('<table>').addClass('table').css('width','100%');
 
-                    var $adminContainer = $('<div>').addClass('container')
-                            .append($('<div>').addClass('row')
-                                .append($('<div>').addClass('col-md-12')
-                                    .append('<h4>(Admin View) User Run Summary:</h4>')
-                                    .append($adminUserStatsTable)
-                                    .append('<h4>(Admin View) Recent Runs (completed in last 48h):</h4>')
-                                    .append($adminRecentRunsTable)));
-
-                    var adminUserStatsTblSettings = {
-                        "bFilter": true,
-                        "sPaginationType": "full_numbers",
-                        "iDisplayLength": 50,
-                        "sDom": 'ft<ip>',
-                        "aaSorting": [[ 3, "dsc" ], [1, "asc"]],
-                        "columns": [
-                            {sTitle: 'User', data: "u"},
-                            {sTitle: "App Id", data: "id"},
-                            {sTitle: "Module", data: "module"},
-                            {sTitle: "Total Runs", data: "n"}
-                        ],
-                        "data": self.adminStats
-                    };
-                    $adminUserStatsTable.DataTable(adminUserStatsTblSettings);
-                    $adminUserStatsTable.find('th').css('cursor','pointer');
-
-
-                    var adminRecentRunsTblSettings = {
-                        "bFilter": true,
-                        "sPaginationType": "full_numbers",
-                        "iDisplayLength": 50,
-                        "sDom": 'ft<ip>',
-                        "aaSorting": [[ 3, "dsc" ], [1, "asc"]],
-                        "columns": [
-                            {sTitle: 'User', data: "user_id"},
-                            {sTitle: "App Id", data: "app_id"},
-                            {sTitle: "Module", data: "app_module_name"},
-                            {sTitle: "Submission Time", data: "creation_time"},
-                            {sTitle: "Start Time", data: "exec_start_time"},
-                            {sTitle: "End Time", data: "finish_time"},
-                            {sTitle: "Run Time", data: "run_time"},
-                            {sTitle: "Result", data: "result"},
-                        ],
-                        "columnDefs": [
-                            { "type": "hidden-number-stats", targets: [6] }
-                        ],
-                        "data": self.adminRecentRuns
-                    };
-                    $adminRecentRunsTable.DataTable(adminRecentRunsTblSettings);
-                    $adminRecentRunsTable.find('th').css('cursor','pointer');
-
-
-                    self.$basicStatsDiv.append($adminContainer);
-
-                }
             },
 
 
@@ -325,7 +333,6 @@ define([
                 return self.catalog.get_exec_aggr_table({})
                             .then(function (adminStats) {
 
-                                //console.log(adminStats);
                                 self.adminStats = [];
 
                                 for(var k=0; k<adminStats.length; k++) {
@@ -375,7 +382,6 @@ define([
                 return self.catalog.get_exec_raw_stats({begin:seconds})
                     .then(function(data) {
                         self.adminRecentRuns = [];
-                        console.log(data)
                         for(var k=0; k<data.length; k++) {
                             var rt = data[k]['finish_time'] - data[k]['exec_start_time'];
                             data[k]['creation_time']=new Date( data[k]['creation_time']*1000).toLocaleString();
