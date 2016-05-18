@@ -6,9 +6,10 @@
  */
 
 define(['jquery',
+        'bluebird',
         'kb/service/client/catalog',
         'kb/widget/legacy/authenticatedWidget'
-        ], function($, Catalog) {
+        ], function($, Promise, Catalog) {
 
     $.KBWidget({
         name: 'KBaseViewSDKRegistrationLog',
@@ -96,53 +97,50 @@ define(['jquery',
         loadState: function(state) {
         },
 
-        getLogAndState: function(registration_id, skip) {
-            var self = this;
 
-            var chunk_size = 10000
-            
-            self.catalogClient.get_parsed_build_log({
+
+        // should load up all the way to the end
+        getParsedLog: function(skip) {
+            var self = this;
+            var chunk_size = 5000;
+            return self.catalogClient.get_parsed_build_log({
                                             'registration_id':self.registration_id,
                                             'skip':skip,
                                             'limit':chunk_size
-                                        },
-                    function(build_info) {
+                                        })
+                        .then(function(build_info) {
+                            var log_length = skip+build_info.log.length;
+                            self.last_log_line = log_length;
+                            console.log(self.last_log_line)
 
-                        // display the state
-                        self.updateBuildState(build_info.registration, build_info.error_message, build_info);
-
-                        // make sure our log array is big enough
-                        var log_length = skip+build_info.log.length;
-                        self.last_log_line = log_length;
-
-                        for(var k=self.log.length; k<log_length; k++) {
-                            if(k>=skip) {
-                                self.log.push(build_info.log[k-skip]);
-                                self.appendLineToLog(build_info.log[k-skip].content);
-                            } else {
-                                // odd- we're getting a chunk before an earlier chunk
-                                self.log.push({'content':'','is_error':0})
-                                self.appendLineToLog(''); // odd, we're 
+                            var new_content = '';
+                            for(var k=0; k<build_info.log.length; k++) {
+                                new_content += build_info.log[k].content;
                             }
-                        }
+                            self.appendLineToLog(new_content);
 
-                        // get the next chunk if there is more
-                        if(build_info.log.length == chunk_size) {
-                            setTimeout(self.getLogAndState(registration_id, skip+chunk_size), 50);
-                            self.getLogAndState(registration_id, skip+chunk_size);
-                        }
+                            if(build_info.log.length == chunk_size) {
+                                //try to get more
+                                return self.getParsedLog(self.last_log_line);
+                            } else {
+                                // set state and render
+                                self.updateBuildState(build_info.registration, build_info.error_message, build_info);
+                            }
+                        });
 
-                    }, function(error) {
-                        self.loading(false);
-                        console.error(error);
-                        self.$log_window.val('Error fetching log: '+ error.error.error);
-                    });
+
+        },
+
+
+        getLogAndState: function(registration_id, skip) {
+            var self = this;
+            return self.getParsedLog(skip);
         },
 
 
         appendLineToLog: function(line) {
             self = this;
-            self.$log_window.val(self.$log_window.val()+line)
+            self.$log_window.append(line)
 
             if(self.$track_checkbox.prop('checked')) {
                 self.$log_window.scrollTop(self.$log_window[0].scrollHeight); // scroll to bottom
