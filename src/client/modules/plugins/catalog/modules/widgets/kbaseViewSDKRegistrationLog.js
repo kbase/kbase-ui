@@ -116,7 +116,7 @@ define(['jquery',
                             for(var k=0; k<build_info.log.length; k++) {
                                 new_content += build_info.log[k].content;
                             }
-                            self.appendLineToLog(new_content);
+                            self.appendLineToLog(self.escapeHtml(new_content));
 
                             if(build_info.log.length == chunk_size) {
                                 //try to get more
@@ -128,6 +128,13 @@ define(['jquery',
                         });
 
 
+        },
+
+        escapeHtml: function(text) {
+            'use strict';
+            return text.replace(/[\"&<>]/g, function (a) {
+                return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
+            });
         },
 
 
