@@ -111,7 +111,6 @@ define(['jquery',
                         .then(function(build_info) {
                             var log_length = skip+build_info.log.length;
                             self.last_log_line = log_length;
-                            console.log(self.last_log_line)
 
                             var new_content = '';
                             for(var k=0; k<build_info.log.length; k++) {
