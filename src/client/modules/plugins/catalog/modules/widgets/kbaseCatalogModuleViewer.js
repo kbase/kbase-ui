@@ -693,7 +693,7 @@ define([
                         console.log('has functions!')
                         // do the same for local functions
                         if(has_functions) {
-                            return self.catalog.list_local_functions({'release_tag': tag, 'module_names': [ self.module_name ] })
+                            return self.catalog.list_local_functions({'release_tag': tag, 'module_names': [ self.module_name.toLowerCase() ] })
                                 .then(function(mods) {
                                     console.log(mods)
                                     for(var m=0; m<mods.length; m++) {

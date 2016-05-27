@@ -73,6 +73,7 @@ define([
                         self.hideLoading();
                         if(self.functionInfo) {
                             self.renderInfo();
+                            self.renderParseInfo();
                         }
                     });
                 return this;
@@ -114,7 +115,7 @@ define([
                         self.functionInfo = info_list[0];
                         console.log('Function full info:')
                         console.log(self.functionInfo);
-                        return self.getModuleInfo(self.functionInfo.info.module_name);
+                        return self.getModuleInfo(self.functionInfo.info.module_name, self.functionInfo.info.git_commit_hash);
                     })
                     .catch(function (err) {
                         console.error('ERROR');
@@ -125,19 +126,22 @@ define([
             },
 
 
-            getModuleInfo: function(module_name) {
+            getModuleInfo: function(module_name, git_commit_hash) {
                 var self = this;
-                return self.catalog.get_module_info({module_name:module_name})
-                    .then(function(module_info) {
-
-                        if(!module_info === 0 ) {
+                return self.catalog.get_module_version({
+                                module_name:module_name, 
+                                git_commit_hash:git_commit_hash,
+                                'include_compilation_report':1
+                                })
+                    .then(function(module_version) {
+                        if(!module_version === 0 ) {
                             console.error('ERROR: could not fetch module information');
                             self.showError({error:{message:'Module not found.'}});
                             return;
                         }
-                        self.moduleInfo = module_info;
-                        console.log('Module full info:')
-                        console.log(self.moduleInfo);
+                        self.module_version = module_version;
+                        console.log('Module Version info:')
+                        console.log(self.module_version);
                     })
                     .catch(function (err) {
                         console.error('ERROR');
@@ -207,6 +211,7 @@ define([
 
                 var info = self.functionInfo.info;
                 var description = self.functionInfo.long_description;
+                var module_version = self.module_version;
 
 
                 // HEADER - contains logo, title, module link, authors
@@ -218,8 +223,8 @@ define([
                 
                 var version_string = info.version;
 
-                if(info.release_tag) {
-                    version_string += ' '+info.release_tag;
+                if(module_version.release_tags) {
+                    version_string += ' '+module_version.release_tags.join(', ');;
                 }
 
                 $titleSpan.append($('<div>').addClass('kbcb-app-page-title').append(info.name).append(
@@ -309,8 +314,8 @@ define([
                             )
                         .append($.jqElem('hr'))
 
-                if(self.moduleInfo) {
-                    var git_url = self.moduleInfo.git_url;
+                if(self.module_version) {
+                    var git_url = self.module_version.git_url;
                     if(git_url.indexOf('.git', git_url.length - '.git'.length) !== -1) {
                         git_url = git_url.substring(0, git_url.length - '.git'.length);
                     }
@@ -318,13 +323,146 @@ define([
                     if(git_url.indexOf('github.com') > -1) {
                         $gitDiv.append('<b>Github Source Commit:</b>&nbsp; &nbsp; <a href="'+git_url+'/tree/' + self.functionInfo.info.git_commit_hash+
                             '" target="_blank">'+git_url + '/tree/' + self.functionInfo.info.git_commit_hash+'</a><br>');
+
+                        var specUrl = git_url+'/tree/' + self.functionInfo.info.git_commit_hash+
+                                        '/ui/local_functions/'+self.functionInfo.info.function_id+'.json';
+                        $gitDiv.append('<b>Github Documentation Spec:</b>&nbsp; &nbsp; <a href="'+specUrl+'" target="_blank">'+specUrl+'</a><br>');
+
+                        if(self.module_version.compilation_report) {
+                            if(self.module_version.compilation_report.function_places &&
+                                self.module_version.compilation_report.impl_file_path) {
+
+                                    var start = 0; var stop = 0;
+                                    if(self.module_version.compilation_report.function_places[self.functionInfo.info.function_id]) {
+                                        var places = self.module_version.compilation_report.function_places[self.functionInfo.info.function_id];
+                                        var impl_path = self.module_version.compilation_report.impl_file_path;
+
+
+                                        var implUrl = git_url+'/tree/' + self.functionInfo.info.git_commit_hash+
+                                            '/'+impl_path + '#L'+places.start_line+'-'+places.end_line;
+                                        $gitDiv.append('<b>Implementation:</b>&nbsp; &nbsp; <a href="'+implUrl+'" target="_blank">'+implUrl+'</a><br>');
+
+
+                                    }
+                            }
+                        }
+
+
+
                     } else {
                         $gitDiv.append('<b>Git URL:</b> ' + git_url+'<br>');
                         $gitDiv.append('<b>Source Commit:</b> ' + version.git_commit_hash+'<br>');
                     }
-                    self.$infoPanel.append($gitDiv);
+                    self.$infoPanel.append($('<h3>').append('Function Source Files')).append($gitDiv);
                 }
-            }
+            },
+
+
+
+            renderParseInfo: function() {
+                var self = this;
+
+
+                if(self.functionInfo.info.kidl) {
+                    if(self.functionInfo.info.kidl.parse) {
+                        self.$paramsPanel.append('<h3>Function Specification</h3>');
+                        var parse = self.functionInfo.info.kidl.parse;
+
+                        var code = $('<div>').addClass('kbcb-function-prototype-title').css({'margin':'5px', 'font-size':'1.1em'});
+                        console.log(parse)
+
+                        code.append('<br>');
+
+                        var inputs = '';
+                        var input_comments = $('<div>').css({'margin-left':'1em'});
+                        var has_input_comments = false;
+                        for(var i=0; i<parse.input.length; i++) {
+                            if(parse.input[i].type) {
+                                var type = parse.input[i].type;
+                                var tokens = type.split('.');
+                                if(tokens.length===2) {
+                                    if(tokens[0] === self.functionInfo.info.module_name) {
+                                        type = tokens[1];
+                                    }
+                                }
+                                if(i>0) { inputs += ', ' }
+                                inputs += type;
+                                if(parse.input[i].comment) {
+                                    has_input_comments = true;
+                                    input_comments.append(type).append(' -- <br>').append(
+                                        $('<div>').css({'margin-left':'1em'}).append(self.escapeHtml(parse.input[i].comment)));
+                                }
+                            }
+                        }
+
+                        var outputs = '';
+                        var output_comments = $('<div>').css({'margin-left':'1em'});
+                        var has_output_comments = false;
+                        for(var i=0; i<parse.output.length; i++) {
+                            if(parse.output[i].type) {
+                                var type = parse.output[i].type;
+                                var tokens = type.split('.');
+                                if(tokens.length===2) {
+                                    if(tokens[0] === self.functionInfo.info.module_name) {
+                                        type = tokens[1];
+                                    }
+                                }
+                                if(i>0) { inputs += ', ' }
+                                outputs += type;
+                                if(parse.output[i].comment) {
+                                    has_output_comments = true;
+                                    output_comments.append(type).append(' -- <br>').append(
+                                        $('<div>').css({'margin-left':'1em'}).append(self.escapeHtml(parse.output[i].comment)));
+                                }
+                            }
+                        }
+
+                        var color = '#888';
+                        var comment = $('<div>').css({'color':color, 'margin-left':'2em', 'white-space': 'pre-wrap'});
+                        if(parse.comment) {
+                            comment.append(self.escapeHtml(parse.comment)).append('<br>');
+                        }
+                        if(has_input_comments) {
+                            comment.append('<br>Inputs:<br>');
+                            comment.append(input_comments);
+                        }
+                        if(has_output_comments) {
+                            comment.append('<br>Outputs:<br>');
+                            comment.append(output_comments);
+                        }
+
+                        code.append($('<span>').css({'color':color}).append('/*'));
+                        code.append(comment);
+                        code.append($('<span>').css({'color':color}).append('*/'));
+
+                        code.append('<br>funcdef ');
+                        code.append($('<span style="font-weight:bold">').append(parse.name));
+                        code.append('(').append(inputs).append(')').append('<br>');
+                        code.append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+                        code.append('returns (').append(outputs).append(');');
+
+                        self.$paramsPanel.append(code);
+                    }
+                    
+                }
+
+
+
+
+
+
+
+                //self.$paramsPanel.append('<h3>KIDL Source</h3>')
+            },
+
+            escapeHtml: function(text) {
+                'use strict';
+                return text.replace(/[\"&<>]/g, function (a) {
+                    return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;'}[a];
+                }).replace(/(?:\r\n|\r|\n)/g, '<br />');;
+                return '';
+            },
+
         });
     });
 
