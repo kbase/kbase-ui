@@ -426,7 +426,7 @@ define([
                             comment.append('<br>Inputs:<br>');
                             comment.append(input_comments);
                         }
-                        if(output_comments) {
+                        if(has_output_comments) {
                             comment.append('<br>Outputs:<br>');
                             comment.append(output_comments);
                         }
