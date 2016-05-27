@@ -75,9 +75,22 @@ define([
                 Promise.all(loadingCalls).then(function() {
                     self.render();
                     self.hideLoading();
+                }).catch(function (err) {
+                    self.hideLoading();
+                    console.error('ERROR contacting the catalog');
+                    console.error(err);
+                    self.renderError();   
                 });
 
                 return this;
+            },
+
+            renderError: function() {
+                var self = this
+                self.$basicStatusDiv.empty()
+                self.$basicStatusDiv.append(
+                    $('<div role=alert>').addClass('alert alert-danger')
+                            .append('<b>Error contacting the catalog.  The catalog may be down.</b>'))
             },
 
             render: function() {
@@ -89,6 +102,7 @@ define([
 
 
             setupClients: function() {
+                console.log('here')
                 this.catalog = new Catalog(
                     this.runtime.getConfig('services.catalog.url'),
                     { token: this.runtime.service('session').getAuthToken() }
