@@ -2,8 +2,8 @@ sudo: false
 language: node_js
 
 # Note that travis-ci docs do not always reflect the current state of
-# node_js support. E.g. at the moment the docs say 4.2 is the latest on the 4.X
-# branch, but it is actually 4.4 
+# node_js support. E.g. at the moment the docs say 4.2 is the latest on the 4.X 
+# branch, but it is actually 4.4
 node_js:
   - "4.4"
   
