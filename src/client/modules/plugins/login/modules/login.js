@@ -153,11 +153,11 @@ function (html, domEvent, $, Promise, Plugin) {
                         ]),
                         p([
                             'Want to learn more?  Check out the ',
-                            a({href: 'http://kbase.us/narrative-guide', target: '_blank'}, 'Narrative Interface User Guide'),
+                            a({href: runtime.config('resources.documentation.narrativeGuide.url')}, 'Narrative Interface User Guide'),
                             ' or the ',
-                            a({href: 'https://youtu.be/6ql7HAUzU7U', target: '_blank'}, 'Narrative Interface video tutorial'),
+                            a({href: 'https://youtu.be/6ql7HAUzU7U'}, 'Narrative Interface video tutorial'),
                             ', and a ',
-                            a({href: 'http://kbase.us/tutorials', target: '_blank'}, 'library of tutorials'), 
+                            a({href: runtime.config('resources.documentation.tutorials.url')}, 'library of tutorials'), 
                             ' that show you how to use various KBase apps to analyze your data.'
                         ])
                     ]),
