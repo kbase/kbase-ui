@@ -127,7 +127,7 @@ function (html, domEvent, $, Promise, Plugin) {
 
             // eventMan.reset();
             var doodlePath = Plugin.plugin.fullPath + '/doodle.png';
-
+            
             return div({class: 'container', style: 'margin-top: 4em', dataWidget: 'login'}, [
                 div({}, [
                     div({style: {
@@ -145,23 +145,20 @@ function (html, domEvent, $, Promise, Plugin) {
                 ]),
                 div({class: 'row'}, [
                     div({class: 'col-sm-7 col-sm-offset-1'}, [
-                        h1({style: 'font-size:1.6em'}, ['Welcome to the KBase Narrative Interface']),
-                        p('After signing in you can upload your own experimental data or find data integrated from external resources or shared by other users. You can then perform, organize, and share sophisticated comparative genomics and systems biology analyses by creating Narratives.'),
-                        p('Narratives are user-created interactive, dynamic, and shareable documents that are KBase’s way of making systems biology research transparent, reproducible, and reusable.'),
+                        h1({style: 'font-size:1.6em'}, ['Welcome to KBase']),
                         p([
-                            'The Narrative Interface lets you customize and execute a set of ordered ',
-                            a({href: runtime.config('resources.documentation.apps.url')}, 'KBase apps'),
-                            ' to create your own Narratives that include your analysis steps, commentary, visualizations, and custom scripts.'
+                            'After signing in, you can start working with KBase. Upload your experimental data and perform comparative genomics and systems biology analyses by creating ', 
+                            i('Narratives'), 
+                            ': interactive, dynamic, and shareable documents. Narratives include all your analysis steps, commentary, and visualizations.'
                         ]),
                         p([
-                            'Want to learn more? We have an extensive and growing ', 
-                            a({href: runtime.config('resources.documentation.tutorials.url')}, 'library of tutorials') ,
-                            ' that show you how to use KBase apps to analyze your data.'
-                        ]),
-                        p([
-                            'To become familiar with the user interface, try the ', 
-                            a({href: runtime.config('resources.documentation.narrativeGuide.url')}, 'Narrative Interface User Guide'), 
-                            ' or the <a href="https://youtu.be/6ql7HAUzU7U">Narrative Interface video tutorial</a>.'
+                            'Want to learn more?  Check out the ',
+                            a({href: 'http://kbase.us/narrative-guide', target: '_blank'}, 'Narrative Interface User Guide'),
+                            ' or the ',
+                            a({href: 'https://youtu.be/6ql7HAUzU7U', target: '_blank'}, 'Narrative Interface video tutorial'),
+                            ', and a ',
+                            a({href: 'http://kbase.us/tutorials', target: '_blank'}, 'library of tutorials'), 
+                            ' that show you how to use various KBase apps to analyze your data.'
                         ])
                     ]),
                     div({class: 'col-sm-3'}, [
