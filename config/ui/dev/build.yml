@@ -114,13 +114,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
-    # -
-    #     name: ontology-widgets
-    #     globalName: kbase-ui-plugin-ontology-widgets
-    #     version: 0.1.0
-    #     cwd: src/plugin
-    #     source:
-    #         bower: {}
+    -
+        name: ontology-widgets
+        globalName: kbase-ui-plugin-ontology-widgets
+        version: 1.0.0
+        cwd: src/plugin
+        source:
+            bower: {}
 
 # Copy these directories into the modules
 # There are two forms, as for plugins.
