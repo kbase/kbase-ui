@@ -117,7 +117,7 @@ plugins:
     -
         name: ontology-widgets
         globalName: kbase-ui-plugin-ontology-widgets
-        version: 0.1.0
+        version: 1.0.0
         cwd: src/plugin
         source:
             bower: {}
