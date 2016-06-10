@@ -7,13 +7,12 @@
  */
 define([
     'jquery',
-    'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
-    function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
+    function ($, Catalog, CatalogUtil) {
         $.KBWidget({
             name: "KBaseCatalogIndex",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
@@ -22,21 +21,10 @@ define([
 
             // clients to the catalog service and the NarrativeMethodStore
             catalog: null,
-            nms: null,
             util: null,
 
             // main panel and elements
             $mainPanel: null,
-            $loadingPanel: null,
-            $basicStatusDiv: null,
-            $pendingReleaseDiv: null,
-            $devListDiv: null,
-
-
-            build_list: null,
-            module_list: null,
-            catalog_version: null,
-            requested_releases: null,
 
             isAdmin: null,
 
@@ -74,48 +62,48 @@ define([
                 $m.append('<hr>');
 
 
-                descriptionText = 'View the list of registered KBase Modules.  Modules are groups of related Apps, code, functions, data and other components'
+                descriptionText = 'View registered KBase Modules.  Modules are groups of related Apps, code, functions, data and other components'
                                     + ' registered from a single git repository by developers using the KBase SDK.';
                 $m.append($('<h4>').append(self.makeLink(base+'modules', 'Module Catalog')))
                   .append($('<div>').append(descriptionText));
                 $m.append('<hr>');
 
 
-                descriptionText = '(for developers) Browse and search functions that you can call from your code.  Think of it as your KBase API library that any developer can contribute to.'
+                descriptionText = '(for developers) Browse and search for functions that you can call from your code.  Think of these functions as your KBase API library that anyone can contribute to.'
                 $m.append($('<h4>').append(self.makeLink(base+'functions', 'Function Catalog')))
                   .append($('<div>').append(descriptionText));
                 $m.append('<hr>');
 
 
-                //descriptionText = '(for developers) View low-level data type schemas and specifications.  In general, don\'t operate on these schemas directly in your code.  Instead find '
-                //                   + 'an appropriate function to get and save data using a standard file format.';
-                //$m.append($('<h4>').append(self.makeLink(base+'datatypes', 'Data Type Catalog')))
-                //  .append($('<div>').append(descriptionText));
-                //$m.append('<hr>');
+                descriptionText = '(for developers) View low-level data type schemas and specifications.  In general, don\'t operate on these schemas directly in your code because they will '
+                                    + 'change.  Instead find an appropriate function to get and save data using a standard file format.';
+                $m.append($('<h4>').append(self.makeLink(base+'datatypes', 'Data Type Catalog')))
+                  .append($('<div>').append(descriptionText));
+                $m.append('<hr>');
 
 
-                descriptionText = '(for developers) Browse and manage available KBase web services, which you should really only be using for interactive browser'
+                descriptionText = '(for developers) Browse and manage KBase web services, which you should only be using for interactive browser'
                                     + ' visualizations.  For SDK-built Apps, take a look at the Functions instead.';
                 $m.append($('<h4>').append(self.makeLink(base+'services', 'Web Service Status and Management')))
                   .append($('<div>').append(descriptionText));
                 $m.append('<hr>');
 
 
-                descriptionText = '(for developers) Register new Modules built with the KBase SDK to the system.  You should only use this page for your first registration.'
-                                    + '  After that, go to your Module page to access additional developer tools.';
-                $m.append($('<h4>').append(self.makeLink(base+'services', 'New Module Registration Page')))
+                descriptionText = '(for developers) Register new Modules built with the KBase SDK.  Use this page only for your first registration.'
+                                    + '  After that, go to your Module page to access developer tools.';
+                $m.append($('<h4>').append(self.makeLink(base+'register', 'New Module Registration Page')))
                   .append($('<div>').append(descriptionText));
                 $m.append('<hr>');
 
 
-                descriptionText = 'View the current status of the KBase Catalog, such as the deployed Catalog version and recent module registrations.';
+                descriptionText = 'View the current status of the KBase Catalog Service, such as recent module registrations.';
                 $m.append($('<h4>').append(self.makeLink(base+'status', 'Catalog Status')))
                   .append($('<div>').append(descriptionText));
                 $m.append('<hr>');
 
 
-                descriptionText = 'View summary usage statistics of the Narrative Apps currently available in KBase.';
-                $m.append($('<h4>').append(self.makeLink(base+'status', 'Catalog Stats')))
+                descriptionText = 'View summary statistics of Narrative Apps.';
+                $m.append($('<h4>').append(self.makeLink(base+'stats', 'Catalog Stats')))
                   .append($('<div>').append(descriptionText));
                 $m.append('<hr>');
 

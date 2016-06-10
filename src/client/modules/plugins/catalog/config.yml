@@ -26,13 +26,18 @@ source:
             file: catalog_function_viewer
 
 
-
         -
             module: catalog_app_viewer
             file: catalog_app_viewer
         -
+            module: catalog_module_browser
+            file: catalog_module_browser
+        -
             module: catalog_module_viewer
             file: catalog_module_viewer
+        -
+            module: catalog_type_browser
+            file: catalog_type_browser
         -
             module: catalog_module_dev_viewer
             file: catalog_module_dev_viewer
@@ -73,8 +78,14 @@ source:
             module: catalog_app_viewer_widget
             file: widgets/kbaseCatalogAppViewer
         -
+            module: catalog_module_browser_widget
+            file: widgets/kbaseCatalogModuleBrowser
+        -
             module: catalog_module_viewer_widget
             file: widgets/kbaseCatalogModuleViewer
+        -
+            module: catalog_type_browser_widget
+            file: widgets/kbaseCatalogTypeBrowser
         -
             module: catalog_module_dev_viewer_widget
             file: widgets/kbaseCatalogModuleDevViewer
@@ -122,8 +133,16 @@ install:
             id: catalog_app_viewer
             type: factory
         - 
+            module: catalog_module_browser
+            id: catalog_module_browser
+            type: factory
+        - 
             module: catalog_module_viewer
             id: catalog_module_viewer
+            type: factory
+        - 
+            module: catalog_type_browser
+            id: catalog_type_browser
             type: factory
         - 
             module: catalog_module_dev_viewer
@@ -203,11 +222,25 @@ install:
                 jqueryName: KBaseCatalogAppViewer
             type: kbwidget
         -
+            module: catalog_module_browser_widget
+            id: catalog_module_browser_widget
+            title: Module Catalog
+            config:
+                jqueryName: KBaseCatalogModuleBrowser
+            type: kbwidget
+        -
             module: catalog_module_viewer_widget
             id: catalog_module_viewer_widget
             title: App Catalog
             config:
                 jqueryName: KBaseCatalogModuleViewer
+            type: kbwidget
+        -
+            module: catalog_type_browser_widget
+            id: catalog_type_browser_widget
+            title: Data Type Catalog
+            config:
+                jqueryName: KBaseCatalogTypeBrowser
             type: kbwidget
         -
             module: catalog_module_dev_viewer_widget
@@ -272,14 +305,17 @@ install:
     routes:
 
         -
+            path: ['catalog']
+            widget: catalog_index
+        -
             path: ['catalog','index']
             widget: catalog_index
 
 
         # module catalog
-        #-
-        #    path: ['catalog','modules']
-        #    widget: 
+        -
+            path: ['catalog','modules']
+            widget: catalog_module_browser
         -
             path: ['catalog','modules', {type: param, name: module_name}]
             widget: catalog_module_viewer
@@ -318,6 +354,12 @@ install:
         -   
             path: ['catalog', 'functions', {type: param, name: module}, {type: param, name: function_id}, {type: param, name: ver} ]
             widget: catalog_function_viewer
+
+
+        # type catalog
+        -
+            path: ['catalog','datatypes']
+            widget: catalog_type_browser
 
 
         # developer tools

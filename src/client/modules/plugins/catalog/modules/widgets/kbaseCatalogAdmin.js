@@ -644,7 +644,7 @@ define([
 
 
                 var $moduleName = $('<input type="text" size="50" placeholder="ModuleName">').addClass('form-control').css('margin','4px');
-                var $appId = $('<input type="text" size="50" placeholder="app_id">').addClass('form-control').css('margin','4px');
+                var $functionName = $('<input type="text" size="50" placeholder="function_name">').addClass('form-control').css('margin','4px');
                 var $clientGroup = $('<input type="text" size="50" placeholder="client_group_name">').addClass('form-control').css('margin','4px');
 
                 var volumeMountEntry = []; var nOptions = 4;
@@ -677,7 +677,7 @@ define([
                 $modifyVolMount
                     .append($('<div>').addClass('input-group').css('width','35%')
                                 .append($moduleName)
-                                .append($appId)
+                                .append($functionName)
                                 .append($clientGroup))
                     .append($volMountInfo)
                     .append($modify)
@@ -688,7 +688,7 @@ define([
                         'volume_mounts':[]
                     }
                     if($moduleName.val()) { config['module_name'] = $moduleName.val() }
-                    if($appId.val()) { config['app_id'] = $appId.val() }
+                    if($functionName.val()) { config['function_name'] = $functionName.val() }
                     if($clientGroup.val()) { config['client_group'] = $clientGroup.val() }
 
                     for(var v=0; v<volumeMountEntry.length; v++) {
@@ -721,7 +721,7 @@ define([
                 $tbl.append(
                     $('<tr>')
                         .append($('<th>').append('<b>Module Name</b>'))
-                        .append($('<th>').append('<b>App ID</b>'))
+                        .append($('<th>').append('<b>Function Name</b>'))
                         .append($('<th>').append('<b>Client Group</b>'))
                         .append($('<th>').append('<b>Host Directory &nbsp;&nbsp;<i class="fa fa-arrow-right"></i>&nbsp;&nbsp; Container Directory</b>'))
                         .append($('<th>')));
@@ -730,7 +730,7 @@ define([
                     var vm = self.volume_mounts[k];
 
                     var module_name = vm['module_name'];
-                    var app_id = vm['app_id'];
+                    var function_name = vm['function_name'];
                     var client_group = vm['client_group'];
 
                     var volMountStr = '';
@@ -752,10 +752,10 @@ define([
                         return function() {
                             var confirm = window.confirm("Are you sure you want to remove this volume mount?");
                             if (confirm == true) {
-                                console.log('removing: '+vm['module_name'] + ' - ' + vm['app_id'] + ' - ' + vm['client_group']);
+                                console.log('removing: '+vm['module_name'] + ' - ' + vm['function_name'] + ' - ' + vm['client_group']);
                                 self.catalog.remove_volume_mount({
                                             'module_name':vm['module_name'],
-                                            'app_id':vm['app_id'],
+                                            'function_name':'', //vm['function_name'],
                                             'client_group':vm['client_group']
                                         })
                                         .then(function () {
@@ -778,7 +778,7 @@ define([
                             .append($('<td>')
                                 .append($('<a href="#appcatalog/module/'+module_name+'">').append(module_name)))
                             .append($('<td>')
-                                .append($('<a href="#appcatalog/app/'+app_id+'">').append(app_id)))
+                                .append(function_name))
                             .append($('<td>')
                                 .append(client_group))
                             .append($('<td>')
