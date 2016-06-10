@@ -1,14 +1,17 @@
-## Welcome Panel
 ---
 package:
-    name: AppCatalog
-    description: KBase App Catalog
+    name: Catalog
+    description: KBase Catalog
     author: Michael Sneddon
     date: January 2016
-    version: 0.0.1
+    version: 0.1.0
 source:
     modules:
         # not sure what modules are, but here is one per factory
+        -
+            module: catalog_index
+            file: catalog_index
+
         -
             module: catalog_home
             file: catalog_app_browser
@@ -61,6 +64,9 @@ source:
 
         # here is one per widget
         -
+            module: catalog_index_widget
+            file: widgets/kbaseCatalogIndex
+        -
             module: catalog_home_widget
             file: widgets/kbaseCatalogBrowser
         -
@@ -103,6 +109,10 @@ source:
 install:
     # Register the welcome widget
     widgets:
+        - 
+            module: catalog_index
+            id: catalog_index
+            type: factory
         - 
             module: catalog_home
             id: catalog_home
@@ -171,6 +181,13 @@ install:
                 jqueryName: KBaseCatalogBrowser
             type: kbwidget
 
+        -
+            module: catalog_index_widget
+            id: catalog_index_widget
+            title: Catalog Index
+            config:
+                jqueryName: KBaseCatalogIndex
+            type: kbwidget
         -
             module: catalog_function_browser_widget
             id: catalog_function_browser_widget
@@ -254,19 +271,41 @@ install:
     # Set up a route to install that widget in the main body view
     routes:
 
-
-        # slowly migrate to the base url of catalog
-        #  #catalog/apps
-        #  #catalog/modules
-        #  #catalog/functions
-        #  #catalog/widgets
-        #  #catalog/services
-        #
+        -
+            path: ['catalog','index']
+            widget: catalog_index
 
 
+        # module catalog
         #-
-        #    path: ['catalog']
-        #    widget: catalog_index
+        #    path: ['catalog','modules']
+        #    widget: 
+        -
+            path: ['catalog','modules', {type: param, name: module_name}]
+            widget: catalog_module_viewer
+
+
+        # app catalog
+        -
+            path: ['catalog', 'apps']
+            widget: catalog_home
+        -
+            path: ['catalog', 'apps', {type: param, name: tag}]
+            widget: catalog_home
+        -
+            path: ['catalog', 'apps', {type: param, name: namespace}, {type: param, name: id}]
+            widget: catalog_app_viewer
+        -
+            path: ['appcatalog', 'apps', {type: param, name: namespace}, {type: param, name: id}, {type: param, name: tag}]
+            widget: catalog_app_viewer
+
+
+
+        # dynamic services catalog
+        -
+            path: ['catalog', 'services']
+            widget: catalog_service
+
 
 
         # function catalog
@@ -281,6 +320,29 @@ install:
             widget: catalog_function_viewer
 
 
+        # developer tools
+        -
+            path: ['catalog', 'register', {type: param, name: registration_id }]
+            widget: catalog_registration
+
+
+        # stats, status, admin
+        -
+            path: ['catalog', 'stats']
+            widget: catalog_stats
+        -
+            path: ['catalog', 'status']
+            widget: catalog_status
+        -
+            path: ['catalog', 'status', {type: param, name: module_names }]
+            widget: catalog_status
+        -
+            path: ['catalog', 'admin']
+            widget: catalog_admin
+
+
+
+        ##### OLD ROUTES
         -
             path: ['appcatalog']
             widget: catalog_home
@@ -293,9 +355,6 @@ install:
         -
             path: ['appcatalog', 'module', {type: param, name: module_name}]
             widget: catalog_module_viewer
-        #-
-        #    path: ['appcatalog', 'app', {type: param, name: id}]
-        #    widget: catalog_app_viewer
         -
             path: ['appcatalog', 'app', {type: param, name: namespace}, {type: param, name: id}]
             widget: catalog_app_viewer
@@ -314,7 +373,6 @@ install:
         -
             path: ['appcatalog', 'status', {type: param, name: module_names }]
             widget: catalog_status
-
         -
             path: ['appcatalog', 'service']
             widget: catalog_service
