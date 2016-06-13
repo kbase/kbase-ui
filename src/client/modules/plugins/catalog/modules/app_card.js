@@ -186,7 +186,7 @@ define([
             $titleSpan.append($('<div>').addClass('kbcb-app-card-title').append(info.name));
             if(info['module_name']) {
                 $titleSpan.append($('<div>').addClass('kbcb-app-card-module').append(
-                                        $('<a href="#appcatalog/module/'+info.module_name+'">')
+                                        $('<a href="#catalog/modules/'+info.module_name+'">')
                                             .append(info.module_name)
                                             .on('click',function(event) {
                                                 // have to stop propagation so we don't go to the app page first
@@ -294,13 +294,13 @@ define([
                         // module name right now is encoded in the ID
                         //window.location.href = '#appcatalog/app/'.info.module_name+'/'+app.info.id;
                         if(tag) {
-                            window.location.href = '#appcatalog/app/'+info.id + '/'+tag;
+                            window.location.href = '#catalog/apps/'+info.id + '/'+tag;
                         } else {
-                            window.location.href = '#appcatalog/app/'+info.id;
+                            window.location.href = '#catalog/apps/'+info.id;
                         }
                     } else {
                         // legacy method, encoded as l.m
-                        window.location.href = '#appcatalog/app/l.m/'+info.id;
+                        window.location.href = '#catalog/apps/l.m/'+info.id;
                     }
                 } else {
                     // apps still go to old style page

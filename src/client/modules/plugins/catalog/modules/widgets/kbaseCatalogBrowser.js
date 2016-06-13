@@ -235,9 +235,9 @@ define([
 
 
                 // ORGANIZE BY
-                var $verR = $('<a href="#appcatalog/browse/release">').append('Released Modules');
-                var $verB = $('<a href="#appcatalog/browse/beta">').append('Beta Modules');
-                var $verD = $('<a href="#appcatalog/browse/dev">').append('Modules in Development');
+                var $verR = $('<a href="#catalog/apps/release">').append('Released Modules');
+                var $verB = $('<a href="#catalog/apps/beta">').append('Beta Modules');
+                var $verD = $('<a href="#catalog/apps/dev">').append('Modules in Development');
 
                 var $version = $('<li>').addClass('dropdown')
                                     .append('<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Version<span class="caret"></span></a>')
@@ -253,9 +253,11 @@ define([
 
 
                 // NAV LINKS
-                var $statusLink = $('<li>').append($('<a href="#appcatalog/status">').append('Status'));
+                var $statusLink = $('<li>').append($('<a href="#catalog/status">').append('Status'));
 
-                var $registerLink = $('<li>').append($('<a href="#appcatalog/register">').append('<i class="fa fa-plus-circle"></i> Add Module'));
+                var $registerLink = $('<li>').append($('<a href="#catalog/register">').append('<i class="fa fa-plus-circle"></i> Add Module'));
+
+                var $helpLink = $('<li>').append($('<a href="#catalog">').append('<i class="fa fa-question-circle"></i> Help'));
 
 
 
@@ -265,7 +267,8 @@ define([
                         .append($organizeBy)
                         .append($version)
                         .append($statusLink)
-                        .append($registerLink));
+                        .append($registerLink)
+                        .append($helpLink));
 
                 $nav.append($container)
 
@@ -666,6 +669,15 @@ define([
 
                 self.$appListPanel.children().detach();
 
+                if(self.options.tag) {
+                    var text_css = {'color':'#777', 'font-size':'1.1em', 'margin':'5px' }
+                    if(self.options.tag == 'dev') {
+                        self.$appListPanel.append($('<div>').css(text_css).append('Currently viewing Apps under development.'));
+                    } else if (self.options.tag == 'beta') {
+                        self.$appListPanel.append($('<div>').css(text_css).append('Currently viewing Apps in beta.'));
+                    }
+                }
+
                 // no organization, so show all
                 if(!organizeBy) { return; }
 
@@ -727,7 +739,7 @@ define([
                             var $section = $('<div>').addClass('catalog-section');
                             $currentModuleDiv = $('<div>').addClass('kbcb-app-card-list-container');
                             $section.append($('<div>').css({'color':'#777'})
-                                    .append($('<h4>').append('<a href="#appcatalog/module/'+m+'">'+m+'</a>')));
+                                    .append($('<h4>').append('<a href="#catalog/modules/'+m+'">'+m+'</a>')));
                             $section.append($currentModuleDiv);
                             self.$appListPanel.append($section);
                         }
@@ -779,7 +791,6 @@ define([
                             $noAuthorDiv.append(self.appList[k].getNewCardDiv())
                         }
                     }
-
                 }
 
                 

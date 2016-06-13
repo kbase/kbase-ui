@@ -22,7 +22,6 @@ define([
 
             // clients to the catalog service and the NarrativeMethodStore
             catalog: null,
-            nms: null,
             util: null,
 
             // main panel and elements
@@ -62,6 +61,7 @@ define([
                 self.$devListDiv = mainPanelElements[3];
                 self.$moduleList = mainPanelElements[4];
                 self.$clientGroupList = mainPanelElements[5];
+                self.$volumeMountList = mainPanelElements[6];
                 self.$elem.append(self.$mainPanel);
                 self.showLoading();
 
@@ -80,8 +80,19 @@ define([
 
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
-                    self.render();
-                    self.hideLoading();
+
+                    if(self.isAdmin) {
+                        var adminCalls = [];
+                        adminCalls.push(self.getVolumeMounts())
+                        Promise.all(adminCalls).then(function(){
+                            self.render();
+                            self.hideLoading();
+                        });
+                    } else {
+                        self.render();
+                        self.hideLoading();
+                    }
+
                 });
 
                 return this;
@@ -94,6 +105,7 @@ define([
                 self.renderDevList();
                 self.renderModuleList();
                 self.renderClientGroupList();
+                self.renderVolumeMountList();
             },
 
 
@@ -102,17 +114,13 @@ define([
                     this.runtime.getConfig('services.catalog.url'),
                     { token: this.runtime.service('session').getAuthToken() }
                 );
-                this.nms = new NarrativeMethodStore(
-                    this.runtime.getConfig('services.narrative_method_store.url'),
-                    { token: this.runtime.service('session').getAuthToken() }
-                );
             },
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
                 var $mainPanel = $('<div>').addClass('container');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog Index')));
                 
                 $mainPanel.append($('<h3>').append('Catalog Admin Console:'));
 
@@ -139,11 +147,15 @@ define([
                 $mainPanel.append($clientGroups);
                 $mainPanel.append('<br>');
 
+                $mainPanel.append($('<h4>').append('Volume Mounts:'));
+                var $volumeMounts = $('<div>');
+                $mainPanel.append($volumeMounts);
+                $mainPanel.append('<br>');
 
 
                 $mainPanel.append('<br><br>');
 
-                return [$mainPanel, $basicStatusDiv, $pendingReleaseDiv, $approvedDevelopers, $moduleList, $clientGroups];
+                return [$mainPanel, $basicStatusDiv, $pendingReleaseDiv, $approvedDevelopers, $moduleList, $clientGroups, $volumeMounts];
             },
 
             initLoadingPanel: function() {
@@ -167,7 +179,7 @@ define([
             renderBasicStatus: function() {
                 var self = this;
 
-                self.$basicStatusDiv.append('<a href="#appcatalog/status">Catalog Status Page</a><br><br>');
+                self.$basicStatusDiv.append('<a href="#catalog/status">Catalog Status Page</a><br><br>');
                 self.$basicStatusDiv.append('Running <b>v'+self.catalog_version+'</b> of the Catalog Server on: ');
                 self.$basicStatusDiv.append('<a href="'+self.runtime.getConfig('services.catalog.url')+'">'+self.runtime.getConfig('services.catalog.url')+'</a>');
                 self.$basicStatusDiv.append('<br>');
@@ -298,7 +310,7 @@ define([
                     $tbl.append(
                         $('<tr>')
                             .append($('<td>')
-                                .append($('<a href="#appcatalog/module/'+self.released_modules[k].module_name+'">').append(self.released_modules[k].module_name)))
+                                .append($('<a href="#catalog/modules/'+self.released_modules[k].module_name+'">').append(self.released_modules[k].module_name)))
                             .append($('<td>')
                                 .append($('<a href="'+self.released_modules[k].git_url+'">').append(self.released_modules[k].git_url))));
                 }
@@ -310,7 +322,7 @@ define([
                     $tbl.append(
                         $('<tr>')
                             .append($('<td>')
-                                .append($('<a href="#appcatalog/module/'+self.unreleased_modules[k].module_name+'">').append(self.unreleased_modules[k].module_name)))
+                                .append($('<a href="#catalog/modules/'+self.unreleased_modules[k].module_name+'">').append(self.unreleased_modules[k].module_name)))
                             .append($('<td>')
                                 .append($('<a href="'+self.unreleased_modules[k].git_url+'">').append(self.unreleased_modules[k].git_url))));
                 }
@@ -322,7 +334,7 @@ define([
                     $tbl.append(
                         $('<tr>')
                             .append($('<td>')
-                                .append($('<a href="#appcatalog/module/'+self.inactive_modules[k].module_name+'">').append(self.inactive_modules[k].module_name)))
+                                .append($('<a href="#catalog/modules/'+self.inactive_modules[k].module_name+'">').append(self.inactive_modules[k].module_name)))
                             .append($('<td>')
                                 .append($('<a href="'+self.inactive_modules[k].git_url+'">').append(self.inactive_modules[k].git_url))));
                 }
@@ -336,7 +348,7 @@ define([
 
                 self.$pendingReleaseDiv.append(
                     $('<button>').addClass('btn btn-default').css('margin','12px')
-                            .append($('<i>').addClass('fa fa-refresh').append(' Refresh'))
+                            .append($('<i>').addClass('fa fa-refresh')).append(' Refresh')
                             .on('click', function() { self.rerenderPendingRelease(); })
                     );
 
@@ -347,7 +359,7 @@ define([
                         var addRow = function (mod) {
 
                             var $li = $('<li>');
-                            $li.append('<a href="#appcatalog/module/'+mod.module_name+'">'+mod.module_name+'</a>');
+                            $li.append('<a href="#catalog/modules/'+mod.module_name+'">'+mod.module_name+'</a>');
                             $li.append('- <a href="'+mod.git_url+'">'+mod.git_url+'</a><br>');
                             $li.append(mod.git_commit_hash + ' - '+mod.git_commit_message+'<br>');
                             $li.append('owners: [')
@@ -534,23 +546,26 @@ define([
                 self.$clientGroupList.append($groupList);
 
 
-                var $appId = $('<input type="text" size="50" placeholder="module_name/app_id">').addClass('form-control').css('margin','4px');
+                var $modName = $('<input type="text" size="50" placeholder="ModuleName">').addClass('form-control').css('margin','4px');
+                var $funcName = $('<input type="text" size="50" placeholder="function_name">').addClass('form-control').css('margin','4px');
                 var $groups = $('<input type="text" size="50" placeholder="group1,group2, ...">').addClass('form-control').css('margin','4px');
 
                 var $modify = $('<button>').addClass('btn btn-default').append($('<i>').addClass('fa fa-plus')).css('margin-left','10px');
 
                 var $result = $('<div>');
 
-                $modifyGroup.append($('<b>').append('Modify App Client Groups:')).append(' (leave groups blank to reset to default)').append('<br>')
+                $modifyGroup.append($('<b>').append('Add / Modify Client Group Configurations:')).append('<br>')
                 $modifyGroup.append(
                     $('<div>').addClass('input-group').css('width','35%')
-                        .append($appId)
+                        .append($modName)
+                        .append($funcName)
                         .append($groups)
                         .append($('<span>').addClass('input-group-btn')
                             .append($modify)))
                     .append($result);
                 $modify.on('click', function() {
-                    var appId = $appId.val();
+                    var moduleName = $modName.val();
+                    var functionName = $funcName.val();
                     var groups = $groups.val();
                     $groups.val('');
                     var groupsList = [];
@@ -562,7 +577,7 @@ define([
                         }
                     }
 
-                    self.catalog.set_client_group( { app_id:appId, client_groups:groupsList } )
+                    self.catalog.set_client_group_config( { module_name:moduleName, function_name:functionName, client_groups:groupsList } )
                         .then(function () {
                             $result.empty();
                             return self.refreshClientGroups();
@@ -577,6 +592,13 @@ define([
 
 
                 var $tbl = $('<table>').addClass('table table-hover table-condensed');
+                $tbl.append(
+                    $('<tr>')
+                        .append($('<th>').append('<b>Module Name</b>'))
+                        .append($('<th>').append('<b>Function Name</b>'))
+                        .append($('<th>').append('<b>Client Groups</b>'))
+                        .append($('<th>')));
+
                 for(var k=0; k<self.client_groups.length; k++) {
 
                     // loop to get client group string
@@ -586,16 +608,218 @@ define([
                         cliGroupString += self.client_groups[k].client_groups[i];
                     }
 
+                    var $trash = $('<span>').css('cursor','pointer').append($('<i class="fa fa-trash-o" aria-hidden="true">'));
+                    
+                    $trash.on('click', (function(cg) {
+                        return function() {
+                            var confirm = window.confirm("Are you sure you want to remove this client group configuration?");
+                            if (confirm == true) {
+                                self.catalog.remove_client_group_config({
+                                            'module_name':cg['module_name'],
+                                            'function_name':cg['function_name']
+                                        })
+                                        .then(function () {
+                                            $result.empty();
+                                            return self.refreshClientGroups();
+                                        })
+                                        .catch(function (err) {
+                                            $result.empty();
+                                            console.error('ERROR');
+                                            console.error(err);
+                                            $result.prepend($('<div role=alert>').addClass('alert alert-danger')
+                                                .append('<b>Error:</b> '+err.error.message));
+                                        });
+                            }
+                        }
+                    }(self.client_groups[k])));
+
+
                     $tbl.append(
                         $('<tr>')
                             .append($('<td>')
-                                .append($('<a href="#appcatalog/app/'+self.client_groups[k].app_id+'/dev">').append(self.client_groups[k].app_id)))
+                                .append($('<a href="#catalog/modules/'+self.client_groups[k].module_name+'">').append(self.client_groups[k].module_name)))
                             .append($('<td>')
-                                .append(cliGroupString)));
+                                .append(self.client_groups[k].function_name))
+                            .append($('<td>')
+                                .append(cliGroupString))
+                            .append($('<td>')
+                                .append($trash)));
                 }
                 $groupList.append($tbl);
 
 
+            },
+
+
+
+            refreshVolumeMounts: function() {
+                var self = this;
+                self.$volumeMountList.empty();
+                return self.getVolumeMounts()
+                    .then(function() {
+                        self.renderVolumeMountList();
+                    });
+            },
+
+            renderVolumeMountList: function() {
+                var self = this;
+
+                if(!self.isAdmin) {
+                    self.$volumeMountList.append($('<div>').css('margin','1em').append('Only Admins can view volume mounts.'));
+                    return;
+                }
+
+                var $modifyVolMount = $('<div>').css('margin','1em');
+                var $volumeMountList = $('<div>').css('margin','1em');
+
+
+                self.$volumeMountList.append($modifyVolMount);
+                self.$volumeMountList.append($volumeMountList);
+
+
+                var $moduleName = $('<input type="text" size="50" placeholder="ModuleName">').addClass('form-control').css('margin','4px');
+                var $functionName = $('<input type="text" size="50" placeholder="function_name">').addClass('form-control').css('margin','4px');
+                var $clientGroup = $('<input type="text" size="50" placeholder="client_group_name">').addClass('form-control').css('margin','4px');
+
+                var volumeMountEntry = []; var nOptions = 4;
+                for(var x=0; x<nOptions; x++ ){
+                    volumeMountEntry.push({
+                        '$host_dir':  $('<input type="text" size="50" placeholder="/my/host/path/'+(x+1)+'">').addClass('form-control').css('margin','4px'),
+                        '$con_dir' :  $('<input type="text" size="50" placeholder="/my/container/path/'+(x+1)+'">').addClass('form-control').css('margin','4px'),
+                        '$rw'      :  $('<select>').addClass('form-control').css('margin','4px')
+                                        .append($('<option value="1">').append('Read-only'))
+                                        .append($('<option value="0">').append('Read/Write'))
+                    });
+                }
+
+                var $modify = $('<button>').addClass('btn btn-default').append($('<i>').addClass('fa fa-plus')).append(' Submit Entry').css('margin-left','10px');
+
+                var $result = $('<div>').css('margin','1em');
+
+                $modifyVolMount.append($('<b>').append('Add / Modify Volume Mounts:')).append(' (use the API if you need more than '+nOptions+' mounts)').append('<br>')
+
+                var $volMountInfo = $('<div>');
+                for (var x=0; x<volumeMountEntry.length; x++) {
+                    var $d = $('<div>').addClass('row');
+                    $d.append($('<div>').addClass('col-md-1').append());
+                    $d.append($('<div>').addClass('col-md-3').append(volumeMountEntry[x]['$host_dir']));
+                    $d.append($('<div>').addClass('col-md-3').append(volumeMountEntry[x]['$con_dir']));
+                    $d.append($('<div>').addClass('col-md-2').append(volumeMountEntry[x]['$rw']));
+                    $volMountInfo.append($d);
+                }
+
+                $modifyVolMount
+                    .append($('<div>').addClass('input-group').css('width','35%')
+                                .append($moduleName)
+                                .append($functionName)
+                                .append($clientGroup))
+                    .append($volMountInfo)
+                    .append($modify)
+                    .append($result);
+
+                $modify.on('click', function() {
+                    var config = {
+                        'volume_mounts':[]
+                    }
+                    if($moduleName.val()) { config['module_name'] = $moduleName.val() }
+                    if($functionName.val()) { config['function_name'] = $functionName.val() }
+                    if($clientGroup.val()) { config['client_group'] = $clientGroup.val() }
+
+                    for(var v=0; v<volumeMountEntry.length; v++) {
+                        var vme = volumeMountEntry[v];
+                        if(vme['$host_dir'].val() && vme['$con_dir'].val()) {
+                            config['volume_mounts'].push({
+                                'host_dir': vme['$host_dir'].val(),
+                                'container_dir': vme['$con_dir'].val(),
+                                'read_only': vme['$rw'].val()
+                            });
+                        }
+                    }
+
+                    self.catalog.set_volume_mount(config)
+                        .then(function () {
+                            $result.empty();
+                            return self.refreshVolumeMounts();
+                        })
+                        .catch(function (err) {
+                            $result.empty();
+                            console.error('ERROR');
+                            console.error(err);
+                            $result.prepend($('<div role=alert>').addClass('alert alert-danger')
+                                .append('<b>Error:</b> '+err.error.message));
+                        })
+                });
+
+
+                var $tbl = $('<table>').addClass('table table-hover table-condensed');
+                $tbl.append(
+                    $('<tr>')
+                        .append($('<th>').append('<b>Module Name</b>'))
+                        .append($('<th>').append('<b>Function Name</b>'))
+                        .append($('<th>').append('<b>Client Group</b>'))
+                        .append($('<th>').append('<b>Host Directory &nbsp;&nbsp;<i class="fa fa-arrow-right"></i>&nbsp;&nbsp; Container Directory</b>'))
+                        .append($('<th>')));
+
+                for(var k=0; k<self.volume_mounts.length; k++) {
+                    var vm = self.volume_mounts[k];
+
+                    var module_name = vm['module_name'];
+                    var function_name = vm['function_name'];
+                    var client_group = vm['client_group'];
+
+                    var volMountStr = '';
+                    if(vm['volume_mounts'].length == 0) { volMountStr = 'None.'}
+                    for(var i=0; i<vm['volume_mounts'].length; i++) {
+                        if(i>0) { volMountStr += '<br>'}
+                        volMountStr += vm['volume_mounts'][i]['host_dir'] + ' &nbsp;&nbsp;<i class="fa fa-arrow-right"></i>&nbsp;&nbsp; ';
+                        volMountStr += vm['volume_mounts'][i]['container_dir'];
+                        if(vm['volume_mounts'][i]['read_only'] == 1) {
+                            volMountStr += ' &nbsp; (read-only)';
+                        } else {
+                            volMountStr += ' &nbsp; (r/w)';
+                        }
+                    }
+
+                    var $trash = $('<span>').css('cursor','pointer').append($('<i class="fa fa-trash-o" aria-hidden="true">'));
+                    
+                    $trash.on('click', (function(vm) {
+                        return function() {
+                            var confirm = window.confirm("Are you sure you want to remove this volume mount?");
+                            if (confirm == true) {
+                                self.catalog.remove_volume_mount({
+                                            'module_name':vm['module_name'],
+                                            'function_name':vm['function_name'],
+                                            'client_group':vm['client_group']
+                                        })
+                                        .then(function () {
+                                            $result.empty();
+                                            return self.refreshVolumeMounts();
+                                        })
+                                        .catch(function (err) {
+                                            $result.empty();
+                                            console.error('ERROR');
+                                            console.error(err);
+                                            $result.prepend($('<div role=alert>').addClass('alert alert-danger')
+                                                .append('<b>Error:</b> '+err.error.message));
+                                        });
+                            }
+                        }
+                    }(vm)));
+
+                    $tbl.append(
+                        $('<tr>')
+                            .append($('<td>')
+                                .append($('<a href="#catalog/modules/'+module_name+'">').append(module_name)))
+                            .append($('<td>')
+                                .append(function_name))
+                            .append($('<td>')
+                                .append(client_group))
+                            .append($('<td>')
+                                .append(volMountStr))
+                            .append($('<td>')
+                                .append($trash)));
+                }
+                $volumeMountList.append($tbl);
             },
 
 
@@ -655,22 +879,22 @@ define([
             getClientGroups: function() {
                 var self = this
                 self.client_groups = [];
-                return self.catalog.get_client_groups({})
+                return self.catalog.list_client_group_configs({})
                     .then(function (groups) {
+                        self.client_groups = groups;
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
 
-                        var non_empty_groups = [];
-                        for(var k=0; k<groups.length; k++) {
-                            if(groups[k].client_groups.length>0) {
-                                non_empty_groups.push(groups[k]);
-                            }
-                        }
-                        non_empty_groups.sort(function(a,b) {
-                            if(a.app_id < b.app_id) return -1;
-                            if(a.app_id > b.app_id) return 1;
-                            return 0;
-                        });
-
-                        self.client_groups = non_empty_groups;
+            getVolumeMounts: function() {
+                var self = this
+                self.volume_mounts = [];
+                return self.catalog.list_volume_mounts({})
+                    .then(function (mounts) {
+                        self.volume_mounts = mounts;
                     })
                     .catch(function (err) {
                         console.error('ERROR');

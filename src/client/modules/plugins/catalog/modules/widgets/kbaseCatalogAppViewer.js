@@ -255,7 +255,7 @@ define([
                 var $infoPanel = $('<div>').css('margin','1em');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog/apps">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
                 
                 $mainPanel
                     .append($header)
@@ -831,7 +831,7 @@ define([
 
                 if(self.moduleDetails.info) {
                     $titleSpan.append($('<div>').addClass('kbcb-app-page-module').append(
-                                            $('<a href="#appcatalog/module/'+self.moduleDetails.info.module_name+'">')
+                                            $('<a href="#catalog/modules/'+self.moduleDetails.info.module_name+'">')
                                                 .append(self.moduleDetails.info.module_name)));
                 }
 

@@ -187,7 +187,7 @@ define([
                 var $errorPanel = $('<div>').css('color','red').hide();
                 if(this.options.show_title) {
                     $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog/apps">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
                 }
                 $mainPanel
                     .append($inputPanel)

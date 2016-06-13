@@ -233,7 +233,7 @@ define([
                 
 
                 $titleSpan.append($('<div>').addClass('kbcb-app-page-module').append(
-                                        $('<a href="#appcatalog/module/'+info.module_name+'">')
+                                        $('<a href="#catalog/modules/'+info.module_name+'">')
                                             .append(info.module_name)));
 
 
@@ -443,8 +443,17 @@ define([
 
                         self.$paramsPanel.append(code);
                     }
+
+/*                  if(self.module_version) {
+                        if(self.module_version.compilation_report) {
+                            if(self.module_version.compilation_report) {
+                                console.log(self.module_version)
+                            }
+                        }
+                    }*/
                     
                 }
+
 
 
 

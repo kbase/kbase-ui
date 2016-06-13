@@ -66,7 +66,7 @@ define(['jquery',
             container.append($table);
             var width = "15%"
 
-            $table.append('<tr><td width="'+width+'">Registration ID</td><td><a href="#appcatalog/register/'+self.registration_id+'">'
+            $table.append('<tr><td width="'+width+'">Registration ID</td><td><a href="#catalog/register/'+self.registration_id+'">'
                 +self.registration_id+'</a></td></tr>');
 
             self.$registration_state_td = $('<td></td>')
@@ -173,7 +173,7 @@ define(['jquery',
                 if(self.options.show_module_links) {
                     self.$registration_state_td.append('&nbsp;&nbsp;&nbsp;');
                     self.$registration_state_td.append(
-                            'Successfully registered <a href="#appcatalog/module/'+build_info.module_name_lc+'">'+build_info.module_name_lc+'</a> '
+                            'Successfully registered <a href="#catalog/modules/'+build_info.module_name_lc+'">'+build_info.module_name_lc+'</a> '
                         );
                     self.$registration_state_td.append(
                             'from <a href="'+build_info.git_url+'" target="_blank">'+build_info.git_url+'</a>.'
