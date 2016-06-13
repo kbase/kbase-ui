@@ -117,7 +117,7 @@ define([
                 var $mainPanel = $('<div>').addClass('container');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog/status">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
                 
                 $mainPanel.append($('<h3>').append('Catalog Status:'));
                 var $basicStatusDiv = $('<div>');
@@ -164,7 +164,7 @@ define([
                     for(var k=0; k<self.requested_releases.length; k++) {
                         var mod = self.requested_releases[k];
                         var $li = $('<li>');
-                        $li.append('<a href="#appcatalog/module/'+mod.module_name+'">'+mod.module_name+'</a>');
+                        $li.append('<a href="#catalog/modules/'+mod.module_name+'">'+mod.module_name+'</a>');
                         $li.append('- <a href="'+mod.git_url+'">'+mod.git_url+'</a><br>');
                         $li.append(mod.git_commit_hash + ' - '+mod.git_commit_message+'<br>');
                         $li.append('owners: [');
@@ -313,7 +313,7 @@ define([
                 var timestamp = self.util.getTimeStampStr(info.timestamp);
                 
                 if(info.module_name_lc) {
-                    $row.append('<strong><a href="#appcatalog/module/'+info.module_name_lc+'">'+info.module_name_lc+'</a></strong> - ');
+                    $row.append('<strong><a href="#catalog/modules/'+info.module_name_lc+'">'+info.module_name_lc+'</a></strong> - ');
                 } else {
                     $row.append('<strong>Module Name Not Detected</strong> - ');
                 }
@@ -321,7 +321,7 @@ define([
                 $row.append($('<span>').addClass('pull-right').css('color','#777')
                                     .append(timestamp)
                                     .append('<br>')
-                                    .append('<a href="#appcatalog/register/'+info.registration_id+'">'+info.registration_id+'</a>'));
+                                    .append('<a href="#catalog/register/'+info.registration_id+'">'+info.registration_id+'</a>'));
                 $row.append('<br>');
                 $row.append('Status: '+ info.registration);
                 if(info.error_message) {

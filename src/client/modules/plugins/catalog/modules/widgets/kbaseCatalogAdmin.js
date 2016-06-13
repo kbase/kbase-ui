@@ -126,7 +126,7 @@ define([
                 var $mainPanel = $('<div>').addClass('container');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog/apps">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
                 
                 $mainPanel.append($('<h3>').append('Catalog Admin Console:'));
 
@@ -185,7 +185,7 @@ define([
             renderBasicStatus: function() {
                 var self = this;
 
-                self.$basicStatusDiv.append('<a href="#appcatalog/status">Catalog Status Page</a><br><br>');
+                self.$basicStatusDiv.append('<a href="#catalog/status">Catalog Status Page</a><br><br>');
                 self.$basicStatusDiv.append('Running <b>v'+self.catalog_version+'</b> of the Catalog Server on: ');
                 self.$basicStatusDiv.append('<a href="'+self.runtime.getConfig('services.catalog.url')+'">'+self.runtime.getConfig('services.catalog.url')+'</a>');
                 self.$basicStatusDiv.append('<br>');
@@ -316,7 +316,7 @@ define([
                     $tbl.append(
                         $('<tr>')
                             .append($('<td>')
-                                .append($('<a href="#appcatalog/module/'+self.released_modules[k].module_name+'">').append(self.released_modules[k].module_name)))
+                                .append($('<a href="#catalog/modules/'+self.released_modules[k].module_name+'">').append(self.released_modules[k].module_name)))
                             .append($('<td>')
                                 .append($('<a href="'+self.released_modules[k].git_url+'">').append(self.released_modules[k].git_url))));
                 }
@@ -328,7 +328,7 @@ define([
                     $tbl.append(
                         $('<tr>')
                             .append($('<td>')
-                                .append($('<a href="#appcatalog/module/'+self.unreleased_modules[k].module_name+'">').append(self.unreleased_modules[k].module_name)))
+                                .append($('<a href="#catalog/modules/'+self.unreleased_modules[k].module_name+'">').append(self.unreleased_modules[k].module_name)))
                             .append($('<td>')
                                 .append($('<a href="'+self.unreleased_modules[k].git_url+'">').append(self.unreleased_modules[k].git_url))));
                 }
@@ -340,7 +340,7 @@ define([
                     $tbl.append(
                         $('<tr>')
                             .append($('<td>')
-                                .append($('<a href="#appcatalog/module/'+self.inactive_modules[k].module_name+'">').append(self.inactive_modules[k].module_name)))
+                                .append($('<a href="#catalog/modules/'+self.inactive_modules[k].module_name+'">').append(self.inactive_modules[k].module_name)))
                             .append($('<td>')
                                 .append($('<a href="'+self.inactive_modules[k].git_url+'">').append(self.inactive_modules[k].git_url))));
                 }
@@ -365,7 +365,7 @@ define([
                         var addRow = function (mod) {
 
                             var $li = $('<li>');
-                            $li.append('<a href="#appcatalog/module/'+mod.module_name+'">'+mod.module_name+'</a>');
+                            $li.append('<a href="#catalog/modules/'+mod.module_name+'">'+mod.module_name+'</a>');
                             $li.append('- <a href="'+mod.git_url+'">'+mod.git_url+'</a><br>');
                             $li.append(mod.git_commit_hash + ' - '+mod.git_commit_message+'<br>');
                             $li.append('owners: [')
@@ -552,23 +552,26 @@ define([
                 self.$clientGroupList.append($groupList);
 
 
-                var $appId = $('<input type="text" size="50" placeholder="module_name/app_id">').addClass('form-control').css('margin','4px');
+                var $modName = $('<input type="text" size="50" placeholder="ModuleName">').addClass('form-control').css('margin','4px');
+                var $funcName = $('<input type="text" size="50" placeholder="function_name">').addClass('form-control').css('margin','4px');
                 var $groups = $('<input type="text" size="50" placeholder="group1,group2, ...">').addClass('form-control').css('margin','4px');
 
                 var $modify = $('<button>').addClass('btn btn-default').append($('<i>').addClass('fa fa-plus')).css('margin-left','10px');
 
                 var $result = $('<div>');
 
-                $modifyGroup.append($('<b>').append('Modify App Client Groups:')).append(' (leave groups blank to reset to default)').append('<br>')
+                $modifyGroup.append($('<b>').append('Add / Modify Client Group Configurations:')).append('<br>')
                 $modifyGroup.append(
                     $('<div>').addClass('input-group').css('width','35%')
-                        .append($appId)
+                        .append($modName)
+                        .append($funcName)
                         .append($groups)
                         .append($('<span>').addClass('input-group-btn')
                             .append($modify)))
                     .append($result);
                 $modify.on('click', function() {
-                    var appId = $appId.val();
+                    var moduleName = $modName.val();
+                    var functionName = $funcName.val();
                     var groups = $groups.val();
                     $groups.val('');
                     var groupsList = [];
@@ -580,7 +583,7 @@ define([
                         }
                     }
 
-                    self.catalog.set_client_group( { app_id:appId, client_groups:groupsList } )
+                    self.catalog.set_client_group_configuration( { module_name:moduleName, function_name:functionName, client_groups:groupsList } )
                         .then(function () {
                             $result.empty();
                             return self.refreshClientGroups();
@@ -604,12 +607,44 @@ define([
                         cliGroupString += self.client_groups[k].client_groups[i];
                     }
 
+                    var $trash = $('<span>').css('cursor','pointer').append($('<i class="fa fa-trash-o" aria-hidden="true">'));
+                    
+                    $trash.on('click', (function(cg) {
+                        return function() {
+                                console.log('removing: '+cg['module_name'] + ' - "' + cg['function_name']);
+                            var confirm = window.confirm("Are you sure you want to remove this client group configuration?");
+                            if (confirm == true) {
+                                console.log('removing: '+cg['module_name'] + ' - "' + cg['function_name']);
+                                self.catalog.remove_client_group_config({
+                                            'module_name':cg['module_name'],
+                                            'function_name':cg['function_name']
+                                        })
+                                        .then(function () {
+                                            $result.empty();
+                                            return self.refreshClientGroups();
+                                        })
+                                        .catch(function (err) {
+                                            $result.empty();
+                                            console.error('ERROR');
+                                            console.error(err);
+                                            $result.prepend($('<div role=alert>').addClass('alert alert-danger')
+                                                .append('<b>Error:</b> '+err.error.message));
+                                        });
+                            }
+                        }
+                    }(self.client_groups[k])));
+
+
                     $tbl.append(
                         $('<tr>')
                             .append($('<td>')
-                                .append($('<a href="#appcatalog/app/'+self.client_groups[k].app_id+'/dev">').append(self.client_groups[k].app_id)))
+                                .append($('<a href="#catalog/modules/'+self.client_groups[k].module_name+'">').append(self.client_groups[k].module_name)))
                             .append($('<td>')
-                                .append(cliGroupString)));
+                                .append(self.client_groups[k].function_name))
+                            .append($('<td>')
+                                .append(cliGroupString))
+                            .append($('<td>')
+                                .append($trash)));
                 }
                 $groupList.append($tbl);
 
@@ -728,6 +763,7 @@ define([
 
                 for(var k=0; k<self.volume_mounts.length; k++) {
                     var vm = self.volume_mounts[k];
+                    console.log(vm)
 
                     var module_name = vm['module_name'];
                     var function_name = vm['function_name'];
@@ -752,10 +788,10 @@ define([
                         return function() {
                             var confirm = window.confirm("Are you sure you want to remove this volume mount?");
                             if (confirm == true) {
-                                console.log('removing: '+vm['module_name'] + ' - ' + vm['function_name'] + ' - ' + vm['client_group']);
+                                console.log('removing: '+vm['module_name'] + ' - "' + vm['function_name'] + '"" - ' + vm['client_group']);
                                 self.catalog.remove_volume_mount({
                                             'module_name':vm['module_name'],
-                                            'function_name':'', //vm['function_name'],
+                                            'function_name':vm['function_name'],
                                             'client_group':vm['client_group']
                                         })
                                         .then(function () {
@@ -776,7 +812,7 @@ define([
                     $tbl.append(
                         $('<tr>')
                             .append($('<td>')
-                                .append($('<a href="#appcatalog/module/'+module_name+'">').append(module_name)))
+                                .append($('<a href="#catalog/modules/'+module_name+'">').append(module_name)))
                             .append($('<td>')
                                 .append(function_name))
                             .append($('<td>')

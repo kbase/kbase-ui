@@ -332,7 +332,7 @@ install:
             path: ['catalog', 'apps', {type: param, name: namespace}, {type: param, name: id}]
             widget: catalog_app_viewer
         -
-            path: ['appcatalog', 'apps', {type: param, name: namespace}, {type: param, name: id}, {type: param, name: tag}]
+            path: ['catalog', 'apps', {type: param, name: namespace}, {type: param, name: id}, {type: param, name: tag}]
             widget: catalog_app_viewer
 
 

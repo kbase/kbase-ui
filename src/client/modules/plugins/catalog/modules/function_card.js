@@ -170,7 +170,7 @@ define([
                 }
             }
             $titleSpan.append($('<div>').addClass('kbcb-app-card-module').css({'padding-top':'4px'}).append(
-                                    $('<a href="#appcatalog/module/'+info.module_name+'">')
+                                    $('<a href="#catalog/modules/'+info.module_name+'">')
                                         .append(info.module_name)
                                         .on('click',function(event) {
                                             // have to stop propagation so we don't go to the app page first

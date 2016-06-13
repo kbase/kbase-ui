@@ -215,7 +215,7 @@ define([
                 var $mainPanel = $('<div>').addClass('container');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog/apps">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
 
                 var $basicStatsDiv = $('<div>');
                 $mainPanel.append($basicStatsDiv);
@@ -284,8 +284,8 @@ define([
                             var meanQueueTime = s.total_queue_time/s.number_of_calls;
 
                             var stat = {
-                                id: '<a href="#appcatalog/app/'+s.full_app_id+'/dev">'+id+'</a>',
-                                module: '<a href="#appcatalog/module/'+s.module_name+'">'+s.module_name+'</a>',
+                                id: '<a href="#catalog/apps/'+s.full_app_id+'/dev">'+id+'</a>',
+                                module: '<a href="#catalog/modules/'+s.module_name+'">'+s.module_name+'</a>',
                                 nCalls: s.number_of_calls,
                                 nErrors: s.number_of_errors,
                                 success: successPercent.toPrecision(3),
@@ -345,8 +345,8 @@ define([
                                             module = s.app.split('/')[0];
                                             id = s.app.split('/')[1];
                                         }
-                                        id = '<a href="#appcatalog/app/'+module+'/'+id+'/dev">'+id+'</a>';
-                                        module = '<a href="#appcatalog/module/'+module+'">'+module+'</a>';
+                                        id = '<a href="#catalog/apps/'+module+'/'+id+'/dev">'+id+'</a>';
+                                        module = '<a href="#catalog/modules/'+module+'">'+module+'</a>';
                                     } else {
                                         if(s.func) {
                                             id = 'API Call: ' + s.func;
@@ -400,17 +400,17 @@ define([
                                 var mod = ''; //data[k]['app_module_name'];
                                 if(data[k]['app_module_name']) {
                                     mod = data[k]['app_module_name'];
-                                    data[k]['app_module_name']= '<a href="#appcatalog/module/'+mod+'">'
+                                    data[k]['app_module_name']= '<a href="#catalog/modules/'+mod+'">'
                                                                     +mod+'</a>';
                                 }
-                                data[k]['app_id']= '<a href="#appcatalog/app/'+mod+'/'+data[k]['app_id']+'">'+
+                                data[k]['app_id']= '<a href="#catalog/apps/'+mod+'/'+data[k]['app_id']+'">'+
                                                         data[k]['app_id']+'</a>';
                             } else {
                                 if(data[k]['func_name']) {
                                     data[k]['app_id'] = '(API):' + data[k]['func_name'];
                                     if(data[k]['func_module_name']) {
                                         mod = data[k]['func_module_name'];
-                                        data[k]['app_module_name']= '<a href="#appcatalog/module/'+mod+'">'
+                                        data[k]['app_module_name']= '<a href="#catalog/modules/'+mod+'">'
                                                                         +mod+'</a>';
                                     } else {
                                         data[k]['app_module_name'] = 'Unknown'

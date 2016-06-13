@@ -211,7 +211,7 @@ define([
                     $versionDiv.append(self.renderCollapsableVersionDiv(
                         'Development Version',
                         $('<div>')
-                            .append('<a href="#appcatalog/status/'+info.module_name+'">View recent registrations</a><br><br>')
+                            .append('<a href="#catalog/status/'+info.module_name+'">View recent registrations</a><br><br>')
                             .append(self.renderVersion('dev',info.dev))
                         ));
                 } else {
@@ -268,10 +268,10 @@ define([
                         for(var i=0; i<version.narrative_methods.length; i++) {
                             var id = version.narrative_methods[i];
                             if(tag) {
-                                $l.append('<li><a href="#appcatalog/app/'+this.moduleDetails.info.module_name+'/'+id+'/'+tag+
+                                $l.append('<li><a href="#catalog/apps/'+this.moduleDetails.info.module_name+'/'+id+'/'+tag+
                                     '">'+id+'</a></li>');
                             } else {
-                                $l.append('<li><a href="#appcatalog/app/'+this.moduleDetails.info.module_name+'/'+id+
+                                $l.append('<li><a href="#catalog/apps/'+this.moduleDetails.info.module_name+'/'+id+
                                     '">'+id+'</a></li>');
                             }
                             /*$l.append('<li><a href="#narrativestore/method/'+this.moduleDetails.info.module_name+'/'+id+
@@ -335,7 +335,7 @@ define([
                                 }));
 
 
-                $adminContent.append('<br><a href="#appcatalog/status/'+
+                $adminContent.append('<br><a href="#catalog/status/'+
                     self.moduleDetails.info.module_name+'">View recent registrations</a><br>')
                 
                 $adminContent.append('<br><b>Module state information:</b>');
@@ -481,7 +481,7 @@ define([
                 var $versionsPanel = $('<div>').css('margin','1em');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog/apps">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
                 
                 $mainPanel
                     .append($header)

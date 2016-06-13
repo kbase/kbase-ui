@@ -197,9 +197,9 @@ define([
 
 
                 // NAV LINKS
-                var $statusLink = $('<li>').append($('<a href="#appcatalog/status">').append('Status'));
+                var $statusLink = $('<li>').append($('<a href="#catalog/status">').append('Status'));
 
-                var $registerLink = $('<li>').append($('<a href="#appcatalog/register">').append('<i class="fa fa-plus-circle"></i> Add Module'));
+                var $registerLink = $('<li>').append($('<a href="#catalog/register">').append('<i class="fa fa-plus-circle"></i> Add Module'));
 
 
 
@@ -579,7 +579,7 @@ define([
                             var $section = $('<div>').addClass('catalog-section');
                             $currentModuleDiv = $('<div>').addClass('kbcb-app-card-list-container');
                             $section.append($('<div>').css({'color':'#777'})
-                                    .append($('<h4>').append('<a href="#appcatalog/module/'+m+'">'+m+'</a>')));
+                                    .append($('<h4>').append('<a href="#catalog/modules/'+m+'">'+m+'</a>')));
                             $section.append($currentModuleDiv);
                             self.$functionListPanel.append($section);
                         }
@@ -710,7 +710,6 @@ define([
                     var types = [];
                     for(var k in self.inputTypes) { types.push(k); }
                     types.sort();
-                    console.log(self.inputTypes)
 
                     // create the sections per author
                     var $typeDivLookup = {};

@@ -114,7 +114,7 @@ define([
                 var newEntry = {};
                 newEntry['actions'] = $('<button>').addClass('btn').append('start');
                 newEntry['module_name'] = entry['module_name'];
-                newEntry['module_name_link'] = '<a href="#appcatalog/module/'+entry['module_name']+'">'+entry['module_name']+'</a>';
+                newEntry['module_name_link'] = '<a href="#catalog/modules/'+entry['module_name']+'">'+entry['module_name']+'</a>';
                 newEntry['version'] =  entry['version'];
                 newEntry['git_commit_hash'] = entry['git_commit_hash'];
                 return newEntry;
@@ -172,7 +172,7 @@ define([
                     "data": data,
                     "fnCreatedRow": function( nRow, aData, iDataIndex ) {
 
-                        $('td:eq(0)', nRow).html('<a href="#appcatalog/module/'+aData['module_name']+'">'+aData['module_name']+'</a>');
+                        $('td:eq(0)', nRow).html('<a href="#catalog/modules/'+aData['module_name']+'">'+aData['module_name']+'</a>');
 
                         $('td:eq(6)', nRow).html('<div style="width:250px"><a href="'+aData['url']+'">'+aData['url']+'</a></div>');
 
@@ -353,7 +353,7 @@ define([
                 var $mainPanel = $('<div>').addClass('container');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog/apps">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
                 
                 $mainPanel.append($('<h3>').append('Catalog Service Status:'));
 
