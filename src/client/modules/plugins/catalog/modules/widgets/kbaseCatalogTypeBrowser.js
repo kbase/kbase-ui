@@ -8,13 +8,13 @@
 define([
     'jquery',
     'bluebird',
-    'kb/service/client/catalog',
+    'kb/service/client/workspace',
     './catalog_util',
     'datatables',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap'
 ],
-    function ($, Promise, Catalog, CatalogUtil) {
+    function ($, Promise, Workspace, CatalogUtil) {
         $.KBWidget({
             name: "KBaseCatalogTypeBrowser",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
@@ -29,7 +29,7 @@ define([
             $mainPanel: null,
             $loadingPanel: null,
 
-            moduleList:null,
+            typeList:null,
 
             init: function (options) {
                 this._super(options);
@@ -46,12 +46,12 @@ define([
                 self.$elem.append(self.$loadingPanel);
                 var mainPanelElements = self.initMainPanel();
                 self.$mainPanel = mainPanelElements[0];
-                self.$moduleListPanel = mainPanelElements[1];
+                self.$typeListPanel = mainPanelElements[1];
                 self.$elem.append(self.$mainPanel);
                 self.showLoading();
 
                 var loadingCalls = [];
-                loadingCalls.push(self.populateModuleList());
+                loadingCalls.push(self.populateTypeList());
 
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
@@ -64,27 +64,43 @@ define([
 
             render: function() {
                 var self = this;
+                console.log(self.typeList)
 
-
-                if(self.myModuleList.length > 0) {
-
-                    self.$moduleListPanel.append( $('<div>').append($('<h4>').append('My Modules')) );
-                    var $myModuleTable = self.renderTable(self.myModuleList);
-                    self.$moduleListPanel.append($myModuleTable);
-                    self.$moduleListPanel.append( $('<div>').css('height','30px') );
-                    self.$moduleListPanel.append( $('<div>').append($('<h4>').append('All Modules')) );
-                }
-
-                var $moduleTable = self.renderTable(self.moduleList);
-                self.$moduleListPanel.append($moduleTable);
-                self.$moduleListPanel.append( $('<div>').css('height','100px') );
+                var $typeTable = self.renderTable(self.typeList);
+                self.$typeListPanel.append($typeTable);
+                self.$typeListPanel.append( $('<div>').css('height','100px') );
 
 
 
 
             },
 
-            renderTable: function(moduleData) {
+            renderTable: function(typeData) {
+
+                // Custom data tables sorting function, that takes a number in an html comment
+                // and sorts numerically by that number
+                $.extend( $.fn.dataTableExt.oSort, {
+                    "hidden-number-stats-pre": function ( a ) {
+                        // extract out the first comment if it exists, then parse as number
+                        var t = a.split('-->');
+                        if(t.length>1) {
+                            var t2 = t[0].split('<!--');
+                            if(t2.length>1) {
+                                return Number(t2[1]);
+                            }
+                        }
+                        return Number(a);
+                    },
+                 
+                    "hidden-number-stats-asc": function( a, b ) {
+                        return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+                    },
+                 
+                    "hidden-number-stats-desc": function(a,b) {
+                        return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+                    }
+                } );
+
                 var $table = $('<table>').addClass('table').css('width','100%');
 
                 var $container = $('<div>').addClass('container')
@@ -93,7 +109,7 @@ define([
                                 .append($table)));
 
                 var limit = 10000; var sDom = 'tipf';
-                if(moduleData.length<limit) {
+                if(typeData.length<limit) {
                     sDom = 'ift';
                 }
 
@@ -102,17 +118,18 @@ define([
                     "sPaginationType": "full_numbers",
                     "iDisplayLength": limit,
                     "sDom": sDom,
-                    "aaSorting": [[ 3, "dsc" ],[ 4, "dsc" ], [ 0, "asc" ]],
+                    "aaSorting": [[ 0, "asc" ]],
                     "columns": [
-                        {sTitle: 'Module Name', data: "module_name_link"},
+                        {sTitle: 'Type Name', data: "type_link"},
+                        {sTitle: 'Version', data: "ver"},
                         {sTitle: "Owners", data: "owners_link"},
-                        {sTitle: "Language", data: "language"},
-                        {sTitle: "Released?", data: "is_released"},
-                        {sTitle: "Beta?", data: "has_beta"},
-                        {sTitle: "Service?", data: "is_service"},
-                        {sTitle: "Git URL", data: "git_url_link"}
+                        {sTitle: "Released?", data: "released"},
+                        {sTitle: 'Timestamp', data: "timestamp"}
                     ],
-                    "data": moduleData
+                    "columnDefs": [
+                        { "type": "hidden-number-stats", targets: [4] }
+                    ],
+                    "data": typeData
                 };
                 $table.DataTable(tblSettings);
                 $table.find('th').css('cursor','pointer');
@@ -122,71 +139,70 @@ define([
 
 
             setupClients: function() {
-                this.catalog = new Catalog(
-                    this.runtime.getConfig('services.catalog.url'),
+                this.ws = new Workspace(
+                    this.runtime.getConfig('services.workspace.url'),
                     { token: this.runtime.service('session').getAuthToken() }
                 );
             },
 
-            initMainPanel: function($appListPanel, $moduleListPanel) {
+            initMainPanel: function() {
                 var $mainPanel = $('<div>').addClass('container');
 
-                var $moduleListPanel =  $('<div>');
-                $mainPanel.append($moduleListPanel);
+                $mainPanel.append($('<div>').addClass('kbcb-back-link')
+                        .append($('<a href="#catalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog Index')));
 
-                return [$mainPanel, $moduleListPanel];
+                var $typeListPanel =  $('<div>');
+                $mainPanel.append($typeListPanel);
+
+                return [$mainPanel, $typeListPanel];
             },
 
 
-            populateModuleList: function() {
+            populateTypeList: function() {
                 var self = this
 
-                var moduleSelection = {
-                    include_released:1,
-                    include_unreleased:1,
-                    include_disabled:0
-                };
+                return self.ws.list_modules({})
+                    .then(function (types) {
+                        self.typeList = [];
+                        var moduleLookupCalls = [];
+                        for(var t=0; t<types.length; t++) {
+                            moduleLookupCalls.push(
+                                self.ws.get_module_info({mod:types[t]})
+                                    .then(function(info) {
+                                        for (var name in info.types) {
+                                            if (!info.types.hasOwnProperty(name)) continue;
+                                            var tokens = name.split('-');
+                                            var modName = tokens[0].split('.')[0];
+                                            var typeName = tokens[0].split('.')[1];
+                                            var ver =  tokens[1]
 
-                return self.catalog.list_basic_module_info(moduleSelection)
-                    .then(function (modules) {
-                        self.moduleList = [];
-                        self.myModuleList = [];
-                        for(var k=0; k<modules.length; k++) {
-                            var moduleData = modules[k];
+                                            var released = '';
+                                            if(info.is_released == 1) { released = 'yes'; }
 
-                            moduleData['is_released'] = '';
-                            if(moduleData['release'] && moduleData['release']['git_commit_hash']) {
-                                moduleData['is_released'] = 'Yes (' + moduleData['release_version_list'].length + ')';
-                            }
+                                            var owners = '';
+                                            for(var o=0; o<info.owners.length; o++) {
+                                                if(o>=1) { owners += ', '; }
+                                                owners += '<a href="#people/'+ info.owners[o] +'">' + info.owners[o] + '</a>';
+                                            }
+                                            var typeInfo = {
+                                                'module': modName,
+                                                'type': typeName,
+                                                'type_link': '<a href="#spec/module/'+modName+'">'+modName+'</a>.<a href="#spec/type/'+modName+'.'+typeName+'">'+typeName+'</a>',
+                                                'ver' : ver,
+                                                'timestamp' : '<!--' + info.ver + '-->' + new Date( info.ver ).toLocaleString(),
+                                                'owners_link': owners,
+                                                'released': released
+                                            }
+                                            self.typeList.push(typeInfo);
+                                        }
 
-                            moduleData['has_beta'] = '';
-                            if(moduleData['beta'] && moduleData['beta']['git_commit_hash']) {
-                                moduleData['has_beta'] = 'Yes';
-                            }
-
-                            moduleData['is_service'] = '';
-                            if(moduleData['dynamic_service'] && moduleData['dynamic_service']==1) {
-                                moduleData['is_service'] = 'Yes';
-                            }
-
-                            moduleData['module_name_link'] = '<a href="#catalog/modules/'+ moduleData['module_name'] +'">' + moduleData['module_name'] + '</a>';
-                            moduleData['git_url_link'] = '<a href="'+ moduleData['git_url'] +'" target="_blank">' + moduleData['git_url'] + '</a>';
-                            moduleData['owners_link'] = '';
-                            var isMyModule = false;
-                            var me = self.runtime.service('session').getUsername();
-                            for(var o=0; o<moduleData['owners'].length; o++) {
-                                if(moduleData['owners'][o] === me) {
-                                    isMyModule = true;
-                                }
-                                if(o>=1) { moduleData['owners_link'] += ', '; }
-                                moduleData['owners_link'] += '<a href="#people/'+ moduleData['owners'][o] +'">' + moduleData['owners'][o] + '</a>';
-                            }
-                            self.moduleList.push(moduleData);
-                            if(isMyModule) {
-                                self.myModuleList.push(moduleData);
-                            }
+                                    })
+                                    .catch(function(err) {
+                                        console.log(err.error.message);
+                                    }));
                         }
-                        console.log(self.moduleList)
+                        // when we have it all, then return
+                        return Promise.all(moduleLookupCalls);
                     })
                     .catch(function (err) {
                         console.error('ERROR');

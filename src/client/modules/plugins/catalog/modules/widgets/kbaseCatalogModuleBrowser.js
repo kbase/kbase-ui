@@ -128,8 +128,11 @@ define([
                 );
             },
 
-            initMainPanel: function($appListPanel, $moduleListPanel) {
+            initMainPanel: function() {
                 var $mainPanel = $('<div>').addClass('container');
+
+                $mainPanel.append($('<div>').addClass('kbcb-back-link')
+                        .append($('<a href="#catalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog Index')));
 
                 var $moduleListPanel =  $('<div>');
                 $mainPanel.append($moduleListPanel);

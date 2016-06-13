@@ -353,7 +353,7 @@ define([
                 var $mainPanel = $('<div>').addClass('container');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#catalog/apps">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog Index')));
                 
                 $mainPanel.append($('<h3>').append('Catalog Service Status:'));
 

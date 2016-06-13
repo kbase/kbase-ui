@@ -22,7 +22,6 @@ define([
 
             // clients to the catalog service and the NarrativeMethodStore
             catalog: null,
-            nms: null,
             util: null,
 
             // main panel and elements
@@ -115,18 +114,13 @@ define([
                     this.runtime.getConfig('services.catalog.url'),
                     { token: this.runtime.service('session').getAuthToken() }
                 );
-                console.log(this.catalog)
-                this.nms = new NarrativeMethodStore(
-                    this.runtime.getConfig('services.narrative_method_store.url'),
-                    { token: this.runtime.service('session').getAuthToken() }
-                );
             },
 
             initMainPanel: function($appListPanel, $moduleListPanel) {
                 var $mainPanel = $('<div>').addClass('container');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#catalog/apps">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog Index')));
                 
                 $mainPanel.append($('<h3>').append('Catalog Admin Console:'));
 
@@ -583,7 +577,7 @@ define([
                         }
                     }
 
-                    self.catalog.set_client_group_configuration( { module_name:moduleName, function_name:functionName, client_groups:groupsList } )
+                    self.catalog.set_client_group_config( { module_name:moduleName, function_name:functionName, client_groups:groupsList } )
                         .then(function () {
                             $result.empty();
                             return self.refreshClientGroups();
@@ -598,6 +592,13 @@ define([
 
 
                 var $tbl = $('<table>').addClass('table table-hover table-condensed');
+                $tbl.append(
+                    $('<tr>')
+                        .append($('<th>').append('<b>Module Name</b>'))
+                        .append($('<th>').append('<b>Function Name</b>'))
+                        .append($('<th>').append('<b>Client Groups</b>'))
+                        .append($('<th>')));
+
                 for(var k=0; k<self.client_groups.length; k++) {
 
                     // loop to get client group string
@@ -611,10 +612,8 @@ define([
                     
                     $trash.on('click', (function(cg) {
                         return function() {
-                                console.log('removing: '+cg['module_name'] + ' - "' + cg['function_name']);
                             var confirm = window.confirm("Are you sure you want to remove this client group configuration?");
                             if (confirm == true) {
-                                console.log('removing: '+cg['module_name'] + ' - "' + cg['function_name']);
                                 self.catalog.remove_client_group_config({
                                             'module_name':cg['module_name'],
                                             'function_name':cg['function_name']
@@ -763,7 +762,6 @@ define([
 
                 for(var k=0; k<self.volume_mounts.length; k++) {
                     var vm = self.volume_mounts[k];
-                    console.log(vm)
 
                     var module_name = vm['module_name'];
                     var function_name = vm['function_name'];
@@ -788,7 +786,6 @@ define([
                         return function() {
                             var confirm = window.confirm("Are you sure you want to remove this volume mount?");
                             if (confirm == true) {
-                                console.log('removing: '+vm['module_name'] + ' - "' + vm['function_name'] + '"" - ' + vm['client_group']);
                                 self.catalog.remove_volume_mount({
                                             'module_name':vm['module_name'],
                                             'function_name':vm['function_name'],
@@ -882,22 +879,9 @@ define([
             getClientGroups: function() {
                 var self = this
                 self.client_groups = [];
-                return self.catalog.get_client_groups({})
+                return self.catalog.list_client_group_configs({})
                     .then(function (groups) {
-
-                        var non_empty_groups = [];
-                        for(var k=0; k<groups.length; k++) {
-                            if(groups[k].client_groups.length>0) {
-                                non_empty_groups.push(groups[k]);
-                            }
-                        }
-                        non_empty_groups.sort(function(a,b) {
-                            if(a.app_id < b.app_id) return -1;
-                            if(a.app_id > b.app_id) return 1;
-                            return 0;
-                        });
-
-                        self.client_groups = non_empty_groups;
+                        self.client_groups = groups;
                     })
                     .catch(function (err) {
                         console.error('ERROR');

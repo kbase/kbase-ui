@@ -87,7 +87,17 @@ define([
 
                 // Default sort is by name
                 self.organizeBy = 'name_az';
-                self.switchVersion('release')
+
+                if(self.options.tag) {
+                    self.tag = self.options.tag;
+                    if(self.tag!=='dev' && self.tag!=='beta' && self.tag!=='release') {
+                        console.warn('tag '+tag+ ' is not valid! Use: dev/beta/release.  defaulting to release.');
+                        self.tag='release';
+                    }
+                    self.switchVersion(self.tag);
+                } else {
+                    self.switchVersion('release');
+                }
                 
                 return this;
             },
@@ -201,6 +211,7 @@ define([
 
                 var $registerLink = $('<li>').append($('<a href="#catalog/register">').append('<i class="fa fa-plus-circle"></i> Add Module'));
 
+                var $helpLink = $('<li>').append($('<a href="#catalog">').append('<i class="fa fa-question-circle"></i> Help'));
 
 
                 // PLACE CONTENT ON CONTROL BAR
@@ -209,7 +220,8 @@ define([
                         .append($organizeBy)
                         .append($version)
                         .append($statusLink)
-                        .append($registerLink));
+                        .append($registerLink)
+                        .append($helpLink));
 
                 $nav.append($container)
 
@@ -221,6 +233,7 @@ define([
                 self.showLoading();
                 var loadingCalls = [];
                 self.functionList = [];
+                self.tag = tag;
                 loadingCalls.push(self.refreshLocalFunctionList(tag));
 
                 Promise.all(loadingCalls).then(function() {
@@ -357,7 +370,6 @@ define([
 
                 return self.catalog.list_local_functions(localFunctionSelection)
                     .then(function (functions) {
-                        console.log(functions)
 
                         /*functions.push({
                             'module_name': 'ModuleName',
@@ -511,6 +523,17 @@ define([
                 var organizeBy = self.organizeBy;
 
                 self.$functionListPanel.children().detach();
+
+                if(self.tag) {
+                    var text_css = {'color':'#777', 'font-size':'1.1em', 'margin':'5px' }
+                    if(self.tag == 'dev') {
+                        self.$functionListPanel.append($('<div>').css(text_css).append('Currently viewing Functions under development.'));
+                    } else if (self.tag == 'beta') {
+                        self.$functionListPanel.append($('<div>').css(text_css).append('Currently viewing Functions in beta.'));
+                    }
+                }
+
+
 
                 if(self.functionList.length === 0) {
                     var $listContainer = $('<div>').css({'overflow':'auto', 'padding':'0 0 2em 0'});

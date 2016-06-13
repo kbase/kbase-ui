@@ -348,6 +348,9 @@ install:
         -
             path: ['catalog', 'functions']
             widget: catalog_function_browser
+        -
+            path: ['catalog', 'functions', {type: param, name: tag}]
+            widget: catalog_function_browser
         -   
             path: ['catalog', 'functions', {type: param, name: module}, {type: param, name: function_id}]
             widget: catalog_function_viewer

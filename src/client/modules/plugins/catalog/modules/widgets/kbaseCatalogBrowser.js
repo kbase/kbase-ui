@@ -257,6 +257,8 @@ define([
 
                 var $registerLink = $('<li>').append($('<a href="#catalog/register">').append('<i class="fa fa-plus-circle"></i> Add Module'));
 
+                var $helpLink = $('<li>').append($('<a href="#catalog">').append('<i class="fa fa-question-circle"></i> Help'));
+
 
 
                 // PLACE CONTENT ON CONTROL BAR
@@ -265,7 +267,8 @@ define([
                         .append($organizeBy)
                         .append($version)
                         .append($statusLink)
-                        .append($registerLink));
+                        .append($registerLink)
+                        .append($helpLink));
 
                 $nav.append($container)
 
@@ -666,6 +669,15 @@ define([
 
                 self.$appListPanel.children().detach();
 
+                if(self.options.tag) {
+                    var text_css = {'color':'#777', 'font-size':'1.1em', 'margin':'5px' }
+                    if(self.options.tag == 'dev') {
+                        self.$appListPanel.append($('<div>').css(text_css).append('Currently viewing Apps under development.'));
+                    } else if (self.options.tag == 'beta') {
+                        self.$appListPanel.append($('<div>').css(text_css).append('Currently viewing Apps in beta.'));
+                    }
+                }
+
                 // no organization, so show all
                 if(!organizeBy) { return; }
 
@@ -779,7 +791,6 @@ define([
                             $noAuthorDiv.append(self.appList[k].getNewCardDiv())
                         }
                     }
-
                 }
 
                 

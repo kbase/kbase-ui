@@ -56,8 +56,13 @@ define([
                 var base = '#catalog/';
 
 
-                var descriptionText = 'Browse and search for Narrative Apps.  This is probably what you are looking for.';
+                var descriptionText = 'Browse and search for KBase apps.  This is probably what you are looking for.';
                 $m.append($('<h4>').append(self.makeLink(base+'apps', 'App Catalog')))
+                  .append($('<div>').append(descriptionText));
+                $m.append('<hr>');
+
+                var descriptionText = 'A brief introduction to KBase apps and the App Catalog.';
+                $m.append($('<h4>').append(self.makeLink('https://kbase.us/apps', 'App Catalog Help Pages')))
                   .append($('<div>').append(descriptionText));
                 $m.append('<hr>');
 
@@ -102,7 +107,7 @@ define([
                 $m.append('<hr>');
 
 
-                descriptionText = 'View summary statistics of Narrative Apps.';
+                descriptionText = 'View summary statistics of KBase Apps.';
                 $m.append($('<h4>').append(self.makeLink(base+'stats', 'Catalog Stats')))
                   .append($('<div>').append(descriptionText));
                 $m.append('<hr>');
