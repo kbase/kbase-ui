@@ -43,7 +43,7 @@ plugins:
     -
         name: datawidgets
         globalName: kbase-ui-plugin-datawidgets
-        version: 0.1.5
+        version: 0.2.0
         cwd: src/plugin
         source:
             bower: {}
@@ -95,7 +95,7 @@ modules:
             bower: {}
     -
         globalName: kbase-service-clients-js
-        version: 1.6.0
+        version: 1.7.0
         source:
             bower: {}
     -
