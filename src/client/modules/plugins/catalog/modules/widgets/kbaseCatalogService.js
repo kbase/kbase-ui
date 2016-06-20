@@ -354,6 +354,8 @@ define([
                 });
             },
 
+            connections: [],
+
             showLog: function(data, btn) {
                 var self = this;
                 self.$logPanelDiv.empty();
@@ -362,56 +364,142 @@ define([
                 $container.append($('<i>').addClass('fa fa-spinner fa-2x fa-spin')).append('<br><br><br>');
                 self.$logPanelDiv.append($container);
 
-                return self.wizard.get_service_log({
-                        service: {
-                            'module_name': data['module_name'],
-                            'version': data['git_commit_hash']
-                        }
-                    })
-                    .then(function (logdata) {
-                        $container.empty();
-                        console.log('Log Data:', logdata);
-                        var $logs = $('<div>');
-                        var $refresh = $('<button>')
-                                            .addClass('btn btn-default')
-                                            .append($('<i class="fa fa-refresh" aria-hidden="true">'))
-                                            .append('&nbsp;&nbspRefresh');
-                        $refresh.on('click', function() { self.showLog(data, btn); });
-                        $container.append($refresh);
 
-                        $container.append($logs).append('<br><br><br>');
-                        for(var k=0; k<logdata.length; k++) {
-                            var $entry = $('<div>');
-
-                            $entry.append($('<h4>').append('Instance: '+logdata[k]['instance_id']));
-                            var $content = $('<div>')
-                                                .css({
-                                                    'height':'400px',
-                                                    'overflow-y':'scroll',
-                                                    'resize':'vertical',
-                                                    'font-family': "'Courier New', monospace"
-                                                    });
-                            for(var i=0; i<logdata[k]['log'].length; i++) {
-                                $content.append(self.escapeHtml(logdata[k]['log'][i])).append('<br>');
+                if ('WebSocket' in window){
+                    /* WebSocket is supported. great! */
+                    return self.wizard.get_service_log_web_socket({
+                            service: {
+                                'module_name': data['module_name'],
+                                'version': data['git_commit_hash']
                             }
-                            $entry.append($content);
-                            $logs.append($entry);
-                            $content.scrollTop($content[0].scrollHeight);
-                        }
-                    })
-                    .catch(function (err) {
-                        console.error('FETCHING LOG ERROR');
-                        console.error(err);
+                        })
+                        .then(function (logdata) {
+                            $container.empty();
 
-                        $container.empty();
-                        var msg = err.error.message;
-                        $container.append(
-                            $('<div class="alert alert-danger" role="alert">')
-                                .append('<strong>Error:</strong><br><br>')
-                                .append(msg)
-                                )
-                        $container.append('<br><br>');
-                    });
+                            var $logs = $('<div>');
+                            $container.append($logs).append('<br><br><br>');
+
+                            // close out existing connections
+                            if(self.connections) {
+                                for(var c=0; c<self.connections.length; c++) {
+                                    self.connections[c].close();
+                                }
+                            }
+                            self.connections = [];
+
+                            for(var k=0; k<logdata.length; k++) {
+
+                                // create the page elements
+                                var $entry = $('<div>');
+                                $entry.append($('<h4>').append('Instance: '+logdata[k]['instance_id']));
+                                var $content = $('<div>')
+                                                    .css({
+                                                        'height':'350px',
+                                                        'overflow-y':'scroll',
+                                                        'resize':'vertical',
+                                                        'font-family': "'Courier New', monospace"
+                                                        });
+                                $logs.append($entry.append($content));
+
+
+                                // create the connections
+                                var connection = new WebSocket(logdata[k]['socket_url']);
+                                var onclose = function(id) {
+                                    return function() { console.log('closing '+id) };
+                                }
+                                var onopen  = function(id) {
+                                    return function() { console.log('opening '+id) };
+                                }
+                                var onmessage = function($logPanel, escapeHtml) {
+                                    return function(e) {
+                                        var server_mssg = e.data;
+                                        var clean_mssg = server_mssg.replace(/[\"&<>]/g, function (a) {
+                                            return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
+                                        });
+                                        $logPanel.append(clean_mssg).append('<br>');
+                                        $logPanel.scrollTop($content[0].scrollHeight);
+                                    }
+                                }
+
+                                connection.onopen = onopen(logdata[k]['instance_id'])
+                                connection.onclose = onclose(logdata[k]['instance_id'])
+                                connection.onmessage = onmessage($content)
+                                self.connections.push(connection);
+                            }
+
+                        })
+                        .catch(function (err) {
+                            console.error('FETCHING LOG ERROR');
+                            console.error(err);
+
+                            $container.empty();
+                            var msg = err.error.message;
+                            $container.append(
+                                $('<div class="alert alert-danger" role="alert">')
+                                    .append('<strong>Error:</strong><br><br>')
+                                    .append(msg)
+                                    )
+                            $container.append('<br><br>');
+                        });
+
+
+
+                } else {
+                /*WebSockets are not supported. */
+                    return self.wizard.get_service_log({
+                            service: {
+                                'module_name': data['module_name'],
+                                'version': data['git_commit_hash']
+                            }
+                        })
+                        .then(function (logdata) {
+                            $container.empty();
+                            console.log('Log Data:', logdata);
+                            var $logs = $('<div>');
+                            var $refresh = $('<button>')
+                                                .addClass('btn btn-default')
+                                                .append($('<i class="fa fa-refresh" aria-hidden="true">'))
+                                                .append('&nbsp;&nbspRefresh');
+                            $refresh.on('click', function() { self.showLog(data, btn); });
+                            $container.append($refresh);
+
+                            $container.append($logs).append('<br><br><br>');
+                            for(var k=0; k<logdata.length; k++) {
+                                var $entry = $('<div>');
+
+                                $entry.append($('<h4>').append('Instance: '+logdata[k]['instance_id']));
+                                var $content = $('<div>')
+                                                    .css({
+                                                        'height':'350px',
+                                                        'overflow-y':'scroll',
+                                                        'resize':'vertical',
+                                                        'font-family': "'Courier New', monospace"
+                                                        });
+                                for(var i=0; i<logdata[k]['log'].length; i++) {
+                                    $content.append(self.escapeHtml(logdata[k]['log'][i])).append('<br>');
+                                }
+                                $entry.append($content);
+                                $logs.append($entry);
+                                $content.scrollTop($content[0].scrollHeight);
+                            }
+                        })
+                        .catch(function (err) {
+                            console.error('FETCHING LOG ERROR');
+                            console.error(err);
+
+                            $container.empty();
+                            var msg = err.error.message;
+                            $container.append(
+                                $('<div class="alert alert-danger" role="alert">')
+                                    .append('<strong>Error:</strong><br><br>')
+                                    .append(msg)
+                                    )
+                            $container.append('<br><br>');
+                        });
+                }
+
+
+                
 
 
             },
