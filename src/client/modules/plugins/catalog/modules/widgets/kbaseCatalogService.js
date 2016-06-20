@@ -34,6 +34,7 @@ define([
             // main panel and elements
             $mainPanel: null,
             $loadingPanel: null,
+            $logPanelDiv: null,
 
 
             dev_versions: null,
@@ -61,6 +62,7 @@ define([
                 self.$mainPanel = mainPanelElements[0];
                 self.$serviceStatusDiv = mainPanelElements[1];
                 self.$serviceListDiv = mainPanelElements[2];
+                self.$logPanelDiv = mainPanelElements[3];
 
                 self.$elem.append(self.$mainPanel);
                 self.showLoading();
@@ -158,10 +160,13 @@ define([
                     "columns": [
                         {sTitle: "Module", data: "module_name"},
                         {sTitle: "Version", data: "version"},
+                        {sTitle: "R", data: "release_tag"},
+                        {sTitle: "B", data: "beta_tag"},
+                        {sTitle: "D", data: "dev_tag"},
                         {sTitle: "Status", data: "status"},
                         {sTitle: "Up?", data: "up"},
                         {sTitle: "Health", data: "health"},
-                        {sTitle: "Git Hash", data: "hash"},
+                        {sTitle: "GitHash", data: "git_commit_hash"},
                         {sTitle: "url", data: "url"},
                         {
                             sTitle: "Actions", 
@@ -172,29 +177,39 @@ define([
                     "data": data,
                     "fnCreatedRow": function( nRow, aData, iDataIndex ) {
 
-                        $('td:eq(0)', nRow).html('<a href="#catalog/modules/'+aData['module_name']+'">'+aData['module_name']+'</a>');
+                        if(!aData['module_name'].startsWith('!')){
+                            $('td:eq(0)', nRow).html('<a href="#catalog/modules/'+aData['module_name']+'">'+aData['module_name']+'</a>');
+                        }
+                        if(aData['git_commit_hash'] && aData['git_commit_hash'].length ==40) {
+                            $('td:eq(8)', nRow).html(aData['git_commit_hash'].substring(0,7));
+                        }
 
-                        $('td:eq(6)', nRow).html('<div style="width:250px"><a href="'+aData['url']+'">'+aData['url']+'</a></div>');
+                        $('td:eq(9)', nRow).html('<div style="width:250px"><a href="'+aData['url']+'">'+aData['url']+'</a></div>');
 
                         if(aData['health'] === 'healthy') {
-                            $('td:eq(4)', nRow).html('<span class="label label-success">healthy</span>');
+                            $('td:eq(7)', nRow).html('<span class="label label-success">healthy</span>');
                         } else {
-                            $('td:eq(4)', nRow).html('<span class="label label-danger">'+aData['health']+'</span>');
+                            $('td:eq(7)', nRow).html('<span class="label label-danger">'+aData['health']+'</span>');
                         }
 
                         if(aData['version'] != 'unknown') {
                             if(aData['up']) {
+                                var $span = $('<span>');
                                 var $stopBtn = $("<button>").addClass("btn btn-default").append('stop')
                                     .on('click', function() {
                                         self.stop(aData, this);
                                     });
-                                $('td:eq(7)', nRow).html($stopBtn);
+                                var $logBtn = $("<button>").addClass("btn btn-default").append('log')
+                                    .on('click', function() {
+                                        self.showLog(aData, this);
+                                    });
+                                $('td:eq(10)', nRow).html($span.append($stopBtn).append($logBtn));
                             } else {
                                 var $startBtn = $("<button>").addClass("btn btn-default").append('start')
                                     .on('click', function() {
                                         self.start(aData, this);
                                     });
-                                $('td:eq(7)', nRow).html($startBtn);
+                                $('td:eq(10)', nRow).html($startBtn);
                             }
                         }
                     }
@@ -332,6 +347,75 @@ define([
                     });
             },
 
+            escapeHtml: function(text) {
+                'use strict';
+                return text.replace(/[\"&<>]/g, function (a) {
+                    return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
+                });
+            },
+
+            showLog: function(data, btn) {
+                var self = this;
+                self.$logPanelDiv.empty();
+                self.$logPanelDiv.append($('<h3>').append('Service Log:'))
+                var $container = $('<div>');
+                $container.append($('<i>').addClass('fa fa-spinner fa-2x fa-spin')).append('<br><br><br>');
+                self.$logPanelDiv.append($container);
+
+                return self.wizard.get_service_log({
+                        service: {
+                            'module_name': data['module_name'],
+                            'version': data['git_commit_hash']
+                        }
+                    })
+                    .then(function (logdata) {
+                        $container.empty();
+                        console.log('Log Data:', logdata);
+                        var $logs = $('<div>');
+                        var $refresh = $('<button>')
+                                            .addClass('btn btn-default')
+                                            .append($('<i class="fa fa-refresh" aria-hidden="true">'))
+                                            .append('&nbsp;&nbspRefresh');
+                        $refresh.on('click', function() { self.showLog(data, btn); });
+                        $container.append($refresh);
+
+                        $container.append($logs).append('<br><br><br>');
+                        for(var k=0; k<logdata.length; k++) {
+                            var $entry = $('<div>');
+
+                            $entry.append($('<h4>').append('Instance: '+logdata[k]['instance_id']));
+                            var $content = $('<div>')
+                                                .css({
+                                                    'height':'400px',
+                                                    'overflow-y':'scroll',
+                                                    'resize':'vertical',
+                                                    'font-family': "'Courier New', monospace"
+                                                    });
+                            for(var i=0; i<logdata[k]['log'].length; i++) {
+                                $content.append(self.escapeHtml(logdata[k]['log'][i])).append('<br>');
+                            }
+                            $entry.append($content);
+                            $logs.append($entry);
+                            $content.scrollTop($content[0].scrollHeight);
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error('FETCHING LOG ERROR');
+                        console.error(err);
+
+                        $container.empty();
+                        var msg = err.error.message;
+                        $container.append(
+                            $('<div class="alert alert-danger" role="alert">')
+                                .append('<strong>Error:</strong><br><br>')
+                                .append(msg)
+                                )
+                        $container.append('<br><br>');
+                    });
+
+
+            },
+
 
             setupClients: function() {
                 this.catalog = new Catalog(
@@ -366,14 +450,16 @@ define([
                 var $serviceStatusDiv = $('<div>');
                 $mainPanel.append($serviceStatusDiv);
 
+                var $logDiv = $('<div>');
+                $mainPanel.append($logDiv);
+
                 $mainPanel.append($('<h3>').append('Catalog Available Service List:'));
                 var $serviceListDiv = $('<div>').addClass('row kbcb-ctr-toolbar');
                 $mainPanel.append($serviceListDiv);
 
-
                 $mainPanel.append('<br><br><br><br><br>');
 
-                return [$mainPanel, $serviceStatusDiv, $serviceListDiv];
+                return [$mainPanel, $serviceStatusDiv, $serviceListDiv, $logDiv];
             },
 
             initLoadingPanel: function() {
@@ -400,6 +486,27 @@ define([
                 return self.wizard.list_service_status({})
                     .then(function (service_status_list) {
                         console.log(service_status_list);
+                        for(var k=0; k<service_status_list.length; k++) {
+                            service_status_list[k]['release_tag'] = '';
+                            service_status_list[k]['beta_tag'] = '';
+                            service_status_list[k]['dev_tag'] = '';
+
+                            if(service_status_list[k]['release_tags']) {
+                                for(var r=0; r<service_status_list[k]['release_tags'].length; r++) {
+                                    var tag = service_status_list[k]['release_tags'][r];
+                                    if(tag === 'dev') {
+                                        service_status_list[k]['dev_tag'] = '<span class="label label-default">dev</span>';
+                                    }
+                                    if(tag === 'beta') {
+                                        service_status_list[k]['beta_tag'] = '<span class="label label-info">beta</span>';
+                                    }
+                                    if(tag === 'release') {
+                                        service_status_list[k]['release_tag'] = '<span class="label label-primary">release</span>';
+                                    }
+                                }
+                            }
+                        }
+
                         self.status_data = service_status_list;
                     })
                     .catch(function (err) {
