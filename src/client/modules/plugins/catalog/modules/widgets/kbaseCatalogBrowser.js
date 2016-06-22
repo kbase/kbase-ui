@@ -73,12 +73,27 @@ define([
                     util : 'Utilities'
                 };
 
-
                 // new style we have a runtime object that gives us everything in the options
                 self.runtime = options.runtime;
+                self.isLoggedIn = self.runtime.service('session').isLoggedIn();
                 //console.log(this.runtime.service('session').getUsername());
                 self.util = new CatalogUtil();
                 self.setupClients();
+
+                // process the 'tag' argument, which can only be dev | beta | release
+                self.showReleaseTagLabels = true;
+                if(self.options.tag) {
+                    self.options.tag = self.options.tag.toLowerCase();
+                    if(self.options.tag!=='dev' && self.options.tag!=='beta' && self.options.tag!=='release') {
+                        console.warn('tag '+self.options.tag+ ' is not valid! Use: dev/beta/release.  defaulting to release.');
+                        self.options.tag = 'release';
+                    }
+                } else {
+                    self.options.tag = 'release';
+                }
+                if(self.options.tag==='release') {
+                    self.showReleaseTagLabels = false;
+                }
 
                 // initialize and add the control bar
                 var $container = $('<div>').addClass('container');
@@ -101,15 +116,18 @@ define([
                 // get the list of apps and modules
                 var loadingCalls = [];
                 self.appList = []; self.moduleList = [];
-                loadingCalls.push(self.populateAppListWithMethods());
-                loadingCalls.push(self.populateAppListWithApps());
-                loadingCalls.push(self.populateModuleList());
+                loadingCalls.push(self.populateAppList(self.options.tag));
+                loadingCalls.push(self.populateModuleList(self.options.tag));
+                // only show legacy apps if we are showing everything
+                self.legacyApps=[];
+                if(self.options.tag==='release') {
+                    loadingCalls.push(self.populateAppListWithLegacyApps());
+                }
 
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
 
                     self.processData();
-
 
                     self.updateFavoritesCounts()
                         .then(function() {
@@ -180,7 +198,7 @@ define([
 
                 // ORGANIZE BY
                 var $obMyFavs = $('<a>');
-                if(self.runtime.service('session').isLoggedIn()) {
+                if(self.isLoggedIn) {
                     $obMyFavs.append('My Favorites')
                                     .on('click', function() {self.renderAppList('my_favorites')});
                 }
@@ -235,9 +253,9 @@ define([
 
 
                 // ORGANIZE BY
-                var $verR = $('<a href="#catalog/apps/release">').append('Released Modules');
-                var $verB = $('<a href="#catalog/apps/beta">').append('Beta Modules');
-                var $verD = $('<a href="#catalog/apps/dev">').append('Modules in Development');
+                var $verR = $('<a href="#catalog/apps/release">').append('Released Apps');
+                var $verB = $('<a href="#catalog/apps/beta">').append('Beta Apps');
+                var $verD = $('<a href="#catalog/apps/dev">').append('Apps in Development');
 
                 var $version = $('<li>').addClass('dropdown')
                                     .append('<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Version<span class="caret"></span></a>')
@@ -400,6 +418,7 @@ define([
             //    catalog: catalog_client
             //    browserWidget: this widget, so we can toggle any update
             toggleFavorite: function(info, context) {
+                    console.log('clickz');
                 var appCard = this;
                 var params = {};
                 if(info.module_name) {
@@ -438,40 +457,14 @@ define([
             },
 
 
-
-            populateAppListWithMethods: function() {
+            apps:null,
+            populateAppList: function(tag) {
                 var self = this;
 
                 // determine which set of methods to fetch
-                var tag='release'; // default is to show only 'release' tagged modules
-                if(self.options.tag) {
-                    tag = self.options.tag;
-                    if(tag!=='dev' && tag!=='beta' && tag!=='release') {
-                        console.warn('tag '+tag+ ' is not valid! Use: dev/beta/release.  defaulting to release.');
-                        tag='release';
-                    }
-                }
-
-                return self.nms.list_methods({
-                        tag:tag
-                    })
-                    .then(function (methods) {
-                        for(var k=0; k<methods.length; k++) {
-
-                            if(methods[k].loading_error) {
-                                console.log('Error in spec, will not be loaded:')
-                                console.log(methods[k])
-                                continue;
-                            }
-
-                            // logic to hide/show certain categories
-                            if(self.util.skipApp(methods[k].categories)) continue;
-
-                            var m = new AppCard('method',methods[k],tag,self.nms_base_url, 
-                                self.toggleFavorite, {catalog:self.catalog, browserWidget:self},
-                                self.runtime.service('session').isLoggedIn());
-                            self.appList.push(m);
-                        }
+                return self.nms.list_methods({tag:tag})
+                    .then(function (apps) {
+                        self.apps = apps;
                     })
                     .catch(function (err) {
                         console.error('ERROR');
@@ -479,18 +472,14 @@ define([
                     });
             },
 
-            populateAppListWithApps: function() {
+            legacyApps:null,
+            populateAppListWithLegacyApps: function() {
                 var self = this;
 
                 // apps cannot be registered via the SDK, so don't have tag info
                 return self.nms.list_apps({})
-                    .then(function (apps) {
-                        //console.log(apps);
-                        for(var k=0; k<apps.length; k++) {
-                            if(self.util.skipApp(apps[k].categories)) continue;
-                            var a = new AppCard('app',apps[k],null,self.nms_base_url);
-                            self.appList.push(a);
-                        }
+                    .then(function (legacyApps) {
+                        self.legacyApps = legacyApps;
                     })
                     .catch(function (err) {
                         console.error('ERROR');
@@ -499,8 +488,9 @@ define([
             },
 
 
+            moduleLookup: null,
 
-            populateModuleList: function() {
+            populateModuleList: function(only_released) {
                 var self = this
 
                 var moduleSelection = {
@@ -508,16 +498,16 @@ define([
                     include_unreleased:1,
                     include_disabled:0
                 };
+                if(only_released && only_released==true) {
+                    moduleSelection['include_unreleased']=0;
+                }
 
                 return self.catalog.list_basic_module_info(moduleSelection)
                     .then(function (modules) {
+                        self.moduleLookup = {}; // {module_name: {info:{}, hash1:'tag', hash:'tag', ...} 
+                        var tags = ['release', 'beta', 'dev'];
                         for(var k=0; k<modules.length; k++) {
-                            var m = {
-                                info: modules[k],
-                                $div: $('<div>').addClass('kbcb-module')
-                            };
-                            self.renderModuleBox(m);
-                            self.moduleList.push(m);
+                            self.moduleLookup[modules[k]['module_name']] = modules[k];
                         }
                     })
                     .catch(function (err) {
@@ -552,6 +542,19 @@ define([
                     });
             },
 
+            isDeveloper: function() {
+                var self = this
+
+                return self.catalog.is_approved_developer([self.runtime.service('session').getUsername()])
+                    .then(function (isDev) {
+                        console.log('isdev:',isDev)
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
+            },
+
 
             updateFavoritesCounts: function() {
                 var self = this
@@ -578,7 +581,7 @@ define([
             // warning!  will not return a promise if the user is not logged in!
             updateMyFavorites: function() {
                 var self = this
-                if(self.runtime.service('session').isLoggedIn()) {
+                if(self.isLoggedIn) {
                     return self.catalog.list_favorites(self.runtime.service('session').getUsername())
                         .then(function (favorites) {
                             self.favoritesList = favorites;
@@ -604,22 +607,74 @@ define([
             processData: function() {
                 var self = this;
 
-                // setup module map
-                self.moduleLookup = {};
+
+                // module lookup table should already exist
+
+
+                // instantiate the app cards and create the app lookup table
                 self.appLookup = {};
-                for(var m=0; m<self.moduleList.length; m++) {
-                    self.moduleLookup[self.moduleList[m].info.module_name] = self.moduleList[m];
-                }
-                for(var a=0; a<self.appList.length; a++) {
-                    // only lookup for methods; apps are deprecated
-                    if(self.appList[a].type==='method') {
-                        if(self.appList[a].info.module_name) {
-                            var idTokens = self.appList[a].info.id.split('/');
-                            self.appLookup[idTokens[0].toLowerCase() + '/' + idTokens[1]] = self.appList[a];
-                        } else {
-                            self.appLookup[self.appList[a].info.id] = self.appList[a];
+
+                for(var k=0; k<self.apps.length; k++) {
+
+                    if(self.apps[k].loading_error) {
+                        console.warn('Error in spec, will not be loaded:', self.apps[k])
+                        continue;
+                    }
+
+                    // logic to hide/show certain categories
+                    if(self.util.skipApp(self.apps[k].categories)) continue;
+
+                    // if we are showing dev/beta, do not show non-sdk methods
+                    if(self.options.tag!=='release') {
+                        if(!self.apps[k]['module_name']) {
+                            continue;
                         }
                     }
+
+
+                    //    legacy : true | false // indicates if this is a legacy App or SDK App
+                    //    app:  { .. }  // app info returned (for now) from NMS
+                    //    module: { .. }  // module info returned for SDK methods
+                    //    favoritesCallback: function () // function called when favorites button is clicked
+                    //    favoritesCallbackParams: {} // parameters passed on to the callback function
+                    //    isLoggedIn: true | false
+
+                    var m = new AppCard({
+                                    legacy:false,
+                                    app:self.apps[k],
+                                    module:self.moduleLookup[self.apps[k]['module_name']],
+                                    nms_base_url: self.nms_base_url, 
+                                    favoritesCallback: self.toggleFavorite, 
+                                    favoritesCallbackParams: {catalog:self.catalog, browserWidget:self},
+                                    isLoggedIn: self.isLoggedIn,
+                                    showReleaseTagLabels: self.showReleaseTagLabels,
+                                    linkTag: self.options.tag
+                                });
+                    self.appList.push(m);
+
+                    if(m.info.module_name) {
+                        var idTokens = m.info.id.split('/');
+                        self.appLookup[idTokens[0].toLowerCase() + '/' + idTokens[1]] = m;
+                    } else {
+                        self.appLookup[m.info.id] = m;
+                    }
+                }
+
+                // HANDLE LEGACY APPS!!
+                for(var k=0; k<self.legacyApps.length; k++) {
+                    if(self.legacyApps[k].loading_error) {
+                        console.warn('Error in spec, will not be loaded:', self.legacyApps[k])
+                        continue;
+                    }
+                    if(self.util.skipApp(self.legacyApps[k].categories)) continue;
+                    var a = new AppCard({
+                                    legacy:true,
+                                    app:self.legacyApps[k],
+                                    nms_base_url:self.nms_base_url,
+                                    isLoggedIn: self.isLoggedIn,
+                                    linkTag: self.options.tag
+                                });
+                    self.appList.push(a);
                 }
 
                 self.developers = {};
@@ -648,20 +703,7 @@ define([
                         }
                     }
                 }
-
-
-
             },
-
-
-
-
-            renderModuleBox: function(module) {
-                var $modDiv = $('<div>').addClass('kbcb-app');
-                $modDiv.append(module.info.module_name);
-                module.$div = $modDiv;
-            },
-
 
 
             renderAppList: function(organizeBy) {
