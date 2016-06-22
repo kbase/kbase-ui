@@ -175,7 +175,7 @@ define([
             var isSdk = this.isSdk;
             var nms_base_url = this.nms_base_url;
             var linkTag = this.linkTag;
-            
+
 
             // Main Container
             var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover container');
@@ -296,13 +296,19 @@ define([
                 if(isSdk) {
                     var $ver_tags = $('<div>').addClass('col-xs-4').css('text-align','left');
                     if(module.release && module.release.git_commit_hash && module.release.git_commit_hash===info.git_commit_hash) {
-                        $ver_tags.append('<span class="label label-primary">R</span>');
+                        $ver_tags.append($('<span>').addClass('label label-primary').append('R')
+                                                    .tooltip({title:'Tagged as the latest released version.', placement:'bottom', container:'body',
+                                                                delay:{show: 400, hide: 40}}));
                     }
                     if(module.beta && module.beta.git_commit_hash && module.beta.git_commit_hash===info.git_commit_hash) {
-                        $ver_tags.append('<span class="label label-info">B</span>');
+                        $ver_tags.append($('<span>').addClass('label label-info').append('B')
+                                                    .tooltip({title:'Tagged as the current beta version.', placement:'bottom', container:'body',
+                                                                delay:{show: 400, hide: 40}}));
                     }
                     if(module.dev && module.dev.git_commit_hash && module.dev.git_commit_hash===info.git_commit_hash) {
-                        $ver_tags.append('<span class="label label-default">D</span>');
+                        $ver_tags.append($('<span>').addClass('label label-default').append('D')
+                                                    .tooltip({title:'Tagged as the current development version.', placement:'bottom', container:'body',
+                                                                delay:{show: 400, hide: 40}}));
                     }
                     $footer.append($ver_tags);
 
