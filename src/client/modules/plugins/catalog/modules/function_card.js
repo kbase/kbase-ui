@@ -149,6 +149,7 @@ define([
         this._renderFunctionCard = function() {
 
             var info = this.info;
+            console.log(info)
 
             // Main Container
             var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover container');
@@ -163,12 +164,6 @@ define([
             $titleSpan.append($('<div>').addClass('kbcb-function-prototype-title').css({'margin':'4px'})
                 .append('funcdef <span style="font-weight:bold">'+info.function_id+'</span>(...)'));
 
-            var release_tag = '';
-            if(info.release_tag) {
-                if(info.release_tag == 'beta' || info.release_tag == 'dev') {
-                    release_tag = ' '+info.release_tag;
-                }
-            }
             $titleSpan.append($('<div>').addClass('kbcb-app-card-module').css({'padding-top':'4px'}).append(
                                     $('<a href="#catalog/modules/'+info.module_name+'">')
                                         .append(info.module_name)
@@ -176,7 +171,7 @@ define([
                                             // have to stop propagation so we don't go to the app page first
                                             event.stopPropagation();
                                         }))
-                                    .append(' v'+info.version + release_tag)
+                                    .append(' v'+info.version)
                             );
 
             
@@ -234,8 +229,33 @@ define([
             }*/
             $footer.append($('<div>').addClass('col-xs-3').css('text-align','left'));
 
-            // buffer spacing before the info icon
-            $footer.append($('<div>').addClass('col-xs-4').css('text-align','left'));
+            // add release tag information
+            var $releaseTagsDiv = $('<div>').addClass('col-xs-4').css('text-align','left');
+            $footer.append($releaseTagsDiv);
+
+            for(var r=0; r<info.release_tag.length; r++) {
+                var rts = info.release_tag;
+                for(var r=0; r<rts.length; r++) {
+                    if(rts[r]==='release') {
+                        $releaseTagsDiv.append($('<span>').addClass('label label-primary').css({'padding':'.3em .6em .3em'})
+                                                        .append('R')
+                                                        .tooltip({title:'Tagged as the latest released version.', placement:'bottom', container:'body',
+                                                                    delay:{show: 400, hide: 40}}));
+                    }
+                    if(rts[r]==='beta') {
+                        $releaseTagsDiv.append($('<span>').addClass('label label-info').css({'padding':'.3em .6em .3em'})
+                                                        .append('B')
+                                                        .tooltip({title:'Tagged as the current beta version.', placement:'bottom', container:'body',
+                                                                    delay:{show: 400, hide: 40}}));
+                    }
+                    if(rts[r]==='dev') {
+                        $releaseTagsDiv.append($('<span>').addClass('label label-default').css({'padding':'.3em .6em .3em'})
+                                                        .append('D')
+                                                        .tooltip({title:'Tagged as the current development version.', placement:'bottom', container:'body',
+                                                                    delay:{show: 400, hide: 40}}));
+                    }
+                }
+            }
 
             var $moreInfoDiv = $('<div>').addClass('col-xs-1').addClass('kbcb-info').css('text-align','right');
             $moreInfoDiv

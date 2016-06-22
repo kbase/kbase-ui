@@ -118,6 +118,7 @@ define([
                 self.appList = []; self.moduleList = [];
                 loadingCalls.push(self.populateAppList(self.options.tag));
                 loadingCalls.push(self.populateModuleList(self.options.tag));
+                loadingCalls.push(self.isDeveloper());
                 // only show legacy apps if we are showing everything
                 self.legacyApps=[];
                 if(self.options.tag==='release') {
@@ -133,14 +134,13 @@ define([
                         .then(function() {
                             self.hideLoading();
                             self.renderAppList('favorites');
-                            self.updateRunStats();
-                            return self.updateMyFavorites();
+                            return Promise.all([self.updateRunStats(),self.updateMyFavorites()]);
                         }).catch(function (err) {
-                            self.hideLoading();
-                            self.renderAppList('name_az');
-                            self.updateRunStats();
                             console.error('ERROR');
                             console.error(err);
+                            self.hideLoading();
+                            self.renderAppList('name_az');
+                            return self.updateRunStats();
                         });
 
                 });
@@ -163,6 +163,7 @@ define([
             },
 
 
+            $ctrList: null,
 
             renderControlToolbar: function () {
                 var self = this;
@@ -194,6 +195,7 @@ define([
 
                 // other controls list
                 var $ctrList = $('<ul>').addClass('nav navbar-nav').css('font-family',"'OxygenRegular', Arial, sans-serif");
+                self.$ctrList = $ctrList;
                 $content.append($ctrList);
 
                 // ORGANIZE BY
@@ -252,7 +254,26 @@ define([
                         );
 
 
-                // ORGANIZE BY
+                // PLACE CONTENT ON CONTROL BAR
+                $content
+                    .append($ctrList
+                        .append($organizeBy));
+
+                $nav.append($container)
+
+
+                return [$nav, $searchBox];
+            },
+
+            addUserControls: function() {
+                var self = this;
+                var $helpLink = $('<li>').append($('<a href="https://kbase.us/apps">').append('<i class="fa fa-question-circle"></i> Help'));
+                self.$ctrList.append($helpLink);
+            },
+
+            addDeveloperControls: function() {
+                var self = this;
+
                 var $verR = $('<a href="#catalog/apps/release">').append('Released Apps');
                 var $verB = $('<a href="#catalog/apps/beta">').append('Beta Apps');
                 var $verD = $('<a href="#catalog/apps/dev">').append('Apps in Development');
@@ -269,29 +290,21 @@ define([
                         .append($('<li>')
                             .append($verD)));
 
-
                 // NAV LINKS
                 var $statusLink = $('<li>').append($('<a href="#catalog/status">').append('Status'));
 
                 var $registerLink = $('<li>').append($('<a href="#catalog/register">').append('<i class="fa fa-plus-circle"></i> Add Module'));
 
-                var $helpLink = $('<li>').append($('<a href="#catalog">').append('<i class="fa fa-question-circle"></i> Help'));
+                var $indexLink = $('<li>').append($('<a href="#catalog">').append('<i class="fa fa-bars"></i> Index'));
+                var $helpLink = $('<li>').append($('<a href="https://kbase.us/apps">').append('<i class="fa fa-question-circle"></i> Help'));
 
+                self.$ctrList
+                    .append($version)
+                    .append($statusLink)
+                    .append($registerLink)
+                    .append($indexLink)
+                    .append($helpLink)
 
-
-                // PLACE CONTENT ON CONTROL BAR
-                $content
-                    .append($ctrList
-                        .append($organizeBy)
-                        .append($version)
-                        .append($statusLink)
-                        .append($registerLink)
-                        .append($helpLink));
-
-                $nav.append($container)
-
-
-                return [$nav, $searchBox];
             },
 
 
@@ -547,7 +560,11 @@ define([
 
                 return self.catalog.is_approved_developer([self.runtime.service('session').getUsername()])
                     .then(function (isDev) {
-                        console.log('isdev:',isDev)
+                        if(isDev && isDev.length>0 && isDev[0]==1) {
+                            self.addDeveloperControls();
+                        } else {
+                            self.addUserControls();
+                        }
                     })
                     .catch(function (err) {
                         console.error('ERROR');

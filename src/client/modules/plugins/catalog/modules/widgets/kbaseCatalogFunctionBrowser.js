@@ -211,8 +211,8 @@ define([
 
                 var $registerLink = $('<li>').append($('<a href="#catalog/register">').append('<i class="fa fa-plus-circle"></i> Add Module'));
 
-                var $helpLink = $('<li>').append($('<a href="#catalog">').append('<i class="fa fa-question-circle"></i> Help'));
-
+                var $indexLink = $('<li>').append($('<a href="#catalog">').append('<i class="fa fa-bars"></i> Index'));
+                var $helpLink = $('<li>').append($('<a href="https://kbase.us/apps">').append('<i class="fa fa-question-circle"></i> Help'));
 
                 // PLACE CONTENT ON CONTROL BAR
                 $content
@@ -221,6 +221,7 @@ define([
                         .append($version)
                         .append($statusLink)
                         .append($registerLink)
+                        .append($indexLink)
                         .append($helpLink));
 
                 $nav.append($container)
