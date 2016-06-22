@@ -672,30 +672,34 @@ define([
                     .then(function(info_list) {
                         for(var k=0; k<info_list.length; k++) {
                             // logic to hide/show certain categories
+
                             if(self.util.skipApp(info_list[k].categories)) continue;
-                            
-                            var m = new AppCard('method',info_list[k],tag,self.nms_base_url,
-                                self.toggleFavorite, {catalog:self.catalog, browserWidget:self},
-                                self.runtime.service('session').isLoggedIn());
+                            var m = new AppCard({
+                                        legacy:false,
+                                        app:info_list[k],
+                                        module:self.moduleDetails.info,
+                                        nms_base_url: self.nms_base_url, 
+                                        favoritesCallback: self.toggleFavorite, 
+                                        favoritesCallbackParams: {catalog:self.catalog, browserWidget:self},
+                                        isLoggedIn: self.runtime.service('session').isLoggedIn(),
+                                        showReleaseTagLabels: true,
+                                        linkTag:info_list[k].git_commit_hash
+                                    });
                             self.appList.push(m);
-                        }
-                        for(var a=0; a<self.appList.length; a++) {
-                            // only lookup for methods; apps are deprecated
-                            if(self.appList[a].type==='method') {
-                                if(self.appList[a].info.module_name) {
-                                    var idTokens = self.appList[a].info.id.split('/');
-                                    self.appLookup[idTokens[0].toLowerCase() + '/' + idTokens[1]] = self.appList[a];
+                            if(m.info.module_name) {
+                                if(m.info.module_name) {
+                                    var idTokens = m.info.id.split('/');
+                                    self.appLookup[idTokens[0].toLowerCase() + '/' + idTokens[1]] = m;
                                 } else {
-                                    self.appLookup[self.appList[a].info.id] = self.appList[a];
+                                    self.appLookup[m.info.id] = m;
                                 }
                             }
                         }
-                        console.log('has functions!')
+
                         // do the same for local functions
                         if(has_functions) {
                             return self.catalog.list_local_functions({'release_tag': tag, 'module_names': [ self.module_name.toLowerCase() ] })
                                 .then(function(mods) {
-                                    console.log(mods)
                                     for(var m=0; m<mods.length; m++) {
                                         var f = new FunctionCard(mods[m],self.runtime.service('session').isLoggedIn());
                                         self.functionList.push(f);

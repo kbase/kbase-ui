@@ -15,27 +15,42 @@ define([
     //      module_name:
     //      ...
     //     
-    function AppCard(type, info, tag, nms_base_url, favoritesCallback, favoritesCallbackParams, isLoggedIn) {
+
+    //params = {
+    //    legacy : true | false // indicates if this is a legacy App or SDK App
+    //    app:  { .. }  // app info returned (for now) from NMS
+    //    module: { .. }  // module info returned for SDK methods
+    //    favoritesCallback: function () // function called when favorites button is clicked
+    //    favoritesCallbackParams: {} // parameters passed on to the callback function
+    //    isLoggedIn: true | false
+    //    showReleaseTagLabels: true | false
+    //    linkTag: dev | beta | release | commit_hash
+    //}
+
+    function AppCard(params) {
 
         this.$divs = [];
-        this.info = info;
-        this.type = type;
-        this.tag = tag;
-        this.nms_base_url = nms_base_url;
+        this.info = params.app;
+        this.module = params.module;
+        this.legacy = params.legacy;
+        this.nms_base_url = params.nms_base_url;
+        this.isLoggedIn = params.isLoggedIn;
+        this.showReleaseTagLabels = false;
+        this.linkTag = params.linkTag;
+        if(params.showReleaseTagLabels && params.showReleaseTagLabels==true) {
+            this.showReleaseTagLabels = true;
+        }
+
         this.cardsAdded = 0;
 
-        this.isLoggedIn = isLoggedIn;
-
-        this.favoritesCallback = favoritesCallback;
-        this.favoritesCallbackParams = favoritesCallbackParams;
+        this.favoritesCallback = params.favoritesCallback;
+        this.favoritesCallbackParams = params.favoritesCallbackParams;
 
         // only an SDK module if it has a module name
         this.isSdk = false;
-        if(this.info.module_name) {
+        if(this.module) {
             this.isSdk = true;
         }
-
-
 
         this.show = function() {
             for(var k=0; k<this.$divs.length; k++) {
@@ -155,9 +170,12 @@ define([
         this._renderAppCard = function() {
 
             var info = this.info;
-            var type = this.type;
-            var tag = this.tag;
+            var module = this.module;
+            var legacy = this.legacy;
+            var isSdk = this.isSdk;
             var nms_base_url = this.nms_base_url;
+            var linkTag = this.linkTag;
+
 
             // Main Container
             var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover container');
@@ -166,9 +184,9 @@ define([
             var $topDiv = $('<div>').addClass('row kbcb-app-card-header');
             var $logoSpan = $('<div>').addClass('col-xs-3 kbcb-app-card-logo');
 
-            if(type === 'method') {
+            if(!legacy) {
                 $logoSpan.append('<div class="fa-stack fa-3x"><i class="fa fa-square fa-stack-2x method-icon"></i><i class="fa fa-inverse fa-stack-1x fa-cube"></i></div>')
-            } else if (type === 'app') {
+            } else {
                 $logoSpan.append('<span class="fa-stack fa-3x"><span class="fa fa-square fa-stack-2x app-icon"></span><span class="fa fa-inverse fa-stack-1x fa-cubes" style=""></span></span>');
             }
 
@@ -184,17 +202,19 @@ define([
             var $titleSpan = $('<div>').addClass('col-xs-9 kbcb-app-card-title-panel');
                 
             $titleSpan.append($('<div>').addClass('kbcb-app-card-title').append(info.name));
-            if(info['module_name']) {
+            if(isSdk) {
                 $titleSpan.append($('<div>').addClass('kbcb-app-card-module').append(
-                                        $('<a href="#catalog/modules/'+info.module_name+'">')
-                                            .append(info.module_name)
+                                        $('<a href="#catalog/modules/'+module.module_name+'">')
+                                            .append(module.module_name)
                                             .on('click',function(event) {
                                                 // have to stop propagation so we don't go to the app page first
                                                 event.stopPropagation();
-                                            })));
+                                            }))
+                                        //.append(' v'+module.version)
+                                );
             }
 
-            if(type==='method') {
+            if(!legacy) {
                 if(info.authors.length>0) {
                     var $authorDiv = $('<div>').addClass('kbcb-app-card-authors').append('by ');
                     for(var k=0; k<info.authors.length; k++) {
@@ -230,13 +250,14 @@ define([
             // FOOTER - stars, number of runs, and info mouseover area
             var $footer = $('<div>').addClass('clearfix kbcb-app-card-footer');
 
-            if(type==='method') {
+            if(!legacy) {
                 var $starDiv = $('<div>').addClass('col-xs-3').css('text-align','left');
                 var $star = $('<span>').addClass('kbcb-star').append('<i class="fa fa-star"></i>');
                 var self = this;
                 if(self.isLoggedIn) {
                     $star.addClass('kbcb-star-nonfavorite');
                     $star.on('click', function(event) {
+                        console.log('here')
                         event.stopPropagation();
                         if(!self.deactivatedStar && self.favoritesCallback) {
                             self.favoritesCallback(self.info, self.favoritesCallbackParams)
@@ -254,7 +275,7 @@ define([
                 $footer.append($('<div>').addClass('col-xs-3'))
             }
 
-            if(this.isSdk) {
+            if(isSdk) {
                 var nRuns = Math.floor(Math.random()*10000);
                 var $nRuns = $('<div>').addClass('col-xs-3').css('text-align','left');
                 $nRuns.append($('<span>').addClass('kbcb-runs'));
@@ -270,8 +291,35 @@ define([
                 $footer.append($('<div>').addClass('col-xs-3'))
             }
 
-            // buffer
-            $footer.append($('<div>').addClass('col-xs-4').css('text-align','left'));
+            // version tags
+            if(this.showReleaseTagLabels) {
+                if(isSdk) {
+                    var $ver_tags = $('<div>').addClass('col-xs-4').css('text-align','left');
+                    if(module.release && module.release.git_commit_hash && module.release.git_commit_hash===info.git_commit_hash) {
+                        $ver_tags.append($('<span>').addClass('label label-primary').append('R')
+                                                    .tooltip({title:'Tagged as the latest released version.', placement:'bottom', container:'body',
+                                                                delay:{show: 400, hide: 40}}));
+                    }
+                    if(module.beta && module.beta.git_commit_hash && module.beta.git_commit_hash===info.git_commit_hash) {
+                        $ver_tags.append($('<span>').addClass('label label-info').append('B')
+                                                    .tooltip({title:'Tagged as the current beta version.', placement:'bottom', container:'body',
+                                                                delay:{show: 400, hide: 40}}));
+                    }
+                    if(module.dev && module.dev.git_commit_hash && module.dev.git_commit_hash===info.git_commit_hash) {
+                        $ver_tags.append($('<span>').addClass('label label-default').append('D')
+                                                    .tooltip({title:'Tagged as the current development version.', placement:'bottom', container:'body',
+                                                                delay:{show: 400, hide: 40}}));
+                    }
+                    $footer.append($ver_tags);
+
+                } else {
+                    $footer.append($('<div>').addClass('col-xs-4').css('text-align','left')
+                        .append('<span class="label label-primary">R</span>'));
+                }
+            } else {
+                $footer.append($('<div>').addClass('col-xs-4').css('text-align','left'));
+
+            }
 
             var $moreInfoDiv = $('<div>').addClass('col-xs-1').addClass('kbcb-info').css('text-align','right');
             $moreInfoDiv
@@ -289,12 +337,12 @@ define([
 
 
             $appDiv.on('click', function() {
-                if(type === 'method') {
+                if(!legacy) {
                     if(info.module_name) {
                         // module name right now is encoded in the ID
                         //window.location.href = '#appcatalog/app/'.info.module_name+'/'+app.info.id;
-                        if(tag) {
-                            window.location.href = '#catalog/apps/'+info.id + '/'+tag;
+                        if(linkTag) {
+                            window.location.href = '#catalog/apps/'+info.id + '/'+linkTag;
                         } else {
                             window.location.href = '#catalog/apps/'+info.id;
                         }
