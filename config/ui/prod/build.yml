@@ -36,14 +36,14 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 1.5.4-beta
+        version: 1.6.0
         cwd: src/plugin
         source:
             bower: {}
     -
         name: datawidgets
         globalName: kbase-ui-plugin-datawidgets
-        version: 0.2.0
+        version: 0.2.2
         cwd: src/plugin
         source:
             bower: {}
@@ -57,7 +57,7 @@ plugins:
     -
         name: data-landing-pages
         globalName: kbase-ui-plugin-data-landing-pages
-        version: 0.3.0
+        version: 0.3.1
         cwd: src/plugin
         source:
             bower: {}
@@ -90,7 +90,7 @@ modules:
             bower: {}
     -
         globalName: kbase-common-js
-        version: 1.6.0
+        version: 1.9.0
         source:
             bower: {}
     -
@@ -100,6 +100,6 @@ modules:
             bower: {}
     -
         globalName: kbase-data-api-client-js
-        version: 1.0.4
+        version: 1.0.5
         source:
             bower: {}
