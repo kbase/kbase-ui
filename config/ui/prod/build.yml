@@ -36,7 +36,7 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 1.6.0
+        version: 1.7.0
         cwd: src/plugin
         source:
             bower: {}
