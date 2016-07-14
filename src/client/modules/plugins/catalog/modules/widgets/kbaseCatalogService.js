@@ -364,8 +364,8 @@ define([
                 $container.append($('<i>').addClass('fa fa-spinner fa-2x fa-spin')).append('<br><br><br>');
                 self.$logPanelDiv.append($container);
 
-
-                if ('WebSocket' in window){
+                /* don't use websockets to rancher for now */
+                if (false) { //'WebSocket' in window){
                     /* WebSocket is supported. great! */
                     return self.wizard.get_service_log_web_socket({
                             service: {
