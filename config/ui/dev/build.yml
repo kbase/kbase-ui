@@ -86,13 +86,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
-    -
-        name: dataapidemo
-        globalName: kbase-ui-plugin-data-api-demo
-        version: 0.1.5
-        cwd: src/plugin
-        source:
-            bower: {}
+#    -
+#        name: dataapidemo
+#        globalName: kbase-ui-plugin-data-api-demo
+#        version: 0.1.5
+#        cwd: src/plugin
+#        source:
+#            bower: {}
     -
         name: shockbrowser
         globalName: kbase-ui-plugin-shockbrowser
