@@ -1,4 +1,24 @@
-# Sample live-linking into the kbase-ui build for faster development
+#!/bin/sh
+
+# Set the root of the project.
+# This is the directory which contains kbase-ui and any plugin repo directories.
+export DEVDIR=/your/dev/dir
+
+function linkLib() {
+   local package=$1
+   local module=$2
+
+    rm -rf ../../build/build/client/modules/kb/$package
+    ln -s $DEVDIR/kbase-$module/dist/kb/$package ../../build/build/client/modules/kb/$package
+}
+
+function linkPlugin() {
+    local plugin=$1
+
+    rm -rf ../../build/build/client/modules/plugins/$plugin
+    ln -s $DEVDIR/kbase-ui-plugin-$plugin/src/plugin ../../build/build/client/modules/plugins/$plugin
+}
+
 
 #
 # MODULE LIBS
@@ -15,7 +35,10 @@
 # rm -rf ../../build/build/client/modules/kb/LIBPACKAGE
 # ln -s /DEVDIR/kbase-MODULE/src/kb/data ../../build/build/client/modules/kb/LIBPACKAGE
 
-
+# linkLib "package" "module"
+# where package is the directory within modules/kb owned by this library
+# module is the repo directory following the kbase- namespacing prefix
+# linkLib "common" "common-js"
 
 #
 # EXTERNAL PLUGINS
@@ -28,11 +51,8 @@
 # 
 # 
 
-
-# rm -rf ../../build/build/client/modules/plugins/PLUGIN
-# ln -s /DEVDIR/kbase-ui-plugin-PLUGIN/src/plugin ../../build/build/client/modules/plugins/PLUGIN
-
-
+# linkPlugin "dataview"
+# linkPlugin "data-landing-pages"
 
 #
 # INTERNAL PLUGINS

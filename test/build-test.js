@@ -40,7 +40,7 @@ requirejs.config({
         handlebars: 'bower_components/handlebars/handlebars',
         nunjucks: 'bower_components/nunjucks/nunjucks',
         font_awesome: 'bower_components/font-awesome/css/font-awesome',
-        uuid: 'bower_components/node-uuid/uuid',
+        uuid: 'bower_components/pure-uuid/uuid',
         numeral: 'bower_components/numeral/numeral',
         'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
         kb_ui: 'css/kb-ui',

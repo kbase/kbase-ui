@@ -24,10 +24,10 @@ define([
             // the catalog home page is simple the catalog browser
             var div=html.tag('div');
             return div({
-                id: widgetSet.addWidget('catalog_registration_widget', 
+                id: widgetSet.addWidget('catalog_function_viewer_widget', 
                     {
-                        jqueryName: 'KBaseCatalogRegistration', 
-                        jquery_name:'KBaseCatalogRegistration'
+                        jqueryName: 'KBaseCatalogFunctionViewer', 
+                        jquery_name:'KBaseCatalogFunctionViewer'
                     })
             });
         }
@@ -42,7 +42,7 @@ define([
             });
         }
         function attach(node) {
-            runtime.send('ui', 'setTitle', 'Catalog Module Registration');
+            runtime.send('ui', 'setTitle', 'Function Catalog');
             return Promise.try(function () {
                 mount = node;
                 container = mount.appendChild(DOM.createElement('div'));

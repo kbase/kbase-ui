@@ -31,7 +31,7 @@ make start
 make preview
 ```
 
-This sets up the build environment, builds a developer version of the ui, starts a little static nodejs server at on :8080, and launches the default browser pointed at that local server.
+This sets up the build environment, builds a developer version of the ui, starts a little static nodejs server on :8080, and launches the default browser pointed at that local server.
 
 The basic process is then to iterate over
 
@@ -51,24 +51,26 @@ git clone https://github.com/YOU/kbase-ui-plugin-PLUGIN
 
 A plugin can be developed in two modes: slow or fast.
 
-In slow mode, you can simply update a plugin in-situ, push your changes up to your repo, and configure the local kbase-ui to use the tip if your master branch rather than fetch it through bower's semver mechanism. This is slow (sans automation) because it each plugin change must be followed by commit and push of the plugin repo, then a build of kbase-ui.
+In slow mode, you can simply update a plugin in-situ, push your changes up to your repo, and configure the local kbase-ui to use the tip if your master branch rather than fetch it through bower's semver mechanism. This is slow (sans automation) because each plugin change must be followed by commit and push of the plugin repo, then a build of kbase-ui.
 
 In fast mode, you will link your plugin directly into a kbase-ui build. Your changes will be instantly available to the kbase-ui filesystem without any additional build process (after the first time). It does require a little more configuration at the beginning, but that is a small price to pay for an extended session.
 
-One advantage of at least getting familiar with slow mode is that it can also be applied to other scenarios, such as using another developer's fork, or a special branch or tag from upstream, for testing
+One advantage of at least getting familiar with slow mode is that it can also be applied to other scenarios, such as using another developer's fork, or a special branch or tag from upstream, for testing.
 
 #### Create Dev Config
 
-In *kbase-ui*, the top level *config* directory contains all of the configuration for the ui, service end points, and the build process. For a stock build (e.g. ci, next, production) the config directory is consulted by the make file and sub-processes. For development, it is usually required to make some small changes to the configuration. Rather than change the built-in configuration, the build process will first look in the top level *dev* directory for *dev/config*. 
+In *kbase-ui*, the top level *config* directory contains all of the configuration for the ui, service end points, and the build process. For a stock build (e.g. ci, next, production) the config directory is consulted by the make file and sub-processes. For development, it is usually required to make some small changes to the configuration. It is not good practice to change the built-in configuration unless one is setting about to actually change kbase-ui.
 
-So the first step is to copy the config directory into the dev directory
+The build process supports a secondary config directory within the top level *dev* directory, to wit *dev/config*. 
+
+So the first step is to copy the config directory to dev/config:
 
 ```
 cd kbase-ui
 cp -pr config dev
 ```
-We won't be modifying any configuration immediately.
 
+We won't be modifying any configuration immediately.
 
 ### Integrate into the build
 
