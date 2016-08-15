@@ -12,11 +12,12 @@ define([
     'kb/service/client/catalog',
     './catalog_util',
     './app_card',
+    './function_card',
     'catalog_registration_widget',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap'
 ],
-    function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil, AppCard) {
+    function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil, AppCard, FunctionCard) {
         $.KBWidget({
             name: "KBaseCatalogModuleViewer",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
@@ -69,8 +70,9 @@ define([
                 self.$headerPanel = mainPanelElements[1];
                 self.$adminPanel = mainPanelElements[2];
                 self.$appsPanel = mainPanelElements[3];
-                self.$descriptionPanel = mainPanelElements[4];
-                self.$versionsPanel = mainPanelElements[5];
+                self.$functionsPanel = mainPanelElements[4];
+                self.$descriptionPanel = mainPanelElements[5];
+                self.$versionsPanel = mainPanelElements[6];
 
                 self.$elem.append(self.$mainPanel);
                 self.showLoading();
@@ -86,7 +88,7 @@ define([
                 Promise.all(loadingCalls).then(function() {
                     self.render();
                     self.hideLoading();
-                    self.getAppInfo()
+                    return self.getAppInfo()
                         .then(function() {
                             var p = Promise.all([
                                     self.updateMyFavorites(),
@@ -94,6 +96,7 @@ define([
                                     self.updateRunStats()
                                 ]);
                             self.renderApps();
+                            self.renderFunctions();
                             return p;
                         })
                 }).catch(function(err){
@@ -208,7 +211,7 @@ define([
                     $versionDiv.append(self.renderCollapsableVersionDiv(
                         'Development Version',
                         $('<div>')
-                            .append('<a href="#appcatalog/status/'+info.module_name+'">View recent registrations</a><br><br>')
+                            .append('<a href="#catalog/status/'+info.module_name+'">View recent registrations</a><br><br>')
                             .append(self.renderVersion('dev',info.dev))
                         ));
                 } else {
@@ -265,14 +268,33 @@ define([
                         for(var i=0; i<version.narrative_methods.length; i++) {
                             var id = version.narrative_methods[i];
                             if(tag) {
-                                $l.append('<li><a href="#appcatalog/app/'+this.moduleDetails.info.module_name+'/'+id+'/'+tag+
+                                $l.append('<li><a href="#catalog/apps/'+this.moduleDetails.info.module_name+'/'+id+'/'+tag+
                                     '">'+id+'</a></li>');
                             } else {
-                                $l.append('<li><a href="#appcatalog/app/'+this.moduleDetails.info.module_name+'/'+id+
+                                $l.append('<li><a href="#catalog/apps/'+this.moduleDetails.info.module_name+'/'+id+
                                     '">'+id+'</a></li>');
                             }
                             /*$l.append('<li><a href="#narrativestore/method/'+this.moduleDetails.info.module_name+'/'+id+
                                 '">'+id+'</a></li>');*/
+                        }
+                        $verDiv.append($l);
+                    } else {
+                        $verDiv.append('none<br>');
+                    }
+                } else {
+                    $verDiv.append('none<br>');
+                }
+
+
+                $verDiv.append('<b>Functions Exposed:</b> ');
+                if(version.local_functions) {
+                    if(version.local_functions.length>0) {
+                        $verDiv.append('<br>');
+                        var $l = $('<ul>');
+                        for(var i=0; i<version.local_functions.length; i++) {
+                            var id = version.local_functions[i];
+                            $l.append('<li><a href="#catalog/functions/'+this.moduleDetails.info.module_name+'/'+id+
+                                    '/'+version.git_commit_hash+'">'+id+'</a></li>');
                         }
                         $verDiv.append($l);
                     } else {
@@ -313,7 +335,7 @@ define([
                                 }));
 
 
-                $adminContent.append('<br><a href="#appcatalog/status/'+
+                $adminContent.append('<br><a href="#catalog/status/'+
                     self.moduleDetails.info.module_name+'">View recent registrations</a><br>')
                 
                 $adminContent.append('<br><b>Module state information:</b>');
@@ -405,14 +427,31 @@ define([
                 var self = this;
 
                 //self.$appLPanel.append('<i>Note: temporarily showing dev versions</i><br>')
-                var $appListContainer = $('<div>').css({
-                        padding:'1em 0em 2em 1em',
-                        'overflow':'auto'
-                    });
-                for(var k=0; k<self.appList.length; k++) {
-                    $appListContainer.append(self.appList[k].getNewCardDiv());
+                if(self.appList.length > 0) {
+                    var $appListContainer = $('<div>').css({
+                            padding:'1em 0em 2em 1em',
+                            'overflow':'auto'
+                        });
+                    for(var k=0; k<self.appList.length; k++) {
+                        $appListContainer.append(self.appList[k].getNewCardDiv());
+                    }
+                    self.$appsPanel.append($appListContainer);
                 }
-                self.$appsPanel.append($appListContainer);
+            },
+
+            renderFunctions: function() {
+                var self = this;
+
+                if(self.functionList.length>0) {
+                    var $funcListContainer = $('<div>').css({
+                            padding:'1em 0em 2em 1em',
+                            'overflow':'auto'
+                        });
+                    for(var k=0; k<self.functionList.length; k++) {
+                        $funcListContainer.append(self.functionList[k].getNewCardDiv());
+                    }
+                    self.$functionsPanel.append($funcListContainer);
+                }
             },
 
 
@@ -437,23 +476,25 @@ define([
                 var $header = $('<div>').css('margin','1em');
                 var $adminPanel = $('<div>').css('margin','1em');
                 var $appsPanel = $('<div>').css('margin','1em');
+                var $functionsPanel = $('<div>').css('margin','1em');
                 var $descriptionPanel = $('<div>').css('margin','1em');
                 var $versionsPanel = $('<div>').css('margin','1em');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog/apps">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
                 
                 $mainPanel
                     .append($header)
                     .append($adminPanel)
                     .append($appsPanel)
+                    .append($functionsPanel)
                     .append('<hr>')
                     .append($descriptionPanel)
                     .append('<hr>')
                     .append($versionsPanel)
                     .append('<br><br><br><br><br>');
 
-                return [$mainPanel, $header, $adminPanel, $appsPanel, $descriptionPanel, $versionsPanel];
+                return [$mainPanel, $header, $adminPanel, $appsPanel, $functionsPanel, $descriptionPanel, $versionsPanel];
             },
 
             showLoading: function() {
@@ -566,7 +607,6 @@ define([
 
                 return self.catalog.get_exec_aggr_stats(options)
                     .then(function (stats) {
-                        console.log(stats);
                         self.runStats = stats;
                         for(var k=0; k<stats.length; k++) {
 
@@ -593,46 +633,81 @@ define([
                 var self = this;
 
                 var tag = 'release';
-                var m_names = [];
+                var m_names = []; var has_functions = false;
                 if(self.moduleDetails.info.release) {
                     m_names = self.moduleDetails.info.release.narrative_methods;
+                    if (self.moduleDetails.info.release.local_functions) {
+                        if(self.moduleDetails.info.release.local_functions.length > 0) {
+                            has_functions = true;
+                        }
+                    }
                 } else if(self.moduleDetails.info.beta) {
                     m_names = self.moduleDetails.info.beta.narrative_methods;
+                    if (self.moduleDetails.info.beta.local_functions) {
+                        if(self.moduleDetails.info.beta.local_functions.length > 0) {
+                            has_functions = true;
+                        }
+                    }
                     tag='beta';
                 } else if(self.moduleDetails.info.dev) {
                     m_names = self.moduleDetails.info.dev.narrative_methods;
+                    if (self.moduleDetails.info.dev.local_functions) {
+                        if(self.moduleDetails.info.dev.local_functions.length > 0) {
+                            has_functions = true;
+                        }
+                    }
                     tag='dev';
                 }
                 for(var m=0; m<m_names.length; m++) {
                     m_names[m] = self.moduleDetails.info.module_name + '/' + m_names[m];
                 }
 
-
                 var params = { ids: m_names, tag: tag };
+
+                self.appList = [];
+                self.appLookup = [];
+                self.functionList = [];
+
                 return self.nms.get_method_brief_info(params)
                     .then(function(info_list) {
-                        self.appList = []; self.appLookup = [];
                         for(var k=0; k<info_list.length; k++) {
                             // logic to hide/show certain categories
+
                             if(self.util.skipApp(info_list[k].categories)) continue;
-                            
-                            var m = new AppCard('method',info_list[k],tag,self.nms_base_url,
-                                self.toggleFavorite, {catalog:self.catalog, browserWidget:self},
-                                self.runtime.service('session').isLoggedIn());
+                            var m = new AppCard({
+                                        legacy:false,
+                                        app:info_list[k],
+                                        module:self.moduleDetails.info,
+                                        nms_base_url: self.nms_base_url, 
+                                        favoritesCallback: self.toggleFavorite, 
+                                        favoritesCallbackParams: {catalog:self.catalog, browserWidget:self},
+                                        isLoggedIn: self.runtime.service('session').isLoggedIn(),
+                                        showReleaseTagLabels: true,
+                                        linkTag:info_list[k].git_commit_hash
+                                    });
                             self.appList.push(m);
-                        }
-                        for(var a=0; a<self.appList.length; a++) {
-                            // only lookup for methods; apps are deprecated
-                            if(self.appList[a].type==='method') {
-                                if(self.appList[a].info.module_name) {
-                                    var idTokens = self.appList[a].info.id.split('/');
-                                    self.appLookup[idTokens[0].toLowerCase() + '/' + idTokens[1]] = self.appList[a];
+                            if(m.info.module_name) {
+                                if(m.info.module_name) {
+                                    var idTokens = m.info.id.split('/');
+                                    self.appLookup[idTokens[0].toLowerCase() + '/' + idTokens[1]] = m;
                                 } else {
-                                    self.appLookup[self.appList[a].info.id] = self.appList[a];
+                                    self.appLookup[m.info.id] = m;
                                 }
                             }
                         }
-                        return Promise.try(function() {});
+
+                        // do the same for local functions
+                        if(has_functions) {
+                            return self.catalog.list_local_functions({'release_tag': tag, 'module_names': [ self.module_name.toLowerCase() ] })
+                                .then(function(mods) {
+                                    for(var m=0; m<mods.length; m++) {
+                                        var f = new FunctionCard(mods[m],self.runtime.service('session').isLoggedIn());
+                                        self.functionList.push(f);
+                                    }
+                                } );
+                        }
+
+                        return;
                     })
                     .catch(function (err) {
                         console.error('ERROR');

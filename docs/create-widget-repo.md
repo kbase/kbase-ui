@@ -4,7 +4,7 @@ How to create a new widget repo, get it started, and incorporate it into the kba
 
 ## Create a development directory
 
-This directory will contain the kbase-ui repo in which you will be testing your repo, and your new repo in which you will be developing your plugin. The eventual structure will look something like this:
+This directory will contain the *kbase-ui* repo which will host your new plugin, and your new plugin repo in which you will be developing your plugin. The eventual structure will look something like this:
 
 ```
 dev
@@ -14,25 +14,30 @@ dev
 
 For now, just create the ```dev``` (or whatever you want to call it) wherever you want to.
 
-## Grab a copy of kbase-ui and make sure it is working
-
-This part is easy and satisfying.
+## Ensure you are set up for Javascript development
 
 If your machine is not set up for javascript development, you may need to install some prerequisites. If so, please refer to the [developer set up docs].
+
+## Fork kbase-ui and clone it
+
+In order to incorporate a plugin into kbase-ui, small changes are required to be made to two configuration files. In order to incorporate these changes into kbase-ui, you will need to submit a PR from your fork. To support this, you might as well fork kbase-ui and use that fork to develop the plugin with.
 
 Within the dev directory
 
 ```
-git clone https://github.com/kbase-ui
+git clone -b develop https://github.com/youraccount/kbase-ui
 ```
 
-Then 
+## Do a quick sanity test
+
+Within the kbase-ui repo, issue build kbase-ui and load it via the local developer server:
 
 ```
 cd kbase-ui
-npm install
-grunt build
-grunt preview
+make init
+make build
+make start
+make preview
 ```
 
 If all went well, you should see the kbase ui pop up in your default browser.

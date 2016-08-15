@@ -37,6 +37,27 @@ define([
             //    resolve();
             //});
             return Promise.try(function () {
+                var problems = typeManager.checkViewers(),
+                    errors = [];
+                if (problems.length > 0) {
+                    problems.forEach(function (problem) {
+                        switch (problem.severity) {
+                            case 'warning': 
+                                console.warn(problem.message, problem);
+                                break;
+                            case 'error':
+                                console.error(problem.message, problem);
+                                errors.push(problem.message);
+                                break;
+                            default:
+                                console.log(problem.message, problem);
+                                break;
+                        }
+                    });
+                    if (errors.length > 0) {
+                        throw new Error('Error starting Type Manager. Check the log for details. ' + errors.join('; '))
+                    }
+                }
                 return true;
             });
         }
@@ -59,18 +80,21 @@ define([
                 }
 
                 if (viewers) {
-                    viewers.forEach(function (viewerDef) {
-                        return new Promise(function (resolve, reject) {
-                            try {
-                                typeManager.addViewer(type, viewerDef);
-                                resolve();
-                            } catch (ex) {
-                                console.log('ERROR in plugin handler for type service');
-                                console.log(ex);
-                                reject(ex);
-                            }
+                    return Promise.all(viewers.map(function (viewerDef) {
+                        return Promise.try(function () {
+                            typeManager.addViewer(type, viewerDef);
                         });
-                    });
+                        
+//                        return new Promise(function (resolve, reject) {
+//                            try {
+//                                typeManager.addViewer(type, viewerDef);
+//                                resolve();
+//                            } catch (ex) {
+//                                console.log('ERROR in plugin handler for type service', ex);
+//                                reject(ex);
+//                            }
+//                        });
+                    }));
                 }
             }));
         }
@@ -112,8 +136,7 @@ define([
             },
             makeType: function () {
                 return proxyMethod(typeManager, 'makeType', arguments);
-            },
-            
+            },            
             hasType: function () {
                 return proxyMethod(typeManager, 'hasType', arguments);                
             }

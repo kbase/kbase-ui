@@ -17,6 +17,7 @@ define([
             widgetSet = WidgetSet.make({runtime: runtime}),
             layout;
 
+
         // Mini widget manager
         // TODO: the jquery name should be stored in the widget definition not here.
         function render() {
@@ -24,10 +25,10 @@ define([
             // the catalog home page is simple the catalog browser
             var div=html.tag('div');
             return div({
-                id: widgetSet.addWidget('catalog_registration_widget', 
+                id: widgetSet.addWidget('catalog_function_browser_widget', 
                     {
-                        jqueryName: 'KBaseCatalogRegistration', 
-                        jquery_name:'KBaseCatalogRegistration'
+                        jqueryName: 'KBaseCatalogFunctionBrowser',
+                        jquery_name:'KBaseCatalogFunctionBrowser'
                     })
             });
         }
@@ -42,7 +43,7 @@ define([
             });
         }
         function attach(node) {
-            runtime.send('ui', 'setTitle', 'Catalog Module Registration');
+            runtime.send('ui', 'setTitle', 'Function Catalog');
             return Promise.try(function () {
                 mount = node;
                 container = mount.appendChild(DOM.createElement('div'));

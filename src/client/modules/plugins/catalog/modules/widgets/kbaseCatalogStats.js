@@ -75,13 +75,7 @@ define([
             render: function() {
                 var self = this;
 
-                var $table = $('<table>').addClass('table').css('width','100%');
-
-
-                var $container = $('<div>').addClass('container')
-                        .append($('<div>').addClass('row')
-                            .append($('<div>').addClass('col-md-12')
-                                .append($table)));
+               
 
 
                 // Custom data tables sorting function, that takes a number in an html comment
@@ -108,11 +102,82 @@ define([
                     }
                 } );
 
+                if(self.isAdmin) {
+
+                    var $adminUserStatsTable = $('<table>').addClass('table').css('width','100%');
+                    var $adminRecentRunsTable = $('<table>').addClass('table').css('width','100%');
+
+
+                    var $adminContainer = $('<div>').addClass('container')
+                            .append($('<div>').addClass('row')
+                                .append($('<div>').addClass('col-md-12')
+                                    .append('<h4>(Admin View) Recent Runs (completed in last 48h):</h4>')
+                                    .append($adminRecentRunsTable)
+                                    .append('<br><br>')
+                                    .append('<h4>(Admin View) User Run Summary:</h4>')
+                                    .append($adminUserStatsTable)
+                                    .append('<br><br>')
+                                    .append('<h4>Public Stats:</h4>')));
+
+                    var adminRecentRunsTblSettings = {
+                        "bFilter": true,
+                        "sPaginationType": "full_numbers",
+                        "iDisplayLength": 50,
+                        "sDom": 'ft<ip>',
+                        "aaSorting": [[ 3, "dsc" ]],
+                        "columns": [
+                            {sTitle: 'User', data: "user_id"},
+                            {sTitle: "App Id", data: "app_id"},
+                            {sTitle: "Module", data: "app_module_name"},
+                            {sTitle: "Submission Time", data: "creation_time"},
+                            {sTitle: "Start Time", data: "exec_start_time"},
+                            {sTitle: "End Time", data: "finish_time"},
+                            {sTitle: "Run Time", data: "run_time"},
+                            {sTitle: "Result", data: "result"},
+                        ],
+                        "columnDefs": [
+                            { "type": "hidden-number-stats", targets: [6] }
+                        ],
+                        "data": self.adminRecentRuns
+                    };
+                    $adminRecentRunsTable.DataTable(adminRecentRunsTblSettings);
+                    $adminRecentRunsTable.find('th').css('cursor','pointer');
+
+
+
+                    var adminUserStatsTblSettings = {
+                        "bFilter": true,
+                        "sPaginationType": "full_numbers",
+                        "iDisplayLength": 50,
+                        "sDom": 'ft<ip>',
+                        "aaSorting": [[ 3, "dsc" ], [1, "asc"]],
+                        "columns": [
+                            {sTitle: 'User', data: "u"},
+                            {sTitle: "App Id", data: "id"},
+                            {sTitle: "Module", data: "module"},
+                            {sTitle: "Total Runs", data: "n"}
+                        ],
+                        "data": self.adminStats
+                    };
+                    $adminUserStatsTable.DataTable(adminUserStatsTblSettings);
+                    $adminUserStatsTable.find('th').css('cursor','pointer');
+
+                    self.$basicStatsDiv.append($adminContainer);
+
+                }
+
+
+                var $table = $('<table>').addClass('table').css('width','100%');
+
+                var $container = $('<div>').addClass('container')
+                        .append($('<div>').addClass('row')
+                            .append($('<div>').addClass('col-md-12')
+                                .append($table)));
 
                 var tblSettings = {
                     "bFilter": true,
                     "sPaginationType": "full_numbers",
-                    "iDisplayLength": 100,
+                    "iDisplayLength": 50,
                     "sDom": 'ft<ip>',
                     "aaSorting": [[ 2, "dsc" ], [1, "asc"]],
                     "columns": [
@@ -135,35 +200,7 @@ define([
 
                 self.$basicStatsDiv.append($container);
 
-                if(self.isAdmin) {
-                    var $adminTable = $('<table>').addClass('table').css('width','100%');
 
-
-                    var $adminContainer = $('<div>').addClass('container')
-                            .append($('<div>').addClass('row')
-                                .append($('<div>').addClass('col-md-12')
-                                    .append('<h4>Admin Accessible Stats</h4>')
-                                    .append($adminTable)));
-
-                    var adminTblSettings = {
-                        "bFilter": true,
-                        "sPaginationType": "full_numbers",
-                        "iDisplayLength": 100,
-                        "sDom": 'ft<ip>',
-                        "aaSorting": [[ 3, "dsc" ], [1, "asc"]],
-                        "columns": [
-                            {sTitle: 'User', data: "u"},
-                            {sTitle: "Id", data: "id"},
-                            {sTitle: "Module", data: "module"},
-                            {sTitle: "Total Runs", data: "n"}
-                        ],
-                        "data": self.adminStats
-                    };
-                    $adminTable.DataTable(adminTblSettings);
-                    $adminTable.find('th').css('cursor','pointer');
-
-                    self.$basicStatsDiv.append($adminContainer);
-                }
             },
 
 
@@ -178,7 +215,7 @@ define([
                 var $mainPanel = $('<div>').addClass('container');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog Index')));
 
                 var $basicStatsDiv = $('<div>');
                 $mainPanel.append($basicStatsDiv);
@@ -247,8 +284,8 @@ define([
                             var meanQueueTime = s.total_queue_time/s.number_of_calls;
 
                             var stat = {
-                                id: '<a href="#appcatalog/app/'+s.full_app_id+'/dev">'+id+'</a>',
-                                module: '<a href="#appcatalog/module/'+s.module_name+'">'+s.module_name+'</a>',
+                                id: '<a href="#catalog/apps/'+s.full_app_id+'/dev">'+id+'</a>',
+                                module: '<a href="#catalog/modules/'+s.module_name+'">'+s.module_name+'</a>',
                                 nCalls: s.number_of_calls,
                                 nErrors: s.number_of_errors,
                                 success: successPercent.toPrecision(3),
@@ -269,50 +306,13 @@ define([
             getAdminStats: function() {
                 var self = this;
 
-
                 return self.checkIsAdmin()
                     .then(function() {
                         if(self.isAdmin) {
-                            return self.catalog.get_exec_aggr_table({})
-                                .then(function (adminStats) {
-
-                                    console.log(adminStats);
-                                    self.adminStats = [];
-
-                                    for(var k=0; k<adminStats.length; k++) {
-                                        var s = adminStats[k];
-
-                                        var id = s.app;
-                                        var module = 'l.m';
-                                        if(id) {
-                                            if(s.app.split('/').length==2) {
-                                                module = s.app.split('/')[0];
-                                                id = s.app.split('/')[1];
-                                            }
-                                            id = '<a href="#appcatalog/app/'+module+'/'+id+'/dev">'+id+'</a>';
-                                            module = '<a href="#appcatalog/module/'+module+'">'+module+'</a>';
-                                        } else {
-                                            if(s.func) {
-                                                id = 'API Call: ' + s.func;
-                                            } else {
-                                                id = 'API Call: unknown!';
-                                            }
-                                            if(s.func_mod) {
-                                                module = 'API Call: ' +s.func_mod;
-                                            } else {
-                                                module = 'API Call: unknown!';
-                                            }
-                                        }
-
-                                        var stat = {
-                                            id: id,
-                                            module: module,
-                                            n: s.n,
-                                            u: '<a href="#appcatalog/people/'+s.user+'">'+s.user+'</a>'
-                                        }
-                                        self.adminStats.push(stat);
-                                    }
-                                });
+                            return self.getAdminUserStats()
+                                        .then(function() {
+                                            return self.getAdminLatestRuns();
+                                        })
                         } else {
                             return Promise.try(function() {});
                         }
@@ -323,8 +323,114 @@ define([
                     });
             },
 
+
+            getAdminUserStats: function() {
+                var self = this;
+                if(!self.isAdmin) {
+                    return Promise.try(function() {});
+                }
+
+                return self.catalog.get_exec_aggr_table({})
+                            .then(function (adminStats) {
+
+                                self.adminStats = [];
+
+                                for(var k=0; k<adminStats.length; k++) {
+                                    var s = adminStats[k];
+
+                                    var id = s.app;
+                                    var module = 'l.m';
+                                    if(id) {
+                                        if(s.app.split('/').length==2) {
+                                            module = s.app.split('/')[0];
+                                            id = s.app.split('/')[1];
+                                        }
+                                        id = '<a href="#catalog/apps/'+module+'/'+id+'/dev">'+id+'</a>';
+                                        module = '<a href="#catalog/modules/'+module+'">'+module+'</a>';
+                                    } else {
+                                        if(s.func) {
+                                            id = 'API Call: ' + s.func;
+                                        } else {
+                                            id = 'API Call: unknown!';
+                                        }
+                                        if(s.func_mod) {
+                                            module = 'API Call: ' +s.func_mod;
+                                        } else {
+                                            module = 'API Call: unknown!';
+                                        }
+                                    }
+
+                                    var stat = {
+                                        id: id,
+                                        module: module,
+                                        n: s.n,
+                                        u: '<a href="#people/'+s.user+'">'+s.user+'</a>'
+                                    }
+                                    self.adminStats.push(stat);
+                                }
+                            });
+            },
+
+            getAdminLatestRuns: function() {
+                var self = this;
+                if(!self.isAdmin) {
+                    return Promise.try(function() {});
+                }
+
+                var seconds = (new Date().getTime() / 1000)-172800;
+
+                return self.catalog.get_exec_raw_stats({begin:seconds})
+                    .then(function(data) {
+                        self.adminRecentRuns = [];
+                        for(var k=0; k<data.length; k++) {
+                            var rt = data[k]['finish_time'] - data[k]['exec_start_time'];
+                            data[k]['creation_time']=new Date( data[k]['creation_time']*1000).toLocaleString();
+                            data[k]['exec_start_time']=new Date( data[k]['exec_start_time']*1000).toLocaleString();
+                            data[k]['finish_time']=new Date( data[k]['finish_time']*1000).toLocaleString();
+                            data[k]['user_id'] = '<a href="#people/'+data[k]['user_id']+'">'+data[k]['user_id']+'</a>'
+                            data[k]['run_time']= '<!--'+rt+'-->'+ self.getNiceDuration(rt);
+
+                            if(data[k]['is_error']) {
+                                data[k]['result'] = '<span class="label label-danger">Error</span>';
+                            } else {
+                                data[k]['result'] = '<span class="label label-success">Success</span>';
+                            }
+
+                            if(data[k]['app_id']) {
+                                var mod = ''; //data[k]['app_module_name'];
+                                if(data[k]['app_module_name']) {
+                                    mod = data[k]['app_module_name'];
+                                    data[k]['app_module_name']= '<a href="#catalog/modules/'+mod+'">'
+                                                                    +mod+'</a>';
+                                }
+                                data[k]['app_id']= '<a href="#catalog/apps/'+mod+'/'+data[k]['app_id']+'">'+
+                                                        data[k]['app_id']+'</a>';
+                            } else {
+                                if(data[k]['func_name']) {
+                                    data[k]['app_id'] = '(API):' + data[k]['func_name'];
+                                    if(data[k]['func_module_name']) {
+                                        mod = data[k]['func_module_name'];
+                                        data[k]['app_module_name']= '<a href="#catalog/modules/'+mod+'">'
+                                                                        +mod+'</a>';
+                                    } else {
+                                        data[k]['app_module_name'] = 'Unknown'
+                                    }
+
+                                } else {
+                                    data[k]['app_id'] = 'Unknown'
+                                    data[k]['app_module_name'] = 'Unknown'
+                                }
+                            }
+
+                        }
+                        self.adminRecentRuns = data;
+                    });
+            },
+
+
+
             checkIsAdmin: function() {
-                var self = this
+                var self = this;
                 self.isAdmin = false;
 
                 var me = self.runtime.service('session').getUsername();

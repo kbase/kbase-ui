@@ -1,6 +1,7 @@
 var require = {
     baseUrl: '/modules',
     catchError: true,
+    waitSeconds: 60,
     paths: {
         // External Dependencies
         // ----------------------

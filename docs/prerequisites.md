@@ -9,7 +9,7 @@ For development, you will need a common Javascript development toolchain, descri
 
 > Note: In the future we may provide the web app files in a pre-built state, but for now you need to build the runnable app from source.
 
-KBase UI ships with a small testing web server running under *nodejs*, buf if you are doing continual development, already have a testing server, or any number of other cases, you may wish to use a system-level server. In production, KBase uses nginx as the web server front end, and in development nodejs is preferred since it is included and can be quickly started, stopped, and requires no additional system software.
+KBase UI ships with a small testing web server running under *nodejs*, buf if you are doing continual development, already have a testing server, or any number of other cases, you may wish to use a system-level server. In production, KBase uses nginx as the web server front end, and in development nodejs is preferred since it is included and can be quickly started, stopped, and requires no additional system software beyond what is required to build kbase-ui.
 
 
 ## Overview
@@ -68,7 +68,7 @@ sudo npm install -g grunt-cli
 sudo npm install -g karma-cli
 ```
 
-> TODO: verify these instructions. This was from memory, and should be verified to note any exceptions, or catch any missing steps.
+> TODO: verify these instructions.
 
 ### Macports
 
@@ -131,7 +131,7 @@ Occasionally you may be prompted for an admin account authorization if you are u
 
 Using Vagrant, or a virtual machine directly, is a great way to test the canonical installation environment for KBase UI, which is Ubunto 14.04 (as of the time of writing.) It is also a great way to shake out prerequisites, to test out changes to prerequisites, and to generally create an isolated runtime, since you may not want to remove the requisite packages in your native working environment.
 
-> Note: if you develop on Mac, it is also a requirement before submitting a PR to clone your prepared repo into an Ubuntu 14.04 environment and perform both unit and visual testing. This is due to, amongst other things, the need to file references which are case insensitive on Mac do not break on case sensitve Linux filesystems.
+> Note: if you develop on Mac, it is also a requirement before submitting a PR to clone your prepared repo into an Ubuntu 14.04 environment and perform both unit and visual testing. This is due to, amongst other things, the need to ensure that file references which are case insensitive on Mac do not break on case sensitve Linux filesystems.
 
 #### 1) First get a working VM up and running:
 

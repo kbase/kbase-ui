@@ -540,7 +540,10 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                 $scope.options.templates[p]["root"] = "views/search/categories/models.html";
             }
         }
-        
+
+        // Hide Metagenomics from search. This has to be done in category service
+        // https://kbase.us/services/search/categories
+        delete $scope.options.searchCategories["metagenomes"];
         //console.log($scope.options.related);
         //console.log($scope.options.searchCategories);
     };

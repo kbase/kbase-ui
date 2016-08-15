@@ -11,7 +11,7 @@ define([
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
-    'kb/widget/legacy/kbasePrompt',
+    'kb/widget/legacy/prompt',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
@@ -73,7 +73,6 @@ define([
                 self.tag = options.tag;
                 self.isGithub = false;
 
-
                 // initialize and add the main panel
                 //self.$elem.addClass('container');
                 self.$errorPanel = $('<div>');
@@ -113,9 +112,18 @@ define([
                             self.updateFavoritesCounts();
                             self.updateRunStats();
                             return null;
-                        }).catch(function() {
+                        }).catch(function (err) {
+                            console.error('ERROR');
+                            console.error(err);
+                            self.showError(err);
                             self.hideLoading();
                         });
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                        self.showError(err);
+                        self.hideLoading();
                     });
                 return this;
             },
@@ -152,16 +160,8 @@ define([
 
                 return self.nms.get_method_full_info(params)
                     .then(function(info_list) {
-                        console.log('Method full info:')
-                        console.log(info_list);
+                        console.log('(NMS) App full info:',info_list);
                         self.appFullInfo = info_list[0];
-                        return null;
-                    })
-                    .catch(function (err) {
-                        console.error('ERROR');
-                        console.error(err);
-                        self.showError(err);
-                        return err;
                     });
             },
             getAppSpec: function() {
@@ -180,14 +180,8 @@ define([
 
                 return self.nms.get_method_spec(params)
                     .then(function(specs) {
-                        console.log('Specs:')
-                        console.log(specs);
+                        console.log('(NMS) App Specs:',specs);
                         self.appSpec = specs[0];
-                    })
-                    .catch(function (err) {
-                        console.error('ERROR');
-                        console.error(err);
-                        self.showError(err);
                     });
             },
 
@@ -201,22 +195,17 @@ define([
                 var moduleSelection = {
                     module_name: self.module_name
                 };
+                if(self.tag) {
+                    moduleSelection.version = self.tag;
+                }
 
-                return self.catalog.get_module_info(moduleSelection)
+                return self.catalog.get_module_version(moduleSelection)
                     .then(function (info) {
-                        /*typedef structure {
-                            string module_name;
-                            string git_url;
+                        console.log('(Catalog) Module Version:',info);
 
-                            string description;
-                            string language;
-
-                            list <string> owners;
-
-                            ModuleVersionInfo release;
-                            ModuleVersionInfo beta;
-                            ModuleVersionInfo dev;
-                        } ModuleInfo;*/
+                        if(!self.tag) {
+                            self.tag = info['git_commit_hash']; 
+                        }
 
                         // make sure the ID and module name case is correct
                         var idTokens = self.id.split('/');
@@ -241,6 +230,7 @@ define([
                         console.error('ERROR');
                         console.error(err);
                         self.showError(err);
+                        self.hideLoading();
                     });
             },
 
@@ -255,7 +245,7 @@ define([
                 var $infoPanel = $('<div>').css('margin','1em');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog/apps">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
                 
                 $mainPanel
                     .append($header)
@@ -326,18 +316,39 @@ define([
                                     .append($('<td>').append(commit)))
                                 );
                         });
+                } else {
+                    // sdk App, so check if we can get some info here
+                    if(self.moduleDetails.info) {
+                        var p = '5px';
+                        if(self.isGithub) {
+                            var url = self.moduleDetails.info.git_url + "/tree/" + self.moduleDetails.info.git_commit_hash;
+                            url += "/ui/narrative/methods/" + self.options.id;
+                            self.$infoPanel.append('<br>');
+                            self.$infoPanel.append(
+                                $('<table>').css({border: '1px solid #bbb', margin: '10px'})
+                                    .append($('<tr>')
+                                        .append($('<th style = "vertical-align : top;" >').css('padding',p).append('App Specification: '))
+                                        .append($('<td>').css('padding',p).append('<a href="' + url + '" target="_blank">' + url + "</a>")))
+                                    .append($('<tr>')
+                                        .append($('<th style = "vertical-align : top;" >').css('padding',p).append('Module Commit:  '))
+                                        .append($('<td>').css('padding',p).append(self.moduleDetails.info.git_commit_hash)))
+                                    );
+                        } else {
+                            self.$infoPanel.append('<br>');
+                            self.$infoPanel.append(
+                                $('<table>').css({border: '1px solid #bbb', margin: '10px'})
+                                    .append($('<tr>')
+                                        .append($('<th style = "vertical-align : top;" >').css('padding',p).append('Git URL: '))
+                                        .append($('<td>').css('padding',p).append('<a href="' + self.moduleDetails.info.git_url + '" target="_blank">' + self.moduleDetails.info.git_url + "</a>")))
+                                    .append($('<tr>')
+                                        .append($('<th style = "vertical-align : top;" >').css('padding',p).append('Module Commit:  '))
+                                        .append($('<td>').css('padding',p).append(self.moduleDetails.info.git_commit_hash)))
+                                    );
+                        }
+                    }
+
                 }
                 return Promise.try(function() {});
-
-                /*if(self.isGithub) {
-                    var url = self.moduleDetails.info.git_url + ;
-                    self.$infoPanel.append(
-                        $('<table>').addClass('table').css({border: '1px solid #bbb', margin: '10px', padding: '10px'})
-                            .append($('<tr>')
-                                .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Yaml/Spec Location '))
-                                .append($('<td>').append('<a href="' + url + '" target="_blank">' + url + "</a>"))));
-
-                }*/
 
             },
 
@@ -699,16 +710,14 @@ define([
             updateRunStats: function() {
                 var self = this
 
-                var options = { full_app_ids : [self.appFullInfo.id] }; // eventuall add p
-                console.log(options);
+                var options = { full_app_ids : [self.appFullInfo.id] };
 
                 return self.catalog.get_exec_aggr_stats(options)
                     .then(function (stats) {
                         // should only get one for now- when we switch to 'per_week' stats, then we will get one record per week
                         if(stats.length>0) {
                             var s = stats[0];
-                            console.log('Stats:')
-                            console.log(s);
+                            console.log('(Catalog) Stats:',s);
                             /*
                                 full_app_id - optional fully qualified method-spec id including module_name prefix followed
                                     by slash in case of dynamically registered repo (it could be absent or null in case
@@ -814,25 +823,16 @@ define([
 
                 var $titleSpan = $('<div>').addClass('kbcb-app-page-title-panel');
                 
-
-                var versiontag = '';
-                if(self.tag) {
-                    if(self.tag=='dev') {
-                        versiontag = ' (under development)'
-                    } else if(self.tag=='beta') {
-                        versiontag = ' beta'
-                    }
-                }
-
                 $titleSpan.append($('<div>').addClass('kbcb-app-page-title').append(m.name).append(
                     $('<span>').css({'font-size':'0.5em','margin-left':'0.5em'})
-                        .append(versiontag)));
+                        ));
                 
 
                 if(self.moduleDetails.info) {
                     $titleSpan.append($('<div>').addClass('kbcb-app-page-module').append(
-                                            $('<a href="#appcatalog/module/'+self.moduleDetails.info.module_name+'">')
-                                                .append(self.moduleDetails.info.module_name)));
+                                            $('<a href="#catalog/modules/'+self.moduleDetails.info.module_name+'">')
+                                                .append(self.moduleDetails.info.module_name))
+                                            .append(' v.'+self.moduleDetails.info.version));
                 }
 
                 if(m.authors.length>0) {
@@ -882,7 +882,41 @@ define([
                 $starDiv.append($star).append($starCount);
 
 
-                var $nRuns = $('<div>').addClass('kbcb-runs').addClass('col-xs-10');
+                var $releaseTagsDiv = $('<div>').addClass('col-xs-2');
+
+                if(self.moduleDetails.info) {
+                    var rts = self.moduleDetails.info.release_tags;
+                    for(var r=0; r<rts.length; r++) {
+                        if(rts[r]==='release') {
+                            $releaseTagsDiv.append($('<span>').addClass('label label-primary').css({'padding':'.3em .6em .3em'})
+                                                        .append('R')
+                                                        .tooltip({title:'Tagged as the latest released version.', placement:'bottom', container:'body',
+                                                                    delay:{show: 400, hide: 40}}));
+                        }
+                        if(rts[r]==='beta') {
+                            $releaseTagsDiv.append($('<span>').addClass('label label-info').css({'padding':'.3em .6em .3em'})
+                                                        .append('B')
+                                                        .tooltip({title:'Tagged as the current beta version.', placement:'bottom', container:'body',
+                                                                    delay:{show: 400, hide: 40}}));
+                        }
+                        if(rts[r]==='dev') {
+                            $releaseTagsDiv.append($('<span>').addClass('label label-default').css({'padding':'.3em .6em .3em'})
+                                                        .append('D')
+                                                        .tooltip({title:'Tagged as the current development version.', placement:'bottom', container:'body',
+                                                                    delay:{show: 400, hide: 40}}));
+                        }
+                    }
+                } else {
+                    // this is a legacy method, so it must be released
+                    $releaseTagsDiv.append($('<span>').addClass('label label-primary').css({'padding':'.3em .6em .3em'})
+                                                        .append('R')
+                                                        .tooltip({title:'Tagged as the latest released version.', placement:'bottom', container:'body',
+                                                                    delay:{show: 400, hide: 40}}));
+                }
+
+
+
+                var $nRuns = $('<div>').addClass('kbcb-runs').addClass('col-xs-8');
 
 
                 if(self.isLegacyMethod || self.isLegacyApp) {
@@ -893,6 +927,7 @@ define([
                     $('<div>').addClass('kbcb-app-page-stats-bar container').append(
                         $('<div>').addClass('row')
                             .append($starDiv)
+                            .append($releaseTagsDiv)
                             .append($nRuns)));
 
 
@@ -978,6 +1013,11 @@ define([
 
 
                 if (m.description) {
+
+                    // replace instances of emailing help@kbase.us to contact us
+                    var re = /For questions.{0,50}<a href="mailto:help@kbase.us".{1,50}help@kbase.us.{0,5}<\/a>/g; 
+                    var d_text = m.description.replace(re, 'Questions? Suggestions? Bug reports? Please <a href="https://kbase.us/contact-us/">contact us</a> and include the app name.');
+
                     self.$descriptionPanel
                         .append(
                             $.jqElem('div')
@@ -989,7 +1029,7 @@ define([
                                 .append(
                                     $.jqElem('div')
                                     .append($.jqElem('hr'))
-                                    .append(m.description)
+                                    .append(d_text)
                                     )
                                 )
                             )

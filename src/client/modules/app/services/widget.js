@@ -27,9 +27,17 @@ define([
         function stop() {
             return true;
         }
-        function installWidgets(pluginConfig) {
+        function pluginHandler(widgetsConfig, pluginConfig) {
             return Promise.try(function () {
-                pluginConfig.forEach(function (widgetDef) {
+                widgetsConfig.forEach(function (widgetDef) {
+                    // If source modules are not specified, we are using module
+                    // paths. A full path will start with "plugins/" and a relative
+                    // path won't. Prefix a relative path with the plugin's module path.
+                    if (!pluginConfig.usingSourceModules) {
+                        if (!widgetDef.module.match(/^plugins\//)) {
+                            widgetDef.module = [pluginConfig.moduleRoot, widgetDef.module].join('/');
+                        }
+                    }
                     widgetManager.addWidget(widgetDef);
                 });
             });
@@ -39,7 +47,7 @@ define([
             start: start,
             stop: stop,
             // plugin interface
-            pluginHandler: installWidgets,
+            pluginHandler: pluginHandler,
             makeWidget: function () {                
                 return proxyMethod(widgetManager, 'makeWidget', arguments);
             },
