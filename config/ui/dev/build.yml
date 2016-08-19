@@ -121,6 +121,15 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: sdk-clients-test
+        globalName: kbase-ui-plugin-sdk-clients-test
+        version: 0.0.1
+        cwd: src/plugin
+        source:
+            bower: {}
+                
+
 
 # Copy these directories into the modules
 # There are two forms, as for plugins.
@@ -147,5 +156,10 @@ modules:
     -
         globalName: kbase-data-api-client-js
         version: 1.0.6-alpha
+        source:
+            bower: {}
+    -
+        globalName: kbase-sdk-clients-js
+        version: 0.0.5
         source:
             bower: {}

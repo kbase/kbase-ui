@@ -40,6 +40,8 @@ function linkPlugin() {
 # module is the repo directory following the kbase- namespacing prefix
 # linkLib "common" "common-js"
 
+# linkLib 'sdk-clients' 'sdk-clients-js'
+
 #
 # EXTERNAL PLUGINS
 #
