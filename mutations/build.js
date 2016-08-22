@@ -147,6 +147,7 @@ function copyLocalModules(state) {
             }).map(function (spec) {
                 var from = projectRoot.concat(spec.directory.path.split('/')),
                     to = root.concat(['build', 'local_modules']);
+                
                 return copyDirFiles(from, to);
             }));
         });
@@ -505,7 +506,7 @@ function installExternalPlugins(state) {
 //                    console.log('EXTERNAL plugin');
 //                    console.log(source);
 //                    console.log(destination);
-                        
+                    
                     return copyFiles(source, destination, '**/*');
                 }));
         });
