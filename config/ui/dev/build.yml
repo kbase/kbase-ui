@@ -39,7 +39,7 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 1.7.0
+        version: 1.7.1
         cwd: src/plugin
         source:
             bower: {}
@@ -128,7 +128,7 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
-                
+
 
 
 # Copy these directories into the modules
