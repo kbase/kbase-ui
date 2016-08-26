@@ -89,7 +89,7 @@ plugins:
     -
         name: data-api-demo
         globalName: kbase-ui-plugin-data-api-demo
-        version: 0.2.0
+        version: 0.2.2
         cwd: src/plugin
         source:
             bower: {}
@@ -124,7 +124,7 @@ plugins:
     -
         name: sdk-clients-test
         globalName: kbase-ui-plugin-sdk-clients-test
-        version: 0.0.2
+        version: 0.0.3
         cwd: src/plugin
         source:
             bower: {}
@@ -160,6 +160,6 @@ modules:
             bower: {}
     -
         globalName: kbase-sdk-clients-js
-        version: 0.0.6
+        version: 0.1.0
         source:
             bower: {}
