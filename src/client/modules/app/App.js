@@ -42,6 +42,9 @@ define([
         function hasConfig(prop) {
             return clientConfigProps.hasItem(prop);
         }
+        function rawConfig() {
+            return clientConfigProps.debug();
+        }
 
         // Events
 
@@ -144,6 +147,7 @@ define([
             getConfig: getConfig,
             config: getConfig,
             hasConfig: hasConfig,
+            rawConfig: rawConfig,
             // Session
             installPlugins: installPlugins,
             send: send,
