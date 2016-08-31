@@ -27,6 +27,7 @@ var require = {
         datatables_css: 'bower_components/datatables/css/jquery.dataTables',
         datatables_bootstrap: 'bower_components/datatables-bootstrap3-plugin/js/datatables-bootstrap3',
         datatables_bootstrap_css: 'bower_components/datatables-bootstrap3-plugin/css/datatables-bootstrap3',
+        marked: 'bower_components/marked/marked',
         md5: 'bower_components/SparkMD5/spark-md5',
         'google-code-prettify': 'bower_components/google-code-prettify/prettify',
         'google-code-prettify-style': 'bower_components/google-code-prettify/prettify',
