@@ -160,6 +160,6 @@ modules:
             bower: {}
     -
         globalName: kbase-sdk-clients-js
-        version: 0.1.1
+        version: 0.2.0
         source:
             bower: {}
