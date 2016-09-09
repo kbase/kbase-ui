@@ -1,19 +1,16 @@
-/*global
- define
- */
-/*jslint
- browser: true,
- white: true
- */
+/*global define*/
+/*jslint browser: true, white: true*/
 define([
+    'bluebird',
     'jquery',
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     './catalog_util',
     'kb/widget/legacy/authenticatedWidget',
-    'bootstrap',
+    'bootstrap'
 ],
-    function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
+    function (Promise, $, NarrativeMethodStore, Catalog, CatalogUtil) {
+        'use strict';
         $.KBWidget({
             name: "KBaseCatalogStatus",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
@@ -78,9 +75,22 @@ define([
                 Promise.all(loadingCalls).then(function() {
                     self.render();
                     self.hideLoading();
+                }).catch(function (err) {
+                    self.hideLoading();
+                    console.error('ERROR contacting the catalog');
+                    console.error(err);
+                    self.renderError();   
                 });
 
                 return this;
+            },
+
+            renderError: function() {
+                var self = this
+                self.$basicStatusDiv.empty()
+                self.$basicStatusDiv.append(
+                    $('<div role=alert>').addClass('alert alert-danger')
+                            .append('<b>Error contacting the catalog.  The catalog may be down.</b>'))
             },
 
             render: function() {
@@ -92,6 +102,7 @@ define([
 
 
             setupClients: function() {
+                console.log('here')
                 this.catalog = new Catalog(
                     this.runtime.getConfig('services.catalog.url'),
                     { token: this.runtime.service('session').getAuthToken() }
@@ -106,7 +117,7 @@ define([
                 var $mainPanel = $('<div>').addClass('container');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#appcatalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+                        .append($('<a href="#catalog/apps">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
                 
                 $mainPanel.append($('<h3>').append('Catalog Status:'));
                 var $basicStatusDiv = $('<div>');
@@ -153,12 +164,14 @@ define([
                     for(var k=0; k<self.requested_releases.length; k++) {
                         var mod = self.requested_releases[k];
                         var $li = $('<li>');
-                        $li.append('<a href="#appcatalog/module/'+mod.module_name+'">'+mod.module_name+'</a>');
+                        $li.append('<a href="#catalog/modules/'+mod.module_name+'">'+mod.module_name+'</a>');
                         $li.append('- <a href="'+mod.git_url+'">'+mod.git_url+'</a><br>');
                         $li.append(mod.git_commit_hash + ' - '+mod.git_commit_message+'<br>');
-                        $li.append('owners: [')
+                        $li.append('owners: [');
                         for(var owner=0; owner<mod.owners.length; owner++) {
-                            if(owner>0) { $li.append(', ') }
+                            if(owner>0) { 
+                                $li.append(', ');
+                            }
                             $li.append('<a href="#people/'+mod.owners[owner]+'">'+mod.owners[owner]+'</a>');
                         }
                         $li.append(']<br>');
@@ -175,7 +188,7 @@ define([
             renderControlPanel: function() {
                 var self = this;
 
-                var $filterModules = $('<select>').addClass('form-control')
+                var $filterModules = $('<select>').addClass('form-control');
                 $filterModules.append('<option value="All.Modules">All Modules</option>');
                 for(var k=0; k<self.module_list.length; k++) {
                     var m = self.module_list[k].module_name;
@@ -300,7 +313,7 @@ define([
                 var timestamp = self.util.getTimeStampStr(info.timestamp);
                 
                 if(info.module_name_lc) {
-                    $row.append('<strong><a href="#appcatalog/module/'+info.module_name_lc+'">'+info.module_name_lc+'</a></strong> - ');
+                    $row.append('<strong><a href="#catalog/modules/'+info.module_name_lc+'">'+info.module_name_lc+'</a></strong> - ');
                 } else {
                     $row.append('<strong>Module Name Not Detected</strong> - ');
                 }
@@ -308,7 +321,7 @@ define([
                 $row.append($('<span>').addClass('pull-right').css('color','#777')
                                     .append(timestamp)
                                     .append('<br>')
-                                    .append('<a href="#appcatalog/register/'+info.registration_id+'">'+info.registration_id+'</a>'));
+                                    .append('<a href="#catalog/register/'+info.registration_id+'">'+info.registration_id+'</a>'));
                 $row.append('<br>');
                 $row.append('Status: '+ info.registration);
                 if(info.error_message) {
@@ -319,7 +332,7 @@ define([
 
 
             getCatalogVersion: function() {
-                var self = this
+                var self = this;
 
                 var moduleSelection = {
                     module_name: self.module_name
@@ -336,7 +349,7 @@ define([
             },
 
             getPendingReleases: function() {
-                var self = this
+                var self = this;
 
                 /* typedef structure {
                     string module_name;
@@ -358,7 +371,7 @@ define([
 
 
             getBuildStatus: function(skip, limit, module_names) {
-                var self = this
+                var self = this;
 
                 var build_filter = {
                     skip: skip,
@@ -388,13 +401,13 @@ define([
             },
 
             getModuleList: function() {
-                var self = this
+                var self = this;
 
                 return self.catalog.list_basic_module_info({
                         include_unreleased:1
                     })
                     .then(function (module_list) {
-                        var good_modules = []
+                        var good_modules = [];
                         for(var k=0; k<module_list.length; k++) {
                             if(module_list[k].module_name) {
                                 good_modules.push(module_list[k]);
@@ -427,6 +440,3 @@ define([
             }
         });
     });
-
-
-

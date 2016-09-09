@@ -42,7 +42,7 @@ define([
             });
         }
         function attach(node) {
-            runtime.send('ui', 'setTitle', 'App Catalog');
+            runtime.send('ui', 'setTitle', 'Catalog Admin');
             return Promise.try(function () {
                 mount = node;
                 container = mount.appendChild(DOM.createElement('div'));
