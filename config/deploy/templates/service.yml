@@ -79,6 +79,7 @@ services:
         name: Narrative Job Service
     ftp:
         url: <%= ftp_api_url %>
+        root: <%= ftp_api_root %>
         name: FTP Service
         
 resources:
