@@ -133,7 +133,9 @@ define([
                     self.updateFavoritesCounts()
                         .then(function() {
                             self.hideLoading();
-                            self.renderAppList('favorites');
+                            //self.renderAppList('favorites');               
+                            // Instead of making the default sort by # of favorites, sort by category (more intuitive to users)
+                            self.renderAppList('category');
                             return Promise.all([self.updateRunStats(),self.updateMyFavorites()]);
                         }).catch(function (err) {
                             console.error('ERROR');
