@@ -75,6 +75,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: bulk-ui
+        globalName: kbase-ui-plugin-bulk-ui
+        version: 0.2.0
+        cwd: src/plugin
+        source:
+            bower: {}            
 
 # Copy these directories into the modules
 # There are two forms, as for plugins.

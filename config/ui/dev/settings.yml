@@ -31,7 +31,7 @@ docsite:
         browser_support: /supported-browsers
 menus:
     authenticated:
-        main: [narrative, appcatalog, search, dashboard]
+        main: [narrative, appcatalog, search, dashboard, bulk-ui]
         developer: [sdkclientstest, dataapidemo, databrowser, typebrowser, jobbrowser, shockbrowser, test, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
         help: [contact-kbase, about-kbase]
     unauthenticated:

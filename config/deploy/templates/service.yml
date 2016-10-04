@@ -74,6 +74,13 @@ services:
     service_wizard:
         url: <%= service_wizard_url %>
         name: Service Wizard
+    narrative_job_service:
+        url: <%= njs_url %>
+        name: Narrative Job Service
+    ftp:
+        url: <%= ftp_api_url %>
+        root: <%= ftp_api_root %>
+        name: FTP Service
         
 resources:
     docSite:
@@ -99,6 +106,9 @@ resources:
             url: <%= user_account_url %>
         signUp:
             url: <%= signup_url %>
+    contact:
+        url: <%= contact_url %>
+        name: Contact KBase
     status_page: <%= status_page_url %>
     submit_jira_ticket: <%= submit_jira_ticket_url %>
     googleAnalytics:
