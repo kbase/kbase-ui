@@ -81,7 +81,7 @@ plugins:
         version: 0.2.1
         cwd: src/plugin
         source:
-            bower: {}            
+            bower: {}
 
 # Copy these directories into the modules
 # There are two forms, as for plugins.
@@ -112,6 +112,6 @@ modules:
             bower: {}
     -
         globalName: kbase-sdk-clients-js
-        version: 0.2.0
+        version: 0.4.0
         source:
             bower: {}
