@@ -31,6 +31,13 @@ install:
             module: ./createNewPanel
             id: narrativeManager_createNew
             type: factory
+    menu:
+        -
+            name: narrative
+            definition:
+                path: narrativemanager/start
+                label: Narrative Interface
+                icon: file 
     routes:
         -
             path: [narrativemanager, start]

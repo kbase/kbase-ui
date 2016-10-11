@@ -65,9 +65,4 @@ install:
                 newWindow: true
                 label: Contact KBase
                 icon: envelope-o
-        -
-            name: narrative
-            definition:
-                path: narrativemanager/start
-                label: Narrative
-                icon: file                    
+                   
