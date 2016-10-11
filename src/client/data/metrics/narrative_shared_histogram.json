@@ -1,150 +1,154 @@
 {
     "meta": {
-        "generated": 1424337784,
-        "originalGenerated": 1424338753
+        "generated": 1476144280,
+        "originalGenerated": 1476100064
     },
     "histogram": {
         "summary": {
             "min": 1,
-            "max": 22,
-            "mean": 3.4333333333333,
-            "count": 90,
+            "max": 56,
+            "mean": 5.0111524163569,
+            "count": 269,
             "median": 2,
-            "stddev": 66.154353405461,
+            "stddev": 2896149.8184371,
             "lq": 1,
-            "uq": 4,
-            "iqr": 3
+            "uq": 5,
+            "iqr": 4
         },
         "bins": [
             {
-                "count": 37,
-                "label": "[1-2)",
+                "count": 150,
+                "label": "[1-3)",
                 "upperInclusive": false,
                 "lower": 1,
-                "upper": 2
-            },
-            {
-                "count": 16,
-                "label": "[2-3)",
-                "upperInclusive": false,
-                "lower": 2,
                 "upper": 3
             },
             {
-                "count": 11,
-                "label": "[3-4)",
+                "count": 41,
+                "label": "[3-5)",
                 "upperInclusive": false,
                 "lower": 3,
-                "upper": 4
-            },
-            {
-                "count": 5,
-                "label": "[4-5)",
-                "upperInclusive": false,
-                "lower": 4,
                 "upper": 5
             },
             {
-                "count": 4,
-                "label": "[5-6)",
+                "count": 25,
+                "label": "[5-7)",
                 "upperInclusive": false,
                 "lower": 5,
-                "upper": 6
-            },
-            {
-                "count": 3,
-                "label": "[6-7)",
-                "upperInclusive": false,
-                "lower": 6,
                 "upper": 7
             },
             {
-                "count": 3,
-                "label": "[7-8)",
+                "count": 9,
+                "label": "[7-9)",
                 "upperInclusive": false,
                 "lower": 7,
-                "upper": 8
-            },
-            {
-                "count": 3,
-                "label": "[8-9)",
-                "upperInclusive": false,
-                "lower": 8,
                 "upper": 9
             },
             {
-                "count": 1,
-                "label": "[9-10)",
+                "count": 6,
+                "label": "[9-11)",
                 "upperInclusive": false,
                 "lower": 9,
-                "upper": 10
-            },
-            {
-                "count": 3,
-                "label": "[10-11]",
-                "upperInclusive": true,
-                "lower": 10,
                 "upper": 11
             },
             {
-                "count": 4,
-                "label": "(11-22]",
-                "upperInclusive": true,
+                "count": 6,
+                "label": "[11-13)",
+                "upperInclusive": false,
                 "lower": 11,
-                "upper": 22
+                "upper": 13
+            },
+            {
+                "count": 13,
+                "label": "[13-15)",
+                "upperInclusive": false,
+                "lower": 13,
+                "upper": 15
+            },
+            {
+                "count": 3,
+                "label": "[15-17)",
+                "upperInclusive": false,
+                "lower": 15,
+                "upper": 17
+            },
+            {
+                "count": 3,
+                "label": "[17-19)",
+                "upperInclusive": false,
+                "lower": 17,
+                "upper": 19
+            },
+            {
+                "count": 3,
+                "label": "[19-21]",
+                "upperInclusive": true,
+                "lower": 19,
+                "upper": 21
+            },
+            {
+                "count": 10,
+                "label": "(21-56]",
+                "upperInclusive": true,
+                "lower": 21,
+                "upper": 56
             }
         ],
-        "lowerIQR": -7,
-        "upperIQR": 11,
+        "lowerIQR": -10,
+        "upperIQR": 14,
         "lowerBound": 1,
-        "upperBound": 11,
-        "binSize": 1,
+        "upperBound": 21,
+        "binSize": 2,
         "binCount": 10,
         "binned": [
-            37,
-            16,
-            11,
-            5,
-            4,
+            150,
+            41,
+            25,
+            9,
+            6,
+            6,
+            13,
             3,
             3,
             3,
-            1,
-            3,
-            4
+            10
         ],
         "labels": [
-            "[1-2)",
-            "[2-3)",
-            "[3-4)",
-            "[4-5)",
-            "[5-6)",
-            "[6-7)",
-            "[7-8)",
-            "[8-9)",
-            "[9-10)",
-            "[10-11]",
-            "(11-22]"
+            "[1-3)",
+            "[3-5)",
+            "[5-7)",
+            "[7-9)",
+            "[9-11)",
+            "[11-13)",
+            "[13-15)",
+            "[15-17)",
+            "[17-19)",
+            "[19-21]",
+            "(21-56]"
         ],
-        "below": [
-
-        ],
+        "below": [],
         "above": [
-            15,
+            34,
+            47,
+            56,
+            35,
             22,
-            14,
-            12
+            37,
+            33,
+            49,
+            23,
+            22
         ]
     },
     "summary": {
         "min": 1,
-        "max": 22,
-        "mean": 3.4333333333333,
-        "count": 90,
+        "max": 56,
+        "mean": 5.0111524163569,
+        "count": 269,
         "median": 2,
-        "stddev": 66.154353405461,
+        "stddev": 2896149.8184371,
         "lq": 1,
-        "uq": 4,
-        "iqr": 3
+        "uq": 5,
+        "iqr": 4
     }
 }
