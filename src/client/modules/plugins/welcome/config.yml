@@ -65,4 +65,11 @@ install:
                 newWindow: true
                 label: Contact KBase
                 icon: envelope-o
+        -
+            name: help
+            definition:
+                uri: https://kbase.us/narrative-guide/
+                newWindow: true
+                label: Help
+                icon: question
                    
