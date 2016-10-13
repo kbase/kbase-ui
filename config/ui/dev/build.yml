@@ -39,7 +39,7 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 1.8.0
+        version: 2.0.0
         cwd: src/plugin
         source:
             bower: {}
@@ -132,6 +132,13 @@ plugins:
         name: bulk-ui
         globalName: kbase-ui-plugin-bulk-ui
         version: 0.2.2
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: jgi-import
+        globalName: kbase-ui-plugin-jgi-import
+        version: 0.1.0
         cwd: src/plugin
         source:
             bower: {}
