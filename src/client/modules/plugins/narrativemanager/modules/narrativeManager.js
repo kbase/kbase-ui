@@ -429,9 +429,7 @@ define([
                             // 2 - create the Narrative object
                             return fetchNarrativeObjects(workspaceName, params.cells, params.parameters);
                         })
-                        .then(function (result) {
-                            var narrativeObject = result[0],
-                                metadataExternal = result[1];
+                        .spread(function (narrativeObject, metadataExternal) {
                             // 3 - save the Narrative object
                             return workspaceClient.save_objects({
                                 workspace: workspaceName,
