@@ -181,6 +181,7 @@
         }
         main.start()
             .catch(function (err) {
+                console.error('Startup Error', err);
                 KBaseFallback.showError({
                     title: 'KBase Application Startup Error',
                     content: [
@@ -195,7 +196,6 @@
                     ]
                 });
                 // document.getElementById('root').innerHTML = 'Error starting KBase UI. Please consult the browser error log.';
-                // console.error('Startup Error', err);
             });
     }, function (err) {
         handleStartupError(err);

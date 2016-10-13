@@ -54,6 +54,7 @@ install:
             queryParams:
                 app: {}
                 method: {}
+                markdown: {}
                 copydata: {}
                 appparam: {} 
             widget: narrativeManager_createNew
