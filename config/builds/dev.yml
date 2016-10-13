@@ -8,6 +8,6 @@ build:
     temp: ../temp
 bower:
     offline: false
-debug: true
+debug: false
 server:
     port: 8080
