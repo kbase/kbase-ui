@@ -11,11 +11,11 @@ define([
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
     'kb/service/client/serviceWizard',
-    './catalog_util',
+    '../catalog_util',
     'datatables',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
-    'datatables_bootstrap',
+    'datatables_bootstrap'
 ],
     function ($,  Promise, NarrativeMethodStore, Catalog, ServiceWizard, CatalogUtil) {
         $.KBWidget({

@@ -9,7 +9,7 @@ define([
     'jquery',
     'bluebird',
     'kb/service/client/catalog',
-    './catalog_util',
+    '../catalog_util',
     'datatables',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap'

@@ -13,11 +13,11 @@ define([
     'bluebird',
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
-    './catalog_util',
+    '../catalog_util',
     'datatables',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
-    'datatables_bootstrap',
+    'datatables_bootstrap'
 ],
     function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil) {
         $.KBWidget({

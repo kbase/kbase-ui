@@ -10,7 +10,7 @@ define([
     'bluebird',
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
-    './catalog_util',
+    '../catalog_util',
     'kb/widget/legacy/prompt',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap',
