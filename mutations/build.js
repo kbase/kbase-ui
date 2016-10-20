@@ -147,6 +147,7 @@ function copyLocalModules(state) {
             }).map(function (spec) {
                 var from = projectRoot.concat(spec.directory.path.split('/')),
                     to = root.concat(['build', 'local_modules']);
+
                 return copyDirFiles(from, to);
             }));
         });
@@ -490,25 +491,52 @@ function installExternalPlugins(state) {
                 }))];
         })
         .spread(function (externalPlugins) {
+            return [externalPlugins, Promise.all(externalPlugins
+                    .filter(function (plugin) {
+                        return plugin.source.directory ? true : false;
+                    })
+                    .map(function (plugin) {
+                        var cwds = plugin.cwd || 'dist/plugin',
+                            cwd = cwds.split('/'),
+                            // Our actual cwd is mutations, so we need to escape one up to the 
+                            // project root.
+                            repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..'],
+                            source = repoRoot.concat([plugin.globalName]).concat(cwd),
+                            destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+//                    console.log('EXTERNAL plugin');
+//                    console.log(source);
+//                    console.log(destination);
+
+                        return copyFiles(source, destination, '**/*');
+                    }))];
+        })
+        .spread(function (externalPlugins) {
             return Promise.all(externalPlugins
                 .filter(function (plugin) {
-                    return plugin.source.directory ? true : false;
+                    return plugin.source.link ? true : false;
                 })
                 .map(function (plugin) {
                     var cwds = plugin.cwd || 'dist/plugin',
                         cwd = cwds.split('/'),
                         // Our actual cwd is mutations, so we need to escape one up to the 
                         // project root.
-                        repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..'],
+                        repoRoot = (plugin.source.link.root && plugin.source.link.root.split('/')) || ['..', '..'],
                         source = repoRoot.concat([plugin.globalName]).concat(cwd),
                         destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
 //                    console.log('EXTERNAL plugin');
 //                    console.log(source);
 //                    console.log(destination);
-                        
-                    return copyFiles(source, destination, '**/*');
+
+                    return fs.mkdirAsync(destination.join('/'));
+                    // return linkDirectories(destination, source);
+                    // +++ 
+                    // return copyFiles(source, destination, '**/*');
                 }));
         });
+}
+
+function linkDirectories(source, destination) {
+    return fs.symlinkAsync(source.join('/'), destination.join('/'));
 }
 
 /*
@@ -543,7 +571,9 @@ function installExternalModules(state) {
                 var repoRoot = (module.source.directory.root && module.source.directory.root.split('/')) || ['..', '..'],
                     source = repoRoot.concat([module.globalName]),
                     destination = root.concat(['build', 'client', 'modules', 'bower_components', module.globalName]);
-                console.log('copying from...'); console.log(repoRoot); console.log(source), console.log(destination);
+                console.log('copying from...');
+                console.log(repoRoot);
+                console.log(source), console.log(destination);
                 return copyFiles(source, destination, '**/*');
             }));
         });
@@ -620,7 +650,7 @@ function setupBuild(state) {
 function configureSearch(state) {
     var configFile = state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/');
     return fs.readJson(configFile,
-        function(err, config) {
+        function (err, config) {
             var target = state.config.targets.deploy;
             config.setup = target;
             return fs.outputJson(configFile, config);
@@ -749,10 +779,19 @@ function makeDistBuild(state) {
         .then(function () {
             return glob(root.concat(['dist', 'client', 'modules', '**', '*.js']).join('/'))
                 .then(function (matches) {
-                    return Promise.all(matches.map(function (match) {
-                        var result = uglify.minify(match);
-                        return fs.writeFileAsync(match, result.code);
-                    }));
+                    // TODO: incorporate a sustainable method for omitting
+                    // directories from alteration.
+                    // FORNOW: we need to protect iframe-based plugins from having
+                    // their plugin code altered.
+                    var reProtected = /\/modules\/plugins\/.*?\/iframe_root\//;
+                    return Promise.all(matches
+                        .filter(function (match) {
+                            return !reProtected.test(match);
+                        })
+                        .map(function (match) {
+                            var result = uglify.minify(match);
+                            return fs.writeFileAsync(match, result.code);
+                        }));
                 });
         })
         .then(function () {
@@ -850,7 +889,7 @@ function main(type) {
             return installPlugins(state);
         })
 
-        
+
         .then(function (state) {
             return mutant.copyState(state);
         })
@@ -919,7 +958,7 @@ function main(type) {
             }
             return state;
         })
-        
+
         // Here we handle any developer links.
         //.then(function (state) {
         //    return mutant.copyState(state);
@@ -927,7 +966,7 @@ function main(type) {
         //.then(function (state) {
         //    
         //})
-        
+
         .then(function (state) {
             return mutant.finish(state);
         })

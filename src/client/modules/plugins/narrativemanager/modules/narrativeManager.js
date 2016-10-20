@@ -4,11 +4,14 @@ define([
     'jquery',
     'underscore',
     'bluebird',
+    'handlebars',
     'kb/service/client/workspace',
     'kb/service/client/narrativeMethodStore',
-    'kb/service/utils'
+    'kb/service/utils',
+    'marked',
+    'text!../content/welcome-cell-content.md'
 ],
-    function ($, _, Promise, Workspace, NarrativeMethodStore, serviceUtils) {
+    function ($, _, Promise, Handlebars, Workspace, NarrativeMethodStore, serviceUtils, marked, welcomeCellContent) {
         'use strict';
 
         var KB_CELL = 'kb-cell',
@@ -48,8 +51,16 @@ define([
                 }),
                 narrativeMethodStore = new NarrativeMethodStore(runtime.getConfig('services.narrative_method_store.url'), {
                     token: runtime.service('session').getAuthToken()
-                });
+                }), introHtml;
 
+            // Compile the intro cell html as an object level value.
+            // We could promote this to module level, but we need to runtime
+            // object here for the template context.
+            // We should be able to compile this with just the load-time
+            // configuration, but we need to work out the mechanics of that.
+            introHtml = Handlebars.compile(marked(welcomeCellContent))({
+                config: runtime.rawConfig()
+            });
 
             function copy_to_narrative(ws_id, importData) {
                 return Promise.try(function () {
@@ -110,11 +121,11 @@ define([
                                 }
                                 return false;
                             });
-                            
+
                         if (workspaces.length === 0) {
                             return null;
                         }
-                        
+
                         workspaces.sort(function (a, b) {
                             if (a.moddate > b.moddate) {
                                 return -1;
@@ -159,7 +170,7 @@ define([
              *          {
              *              cell: n,           // indicates index in the cell
              *              step_id: id,
-             *              parameter_id: id,  
+             *              parameter_id: id,
              *              value: value
              *          }
              *      ],
@@ -227,6 +238,8 @@ define([
                 return cell;
             }
 
+
+
             function gatherCellData(cells, specMapping, parameters) {
                 var cell_data = [],
                     cellCount = 0;
@@ -248,7 +261,7 @@ define([
                         }
                     });
                 } else {
-                    cell_data.push({cell_type: 'markdown', source: introText, metadata: {}});
+                    cell_data.push({cell_type: 'markdown', source: introHtml, metadata: {}});
                 }
                 return cell_data;
             }
@@ -393,82 +406,10 @@ define([
                 return cell;
             }
 
-            /*
-             Note: The source for the template is: NarrativeManager-welcome-cell-content.txt
-             Do not change the content here!
-             
-             See NarrativeManager-welcome-cell-content.txt and /tools/markdown-to-js-string.pl
-             E.g.
-             
-             ../../../tools/markdown-to-js-string.pl < NarrativeManager-welcome-cell-content.txt
-             */
-            var introTemplate = (function () {
-                var s = '';
-                s += '![KBase Logo](<%= docBaseUrl %>/wp-content/uploads/2014/11/kbase-logo-web.png)\n';
-                s += 'Welcome to the Narrative Interface!\n';
-                s += '===\n';
-                s += '\n';
-                s += 'What\'s a Narrative?\n';
-                s += '---\n';
-                s += '\n';
-                s += 'Design and carry out collaborative computational experiments while  \n';
-                s += 'creating Narratives: interactive, shareable, and reproducible records \n';
-                s += 'of your data, computational steps, and thought processes.\n';
-                s += '\n';
-                s += '<a href="<%= docBaseUrl %>/narrative-guide">learn more...</a>\n';
-                s += '\n';
-                s += '\n';
-                s += 'Get Some Data\n';
-                s += '---\n';
-                s += '\n';
-                s += 'Click the Add Data button in the Data Panel to browse for KBase data or \n';
-                s += 'upload your own. Mouse over a data object to add it to your Narrative, and  \n';
-                s += 'check out more details once the data appears in your list.\n';
-                s += '\n';
-                s += '<a href="<%= docBaseUrl %>/narrative-guide/explore-data">learn more...</a>\n';
-                s += '\n';
-                s += '\n';
-                s += 'Analyze It\n';
-                s += '---\n';
-                s += '\n';
-                s += 'Browse available analyses that can be run using KBase apps or methods \n';
-                s += '(apps are just multi-step methods that make some common analyses more \n';
-                s += 'convenient). Select an analysis, fill in the fields, and click Run. \n';
-                s += 'Output will be generated, and new data objects will be created and added \n';
-                s += 'to your data list. Add to your results by running follow-on apps or methods.\n';
-                s += '\n';
-                s += '<a href="<%= docBaseUrl %>/narrative-guide/browse-apps-and-methods">learn more...</a>\n';
-                s += '\n';
-                s += '\n';
-                s += 'Save and Share Your Narrative\n';
-                s += '---\n';
-                s += '\n';
-                s += 'Be sure to save your Narrative frequently. When you\'re ready, click  \n';
-                s += 'the share button above to let collaborators view your analysis steps \n';
-                s += 'and results. Or better yet, make your Narrative public and help expand \n';
-                s += 'the social web that KBase is building to make systems biology research \n';
-                s += 'open, collaborative, and more effective.\n';
-                s += '\n';
-                s += '<a href="<%= docBaseUrl %>/narrative-guide/share-narratives/">learn more...</a>\n';
-                s += '\n';
-                s += 'Find Documentation and Help\n';
-                s += '---\n';
-                s += '\n';
-                s += 'For more information, please see the \n';
-                s += '<a href="<%= docBaseUrl %>/narrative-guide">Narrative Interface User Guide</a> \n';
-                s += 'or the <a href="<%= docBaseUrl %>/tutorials">app/method tutorials</a>.\n';
-                s += '\n';
-                s += 'Questions? <a href="<%= docBaseUrl %>/contact-us">Contact us</a>!\n';
-                s += '\n';
-                s += 'Ready to begin adding to your Narrative? You can keep this Welcome cell or \n';
-                s += 'delete it with the trash icon in the top right corner.';
-                return s;
-            }());
-
             // Do we really need a guard here? If there is no kb.urls, the deploy is pretty broken...
-            var introText = _.template(introTemplate)({
-                docBaseUrl: runtime.getConfig('resources.docSite.base.url')
-            });
+            //var introText = _.template(introTemplate)({
+            //    docBaseUrl: runtime.getConfig('resources.docSite.base.url')
+            //});
 
             function createTempNarrative(params) {
                 return Promise.try(function () {
@@ -488,9 +429,7 @@ define([
                             // 2 - create the Narrative object
                             return fetchNarrativeObjects(workspaceName, params.cells, params.parameters);
                         })
-                        .then(function (result) {
-                            var narrativeObject = result[0],
-                                metadataExternal = result[1];
+                        .spread(function (narrativeObject, metadataExternal) {
                             // 3 - save the Narrative object
                             return workspaceClient.save_objects({
                                 workspace: workspaceName,

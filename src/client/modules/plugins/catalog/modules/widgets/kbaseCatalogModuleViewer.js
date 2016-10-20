@@ -10,10 +10,11 @@ define([
     'bluebird',
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
-    './catalog_util',
-    './app_card',
-    './function_card',
-    'catalog_registration_widget',
+    '../catalog_util',
+    '../app_card',
+    '../function_card',
+    
+    './kbaseCatalogRegistration',
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap'
 ],

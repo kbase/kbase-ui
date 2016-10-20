@@ -66,8 +66,10 @@ install:
                 label: Contact KBase
                 icon: envelope-o
         -
-            name: narrative
+            name: help
             definition:
-                path: narrativemanager/start
-                label: Narrative
-                icon: file                    
+                uri: https://kbase.us/narrative-guide/
+                newWindow: true
+                label: Help
+                icon: question
+                   

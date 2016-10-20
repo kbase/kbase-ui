@@ -2,14 +2,15 @@
 
 # Set the root of the project.
 # This is the directory which contains kbase-ui and any plugin repo directories.
-export DEVDIR=/your/dev/dir
+export DEVDIR=`pwd`/../../..
+echo "Dev dir is $DEVDIR"
 
 function linkLib() {
    local package=$1
    local module=$2
 
-    rm -rf ../../build/build/client/modules/kb/$package
-    ln -s $DEVDIR/kbase-$module/dist/kb/$package ../../build/build/client/modules/kb/$package
+    rm -rf ../../build/build/client/modules/$package
+    ln -s $DEVDIR/kbase-$module/dist/amd/$package ../../build/build/client/modules/$package
 }
 
 function linkPlugin() {
@@ -40,6 +41,8 @@ function linkPlugin() {
 # module is the repo directory following the kbase- namespacing prefix
 # linkLib "common" "common-js"
 
+# linkLib 'kb_sdk_clients' 'sdk-clients-js'
+
 #
 # EXTERNAL PLUGINS
 #
@@ -53,6 +56,8 @@ function linkPlugin() {
 
 # linkPlugin "dataview"
 # linkPlugin "data-landing-pages"
+#linkPlugin "data-api-demo"
+#linkPlugin "sdk-clients-test"
 
 #
 # INTERNAL PLUGINS

@@ -4,7 +4,7 @@ define([
     'bluebird',
     'kb/common/html',
     'kb/common/dom',
-    'kb_narrativeManager_narrativeManagerService'
+    './narrativeManager'
 
 ], function (Promise, html, dom, NarrativeManagerService) {
     'use strict';
@@ -42,10 +42,14 @@ define([
                         }
                     }
                 }
+                
+                // Note that these are exclusive cell creation options. 
                 if (params.app) {
                     cells = [{app: params.app}];
                 } else if (params.method) {
                     cells = [{method: params.method}];
+                } else if (params.markdown) {
+                    cells = [{markdown: params.markdown}];
                 }
                 
                 return narrativeManager.createTempNarrative({
