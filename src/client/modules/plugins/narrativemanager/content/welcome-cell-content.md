@@ -2,7 +2,7 @@
 # Welcome to the Narrative Interface!
 
 ## What's a Narrative?
-Design and carry out collaborative computational experiments while creating Narratives: interactive, shareable, and reproducible records of your data, computational steps, and thought processes.
+In KBase, you can customize and execute a series of analysis steps to create shareable, reproducible “Narratives” that include data, analysis steps, results, visualizations and commentary.
 
 [learn more...]({{config.resources.docSite.base.url}}/narrative-guide)
 
@@ -16,7 +16,7 @@ check out more details once the data appears in your list.
 ## Analyze It
 Browse available analyses that can be run using KBase apps. Select an app, fill in the fields, and click Run.
 Output will be generated, and new data objects may be created and added
-to your data list. Extend your workflow by adding more apps to your Narrative.
+to your data list.
 
 [learn more...]({{config.resources.docSite.base.url}}/narrative-guide/browse-apps-and-methods)
 
@@ -31,9 +31,9 @@ more open, reproducible and collaborative.
 ## Find Documentation and Help
 For more information, please see the
 [Narrative Interface User Guide]({{config.resources.docSite.base.url}}/narrative-guide)
-or the [tutorials]({{config.resources.docSite.base.url}}/tutorials)
+or the [tutorials]({{config.resources.docSite.base.url}}/tutorials).
 
-Questions? [Contact us]({{config.resources.docSite.base.url}}/contact-us)
+Questions? [Contact us]({{config.resources.docSite.base.url}}/contact-us)!
 
 Ready to begin adding to your Narrative? You can keep this Welcome cell or
-delete it with the trash icon in the top right corner.
+delete it by selecting "Delete cell" from the "..." menu in the top right corner of this cell.
