@@ -19,9 +19,6 @@
         cookieName: {
             value: 'kbase_session'
         },
-        narrCookieName: {
-            value: 'kbase_narr_session'
-        },
 
         // Note that THIS session just uses the original kbase
         // session object without transforming it to the canonical form
@@ -70,7 +67,7 @@
                 }
                 // first pass just break out the string into fields.
                 var session = this.decodeToken(sessionCookie);
-               
+
                 if (!this.validateKBaseSessionObject(session)) {
                     // zap cookies if we had a bad cookie.
                     this.removeAuth();
@@ -80,7 +77,7 @@
                 session.token = session.token.replace(/PIPESIGN/g, '|').replace(/EQUALSSIGN/g, '=');
                 // now we have a session object equivalent to the one returned by the auth service.
                 session.tokenObject = this.decodeToken(session.token);
-               
+
                 if (!this.validateSessionObject(session)) {
                     // zap cookies if we had a bad cookie.
                     this.removeAuth();
@@ -138,7 +135,7 @@
                 return session;
             }
         },
-       
+
         validateKBaseSessionObject: {
             value: function (sessionObject) {
                 if (!sessionObject) {
@@ -147,7 +144,7 @@
                 // Validate the structure.
                 if (!(sessionObject.kbase_sessionid && sessionObject.un && sessionObject.user_id && sessionObject.token)) {
                     return false;
-                }                
+                }
                 return true;
             }
         },
@@ -166,7 +163,7 @@
                if (!sessionObject.tokenObject.expiry) {
                   return false;
                }
-               
+
                if (!/^\d+$/.test(sessionObject.tokenObject.expiry)) {
                   return false;
                }
@@ -199,13 +196,6 @@
                     path: '/'
                 });
                 $.removeCookie(this.cookieName, {
-                    path: '/',
-                    domain: 'kbase.us'
-                });
-                $.removeCookie(this.narrCookieName, {
-                    path: '/'
-                });
-                $.removeCookie(this.narrCookieName, {
                     path: '/',
                     domain: 'kbase.us'
                 });

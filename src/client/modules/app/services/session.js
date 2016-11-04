@@ -9,7 +9,6 @@ define([
         var runtime = config.runtime,
             session = sessionFactory.make({
                 cookieName: config.cookieName,
-                extraCookieNames: config.extraCookieNames,
                 loginUrl: config.loginUrl,
                 cookieMaxAge: config.cookieMaxAge || 100000
             }),
@@ -57,7 +56,7 @@ define([
         function stop() {
             session = null;
         }
-        
+
         function onChange(fun) {
             state.listen('loggedin', {
                 onSet: function (value) {
