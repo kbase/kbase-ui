@@ -396,7 +396,6 @@ define(['jquery', 'q', 'kb.cookie', 'kb.config', 'kb.logger'],
              * Create and set a session cookie in the browser.
              *
              * Adds kbase_session cookie to browser
-             * Adds kbase_narr_session to browser
              * Adds kbase_session object to local storage
              *
              * @function setSessionCookie
