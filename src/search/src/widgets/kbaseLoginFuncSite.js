@@ -11,23 +11,22 @@
             fields: ['name', 'kbase_sessionid', 'user_id', 'token']
         },
         cookieName: 'kbase_session',
-        narrCookieName: 'kbase_narr_session',
         sessionObject: null,
         userProfile: null,
         init: function (options) {
             this._super(options);
 
             // SYNC WARNING
-            // There may be parts of the systCopaem which rely on the sycnronous loading characterstics of 
-            // this plugin. Specifically, it has traditionally loaded early in the index page, so the 
+            // There may be parts of the systCopaem which rely on the sycnronous loading characterstics of
+            // this plugin. Specifically, it has traditionally loaded early in the index page, so the
             // session information is available to code which loads later.
-            // Most of the session logic is now in kbaseSession.js, which is asynchronous in nature 
+            // Most of the session logic is now in kbaseSession.js, which is asynchronous in nature
             // (requirejs loaded). However, there is a small version of the session code in kbaseSessionSync.js
             // which should be loaded towards the top of the index file, certainly before this one.
             // syncronously load the session.
 
             // Initial load of the session is through the synchronous kbase session sync object.
-            // This object is compatible with the full kbase session object, but is loaded 
+            // This object is compatible with the full kbase session object, but is loaded
             // at index load time and so available here.
             // We use it for the initial state, but after that all other session interactions
             // are asynchronous, and session state is communicated via jquery messages.
@@ -36,12 +35,12 @@
 
 
             // Select which version of the widget to show.
-            // NB this widget just shows one state per instantiation -- 
+            // NB this widget just shows one state per instantiation --
             // the login form when the session is unauthenticated.
             this.$elem.empty();
             this.renderWidget();
             this.afterInit();
-            
+
             /*var style = '_' + this.options.style + 'Style';
             this[style](function (content) {
                 if (content !== null) {
@@ -57,10 +56,10 @@
             // EVENT LISTENERS
             require(['postal', 'kb.widget.login'], function (Postal, LoginWidget) {
 
-                // These need to go after the element is built, but before session is 
+                // These need to go after the element is built, but before session is
                 // set up below, because the widget may need to respond to login and profile events.
-                
-                // The session stuff is handled here for now, but this should 
+
+                // The session stuff is handled here for now, but this should
                 // be moved into the App.
                 Postal.channel('session').subscribe('profile.loaded', function (data) {
                     // $(document).on('profileLoaded.kbase', function(e, profile) {

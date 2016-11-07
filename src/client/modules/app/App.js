@@ -186,7 +186,6 @@ define([
             appServiceManager.addService('session', {
                 runtime: api,
                 cookieName: 'kbase_session',
-                extraCookieNames: ['kbase_narr_session'],
                 loginUrl: serviceConfig.services.login.url,
                 cookieMaxAge: clientConfig.ui.constants.session_max_age
 
@@ -228,8 +227,8 @@ define([
             });
 
             // Behavior
-            // There are not too many global behaviors, and perhaps there should 
-            // even fewer or none. Most behavior is within services or 
+            // There are not too many global behaviors, and perhaps there should
+            // even fewer or none. Most behavior is within services or
             // active widgets themselves.
             receive('session', 'loggedout', function () {
                 send('app', 'navigate', 'goodbye');
@@ -278,7 +277,7 @@ define([
                     // kick off handling of the current route.
                     api.service('analytics').pageView('/index');
                     // remove the loading status.
-                    
+
                     send('app', 'do-route');
                     return api;
                 });
