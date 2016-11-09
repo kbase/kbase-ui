@@ -4,73 +4,40 @@ define([
     'bluebird',
     'kb/common/html',
     'kb/common/dom',
-    './narrativeManager'
-
-], function (Promise, html, dom, NarrativeManagerService) {
+    'kb_sdk_clients/genericClient'
+], function (Promise, html, dom, ServiceClient) {
     'use strict';
 
     function factory(config) {
-        var mount, container, runtime = config.runtime,
-            narrativeManager = NarrativeManagerService({runtime: runtime});
+        var mount, container, runtime = config.runtime;
 
         function makeNarrativePath(wsId, objId) {
             return runtime.getConfig('services.narrative.url') + '/narrative/ws.' + wsId + '.obj.' + objId;
         }
+
         function createNewNarrative(params) {
-            return Promise.try(function () {
-                params = params || {};
-                if (params.app && params.method) {
-                    throw "Must provide no more than one of the app or method params";
-                }
-                var importData, appData, tmp, i, cells;
-                if (params.copydata) {
-                    importData = params.copydata.split(';');
-                }
-                if (params.appparam) {
-                    /* TODO: convert to forEach */
-                    tmp = params.appparam.split(';');
-                    appData = [];
-                    for (i = 0; i < tmp.length; i += 1) {
-                        appData[i] = tmp[i].split(',');
-                        if (appData[i].length !== 3) {
-                            throw new Error("Illegal app parameter set, expected 3 parameters separated by commas: " + tmp[i]);
-                        }
-                        /* TODO: use standard lib for math and string->number conversions) */
-                        appData[i][0] = parseInt(appData[i][0], 10);
-                        if (isNaN(appData[i][0]) || appData[i][0] < 1) {
-                            throw new Error("Illegal app parameter set, first item in set must be an integer > 0: " + tmp[i]);
-                        }
+            var client = new ServiceClient({
+                module: 'NarrativeService',
+                url: runtime.getConfig('services.service_wizard.url'),
+                token: runtime.service('session').getAuthToken(),
+                version: 'dev'
+            });
+            params.includeIntroCell = 1;
+            return client.callFunc('create_new_narrative', [params])
+            .then(function (info) {
+                info = info[0];
+                var wsId = info.narrativeInfo.wsid,
+                    objId = info.narrativeInfo.id,
+                    path = makeNarrativePath(wsId, objId);
+                return {
+                    redirect: {
+                        url: path,
+                        newWindow: false
                     }
                 }
-                
-                // Note that these are exclusive cell creation options. 
-                if (params.app) {
-                    cells = [{app: params.app}];
-                } else if (params.method) {
-                    cells = [{method: params.method}];
-                } else if (params.markdown) {
-                    cells = [{markdown: params.markdown}];
-                }
-                
-                return narrativeManager.createTempNarrative({
-                    cells: cells,
-                    parameters: appData,
-                    importData: importData
-                })
-                    .then(function (info) {
-                        var wsId = info.narrativeInfo.wsid,
-                            objId = info.narrativeInfo.id,
-                            path = makeNarrativePath(wsId, objId);
-                        return {
-                            redirect: {
-                                url: path,
-                                newWindow: false
-                            }
-                        };
-                    });
             });
         }
-        
+
         function wrapPanel(content) {
             var div = html.tag('div');
             return div({class: 'container-fluid'}, [
@@ -83,7 +50,7 @@ define([
         }
 
 
-        
+
         // API
 
         function attach(node) {
