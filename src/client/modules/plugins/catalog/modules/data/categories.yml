@@ -19,6 +19,6 @@ orderings:
         - sequence
         - comparative_genomics
         - metabolic_modeling
-        - communities
         - expression
+        - communities
         - utilities
