@@ -1016,7 +1016,7 @@ define([
 
                     // replace instances of emailing help@kbase.us to contact us
                     var re = /For questions.{0,50}<a href="mailto:help@kbase.us".{1,50}help@kbase.us.{0,5}<\/a>/g; 
-                    var d_text = m.description.replace(re, 'Questions? Suggestions? Bug reports? Please <a href="https://kbase.us/contact-us/">contact us</a> and include the app name.');
+                    var d_text = m.description.replace(re, 'Questions? Suggestions? Bug reports? Please <a href="http://kbase.us/contact-us/">contact us</a> and include the app name and error message (if any).');
 
                     self.$descriptionPanel
                         .append(
