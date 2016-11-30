@@ -58,7 +58,7 @@ define([
             // object here for the template context.
             // We should be able to compile this with just the load-time
             // configuration, but we need to work out the mechanics of that.
-            introHtml = Handlebars.compile(marked(welcomeCellContent))({
+            introHtml = Handlebars.compile(welcomeCellContent)({
                 config: runtime.rawConfig()
             });
 
