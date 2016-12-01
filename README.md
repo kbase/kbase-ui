@@ -100,7 +100,7 @@ The KBase UI is an open source project, managed through github. As such, contrib
 
 ## Reporting Bugs
 
-We do not currently use github issues for bug reports. Please send any bug reports, comments, or requests to [help@kbase.us](mailto:help@kbase.us) or use our [contact form](http://kbase.us/contact-us).
+We do not currently use github issues for bug reports. Please send any bug reports, comments, or requests via our [contact form](http://kbase.us/contact-us).
 
 ## License
 
