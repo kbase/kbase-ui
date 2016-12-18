@@ -1170,7 +1170,6 @@ define([
                 this.renderByFavorites();
             } else if (organizeBy === 'runs') {
                 this.renderByRuns();
-
             } else if (organizeBy === 'input_types') {
                 this.renderbyInputTypes();
             } else if (organizeBy === 'output_types') {
