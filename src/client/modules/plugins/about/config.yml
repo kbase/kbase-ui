@@ -10,35 +10,45 @@ source:
     ## sources are relative to build/plugins/PACKAGE/source/javascript
     ## NB: need to quote file names, otherwise 
     modules:
-        -
-            module: kb_about_aboutWidget
-            file: panel
 install:
     widgets:
         - 
-            module: kb_about_aboutWidget
-            id: kb_about
+            module: panel
+            id: about
+            type: factory
+        -
+            module: services
+            id: aboutServices
             type: factory
     routes:
         -
             path: ['about']
-            widget: kb_about
+            widget: about
+            queryParams: {}
+        -
+            path: ['about', 'services']
+            widget: aboutServices
+            queryParams: {}
     menu:
         -
             name: about
-            menus: ['authenticated', 'unauthenticated']
             definition:
                 path: about
-                label: About the Functional Site
+                label: About the User Interface
                 icon: info-circle
         -
-            name: contact
-            menus: ['authenticated', 'unauthenticated']
+            name: about-services
             definition:
-                uri: http://kbase.us/contact
-                newWindow: true
-                label: Contact KBase
-                icon: envelope-o
+                path: ['about', 'services']
+                label: Core KBase Services
+                icon: info-circle
+        # -
+        #     name: contact
+        #     definition:
+        #         uri: http://kbase.us/contact
+        #         newWindow: true
+        #         label: Contact KBase
+        #         icon: envelope-o
                
                     
             

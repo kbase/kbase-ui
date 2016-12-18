@@ -20,6 +20,8 @@ plugins:
         narrativemanager
     -
         catalog
+    -
+        about
     # external:
     # These are shared with production
     -
