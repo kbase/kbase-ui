@@ -507,7 +507,7 @@ define([
             var self = this;
 
             // determine which set of methods to fetch
-            return self.nms.list_methods_full_info({ tag: tag })
+            return self.nms.list_methods({ tag: tag })
                 .then(function(apps) {
                     self.apps = apps;
                 })
@@ -651,9 +651,7 @@ define([
         processData: function() {
             var self = this;
 
-
             // module lookup table should already exist
-
 
             // instantiate the app cards and create the app lookup table
             self.appLookup = {};
@@ -727,28 +725,21 @@ define([
             self.inputTypes = {};
             self.outputTypes = {};
 
-            for (var k = 0; k < self.appList.length; k++) {
-                if (self.appList[k].info.app_type === 'app') {
-                    if (self.appList[k].info.authors.length > 0) {
-                        var authors = self.appList[k].info.authors;
-                        for (var i = 0; i < authors.length; i++) {
-                            self.developers[authors[i]] = 1;
-                        }
-                    }
-                    if (self.appList[k].info.input_types.length > 0) {
-                        var input_types = self.appList[k].info.input_types;
-                        for (var i = 0; i < input_types.length; i++) {
-                            self.inputTypes[input_types[i]] = 1;
-                        }
-                    }
-                    if (self.appList[k].info.output_types.length > 0) {
-                        var output_types = self.appList[k].info.output_types;
-                        for (var i = 0; i < output_types.length; i++) {
-                            self.outputTypes[output_types[i]] = 1;
-                        }
-                    }
+            this.appList.forEach(function(app) {
+                if (app.info.app_type === 'app') {
+                    app.info.authors.forEach(function(author) {
+                        this.developers[author] = true;
+                    }.bind(this));
+
+                    app.info.input_types.forEach(function(inputType) {
+                        this.inputTypes[inputType] = true;
+                    }.bind(this));
+
+                    app.info.output_types.forEach(function(outputType) {
+                        this.outputTypes[outputType] = true;
+                    }.bind(this));
                 }
-            }
+            }.bind(this));
         },
 
         /*
@@ -940,7 +931,6 @@ define([
             // render the app list
             for (var k = 0; k < this.appList.length; k++) {
                 this.appList[k].clearCardsAddedCount();
-                console.log('DEV', this.appList[k].info);
                 if (this.appList[k].info.app_type === 'app') {
                     if (this.appList[k].info.authors.length > 0) {
                         var authors = this.appList[k].info.authors;
@@ -1045,7 +1035,7 @@ define([
             }
             types.sort();
 
-            // create the sections per author
+            // create the sections per type
             var $typeDivLookup = {};
             for (var k = 0; k < types.length; k++) {
                 var $section = $('<div>').addClass('catalog-section');
@@ -1058,6 +1048,17 @@ define([
                 this.$appListPanel.append($section);
             }
 
+            // create section for apps without an input type
+            var typeId = 'none';
+            var $section = $('<div>').addClass('catalog-section');
+            var $typeDiv = $('<div>').addClass('kbcb-app-card-list-container');
+            $typeDivLookup.none = $typeDiv;
+            $section.append(
+                $('<div>').css({ 'color': '#777' })
+                .append($('<h4>').append($('<span>None</span>').append(types[k]))));
+            $section.append($typeDiv);
+            this.$appListPanel.append($section);
+
             // render the app list
             for (var k = 0; k < this.appList.length; k++) {
                 this.appList[k].clearCardsAddedCount();
@@ -1067,6 +1068,8 @@ define([
                         for (var i = 0; i < input_types.length; i++) {
                             $typeDivLookup[input_types[i]].append(this.appList[k].getNewCardDiv());
                         }
+                    } else {
+                        $typeDivLookup.none.append(this.appList[k].getNewCardDiv());
                     }
                 }
             }
@@ -1080,7 +1083,7 @@ define([
             }
             types.sort();
 
-            // create the sections per author
+            // create the sections per output type
             var $typeDivLookup = {};
             for (var k = 0; k < types.length; k++) {
                 var $section = $('<div>').addClass('catalog-section');
@@ -1093,6 +1096,18 @@ define([
                 this.$appListPanel.append($section);
             }
 
+
+            // create section for apps without an output type
+            var typeId = 'none';
+            var $section = $('<div>').addClass('catalog-section');
+            var $typeDiv = $('<div>').addClass('kbcb-app-card-list-container');
+            $typeDivLookup.none = $typeDiv;
+            $section.append(
+                $('<div>').css({ 'color': '#777' })
+                .append($('<h4>').append($('<span>None</span>').append(types[k]))));
+            $section.append($typeDiv);
+            this.$appListPanel.append($section);
+
             // render the app list
             for (var k = 0; k < this.appList.length; k++) {
                 this.appList[k].clearCardsAddedCount();
@@ -1103,6 +1118,8 @@ define([
                         for (var i = 0; i < output_types.length; i++) {
                             $typeDivLookup[output_types[i]].append(this.appList[k].getNewCardDiv());
                         }
+                    } else {
+                        $typeDivLookup.none.append(this.appList[k].getNewCardDiv());
                     }
                 }
             }
