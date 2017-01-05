@@ -48,7 +48,9 @@
     "postal": "1.0.7",
     "plotly": "plotly/plotly.js#1.5.1",
     "highlightjs": "9.2.0",
-    "marked": "0.3.6"
+    "marked": "0.3.6",
+    "kb_common": "kbase-common-js#2.0.0",
+    "kb_service": "kbase-service-clients-js#3.1.2"
   },
   "devDependencies": {},
   "license": "SEE LICENSE IN LICENSE"

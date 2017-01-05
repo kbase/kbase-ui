@@ -216,6 +216,7 @@ function installModulePackagesFromBower(state) {
         })
         .then(function (installDirs) {
             return Promise.all(installDirs.map(function (installDir) {
+                // console.log('Installing module: ' + installDir.path);
                 return installModule(state, installDir.path);
             }));
         })
@@ -401,7 +402,7 @@ function copyFromBower(state) {
                 /*
                  Finally, the cwd serves as a way to dig into a subdirectory and use it as the 
                  basis for copying. This allows us to "bring up" files to the top level of 
-                 the destination. Since we are relative to the root of this proces, we
+                 the destination. Since we are relative to the root of this process, we
                  need to jigger that here.
                  */
                 if (cfg.cwd) {
@@ -902,6 +903,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
+            console.log('Installing Module Packages from Bower...');
             return installModulePackagesFromBower(state);
         })
 
@@ -972,7 +974,7 @@ function main(type) {
         })
         .catch(function (err) {
             console.log('ERROR');
-            // console.log(err);
+            console.log(err);
             console.log(util.inspect(err, {
                 showHidden: false,
                 depth: 10
