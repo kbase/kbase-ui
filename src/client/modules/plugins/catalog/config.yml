@@ -258,6 +258,7 @@ install:
         -
             path: ['catalog', 'register', {type: param, name: registration_id }]
             widget: catalog_registration
+            authorization: true
 
 
         # stats, status, admin
@@ -298,9 +299,11 @@ install:
         -
             path: ['appcatalog', 'register']
             widget: catalog_registration
+            authorization: false
         -
             path: ['appcatalog', 'register', {type: param, name: registration_id }]
             widget: catalog_registration
+            authorization: false
         -
             path: ['appcatalog', 'status']
             widget: catalog_status
