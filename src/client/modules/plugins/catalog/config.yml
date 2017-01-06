@@ -299,11 +299,11 @@ install:
         -
             path: ['appcatalog', 'register']
             widget: catalog_registration
-            authorization: false
+            authorization: true
         -
             path: ['appcatalog', 'register', {type: param, name: registration_id }]
             widget: catalog_registration
-            authorization: false
+            authorization: true
         -
             path: ['appcatalog', 'status']
             widget: catalog_status
