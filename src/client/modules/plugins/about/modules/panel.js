@@ -7,26 +7,27 @@
  */
 define([
     'promise',
-    'kb/common/html', 
+    'kb/common/html',
     'kb/common/dom'
-], 
-    function (Promise, html, dom) {
+], function(Promise, html, dom) {
     'use strict';
+    var t = html.tag,
+        h1 = t('h1'),
+        p = t('p'),
+        div = t('div'),
+        a = t('a');
 
     /*
      * The widget factory function implements the widget interface.
      */
     function widget(config) {
-        var mount, container, 
-            runtime = config.runtime,
-            h1 = html.tag('h1'),
-            p = html.tag('p'),
-            div = html.tag('div'),
-            a = html.tag('a');
-        
+        var mount, container,
+            runtime = config.runtime;
+
         function greeting() {
             return p('Hello');
         }
+
         function render() {
             return [
                 h1('About KBase'),
@@ -38,20 +39,21 @@ define([
         }
         // Widget API
         function attach(node) {
-            return Promise.try(function () {
+            return Promise.try(function() {
                 mount = node;
-                container = dom.createElement('div');
-                mount.appendChild(container);
+                container = mount.appendChild(document.createElement('div'));
             });
         }
+
         function detach() {
-            return Promise.try(function () {
+            return Promise.try(function() {
                 mount.removeChild(container);
                 container = null;
             });
         }
+
         function start() {
-            return Promise.try(function () {
+            return Promise.try(function() {
                 runtime.send('ui', 'setTitle', 'About then FUNctional Site');
                 runtime.send('ui', 'render', {
                     node: container,
@@ -59,8 +61,9 @@ define([
                 });
             });
         }
+
         function stop() {
-             return Promise.try(function () {
+            return Promise.try(function() {
                 runtime.send('ui', 'setTitle', 'Leaving about...');
             });
         }
@@ -72,11 +75,11 @@ define([
             stop: stop
         };
     }
-    
+
     return {
-        make: function (config) {
+        make: function(config) {
             return widget(config);
         }
     };
-    
+
 });

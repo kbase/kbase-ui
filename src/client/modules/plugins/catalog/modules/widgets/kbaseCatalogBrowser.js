@@ -12,7 +12,7 @@ define([
     // for effect
     'kb/widget/legacy/authenticatedWidget',
     'bootstrap'
-], function (
+], function(
     $,
     Promise,
     NarrativeMethodStore,
@@ -20,7 +20,7 @@ define([
     CatalogUtil,
     AppCard,
     categoriesConfig
-    ) {
+) {
     'use strict';
     $.KBWidget({
         name: "KBaseCatalogBrowser",
@@ -60,28 +60,27 @@ define([
 
         categories: {},
 
-        init: function (options) {
+        init: function(options) {
             this._super(options);
 
             var self = this;
 
-//            self.categories = {
-//                assembly: 'Assembly',
-//                annotation: 'Annotation',
-//                metabolic_modeling: 'Metabolic Modeling',
-//                comparative_genomics: 'Comparative Genomics',
-//                expression: 'Expression',
-//                communities: 'Communities',
-//                sequence: 'Sequence Alignment & Search',
-//                util: 'Utilities'
-//            };
+            //            self.categories = {
+            //                assembly: 'Assembly',
+            //                annotation: 'Annotation',
+            //                metabolic_modeling: 'Metabolic Modeling',
+            //                comparative_genomics: 'Comparative Genomics',
+            //                expression: 'Expression',
+            //                communities: 'Communities',
+            //                sequence: 'Sequence Alignment & Search',
+            //                util: 'Utilities'
+            //            };
 
             self.categories = categoriesConfig.categories;
 
             // new style we have a runtime object that gives us everything in the options
             self.runtime = options.runtime;
             self.isLoggedIn = self.runtime.service('session').isLoggedIn();
-            //console.log(this.runtime.service('session').getUsername());
             self.util = new CatalogUtil();
             self.setupClients();
 
@@ -132,12 +131,12 @@ define([
             }
 
             // when we have it all, then render the list
-            Promise.all(loadingCalls).then(function () {
+            Promise.all(loadingCalls).then(function() {
 
                 self.processData();
 
                 self.updateFavoritesCounts()
-                    .then(function () {
+                    .then(function() {
                         self.hideLoading();
                         //self.renderAppList('favorites');
                         // Instead of making the default sort by # of favorites, sort by category (more intuitive to users)
@@ -146,27 +145,29 @@ define([
                         self.sortBy('favorites');
                         self.renderAppList('category');
                         return Promise.all([self.updateRunStats(), self.updateMyFavorites()]);
-                    }).catch(function (err) {
-                    console.error('ERROR');
-                    console.error(err);
-                    self.hideLoading();
-                    self.renderAppList('name_az');
-                    return self.updateRunStats();
-                });
+                    }).catch(function(err) {
+                        console.error('ERROR');
+                        console.error(err);
+                        self.hideLoading();
+                        self.renderAppList('name_az');
+                        return self.updateRunStats();
+                    });
 
             });
 
             return this;
         },
 
-        setupClients: function () {
+        setupClients: function() {
             this.catalog = new Catalog(
-                this.runtime.getConfig('services.catalog.url'),
-                {token: this.runtime.service('session').getAuthToken()}
+                this.runtime.getConfig('services.catalog.url'), {
+                    token: this.runtime.service('session').getAuthToken()
+                }
             );
             this.nms = new NarrativeMethodStore(
-                this.runtime.getConfig('services.narrative_method_store.url'),
-                {token: this.runtime.service('session').getAuthToken()}
+                this.runtime.getConfig('services.narrative_method_store.url'), {
+                    token: this.runtime.service('session').getAuthToken()
+                }
             );
             this.nms_base_url = this.runtime.getConfig('services.narrative_method_store.url');
             this.nms_base_url = this.nms_base_url.substring(0, this.nms_base_url.length - 3);
@@ -174,12 +175,12 @@ define([
 
         $ctrList: null,
 
-        renderControlToolbar: function () {
+        renderControlToolbar: function() {
             var self = this;
 
             // CONTROL BAR CONTAINER
             var $nav = $('<nav>').addClass('navbar navbar-default')
-                .css({'border': '0', 'background-color': '#fff'});
+                .css({ 'border': '0', 'background-color': '#fff' });
             var $container = $('<div>').addClass('container-fluid');
 
             var $content = $('<div>').addClass('');
@@ -190,10 +191,10 @@ define([
             // SEARCH
             var $searchBox = $('<input type="text" placeholder="Search" size="50">').addClass('form-control');
             $searchBox.on('input',
-                function () {
-                    self.filterApps($searchBox.val());
-                })
-                .bind('keypress', function (e) {
+                    function() {
+                        self.filterApps($searchBox.val());
+                    })
+                .bind('keypress', function(e) {
                     if (e.keyCode === 13) {
                         return false;
                     }
@@ -211,44 +212,44 @@ define([
             var $obMyFavs = $('<a>');
             if (self.isLoggedIn) {
                 $obMyFavs.append('My Favorites')
-                    .on('click', function () {
+                    .on('click', function() {
                         self.renderAppList('my_favorites');
                     });
             }
             var $obFavs = $('<a>').append('Favorites Count')
-                .on('click', function () {
+                .on('click', function() {
                     self.renderAppList('favorites');
                 });
             var $obRuns = $('<a>').append('Run Count')
-                .on('click', function () {
+                .on('click', function() {
                     self.renderAppList('runs');
                 });
             var $obNameAz = $('<a>').append('Name (a-z)')
-                .on('click', function () {
+                .on('click', function() {
                     self.renderAppList('name_az');
                 });
             var $obNameZa = $('<a>').append('Name (z-a)')
-                .on('click', function () {
+                .on('click', function() {
                     self.renderAppList('name_za');
                 });
             var $obCat = $('<a>').append('Category')
-                .on('click', function () {
+                .on('click', function() {
                     self.renderAppList('category');
                 });
             var $obModule = $('<a>').append('Module')
-                .on('click', function () {
+                .on('click', function() {
                     self.renderAppList('module');
                 });
             var $obOwner = $('<a>').append('Developer')
-                .on('click', function () {
+                .on('click', function() {
                     self.renderAppList('developer');
                 });
             var $obInput = $('<a>').append('Input Types')
-                .on('click', function () {
+                .on('click', function() {
                     self.renderAppList('input_types');
                 });
             var $obOutput = $('<a>').append('Output Types')
-                .on('click', function () {
+                .on('click', function() {
                     self.renderAppList('output_types');
                 });
 
@@ -280,7 +281,7 @@ define([
                         .append($obInput))
                     .append($('<li>')
                         .append($obOutput))
-                    );
+                );
 
 
             // PLACE CONTENT ON CONTROL BAR
@@ -294,13 +295,13 @@ define([
             return [$nav, $searchBox];
         },
 
-        addUserControls: function () {
+        addUserControls: function() {
             var self = this;
             var $helpLink = $('<li>').append($('<a href="https://kbase.us/apps">').append('<i class="fa fa-question-circle"></i> Help'));
             self.$ctrList.append($helpLink);
         },
 
-        addDeveloperControls: function () {
+        addDeveloperControls: function() {
             var self = this;
 
             var $verR = $('<a href="#catalog/apps/release">').append('Released Apps');
@@ -336,7 +337,7 @@ define([
 
         },
 
-        filterApps: function (query) {
+        filterApps: function(query) {
             var self = this;
             query = query.trim();
             if (query) {
@@ -433,14 +434,14 @@ define([
 
         },
 
-        clearFilter: function () {
+        clearFilter: function() {
             var self = this;
             for (var k = 0; k < self.appList.length; k++) {
                 self.appList[k].show();
             }
         },
 
-        initMainPanel: function ($appListPanel, $moduleListPanel) {
+        initMainPanel: function($appListPanel, $moduleListPanel) {
             var $mainPanel = $('<div>').addClass('container');
             var $appListPanel = $('<div>');
             var $moduleListPanel = $('<div>');
@@ -449,12 +450,12 @@ define([
             return [$mainPanel, $appListPanel, $moduleListPanel];
         },
 
-        showLoading: function () {
+        showLoading: function() {
             var self = this;
             self.$loadingPanel.show();
             self.$mainPanel.hide();
         },
-        hideLoading: function () {
+        hideLoading: function() {
             var self = this;
             self.$loadingPanel.hide();
             self.$mainPanel.show();
@@ -463,8 +464,7 @@ define([
         // we assume context is:
         //    catalog: catalog_client
         //    browserWidget: this widget, so we can toggle any update
-        toggleFavorite: function (info, context) {
-            console.log('clickz');
+        toggleFavorite: function(info, context) {
             var appCard = this;
             var params = {};
             if (info.module_name) {
@@ -477,25 +477,25 @@ define([
             // check if is a favorite
             if (appCard.isStarOn()) {
                 context.catalog.remove_favorite(params)
-                    .then(function () {
+                    .then(function() {
                         appCard.turnOffStar();
                         appCard.setStarCount(appCard.getStarCount() - 1);
                         context.browserWidget.updateMyFavorites();
                         return context.browserWidget.updateFavoritesCounts();
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         console.error('ERROR');
                         console.error(err);
                     });
             } else {
                 context.catalog.add_favorite(params)
-                    .then(function () {
+                    .then(function() {
                         appCard.turnOnStar();
                         appCard.setStarCount(appCard.getStarCount() + 1);
                         context.browserWidget.updateMyFavorites();
                         return context.browserWidget.updateFavoritesCounts();
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         console.error('ERROR');
                         console.error(err);
                     });
@@ -503,36 +503,36 @@ define([
         },
 
         apps: null,
-        populateAppList: function (tag) {
+        populateAppList: function(tag) {
             var self = this;
 
             // determine which set of methods to fetch
-            return self.nms.list_methods({tag: tag})
-                .then(function (apps) {
+            return self.nms.list_methods({ tag: tag })
+                .then(function(apps) {
                     self.apps = apps;
                 })
-                .catch(function (err) {
+                .catch(function(err) {
                     console.error('ERROR');
                     console.error(err);
                 });
         },
 
         legacyApps: null,
-        populateAppListWithLegacyApps: function () {
+        populateAppListWithLegacyApps: function() {
             var self = this;
 
             // apps cannot be registered via the SDK, so don't have tag info
             return self.nms.list_apps({})
-                .then(function (legacyApps) {
+                .then(function(legacyApps) {
                     self.legacyApps = legacyApps;
                 })
-                .catch(function (err) {
+                .catch(function(err) {
                     console.error('ERROR');
                     console.error(err);
                 });
         },
 
-        populateModuleList: function (only_released) {
+        populateModuleList: function(only_released) {
             var self = this;
 
             var moduleSelection = {
@@ -545,26 +545,26 @@ define([
             }
 
             return self.catalog.list_basic_module_info(moduleSelection)
-                .then(function (modules) {
+                .then(function(modules) {
                     self.moduleLookup = {}; // {module_name: {info:{}, hash1:'tag', hash:'tag', ...}
                     var tags = ['release', 'beta', 'dev'];
                     for (var k = 0; k < modules.length; k++) {
                         self.moduleLookup[modules[k]['module_name']] = modules[k];
                     }
                 })
-                .catch(function (err) {
+                .catch(function(err) {
                     console.error('ERROR');
                     console.error(err);
                 });
         },
 
-        updateRunStats: function () {
+        updateRunStats: function() {
             var self = this;
 
             var options = {};
 
             return self.catalog.get_exec_aggr_stats(options)
-                .then(function (stats) {
+                .then(function(stats) {
                     self.runStats = stats;
                     for (var k = 0; k < stats.length; k++) {
 
@@ -578,34 +578,34 @@ define([
                         }
                     }
                 })
-                .catch(function (err) {
+                .catch(function(err) {
                     console.error('ERROR');
                     console.error(err);
                 });
         },
 
-        isDeveloper: function () {
+        isDeveloper: function() {
             var self = this;
 
             return self.catalog.is_approved_developer([self.runtime.service('session').getUsername()])
-                .then(function (isDev) {
+                .then(function(isDev) {
                     if (isDev && isDev.length > 0 && isDev[0] === 1) {
                         self.addDeveloperControls();
                     } else {
                         self.addUserControls();
                     }
                 })
-                .catch(function (err) {
+                .catch(function(err) {
                     console.error('ERROR');
                     console.error(err);
                 });
         },
 
-        updateFavoritesCounts: function () {
+        updateFavoritesCounts: function() {
             var self = this;
             var listFavoritesParams = {};
             return self.catalog.list_favorite_counts(listFavoritesParams)
-                .then(function (counts) {
+                .then(function(counts) {
                     for (var k = 0; k < counts.length; k++) {
                         var c = counts[k];
                         var lookup = c.id;
@@ -617,18 +617,18 @@ define([
                         }
                     }
                 })
-                .catch(function (err) {
+                .catch(function(err) {
                     console.error('ERROR');
                     console.error(err);
                 });
         },
 
         // warning!  will not return a promise if the user is not logged in!
-        updateMyFavorites: function () {
+        updateMyFavorites: function() {
             var self = this;
             if (self.isLoggedIn) {
                 return self.catalog.list_favorites(self.runtime.service('session').getUsername())
-                    .then(function (favorites) {
+                    .then(function(favorites) {
                         self.favoritesList = favorites;
                         for (var k = 0; k < self.favoritesList.length; k++) {
                             var fav = self.favoritesList[k];
@@ -641,19 +641,17 @@ define([
                             }
                         }
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         console.error('ERROR');
                         console.error(err);
                     });
             }
         },
 
-        processData: function () {
+        processData: function() {
             var self = this;
 
-
             // module lookup table should already exist
-
 
             // instantiate the app cards and create the app lookup table
             self.appLookup = {};
@@ -690,7 +688,7 @@ define([
                     module: self.moduleLookup[self.apps[k]['module_name']],
                     nms_base_url: self.nms_base_url,
                     favoritesCallback: self.toggleFavorite,
-                    favoritesCallbackParams: {catalog: self.catalog, browserWidget: self},
+                    favoritesCallbackParams: { catalog: self.catalog, browserWidget: self },
                     isLoggedIn: self.isLoggedIn,
                     showReleaseTagLabels: self.showReleaseTagLabels,
                     linkTag: self.options.tag
@@ -727,28 +725,21 @@ define([
             self.inputTypes = {};
             self.outputTypes = {};
 
-            for (var k = 0; k < self.appList.length; k++) {
-                if (self.appList[k].type === 'method') {
-                    if (self.appList[k].info.authors.length > 0) {
-                        var authors = self.appList[k].info.authors;
-                        for (var i = 0; i < authors.length; i++) {
-                            self.developers[authors[i]] = 1;
-                        }
-                    }
-                    if (self.appList[k].info.input_types.length > 0) {
-                        var input_types = self.appList[k].info.input_types;
-                        for (var i = 0; i < input_types.length; i++) {
-                            self.inputTypes[input_types[i]] = 1;
-                        }
-                    }
-                    if (self.appList[k].info.output_types.length > 0) {
-                        var output_types = self.appList[k].info.output_types;
-                        for (var i = 0; i < output_types.length; i++) {
-                            self.outputTypes[output_types[i]] = 1;
-                        }
-                    }
+            this.appList.forEach(function(app) {
+                if (app.info.app_type === 'app') {
+                    app.info.authors.forEach(function(author) {
+                        this.developers[author] = true;
+                    }.bind(this));
+
+                    app.info.input_types.forEach(function(inputType) {
+                        this.inputTypes[inputType] = true;
+                    }.bind(this));
+
+                    app.info.output_types.forEach(function(outputType) {
+                        this.outputTypes[outputType] = true;
+                    }.bind(this));
                 }
-            }
+            }.bind(this));
         },
 
         /*
@@ -756,11 +747,11 @@ define([
          This is very useful to call before a viewer, since they
          may be chained together without re-rendering.
          */
-        sortBy: function (sortMethod) {
+        sortBy: function(sortMethod) {
             switch (sortMethod) {
                 case 'favorites':
                     // sort by number of stars, then by app name
-                    this.appList.sort(function (a, b) {
+                    this.appList.sort(function(a, b) {
                         var aStars = a.getStarCount();
                         var bStars = b.getStarCount();
                         if (aStars > bStars)
@@ -782,13 +773,392 @@ define([
             }
         },
 
-        renderAppList: function (organizeBy) {
+        renderByCategory: function() {
+            var cats = categoriesConfig.orderings[categoriesConfig.orderings.default];
+            var $catDivLookup = {};
+
+            cats.forEach(function(category) {
+                var $section = $('<div>').addClass('catalog-section');
+                var $catDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                $catDivLookup[category] = $catDiv;
+                $section.append(
+                    $('<div>').css({ 'color': '#777' })
+                    .append($('<h4>').append(this.categories[category])));
+                $section.append($catDiv);
+                this.$appListPanel.append($section);
+            }.bind(this));
+            var $section = $('<div>').addClass('catalog-section');
+            var $noCatDiv = $('<div>').addClass('kbcb-app-card-list-container');
+            $section.append(
+                $('<div>').css({ 'color': '#777' })
+                .append($('<h4>').append('Uncategorized')));
+            $section.append($noCatDiv);
+            this.$appListPanel.append($section);
+
+            for (var k = 0; k < this.appList.length; k++) {
+                this.appList[k].clearCardsAddedCount();
+
+                if (this.appList[k].info.categories.length > 0) {
+                    var appCats = this.appList[k].info.categories;
+                    var gotCat = false;
+                    for (var i = 0; i < appCats.length; i++) {
+                        if ($catDivLookup.hasOwnProperty(appCats[i])) {
+                            gotCat = true;
+                            $catDivLookup[appCats[i]].append(this.appList[k].getNewCardDiv());
+                        }
+                    }
+                    if (!gotCat) {
+                        $noCatDiv.append(this.appList[k].getNewCardDiv());
+                    }
+                } else {
+                    $noCatDiv.append(this.appList[k].getNewCardDiv());
+                }
+            }
+        },
+
+        renderByAZ: function() {
+            // sort by method name, A to Z
+            this.appList.sort(function(a, b) {
+                if (a.info.name.toLowerCase() < b.info.name.toLowerCase()) {
+                    return -1;
+                }
+                if (a.info.name.toLowerCase() > b.info.name.toLowerCase()) {
+                    return 1;
+                }
+                return 0;
+            });
+            var $listContainer = $('<div>').css({ 'overflow': 'auto', 'padding': '0 0 2em 0' });
+            for (var k = 0; k < this.appList.length; k++) {
+                this.appList[k].clearCardsAddedCount();
+                $listContainer.append(this.appList[k].getNewCardDiv());
+            }
+            this.$appListPanel.append($listContainer);
+        },
+
+        renderByZA: function() {
+            // sort by method name, Z to A
+            this.appList.sort(function(a, b) {
+                if (a.info.name.toLowerCase() < b.info.name.toLowerCase()) {
+                    return 1;
+                }
+                if (a.info.name.toLowerCase() > b.info.name.toLowerCase()) {
+                    return -1;
+                }
+                return 0;
+            });
+            var $listContainer = $('<div>').css({ 'overflow': 'auto', 'padding': '0 0 2em 0' });
+            for (var k = 0; k < this.appList.length; k++) {
+                this.appList[k].clearCardsAddedCount();
+                $listContainer.append(this.appList[k].getNewCardDiv());
+            }
+            this.$appListPanel.append($listContainer);
+        },
+
+        renderByModule: function() {
+            // Organization by module is simple because things can only be in one module, we sort and group them by module
+
+            this.appList.sort(function(a, b) {
+                if (a.info.module_name && b.info.module_name) {
+                    if (a.info.module_name.toLowerCase() < b.info.module_name.toLowerCase())
+                        return -1;
+                    if (a.info.module_name.toLowerCase() > b.info.module_name.toLowerCase())
+                        return 1;
+                    if (a.info.name.toLowerCase() < b.info.name.toLowerCase())
+                        return -1;
+                    if (a.info.name.toLowerCase() > b.info.name.toLowerCase())
+                        return 1;
+                    return 0;
+                }
+                if (a.info.module_name)
+                    return -1;
+                if (b.info.module_name)
+                    return 1;
+                return 0;
+            });
+            var currentModuleName = '';
+            var $currentModuleDiv = null;
+            for (var k = 0; k < this.appList.length; k++) {
+                this.appList[k].clearCardsAddedCount();
+
+                var info = this.appList[k].info;
+
+                var m = info.module_name;
+                if (!m) {
+                    m = 'Not in an SDK Module';
+                }
+
+                if (currentModuleName !== m) {
+                    currentModuleName = m;
+                    var $section = $('<div>').addClass('catalog-section');
+                    $currentModuleDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                    $section.append($('<div>').css({ 'color': '#777' })
+                        .append($('<h4>').append('<a href="#catalog/modules/' + m + '">' + m + '</a>')));
+                    $section.append($currentModuleDiv);
+                    this.$appListPanel.append($section);
+                }
+                $currentModuleDiv.append(this.appList[k].getNewCardDiv());
+            }
+        },
+
+        renderByDeveloper: function() {
+            // get and sort the dev list
+            var devs = [];
+            for (var k in this.developers) {
+                devs.push(k);
+            }
+            devs.sort();
+
+            // create the sections per author
+            var $authorDivLookup = {};
+            for (var k = 0; k < devs.length; k++) {
+                var $section = $('<div>').addClass('catalog-section');
+                var $authorDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                $authorDivLookup[devs[k]] = $authorDiv;
+                $section.append(
+                    $('<div>').css({ 'color': '#777' })
+                    .append($('<h4>').append('<a href="#people/' + devs[k] + '">' + devs[k] + '</a>')));
+                $section.append($authorDiv);
+                this.$appListPanel.append($section);
+            }
+            var $section = $('<div>').addClass('catalog-section');
+            var $noAuthorDiv = $('<div>').addClass('kbcb-app-card-list-container');
+            $section.append(
+                $('<div>').css({ 'color': '#777' })
+                .append($('<h4>').append('No Developer Specified')));
+            $section.append($noAuthorDiv);
+            this.$appListPanel.append($section);
+
+            // render the app list
+            for (var k = 0; k < this.appList.length; k++) {
+                this.appList[k].clearCardsAddedCount();
+                if (this.appList[k].info.app_type === 'app') {
+                    if (this.appList[k].info.authors.length > 0) {
+                        var authors = this.appList[k].info.authors;
+                        for (var i = 0; i < authors.length; i++) {
+                            $authorDivLookup[authors[i]].append(this.appList[k].getNewCardDiv());
+                        }
+                    } else {
+                        $noAuthorDiv.append(this.appList[k].getNewCardDiv());
+                    }
+                } else {
+                    $noAuthorDiv.append(this.appList[k].getNewCardDiv());
+                }
+            }
+        },
+
+        renderByMyFavorites: function() {
+            // sort by number of stars, then by app name
+            this.appList.sort(function(a, b) {
+                // sort by time favorited
+                if (a.isStarOn() && b.isStarOn()) {
+                    if (a.getStarTime() > b.getStarTime())
+                        return -1;
+                    if (a.getStarTime() < b.getStarTime())
+                        return 1;
+                }
+
+                // otherwise sort by stars
+                var aStars = a.getStarCount();
+                var bStars = b.getStarCount();
+                if (aStars > bStars)
+                    return -1;
+                if (bStars > aStars)
+                    return 1;
+                var aName = a.info.name.toLowerCase();
+                var bName = b.info.name.toLowerCase();
+                if (aName < bName)
+                    return -1;
+                if (aName > bName)
+                    return 1;
+                return 0;
+            });
+            var $mySection = $('<div>').addClass('catalog-section');
+            var $myDiv = $('<div>').addClass('kbcb-app-card-list-container');
+            $mySection.append(
+                $('<div>').css({ 'color': '#777' })
+                .append($('<h4>').append('My Favorites')));
+            $mySection.append($myDiv);
+            this.$appListPanel.append($mySection);
+
+            var $otherSection = $('<div>').addClass('catalog-section');
+            var $otherDiv = $('<div>').addClass('kbcb-app-card-list-container');
+            $otherSection.append(
+                $('<div>').css({ 'color': '#777' })
+                .append($('<h4>').append('Everything Else')));
+            $otherSection.append($otherDiv);
+            this.$appListPanel.append($otherSection);
+            var hasFavorites = false;
+            for (var k = 0; k < this.appList.length; k++) {
+                this.appList[k].clearCardsAddedCount();
+                if (this.appList[k].isStarOn()) {
+                    $myDiv.append(this.appList[k].getNewCardDiv());
+                    hasFavorites = true;
+                } else {
+                    $otherDiv.append(this.appList[k].getNewCardDiv());
+                }
+            }
+            if (!hasFavorites) {
+                $myDiv.append($('<div>').css({ 'color': '#777' }).addClass('kbcb-app-card-list-element').append('You do not have any favorites yet.  Click on the stars to add to your favorites.'));
+            }
+        },
+
+        renderByFavorites: function() {
+            // sort by number of stars, then by app name
+            this.appList.sort(function(a, b) {
+                var aStars = a.getStarCount();
+                var bStars = b.getStarCount();
+                if (aStars > bStars)
+                    return -1;
+                if (bStars > aStars)
+                    return 1;
+                var aName = a.info.name.toLowerCase();
+                var bName = b.info.name.toLowerCase();
+                if (aName < bName)
+                    return -1;
+                if (aName > bName)
+                    return 1;
+                return 0;
+            });
+            var $listContainer = $('<div>').css({ 'overflow': 'auto', 'padding': '0 0 2em 0' });
+            for (var k = 0; k < this.appList.length; k++) {
+                this.appList[k].clearCardsAddedCount();
+                $listContainer.append(this.appList[k].getNewCardDiv());
+            }
+            this.$appListPanel.append($listContainer);
+        },
+
+        renderbyInputTypes: function() {
+            // get and sort the type list
+            var types = [];
+            for (var k in this.inputTypes) {
+                types.push(k);
+            }
+            types.sort();
+
+            // create the sections per type
+            var $typeDivLookup = {};
+            for (var k = 0; k < types.length; k++) {
+                var $section = $('<div>').addClass('catalog-section');
+                var $typeDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                $typeDivLookup[types[k]] = $typeDiv;
+                $section.append(
+                    $('<div>').css({ 'color': '#777' })
+                    .append($('<h4>').append($('<a href="#spec/type/' + types[k] + '">').append(types[k]))));
+                $section.append($typeDiv);
+                this.$appListPanel.append($section);
+            }
+
+            // create section for apps without an input type
+            var typeId = 'none';
+            var $section = $('<div>').addClass('catalog-section');
+            var $typeDiv = $('<div>').addClass('kbcb-app-card-list-container');
+            $typeDivLookup.none = $typeDiv;
+            $section.append(
+                $('<div>').css({ 'color': '#777' })
+                .append($('<h4>').append($('<span>None</span>').append(types[k]))));
+            $section.append($typeDiv);
+            this.$appListPanel.append($section);
+
+            // render the app list
+            for (var k = 0; k < this.appList.length; k++) {
+                this.appList[k].clearCardsAddedCount();
+                if (this.appList[k].info.app_type === 'app') {
+                    if (this.appList[k].info.input_types.length > 0) {
+                        var input_types = this.appList[k].info.input_types;
+                        for (var i = 0; i < input_types.length; i++) {
+                            $typeDivLookup[input_types[i]].append(this.appList[k].getNewCardDiv());
+                        }
+                    } else {
+                        $typeDivLookup.none.append(this.appList[k].getNewCardDiv());
+                    }
+                }
+            }
+        },
+
+        renderByOutputTypes: function() {
+            // get and sort the type list
+            var types = [];
+            for (var k in this.outputTypes) {
+                types.push(k);
+            }
+            types.sort();
+
+            // create the sections per output type
+            var $typeDivLookup = {};
+            for (var k = 0; k < types.length; k++) {
+                var $section = $('<div>').addClass('catalog-section');
+                var $typeDiv = $('<div>').addClass('kbcb-app-card-list-container');
+                $typeDivLookup[types[k]] = $typeDiv;
+                $section.append(
+                    $('<div>').css({ 'color': '#777' })
+                    .append($('<h4>').append($('<a href="#spec/type/' + types[k] + '">').append(types[k]))));
+                $section.append($typeDiv);
+                this.$appListPanel.append($section);
+            }
+
+
+            // create section for apps without an output type
+            var typeId = 'none';
+            var $section = $('<div>').addClass('catalog-section');
+            var $typeDiv = $('<div>').addClass('kbcb-app-card-list-container');
+            $typeDivLookup.none = $typeDiv;
+            $section.append(
+                $('<div>').css({ 'color': '#777' })
+                .append($('<h4>').append($('<span>None</span>').append(types[k]))));
+            $section.append($typeDiv);
+            this.$appListPanel.append($section);
+
+            // render the app list
+            for (var k = 0; k < this.appList.length; k++) {
+                this.appList[k].clearCardsAddedCount();
+
+                if (this.appList[k].info.app_type === 'app') {
+                    if (this.appList[k].info.output_types.length > 0) {
+                        var output_types = this.appList[k].info.output_types;
+                        for (var i = 0; i < output_types.length; i++) {
+                            $typeDivLookup[output_types[i]].append(this.appList[k].getNewCardDiv());
+                        }
+                    } else {
+                        $typeDivLookup.none.append(this.appList[k].getNewCardDiv());
+                    }
+                }
+            }
+        },
+
+        renderByRuns: function() {
+            this.$appListPanel.append('<div><i>Note: Run counts for legacy methods released before 2016 are not reported.</i><br><br></div>');
+
+            // sort by runs, then by app name
+            this.appList.sort(function(a, b) {
+                var aRuns = a.getRunCount();
+                var bRuns = b.getRunCount();
+                if (aRuns > bRuns)
+                    return -1;
+                if (bRuns > aRuns)
+                    return 1;
+                var aName = a.info.name.toLowerCase();
+                var bName = b.info.name.toLowerCase();
+                if (aName < bName)
+                    return -1;
+                if (aName > bName)
+                    return 1;
+                return 0;
+            });
+            var $listContainer = $('<div>').css({ 'overflow': 'auto', 'padding': '0 0 2em 0' });
+            for (var k = 0; k < this.appList.length; k++) {
+                this.appList[k].clearCardsAddedCount();
+                $listContainer.append(this.appList[k].getNewCardDiv());
+            }
+            this.$appListPanel.append($listContainer);
+        },
+
+        renderAppList: function(organizeBy) {
             var self = this;
 
             self.$appListPanel.children().detach();
 
             if (self.options.tag) {
-                var text_css = {'color': '#777', 'font-size': '1.1em', 'margin': '5px'};
+                var text_css = { 'color': '#777', 'font-size': '1.1em', 'margin': '5px' };
                 if (self.options.tag === 'dev') {
                     self.$appListPanel.append($('<div>').css(text_css).append('Currently viewing Apps under development.'));
                 } else if (self.options.tag === 'beta') {
@@ -802,341 +1172,25 @@ define([
             }
 
             if (organizeBy === 'name_az') {
-                // sort by method name, A to Z
-                self.appList.sort(function (a, b) {
-                    if (a.info.name.toLowerCase() < b.info.name.toLowerCase())
-                        return -1;
-                    if (a.info.name.toLowerCase() > b.info.name.toLowerCase())
-                        return 1;
-                    return 0;
-                });
-                var $listContainer = $('<div>').css({'overflow': 'auto', 'padding': '0 0 2em 0'});
-                for (var k = 0; k < self.appList.length; k++) {
-                    self.appList[k].clearCardsAddedCount();
-                    $listContainer.append(self.appList[k].getNewCardDiv());
-                }
-                self.$appListPanel.append($listContainer);
+                this.renderByAZ();
             } else if (organizeBy === 'name_za') {
-                // sort by method name, Z to A
-                self.appList.sort(function (a, b) {
-                    if (a.info.name.toLowerCase() < b.info.name.toLowerCase())
-                        return 1;
-                    if (a.info.name.toLowerCase() > b.info.name.toLowerCase())
-                        return -1;
-                    return 0;
-                });
-                var $listContainer = $('<div>').css({'overflow': 'auto', 'padding': '0 0 2em 0'});
-                for (var k = 0; k < self.appList.length; k++) {
-                    self.appList[k].clearCardsAddedCount();
-                    $listContainer.append(self.appList[k].getNewCardDiv());
-                }
-                self.$appListPanel.append($listContainer);
+                this.renderByZA();
             } else if (organizeBy === 'module') {
-                // Organization by module is simple because things can only be in one module, we sort and group them by module
-
-                self.appList.sort(function (a, b) {
-                    if (a.info.module_name && b.info.module_name) {
-                        if (a.info.module_name.toLowerCase() < b.info.module_name.toLowerCase())
-                            return -1;
-                        if (a.info.module_name.toLowerCase() > b.info.module_name.toLowerCase())
-                            return 1;
-                        if (a.info.name.toLowerCase() < b.info.name.toLowerCase())
-                            return -1;
-                        if (a.info.name.toLowerCase() > b.info.name.toLowerCase())
-                            return 1;
-                        return 0;
-                    }
-                    if (a.info.module_name)
-                        return -1;
-                    if (b.info.module_name)
-                        return 1;
-                    return 0;
-                });
-                var currentModuleName = '';
-                var $currentModuleDiv = null;
-                for (var k = 0; k < self.appList.length; k++) {
-                    self.appList[k].clearCardsAddedCount();
-
-                    var info = self.appList[k].info;
-
-                    var m = info.module_name;
-                    if (!m) {
-                        m = 'Not in an SDK Module';
-                    }
-
-                    if (currentModuleName !== m) {
-                        currentModuleName = m;
-                        var $section = $('<div>').addClass('catalog-section');
-                        $currentModuleDiv = $('<div>').addClass('kbcb-app-card-list-container');
-                        $section.append($('<div>').css({'color': '#777'})
-                            .append($('<h4>').append('<a href="#catalog/modules/' + m + '">' + m + '</a>')));
-                        $section.append($currentModuleDiv);
-                        self.$appListPanel.append($section);
-                    }
-                    $currentModuleDiv.append(self.appList[k].getNewCardDiv());
-                }
+                this.renderByModule();
             } else if (organizeBy === 'developer') {
-
-                // get and sort the dev list
-                var devs = [];
-                for (var k in self.developers) {
-                    devs.push(k);
-                }
-                devs.sort();
-
-                // create the sections per author
-                var $authorDivLookup = {};
-                for (var k = 0; k < devs.length; k++) {
-                    var $section = $('<div>').addClass('catalog-section');
-                    var $authorDiv = $('<div>').addClass('kbcb-app-card-list-container');
-                    $authorDivLookup[devs[k]] = $authorDiv;
-                    $section.append(
-                        $('<div>').css({'color': '#777'})
-                        .append($('<h4>').append('<a href="#people/' + devs[k] + '">' + devs[k] + '</a>')));
-                    $section.append($authorDiv);
-                    self.$appListPanel.append($section);
-                }
-                var $section = $('<div>').addClass('catalog-section');
-                var $noAuthorDiv = $('<div>').addClass('kbcb-app-card-list-container');
-                $section.append(
-                    $('<div>').css({'color': '#777'})
-                    .append($('<h4>').append('No Developer Specified')));
-                $section.append($noAuthorDiv);
-                self.$appListPanel.append($section);
-
-                // render the app list
-                for (var k = 0; k < self.appList.length; k++) {
-                    self.appList[k].clearCardsAddedCount();
-
-                    if (self.appList[k].type === 'method') {
-                        if (self.appList[k].info.authors.length > 0) {
-                            var authors = self.appList[k].info.authors;
-                            for (var i = 0; i < authors.length; i++) {
-                                $authorDivLookup[authors[i]].append(self.appList[k].getNewCardDiv());
-                            }
-                        } else {
-                            $noAuthorDiv.append(self.appList[k].getNewCardDiv());
-                        }
-                    } else {
-                        $noAuthorDiv.append(self.appList[k].getNewCardDiv());
-                    }
-                }
+                this.renderByDeveloper();
             } else if (organizeBy === 'category') {
-                var cats = categoriesConfig.orderings[categoriesConfig.orderings.default];
-                var $catDivLookup = {};
-                
-                cats.forEach(function (category) {
-                    var $section = $('<div>').addClass('catalog-section');
-                    var $catDiv = $('<div>').addClass('kbcb-app-card-list-container');
-                    $catDivLookup[category] = $catDiv;
-                    $section.append(
-                        $('<div>').css({'color': '#777'})
-                        .append($('<h4>').append(self.categories[category])));
-                    $section.append($catDiv);
-                    self.$appListPanel.append($section);
-                });
-                var $section = $('<div>').addClass('catalog-section');
-                var $noCatDiv = $('<div>').addClass('kbcb-app-card-list-container');
-                $section.append(
-                    $('<div>').css({'color': '#777'})
-                    .append($('<h4>').append('Uncategorized')));
-                $section.append($noCatDiv);
-                self.$appListPanel.append($section);
-
-                for (var k = 0; k < self.appList.length; k++) {
-                    self.appList[k].clearCardsAddedCount();
-
-                    if (self.appList[k].info.categories.length > 0) {
-                        var appCats = self.appList[k].info.categories;
-                        var gotCat = false;
-                        for (var i = 0; i < appCats.length; i++) {
-                            if ($catDivLookup.hasOwnProperty(appCats[i])) {
-                                gotCat = true;
-                                $catDivLookup[appCats[i]].append(self.appList[k].getNewCardDiv());
-                            }
-                        }
-                        if (!gotCat) {
-                            $noCatDiv.append(self.appList[k].getNewCardDiv());
-                        }
-                    } else {
-                        $noCatDiv.append(self.appList[k].getNewCardDiv());
-                    }
-                }
-
+                this.renderByCategory();
             } else if (organizeBy === 'my_favorites') {
-                // sort by number of stars, then by app name
-                self.appList.sort(function (a, b) {
-                    // sort by time favorited
-                    if (a.isStarOn() && b.isStarOn()) {
-                        if (a.getStarTime() > b.getStarTime())
-                            return -1;
-                        if (a.getStarTime() < b.getStarTime())
-                            return 1;
-                    }
-
-                    // otherwise sort by stars
-                    var aStars = a.getStarCount();
-                    var bStars = b.getStarCount();
-                    if (aStars > bStars)
-                        return -1;
-                    if (bStars > aStars)
-                        return 1;
-                    var aName = a.info.name.toLowerCase();
-                    var bName = b.info.name.toLowerCase();
-                    if (aName < bName)
-                        return -1;
-                    if (aName > bName)
-                        return 1;
-                    return 0;
-                });
-                var $mySection = $('<div>').addClass('catalog-section');
-                var $myDiv = $('<div>').addClass('kbcb-app-card-list-container');
-                $mySection.append(
-                    $('<div>').css({'color': '#777'})
-                    .append($('<h4>').append('My Favorites')));
-                $mySection.append($myDiv);
-                self.$appListPanel.append($mySection);
-
-                var $otherSection = $('<div>').addClass('catalog-section');
-                var $otherDiv = $('<div>').addClass('kbcb-app-card-list-container');
-                $otherSection.append(
-                    $('<div>').css({'color': '#777'})
-                    .append($('<h4>').append('Everything Else')));
-                $otherSection.append($otherDiv);
-                self.$appListPanel.append($otherSection);
-                var hasFavorites = false;
-                for (var k = 0; k < self.appList.length; k++) {
-                    self.appList[k].clearCardsAddedCount();
-                    if (self.appList[k].isStarOn()) {
-                        $myDiv.append(self.appList[k].getNewCardDiv());
-                        hasFavorites = true;
-                    } else {
-                        $otherDiv.append(self.appList[k].getNewCardDiv());
-                    }
-                }
-                if (!hasFavorites) {
-                    console.log('here');
-                    $myDiv.append($('<div>').css({'color': '#777'}).addClass('kbcb-app-card-list-element').append('You do not have any favorites yet.  Click on the stars to add to your favorites.'));
-                }
-
+                this.renderByMyFavorites();
             } else if (organizeBy === 'favorites') {
-                // sort by number of stars, then by app name
-                self.appList.sort(function (a, b) {
-                    var aStars = a.getStarCount();
-                    var bStars = b.getStarCount();
-                    if (aStars > bStars)
-                        return -1;
-                    if (bStars > aStars)
-                        return 1;
-                    var aName = a.info.name.toLowerCase();
-                    var bName = b.info.name.toLowerCase();
-                    if (aName < bName)
-                        return -1;
-                    if (aName > bName)
-                        return 1;
-                    return 0;
-                });
-                var $listContainer = $('<div>').css({'overflow': 'auto', 'padding': '0 0 2em 0'});
-                for (var k = 0; k < self.appList.length; k++) {
-                    self.appList[k].clearCardsAddedCount();
-                    $listContainer.append(self.appList[k].getNewCardDiv());
-                }
-                self.$appListPanel.append($listContainer);
+                this.renderByFavorites();
             } else if (organizeBy === 'runs') {
-
-                self.$appListPanel.append('<div><i>Note: Run counts for legacy methods released before 2016 are not reported.</i><br><br></div>');
-
-                // sort by runs, then by app name
-                self.appList.sort(function (a, b) {
-                    var aRuns = a.getRunCount();
-                    var bRuns = b.getRunCount();
-                    if (aRuns > bRuns)
-                        return -1;
-                    if (bRuns > aRuns)
-                        return 1;
-                    var aName = a.info.name.toLowerCase();
-                    var bName = b.info.name.toLowerCase();
-                    if (aName < bName)
-                        return -1;
-                    if (aName > bName)
-                        return 1;
-                    return 0;
-                });
-                var $listContainer = $('<div>').css({'overflow': 'auto', 'padding': '0 0 2em 0'});
-                for (var k = 0; k < self.appList.length; k++) {
-                    self.appList[k].clearCardsAddedCount();
-                    $listContainer.append(self.appList[k].getNewCardDiv());
-                }
-                self.$appListPanel.append($listContainer);
-
+                this.renderByRuns();
             } else if (organizeBy === 'input_types') {
-                // get and sort the type list
-                var types = [];
-                for (var k in self.inputTypes) {
-                    types.push(k);
-                }
-                types.sort();
-
-                // create the sections per author
-                var $typeDivLookup = {};
-                for (var k = 0; k < types.length; k++) {
-                    var $section = $('<div>').addClass('catalog-section');
-                    var $typeDiv = $('<div>').addClass('kbcb-app-card-list-container');
-                    $typeDivLookup[types[k]] = $typeDiv;
-                    $section.append(
-                        $('<div>').css({'color': '#777'})
-                        .append($('<h4>').append($('<a href="#spec/type/' + types[k] + '">').append(types[k]))));
-                    $section.append($typeDiv);
-                    self.$appListPanel.append($section);
-                }
-
-                // render the app list
-                for (var k = 0; k < self.appList.length; k++) {
-                    self.appList[k].clearCardsAddedCount();
-
-                    if (self.appList[k].type === 'method') {
-                        if (self.appList[k].info.input_types.length > 0) {
-                            var input_types = self.appList[k].info.input_types;
-                            for (var i = 0; i < input_types.length; i++) {
-                                $typeDivLookup[input_types[i]].append(self.appList[k].getNewCardDiv());
-                            }
-                        }
-                    }
-                }
+                this.renderbyInputTypes();
             } else if (organizeBy === 'output_types') {
-                // get and sort the type list
-                var types = [];
-                for (var k in self.outputTypes) {
-                    types.push(k);
-                }
-                types.sort();
-
-                // create the sections per author
-                var $typeDivLookup = {};
-                for (var k = 0; k < types.length; k++) {
-                    var $section = $('<div>').addClass('catalog-section');
-                    var $typeDiv = $('<div>').addClass('kbcb-app-card-list-container');
-                    $typeDivLookup[types[k]] = $typeDiv;
-                    $section.append(
-                        $('<div>').css({'color': '#777'})
-                        .append($('<h4>').append($('<a href="#spec/type/' + types[k] + '">').append(types[k]))));
-                    $section.append($typeDiv);
-                    self.$appListPanel.append($section);
-                }
-
-                // render the app list
-                for (var k = 0; k < self.appList.length; k++) {
-                    self.appList[k].clearCardsAddedCount();
-
-                    if (self.appList[k].type === 'method') {
-                        if (self.appList[k].info.output_types.length > 0) {
-                            var output_types = self.appList[k].info.output_types;
-                            for (var i = 0; i < output_types.length; i++) {
-                                $typeDivLookup[output_types[i]].append(self.appList[k].getNewCardDiv());
-                            }
-                        }
-                    }
-                }
+                this.renderByOutputTypes();
             } else {
                 self.$appListPanel.append('<span>invalid organization parameter</span>');
             }
@@ -1147,7 +1201,7 @@ define([
             self.filterApps(self.$searchBox.val());
         },
 
-        showError: function (error) {
+        showError: function(error) {
             this.$errorPanel.empty();
             this.$errorPanel.append('<strong>Error when fetching App/Method information.</strong><br><br>');
             this.$errorPanel.append(error.error.message);
