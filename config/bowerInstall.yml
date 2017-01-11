@@ -165,4 +165,10 @@ bowerFiles:
         cwd: dist
         src: "**/*"
         bowerComponent: false
+    -
+        name: kb_widget
+        cwd: src/kb/widget 
+        src: "**/*"
+        bowerComponent: false
+
             
