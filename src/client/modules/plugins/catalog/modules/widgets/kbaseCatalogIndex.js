@@ -9,7 +9,7 @@ define([
     'jquery',
     'kb/service/client/catalog',
     '../catalog_util',
-    'kb/widget/legacy/authenticatedWidget',
+    'kb_widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
     function ($, Catalog, CatalogUtil) {

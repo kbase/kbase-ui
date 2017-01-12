@@ -6,8 +6,8 @@
  white: true
  */
 define([
-    'kb/common/html',
-    'kb/common/domEvent',
+    'kb_common/html',
+    'kb_common/domEvent',
     'jquery',
     'bluebird',
     'kb_plugin_login'

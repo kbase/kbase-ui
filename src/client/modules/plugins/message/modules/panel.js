@@ -6,8 +6,8 @@
  white: true
  */
 define([
-    'kb/common/html',
-    'kb/common/places',
+    'kb_common/html',
+    'kb_common/places',
     'bluebird'
 ],
     function (html, Places, Promise) {

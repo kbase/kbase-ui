@@ -3,13 +3,13 @@
  white: true, browser: true
  */
 define([
-    'kb/common/pluginManager',
-    'kb/common/dom',
-    'kb/common/messenger',
-    'kb/widget/widgetMount',
-    'kb/common/props',
-    'kb/common/asyncQueue',
-    'kb/common/appServiceManager'
+    'kb_common/pluginManager',
+    'kb_common/dom',
+    'kb_common/messenger',
+    'kb_widget/widgetMount',
+    'kb_common/props',
+    'kb_common/asyncQueue',
+    'kb_common/appServiceManager'
 ], function (
     pluginManagerFactory,
     dom,

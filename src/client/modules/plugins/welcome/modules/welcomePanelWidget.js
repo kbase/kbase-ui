@@ -5,8 +5,8 @@
  */
 define([
     'promise',
-    'kb/common/html',
-    'kb/common/dom'
+    'kb_common/html',
+    'kb_common/dom'
 ],
     function (Promise, html, dom) {
         'use strict';

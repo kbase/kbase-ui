@@ -2,7 +2,7 @@
 /*jslint white:true,browser: true*/
 define([
     'bluebird',
-    'kb/widget/widgetMount'
+    'kb_widget/widgetMount'
 ],
     function (Promise, WidgetMount) {
         'use strict';

@@ -1,8 +1,8 @@
 /*global define */
 /*jslint browser: true, white: true */
 define([
-    'kb/common/session',
-    'kb/common/observed'
+    'kb_common/session',
+    'kb_common/observed'
 ], function (sessionFactory, observed) {
     'use strict';
     function factory(config) {

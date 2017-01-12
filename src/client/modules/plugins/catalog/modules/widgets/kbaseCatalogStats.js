@@ -15,7 +15,7 @@ define([
     'kb/service/client/catalog',
     '../catalog_util',
     'datatables',
-    'kb/widget/legacy/authenticatedWidget',
+    'kb_widget/legacy/authenticatedWidget',
     'bootstrap',
     'datatables_bootstrap'
 ],

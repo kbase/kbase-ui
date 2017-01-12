@@ -11,7 +11,7 @@ define([
     'kb/service/client/catalog',
     '../catalog_util',
     '../function_card',
-    'kb/widget/legacy/authenticatedWidget',
+    'kb_widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
     function ($, NarrativeMethodStore, Catalog, CatalogUtil, FunctionCard) {

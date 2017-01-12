@@ -2,7 +2,7 @@
 /*jslint white: true */
 define([
     'bluebird',
-    'kb/common/observed'
+    'kb_common/observed'
 ], function (Promise, observed) {
     'use strict';
     function factory(config) {

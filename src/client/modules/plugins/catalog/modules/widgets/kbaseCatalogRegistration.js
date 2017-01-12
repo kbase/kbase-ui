@@ -11,7 +11,7 @@ define([
     'kb/service/client/catalog',
     
     './kbaseViewSDKRegistrationLog',
-    'kb/widget/legacy/authenticatedWidget',
+    'kb_widget/legacy/authenticatedWidget',
     'bootstrap',
 ],
     function ($, NarrativeMethodStore, Catalog) {
