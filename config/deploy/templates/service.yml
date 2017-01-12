@@ -3,6 +3,7 @@
 # TODO: ensure that this list includes all supported services
 # TODO: ensure that all services represented are also defined as amd modules
 # TODO: alpha sort of services
+# TODO: switch to deployment-friendly configuration
 services:
     awe:
         url: <%= awe_url %>
