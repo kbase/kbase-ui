@@ -424,7 +424,7 @@ function copyFromBower(state) {
                 if (cfg.bowerComponent) {
                     dest = ['build', 'client', 'modules', 'bower_components'].concat([cfg.dir || cfg.name]);
                 } else {
-                    dest = ['build', 'client', 'modules'];
+                    dest = ['build', 'client', 'modules'].concat([cfg.name]);
                 }
 
                 sources.forEach(function (source) {

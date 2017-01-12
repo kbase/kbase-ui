@@ -1,8 +1,8 @@
 /*global define */
 /*jslint white: true, browser: true */
 define([    
-    'kb/widget/bases/simpleWidget',
-    'kb/common/html'
+    'kb_widget/bases/simpleWidget',
+    'kb_common/html'
 ],
     function (simpleWidgetFactory, html) {
         'use strict';

@@ -36,7 +36,7 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 3.0.0
+        version: 3.0.1
         cwd: src/plugin
         source:
             bower: {}
@@ -57,7 +57,7 @@ plugins:
     -
         name: data-landing-pages
         globalName: kbase-ui-plugin-data-landing-pages
-        version: 0.6.1
+        version: 0.7.1
         cwd: src/plugin
         source:
             bower: {}

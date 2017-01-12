@@ -2,8 +2,8 @@
 /*jslint white:true*/
 define([
     'bluebird',
-    'kb/common/html',
-    'kb/common/dom',
+    'kb_common/html',
+    'kb_common/dom',
     './narrativeManager'
 
 ], function (Promise, html, dom, NarrativeManagerService) {

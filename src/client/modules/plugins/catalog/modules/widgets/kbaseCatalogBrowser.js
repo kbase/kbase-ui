@@ -10,7 +10,7 @@ define([
     'yaml!../data/categories.yml',
 
     // for effect
-    'kb/widget/legacy/authenticatedWidget',
+    'kb_widget/legacy/authenticatedWidget',
     'bootstrap'
 ], function(
     $,

@@ -15,7 +15,7 @@ define([
     '../function_card',
     
     './kbaseCatalogRegistration',
-    'kb/widget/legacy/authenticatedWidget',
+    'kb_widget/legacy/authenticatedWidget',
     'bootstrap'
 ],
     function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil, AppCard, FunctionCard) {

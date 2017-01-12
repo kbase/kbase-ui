@@ -2,8 +2,8 @@
 /*jslint white: true, browser: true */
 define([
     'underscore',
-    'kb/widget/bases/simpleWidget',
-    'kb/common/html',
+    'kb_widget/bases/simpleWidget',
+    'kb_common/html',
     'kb_plugin_mainWindow',
     'bootstrap'
 ],
