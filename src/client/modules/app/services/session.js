@@ -9,6 +9,7 @@ define([
         var runtime = config.runtime,
             session = sessionFactory.make({
                 cookieName: config.cookieName,
+                extraCookies: config.extraCookies,
                 loginUrl: config.loginUrl,
                 cookieMaxAge: config.cookieMaxAge || 100000
             }),
