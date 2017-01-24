@@ -2,9 +2,9 @@
 /*jslint browser: true, white: true */
 define([
     'promise',
-    'kb/common/observed',
-    'kb/service/userProfile',
-    'kb/common/lang'
+    'kb_common/observed',
+    'kb_service/userProfile',
+    'kb_common/lang'
 ], function (
     Promise,
     observed,

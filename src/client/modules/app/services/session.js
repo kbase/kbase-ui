@@ -1,14 +1,15 @@
 /*global define */
 /*jslint browser: true, white: true */
 define([
-    'kb/common/session',
-    'kb/common/observed'
+    'kb_common/session',
+    'kb_common/observed'
 ], function (sessionFactory, observed) {
     'use strict';
     function factory(config) {
         var runtime = config.runtime,
             session = sessionFactory.make({
                 cookieName: config.cookieName,
+                extraCookies: config.extraCookies,
                 loginUrl: config.loginUrl,
                 cookieMaxAge: config.cookieMaxAge || 100000
             }),

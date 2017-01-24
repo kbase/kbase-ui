@@ -7,11 +7,11 @@
  */
 define([
     'bluebird',
-    'kb/common/html',
-    'kb/common/dom',
-    'kb/service/client/narrativeMethodStore',
-    'kb/service/client/workspace',
-    'kb/service/client/catalog',
+    'kb_common/html',
+    'kb_common/dom',
+    'kb_service/client/narrativeMethodStore',
+    'kb_service/client/workspace',
+    'kb_service/client/catalog',
     'kb_sdk_clients/genericClient',
 
     'bootstrap'

@@ -2,7 +2,7 @@ define([
     'nunjucks',
     'jquery',
     'bluebird',
-    'kb/common/utils',
+    'kb_common/utils',
     'kb_userProfile_widget_base',
     'kb/service/userProfile'
 ],

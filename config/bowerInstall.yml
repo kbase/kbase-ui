@@ -157,12 +157,18 @@ bowerFiles:
         bowerComponent: true
     -
         name: kb_common
-        cwd: dist
+        cwd: dist/kb_common
         src: "**/*"
         bowerComponent: false
     -
         name: kb_service
-        cwd: dist
+        cwd: dist/kb_service
         src: "**/*"
         bowerComponent: false
+    -
+        name: kb_widget
+        cwd: src/kb/widget
+        src: "**/*"
+        bowerComponent: false
+
             

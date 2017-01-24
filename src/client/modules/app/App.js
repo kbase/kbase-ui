@@ -3,13 +3,13 @@
  white: true, browser: true
  */
 define([
-    'kb/common/pluginManager',
-    'kb/common/dom',
-    'kb/common/messenger',
-    'kb/widget/widgetMount',
-    'kb/common/props',
-    'kb/common/asyncQueue',
-    'kb/common/appServiceManager'
+    'kb_common/pluginManager',
+    'kb_common/dom',
+    'kb_common/messenger',
+    'kb_widget/widgetMount',
+    'kb_common/props',
+    'kb_common/asyncQueue',
+    'kb_common/appServiceManager'
 ], function (
     pluginManagerFactory,
     dom,
@@ -183,13 +183,22 @@ define([
 
         function begin() {
             // Register service handlers.
-            appServiceManager.addService('session', {
+            var sessionConfig = {
                 runtime: api,
-                cookieName: 'kbase_session',
+                cookieName: 'kbase_session',               
                 loginUrl: serviceConfig.services.login.url,
                 cookieMaxAge: clientConfig.ui.constants.session_max_age
+            };
+            if (api.config('deploy.backup-cookie-enabled')) {
+                sessionConfig.extraCookies = [
+                    {
+                        name: 'kbase_session_backup',
+                        domain: api.config('deploy.cookie-domain')
+                    }
+                ];
+            }
 
-            });
+            appServiceManager.addService('session', sessionConfig);
             appServiceManager.addService('heartbeat', {
                 runtime: api,
                 interval: 500
