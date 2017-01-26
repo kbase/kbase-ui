@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "spark-md5": "2.0.0",
-    "bluebird": "3.4.1",
+    "bluebird": "3.4.7",
     "comma-separated-values": "3.6.3",
     "d3": "3.5.6",
     "jquery": "2.1.4",
@@ -48,7 +48,10 @@
     "postal": "1.0.7",
     "plotly": "plotly/plotly.js#1.5.1",
     "highlightjs": "9.2.0",
-    "marked": "0.3.6"
+    "marked": "0.3.6",
+    "kb_common": "kbase-common-js#2.2.0",
+    "kb_service": "kbase-service-clients-js#3.1.2",
+    "kb_widget": "kbase-ui-widget#1.0.8"
   },
   "devDependencies": {},
   "license": "SEE LICENSE IN LICENSE"

@@ -4,7 +4,7 @@ define([
     'bluebird',
     'app/App',
     // 'app/analytics',
-    'kb/common/dom',
+    'kb_common/dom',
     'yaml!config/plugin.yml',
     'yaml!config/settings.yml',
     'yaml!config/service.yml',

@@ -20,6 +20,8 @@ plugins:
         narrativemanager
     -
         catalog
+    -
+        about
     # external:
     # These are shared with production
     -
@@ -39,14 +41,14 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 2.0.4
+        version: 3.0.1
         cwd: src/plugin
         source:
             bower: {}
     -
         name: dashboard
         globalName: kbase-ui-plugin-dashboard
-        version: 1.2.3
+        version: 2.0.4
         cwd: src/plugin
         source:
             bower: {}
@@ -82,7 +84,7 @@ plugins:
     -
         name: data-landing-pages
         globalName: kbase-ui-plugin-data-landing-pages
-        version: 0.5.0
+        version: 0.7.1
         cwd: src/plugin
         source:
             bower: {}
@@ -131,7 +133,7 @@ plugins:
     -
         name: bulk-ui
         globalName: kbase-ui-plugin-bulk-ui
-        version: 0.2.2
+        version: 0.3.3
         cwd: src/plugin
         source:
             bower: {}

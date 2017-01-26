@@ -49,7 +49,8 @@
                             <p>Select data to copy.</p>
                         </div>
                         -->
-                        <div class="search-transfer-row search-transfer-progress" ng-show="options.userState.session.data_cart.size >= 0 && (options.transferring || options.objectsTransferred > 0)">
+<!--
+                        <div class="search-transfer-row search-transfer-progress" ng-show="options.userState.session.data_cart.size >= 0 && options.transferring">
                             <div class="text-center">Object Copy Requests Sent</div>
                             <div class="progress">
                                 <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'min-width': (options.transferRequests/options.transferSize * 100.0) + '%'}">
@@ -57,7 +58,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="search-transfer-row search-transfer-progress" ng-show="options.objectsTransferred > 0 && options.transferSize > 0">
+-->
+                        <div class="search-transfer-row search-transfer-progress" ng-show="options.objectsTransferred > 0 && options.transferSize > 0 && options.userState.session.data_cart.size > 0">
                             <div class="text-center">Completed Object Copies</div>
                             <div class="progress">
                                 <div class="progress-bar progress-bar-success" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'min-width': (options.objectsTransferred/options.transferSize * 100.0) + '%'}">
@@ -162,7 +164,7 @@
 
                 <hr class="search-leftarea-size"></hr>
     
-                <div ng-show="options.facets">
+                <div ng-show="options.facets && options.resultJSON.totalResults > 0">
                     <div class='text-center search-filters-title'>
                         <h3 data-toggle="tooltip" data-placement="right" tooltip="Select options to help narrow your search results." tooltip-placement="right">Refine by</h3>                    
                         <button type="button" class="btn btn-danger btn-xs search-filter-remove-button" ng-click="removeAllFacets()" ng-if="options.active_facets[options.selectedCategory] && Object.keys(options.active_facets[options.selectedCategory]).length > 0" data-toggle="tooltip" data-placement="top" tooltip="Use this button to remove all the filters you have selected." tooltip-placement="top"><span class="glyphicon glyphicon-remove"></span></button>
@@ -211,8 +213,10 @@
                         </button>
                     </span>
                 </form>
+                <!--
                 <br/>
                 <div class="lead"><span>OR</span>&nbsp; &nbsp; &nbsp; <a href="/search/#/homology/">Search by sequence homology</a></div>
+                -->
             </div>
 
             <div class="col-md-12 col-lg-12 search-result-section"> <!-- all results -->                            

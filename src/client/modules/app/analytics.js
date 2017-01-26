@@ -3,7 +3,7 @@
 define([
     'bluebird',
     'uuid',
-    'kb/common/ajax'
+    'kb_common/ajax'
         // 'https://www.google-analytics.com/analytics.js'
 ], function (Promise, Uuid, Ajax) {
     'use strict';

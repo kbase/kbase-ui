@@ -155,4 +155,20 @@ bowerFiles:
         cwd: dist
         src: plotly.js
         bowerComponent: true
+    -
+        name: kb_common
+        cwd: dist/kb_common
+        src: "**/*"
+        bowerComponent: false
+    -
+        name: kb_service
+        cwd: dist/kb_service
+        src: "**/*"
+        bowerComponent: false
+    -
+        name: kb_widget
+        cwd: src/kb/widget
+        src: "**/*"
+        bowerComponent: false
+
             

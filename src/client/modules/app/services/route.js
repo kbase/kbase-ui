@@ -1,7 +1,7 @@
 define([
     'bluebird',
-    'kb/common/router',
-    'kb/common/lang'
+    'kb_common/router',
+    'kb_common/lang'
 ], function (Promise, Router, lang) {
     function factory(config) {
         var runtime = config.runtime,

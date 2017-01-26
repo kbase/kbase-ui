@@ -2,7 +2,7 @@
 /*jslint white: true */
 define([
     'promise',
-    'kb/common/typeManager'
+    'kb_common/typeManager'
 ], function (Promise, TypeManager) {
     'use strict';
 

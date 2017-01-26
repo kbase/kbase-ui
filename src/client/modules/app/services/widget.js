@@ -2,7 +2,7 @@
 /*jslint white: true */
 define([
     'promise',
-    'kb/widget/widgetManager'
+    'kb_widget/widgetManager'
 ], function (Promise, widgetManagerFactory) {
     'use strict';
 

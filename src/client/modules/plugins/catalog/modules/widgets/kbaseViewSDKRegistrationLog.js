@@ -8,7 +8,7 @@
 define(['jquery',
         'bluebird',
         'kb/service/client/catalog',
-        'kb/widget/legacy/authenticatedWidget'
+        'kb_widget/legacy/authenticatedWidget'
         ], function($, Promise, Catalog) {
 
     $.KBWidget({
