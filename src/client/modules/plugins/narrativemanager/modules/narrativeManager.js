@@ -55,7 +55,7 @@ define([
                 }),
                 introHtml,
                 narrativeService = new GenericClient({
-                    module: "NarrativeService",
+                    module: 'NarrativeService',
                     url: runtime.config('services.service_wizard.url'),
                     token: runtime.service('session').getAuthToken(),
                     version: 'dev'
