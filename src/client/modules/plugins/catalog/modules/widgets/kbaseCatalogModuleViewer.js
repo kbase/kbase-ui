@@ -181,8 +181,7 @@ define([
                 if(isOwner) {
                     self.$adminPanel.append('<b>You are a module owner</b><br>');
                     self.$adminPanel.append(self.renderModuleAdminDiv());
-                }
-                if(self.isAdmin) {
+                } else if(self.isAdmin) {
                     self.$adminPanel.append('<b>You are not an owner, but a catalog admin</b><br>');
                     self.$adminPanel.append(self.renderModuleAdminDiv());
                 }
