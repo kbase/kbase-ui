@@ -78,7 +78,7 @@ plugins:
     -
         name: bulk-ui
         globalName: kbase-ui-plugin-bulk-ui
-        version: 0.3.2
+        version: 0.3.6
         cwd: src/plugin
         source:
             bower: {}    

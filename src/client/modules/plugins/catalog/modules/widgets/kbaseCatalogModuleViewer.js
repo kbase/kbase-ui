@@ -38,6 +38,8 @@ define([
             appList: null,
             isGithub: null,
 
+            isAdmin: null,
+
             // main panel and elements
             $mainPanel: null,
             $appsPanel: null,
@@ -84,6 +86,7 @@ define([
                 loadingCalls.push(self.getModuleInfo());
                 loadingCalls.push(self.getModuleVersions());
                 loadingCalls.push(self.getModuleStatus());
+                loadingCalls.push(self.checkIsAdmin());
 
                 // when we have it all, then render the list
                 Promise.all(loadingCalls).then(function() {
@@ -177,6 +180,9 @@ define([
                 // ADMIN PANEL IF OWNER
                 if(isOwner) {
                     self.$adminPanel.append('<b>You are a module owner</b><br>');
+                    self.$adminPanel.append(self.renderModuleAdminDiv());
+                } else if(self.isAdmin) {
+                    self.$adminPanel.append('<b>You are not an owner, but a catalog admin</b><br>');
                     self.$adminPanel.append(self.renderModuleAdminDiv());
                 }
 
@@ -838,6 +844,22 @@ define([
                 }
                 $alert.append('<br>');
                 this.$errorPanel.show();
+            },
+
+            checkIsAdmin: function() {
+                var self = this
+
+                var me = self.runtime.service('session').getUsername();
+                return self.catalog.is_admin(me)
+                    .then(function (result) {
+                        if(result) {
+                            self.isAdmin = true;
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR');
+                        console.error(err);
+                    });
             }
         });
     });
