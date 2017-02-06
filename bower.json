@@ -49,7 +49,7 @@
     "plotly": "plotly/plotly.js#1.5.1",
     "highlightjs": "9.2.0",
     "marked": "0.3.6",
-    "kb_common": "kbase-common-js#2.2.0",
+    "kb_common": "kbase-common-js#2.3.0",
     "kb_service": "kbase-service-clients-js#3.1.2",
     "kb_widget": "kbase-ui-widget#1.0.8"
   },
