@@ -790,7 +790,11 @@ function makeDistBuild(state) {
                             return !reProtected.test(match);
                         })
                         .map(function (match) {
-                            var result = uglify.minify(match);
+                            var result = uglify.minify(match, {
+                                compress: {
+                                    dead_code: false
+                                }
+                            });
                             return fs.writeFileAsync(match, result.code);
                         }));
                 });
