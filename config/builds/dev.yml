@@ -2,7 +2,7 @@
 ---
 targets:
     ui: dev
-    deploy: dev
+    deploy: dev-auth2
 build:
     dist: false
     temp: ../temp

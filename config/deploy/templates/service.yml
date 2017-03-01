@@ -23,16 +23,10 @@ services:
     genome_comparison:
         url: <%= genome_comparison_url %>
         name: Genome Comparison
-    login:
-        url: <%= login_url %>
-        name: Login
     narrative_method_store:
         url: <%= nms_url %>
         image_url: <%= nms_image_url %>
         name: Narrative Method Store
-    protein_info:
-        url: <%= protein_info_url %>
-        name: Protein Info
     search:
         url: <%= search_url %>
         name: Data Search
@@ -60,15 +54,6 @@ services:
     catalog:
         url: <%= catalog_url %>
         name: Catalog
-    taxon_api:
-        url: <%= taxon_api_url %>
-        name: Taxon API
-    assembly_api:
-        url: <%= assembly_api_url %>
-        name: Assembly API 
-    genomeAnnotation_api:
-        url: <%= genome_annotation_api_url %>
-        name: Genome Annotation API
     doc_site:
         url: <%= doc_site_url %>
         name: Documentation and Support Site

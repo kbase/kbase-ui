@@ -187,7 +187,6 @@ define([
             var sessionConfig = {
                 runtime: api,
                 cookieName: 'kbase_session',               
-                loginUrl: serviceConfig.services.login.url,
                 cookieMaxAge: clientConfig.ui.constants.session_max_age
             };
 

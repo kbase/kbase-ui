@@ -69,11 +69,9 @@ define([
 
         // Session state change
         function login(arg) {
-            return auth2Session.getClient().login(arg)
-                .then(function () {
-                    state.setItem('loggedin', true);
-                    runtime.send('session', 'loggedin');
-                });
+            // starts an auth login / signup redirect loop
+            // it _could_ be done inside an iframe ...
+            return auth2Session.getClient().login(arg);
         }
         function logout() {
             return auth2Session.logout()
