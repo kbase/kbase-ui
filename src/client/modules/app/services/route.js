@@ -29,7 +29,7 @@ define([
                         loginParams.nextrequest = JSON.stringify(handler.request);
                     }
                     runtime.send('app', 'navigate', {
-                        path: 'login',
+                        path: 'auth2/login',
                         // TODO: path needs to be the path + params
                         params: loginParams
                     });

@@ -1,0 +1,157 @@
+/*global define */
+/*jslint browser: true, white: true */
+define([
+    'kb_common_ts/auth2Session',
+    'kb_common/observed'
+], function (M_auth2Session, observed) {
+    'use strict';
+    function factory(config) {
+        var runtime = config.runtime;
+
+        // TODO: all of this from config?
+        var auth2Session = new M_auth2Session.Auth2Session({
+            cookieName: runtime.config('services.auth2.cookieName'),
+            extraCookies: config.extraCookies,
+            baseUrl: runtime.config('services.auth2.url'),
+             endpoints: {
+                introspect: 'api/V2/token',
+                profile: 'api/V2/me',
+                loginStart: 'login/start',
+                logout: 'logout',
+                loginChoice: 'login/choice',
+                loginCreate: 'login/create',
+                loginPick: 'login/pick'
+            },
+            providers: [{
+                    id: 'Globus',
+                    label: 'Globus'
+                },
+                {
+                    id: 'Google',
+                    label: 'Google'
+                }
+            ]
+        });
+
+        var state = observed.make();
+
+        // Session
+        function getAuthToken() {
+            return auth2Session.getToken();
+        }
+        function getUsername() {
+            return auth2Session.getUsername();
+        }
+        function getRealname() {
+            return auth2Session.getRealname();
+        }
+        function getIntrospection() {
+            return auth2Session.getIntrospection();
+        }
+        function getAccount() {
+            return auth2Session.getAccount();
+        }
+        function isLoggedIn() {
+            return auth2Session.isLoggedIn();
+        }
+        function isAuthorized() {
+            return auth2Session.isAuthorized();
+        }
+        function getKbaseSession() {
+            return auth2Session.getKbaseSession();
+        }
+        function getLastProvider() {
+            return auth2Session.getLastProvider();
+        }
+        function getProviders() {
+            return auth2Session.getClient().getProviders();
+        }
+
+        // Session state change
+        function login(arg) {
+            return auth2Session.getClient().login(arg)
+                .then(function () {
+                    state.setItem('loggedin', true);
+                    runtime.send('session', 'loggedin');
+                });
+        }
+        function logout() {
+            return auth2Session.logout()
+                .then(function (result) {
+                    state.setItem('loggedin', false);
+                    runtime.send('session', 'loggedout');
+                    return result;
+                });
+        }
+
+        function start() {
+            auth2Session.start()
+                .then(function () {
+                    // session.setSession(session.importFromCookie());
+                    if (auth2Session.isAuthorized()) {
+                        state.setItem('loggedin', true);
+                        runtime.send('session', 'loggedin');
+                    } else {
+                        state.setItem('loggedin', false);
+                        runtime.send('session', 'loogedout');
+                    }
+                    auth2Session.onChange(function (change) {
+                         if (auth2Session.isAuthorized()) {
+                             if (change === 'newuser') {
+                                 // TODO: do something special...
+                             }
+
+                            state.setItem('loggedin', true);
+                            runtime.send('session', 'loggedin');
+                        } else {
+                            state.setItem('loggedin', false);
+                            runtime.send('session', 'loogedout');
+                        }
+                    });
+                });
+        }
+        function stop() {
+            auth2Session.stop()
+                .then(function() {
+                    session = null;
+                });
+        }
+
+        function onChange(fun) {
+            state.listen('loggedin', {
+                onSet: function (value) {
+                    fun(value);
+                }
+            });
+        }
+
+        function getClient() {
+            return auth2Session;
+        }
+
+        return {
+            start: start,
+            stop: stop,
+            onChange: onChange,
+            getAuthToken: getAuthToken,
+            getUsername: getUsername,
+            getRealname: getRealname,
+            isLoggedIn: isLoggedIn,
+            isAuthorized: isAuthorized,
+            getKbaseSession: getKbaseSession,
+            getLastProvider: getLastProvider,
+            getProviders: getProviders,
+            getIntrospection: getIntrospection,
+            getAccount: getAccount,
+            getClient: getClient,
+            login: login,
+            logout: logout
+        };
+
+    }
+    return {
+        make: function (config) {
+            return factory(config);
+        }
+    };
+});

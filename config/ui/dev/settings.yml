@@ -32,9 +32,9 @@ docsite:
 menus:
     authenticated:
         main: [narrative, appcatalog, search, dashboard, bulk-ui]
-        developer: [sdkclientstest, dataapidemo, databrowser, typebrowser, jobbrowser, shockbrowser, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
+        developer: [auth2login, auth2info, sdkclientstest, dataapidemo, databrowser, typebrowser, jobbrowser, shockbrowser, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
         help: [about, about-services, contact-kbase, about-kbase, help]
     unauthenticated:
         main: [appcatalog, search]
-        developer: []
+        developer: [auth2login, auth2info ]
         help: [contact-kbase, about-kbase, help]

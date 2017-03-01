@@ -144,6 +144,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: auth2-client
+        globalName: kbase-ui-plugin-auth2-client
+        version: 0.1.1
+        cwd: src/plugin
+        source:
+            bower: {}
 
 
 # Copy these directories into the modules
