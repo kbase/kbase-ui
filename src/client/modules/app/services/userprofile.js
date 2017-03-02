@@ -74,13 +74,16 @@ define([
                                             // Send to alert?
                                             console.error(err);
                                             runtime.send('ui', 'alert', {
-                                                type: 'error',
+                                                type: 'danger',
                                                 message: 'Error loading profile - could not create stub'
                                             });
                                         });
                                     break;
                                 default:
-                                    runtime.send('ui', 'alert', 'Error loading profile - invalid state ' + profileState);
+                                    runtime.send('ui', 'alert', {
+                                        type: 'danger',
+                                        message: 'Error loading profile - invalid state ' + profileState
+                                    });
                             }
                         })
                         .catch(function (err) {

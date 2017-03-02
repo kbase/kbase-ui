@@ -216,7 +216,7 @@ function installModulePackagesFromBower(state) {
         })
         .then(function (installDirs) {
             return Promise.all(installDirs.map(function (installDir) {
-                // console.log('Installing module: ' + installDir.path);
+                console.log('Installing module: ' + installDir.path);
                 return installModule(state, installDir.path);
             }));
         })

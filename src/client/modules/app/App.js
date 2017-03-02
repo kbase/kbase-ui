@@ -170,7 +170,8 @@ define([
                 return proxyMethod(appServiceManager, 'getService', arguments);
             },
             service: function () {
-                return proxyMethod(appServiceManager, 'getService', arguments);
+                var service = proxyMethod(appServiceManager, 'getService', arguments);
+                return service
             },
             hasService: function () {
                 return proxyMethod(appServiceManager, 'hasService', arguments);
@@ -186,9 +187,9 @@ define([
             var sessionConfig = {
                 runtime: api,
                 cookieName: 'kbase_session',               
-                loginUrl: serviceConfig.services.login.url,
                 cookieMaxAge: clientConfig.ui.constants.session_max_age
             };
+
             if (api.config('deploy.backup-cookie-enabled')) {
                 sessionConfig.extraCookies = [
                     {
@@ -198,11 +199,18 @@ define([
                 ];
             }
 
-            appServiceManager.addService('session', sessionConfig);
+            // var authService = 'auth2Session'; // or 'session'
+            appServiceManager.addService({
+                name: 'session',
+                module: 'auth2Session'
+            }, sessionConfig);
+
             appServiceManager.addService('heartbeat', {
                 runtime: api,
                 interval: 500
             });
+
+
             appServiceManager.addService('route', {
                 runtime: api,
                 // notFoundRoute: {redirect: {path: 'message/notfound'}},

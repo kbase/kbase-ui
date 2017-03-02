@@ -33,9 +33,9 @@ docsite:
 menus:
     authenticated: 
         main: [narrative, appcatalog, search, dashboard, bulk-ui]
-        developer: []
+        developer: [auth2info, auth2account ]
         help: [contact-kbase, about-kbase, help]
     unauthenticated: 
         main: [appcatalog, search]
-        developer: []
+        developer: [auth2info, auth2account ]
         help: [contact-kbase, about-kbase, help]
