@@ -85,6 +85,8 @@ resources:
             url: <%= doc_tutorials %>
         apps:
             url: <%= doc_apps %>
+        troubleshooting:
+            signin: <%= signin_troubleshooting %>
     userAccount:
         resetPassword: 
             url: <%= reset_password_url %>

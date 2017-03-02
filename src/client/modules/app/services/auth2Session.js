@@ -63,6 +63,9 @@ define([
         function getLastProvider() {
             return auth2Session.getLastProvider();
         }
+        function setLastProvider() {
+            return auth2Session.setLastProvider.apply(null, arguments);
+        }
         function getProviders() {
             return auth2Session.getClient().getProviders();
         }

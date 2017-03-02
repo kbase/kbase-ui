@@ -52,7 +52,7 @@
     "kb_common": "kbase-common-js#2.4.0",
     "kb_service": "kbase-service-clients-js#3.1.2",
     "kb_widget": "kbase-ui-widget#1.0.8",
-    "kb_common_ts": "kbase-common-ts#0.2.3"
+    "kb_common_ts": "kbase-common-ts#0.2.4"
   },
   "devDependencies": {},
   "license": "SEE LICENSE IN LICENSE"
