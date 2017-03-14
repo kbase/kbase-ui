@@ -39,7 +39,7 @@ ui:
                 auth2:
                     services:
                         session:
-                            module: Auth2Session
+                            module: auth2Session
                     widgets:
                         login:
                             name: auth2_login        
