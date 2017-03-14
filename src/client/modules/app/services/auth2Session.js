@@ -1,7 +1,7 @@
 /*global define */
 /*jslint browser: true, white: true */
 define([
-    'kb_common_ts/auth2Session',
+    'kb_common_ts/Auth2Session',
     'kb_common/observed'
 ], function (M_auth2Session, observed) {
     'use strict';
