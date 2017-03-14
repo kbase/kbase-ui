@@ -8,13 +8,14 @@ define([
     'yaml!config/plugin.yml',
     'yaml!config/settings.yml',
     'yaml!config/service.yml',
+    'json!config/buildInfo.json',
     'bootstrap',
     'css!font_awesome',
     'css!app/styles/kb-bootstrap',
     'css!app/styles/kb-icons',
     'css!app/styles/kb-ui',
     'css!app/styles/kb-datatables'
-], function (Promise, App, dom, pluginConfig, clientConfig, serviceConfig) {
+], function (Promise, App, dom, pluginConfig, clientConfig, serviceConfig, buildInfo) {
     'use strict';
     Promise.config({
         warnings: true,
@@ -37,6 +38,7 @@ define([
             return App.run({
                 clientConfig: clientConfig,
                 serviceConfig: serviceConfig,
+                buildInfo: buildInfo,
                 nodes: {
                     root: {
                         selector: '#root'

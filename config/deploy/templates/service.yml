@@ -67,6 +67,9 @@ services:
         url: <%= ftp_api_url %>
         root: <%= ftp_api_root %>
         name: FTP Service
+    auth:
+        url: <%= auth_url %>
+        name: Authorization Service
     auth2:
         url: <%= auth2_url %>
         cookieName: <%= auth2_cookie_name %>

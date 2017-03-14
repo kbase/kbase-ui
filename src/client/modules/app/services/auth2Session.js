@@ -13,15 +13,7 @@ define([
             cookieName: runtime.config('services.auth2.cookieName'),
             extraCookies: config.extraCookies,
             baseUrl: runtime.config('services.auth2.url'),
-             endpoints: {
-                introspect: 'api/V2/token',
-                profile: 'api/V2/me',
-                loginStart: 'login/start',
-                logout: 'logout',
-                loginChoice: 'login/choice',
-                loginCreate: 'login/create',
-                loginPick: 'login/pick'
-            },
+            
             providers: [{
                     id: 'Globus',
                     label: 'Globus'
@@ -45,8 +37,8 @@ define([
         function getRealname() {
             return auth2Session.getRealname();
         }
-        function getIntrospection() {
-            return auth2Session.getIntrospection();
+        function getTokenInfo() {
+            return auth2Session.getTokenInfo();
         }
         function getAccount() {
             return auth2Session.getAccount();
@@ -142,7 +134,7 @@ define([
             getKbaseSession: getKbaseSession,
             getLastProvider: getLastProvider,
             getProviders: getProviders,
-            getIntrospection: getIntrospection,
+            getTokenInfo: getTokenInfo,
             getAccount: getAccount,
             getClient: getClient,
             login: login,

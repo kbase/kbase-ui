@@ -10,7 +10,7 @@ define([
             session = sessionFactory.make({
                 cookieName: config.cookieName,
                 extraCookies: config.extraCookies,
-                loginUrl: config.loginUrl,
+                loginUrl: runtime.config('services.auth.url'),
                 cookieMaxAge: config.cookieMaxAge || 100000
             }),
             state = observed.make();

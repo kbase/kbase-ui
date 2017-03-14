@@ -68,6 +68,10 @@
 }
 
 
+.kbase-ui .kb-panel-light {
+    border: none;
+}
+
 
 .kbase-ui .panel-title > [data-toggle="collapse"]::before {
   display: inline-block;
@@ -86,3 +90,47 @@
 .kbase-ui .panel-title > [data-toggle="collapse"].collapsed::before {
     margin-left: 2px; margin-right: 2px;
   content: "\f054 ";
+}
+
+.kbase-ui .panel-danger.kb-panel-light .panel-title {
+    color: #a94442;
+}
+.kbase-ui .panel-success.kb-panel-light .panel-title {
+    color: #3c763d;
+}
+.kbase-ui .panel-warning.kb-panel-light .panel-title {
+    color: #8a6d3b;
+}
+.kbase-ui .panel-info.kb-panel-light .panel-title {
+    color: blue;
+}
+.kbase-ui .panel.kb-panel-light > .panel-heading {
+    background-color: transparent;
+    font-weight: bold;
+    color: #666;
+    padding-left: 0;
+    padding-bottom: 2px;
+    border-bottom: 1px #CCC solid;
+}
+.kbase-ui .panel.kb-panel-light .panel-body {
+    padding: 14px 0 14px 0;
+}
+
+/*
+
+.kbase-ui .nav-tabs {
+  background-color:#BBB;
+}
+.kbase-ui .tab-content {
+    background-color: #BBB;
+}
+.kbase-ui .nav-tabs > li.active {
+    background-color: #BBB;    
+}
+.kbase-ui .nav-tabs > li > a{
+  border: medium none;
+}
+.kbase-ui .nav-tabs > li > a:hover{
+  background-color: #888 !important;
+    
+}*/
