@@ -11,13 +11,20 @@ source:
         ## sources are relative to build/plugins/PACKAGE/source/javascript
         -
             module: kb_widget_loginPanel
-            file: login
+            file: login  
+        -
+            module: kb_login_loginWidget
+            file: loginWidget
 install:
     widgets:
         -
             module: kb_widget_loginPanel
             id: loginPanelWidget
             type: factory
+        -
+            module: kb_login_loginWidget
+            id: globus_login
+            type: factory            
     routes:
         -
             path: ['login']

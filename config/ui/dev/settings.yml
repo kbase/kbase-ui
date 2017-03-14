@@ -19,6 +19,25 @@ ui:
         status_page: http://kbase.us/internal/status
         submit_jira_ticket: https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%20version
         update_profile: https://gologin.kbase.us/account/UpdateProfile
+    
+    features:
+        auth:        
+            available:
+                auth1:
+                    services:
+                        session:
+                            module: session 
+                    widgets:
+                        login:
+                            name: globus_login 
+                auth2:
+                    services:
+                        session:
+                            module: auth2Session
+                    widgets:
+                        login:
+                            name: auth2_login
+                    
 
 # Primarily for output links for the docsite.
 # TODO: merge with ui.outbound_links?
@@ -32,7 +51,7 @@ docsite:
 menus:
     authenticated:
         main: [narrative, appcatalog, search, dashboard, bulk-ui]
-        developer: [auth2login, auth2account, auth2info, sdkclientstest, dataapidemo, databrowser, typebrowser, jobbrowser, shockbrowser, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
+        developer: [auth2login, auth2account, auth2info, sdkclientstest, databrowser, typebrowser, jobbrowser, shockbrowser, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
         help: [about, about-services, contact-kbase, about-kbase, help]
     unauthenticated:
         main: [appcatalog, search]

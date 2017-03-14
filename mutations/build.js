@@ -216,7 +216,7 @@ function installModulePackagesFromBower(state) {
         })
         .then(function (installDirs) {
             return Promise.all(installDirs.map(function (installDir) {
-                console.log('Installing module: ' + installDir.path);
+                // console.log('Installing module: ' + installDir.path);
                 return installModule(state, installDir.path);
             }));
         })
@@ -705,6 +705,21 @@ function copyUiConfig(state) {
         });
 }
 
+function createBuildInfo(state) {
+    var root = state.environment.path,
+        configDest = root.concat(['build', 'client', 'modules', 'config','buildInfo.json']),
+        buildInfo = {
+            features: state.config.features,
+            targets: state.config.targets,
+            stats: state.stats,
+        };
+    // console.log('info', buildInfo, state);
+    return mutant.saveJson(configDest, buildInfo)
+        .then(function () {
+            return state;
+        });
+}
+
 /*
  * 
  * The standard kbase deploy config lives in the root, and is named deploy.cfg
@@ -938,6 +953,15 @@ function main(type) {
         .then(function (state) {
             console.log('Cleaning up...');
             return cleanup(state);
+        })
+
+
+         .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            console.log('Creating build record ...');
+            return createBuildInfo(state);
         })
 
 

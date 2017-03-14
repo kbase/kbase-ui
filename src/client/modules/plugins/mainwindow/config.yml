@@ -82,7 +82,7 @@ install:
             type: factory
         -
             module: kb_widget_login
-            id: login
+            id: loginx
             type: factory
         -
             module: kb_widget_body

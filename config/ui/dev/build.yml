@@ -89,13 +89,6 @@ plugins:
         source:
             bower: {}
     -
-        name: data-api-demo
-        globalName: kbase-ui-plugin-data-api-demo
-        version: 0.2.3
-        cwd: src/plugin
-        source:
-            bower: {}
-    -
         name: shockbrowser
         globalName: kbase-ui-plugin-shockbrowser
         version: 0.1.2
@@ -147,7 +140,7 @@ plugins:
     -
         name: auth2-client
         globalName: kbase-ui-plugin-auth2-client
-        version: 0.1.8
+        version: 0.2.1
         cwd: src/plugin
         source:
             bower: {}
@@ -173,11 +166,6 @@ modules:
     -
         globalName: kbase-service-clients-js
         version: 1.10.0
-        source:
-            bower: {}
-    -
-        globalName: kbase-data-api-client-js
-        version: 1.0.6-alpha
         source:
             bower: {}
     -
