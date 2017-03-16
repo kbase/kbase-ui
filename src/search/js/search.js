@@ -1673,7 +1673,6 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                     //generic solution for types
 
                     if (objToCopy.hasOwnProperty("ws_ref") && objToCopy.hasOwnProperty("genome_id")) {
-                        console.log('objToCopy2', objToCopy);
                         ws_requests.push($scope.copyTypedObject(
                                                 ws_objects[i],
                                                 objToCopy.genome_id, 
@@ -1682,7 +1681,6 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                                                 $scope.options.userState.session.selectedWorkspace).then(function () {;}));
                     }
                     else if (objToCopy.hasOwnProperty("object_name") === true) {
-                        //console.log($scope.options.userState.session.data_cart.data[ws_objects[i]]);
                         ws_requests.push($scope.copyTypedObject(
                                                 ws_objects[i],
                                                 objToCopy["object_name"], 
@@ -1692,8 +1690,6 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                     }
 
                     else if (objToCopy.hasOwnProperty("object_id") === true) {
-                        console.log('objToCopy', objToCopy);
-
                         $scope.workspace_service.get_object_info([{"name": objToCopy["object_id"], "workspace": objToCopy["workspace_name"]}])
                             .fail(function (xhr, status, error) {
                                 console.log(xhr);
@@ -2184,7 +2180,6 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
 */
 
     $scope.toggleAllDataCart = function(type) {
-        console.log("toggleAllDataCart : " + type);
 
         var d;
     
@@ -2293,8 +2288,6 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
 
 
     $scope.addToTransferCart = function(id) {
-        console.log("Adding to cart : " + id);
-    
         if (!$scope.options.userState.session.transfer_cart.items.hasOwnProperty(id)) {
             $scope.options.userState.session.transfer_cart.items[id] = {};
             $scope.options.userState.session.transfer_cart.size += 1;                
