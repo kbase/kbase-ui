@@ -1,0 +1,15 @@
+
+<div class="col-xs-2 col-sm-2 col-md-1 col-lg-1 search-result-column genome-scientific-name">
+    <span>
+        <a target='_blank' class='genome-scientific-name' href='{{options.landingPagePrefix}}{{item.ws_ref}}'>
+            <strong><em>{{item.scientific_name}}</em></strong>
+        </a>
+    </span>
+</div>
+<div class="col-xs-2 col-sm-2 col-md-1 col-lg-1 search-result-column domain">{{item.genome_id}}</div>
+<div class="col-xs-2 col-sm-2 col-md-1 col-lg-1 search-result-column domain">{{item.genome_source}}</div>
+
+<div class="col-xs-2 col-sm-2 col-md-1 col-lg-1 search-result-column domain">{{item.domain}}</div>
+<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 search-result-column num_contigs">{{item.num_contigs | number}}</div>
+<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 search-result-column num_cds">{{item.num_cds | number}}</div>
+<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 search-result-column genome_dna_size">{{item.genome_dna_size | number}}</div>
