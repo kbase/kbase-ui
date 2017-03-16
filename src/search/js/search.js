@@ -220,6 +220,8 @@ searchApp.service('searchOptionsService', function searchOptionsService() {
         categoryRelationships : {},
         expandedCategories : { 'genomes': true,
                                'features': true,
+                               'reference_genomes': true,
+                               'genomeFeatures': true,
                                'metagenomes': true,
                                'models_media': true,
                                'models_fba': true
@@ -246,8 +248,10 @@ searchApp.service('searchOptionsService', function searchOptionsService() {
         landingPagePrefix: "/#/dataview/",
         iconMapping: {
             "metagenomes": "<span class='fa-stack'><i class='fa fa-circle fa-stack-2x' style='color: rgb(255, 193, 7);'></i><i class='icon fa-inverse fa-stack-1x icon-metagenome kb-data-icon-dnudge'></i></span>",
+            "reference_genomes": "<span class='fa-stack'><i class='fa fa-circle fa-stack-2x' style='color: rgb(63, 81, 181);'></i><i class='icon fa-inverse fa-stack-1x icon-genome kb-data-icon-dnudge'></i></span>",
             "genomes": "<span class='fa-stack'><i class='fa fa-circle fa-stack-2x' style='color: rgb(63, 81, 181);'></i><i class='icon fa-inverse fa-stack-1x icon-genome kb-data-icon-dnudge'></i></span>",
             "features": "<span class='fa-stack'><i class='fa fa-circle fa-stack-2x' style='color: rgb(63, 81, 181);'></i><i class='icon fa-inverse fa-stack-1x icon-genome kb-data-icon-dnudge'></i></span>",
+            "genomeFeatures": "<span class='fa-stack'><i class='fa fa-circle fa-stack-2x' style='color: rgb(63, 81, 181);'></i><i class='icon fa-inverse fa-stack-1x icon-genome kb-data-icon-dnudge'></i></span>",
             "models_fba": "<span class='fa-stack'><i class='fa fa-circle fa-stack-2x' style='color: rgb(0, 96, 100);'></i><i class='icon fa-inverse fa-stack-1x icon-metabolism kb-data-icon-dnudge'></i></span>",
             "models_media": "<span class='fa-stack'><i class='fa fa-circle fa-stack-2x' style='color: rgb(244, 67, 54);'></i><i class='fa fa-inverse fa-stack-1x fa-flask'></i></span>",
             "models": "<span class='fa-stack'><i class='fa fa-circle fa-stack-2x' style='color: rgb(0, 96, 100);'></i><i class='icon fa-inverse fa-stack-1x icon-metabolism kb-data-icon-dnudge'></i></span>",
@@ -715,39 +719,54 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                       ws_global_id_groups = [];
               
                   for (var i = 0; i < jsonResult.data.items.length; i++) {
-                      jsonResult.data.items[i].position = (jsonResult.data.currentPage - 1) * jsonResult.data.itemsPerPage + i + 1;
+                      var record = jsonResult.data.items[i];
+                      record.position = (jsonResult.data.currentPage - 1) * jsonResult.data.itemsPerPage + i + 1;
+                      console.log(record);
+                      if (record.hasOwnProperty("ws_ref")) {
+                          record.object_ref = record.ws_ref;
+                          if (record.hasOwnProperty("feature_id")) {
+                              record.row_id = record.feature_id.replace(/\/\||\./g,"_");
+                          } else if (record.hasOwnProperty("genome_id")) {
+                              record.row_id = record.genome_id.replace(/\/\||\./g,"_");
+                          }
+                      } else {
+                          // old style assuming we have to parse object_id
+                          if (record.hasOwnProperty("object_id")) {
+                              // detect object_id with kb|ws.<wsid>.obj.<objid>.ver.<version> with <wsid>/<objid>/<version>
+                              ws_global_regex_matches = record.object_id.match(ws_global_id_match);
 
-                      if (jsonResult.data.items[i].hasOwnProperty("object_id")) {
-                          // detect object_id with kb|ws.<wsid>.obj.<objid>.ver.<version> with <wsid>/<objid>/<version>
-                          ws_global_regex_matches = jsonResult.data.items[i].object_id.match(ws_global_id_match);
-                          if (ws_global_regex_matches.length == 1) {
-                              ws_global_id_groups =  jsonResult.data.items[i].object_id.split('.');
-                              jsonResult.data.items[i].object_ref = ws_global_id_groups[1] + "/" + ws_global_id_groups[3];
-                              
-                              // check to see if a version was included, if so, add to ref string
-                              if (ws_global_id_groups.length == 6) {
-                                  jsonResult.data.items[i].object_ref += "/" + ws_global_id_groups[5];
+                              if (ws_global_regex_matches.length == 1) {
+                                  ws_global_id_groups =  record.object_id.split('.');
+                                  record.object_ref = ws_global_id_groups[1] + "/" + ws_global_id_groups[3];
+                                  
+                                  // check to see if a version was included, if so, add to ref string
+                                  if (ws_global_id_groups.length == 6) {
+                                      record.object_ref += "/" + ws_global_id_groups[5];
+                                  }
                               }
+                              else {
+                                  console.log("Unexpected format for object_id, found " + record["object_id"]);
+                              }
+                              
+                              // set the row id using the object reference string, replace all '/' with '_'
+                              record.row_id = record.object_ref.replace(/\//g,"_");
                           }
                           else {
-                              console.log("Unexpected format for object_id, found " + jsonResult.data.items[i]["object_id"]);
-                          }
-                          
-                          // set the row id using the object reference string, replace all '/' with '_'
-                          jsonResult.data.items[i].row_id = jsonResult.data.items[i].object_ref.replace(/\//g,"_");
-                      }
-                      else {
-                          if (jsonResult.data.items[i].hasOwnProperty("feature_id")) {
-                              jsonResult.data.items[i].row_id = jsonResult.data.items[i].feature_id.replace(/\/\||\./g,"_");
-                              //console.log(jsonResult.data.items[i].row_id);
-                          }
-                          else if (jsonResult.data.items[i].hasOwnProperty("genome_id")) {
-                              jsonResult.data.items[i].row_id = jsonResult.data.items[i].genome_id.replace(/\/\||\./g,"_");
+                              if (record.hasOwnProperty("feature_id")) {
+                                  record.row_id = record.feature_id.replace(/\/\||\./g,"_");
+                                  //console.log(jsonResult.data.items[i].row_id);
+                              }
+                              else if (record.hasOwnProperty("genome_id")) {
+                                  record.row_id = record.genome_id.replace(/\/\||\./g,"_");
+                              }
                           }
                       }
                       
-                      if (jsonResult.data.items[i].hasOwnProperty("taxonomy")) {
-                          jsonResult.data.items[i].taxonomy = jsonResult.data.items[i].taxonomy.join('; ');
+                      if (record.hasOwnProperty("taxonomy")) {
+                          record.taxonomy = record.taxonomy.join('; ');
+                      }
+                      if (record.hasOwnProperty("aliases")) {
+                          record.aliases = record.aliases.join(', ');
                       }
                   }
 
