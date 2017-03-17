@@ -848,11 +848,11 @@ table.search-transfer-table {
 }
 
 .genome_id_header {
-    width: 90px;
+    width: 130px;
 }
 
 .genome_id {
-    width: 80px;
+    width: 120px;
     margin-right: 8px;
 }
 
@@ -875,11 +875,11 @@ table.search-transfer-table {
 }
 
 .feature_id_header {
-    width: 140px;
+    width: 160px;
 }
 
 .feature_id {
-    width: 130px;
+    width: 150px;
     margin-right: 9px;
 }
 
@@ -893,20 +893,20 @@ table.search-transfer-table {
 }
 
 .feature_function_header {
-    width: 150px;
+    width: 270px;
 }
 
 .feature_function {
-    width: 138px;
+    width: 248px;
     margin-right: 10px;
 }
 
 .dna_sequence_length_header {
-    width: 60px;
+    width: 70px;
 }
 
 .dna_sequence_length {
-    width: 50px;
+    width: 60px;
     margin-right: 10px;
 }
 
