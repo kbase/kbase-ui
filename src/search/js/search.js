@@ -737,9 +737,12 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
         for (var prop in options) {        
             if (prop === "general") {
                 for (var gen_prop in options.general) {
-                    if(gen_prop=='q') continue;
                     if (options.general.hasOwnProperty(gen_prop)) {
-                        queryOptions[gen_prop] = options.general[gen_prop];
+                        if(gen_prop=='q') {
+                            queryOptions[gen_prop] = processQuery(options.general[gen_prop]);
+                        } else {
+                            queryOptions[gen_prop] = options.general[gen_prop];
+                        }
                     }
                 }
         
