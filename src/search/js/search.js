@@ -113,7 +113,6 @@ searchApp.service('searchCategoryLoadService', function($q, $http, $rootScope) {
                 // to mimic the old category from the front-end, but query against the new category
                 // on the backend.  Since this is all a hack anyway, stuff this info into the searchApp
                 // object.
-                console.log('results',results);
                 var displayCategories = results.data.displayTree.unauthenticated.children;
                 searchApp.usingNewGenomes = false;
                 searchApp.usingNewFeatures = false;
@@ -127,7 +126,6 @@ searchApp.service('searchCategoryLoadService', function($q, $http, $rootScope) {
                         searchApp.usingNewFeatures = true;
                     }
                 }
-                console.log(searchApp);
                 this.categoriesJSON = results.data;
                 console.log('Using base config: ', results.data)
                 deferred.resolve(results);
@@ -825,13 +823,15 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                               }
                           }
                       }
-                      console.log('record', i, record);
 
                       if (record.hasOwnProperty("taxonomy")) {
                           record.taxonomy = record.taxonomy.join('; ');
                       }
                       if (record.hasOwnProperty("aliases")) {
                           record.aliases = record.aliases.join('; ');
+                      }
+                      if (record.hasOwnProperty("functions")) {
+                          record.functions = record.functions.join('; ');
                       }
                   }
 
@@ -1450,9 +1450,6 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                 var max_tries = 10;
                 var tries = 0;
 
-                console.log('info',info);
-                console.log($scope.options.userState.session.data_cart.data[n]["workspace_name"]);
-
                 var copy_genome = function () {
                     $scope.workspace_service.copy_object({
                         "from": {
@@ -1722,10 +1719,7 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
             for (var i = 0; i < ws_objects.length; i++) {    
                 var record = $scope.options.userState.session.data_cart.data[ws_objects[i]];
 
-
-                console.log('copy record', record);
                 if(record.ws_ref && record.genome_id) {
-                    console.log('has wsid and genome_id');
                     // params = n, object_name, object_ref, from_workspace_name, to_workspace_name
                     var new_name = record['genome_id'];
                     ws_requests.push($scope.copyTypedObject(
@@ -1779,8 +1773,6 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                                                     $scope.options.userState.session.selectedWorkspace).then(function () {;}));                    
                         }
                         else if (record.hasOwnProperty("object_id") === true) {
-                            console.log(record);
-
                             $scope.workspace_service.get_object_info([{"name": record["object_id"], "workspace": record["workspace_name"]}])
                                 .fail(function (xhr, status, error) {
                                     console.log(xhr);
@@ -1832,7 +1824,6 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
         }; // end function
 
         // check for duplicates
-        console.log("Copying objects...");
 
         for (var n in $scope.options.userState.session.data_cart.data) {
             if ($scope.options.userState.session.data_cart.data.hasOwnProperty(n)) {
@@ -2066,92 +2057,54 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
 
     $scope.selectCheckbox = function(id, item) {
         if (!$scope.options.userState.session.data_cart.data.hasOwnProperty(id)) {
-            if (item.object_type.indexOf(".Genome") > -1) {
-                $scope.options.userState.session.data_cart.size += 1;
-                $scope.options.userState.session.data_cart.data[id] = {
-                    "workspace_name": item.workspace_name,
-                    "object_type": item.object_type,
-                    "object_id": item.object_id,
-                    "object_ref": item.object_ref,
-                    "row_id": item.row_id,
-                    "genome_id": item.genome_id,
-                    "scientific_name": item.scientific_name,
-                    "domain": item.domain,
-                    "gc_content": item.gc_content,
-                    "num_contigs": item.num_contigs,
-                    "num_cds": item.num_cds,
-                    "genome_dna_size": item.genome_dna_size,
-                    "ws_ref": item.ws_ref,
-                    "cart_selected": false
-                };
-                $scope.options.userState.session.data_cart.types['genomes'].markers[id] = {}; 
-                $scope.options.userState.session.data_cart.types['genomes'].size += 1; 
-            }
-            else if (item.object_type.indexOf(".Feature") > -1) {
-                $scope.options.userState.session.data_cart.size += 1;
-                $scope.options.userState.session.data_cart.data[id] = {
-                    "workspace_name": item.workspace_name,
-                    "object_id": item.object_id,
-                    "object_ref": item.object_ref,
-                    "object_type": item.object_type,
-                    "row_id": item.row_id,
-                    "genome_id": item.genome_id,
-                    "feature_id": item.feature_id,
-                    "feature_source_id": item.feature_source_id,
-                    "scientific_name": item.scientific_name,
-                    "feature_type": item.feature_type,
-                    "dna_sequence_length": item.dna_sequence_length,
-                    "protein_translation_length": item.protein_translation_length,
-                    "function": item.function,
-                    "aliases": item.aliases,
-                    "ws_ref": item.ws_ref,
-                    "cart_selected": false
-                };
-                $scope.options.userState.session.data_cart.types['features'].markers[id] = {}; 
-                $scope.options.userState.session.data_cart.types['features'].size += 1;         
-            }
-            else if (item.object_type.indexOf(".Metagenome") > -1) {
-                $scope.options.userState.session.data_cart.size += 1;
-                $scope.options.userState.session.data_cart.data[id] = {
-                    "workspace_name": item.workspace_name,
-                    "object_id": item.object_id,
-                    "object_ref": item.object_ref,
-                    "object_name": item.object_name,
-                    "object_type": item.object_type,
-                    "row_id": item.row_id,
-                    "metagenome_id": item.metagenome_id,
-                    "metagenome_name": item.metagenome_name,
-                    "project_name": item.project_name,
-                    "sample_name": item.sample_name,
-                    "cart_selected": false
-                };
-                $scope.options.userState.session.data_cart.types['metagenomes'].markers[id] = {}; 
-                $scope.options.userState.session.data_cart.types['metagenomes'].size += 1; 
-            }
-            else if (item.object_type.indexOf("KBaseFBA") > -1 || item.object_type.indexOf("KBaseBiochem") > -1) {
-                if (item.object_type.indexOf(".FBAModel") > -1) {
-                    $scope.options.userState.session.data_cart.types['models'].subtypes['models_fba'].markers[id] = {}; 
-                    $scope.options.userState.session.data_cart.types['models'].subtypes['models_fba'].size += 1; 
-                    $scope.options.userState.session.data_cart.types['models'].size += 1; 
+
+            if(item.object_type) {
+                if (item.object_type.indexOf(".Genome") > -1) {
+                    $scope.options.userState.session.data_cart.size += 1;
                     $scope.options.userState.session.data_cart.data[id] = {
                         "workspace_name": item.workspace_name,
+                        "object_type": item.object_type,
                         "object_id": item.object_id,
                         "object_ref": item.object_ref,
-                        "object_name": item.object_name,
-                        "object_type": item.object_type,
                         "row_id": item.row_id,
-                        "fba_model_id": item.fba_model_id,
+                        "genome_id": item.genome_id,
                         "scientific_name": item.scientific_name,
-                        "number_of_features": item.number_of_features,
-                        "number_of_reactions": item.number_of_reactions,
-                        "number_of_gapfillings": item.number_of_gapfillings,
+                        "domain": item.domain,
+                        "gc_content": item.gc_content,
+                        "num_contigs": item.num_contigs,
+                        "num_cds": item.num_cds,
+                        "genome_dna_size": item.genome_dna_size,
+                        "ws_ref": item.ws_ref,
                         "cart_selected": false
                     };
+                    $scope.options.userState.session.data_cart.types['genomes'].markers[id] = {}; 
+                    $scope.options.userState.session.data_cart.types['genomes'].size += 1; 
                 }
-                else if (item.object_type.indexOf(".Media") > -1) {
-                    $scope.options.userState.session.data_cart.types['models'].subtypes['models_media'].markers[id] = {}; 
-                    $scope.options.userState.session.data_cart.types['models'].subtypes['models_media'].size += 1; 
-                    $scope.options.userState.session.data_cart.types['models'].size += 1; 
+                else if (item.object_type.indexOf(".Feature") > -1) {
+                    $scope.options.userState.session.data_cart.size += 1;
+                    $scope.options.userState.session.data_cart.data[id] = {
+                        "workspace_name": item.workspace_name,
+                        "object_id": item.object_id,
+                        "object_ref": item.object_ref,
+                        "object_type": item.object_type,
+                        "row_id": item.row_id,
+                        "genome_id": item.genome_id,
+                        "feature_id": item.feature_id,
+                        "feature_source_id": item.feature_source_id,
+                        "scientific_name": item.scientific_name,
+                        "feature_type": item.feature_type,
+                        "dna_sequence_length": item.dna_sequence_length,
+                        "protein_translation_length": item.protein_translation_length,
+                        "function": item.function,
+                        "aliases": item.aliases,
+                        "ws_ref": item.ws_ref,
+                        "cart_selected": false
+                    };
+                    $scope.options.userState.session.data_cart.types['features'].markers[id] = {}; 
+                    $scope.options.userState.session.data_cart.types['features'].size += 1;         
+                }
+                else if (item.object_type.indexOf(".Metagenome") > -1) {
+                    $scope.options.userState.session.data_cart.size += 1;
                     $scope.options.userState.session.data_cart.data[id] = {
                         "workspace_name": item.workspace_name,
                         "object_id": item.object_id,
@@ -2159,23 +2112,87 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                         "object_name": item.object_name,
                         "object_type": item.object_type,
                         "row_id": item.row_id,
-                        "media_id": item.media_id,
-                        "media_name": item.media_name,
-                        "media_type": item.media_type,
-                        "number_of_compounds": item.number_of_compounds,
-                        "is_defined": item.is_defined,
-                        "is_minimal": item.is_minimal,
+                        "metagenome_id": item.metagenome_id,
+                        "metagenome_name": item.metagenome_name,
+                        "project_name": item.project_name,
+                        "sample_name": item.sample_name,
                         "cart_selected": false
                     };
+                    $scope.options.userState.session.data_cart.types['metagenomes'].markers[id] = {}; 
+                    $scope.options.userState.session.data_cart.types['metagenomes'].size += 1; 
+                }
+                else if (item.object_type.indexOf("KBaseFBA") > -1 || item.object_type.indexOf("KBaseBiochem") > -1) {
+                    if (item.object_type.indexOf(".FBAModel") > -1) {
+                        $scope.options.userState.session.data_cart.types['models'].subtypes['models_fba'].markers[id] = {}; 
+                        $scope.options.userState.session.data_cart.types['models'].subtypes['models_fba'].size += 1; 
+                        $scope.options.userState.session.data_cart.types['models'].size += 1; 
+                        $scope.options.userState.session.data_cart.data[id] = {
+                            "workspace_name": item.workspace_name,
+                            "object_id": item.object_id,
+                            "object_ref": item.object_ref,
+                            "object_name": item.object_name,
+                            "object_type": item.object_type,
+                            "row_id": item.row_id,
+                            "fba_model_id": item.fba_model_id,
+                            "scientific_name": item.scientific_name,
+                            "number_of_features": item.number_of_features,
+                            "number_of_reactions": item.number_of_reactions,
+                            "number_of_gapfillings": item.number_of_gapfillings,
+                            "cart_selected": false
+                        };
+                    }
+                    else if (item.object_type.indexOf(".Media") > -1) {
+                        $scope.options.userState.session.data_cart.types['models'].subtypes['models_media'].markers[id] = {}; 
+                        $scope.options.userState.session.data_cart.types['models'].subtypes['models_media'].size += 1; 
+                        $scope.options.userState.session.data_cart.types['models'].size += 1; 
+                        $scope.options.userState.session.data_cart.data[id] = {
+                            "workspace_name": item.workspace_name,
+                            "object_id": item.object_id,
+                            "object_ref": item.object_ref,
+                            "object_name": item.object_name,
+                            "object_type": item.object_type,
+                            "row_id": item.row_id,
+                            "media_id": item.media_id,
+                            "media_name": item.media_name,
+                            "media_type": item.media_type,
+                            "number_of_compounds": item.number_of_compounds,
+                            "is_defined": item.is_defined,
+                            "is_minimal": item.is_minimal,
+                            "cart_selected": false
+                        };
+                    }
+                    else {
+                        throw Error("Unknown Model type : " + item.object_type);
+                    }
+
+                    $scope.options.userState.session.data_cart.size += 1;                
                 }
                 else {
-                    throw Error("Unknown Model type : " + item.object_type);
+                    throw Error("Trying to add unknown type!");        
                 }
-
-                $scope.options.userState.session.data_cart.size += 1;                
-            }
-            else {
-                throw Error("Trying to add unknown type!");        
+            } else {
+                // no object_type defined, me thinks this is a new Feature type.
+                    $scope.options.userState.session.data_cart.size += 1;
+                    $scope.options.userState.session.data_cart.data[id] = {
+                        "workspace_name": item.workspace_name,
+                        "object_id": item.object_id,
+                        "object_ref": item.object_ref,
+                        "object_type": "KBaseGenomes.Feature",
+                        "row_id": item.row_id,
+                        "genome_id": item.genome_id,
+                        "feature_id": item.feature_id,
+                        "feature_source_id": item.feature_source_id,
+                        "scientific_name": item.scientific_name,
+                        "feature_type": item.feature_type,
+                        "dna_sequence_length": item.dna_sequence_length,
+                        "protein_translation_length": item.protein_translation_length,
+                        "function": item.function,
+                        "aliases": item.aliases,
+                        "ws_ref": item.ws_ref,
+                        "cart_selected": false
+                    };
+                    $scope.options.userState.session.data_cart.types['features'].markers[id] = {}; 
+                    $scope.options.userState.session.data_cart.types['features'].size += 1;
             }
         }
     };
@@ -2269,7 +2286,6 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
 */
 
     $scope.toggleAllDataCart = function(type) {
-        console.log("toggleAllDataCart : " + type);
 
         var d;
     

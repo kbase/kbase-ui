@@ -1,4 +1,8 @@
 
+<tr ng-if="item.functions">
+    <td class="search-result-column-expanded-entry-cell feature_expanded_header"><strong>Functions:</strong></td>
+    <td class="search-result-column-expanded-entry-cell">{{item.functions}}</td>
+</tr>
 <tr ng-if="item.aliases">
     <td class="search-result-column-expanded-entry-cell feature_expanded_header"><strong>Aliases:</strong></td>
     <td class="search-result-column-expanded-entry-cell">{{item.aliases}}</td>
