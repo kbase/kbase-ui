@@ -828,7 +828,9 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                           record.taxonomy = record.taxonomy.join('; ');
                       }
                       if (record.hasOwnProperty("aliases")) {
-                          record.aliases = record.aliases.join('; ');
+                        try {
+                            record.aliases = record.aliases.join('; ');
+                        } catch(e) {}
                       }
                       if (record.hasOwnProperty("functions")) {
                           record.functions = record.functions.join('; ');
