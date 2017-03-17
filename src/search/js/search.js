@@ -92,6 +92,9 @@ searchApp.factory("require", function($rootScope) {
 });
 
 
+
+
+
 /* Services */
 
 /*
@@ -104,8 +107,30 @@ searchApp.service('searchCategoryLoadService', function($q, $http, $rootScope) {
             var deferred = $q.defer();
     
             $http.get($rootScope.kb.search_url + "categories").then(function fetchCategories(results) {
+                // Override displayTree
+                // Here's the crazy logic.  If reference_genomes or GenomeFeatures are found, then
+                // the categories are overwritten with 'genomes' and 'features'.  This allows us
+                // to mimic the old category from the front-end, but query against the new category
+                // on the backend.  Since this is all a hack anyway, stuff this info into the searchApp
+                // object.
+                console.log('results',results);
+                var displayCategories = results.data.displayTree.unauthenticated.children;
+                searchApp.usingNewGenomes = false;
+                searchApp.usingNewFeatures = false;
+                for(var k=0; k<displayCategories.length; k++) {
+                    if(displayCategories[k].category == 'reference_genomes') {
+                        displayCategories[k].category = 'genomes';
+                        searchApp.usingNewGenomes = true;
+                    }
+                    if(displayCategories[k].category == 'genomeFeatures') {
+                        displayCategories[k].category = 'features';
+                        searchApp.usingNewFeatures = true;
+                    }
+                }
+                console.log(searchApp);
                 this.categoriesJSON = results.data;
-                deferred.resolve(results);                    
+                console.log('Using base config: ', results.data)
+                deferred.resolve(results);
             });            
             
             return deferred.promise;
@@ -211,7 +236,6 @@ searchApp.service('searchOptionsService', function searchOptionsService() {
             localStorage.searchUserState[p] = _longtermUserData[p];
         }    
     }
-        
     return {
         categoryInfo : {},
         categoryTemplates : {},
@@ -577,14 +601,22 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
     
         //console.log("getCount");
         //console.log([options, category]);
-    
+        var categoryQuery = category;
+        if(category == 'genomes' && searchApp.usingNewGenomes) {
+            categoryQuery = 'reference_genomes';
+        }
+        if(category == 'features' && searchApp.usingNewFeatures) {
+            categoryQuery = 'genomeFeatures';
+        }
+
         var queryOptions = {};
 
         angular.copy(options, queryOptions);
         
         queryOptions["page"] = 1;
         queryOptions["itemsPerPage"] = 0;
-        queryOptions["category"] = category;
+        queryOptions["category"] = categoryQuery;
+
 
         //console.log("getCount : " + JSON.stringify(queryOptions));
 
@@ -635,6 +667,26 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
     
     $scope.getResults = function(category, options) {
         //console.log($scope.options);
+
+        // Note- hate to do this, but duplicates code.  Fix in both places.
+        function processQuery(query) {
+            var newQuery = '*'
+            if (query) {
+                query = query.trim();
+                if (query.length == 0) {
+                    newQuery = '*';
+                } else if (query.indexOf('"') < 0) {
+                    var parts = query.split(/\s+/);
+                    for (var i in parts)
+                        if (parts[i].indexOf('*', parts[i].length - 1) < 0)
+                            parts[i] = parts[i] + '*';
+                    newQuery = parts.join(' ');
+                }
+            }
+            return newQuery;
+        }
+
+
         var queryOptions = {};
 
         if (!$scope.options.userState.session.hasOwnProperty("ajax_requests") || !$scope.options.userState.session.ajax_requests) {
@@ -642,7 +694,7 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
         }
         
         if (category === null || category === undefined) {
-            queryOptions = {'q': options.general.q};
+            queryOptions = {'q': processQuery(options.general.q)};
 
             $("#loading_message_text").html(options.defaultMessage);
             $.blockUI({message: $("#loading_message")});
@@ -654,7 +706,7 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                     }
                     
                     $scope.getCount(queryOptions, $scope.options.searchCategories[p].category);            
-                    queryOptions = {'q': options.general.q};
+                    queryOptions = {'q': processQuery(options.general.q)};
                 }
                 else {
                     $scope.options.categoryCounts[category] = 0;
@@ -662,7 +714,6 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
             }
     
             $scope.options.countsAvailable = true;
-
             // here we are waiting for all the ajax count calls to complete before unblocking the UI            
             $q.all($scope.options.userState.session.ajax_requests).then(function() {
                 $.unblockUI();
@@ -674,10 +725,19 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
             return;
         }
 
-        queryOptions.category = category;
+        var categoryQuery = category;
+        if(category == 'genomes' && searchApp.usingNewGenomes) {
+            categoryQuery = 'reference_genomes';
+        }
+        if(category == 'features' && searchApp.usingNewFeatures) {
+            categoryQuery = 'genomeFeatures';
+        }
+
+        queryOptions.category = categoryQuery;
         for (var prop in options) {        
             if (prop === "general") {
                 for (var gen_prop in options.general) {
+                    if(gen_prop=='q') continue;
                     if (options.general.hasOwnProperty(gen_prop)) {
                         queryOptions[gen_prop] = options.general[gen_prop];
                     }
@@ -703,7 +763,7 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
         $("#loading_message_text").html(options.defaultMessage);
         $.blockUI({message: $("#loading_message")});
 
-        //console.log("getResults : " + JSON.stringify(queryOptions));
+        console.log("getResults : " + JSON.stringify(queryOptions));
 
         $http({method: 'GET', 
                url: $rootScope.kb.search_url + "getResults",
@@ -715,39 +775,60 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                       ws_global_id_groups = [];
               
                   for (var i = 0; i < jsonResult.data.items.length; i++) {
-                      jsonResult.data.items[i].position = (jsonResult.data.currentPage - 1) * jsonResult.data.itemsPerPage + i + 1;
+                      var record = jsonResult.data.items[i];
+                      record.position = (jsonResult.data.currentPage - 1) * jsonResult.data.itemsPerPage + i + 1;
 
-                      if (jsonResult.data.items[i].hasOwnProperty("object_id")) {
-                          // detect object_id with kb|ws.<wsid>.obj.<objid>.ver.<version> with <wsid>/<objid>/<version>
-                          ws_global_regex_matches = jsonResult.data.items[i].object_id.match(ws_global_id_match);
-                          if (ws_global_regex_matches.length == 1) {
-                              ws_global_id_groups =  jsonResult.data.items[i].object_id.split('.');
-                              jsonResult.data.items[i].object_ref = ws_global_id_groups[1] + "/" + ws_global_id_groups[3];
-                              
-                              // check to see if a version was included, if so, add to ref string
-                              if (ws_global_id_groups.length == 6) {
-                                  jsonResult.data.items[i].object_ref += "/" + ws_global_id_groups[5];
+                      // it is one of the new types, so handle it in the new fashion
+                      if (record.hasOwnProperty('ws_ref')) {
+                         record.object_ref = record.ws_ref;
+                         record.row_id = record.ws_ref;
+                         if (record.hasOwnProperty("feature_id")) {
+                             record.row_id = record.feature_id.replace(/\/\||\./g,"_");
+                         }
+                         else if (record.hasOwnProperty("genome_id")) {
+                             record.row_id = record.genome_id.replace(/\/\||\./g,"_");
+                         }
+                         //object_id is used to name things, so we should just set that to the row_id
+                         record.object_id = record.row_id;
+                      } else {
+                         if (record.hasOwnProperty("object_id")) {
+                              // detect object_id with kb|ws.<wsid>.obj.<objid>.ver.<version> with <wsid>/<objid>/<version>
+                              ws_global_regex_matches = record.object_id.match(ws_global_id_match);
+                              if(ws_global_regex_matches) {
+                                  if (ws_global_regex_matches.length == 1) {
+                                      ws_global_id_groups =  record.object_id.split('.');
+                                      record.object_ref = ws_global_id_groups[1] + "/" + ws_global_id_groups[3];
+                                      
+                                      // check to see if a version was included, if so, add to ref string
+                                      if (ws_global_id_groups.length == 6) {
+                                          record.object_ref += "/" + ws_global_id_groups[5];
+                                      }
+                                  }
+                                  else {
+                                      console.log("Unexpected format for object_id, found " + record["object_id"]);
+                                  }
                               }
+                              
+                              // set the row id using the object reference string, replace all '/' with '_'
+                              record.row_id = record.object_ref.replace(/\//g,"_");
                           }
                           else {
-                              console.log("Unexpected format for object_id, found " + jsonResult.data.items[i]["object_id"]);
-                          }
-                          
-                          // set the row id using the object reference string, replace all '/' with '_'
-                          jsonResult.data.items[i].row_id = jsonResult.data.items[i].object_ref.replace(/\//g,"_");
-                      }
-                      else {
-                          if (jsonResult.data.items[i].hasOwnProperty("feature_id")) {
-                              jsonResult.data.items[i].row_id = jsonResult.data.items[i].feature_id.replace(/\/\||\./g,"_");
-                              //console.log(jsonResult.data.items[i].row_id);
-                          }
-                          else if (jsonResult.data.items[i].hasOwnProperty("genome_id")) {
-                              jsonResult.data.items[i].row_id = jsonResult.data.items[i].genome_id.replace(/\/\||\./g,"_");
+                              if (record.hasOwnProperty("feature_id")) {
+                                  record.row_id = record.feature_id.replace(/\/\||\./g,"_");
+                                  //console.log(jsonResult.data.items[i].row_id);
+                              }
+                              else if (record.hasOwnProperty("genome_id")) {
+                                  record.row_id = record.genome_id.replace(/\/\||\./g,"_");
+                              }
                           }
                       }
-                      
-                      if (jsonResult.data.items[i].hasOwnProperty("taxonomy")) {
-                          jsonResult.data.items[i].taxonomy = jsonResult.data.items[i].taxonomy.join('; ');
+                      console.log('record', i, record);
+
+                      if (record.hasOwnProperty("taxonomy")) {
+                          record.taxonomy = record.taxonomy.join('; ');
+                      }
+                      if (record.hasOwnProperty("aliases")) {
+                          record.aliases = record.aliases.join('; ');
                       }
                   }
 
@@ -1173,7 +1254,7 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
 
     $scope.addFacet = function (name, value, searchAgain) {  
         //console.log([name, value]);
-          
+        
         if (!$scope.options.searchOptions.perCategory[$scope.options.selectedCategory].hasOwnProperty("facets")) {
             $scope.options.searchOptions.perCategory[$scope.options.selectedCategory].facets = name + ":" + value.replace(",","*").replace(":","^");
         }
@@ -1191,8 +1272,26 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
         
         $scope.options.active_facets[$scope.options.selectedCategory][name][value] = true;        
 
+        // Note- hate to do this, but duplicates code.  Fix in both places.
+        function processQuery(query) {
+            var newQuery = '*'
+            if (query) {
+                query = query.trim();
+                if (query.length == 0) {
+                    newQuery = '*';
+                } else if (query.indexOf('"') < 0) {
+                    var parts = query.split(/\s+/);
+                    for (var i in parts)
+                        if (parts[i].indexOf('*', parts[i].length - 1) < 0)
+                            parts[i] = parts[i] + '*';
+                    newQuery = parts.join(' ');
+                }
+            }
+            return newQuery;
+        }
+
         if (searchAgain === undefined || searchAgain === true) {
-            $scope.getCount({q: $scope.options.searchOptions.general.q, facets: $scope.options.searchOptions.perCategory[$scope.options.selectedCategory].facets}, $scope.options.selectedCategory);        
+            $scope.getCount({q: processQuery($scope.options.searchOptions.general.q), facets: $scope.options.searchOptions.perCategory[$scope.options.selectedCategory].facets}, $scope.options.selectedCategory);        
             $state.go("search", {category: $scope.options.selectedCategory, facets: $scope.options.searchOptions.perCategory[$scope.options.selectedCategory].facets, page: 1});
         }
     };
@@ -1347,6 +1446,9 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
             
                 var max_tries = 10;
                 var tries = 0;
+
+                console.log('info',info);
+                console.log($scope.options.userState.session.data_cart.data[n]["workspace_name"]);
 
                 var copy_genome = function () {
                     $scope.workspace_service.copy_object({
@@ -1614,71 +1716,88 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
         var batchCopyRequests = function(ws_objects) {
             var ws_requests = [];
         
-            for (var i = 0; i < ws_objects.length; i++) {            
-                if ($scope.options.userState.session.data_cart.data[ws_objects[i]]["object_type"].indexOf("KBaseSearch.Genome") > -1) {
-                    ws_requests.push($scope.copyGenome(ws_objects[i]).then(function () {;}));
-                    if (!types.hasOwnProperty('genomes')) {
-                        types['genomes'] = true;
-                    }
-                }                    
-                else if ($scope.options.userState.session.data_cart.data[ws_objects[i]]["object_type"].indexOf("KBaseSearch.Feature") > -1) {                
-                    ws_requests.push($scope.copyFeature(ws_objects[i]).then(function () {;}));
-                    if (!types.hasOwnProperty('features')) {
-                        types['features'] = true;
-                    }
-                }
-                else if ($scope.options.userState.session.data_cart.data[ws_objects[i]]["object_type"].indexOf("Communities.Metagenome") > -1) {
-                    ws_requests.push($scope.copyMetagenome(ws_objects[i]).then(function () {;}));
-                    if (!types.hasOwnProperty('metagenomes')) {
-                        types['metagenomes'] = true;
-                    }
-                }
-                else {
-                    if ($scope.options.userState.session.data_cart.data[ws_objects[i]]["object_type"].indexOf("KBaseFBA") > -1 ||
-                        $scope.options.userState.session.data_cart.data[ws_objects[i]]["object_type"].indexOf("KBaseBiochem") > -1) {
-                        if (!types.hasOwnProperty('models')) {
-                            types['models'] = true;
-                        }                    
-                    }
-                    
-                    if ($scope.options.userState.session.data_cart.data[ws_objects[i]]["object_type"].indexOf("KBaseGwas") > -1) {
-                        if (!types.hasOwnProperty('gwas')) {
-                            types['gwas'] = true;
-                        }                    
-                    }
-            
-                    //generic solution for types
-                    if ($scope.options.userState.session.data_cart.data[ws_objects[i]].hasOwnProperty("object_name") === true) {
-                        //console.log($scope.options.userState.session.data_cart.data[ws_objects[i]]);
-                        ws_requests.push($scope.copyTypedObject(
-                                                ws_objects[i],
-                                                $scope.options.userState.session.data_cart.data[ws_objects[i]]["object_name"], 
-                                                $scope.options.userState.session.data_cart.data[ws_objects[i]]["object_ref"], 
-                                                $scope.options.userState.session.data_cart.data[ws_objects[i]]["workspace_name"], 
-                                                $scope.options.userState.session.selectedWorkspace).then(function () {;}));                    
-                    }
-                    else if ($scope.options.userState.session.data_cart.data[ws_objects[i]].hasOwnProperty("object_id") === true) {
-                        console.log($scope.options.userState.session.data_cart.data[ws_objects[i]]);
+            for (var i = 0; i < ws_objects.length; i++) {    
+                var record = $scope.options.userState.session.data_cart.data[ws_objects[i]];
 
-                        $scope.workspace_service.get_object_info([{"name": $scope.options.userState.session.data_cart.data[ws_objects[i]]["object_id"], "workspace": $scope.options.userState.session.data_cart.data[ws_objects[i]]["workspace_name"]}])
-                            .fail(function (xhr, status, error) {
-                                console.log(xhr);
-                                console.log(status);
-                                console.log(error);
-                            })
-                            .done(function (info, status, xhr) {
-                                ws_requests.push($scope.copyTypedObject(
+
+                console.log('copy record', record);
+                if(record.ws_ref && record.genome_id) {
+                    console.log('has wsid and genome_id');
+                    // params = n, object_name, object_ref, from_workspace_name, to_workspace_name
+                    var new_name = record['genome_id'];
+                    ws_requests.push($scope.copyTypedObject(
                                                     ws_objects[i],
-                                                    info[0][1], 
-                                                    $scope.options.userState.session.data_cart.data[ws_objects[i]]["object_ref"], 
-                                                    $scope.options.userState.session.data_cart.data[ws_objects[i]]["workspace_name"], 
+                                                    new_name, 
+                                                    record["ws_ref"], 
+                                                    null, 
                                                     $scope.options.userState.session.selectedWorkspace).then(function () {;}));
-                            });
+
+                } else {
+                    if (record["object_type"].indexOf("KBaseSearch.Genome") > -1) {
+                        ws_requests.push($scope.copyGenome(ws_objects[i]).then(function () {;}));
+                        if (!types.hasOwnProperty('genomes')) {
+                            types['genomes'] = true;
+                        }
+                    }                    
+                    else if (record["object_type"].indexOf("KBaseSearch.Feature") > -1) {                
+                        ws_requests.push($scope.copyFeature(ws_objects[i]).then(function () {;}));
+                        if (!types.hasOwnProperty('features')) {
+                            types['features'] = true;
+                        }
+                    }
+                    else if (record["object_type"].indexOf("Communities.Metagenome") > -1) {
+                        ws_requests.push($scope.copyMetagenome(ws_objects[i]).then(function () {;}));
+                        if (!types.hasOwnProperty('metagenomes')) {
+                            types['metagenomes'] = true;
+                        }
                     }
                     else {
-                        // create error popover
-                        console.log("no object reference found");
-                        return;
+                        if (record["object_type"].indexOf("KBaseFBA") > -1 ||
+                            record["object_type"].indexOf("KBaseBiochem") > -1) {
+                            if (!types.hasOwnProperty('models')) {
+                                types['models'] = true;
+                            }                    
+                        }
+                        
+                        if (record["object_type"].indexOf("KBaseGwas") > -1) {
+                            if (!types.hasOwnProperty('gwas')) {
+                                types['gwas'] = true;
+                            }                    
+                        }
+                
+                        //generic solution for types
+                        if (record.hasOwnProperty("object_name") === true) {
+                            //console.log($scope.options.userState.session.data_cart.data[ws_objects[i]]);
+                            ws_requests.push($scope.copyTypedObject(
+                                                    ws_objects[i],
+                                                    record["object_name"], 
+                                                    record["object_ref"], 
+                                                    record["workspace_name"], 
+                                                    $scope.options.userState.session.selectedWorkspace).then(function () {;}));                    
+                        }
+                        else if (record.hasOwnProperty("object_id") === true) {
+                            console.log(record);
+
+                            $scope.workspace_service.get_object_info([{"name": record["object_id"], "workspace": record["workspace_name"]}])
+                                .fail(function (xhr, status, error) {
+                                    console.log(xhr);
+                                    console.log(status);
+                                    console.log(error);
+                                })
+                                .done(function (info, status, xhr) {
+                                    ws_requests.push($scope.copyTypedObject(
+                                                        ws_objects[i],
+                                                        info[0][1], 
+                                                        record["object_ref"], 
+                                                        record["workspace_name"], 
+                                                        $scope.options.userState.session.selectedWorkspace).then(function () {;}));
+                                });
+                        }
+                        else {
+                            // create error popover
+                            console.log("no object reference found");
+                            return;
+                        }
                     }
                 } // end type if else
             } // end for loop
@@ -1959,6 +2078,7 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                     "num_contigs": item.num_contigs,
                     "num_cds": item.num_cds,
                     "genome_dna_size": item.genome_dna_size,
+                    "ws_ref": item.ws_ref,
                     "cart_selected": false
                 };
                 $scope.options.userState.session.data_cart.types['genomes'].markers[id] = {}; 
@@ -1980,6 +2100,8 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
                     "dna_sequence_length": item.dna_sequence_length,
                     "protein_translation_length": item.protein_translation_length,
                     "function": item.function,
+                    "aliases": item.aliases,
+                    "ws_ref": item.ws_ref,
                     "cart_selected": false
                 };
                 $scope.options.userState.session.data_cart.types['features'].markers[id] = {}; 
