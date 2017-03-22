@@ -40,8 +40,8 @@ define([
         function getTokenInfo() {
             return auth2Session.getTokenInfo();
         }
-        function getAccount() {
-            return auth2Session.getAccount();
+        function getMe() {
+            return auth2Session.getMe();
         }
         function isLoggedIn() {
             return auth2Session.isLoggedIn();
@@ -66,7 +66,7 @@ define([
         function login(arg) {
             // starts an auth login / signup redirect loop
             // it _could_ be done inside an iframe ...
-            return auth2Session.getClient().login(arg);
+            auth2Session.login(arg);
         }
         function logout() {
             return auth2Session.logout()
@@ -135,7 +135,7 @@ define([
             getLastProvider: getLastProvider,
             getProviders: getProviders,
             getTokenInfo: getTokenInfo,
-            getAccount: getAccount,
+            getMe: getMe,
             getClient: getClient,
             login: login,
             logout: logout
