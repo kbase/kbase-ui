@@ -170,5 +170,10 @@ bowerFiles:
         cwd: src/kb/widget
         src: "**/*"
         bowerComponent: false
+    -
+        name: kb_common_ts
+        cwd: dist
+        src: "*.js"
+        bowerComponent: false
 
             

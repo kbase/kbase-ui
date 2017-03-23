@@ -9,7 +9,8 @@ define([
     'kb_widget/widgetMount',
     'kb_common/props',
     'kb_common/asyncQueue',
-    'kb_common/appServiceManager'
+    'kb_common/appServiceManager',
+    'kb_common_ts/Cookie'
 ], function (
     pluginManagerFactory,
     dom,
@@ -17,7 +18,8 @@ define([
     widgetMountFactory,
     props,
     asyncQueue,
-    AppServiceManager
+    AppServiceManager,
+    M_Cookie
     )
 {
     'use strict';
@@ -35,6 +37,8 @@ define([
         Object.keys(serviceConfig).forEach(function (key) {
             clientConfig[key] = serviceConfig[key];
         });
+
+        clientConfig.buildInfo = config.buildInfo;
 
         function getConfig(prop, defaultValue) {
             return clientConfigProps.getItem(prop, defaultValue);
@@ -143,11 +147,27 @@ define([
             send('app', 'navigate', path);
         }
 
+        function feature(featureSet, path) {
+            var featureFlag = new M_Cookie.CookieManager().getItem('ui.features.auth.selected');
+            if (!featureFlag) {
+                featureFlag = api.config('buildInfo.features.' + featureSet + '.selected');
+                // featureFlag = api.config('ui.features.' + featureSet + '.selected');
+            }
+            var featurePath = 'ui.features.' + featureSet + '.available.' + featureFlag + '.' + path;
+            // console.log('feature', featureFlag, featurePath);
+            var result = getConfig(featurePath, null);
+            if (result === null) {
+                throw new Error('Feature is not defined: ' + featurePath);
+            }
+            return result;
+        }
+
         var api = {
             getConfig: getConfig,
             config: getConfig,
             hasConfig: hasConfig,
             rawConfig: rawConfig,
+            feature: feature,
             // Session
             installPlugins: installPlugins,
             send: send,
@@ -170,7 +190,8 @@ define([
                 return proxyMethod(appServiceManager, 'getService', arguments);
             },
             service: function () {
-                return proxyMethod(appServiceManager, 'getService', arguments);
+                var service = proxyMethod(appServiceManager, 'getService', arguments);
+                return service
             },
             hasService: function () {
                 return proxyMethod(appServiceManager, 'hasService', arguments);
@@ -186,9 +207,9 @@ define([
             var sessionConfig = {
                 runtime: api,
                 cookieName: 'kbase_session',               
-                loginUrl: serviceConfig.services.login.url,
                 cookieMaxAge: clientConfig.ui.constants.session_max_age
             };
+
             if (api.config('deploy.backup-cookie-enabled')) {
                 sessionConfig.extraCookies = [
                     {
@@ -198,11 +219,43 @@ define([
                 ];
             }
 
-            appServiceManager.addService('session', sessionConfig);
+            // var authService = 'auth2Session'; // or 'session'
+
+            //var authFeatureFlag = api.config('ui.features.auth.selected');
+            // api.config('ui.features.auth.available.' + authFeatureFlag + '.services.session.module')
+
+            // var sessionModule = ;
+
+            appServiceManager.addService({
+                name: 'session',
+                module: api.feature('auth', 'services.session.module'),
+            }, sessionConfig);
+
+            // switch (authFeatureFlag) {
+            //     case 'auth1':
+            //         sessionConfig.loginUrl = api.config('services.auth.url');
+            //         appServiceManager.addService({
+            //             name: 'session',
+            //             module: 'session'
+            //         }, sessionConfig);
+            //         break;
+            //     case 'auth2':
+            //         appServiceManager.addService({
+            //             name: 'session',
+            //             module: 'auth2Session'
+            //         }, sessionConfig);
+            //         break;
+            //     default:
+            //         throw new Error('Invalid auth feature flag: ' + authFeatureFlag);
+            // }
+           
+
             appServiceManager.addService('heartbeat', {
                 runtime: api,
                 interval: 500
             });
+
+
             appServiceManager.addService('route', {
                 runtime: api,
                 // notFoundRoute: {redirect: {path: 'message/notfound'}},

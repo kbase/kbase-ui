@@ -90,6 +90,9 @@ function saveIni(path, iniData) {
     return fs.writeFileAsync(path.join('/'), ini.stringify(iniData));
 }
 
+function saveJson(path, jsonData) {
+    return fs.writeFileAsync(path.join('/'), JSON.stringify(jsonData));
+}
 
 
 function uniq(prefix) {
@@ -243,6 +246,10 @@ function createInitialState(initialConfig) {
             state.environment.filesystem = inputFs;
             state.environment.path = state.environment.root.concat(inputFs);
 
+            state.stats = {
+                start: new Date().getTime()
+            }
+
             return state;
         });
 }
@@ -268,5 +275,6 @@ module.exports = {
     loadYaml: loadYaml,
     loadIni: loadIni,
     saveIni: saveIni,
+    saveJson: saveJson,
     rtrunc: rtrunc
 };

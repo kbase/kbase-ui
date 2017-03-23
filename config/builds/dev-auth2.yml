@@ -1,11 +1,11 @@
 ## Global Build Config
 ---
 targets:
-    ui: prod
-    deploy: ci
+    ui: dev
+    deploy: dev-auth2
 build:
-    dist: true
-    temp: temp
+    dist: false
+    temp: ../temp
 bower:
     offline: false
 debug: false
