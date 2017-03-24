@@ -91,7 +91,7 @@ function saveIni(path, iniData) {
 }
 
 function saveJson(path, jsonData) {
-    return fs.writeFileAsync(path.join('/'), JSON.stringify(jsonData));
+    return fs.writeFileAsync(path.join('/'), JSON.stringify(jsonData, null, 4));
 }
 
 

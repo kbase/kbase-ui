@@ -34,7 +34,10 @@ var Promise = require('bluebird'),
     ini = require('ini'),
     underscore = require('underscore'),
     dir = Promise.promisifyAll(require('node-dir')),
-    util = require('util');
+    util = require('util'),
+    git = require('git-repo-info'),
+    uname = require('node-uname'),
+    handlebars = require('handlebars');
 
 // UTILS
 
@@ -712,13 +715,31 @@ function createBuildInfo(state) {
             features: state.config.features,
             targets: state.config.targets,
             stats: state.stats,
+            git: git(),
+            hostInfo: uname(),
+            builtAt: new Date().getTime(),
         };
+    state.buildInfo = buildInfo;
     // console.log('info', buildInfo, state);
     return mutant.saveJson(configDest, buildInfo)
         .then(function () {
             return state;
         });
 }
+
+// function makeBuildInfo(state) {
+//     return Promise.try(function () {
+//         state.buildInfo = {
+//             deployType: 'dev',
+//             git: git(),
+//             hostInfo: uname(),
+//             builtAt: new Date().getTime(),
+//             // buildHost: 'Darwin Eriks-MacBook-Pro.local 16.5.0 Darwin Kernel Version 16.5.0: Fri Mar  3 16:45:33 PST 2017; root:xnu-3789.51.2~1/RELEASE_X86_64 x86_64'
+//         }
+
+//     return state;
+//     });
+// }
 
 /*
  * 
@@ -744,6 +765,18 @@ function makeKbConfig(state) {
             var dest = root.concat(['build', 'client', 'modules', 'config', 'service.yml']).join('/');
             return fs.writeFileAsync(dest, configContents);
         })
+        .then(function () {
+            fs.readFileAsync(root.concat(['config', 'deploy', 'templates', 'build-info.js']).join('/'), 'utf8')
+            .then(function (template) {
+                var dest = root.concat(['build', 'client', 'build-info.js']).join('/');
+                var out =  handlebars.compile(template)(state.buildInfo);
+                return fs.writeFileAsync(dest, out);
+            });
+        })
+        // .then(function () {
+        //     var dest = root.concat(['build', 'client', 'modules', 'config', 'build-info.json']).join('/');
+        //     return fs.writeFileAsync(dest, JSON.stringify(state.buildInfo));
+        // })
         .then(function () {
             return state;
         });
@@ -822,6 +855,7 @@ function makeDistBuild(state) {
 }
 
 
+
 // STATE
 // initial state
 /*
@@ -881,6 +915,13 @@ function main(type) {
             return setupBuild(state);
         })
 
+        // .then(function (state) {
+        //     return mutant.copyState(state);
+        // })
+        // .then(function (state) {
+        //     return makeBuildInfo(state);
+        // })
+
         .then(function (state) {
             return mutant.copyState(state);
         })
@@ -937,6 +978,14 @@ function main(type) {
             return copyUiConfig(state);
         })
 
+         .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            console.log('Creating build record ...');
+            return createBuildInfo(state);
+        })
+
         .then(function (state) {
             return mutant.copyState(state);
         })
@@ -956,13 +1005,6 @@ function main(type) {
         })
 
 
-         .then(function (state) {
-            return mutant.copyState(state);
-        })
-        .then(function (state) {
-            console.log('Creating build record ...');
-            return createBuildInfo(state);
-        })
 
 
         // From here, we can make a dev build, make a release
