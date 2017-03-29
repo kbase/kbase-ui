@@ -36,7 +36,8 @@ var Promise = require('bluebird'),
     dir = Promise.promisifyAll(require('node-dir')),
     util = require('util'),
     git = require('git-repo-info'),
-    uname = require('node-uname'),
+    // disabled - uname package fails to install
+    // uname = require('uname'),
     handlebars = require('handlebars');
 
 // UTILS
@@ -716,7 +717,8 @@ function createBuildInfo(state) {
             targets: state.config.targets,
             stats: state.stats,
             git: git(),
-            hostInfo: uname(),
+            // disabled for now, all uname packages are failing!
+            hostInfo: null,
             builtAt: new Date().getTime(),
         };
     state.buildInfo = buildInfo;
