@@ -57,7 +57,6 @@
     "lodash": "4.6.1",
     "node-dir": "0.1.11",
     "node-ini": "1.0.0",
-    "node-uname": "1.0.1",
     "path-exists": "2.1.0",
     "phantomjs-prebuilt": "2.1.6",
     "requirejs": "2.2.0",
