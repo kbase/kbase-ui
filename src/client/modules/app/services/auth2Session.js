@@ -63,10 +63,10 @@ define([
         }
 
         // Session state change
-        function login(arg) {
+        function loginStart(arg) {
             // starts an auth login / signup redirect loop
             // it _could_ be done inside an iframe ...
-            auth2Session.login(arg);
+            auth2Session.loginStart(arg);
         }
         function logout() {
             return auth2Session.logout()
@@ -137,7 +137,7 @@ define([
             getTokenInfo: getTokenInfo,
             getMe: getMe,
             getClient: getClient,
-            login: login,
+            loginStart: loginStart,
             logout: logout
         };
 
