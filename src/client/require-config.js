@@ -25,6 +25,7 @@ var require = {
         // External Dependencies
         // ----------------------
         knockout: 'bower_components/knockout/knockout',
+        'knockout-validation': 'bower_components/knockout-validation/knockout.validation',
         css: 'bower_components/require-css/css',
         text: 'bower_components/requirejs-text/text',
         json: 'bower_components/requirejs-json/json',
