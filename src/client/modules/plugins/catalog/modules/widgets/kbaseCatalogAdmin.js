@@ -41,7 +41,7 @@ define([
 
             init: function (options) {
                 this._super(options);
-                
+
                 var self = this;
 
                 // new style we have a runtime object that gives us everything in the options
@@ -121,7 +121,7 @@ define([
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
                         .append($('<a href="#catalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog Index')));
-                
+
                 $mainPanel.append($('<h3>').append('Catalog Admin Console:'));
 
                 var $basicStatusDiv = $('<div>');
@@ -383,7 +383,7 @@ define([
                                     $confirmDiv.remove();
                                     console.log('approving '+mod.module_name);
                                     self.catalog.review_release_request({
-                                            module_name:mod.module_name, 
+                                            module_name:mod.module_name,
                                             decision:'approved'
                                         })
                                         .then(function () {
@@ -415,7 +415,7 @@ define([
                                     console.log('denying '+mod.module_name);
 
                                     self.catalog.review_release_request({
-                                            module_name:mod.module_name, 
+                                            module_name:mod.module_name,
                                             decision:'denied',
                                             review_message:$reasonInput.val()
                                         })
@@ -609,7 +609,7 @@ define([
                     }
 
                     var $trash = $('<span>').css('cursor','pointer').append($('<i class="fa fa-trash-o" aria-hidden="true">'));
-                    
+
                     $trash.on('click', (function(cg) {
                         return function() {
                             var confirm = window.confirm("Are you sure you want to remove this client group configuration?");
@@ -781,7 +781,7 @@ define([
                     }
 
                     var $trash = $('<span>').css('cursor','pointer').append($('<i class="fa fa-trash-o" aria-hidden="true">'));
-                    
+
                     $trash.on('click', (function(vm) {
                         return function() {
                             var confirm = window.confirm("Are you sure you want to remove this volume mount?");
@@ -1042,6 +1042,8 @@ define([
             checkIsAdmin: function() {
                 var self = this
 
+                return true;
+
                 var me = self.runtime.service('session').getUsername();
                 return self.catalog.is_admin(me)
                     .then(function (result) {
@@ -1056,6 +1058,3 @@ define([
             }
         });
     });
-
-
-

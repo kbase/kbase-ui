@@ -41,7 +41,7 @@ define([
 
             init: function (options) {
                 this._super(options);
-                
+
                 var self = this;
 
                 // new style we have a runtime object that gives us everything in the options
@@ -75,9 +75,6 @@ define([
             render: function() {
                 var self = this;
 
-               
-
-
                 // Custom data tables sorting function, that takes a number in an html comment
                 // and sorts numerically by that number
                 $.extend( $.fn.dataTableExt.oSort, {
@@ -92,11 +89,11 @@ define([
                         }
                         return Number(a);
                     },
-                 
+
                     "hidden-number-stats-asc": function( a, b ) {
                         return ((a < b) ? -1 : ((a > b) ? 1 : 0));
                     },
-                 
+
                     "hidden-number-stats-desc": function(a,b) {
                         return ((a < b) ? 1 : ((a > b) ? -1 : 0));
                     }
@@ -252,10 +249,10 @@ define([
                 if(hours>0) {
                     duration = hours + 'h '+ minutes + 'm';
                 } else if (minutes>0) {
-                    duration = minutes + 'm ' + Math.round(seconds) + 's'; 
+                    duration = minutes + 'm ' + Math.round(seconds) + 's';
                 }
                 else {
-                    duration = (Math.round(seconds*100)/100) + 's'; 
+                    duration = (Math.round(seconds*100)/100) + 's';
                 }
                 return duration;
 
@@ -447,6 +444,3 @@ define([
 
         });
     });
-
-
-
