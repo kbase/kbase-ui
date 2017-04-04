@@ -6,20 +6,19 @@
  white: true
  */
 
-
-
 define([
     'jquery',
     'bluebird',
     'kb/service/client/narrativeMethodStore',
     'kb/service/client/catalog',
+    'kb/service/client/narrativeJobService',
     '../catalog_util',
     'datatables',
     'kb_widget/legacy/authenticatedWidget',
     'bootstrap',
     'datatables_bootstrap'
 ],
-    function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil) {
+    function ($, Promise, NarrativeMethodStore, Catalog, NarrativeJobService, CatalogUtil) {
         $.KBWidget({
             name: "KBaseCatalogStats",
             parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
@@ -29,6 +28,7 @@ define([
             // clients to the catalog service and the NarrativeMethodStore
             catalog: null,
             util: null,
+            njs: null,
 
             // main panel and elements
             $mainPanel: null,
@@ -125,21 +125,44 @@ define([
                         "columns": [
                             {sTitle: 'User', data: "user_id"},
                             {sTitle: "App Id", data: "app_id"},
+                            {sTitle: "Job Id", data: "job_id"},
                             {sTitle: "Module", data: "app_module_name"},
                             {sTitle: "Submission Time", data: "creation_time"},
                             {sTitle: "Start Time", data: "exec_start_time"},
                             {sTitle: "End Time", data: "finish_time"},
                             {sTitle: "Run Time", data: "run_time"},
-                            {sTitle: "Result", data: "result"},
+                            {sTitle: "Result", data: "result", className: "job-log"},
                         ],
                         "columnDefs": [
-                            { "type": "hidden-number-stats", targets: [6] }
+                            { "type": "hidden-number-stats", targets: [7] }
                         ],
-                        "data": self.adminRecentRuns
+                        "data": self.adminRecentRuns,
+                        fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                            $('td:eq(8)', nRow).find('.btn').on('click', function(e) {
+                                var row = renderedTable.row(nRow);
+                                if (row.child.isShown()) {
+                                    row.child.hide();
+                                } else {
+                                    row.child(self.renderJobLog(aData.job_id)).show();
+                                }
+                            })
+                        }
                     };
-                    $adminRecentRunsTable.DataTable(adminRecentRunsTblSettings);
+                    var renderedTable = $adminRecentRunsTable.DataTable(adminRecentRunsTblSettings);
                     $adminRecentRunsTable.find('th').css('cursor','pointer');
 
+                    //
+                    // $adminRecentRunsTable.find('tbody').on('click', 'td.job-log', function() {
+                    //     var tr = $(this).closest('tr');
+                    //     var row = renderedTable.row('tr');
+                    //     if (row.child.isShown()) {
+                    //         row.child.hide();
+                    //         tr.removeClass('shown');
+                    //     } else {
+                    //         row.child("i'm a log! job id " + (row.data())['job_id']).show();
+                    //         tr.addClass('shown');
+                    //     }
+                    // })
 
 
                     var adminUserStatsTblSettings = {
@@ -196,15 +219,41 @@ define([
                 $table.find('th').css('cursor','pointer');
 
                 self.$basicStatsDiv.append($container);
-
-
             },
 
+            renderJobLog: function(jobId) {
+                var logLine = function(lineNum, text, isError) {
+                    var $line = $('<div>').addClass('kblog-line');
+                    $line.append($('<div>').addClass('kblog-num-wrapper').append($('<div>').addClass('kblog-line-num').append(lineNum)));
+                    $line.append($('<div>').addClass('kblog-text').append(text));
+                    if (isError) {
+                        $line.addClass('kb-error');
+                    }
+                    return $line;
+                }
+                var $log = $('<div>').addClass('kbcb-log-view').append('loading logs...');
+                this.njs.get_job_logs({job_id: jobId, skip_lines: 0})
+                    .then(function(logs) {
+                        $log.empty();
+                        for (var i=0; i<logs.lines.length; i++) {
+                            $log.append(logLine(i, logs.lines[i].line, logs.lines[i].isError));
+                            // $log.append('<div><span>' + i + '</span><span>' + logs.lines[i].line + '</span></div>');
+                            // $log.append('<div><span class="line-num">' + (i+1) + '</span><span>' + logs.lines[i].line + '</span></div>');
+                        }
+                        console.log(logs);
+                    });
+                return $log;
+            },
 
             setupClients: function() {
+                var token = this.runtime.service('session').getAuthToken();
                 this.catalog = new Catalog(
                     this.runtime.getConfig('services.catalog.url'),
-                    { token: this.runtime.service('session').getAuthToken() }
+                    { token: token }
+                );
+                this.njs = new NarrativeJobService(
+                    this.runtime.getConfig('services.narrative_job_service.url'),
+                    { token: token }
                 );
             },
 
@@ -385,13 +434,14 @@ define([
                             data[k]['exec_start_time']=new Date( data[k]['exec_start_time']*1000).toLocaleString();
                             data[k]['finish_time']=new Date( data[k]['finish_time']*1000).toLocaleString();
                             data[k]['user_id'] = '<a href="#people/'+data[k]['user_id']+'">'+data[k]['user_id']+'</a>'
-                            data[k]['run_time']= '<!--'+rt+'-->'+ self.getNiceDuration(rt);
+                            data[k]['run_time'] = '<!--'+rt+'-->'+ self.getNiceDuration(rt);
 
                             if(data[k]['is_error']) {
                                 data[k]['result'] = '<span class="label label-danger">Error</span>';
                             } else {
                                 data[k]['result'] = '<span class="label label-success">Success</span>';
                             }
+                            data[k]['result'] += '<span class="btn btn-default btn-xs"><i class="fa fa-file-text"></i></span>';
 
                             if(data[k]['app_id']) {
                                 var mod = ''; //data[k]['app_module_name'];
