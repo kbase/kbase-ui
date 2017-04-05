@@ -237,10 +237,7 @@ define([
                         $log.empty();
                         for (var i=0; i<logs.lines.length; i++) {
                             $log.append(logLine(i, logs.lines[i].line, logs.lines[i].isError));
-                            // $log.append('<div><span>' + i + '</span><span>' + logs.lines[i].line + '</span></div>');
-                            // $log.append('<div><span class="line-num">' + (i+1) + '</span><span>' + logs.lines[i].line + '</span></div>');
                         }
-                        console.log(logs);
                     });
                 return $log;
             },
