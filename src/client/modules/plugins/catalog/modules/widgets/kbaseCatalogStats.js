@@ -226,7 +226,7 @@ define([
                     var $line = $('<div>').addClass('kblog-line');
                     $line.append($('<div>').addClass('kblog-num-wrapper').append($('<div>').addClass('kblog-line-num').append(lineNum)));
                     $line.append($('<div>').addClass('kblog-text').append(text));
-                    if (isError) {
+                    if (isError === 1) {
                         $line.addClass('kb-error');
                     }
                     return $line;
@@ -236,7 +236,7 @@ define([
                     .then(function(logs) {
                         $log.empty();
                         for (var i=0; i<logs.lines.length; i++) {
-                            $log.append(logLine(i, logs.lines[i].line, logs.lines[i].isError));
+                            $log.append(logLine(i, logs.lines[i].line, logs.lines[i].is_error));
                         }
                     });
                 return $log;
