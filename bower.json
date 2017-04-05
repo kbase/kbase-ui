@@ -50,7 +50,7 @@
     "highlightjs": "9.2.0",
     "marked": "0.3.6",
     "kb_common": "kbase-common-js#2.4.0",
-    "kb_service": "kbase-service-clients-js#3.1.2",
+    "kb_service": "kbase-service-clients-js#3.2.0",
     "kb_widget": "kbase-ui-widget#1.0.8",
     "kb_common_ts": "kbase-common-ts#0.7.0"
   },

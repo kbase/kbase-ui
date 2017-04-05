@@ -9,9 +9,9 @@
 define([
     'jquery',
     'bluebird',
-    'kb/service/client/narrativeMethodStore',
-    'kb/service/client/catalog',
-    'kb/service/client/narrativeJobService',
+    'kb_service/client/narrativeMethodStore',
+    'kb_service/client/catalog',
+    'kb_service/client/narrativeJobService',
     '../catalog_util',
     'datatables',
     'kb_widget/legacy/authenticatedWidget',
