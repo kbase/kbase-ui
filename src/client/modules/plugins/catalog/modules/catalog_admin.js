@@ -24,9 +24,9 @@ define([
             // the catalog home page is simple the catalog browser
             var div=html.tag('div');
             return div({
-                id: widgetSet.addWidget('catalog_admin_widget', 
+                id: widgetSet.addWidget('catalog_admin_widget',
                     {
-                        jqueryName: 'KBaseCatalogAdmin', 
+                        jqueryName: 'KBaseCatalogAdmin',
                         jquery_name:'KBaseCatalogAdmin'
                     })
             });

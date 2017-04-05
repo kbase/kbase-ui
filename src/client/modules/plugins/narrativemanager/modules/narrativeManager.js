@@ -8,10 +8,11 @@ define([
     'kb/service/client/workspace',
     'kb/service/client/narrativeMethodStore',
     'kb/service/utils',
+    'kb_sdk_clients/genericClient',
     'marked',
     'text!../content/welcome-cell-content.md'
 ],
-    function ($, _, Promise, Handlebars, Workspace, NarrativeMethodStore, serviceUtils, marked, welcomeCellContent) {
+    function ($, _, Promise, Handlebars, Workspace, NarrativeMethodStore, serviceUtils, GenericClient, marked, welcomeCellContent) {
         'use strict';
 
         var KB_CELL = 'kb-cell',
@@ -51,7 +52,14 @@ define([
                 }),
                 narrativeMethodStore = new NarrativeMethodStore(runtime.getConfig('services.narrative_method_store.url'), {
                     token: runtime.service('session').getAuthToken()
-                }), introHtml;
+                }),
+                introHtml,
+                narrativeService = new GenericClient({
+                    module: 'NarrativeService',
+                    url: runtime.config('services.service_wizard.url'),
+                    token: runtime.service('session').getAuthToken(),
+                    version: 'dev'
+                });
 
             // Compile the intro cell html as an object level value.
             // We could promote this to module level, but we need to runtime
@@ -412,54 +420,14 @@ define([
             //});
 
             function createTempNarrative(params) {
-                return Promise.try(function () {
-                    var id = (new Date()).getTime(),
-                        workspaceName = runtime.service('session').getUsername() + ':' + id,
-                        narrativeName = 'Narrative.' + id,
-                        newWorkspaceInfo,
-                        returnData;
-
-                    // 1 - create ws
-                    return workspaceClient.create_workspace({
-                        workspace: workspaceName,
-                        description: ''
-                    })
-                        .then(function (ws_info) {
-                            newWorkspaceInfo = serviceUtils.workspaceInfoToObject(ws_info);
-                            // 2 - create the Narrative object
-                            return fetchNarrativeObjects(workspaceName, params.cells, params.parameters);
-                        })
-                        .spread(function (narrativeObject, metadataExternal) {
-                            // 3 - save the Narrative object
-                            return workspaceClient.save_objects({
-                                workspace: workspaceName,
-                                objects: [{
-                                        type: 'KBaseNarrative.Narrative',
-                                        data: narrativeObject,
-                                        name: narrativeName,
-                                        meta: metadataExternal,
-                                        provenance: [{
-                                                script: 'NarrativeManager.js',
-                                                description: 'Created new ' +
-                                                    'Workspace/Narrative bundle.'
-                                            }],
-                                        hidden: 0
-                                    }]
-                            });
-                        })
-                        .then(function (obj_info_list) {
-                            // NB, there is only one so just use the first element.
-                            var objectInfo = serviceUtils.objectInfoToObject(obj_info_list[0]);
-                            returnData = {
-                                workspaceInfo: newWorkspaceInfo,
-                                narrativeInfo: objectInfo
-                            };
-                            return completeNewNarrative(newWorkspaceInfo.id, objectInfo.id, params.importData);
-                        })
-                        .then(function () {
-                            return returnData;
+                params.includeIntroCell = 1;
+                return narrativeService
+                    .callFunc('create_new_narrative', [params])
+                    .then(function(result) {
+                        return Promise.try(function() {
+                            return result[0];
                         });
-                });
+                    });
             }
 
             return {
