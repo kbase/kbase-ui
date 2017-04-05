@@ -850,18 +850,78 @@ define([
                     self.$secureParams.append($('<div>').css('margin','1em').append('Only Admins can manage secure parameters.'));
                     return;
                 }
+                self.$secureParams.append('<div><b>View or Set Secure Parameters</b></div><br>');
+
+                var $paramViewArea = $('<div>');
 
                 var currentModule = null;
                 var currentVersion = '';
+
                 // Make a select for all modules
-                self.$secureParams.append('<div><b>View or Set Secure Parameters</b></div>');
-                self.$secureParams.append('<div>First, select a module and version</div>');
                 var $moduleSelect = $('<select class="form-control">');
                 self.module_list.forEach(function(module, idx) {
                     $moduleSelect.append('<option value="' + idx + '">' + module.module_name + '</option>');
                 });
 
-                // Make a select for module versions
+                var updateParamViewArea = function() {
+                    $paramViewArea.empty();
+                    self.catalog.get_secure_config_params({
+                        module_name: currentModule,
+                        version: currentVersion
+                    }).then(function(params) {
+                        if (!params || params.length === 0) {
+                            var viewVer = currentVersion;
+                            if (viewVer === '') {
+                                viewVer = 'all';
+                            }
+                            $paramViewArea.append('No secure parameters found for module "' + currentModule + '" with version "' + viewVer + '"');
+                            return;
+                        }
+                        params.sort(function(a, b) {
+                            return a.param_name > b.param_name;
+                        });
+                        var $table = $('<table class="table table-hover table-condensed">').append('<tr><th>Name</th><th>Value</th><th>Delete?</th></tr>');
+                        params.forEach(function(param) {
+                            var val = param.param_value;
+                            if (param.is_password === 1) {
+                                val = '***';
+                            }
+                            var $trow = $('<tr>')
+                                        .append($('<td>').append(param.param_name))
+                                        .append($('<td>').append(val));
+                            var $delButton = $('<button>')
+                                             .addClass('button btn-default btn-xs')
+                                             .append('<i class="fa fa-trash-o">');
+                            $delButton.click(function(e) {
+                                var confirmStr = 'REALLY delete secure parameter "' +
+                                                 param.param_name +
+                                                 '" from module "' +
+                                                 currentModule +
+                                                 '"? This cannot be undone!';
+                                if (confirm(confirmStr)) {
+                                    self.catalog.remove_secure_config_params({
+                                        data: [{
+                                            module_name: currentModule,
+                                            version: currentVersion,
+                                            param_name: param.param_name,
+                                        }]
+                                    }).then(function() {
+                                        updateParamViewArea();
+                                    }).catch(function(error) {
+                                        alert('An error occurred while trying to delete your parameter.');
+                                        console.error(error);
+                                    });
+                                }
+                            });
+                            $trow.append($('<td>').append($delButton));
+                            $table.append($trow);
+                        });
+                        $paramViewArea.append($table);
+                    }).catch(function(error) {
+                        $paramViewArea.append('Error! Unable to retrieve secure parameters.');
+                        console.error(error);
+                    });
+                }
                 var $versionSelect = $('<select class="form-control">');
                 var verOption = function(ver, display) {
                     return '<option value="' + ver + '">' + display + '</option>';
@@ -886,57 +946,18 @@ define([
                             $versionSelect.append(verOption(module.release_version_list[i].git_commit_hash, 'old release - ' + module.release_version_list[i].git_commit_hash));
                         }
                     }
+                    updateParamViewArea();
                 });
                 $moduleSelect.trigger('change');
                 $versionSelect.on('change', function(e) {
                     currentVersion = $versionSelect.val();
+                    updateParamViewArea();
                 });
-
-                self.$secureParams
-                    .append($('<div class="row">')
-                            .append($('<div class="col-md-1"><b>Module</b></div>'))
-                            .append($('<div class="col-md-11">')
-                                    .append($moduleSelect)))
-                    .append($('<div class="row">')
-                            .append($('<div class="col-md-1"><b>Version</b></div>'))
-                            .append($('<div class="col-md-11">')
-                                    .append($versionSelect)));
-
-                // Add button & div to view params
-                var $paramViewDiv = $('<div style="margin-top: 10px">');
-                var $getParamsBtn = $('<button>').addClass('btn btn-default').append('Show Parameters');
-                var $paramViewArea = $('<div>');
-                $paramViewDiv.append($getParamsBtn)
-                             .append($paramViewArea);
-
-                $getParamsBtn.click(function() {
-                    $paramViewArea.empty();
-                    self.catalog.get_secure_config_params({
-                        module_name: currentModule,
-                        version: currentVersion
-                    }).then(function(params) {
-                        if (!params || params.length === 0) {
-                            $paramViewArea.append('no secure parameters found');
-                            return;
-                        }
-                        params.forEach(function(param) {
-                            var p = '<div class="row"><div class="col-md-5"><span class="pull-right">' + param.param_name + '</span></div><div class="col-md-1" style="text-align:center">=</div>';
-                            var val = param.param_value;
-                            if (param.is_password === 1) {
-                                val = '***';
-                            }
-                            p += '<div class="col-md-5"><span class="pull-left">' + val + '</span></div></div>';
-                            $paramViewArea.append(p);
-                        });
-                    }).catch(function(error) {
-                        $paramViewArea.append('Error! Unable to retrieve secure parameters.');
-                        console.error(error);
-                    });
-                });
-                self.$secureParams.append($paramViewDiv);
-
                 var $paramSetDiv = $(
                     '<div class="row" style="margin-top: 10px">' +
+                        '<div class="col-md-1">' +
+                            '<b>Set Parameter</b>' +
+                        '</div>' +
                         '<div class="col-md-1">' +
                             'Password? <input id="pwcheck" type="checkbox" selected>'+
                         '</div>' +
@@ -965,13 +986,26 @@ define([
                             is_password: $paramSetDiv.find('#pwcheck').is(':checked') ? 1 : 0
                         }]
                     }).then(function() {
-                        alert('new secure parameter successfully set');
+                        updateParamViewArea();
                     }).catch(function(error) {
-                        alert('error while setting secure parameter');
+                        alert('An error occurred while setting a secure parameter!');
                         console.error(error);
                     });
                 });
-                self.$secureParams.append($paramSetDiv);
+                self.$secureParams
+                    .append($('<div class="row">')
+                            .append($('<div class="col-md-1"><b>Module</b></div>'))
+                            .append($('<div class="col-md-11">')
+                                    .append($moduleSelect)))
+                    .append($('<div class="row">')
+                            .append($('<div class="col-md-1"><b>Version</b></div>'))
+                            .append($('<div class="col-md-11">')
+                                    .append($versionSelect)))
+                    .append($('<div class="row">')
+                            .append($('<div class="col-md-1"><b>Parameters</b></div>'))
+                            .append($('<div class="col-md-11">')
+                                    .append($paramViewArea)))
+                    .append($paramSetDiv);
             },
 
             getCatalogVersion: function() {
@@ -1179,9 +1213,6 @@ define([
                                     console.error('ERROR');
                                     console.error(err);
                                 });
-
-
-
                     })
                     .catch(function (err) {
                         console.error('ERROR');
