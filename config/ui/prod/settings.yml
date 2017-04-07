@@ -36,13 +36,17 @@ ui:
                             # at the usual endpoints as triggered from the widget
                             # and session service api.
                             name: globus_login 
+                    paths:
+                        login: login
                 auth2:
                     services:
                         session:
                             module: auth2Session
                     widgets:
                         login:
-                            name: auth2_login        
+                            name: auth2_login
+                    paths:
+                        login: auth2/login
         
 # Primarily for output links for the docsite. 
 # TODO: merge with ui.outbound_links?        

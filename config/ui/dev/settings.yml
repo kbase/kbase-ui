@@ -30,6 +30,8 @@ ui:
                     widgets:
                         login:
                             name: globus_login 
+                    paths:
+                        login: login
                 auth2:
                     services:
                         session:
@@ -37,6 +39,8 @@ ui:
                     widgets:
                         login:
                             name: auth2_login
+                    paths:
+                        login: auth2/login
                     
 
 # Primarily for output links for the docsite.
