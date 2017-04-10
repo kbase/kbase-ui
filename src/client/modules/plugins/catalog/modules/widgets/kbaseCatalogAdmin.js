@@ -7,11 +7,11 @@
  */
 define([
     'jquery',
-    'kb/service/client/narrativeMethodStore',
-    'kb/service/client/catalog',
+    'kb_service/client/narrativeMethodStore',
+    'kb_service/client/catalog',
     '../catalog_util',
     'kb_widget/legacy/authenticatedWidget',
-    'bootstrap',
+    'bootstrap'
 ],
     function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
         $.KBWidget({
@@ -41,7 +41,7 @@ define([
 
             init: function (options) {
                 this._super(options);
-                
+
                 var self = this;
 
                 // new style we have a runtime object that gives us everything in the options
@@ -62,6 +62,7 @@ define([
                 self.$moduleList = mainPanelElements[4];
                 self.$clientGroupList = mainPanelElements[5];
                 self.$volumeMountList = mainPanelElements[6];
+                self.$secureParams = mainPanelElements[7];
                 self.$elem.append(self.$mainPanel);
                 self.showLoading();
 
@@ -106,6 +107,7 @@ define([
                 self.renderModuleList();
                 self.renderClientGroupList();
                 self.renderVolumeMountList();
+                self.renderSecureParamsControls();
             },
 
 
@@ -121,7 +123,7 @@ define([
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
                         .append($('<a href="#catalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog Index')));
-                
+
                 $mainPanel.append($('<h3>').append('Catalog Admin Console:'));
 
                 var $basicStatusDiv = $('<div>');
@@ -152,10 +154,21 @@ define([
                 $mainPanel.append($volumeMounts);
                 $mainPanel.append('<br>');
 
+                $mainPanel.append($('<h4>').append('Secure Parameters:'));
+                var $secureParams = $('<div>');
+                $mainPanel.append($secureParams);
+                $mainPanel.append('<br>');
 
                 $mainPanel.append('<br><br>');
 
-                return [$mainPanel, $basicStatusDiv, $pendingReleaseDiv, $approvedDevelopers, $moduleList, $clientGroups, $volumeMounts];
+                return [$mainPanel,
+                        $basicStatusDiv,
+                        $pendingReleaseDiv,
+                        $approvedDevelopers,
+                        $moduleList,
+                        $clientGroups,
+                        $volumeMounts,
+                        $secureParams];
             },
 
             initLoadingPanel: function() {
@@ -383,7 +396,7 @@ define([
                                     $confirmDiv.remove();
                                     console.log('approving '+mod.module_name);
                                     self.catalog.review_release_request({
-                                            module_name:mod.module_name, 
+                                            module_name:mod.module_name,
                                             decision:'approved'
                                         })
                                         .then(function () {
@@ -415,7 +428,7 @@ define([
                                     console.log('denying '+mod.module_name);
 
                                     self.catalog.review_release_request({
-                                            module_name:mod.module_name, 
+                                            module_name:mod.module_name,
                                             decision:'denied',
                                             review_message:$reasonInput.val()
                                         })
@@ -609,7 +622,7 @@ define([
                     }
 
                     var $trash = $('<span>').css('cursor','pointer').append($('<i class="fa fa-trash-o" aria-hidden="true">'));
-                    
+
                     $trash.on('click', (function(cg) {
                         return function() {
                             var confirm = window.confirm("Are you sure you want to remove this client group configuration?");
@@ -781,7 +794,7 @@ define([
                     }
 
                     var $trash = $('<span>').css('cursor','pointer').append($('<i class="fa fa-trash-o" aria-hidden="true">'));
-                    
+
                     $trash.on('click', (function(vm) {
                         return function() {
                             var confirm = window.confirm("Are you sure you want to remove this volume mount?");
@@ -822,10 +835,181 @@ define([
                 $volumeMountList.append($tbl);
             },
 
+            /**
+             * Creates controls for handling secure parameters in each module.
+             * There's two dropdowns - the first is the list of all available modules
+             * (might break into active vs inactive? Or put released first?)
+             * and the second is a list of available versions. 'all' is an option, too.
+             * Once the module and version are selected, there are a couple of options.
+             * 1. Get secure params - this lists the parameters and values (as *** if password)
+             * 2. Set secure param - two inputs, a key and value.
+             */
+            renderSecureParamsControls: function() {
+                var self = this;
+                if (!self.isAdmin) {
+                    self.$secureParams.append($('<div>').css('margin','1em').append('Only Admins can manage secure parameters.'));
+                    return;
+                }
+                self.$secureParams.append('<div><b>View or Set Secure Parameters</b></div><br>');
 
+                var $paramViewArea = $('<div>');
+
+                var currentModule = null;
+                var currentVersion = '';
+
+                // Make a select for all modules
+                var $moduleSelect = $('<select class="form-control">');
+                self.module_list.forEach(function(module, idx) {
+                    $moduleSelect.append('<option value="' + idx + '">' + module.module_name + '</option>');
+                });
+
+                var updateParamViewArea = function() {
+                    $paramViewArea.empty();
+                    self.catalog.get_secure_config_params({
+                        module_name: currentModule,
+                        version: currentVersion
+                    }).then(function(params) {
+                        if (!params || params.length === 0) {
+                            var viewVer = currentVersion;
+                            if (viewVer === '') {
+                                viewVer = 'all';
+                            }
+                            $paramViewArea.append('No secure parameters found for module "' + currentModule + '" with version "' + viewVer + '"');
+                            return;
+                        }
+                        params.sort(function(a, b) {
+                            return a.param_name > b.param_name;
+                        });
+                        var $table = $('<table class="table table-hover table-condensed">').append('<tr><th>Name</th><th>Value</th><th>Delete?</th></tr>');
+                        params.forEach(function(param) {
+                            var val = param.param_value;
+                            if (param.is_password === 1) {
+                                val = '***';
+                            }
+                            var $trow = $('<tr>')
+                                        .append($('<td>').append(param.param_name))
+                                        .append($('<td>').append(val));
+                            var $delButton = $('<button>')
+                                             .addClass('button btn-default btn-xs')
+                                             .append('<i class="fa fa-trash-o">');
+                            $delButton.click(function(e) {
+                                var confirmStr = 'REALLY delete secure parameter "' +
+                                                 param.param_name +
+                                                 '" from module "' +
+                                                 currentModule +
+                                                 '"? This cannot be undone!';
+                                if (confirm(confirmStr)) {
+                                    self.catalog.remove_secure_config_params({
+                                        data: [{
+                                            module_name: currentModule,
+                                            version: currentVersion,
+                                            param_name: param.param_name,
+                                        }]
+                                    }).then(function() {
+                                        updateParamViewArea();
+                                    }).catch(function(error) {
+                                        alert('An error occurred while trying to delete your parameter.');
+                                        console.error(error);
+                                    });
+                                }
+                            });
+                            $trow.append($('<td>').append($delButton));
+                            $table.append($trow);
+                        });
+                        $paramViewArea.append($table);
+                    }).catch(function(error) {
+                        $paramViewArea.append('Error! Unable to retrieve secure parameters.');
+                        console.error(error);
+                    });
+                }
+                var $versionSelect = $('<select class="form-control">');
+                var verOption = function(ver, display) {
+                    return '<option value="' + ver + '">' + display + '</option>';
+                }
+                $moduleSelect.on('change', function(e) {
+                    $versionSelect.empty();
+                    var module = self.module_list[$moduleSelect.val()];
+                    currentModule = module.module_name;
+                    currentVersion = '';
+                    $versionSelect.append(verOption('', 'all'));
+                    if (module.dev) {
+                        $versionSelect.append(verOption(module.dev.git_commit_hash, 'dev - ' + module.dev.git_commit_hash));
+                    }
+                    if (module.beta) {
+                        $versionSelect.append(verOption(module.beta.git_commit_hash, 'beta - ' + module.beta.git_commit_hash));
+                    }
+                    if (module.release) {
+                        $versionSelect.append(verOption(module.release.git_commit_hash, 'release - ' + module.release.git_commit_hash));
+                    }
+                    if (module.release_version_list && module.release_version_list.length > 1) {
+                        for (var i=module.release_version_list.length-2; i>=0; i--) {
+                            $versionSelect.append(verOption(module.release_version_list[i].git_commit_hash, 'old release - ' + module.release_version_list[i].git_commit_hash));
+                        }
+                    }
+                    updateParamViewArea();
+                });
+                $moduleSelect.trigger('change');
+                $versionSelect.on('change', function(e) {
+                    currentVersion = $versionSelect.val();
+                    updateParamViewArea();
+                });
+                var $paramSetDiv = $(
+                    '<div class="row" style="margin-top: 10px">' +
+                        '<div class="col-md-1">' +
+                            '<b>Set Parameter</b>' +
+                        '</div>' +
+                        '<div class="col-md-1">' +
+                            'Password? <input id="pwcheck" type="checkbox" selected>'+
+                        '</div>' +
+                        '<div class="col-md-3">' +
+                            '<input id="spname" class="form-control" type="text" placeholder="param name" style="margin:4px">' +
+                        '</div>' +
+                        '<div class="col-md-3">' +
+                            '<input id="spval" class="form-control" type="text" placeholder="param value" style="margin:4px">' +
+                        '</div>' +
+                        '<div class="col-md-1">' +
+                            '<button id="spsave" class="btn btn-success">Save</button>' +
+                        '</div>' +
+                    '</div>'
+                );
+                $paramSetDiv.find('#pwcheck').on('change', function(e) {
+                    var newType = this.checked ? 'password': 'text';
+                    $paramSetDiv.find('#spval').attr('type', newType);
+                });
+                $paramSetDiv.find('button#spsave').click(function() {
+                    self.catalog.set_secure_config_params({
+                        data: [{
+                            module_name: currentModule,
+                            version: currentVersion,
+                            param_name: $paramSetDiv.find('#spname').val(),
+                            param_value: $paramSetDiv.find('#spval').val(),
+                            is_password: $paramSetDiv.find('#pwcheck').is(':checked') ? 1 : 0
+                        }]
+                    }).then(function() {
+                        updateParamViewArea();
+                    }).catch(function(error) {
+                        alert('An error occurred while setting a secure parameter!');
+                        console.error(error);
+                    });
+                });
+                self.$secureParams
+                    .append($('<div class="row">')
+                            .append($('<div class="col-md-1"><b>Module</b></div>'))
+                            .append($('<div class="col-md-11">')
+                                    .append($moduleSelect)))
+                    .append($('<div class="row">')
+                            .append($('<div class="col-md-1"><b>Version</b></div>'))
+                            .append($('<div class="col-md-11">')
+                                    .append($versionSelect)))
+                    .append($('<div class="row">')
+                            .append($('<div class="col-md-1"><b>Parameters</b></div>'))
+                            .append($('<div class="col-md-11">')
+                                    .append($paramViewArea)))
+                    .append($paramSetDiv);
+            },
 
             getCatalogVersion: function() {
-                var self = this
+                var self = this;
 
                 var moduleSelection = {
                     module_name: self.module_name
@@ -1029,9 +1213,6 @@ define([
                                     console.error('ERROR');
                                     console.error(err);
                                 });
-
-
-
                     })
                     .catch(function (err) {
                         console.error('ERROR');
@@ -1040,7 +1221,7 @@ define([
             },
 
             checkIsAdmin: function() {
-                var self = this
+                var self = this;
 
                 var me = self.runtime.service('session').getUsername();
                 return self.catalog.is_admin(me)
@@ -1056,6 +1237,3 @@ define([
             }
         });
     });
-
-
-

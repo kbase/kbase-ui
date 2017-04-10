@@ -4,8 +4,8 @@ package:
     author: Erik Pearson
     name: narrativemanager
     description: The narrative manager
-    date: August 8, 2015
-    version: 0.0.2
+    date: January 26, 2017
+    version: 0.0.3
 source:
     modules:
         #-
@@ -20,7 +20,7 @@ source:
         #-
         ##    module: kb_narrativeManager_createNewPanel
         #    file: createNewPanel
-            
+
 install:
     widgets:
         -
@@ -37,7 +37,7 @@ install:
             definition:
                 path: narrativemanager/start
                 label: Narrative Interface
-                icon: file 
+                icon: file
     routes:
         -
             path: [narrativemanager, start]
@@ -56,6 +56,5 @@ install:
                 method: {}
                 markdown: {}
                 copydata: {}
-                appparam: {} 
+                appparam: {}
             widget: narrativeManager_createNew
-        

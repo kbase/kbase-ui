@@ -32,7 +32,6 @@ define([
                     }
                     runtime.send('app', 'navigate', {
                         path: runtime.feature('auth', 'paths.login'),
-                        // path: 'auth/login',
                         // TODO: path needs to be the path + params
                         params: loginParams
                     });
@@ -49,24 +48,13 @@ define([
             } else if (handler.route.handler) {
                 runtime.send('app', 'route-handler', route);
             }
-            //runtime.send('app', 'new-route', {
-            //    routeHandler: handler
-            //});
         }
 
         function installRoute(route) {
             return Promise.try(function() {
                 if (route.widget) {
-                    // ADD ROUTE WIDGET HERE...
                     router.addRoute(route);
                     return true;
-                    //                    router.addRoute({
-                    //                        path: route.path,
-                    //                        queryParams: route.queryParams,
-                    //                        config: {
-                    //                        },
-                    //                        widget: route.widget
-                    //                    });
                 } else if (route.redirectHandler) {
                     router.addRoute(route);
                     return true;

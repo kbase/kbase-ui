@@ -70,7 +70,7 @@ define([
                     });
             });
         }
-        
+
         function wrapPanel(content) {
             var div = html.tag('div');
             return div({class: 'container-fluid'}, [
@@ -83,7 +83,7 @@ define([
         }
 
 
-        
+
         // API
 
         function attach(node) {
