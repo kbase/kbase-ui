@@ -13,4 +13,4 @@ server:
     port: 8080
 features:
     auth:
-        selected: auth2
+        selected: auth1

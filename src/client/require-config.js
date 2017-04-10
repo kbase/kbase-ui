@@ -14,7 +14,7 @@ switch (build.deployType) {
         buildKey = build.gitCommitHash;
         break;
     default:
-        throw new Error('Unsupported deploy type: ' + build.deployType);        
+        throw new Error('Unsupported deploy type: ' + build.deployType);
 }
 var require = {
     baseUrl: '/modules',
@@ -25,7 +25,10 @@ var require = {
         // External Dependencies
         // ----------------------
         knockout: 'bower_components/knockout/knockout',
+        'knockout-plus': 'lib/knockout-plus',
+        'knockout-arraytransforms': 'bower_components/knockout-arraytransforms/knockout-arraytransforms',
         'knockout-validation': 'bower_components/knockout-validation/knockout.validation',
+        'knockout-mapping': 'bower_components/bower-knockout-mapping/knockout.mapping',
         css: 'bower_components/require-css/css',
         text: 'bower_components/requirejs-text/text',
         json: 'bower_components/requirejs-json/json',

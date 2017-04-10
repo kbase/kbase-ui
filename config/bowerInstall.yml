@@ -19,9 +19,19 @@ bowerFiles:
         src: knockout.js
         bowerComponent: true
     -
+        name: knockout-arraytransforms
+        cwd: dist
+        src: knockout-arraytransforms.js
+        bowerComponent: true
+    -
         name: knockout-validation
         cwd: dist
         src: knockout.validation.js
+        bowerComponent: true
+    -
+        name: bower-knockout-mapping
+        cwd: dist
+        src: knockout.mapping.js
         bowerComponent: true
     -
         name: bootstrap

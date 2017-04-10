@@ -1,3 +1,10 @@
+deploy:
+    id: 
+    target: 
+    environment: 
+    hostname: 
+    icon: 
+    name:
 # Settings in support of the user interface
 ui:
     images:
@@ -19,17 +26,36 @@ ui:
         status_page: http://kbase.us/internal/status
         submit_jira_ticket: https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%20version
         update_profile: https://gologin.kbase.us/account/UpdateProfile
-    
+    backupCookie:
+      domain: null
+      enabled: false
+    services:
+        analytics:
+            cookie:
+                name: kbase_client_id
+                # approx 2 years
+                maxAge: 63072000
+            google:
+                code:
     features:
-        auth:        
+        auth:
+            selected: null
             available:
                 auth1:
                     services:
                         session:
-                            module: session 
+                            # note this is the actual js service module to associate
+                            # with the "session" ui service
+                            module: session                         
                     widgets:
                         login:
+                            # however, this is the widget id as established in the
+                            # plugin which provides the auth interface (login, logout)
+                            # at the usual endpoints as triggered from the widget
+                            # and session service api.
                             name: globus_login 
+                    paths:
+                        login: login
                 auth2:
                     services:
                         session:
@@ -37,10 +63,10 @@ ui:
                     widgets:
                         login:
                             name: auth2_login
-                    
-
-# Primarily for output links for the docsite.
-# TODO: merge with ui.outbound_links?
+                    paths:
+                        login: auth2/login           
+# Primarily for output links for the docsite. 
+# TODO: merge with ui.outbound_links?        
 docsite:
     base_url: http://kbase.us
     host: kbase.us
@@ -48,12 +74,3 @@ docsite:
         about: /what-is-kbase
         contact: /contact-us
         browser_support: /supported-browsers
-menus:
-    authenticated:
-        main: [narrative, appcatalog, search, dashboard, bulk-ui]
-        developer: [sdkclientstest, databrowser, typebrowser, jobbrowser, shockbrowser, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
-        help: [about, about-services, contact-kbase, about-kbase, help]
-    unauthenticated:
-        main: [appcatalog, search]
-        developer: []
-        help: [contact-kbase, about-kbase, help]

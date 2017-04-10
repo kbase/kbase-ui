@@ -11,3 +11,6 @@ bower:
 debug: false
 server:
     port: 8080
+features:
+    auth:
+        selected: auth1

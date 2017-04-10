@@ -158,16 +158,16 @@ modules:
         version: 1.0.8
         source:
             bower: {}
-    -
-        globalName: kbase-common-js
-        version: 1.10.0
-        source:
-            bower: {}
-    -
-        globalName: kbase-service-clients-js
-        version: 1.10.0
-        source:
-            bower: {}
+    # -
+    #     globalName: kbase-common-js
+    #     version: 1.10.0
+    #     source:
+    #         bower: {}
+    # -
+    #     globalName: kbase-service-clients-js
+    #     version: 1.10.0
+    #     source:
+    #         bower: {}
     -
         globalName: kbase-sdk-clients-js
         version: 0.4.0
