@@ -8,7 +8,8 @@ define([
     'bootstrap',
     'css!font_awesome',
     'css!app/styles/kb-bootstrap',
-    'css!app/styles/kb-ui'
+    'css!app/styles/kb-ui',
+    'domReady'
 ], function($, Promise, html) {
     'use strict';
     var t = html.tag,
