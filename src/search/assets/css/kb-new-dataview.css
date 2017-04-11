@@ -42,7 +42,8 @@
 .kb-narr-side-panel .kb-title {
     padding: 10px 5px;
     font-size: 14pt;
-    font-family: "OxygenBold", Arial, sans-serif;
+    font-family: "Oxygen", Arial, sans-serif;
+    font-weight: bold;
     text-transform: uppercase;
     color: #2e618d;
     /*border-bottom: 1px solid #CECECE;*/
@@ -292,7 +293,7 @@
 .kb-method-parameter-error-mssg {
    padding:5px;
    text-align:center;
-   font-family: 'OxygenBold', sans-serif;
+   font-family: 'Oxygen', sans-serif;
    font-weight: bold;
    font-size: 9pt;
    color:#F44336;
@@ -301,7 +302,8 @@
 
 /* not sure how to get text in these divs to valign middle... */
 .kb-method-parameter-name {
-   font-family: 'OxygenBold', sans-serif;
+   font-family: 'Oxygen', sans-serif;
+   font-weight: bold;
    color:#777;
    text-align:right;
    vertical-align:middle;
@@ -350,7 +352,8 @@
 
 
 .kb-method-advanced-options-controller-inactive {
-   font-family: 'OxygenBold', sans-serif;
+   font-family: 'Oxygen', sans-serif;
+   font-weight: bold;
    font-style: italic;
    font-size: 10pt;
    line-height: 14px;
@@ -358,9 +361,10 @@
    text-align: center;
 }
 .kb-method-advanced-options-controller {
-   font-family: 'OxygenBold', sans-serif;
-   cursor:pointer;
+   font-family: 'Oxygen', sans-serif;
+   font-weight: bold;
    font-style: italic;
+   cursor: pointer;
    font-size: 10pt;
    line-height: 14px;
    color: #0088cc;
@@ -426,7 +430,8 @@
    margin:10px;
 }
 .kb-app-step-error-heading {
-   font-family: 'OxygenBold', sans-serif;
+   font-family: 'Oxygen', sans-serif;
+   font-weight: bold;
    font-size: 13pt;
    line-height: 14px;
    color: #555;
@@ -435,7 +440,8 @@
    margin-top:20px;
 }
 .kb-app-step-error-main-heading {
-   font-family: 'OxygenBold', sans-serif;
+   font-family: 'Oxygen', sans-serif;
+   font-weight: bold;
    font-size: 16pt;
    line-height: 18px;
    color:#555;
@@ -927,12 +933,12 @@ button.kb-method-run:hover {
 }
 
 .kb-nar-manager-titles {
-    font-family: 'OxygenBold';
+    font-family: 'Oxygen';
+    font-weight: bold;
     color:  #777;
     margin: 10px;
     margin-top: 20px;
     font-size: 14pt;
-    font-weight: bold;
 }
 
 

@@ -1,5 +1,5 @@
 @font-face {
-    font-family: 'OxygenRegular';
+    font-family: 'Oxygen';
     src: url('fonts/Oxygen-webfont.eot');
     src: url('fonts/Oxygen-webfont.eot?#iefix') format('embedded-opentype'),
 	 url('fonts/Oxygen-webfont.woff') format('woff'),
@@ -10,40 +10,40 @@
 }
 
 @font-face {
-    font-family: 'OxygenItalic';
+    font-family: 'Oxygen';
     src: url('fonts/Oxygen-Italic-webfont.eot');
     src: url('fonts/Oxygen-Italic-webfont.eot?#iefix') format('embedded-opentype'),
 	 url('fonts/Oxygen-Italic-webfont.woff') format('woff'),
 	 url('fonts/Oxygen-Italic-webfont.ttf') format('truetype'),
 	 url('fonts/Oxygen-Italic-webfont.svg#OxygenItalic') format('svg');
     font-weight: normal;
-    font-style: normal;
+    font-style: italic;
 }
 
 @font-face {
-    font-family: 'OxygenBold';
+    font-family: 'Oxygen';
     src: url('fonts/Oxygen-Bold-webfont.eot');
     src: url('fonts/Oxygen-Bold-webfont.eot?#iefix') format('embedded-opentype'),
 	 url('fonts/Oxygen-Bold-webfont.woff') format('woff'),
 	 url('fonts/Oxygen-Bold-webfont.ttf') format('truetype'),
 	 url('fonts/Oxygen-Bold-webfont.svg#OxygenBold') format('svg');
-    font-weight: normal;
+    font-weight: bold;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'OxygenBoldItalic';
+    font-family: 'Oxygen';
     src: url('fonts/Oxygen-BoldItalic-webfont.eot');
     src: url('fonts/Oxygen-BoldItalic-webfont.eot?#iefix') format('embedded-opentype'),
 	 url('fonts/Oxygen-BoldItalic-webfont.woff') format('woff'),
 	 url('fonts/Oxygen-BoldItalic-webfont.ttf') format('truetype'),
 	 url('fonts/Oxygen-BoldItalic-webfont.svg#OxygenBoldItalic') format('svg');
-    font-weight: normal;
-    font-style: normal;
+    font-weight: bold;
+    font-style: italic;
 }
 
 @font-face {
-    font-family: 'OxygenMonoRegular';
+    font-family: 'OxygenMono';
     src: url('fonts/OxygenMono-Regular-webfont.eot');
     src: url('fonts/OxygenMono-Regular-webfont.eot?#iefix') format('embedded-opentype'),
 	 url('fonts/OxygenMono-Regular-webfont.woff') format('woff'),
@@ -89,21 +89,14 @@
     body{font-size: 10px;}
 }*/
 .kbase-ui strong, .kbase-ui b {
-    font-family: 'OxygenBold';
-    font-weight: normal;
     }
 .kbase-ui em,  i {
-    font-family: 'OxygenItalic';
-    font-style: normal;
     }
 strong em, em strong, b i, i b{
-    font-family: 'OxygenBoldItalic';
-    font-style: normal;
-    font-weight: normal;
     }
 
 body.kbase-ui  {
-    font-family: 'OxygenRegular', Arial, sans-serif;
+    font-family: 'Oxygen', Arial, sans-serif;
     color: #333333;
 }
 
@@ -436,7 +429,7 @@ div::-webkit-scrollbar-thumb {
 
 #sortable-landing .panel-subtitle {
     color: #888;
-    font-family: 'OxygenBold', Arial, sans-serif;
+    font-family: 'Oxygen', Arial, sans-serif;
 }
 
 .main #sortable-landing .panel-subtitle {
@@ -446,8 +439,7 @@ div::-webkit-scrollbar-thumb {
 
 
 #sortable-landing th {
-    font-family: 'OxygenBold', Arial, sans-serif; 
-    font-weight: normal;
+    font-family: 'Oxygen', Arial, sans-serif; 
 }
 
 .main #sortable-landing th {
@@ -456,7 +448,8 @@ div::-webkit-scrollbar-thumb {
 }
 .panel-title {
     /*color: #0072AF;*/
-    font-family: 'OxygenBold', Arial, sans-serif;
+    font-family: 'Oxygen', Arial, sans-serif;
+    font-weight: bold;
 }
 
 .obj-table-header-title {
@@ -760,7 +753,8 @@ div::-webkit-scrollbar-thumb {
     padding-left: 20px;
     padding-right: 20px;
     border: 1px solid #428bca;
-    font-family: OxygenBold;
+    font-family: Oxygen;
+    font-weight: bold;
     font-size: 14px;
 }
 

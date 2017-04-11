@@ -48,7 +48,7 @@ plugins:
     -
         name: dashboard
         globalName: kbase-ui-plugin-dashboard
-        version: 2.0.4
+        version: 2.0.5
         cwd: src/plugin
         source:
             bower: {}
@@ -85,13 +85,6 @@ plugins:
         name: data-landing-pages
         globalName: kbase-ui-plugin-data-landing-pages
         version: 0.7.1
-        cwd: src/plugin
-        source:
-            bower: {}
-    -
-        name: data-api-demo
-        globalName: kbase-ui-plugin-data-api-demo
-        version: 0.2.3
         cwd: src/plugin
         source:
             bower: {}
@@ -144,6 +137,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: auth2-client
+        globalName: kbase-ui-plugin-auth2-client
+        version: 0.5.0
+        cwd: src/plugin
+        source:
+            bower: {}
 
 
 # Copy these directories into the modules
@@ -166,11 +166,6 @@ modules:
     -
         globalName: kbase-service-clients-js
         version: 1.10.0
-        source:
-            bower: {}
-    -
-        globalName: kbase-data-api-client-js
-        version: 1.0.6-alpha
         source:
             bower: {}
     -

@@ -4,7 +4,7 @@ define([
     'kb_common/dom',
     'kb_common/html',
     'kb_widget/widgetSet'
-], function (Promise, $, DOM, html, WidgetSet) {
+], function(Promise, $, DOM, html, WidgetSet) {
     'use strict';
 
     // favorites callback should accept:
@@ -16,7 +16,7 @@ define([
     //      ...
     //     
     //function FunctionCard(type, info, tag, nms_base_url, favoritesCallback, favoritesCallbackParams, isLoggedIn) {
-    
+
 
     function FunctionCard(info, isLoggedIn) {
 
@@ -31,13 +31,13 @@ define([
         //this.favoritesCallbackParams = favoritesCallbackParams;
 
         this.show = function() {
-            for(var k=0; k<this.$divs.length; k++) {
+            for (var k = 0; k < this.$divs.length; k++) {
                 this.$divs[k].show();
             }
         };
 
         this.hide = function() {
-            for(var k=0; k<this.$divs.length; k++) {
+            for (var k = 0; k < this.$divs.length; k++) {
                 this.$divs[k].hide();
             }
         };
@@ -45,12 +45,12 @@ define([
         /* get a new card that can be added to a DOM element */
         this.getNewCardDiv = function() {
             this.cardsAdded += 1;
-            if(this.$divs.length<this.cardsAdded) {
+            if (this.$divs.length < this.cardsAdded) {
                 var $newCard = this._renderFunctionCard();
                 this.$divs.push($newCard);
                 return $newCard;
             } else {
-                return this.$divs[this.cardsAdded-1];
+                return this.$divs[this.cardsAdded - 1];
             }
 
         };
@@ -62,11 +62,11 @@ define([
 
         this.clearCardsFromMemory = function() {
             this.cardsAdded = 0;
-            this.$divs=0;
+            this.$divs = 0;
         };
 
 
-////////// COMMENT OUT FAVORITE SUPPORT, NOT AVAILABLE YET FOR LOCAL FUNCTIONS
+        ////////// COMMENT OUT FAVORITE SUPPORT, NOT AVAILABLE YET FOR LOCAL FUNCTIONS
         // this.starCount = null;
         // this.onStar = false;
         // this.deactivatedStar = false;
@@ -124,24 +124,28 @@ define([
         //         }
         //     }
         // };
-//////////
+        //////////
 
         this.runCount = null;
 
         this.setRunCount = function(runs) {
             this.runCount = runs;
-            if(this.runCount) {
-                for(var k=0; k<this.$divs.length; k++) {
+            if (this.runCount) {
+                for (var k = 0; k < this.$divs.length; k++) {
                     this.$divs[k].find('.kbcb-runs').empty()
                         .append('<i class="fa fa-share"></i>')
                         .append($('<span>').addClass('kbcb-run-count').append(this.runCount))
-                        .tooltip({title:'Ran '+this.runCount+' times.', placement:'bottom',container:'body',
-                                        delay:{show: 400, hide: 40}});;
+                        .tooltip({
+                            title: 'Ran ' + this.runCount + ' times.',
+                            placement: 'bottom',
+                            container: 'body',
+                            delay: { show: 400, hide: 40 }
+                        });;
                 }
             }
         };
         this.getRunCount = function() {
-            if(this.runCount) return this.runCount;
+            if (this.runCount) return this.runCount;
             return 0;
         }
 
@@ -149,48 +153,47 @@ define([
         this._renderFunctionCard = function() {
 
             var info = this.info;
-            console.log(info)
 
             // Main Container
             var $appDiv = $('<div>').addClass('kbcb-app-card kbcb-hover container');
 
             // HEADER - contains logo, title, module link, authors
-            var $topDiv = $('<div>').addClass('row kbcb-app-card-header').css({'padding-left':'10px'});
-            
+            var $topDiv = $('<div>').addClass('row kbcb-app-card-header').css({ 'padding-left': '10px' });
+
             var $titleSpan = $('<div>').addClass('col-xs-12 kbcb-app-card-title-panel');
-                
+
             $titleSpan.append($('<div>').addClass('kbcb-app-card-title').append(info.name));
 
-            $titleSpan.append($('<div>').addClass('kbcb-function-prototype-title').css({'margin':'4px'})
-                .append('funcdef <span style="font-weight:bold">'+info.function_id+'</span>(...)'));
+            $titleSpan.append($('<div>').addClass('kbcb-function-prototype-title').css({ 'margin': '4px' })
+                .append('funcdef <span style="font-weight:bold">' + info.function_id + '</span>(...)'));
 
-            $titleSpan.append($('<div>').addClass('kbcb-app-card-module').css({'padding-top':'4px'}).append(
-                                    $('<a href="#catalog/modules/'+info.module_name+'">')
-                                        .append(info.module_name)
-                                        .on('click',function(event) {
-                                            // have to stop propagation so we don't go to the app page first
-                                            event.stopPropagation();
-                                        }))
-                                    .append(' v'+info.version)
-                            );
+            $titleSpan.append($('<div>').addClass('kbcb-app-card-module').css({ 'padding-top': '4px' }).append(
+                    $('<a href="#catalog/modules/' + info.module_name + '">')
+                    .append(info.module_name)
+                    .on('click', function(event) {
+                        // have to stop propagation so we don't go to the app page first
+                        event.stopPropagation();
+                    }))
+                .append(' v' + info.version)
+            );
 
-            
-            if(info.authors.length>0) {
+
+            if (info.authors.length > 0) {
                 var $authorDiv = $('<div>').addClass('kbcb-app-card-authors').append('by ');
-                for(var k=0; k<info.authors.length; k++) {
-                    if(k>=1) {
+                for (var k = 0; k < info.authors.length; k++) {
+                    if (k >= 1) {
                         $authorDiv.append(', ');
                     }
-                    if(k>=2) {
-                        $authorDiv.append(' +'+(info.authors.length-2)+' more');
+                    if (k >= 2) {
+                        $authorDiv.append(' +' + (info.authors.length - 2) + ' more');
                         break;
                     }
-                    $authorDiv.append($('<a href="#people/'+info.authors[k]+'">')
-                                            .append(info.authors[k])
-                                            .on('click',function(event) {
-                                                // have to stop propagation so we don't go to the app page first
-                                                event.stopPropagation();
-                                            }));
+                    $authorDiv.append($('<a href="#people/' + info.authors[k] + '">')
+                        .append(info.authors[k])
+                        .on('click', function(event) {
+                            // have to stop propagation so we don't go to the app page first
+                            event.stopPropagation();
+                        }));
                 }
                 $titleSpan.append($authorDiv);
             }
@@ -209,7 +212,7 @@ define([
 
 
             /* FAVORITES - not yet implemented for functions */
-            $footer.append($('<div>').addClass('col-xs-3').css('text-align','left'));
+            $footer.append($('<div>').addClass('col-xs-3').css('text-align', 'left'));
 
 
             /* RUN COUNT - not yet implemented for functions
@@ -227,37 +230,49 @@ define([
             } else {
                 $footer.append($('<div>').addClass('col-xs-3'))
             }*/
-            $footer.append($('<div>').addClass('col-xs-3').css('text-align','left'));
+            $footer.append($('<div>').addClass('col-xs-3').css('text-align', 'left'));
 
             // add release tag information
-            var $releaseTagsDiv = $('<div>').addClass('col-xs-4').css('text-align','left');
+            var $releaseTagsDiv = $('<div>').addClass('col-xs-4').css('text-align', 'left');
             $footer.append($releaseTagsDiv);
 
-            for(var r=0; r<info.release_tag.length; r++) {
+            for (var r = 0; r < info.release_tag.length; r++) {
                 var rts = info.release_tag;
-                for(var r=0; r<rts.length; r++) {
-                    if(rts[r]==='release') {
-                        $releaseTagsDiv.append($('<span>').addClass('label label-primary').css({'padding':'.3em .6em .3em'})
-                                                        .append('R')
-                                                        .tooltip({title:'Tagged as the latest released version.', placement:'bottom', container:'body',
-                                                                    delay:{show: 400, hide: 40}}));
+                for (var r = 0; r < rts.length; r++) {
+                    if (rts[r] === 'release') {
+                        $releaseTagsDiv.append($('<span>').addClass('label label-primary').css({ 'padding': '.3em .6em .3em' })
+                            .append('R')
+                            .tooltip({
+                                title: 'Tagged as the latest released version.',
+                                placement: 'bottom',
+                                container: 'body',
+                                delay: { show: 400, hide: 40 }
+                            }));
                     }
-                    if(rts[r]==='beta') {
-                        $releaseTagsDiv.append($('<span>').addClass('label label-info').css({'padding':'.3em .6em .3em'})
-                                                        .append('B')
-                                                        .tooltip({title:'Tagged as the current beta version.', placement:'bottom', container:'body',
-                                                                    delay:{show: 400, hide: 40}}));
+                    if (rts[r] === 'beta') {
+                        $releaseTagsDiv.append($('<span>').addClass('label label-info').css({ 'padding': '.3em .6em .3em' })
+                            .append('B')
+                            .tooltip({
+                                title: 'Tagged as the current beta version.',
+                                placement: 'bottom',
+                                container: 'body',
+                                delay: { show: 400, hide: 40 }
+                            }));
                     }
-                    if(rts[r]==='dev') {
-                        $releaseTagsDiv.append($('<span>').addClass('label label-default').css({'padding':'.3em .6em .3em'})
-                                                        .append('D')
-                                                        .tooltip({title:'Tagged as the current development version.', placement:'bottom', container:'body',
-                                                                    delay:{show: 400, hide: 40}}));
+                    if (rts[r] === 'dev') {
+                        $releaseTagsDiv.append($('<span>').addClass('label label-default').css({ 'padding': '.3em .6em .3em' })
+                            .append('D')
+                            .tooltip({
+                                title: 'Tagged as the current development version.',
+                                placement: 'bottom',
+                                container: 'body',
+                                delay: { show: 400, hide: 40 }
+                            }));
                     }
                 }
             }
 
-            var $moreInfoDiv = $('<div>').addClass('col-xs-1').addClass('kbcb-info').css('text-align','right');
+            var $moreInfoDiv = $('<div>').addClass('col-xs-1').addClass('kbcb-info').css('text-align', 'right');
             $moreInfoDiv
                 .on('mouseenter', function() {
                     $topDiv.hide();
@@ -273,10 +288,10 @@ define([
 
 
             $appDiv.on('click', function() {
-                if(info.git_commit_hash) {
-                    window.location.href = '#catalog/functions/'+info.module_name + '/' + info.function_id + '/' +info.git_commit_hash;
+                if (info.git_commit_hash) {
+                    window.location.href = '#catalog/functions/' + info.module_name + '/' + info.function_id + '/' + info.git_commit_hash;
                 } else {
-                    window.location.href = '#catalog/functions/'+info.module_name + '/' + info.function_id;
+                    window.location.href = '#catalog/functions/' + info.module_name + '/' + info.function_id;
                 }
             });
 
@@ -284,9 +299,6 @@ define([
             var $appCardContainer = $('<div>').addClass('kbcb-app-card-container');
             return $appCardContainer.append($appDiv);
         };
-
-
-
     }
 
     return FunctionCard;

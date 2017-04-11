@@ -1,11 +1,31 @@
+// For dev this should be set at app load time or manually set
+// if the cache seems to be sticky (it may not be nessary to ALWAYS
+// bust the cache.)
+// For production we should use the commit hash or
+// semver
+var build = window.__kbase__build__;
+var buildKey;
+switch (build.deployType) {
+    case 'dev':
+        // buildKey = new Date().getTime();
+        buildKey = new Date().getTime();
+        break;
+    case 'prod':
+        buildKey = build.gitCommitHash;
+        break;
+    default:
+        throw new Error('Unsupported deploy type: ' + build.deployType);        
+}
 var require = {
     baseUrl: '/modules',
+    urlArgs: "cb=" + buildKey,
     catchError: true,
     waitSeconds: 60,
     paths: {
         // External Dependencies
         // ----------------------
         knockout: 'bower_components/knockout/knockout',
+        'knockout-validation': 'bower_components/knockout-validation/knockout.validation',
         css: 'bower_components/require-css/css',
         text: 'bower_components/requirejs-text/text',
         json: 'bower_components/requirejs-json/json',

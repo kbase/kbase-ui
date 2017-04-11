@@ -49,6 +49,7 @@ define([
                         height: '100%',
                         verticalAlign: 'top'
                     },
+                    loginWidget =  runtime.feature('auth', 'widgets.login.name'),
                 content = div({style: {position: 'relative', height: '100%'}, class: 'kb-widget-mainWindow'}, [
                     div({style: cellStyle, id: widgetSet.addWidget('menu')}),
                     div({style: cellStyle, id: widgetSet.addWidget('logo')}),
@@ -56,7 +57,7 @@ define([
                     div({style: {position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top'}}, [
                         div({style: cellStyle, id: widgetSet.addWidget('buttonbar')}),
                         div({style: {borderLeft: '0px #EEE solid', borderRight: '0px #EEE solid', padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top', width: '100px'}, id: widgetSet.addWidget('notification')}),
-                        div({style: cellStyle, class: 'navbar-right', id: widgetSet.addWidget('login')})
+                        div({style: cellStyle, class: 'navbar-right', id: widgetSet.addWidget(loginWidget)})
                     ])
                 ]);
                 return content;

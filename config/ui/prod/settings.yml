@@ -19,6 +19,34 @@ ui:
         status_page: http://kbase.us/internal/status
         submit_jira_ticket: https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%20version
         update_profile: https://gologin.kbase.us/account/UpdateProfile
+
+    features:
+        auth:        
+            available:
+                auth1:
+                    services:
+                        session:
+                            # note this is the actual js service module to associate
+                            # with the "session" ui service
+                            module: session 
+                    widgets:
+                        login:
+                            # however, this is the widget id as established in the
+                            # plugin which provides the auth interface (login, logout)
+                            # at the usual endpoints as triggered from the widget
+                            # and session service api.
+                            name: globus_login 
+                    paths:
+                        login: login
+                auth2:
+                    services:
+                        session:
+                            module: auth2Session
+                    widgets:
+                        login:
+                            name: auth2_login
+                    paths:
+                        login: auth2/login
         
 # Primarily for output links for the docsite. 
 # TODO: merge with ui.outbound_links?        

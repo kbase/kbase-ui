@@ -5,7 +5,7 @@ language: node_js
 # node_js support. E.g. at the moment the docs say 4.2 is the latest on the 4.X 
 # branch, but it is actually 4.4
 node_js:
-  - "4.4"
+  - "6.9"
   
 #cache:
 #  directories:
