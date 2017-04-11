@@ -7,21 +7,21 @@
  todo: true
  */
 define([
-    'nunjucks',
-    'jquery',
-    'bluebird',
-    'kb_common/utils',
-    'kb_common/html',
-    'kb/service/userProfile',
-    'kb_plugin_userprofile'
-],
-    function (nunjucks, $, Promise, Utils, html, UserProfile, Plugin) {
+        'nunjucks',
+        'jquery',
+        'bluebird',
+        'kb_common/utils',
+        'kb_common/html',
+        'kb/service/userProfile',
+        'kb_plugin_userprofile'
+    ],
+    function(nunjucks, $, Promise, Utils, html, UserProfile, Plugin) {
         "use strict";
         var SocialWidget = Object.create({}, {
             // The init function interfaces this object with the caller, and sets up any 
             // constants and constant state.
             SocialWidget_init: {
-                value: function (cfg) {
+                value: function(cfg) {
                     this.generatedId = 0;
 
                     // First we get the global config.
@@ -112,7 +112,7 @@ define([
 
                     var loaders = [
                         new nunjucks.WebLoader(Plugin.plugin.fullPath + '/' + this.widgetName + '/templates', true),
-                            //new nunjucks.WebLoader(Plugin.plugin.path + '/UserProfileBase/templates', true)
+                        //new nunjucks.WebLoader(Plugin.plugin.path + '/UserProfileBase/templates', true)
                     ];
                     this.templates.env = new nunjucks.Environment(loaders, {
                         'autoescape': false
@@ -124,18 +124,18 @@ define([
                     //});
                     // create a gravatar-url out of an email address and a 
                     // default option.
-                    this.templates.env.addFilter('gravatar', function (email, size, rating, gdefault) {
+                    this.templates.env.addFilter('gravatar', function(email, size, rating, gdefault) {
                         // TODO: http/https.
                         return UserProfile.makeGravatarURL(email, size, rating, gdefault);
                     }.bind(this));
-                    this.templates.env.addFilter('kbmarkup', function (s) {
+                    this.templates.env.addFilter('kbmarkup', function(s) {
                         s = s.replace(/\n/g, '<br>');
                         return s;
                     });
-                    this.templates.env.addFilter('avatarBackgroundColor', function (color) {
+                    this.templates.env.addFilter('avatarBackgroundColor', function(color) {
                         return this.listMaps['avatarColor'][color].color;
                     }.bind(this));
-                    this.templates.env.addFilter('avatarTextColor', function (color) {
+                    this.templates.env.addFilter('avatarTextColor', function(color) {
                         return this.listMaps['avatarColor'][color].textColor;
                     }.bind(this));
                     // this is the cache of templates.
@@ -150,7 +150,7 @@ define([
                         docsite: this.runtime.getConfig('resources.docSite.base.url'),
                         root: Plugin.plugin.path,
                         pluginPath: Plugin.plugin.fullPath,
-                        getConfig: function (prop) {
+                        getConfig: function(prop) {
                             return this.runtime.getConfig(prop);
                         }.bind(this)
                     };
@@ -163,13 +163,13 @@ define([
                     // Set up listeners for any kbase events we are interested in:
                     // NB: following tradition, the auth listeners are namespaced for kbase; the events
                     // are not actually emitted in the kbase namespace.
-                    this.runtime.recv('session', 'login.success', function (data) {
+                    this.runtime.recv('session', 'login.success', function(data) {
                         if (this.onLoggedIn) {
                             this.onLoggedIn(data.session);
                         }
                     }.bind(this));
 
-                    this.runtime.recv('session', 'logout.success', function () {
+                    this.runtime.recv('session', 'logout.success', function() {
                         if (this.onLoggedOut) {
                             this.onLoggedOut();
                         }
@@ -179,7 +179,7 @@ define([
                 }
             },
             setupConfig: {
-                value: function () {
+                value: function() {
 
                     this.configs = [{}, this.initConfig, this.localConfig];
 
@@ -199,7 +199,7 @@ define([
                 }
             },
             setupCoreApp: {
-                value: function () {
+                value: function() {
                     // Should be run after configuration changes.
                     // May touch parts of the widget object, so care should be taken
                     // to syncronize or just plain rebuild.
@@ -222,14 +222,14 @@ define([
                 }
             },
             setupAuth: {
-                value: function () {
+                value: function() {
                     // R.refreshSession();
                 }
             },
             // LIFECYCLE
 
             start: {
-                value: function () {
+                value: function() {
                     // This creates the initial UI -- loads the css, inserts layout html.
                     // For simple widgets this is all the setup needed.
                     // For more complex one, parts of the UI may be swapped out.
@@ -237,17 +237,17 @@ define([
                     this.renderWaitingView();
 
                     this.setInitialState()
-                        .then(function () {
+                        .then(function() {
                             this.refresh();
                             return null;
                         }.bind(this))
-                        .catch(function (err) {
+                        .catch(function(err) {
                             this.setError(err);
                         }.bind(this));
                 }
             },
             setup: {
-                value: function () {
+                value: function() {
                     // does whatever the widget needs to do to set itself up
                     // after config, params, and auth have been configured.
 
@@ -255,26 +255,26 @@ define([
                 }
             },
             setupUI: {
-                value: function () {
+                value: function() {
                     this.loadCSS();
                     this.renderLayout();
                     return this;
                 }
             },
             stop: {
-                value: function () {
+                value: function() {
                     // ???
                 }
             },
             destroy: {
-                value: function () {
+                value: function() {
                     // tear down any events, etc. that are not attached
                     // to the local container.
                 }
             },
             // CONFIG
             getConfig: {
-                value: function (key, defaultValue) {
+                value: function(key, defaultValue) {
                     for (var i = 0; i < this.configs.length; i += 1) {
                         if (Utils.getProp(this.configs[i], key) !== undefined) {
                             return Utils.getProp(this.configs[i], key);
@@ -284,13 +284,13 @@ define([
                 }
             },
             setConfig: {
-                value: function (key, value) {
+                value: function(key, value) {
                     // sets it on the first config, which is the override config.
                     Utils.setProp(this.configs[0], key, value);
                 }
             },
             hasConfig: {
-                value: function (key) {
+                value: function(key) {
                     for (var i = 0; i < this.configs.length; i++) {
                         if (Utils.getProp(this.configs[i], key) !== undefined) {
                             return true;
@@ -303,32 +303,32 @@ define([
             // Parameters are typically passed into the init() method, and represent external values that vary for each 
             // new object. Typical use cases are url query variables.
             setParam: {
-                value: function (path, value) {
+                value: function(path, value) {
                     Utils.setProp(this.params, path, value);
                     this.refresh();
                 }
             },
             getParam: {
-                value: function (path, defaultValue) {
+                value: function(path, defaultValue) {
                     return Utils.getProp(this.params, path, defaultValue);
                 }
             },
             recalcState: {
-                value: function () {
+                value: function() {
                     this.setInitialState()
-                        .then(function () {
+                        .then(function() {
                             this.refresh();
                             return null;
                         }.bind(this))
-                        .catch(function (err) {
+                        .catch(function(err) {
                             this.setError(err);
                         }.bind(this));
                 }
             },
             refresh: {
-                value: function () {
+                value: function() {
                     if (!this.refreshTimer) {
-                        this.refreshTimer = window.setTimeout(function () {
+                        this.refreshTimer = window.setTimeout(function() {
                             this.refreshTimer = null;
                             this.render();
                         }.bind(this), 0);
@@ -344,7 +344,7 @@ define([
              and perhaps perform some rudimentary analysis.
              */
             setState: {
-                value: function (path, value, norefresh) {
+                value: function(path, value, norefresh) {
                     Utils.setProp(this.state, path, value);
                     if (!norefresh) {
                         this.refresh();
@@ -352,7 +352,7 @@ define([
                 }
             },
             setError: {
-                value: function (errorValue) {
+                value: function(errorValue) {
                     if (!errorValue) {
                         return;
                     }
@@ -375,7 +375,7 @@ define([
                 }
             },
             checkState: {
-                value: function (status) {
+                value: function(status) {
                     if (this.stateMeta.status === status) {
                         return true;
                     } else {
@@ -384,9 +384,9 @@ define([
                 }
             },
             setInitialState: {
-                value: function (options) {
+                value: function(options) {
                     // The base method just resolves immediately (well, on the next turn.) 
-                    return new Promise(function (resolve, reject, notify) {
+                    return new Promise(function(resolve, reject, notify) {
                         resolve();
                     });
                 }
@@ -394,25 +394,25 @@ define([
             // EVENT HANDLERS
 
             onLoggedIn: {
-                value: function (auth) {
+                value: function(auth) {
                     this.setupAuth();
                     this.setup();
                     this.setInitialState({
-                        force: true
-                    })
-                        .then(function () {
+                            force: true
+                        })
+                        .then(function() {
                             this.refresh();
                             return null;
                         }.bind(this));
                 }
             },
             onLoggedOut: {
-                value: function () {
+                value: function() {
                     this.setupAuth();
                     this.setup();
                     this.setInitialState({
                         force: true
-                    }).then(function () {
+                    }).then(function() {
                         this.refresh();
                         return null;
                     }.bind(this));
@@ -422,7 +422,7 @@ define([
 
             // TEMPLATES
             getTemplate: {
-                value: function (name) {
+                value: function(name) {
                     if (this.templates.cache[name] === undefined) {
                         this.templates.cache[name] = this.templates.env.getTemplate(name + '.html');
                     }
@@ -430,7 +430,7 @@ define([
                 }
             },
             createTemplateContext: {
-                value: function (additionalContext) {
+                value: function(additionalContext) {
                     /*
                      var context = this.merge({}, this.context);
                      return this.merge(context, {
@@ -463,7 +463,7 @@ define([
                 }
             },
             renderTemplate: {
-                value: function (name, context) {
+                value: function(name, context) {
                     var template = this.getTemplate(name);
                     if (!template) {
                         throw 'Template ' + name + ' not found';
@@ -474,12 +474,12 @@ define([
             },
             // Generates a unique id for usage on synthesized dom elements.
             genId: {
-                value: function () {
+                value: function() {
                     return 'gen_' + this.widgetName + '_' + this.generatedId++;
                 }
             },
             renderError: {
-                value: function () {
+                value: function() {
                     var context = this.createTemplateContext({
                         error: {
                             message: Utils.getProp(this.error, 'message')
@@ -489,7 +489,7 @@ define([
                 }
             },
             renderErrorView: {
-                value: function (error) {
+                value: function(error) {
                     // Very simple error view.
 
                     if (error) {
@@ -512,7 +512,7 @@ define([
                 }
             },
             niceElapsedTime: {
-                value: function (dateString) {
+                value: function(dateString) {
                     // need to strip off the timezone from the string.
                     var isoRE = /(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)([\+\-])(\d\d\d\d)/;
                     var dateParts = isoRE.exec(dateString);
@@ -545,7 +545,7 @@ define([
                 }
             },
             isOwner: {
-                value: function (paramName) {
+                value: function(paramName) {
                     // NB param name represents the property name of the parameter which currently 
                     // holds the username of the "subject" of the widget. If the current authenticated
                     // user and the subject user are the same, we say the user is the owner.
@@ -565,7 +565,7 @@ define([
             // An example universal renderer, which inspects the state of the widget and
             // displays the appropriate content.
             render: {
-                value: function () {
+                value: function() {
                     // Generate initial view based on the current state of this widget.
                     // Head off at the pass -- if not logged in, can't show profile.
                     if (this.error) {
@@ -586,7 +586,7 @@ define([
             // This can provide an initial layout, such as a panel, and provide container nodes,
             // such as title and content.
             renderLayout: {
-                value: function () {
+                value: function() {
                     this.container.html(this.getTemplate('layout').render(this.createTemplateContext()));
                     this.places = {
                         title: this.container.find('[data-placeholder="title"]'),
@@ -600,33 +600,33 @@ define([
             // to fetch data.
             // NB depends on assets.
             renderWaitingView: {
-                value: function () {
+                value: function() {
                     this.places.content.html(html.loading());
                 }
             },
-//            loadCSS: {
-//                value: function () {
-//                    // Load social widget css.
-//                    $('<link>')
-//                        .appendTo('head')
-//                        .attr({
-//                            type: 'text/css',
-//                            rel: 'stylesheet'
-//                        })
-//                        .attr('href', '/src/widgets/social/style.css');
-//                    // Load specific widget css.
-//                    $('<link>')
-//                        .appendTo('head')
-//                        .attr({
-//                            type: 'text/css',
-//                            rel: 'stylesheet'
-//                        })
-//                        .attr('href', '/src/widgets/social/' + this.widgetName + '/style.css');
-//                }
-//            },
+            //            loadCSS: {
+            //                value: function () {
+            //                    // Load social widget css.
+            //                    $('<link>')
+            //                        .appendTo('head')
+            //                        .attr({
+            //                            type: 'text/css',
+            //                            rel: 'stylesheet'
+            //                        })
+            //                        .attr('href', '/src/widgets/social/style.css');
+            //                    // Load specific widget css.
+            //                    $('<link>')
+            //                        .appendTo('head')
+            //                        .attr({
+            //                            type: 'text/css',
+            //                            rel: 'stylesheet'
+            //                        })
+            //                        .attr('href', '/src/widgets/social/' + this.widgetName + '/style.css');
+            //                }
+            //            },
 
             loadCSSResource: {
-                value: function (url) {
+                value: function(url) {
                     if (!this.cssLoaded) {
                         this.cssLoaded = {};
                     }
@@ -643,12 +643,12 @@ define([
                 }
             },
             loadCSS: {
-                value: function () {
+                value: function() {
                     this.loadCSSResource([Plugin.plugin.fullPath, this.widgetName, 'style.css'].join('/'));
                 }
             },
             renderMessages: {
-                value: function () {
+                value: function() {
                     if (this.places.alert) {
                         this.places.alert.empty();
                         for (var i = 0; i < this.messages.length; i++) {
@@ -678,70 +678,70 @@ define([
                 }
             },
             clearMessages: {
-                value: function () {
+                value: function() {
                     this.messages = [];
                     this.renderMessages();
                 }
             },
             addSuccessMessage: {
-                value: function (message) {
+                value: function(message) {
 
                     this.runtime.send('ui', 'alert', {
                         type: 'success',
                         message: message
                     });
 
-//                    
-//                    if (message === undefined) {
-//                        message = title;
-//                        title = '';
-//                    }
-//                    this.messages.push({
-//                        type: 'success',
-//                        title: title,
-//                        message: message
-//                    });
-//                    this.renderMessages();
+                    //                    
+                    //                    if (message === undefined) {
+                    //                        message = title;
+                    //                        title = '';
+                    //                    }
+                    //                    this.messages.push({
+                    //                        type: 'success',
+                    //                        title: title,
+                    //                        message: message
+                    //                    });
+                    //                    this.renderMessages();
                 }
             },
             addWarningMessage: {
-                value: function (message) {
+                value: function(message) {
                     this.runtime.send('ui', 'alert', {
                         type: 'warning',
                         message: message
                     });
-//                    if (message === undefined) {
-//                        message = title;
-//                        title = '';
-//                    }
-//                    this.messages.push({
-//                        type: 'warning',
-//                        title: title,
-//                        message: message
-//                    });
-//                    this.renderMessages();
+                    //                    if (message === undefined) {
+                    //                        message = title;
+                    //                        title = '';
+                    //                    }
+                    //                    this.messages.push({
+                    //                        type: 'warning',
+                    //                        title: title,
+                    //                        message: message
+                    //                    });
+                    //                    this.renderMessages();
                 }
             },
             addErrorMessage: {
-                value: function (message) {
+                value: function(message) {
                     this.runtime.send('ui', 'alert', {
                         type: 'error',
                         message: message
                     });
-//                    if (message === undefined) {
-//                        message = title;
-//                        title = '';
-//                    }
-//                    this.messages.push({
-//                        type: 'error',
-//                        title: title,
-//                        message: message
-//                    });
-//                    this.renderMessages();
+                    //                    if (message === undefined) {
+                    //                        message = title;
+                    //                        title = '';
+                    //                    }
+                    //                    this.messages.push({
+                    //                        type: 'error',
+                    //                        title: title,
+                    //                        message: message
+                    //                    });
+                    //                    this.renderMessages();
                 }
             },
             makeWorkspaceObjectId: {
-                value: function (workspaceId, objectId) {
+                value: function(workspaceId, objectId) {
                     return 'ws.' + workspaceId + '.obj.' + objectId;
                 }
             },
@@ -749,7 +749,7 @@ define([
             // NB: these should really be contained in the service apis, but those are automatically generated.
             // Maybe a kbase services utility module?
             workspace_metadata_to_object: {
-                value: function (wsInfo) {
+                value: function(wsInfo) {
                     return {
                         id: wsInfo[0],
                         name: wsInfo[1],
@@ -764,7 +764,7 @@ define([
                 }
             },
             narrative_info_to_object: {
-                value: function (data) {
+                value: function(data) {
                     return {
                         id: data[0],
                         name: data[1],
@@ -783,27 +783,27 @@ define([
                 }
             },
             logNotice: {
-                value: function (source, message) {
-                    console.log('NOTICE: [' + source + '] ' + message);
+                value: function(source, message) {
+                    console.warn('NOTICE: [' + source + '] ' + message);
                 }
             },
             logDeprecation: {
-                value: function (source, message) {
-                    console.log('DEPRECATION: [' + source + '] ' + message);
+                value: function(source, message) {
+                    console.warn('DEPRECATION: [' + source + '] ' + message);
                 }
             },
             logWarning: {
-                value: function (source, message) {
-                    console.log('WARNING: [' + source + '] ' + message);
+                value: function(source, message) {
+                    console.warn('WARNING: [' + source + '] ' + message);
                 }
             },
             logError: {
-                value: function (source, message) {
-                    console.log('ERROR: [' + source + '] ' + message);
+                value: function(source, message) {
+                    console.error('ERROR: [' + source + '] ' + message);
                 }
             },
             createListMaps: {
-                value: function () {
+                value: function() {
                     this.listMaps = {};
                     for (var listId in this.lists) {
                         var list = this.lists[listId];
@@ -819,158 +819,158 @@ define([
             lists: {
                 value: {
                     userRoles: [{
-                            id: 'pi',
-                            label: 'Principal Investigator'
-                        }, {
-                            id: 'gradstudent',
-                            label: 'Graduate Student'
-                        }, {
-                            id: 'developer',
-                            label: 'Developer'
-                        }, {
-                            id: 'tester',
-                            label: 'Tester'
-                        }, {
-                            id: 'documentation',
-                            label: 'Documentation'
-                        }, {
-                            id: 'general',
-                            label: 'General Interest'
-                        }],
+                        id: 'pi',
+                        label: 'Principal Investigator'
+                    }, {
+                        id: 'gradstudent',
+                        label: 'Graduate Student'
+                    }, {
+                        id: 'developer',
+                        label: 'Developer'
+                    }, {
+                        id: 'tester',
+                        label: 'Tester'
+                    }, {
+                        id: 'documentation',
+                        label: 'Documentation'
+                    }, {
+                        id: 'general',
+                        label: 'General Interest'
+                    }],
                     userClasses: [{
-                            id: 'pi',
-                            label: 'Principal Investigator'
-                        }, {
-                            id: 'gradstudent',
-                            label: 'Graduate Student'
-                        }, {
-                            id: 'kbase-internal',
-                            label: 'KBase Staff'
-                        }, {
-                            id: 'kbase-test',
-                            label: 'KBase Test/Beta User'
-                        }, {
-                            id: 'commercial',
-                            label: 'Commercial User'
-                        }],
+                        id: 'pi',
+                        label: 'Principal Investigator'
+                    }, {
+                        id: 'gradstudent',
+                        label: 'Graduate Student'
+                    }, {
+                        id: 'kbase-internal',
+                        label: 'KBase Staff'
+                    }, {
+                        id: 'kbase-test',
+                        label: 'KBase Test/Beta User'
+                    }, {
+                        id: 'commercial',
+                        label: 'Commercial User'
+                    }],
                     userTitles: [{
-                            id: 'mr',
-                            label: 'Mr.'
-                        }, {
-                            id: 'ms',
-                            label: 'Ms.'
-                        }, {
-                            id: 'dr',
-                            label: 'Dr.'
-                        }, {
-                            id: 'prof',
-                            label: 'Prof.'
-                        }],
+                        id: 'mr',
+                        label: 'Mr.'
+                    }, {
+                        id: 'ms',
+                        label: 'Ms.'
+                    }, {
+                        id: 'dr',
+                        label: 'Dr.'
+                    }, {
+                        id: 'prof',
+                        label: 'Prof.'
+                    }],
                     gravatarDefaults: [{
-                            id: 'mm',
-                            label: 'Mystery Man - simple, cartoon-style silhouetted outline'
-                        }, {
-                            id: 'identicon',
-                            label: 'Identicon - a geometric pattern based on an email hash'
-                        }, {
-                            id: 'monsterid',
-                            label: 'MonsterID - generated "monster" with different colors, faces, etc'
-                        }, {
-                            id: 'wavatar',
-                            label: 'Wavatar - generated faces with differing features and backgrounds'
-                        }, {
-                            id: 'retro',
-                            label: 'Retro - 8-bit arcade-style pixelated faces'
-                        }, {
-                            id: 'blank',
-                            label: 'Blank - A Blank Space'
-                        }],
+                        id: 'mm',
+                        label: 'Mystery Man - simple, cartoon-style silhouetted outline'
+                    }, {
+                        id: 'identicon',
+                        label: 'Identicon - a geometric pattern based on an email hash'
+                    }, {
+                        id: 'monsterid',
+                        label: 'MonsterID - generated "monster" with different colors, faces, etc'
+                    }, {
+                        id: 'wavatar',
+                        label: 'Wavatar - generated faces with differing features and backgrounds'
+                    }, {
+                        id: 'retro',
+                        label: 'Retro - 8-bit arcade-style pixelated faces'
+                    }, {
+                        id: 'blank',
+                        label: 'Blank - A Blank Space'
+                    }],
                     avatarColors: [{
-                            id: 'maroon',
-                            label: 'maroon',
-                            color: '#800000',
-                            textColor: '#FFF'
-                        }, {
-                            id: 'red',
-                            label: 'red',
-                            color: '#ff0000',
-                            textColor: '#FFF'
-                        }, {
-                            id: 'orange',
-                            label: 'orange',
-                            color: '#ffA500',
-                            textColor: '#FFF'
-                        }, {
-                            id: 'yellow',
-                            label: 'yellow',
-                            color: '#ffff00',
-                            textColor: '#000'
-                        }, {
-                            id: 'olive',
-                            label: 'olive',
-                            color: '#808000',
-                            textColor: '#FFF'
-                        }, {
-                            id: 'purple',
-                            label: 'purple',
-                            color: '#800080',
-                            textColor: '#FFF'
-                        }, {
-                            id: 'fuchsia',
-                            label: 'fuchsia',
-                            color: '#ff00ff',
-                            textColor: '#FFF'
-                        }, {
-                            id: 'white',
-                            label: 'white',
-                            color: '#ffffff',
-                            textColor: '#000'
-                        }, {
-                            id: 'lime',
-                            label: 'lime',
-                            color: '#00ff00',
-                            textColor: '#000'
-                        }, {
-                            id: 'green',
-                            label: 'green',
-                            color: '#008000',
-                            textColor: '#FFF'
-                        }, {
-                            id: 'navy',
-                            label: 'navy',
-                            color: '#000080',
-                            textColor: '#FFF'
-                        }, {
-                            id: 'blue',
-                            label: 'blue',
-                            color: '#0000ff',
-                            textColor: '#FFF'
-                        }, {
-                            id: 'aqua',
-                            label: 'aqua',
-                            color: '#00ffff',
-                            textColor: '#000'
-                        }, {
-                            id: 'teal',
-                            label: 'teal',
-                            color: '#008080',
-                            textColor: '#FFF'
-                        }, {
-                            id: 'black',
-                            label: 'black',
-                            color: '#000000',
-                            textColor: '#FFF'
-                        }, {
-                            id: 'silver',
-                            label: 'silver',
-                            color: '#c0c0c0',
-                            textColor: '#000'
-                        }, {
-                            id: 'gray',
-                            label: 'gray',
-                            color: '#808080',
-                            textColor: '#FFF'
-                        }]
+                        id: 'maroon',
+                        label: 'maroon',
+                        color: '#800000',
+                        textColor: '#FFF'
+                    }, {
+                        id: 'red',
+                        label: 'red',
+                        color: '#ff0000',
+                        textColor: '#FFF'
+                    }, {
+                        id: 'orange',
+                        label: 'orange',
+                        color: '#ffA500',
+                        textColor: '#FFF'
+                    }, {
+                        id: 'yellow',
+                        label: 'yellow',
+                        color: '#ffff00',
+                        textColor: '#000'
+                    }, {
+                        id: 'olive',
+                        label: 'olive',
+                        color: '#808000',
+                        textColor: '#FFF'
+                    }, {
+                        id: 'purple',
+                        label: 'purple',
+                        color: '#800080',
+                        textColor: '#FFF'
+                    }, {
+                        id: 'fuchsia',
+                        label: 'fuchsia',
+                        color: '#ff00ff',
+                        textColor: '#FFF'
+                    }, {
+                        id: 'white',
+                        label: 'white',
+                        color: '#ffffff',
+                        textColor: '#000'
+                    }, {
+                        id: 'lime',
+                        label: 'lime',
+                        color: '#00ff00',
+                        textColor: '#000'
+                    }, {
+                        id: 'green',
+                        label: 'green',
+                        color: '#008000',
+                        textColor: '#FFF'
+                    }, {
+                        id: 'navy',
+                        label: 'navy',
+                        color: '#000080',
+                        textColor: '#FFF'
+                    }, {
+                        id: 'blue',
+                        label: 'blue',
+                        color: '#0000ff',
+                        textColor: '#FFF'
+                    }, {
+                        id: 'aqua',
+                        label: 'aqua',
+                        color: '#00ffff',
+                        textColor: '#000'
+                    }, {
+                        id: 'teal',
+                        label: 'teal',
+                        color: '#008080',
+                        textColor: '#FFF'
+                    }, {
+                        id: 'black',
+                        label: 'black',
+                        color: '#000000',
+                        textColor: '#FFF'
+                    }, {
+                        id: 'silver',
+                        label: 'silver',
+                        color: '#c0c0c0',
+                        textColor: '#000'
+                    }, {
+                        id: 'gray',
+                        label: 'gray',
+                        color: '#808080',
+                        textColor: '#FFF'
+                    }]
 
 
                 }
