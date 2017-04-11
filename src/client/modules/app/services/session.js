@@ -50,7 +50,7 @@ define([
             return session.logout()
                 .then(function() {
                     state.setItem('loggedin', false);
-                    runtime.send('session', 'loggedout');
+                    runtime.send('app', 'navigate', 'goodbye');
                 });
         }
 
