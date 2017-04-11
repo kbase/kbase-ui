@@ -6,18 +6,19 @@ define([
     'kb_common/dom',
     './narrativeManager'
 
-], function (Promise, html, dom, NarrativeManagerService) {
+], function(Promise, html, dom, NarrativeManagerService) {
     'use strict';
 
     function factory(config) {
         var mount, container, runtime = config.runtime,
-            narrativeManager = NarrativeManagerService({runtime: runtime});
+            narrativeManager = NarrativeManagerService({ runtime: runtime });
 
         function makeNarrativePath(wsId, objId) {
             return runtime.getConfig('services.narrative.url') + '/narrative/ws.' + wsId + '.obj.' + objId;
         }
+
         function createNewNarrative(params) {
-            return Promise.try(function () {
+            return Promise.try(function() {
                 params = params || {};
                 if (params.app && params.method) {
                     throw "Must provide no more than one of the app or method params";
@@ -42,22 +43,22 @@ define([
                         }
                     }
                 }
-                
+
                 // Note that these are exclusive cell creation options. 
                 if (params.app) {
-                    cells = [{app: params.app}];
+                    cells = [{ app: params.app }];
                 } else if (params.method) {
-                    cells = [{method: params.method}];
+                    cells = [{ method: params.method }];
                 } else if (params.markdown) {
-                    cells = [{markdown: params.markdown}];
+                    cells = [{ markdown: params.markdown }];
                 }
-                
+
                 return narrativeManager.createTempNarrative({
-                    cells: cells,
-                    parameters: appData,
-                    importData: importData
-                })
-                    .then(function (info) {
+                        cells: cells,
+                        parameters: appData,
+                        importData: importData
+                    })
+                    .then(function(info) {
                         var wsId = info.narrativeInfo.wsid,
                             objId = info.narrativeInfo.id,
                             path = makeNarrativePath(wsId, objId);
@@ -73,9 +74,9 @@ define([
 
         function wrapPanel(content) {
             var div = html.tag('div');
-            return div({class: 'container-fluid'}, [
-                div({class: 'row'}, [
-                    div({class: 'col-md-12'}, [
+            return div({ class: 'container-fluid' }, [
+                div({ class: 'row' }, [
+                    div({ class: 'col-md-12' }, [
                         content
                     ])
                 ])
@@ -97,13 +98,13 @@ define([
                 a = html.tag('a'),
                 p = html.tag('p');
             container.innerHTML = wrapPanel(html.loading('Creating a new Narrative for you...'));
-            return new Promise(function (resolve, reject) {
+            return new Promise(function(resolve, reject) {
                 createNewNarrative(params)
-                    .then(function (result) {
+                    .then(function(result) {
                         container.innerHTML = wrapPanel([
                             p('Opening your new Narrative.'),
                             p('If the Narrative did not open, use this link'),
-                            p(a({href: result.redirect.url, target: '_blank'}, [
+                            p(a({ href: result.redirect.url, target: '_blank' }, [
                                 'Open your new Narrative: ',
                                 result.redirect.url
                             ]))
@@ -114,10 +115,9 @@ define([
                         });
                         resolve();
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         container.innerHTML = 'ERROR creating and opening a new narrative';
-                        console.log('ERROR creating and opening a new narrative');
-                        console.log(err);
+                        console.error('ERROR creating and opening a new narrative', err);
                         reject(err);
                     });
             });
@@ -142,7 +142,7 @@ define([
     }
 
     return {
-        make: function (config) {
+        make: function(config) {
             return factory(config);
         }
     };
