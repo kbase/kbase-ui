@@ -1,19 +1,19 @@
 /*global define*/
 /*jslint browser: true, white: true*/
 define([
-    'bluebird',
-    'jquery',
-    'kb/service/client/narrativeMethodStore',
-    'kb/service/client/catalog',
-    '../catalog_util',
-    'kb_widget/legacy/authenticatedWidget',
-    'bootstrap'
-],
-    function (Promise, $, NarrativeMethodStore, Catalog, CatalogUtil) {
+        'bluebird',
+        'jquery',
+        'kb/service/client/narrativeMethodStore',
+        'kb/service/client/catalog',
+        '../catalog_util',
+        'kb_widget/legacy/authenticatedWidget',
+        'bootstrap'
+    ],
+    function(Promise, $, NarrativeMethodStore, Catalog, CatalogUtil) {
         'use strict';
         $.KBWidget({
             name: "KBaseCatalogStatus",
-            parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
+            parent: "kbaseAuthenticatedWidget", // todo: do we still need th
             options: {
                 module_names: null,
                 limit: 20,
@@ -38,9 +38,9 @@ define([
             catalog_version: null,
             requested_releases: null,
 
-            init: function (options) {
+            init: function(options) {
                 this._super(options);
-                
+
                 var self = this;
 
                 // new style we have a runtime object that gives us everything in the options
@@ -60,7 +60,7 @@ define([
                 self.showLoading();
 
                 var modules = [];
-                if(self.options.module_names) {
+                if (self.options.module_names) {
                     modules = self.options.module_names.split(';');
                 }
 
@@ -75,11 +75,11 @@ define([
                 Promise.all(loadingCalls).then(function() {
                     self.render();
                     self.hideLoading();
-                }).catch(function (err) {
+                }).catch(function(err) {
                     self.hideLoading();
                     console.error('ERROR contacting the catalog');
                     console.error(err);
-                    self.renderError();   
+                    self.renderError();
                 });
 
                 return this;
@@ -90,7 +90,7 @@ define([
                 self.$basicStatusDiv.empty()
                 self.$basicStatusDiv.append(
                     $('<div role=alert>').addClass('alert alert-danger')
-                            .append('<b>Error contacting the catalog.  The catalog may be down.</b>'))
+                    .append('<b>Error contacting the catalog.  The catalog may be down.</b>'))
             },
 
             render: function() {
@@ -100,16 +100,12 @@ define([
                 self.renderBuildList();
             },
 
-
             setupClients: function() {
-                console.log('here')
                 this.catalog = new Catalog(
-                    this.runtime.getConfig('services.catalog.url'),
-                    { token: this.runtime.service('session').getAuthToken() }
+                    this.runtime.getConfig('services.catalog.url'), { token: this.runtime.service('session').getAuthToken() }
                 );
                 this.nms = new NarrativeMethodStore(
-                    this.runtime.getConfig('services.narrative_method_store.url'),
-                    { token: this.runtime.service('session').getAuthToken() }
+                    this.runtime.getConfig('services.narrative_method_store.url'), { token: this.runtime.service('session').getAuthToken() }
                 );
             },
 
@@ -117,8 +113,8 @@ define([
                 var $mainPanel = $('<div>').addClass('container');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#catalog/apps">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
-                
+                    .append($('<a href="#catalog/apps">').append('<i class="fa fa-chevron-left"></i> back to the Catalog')));
+
                 $mainPanel.append($('<h3>').append('Catalog Status:'));
                 var $basicStatusDiv = $('<div>');
                 $mainPanel.append($basicStatusDiv);
@@ -153,29 +149,29 @@ define([
 
             renderBasicStatus: function() {
                 var self = this;
-                self.$basicStatusDiv.append('Running <b>v'+self.catalog_version+'</b> of the Catalog Server on: ');
-                self.$basicStatusDiv.append('<a href="'+self.runtime.getConfig('services.catalog.url')+'">'+self.runtime.getConfig('services.catalog.url')+'</a>');
+                self.$basicStatusDiv.append('Running <b>v' + self.catalog_version + '</b> of the Catalog Server on: ');
+                self.$basicStatusDiv.append('<a href="' + self.runtime.getConfig('services.catalog.url') + '">' + self.runtime.getConfig('services.catalog.url') + '</a>');
                 self.$basicStatusDiv.append('<br>');
-                self.$basicStatusDiv.append('<b>'+self.module_list.length+'</b> modules registered.');
+                self.$basicStatusDiv.append('<b>' + self.module_list.length + '</b> modules registered.');
                 self.$basicStatusDiv.append('<br>');
                 self.$basicStatusDiv.append('<b>Modules Pending Release:</b>');
-                if(self.requested_releases.length>0) {
+                if (self.requested_releases.length > 0) {
                     var $ul = $('<ul>');
-                    for(var k=0; k<self.requested_releases.length; k++) {
+                    for (var k = 0; k < self.requested_releases.length; k++) {
                         var mod = self.requested_releases[k];
                         var $li = $('<li>');
-                        $li.append('<a href="#catalog/modules/'+mod.module_name+'">'+mod.module_name+'</a>');
-                        $li.append('- <a href="'+mod.git_url+'">'+mod.git_url+'</a><br>');
-                        $li.append(mod.git_commit_hash + ' - '+mod.git_commit_message+'<br>');
+                        $li.append('<a href="#catalog/modules/' + mod.module_name + '">' + mod.module_name + '</a>');
+                        $li.append('- <a href="' + mod.git_url + '">' + mod.git_url + '</a><br>');
+                        $li.append(mod.git_commit_hash + ' - ' + mod.git_commit_message + '<br>');
                         $li.append('owners: [');
-                        for(var owner=0; owner<mod.owners.length; owner++) {
-                            if(owner>0) { 
+                        for (var owner = 0; owner < mod.owners.length; owner++) {
+                            if (owner > 0) {
                                 $li.append(', ');
                             }
-                            $li.append('<a href="#people/'+mod.owners[owner]+'">'+mod.owners[owner]+'</a>');
+                            $li.append('<a href="#people/' + mod.owners[owner] + '">' + mod.owners[owner] + '</a>');
                         }
                         $li.append(']<br>');
-                        $li.append('Registered on: '+new Date(mod.timestamp).toLocaleString()+'<br>');
+                        $li.append('Registered on: ' + new Date(mod.timestamp).toLocaleString() + '<br>');
                         $ul.append($li);
                     }
                     self.$basicStatusDiv.append('<br>');
@@ -190,13 +186,13 @@ define([
 
                 var $filterModules = $('<select>').addClass('form-control');
                 $filterModules.append('<option value="All.Modules">All Modules</option>');
-                for(var k=0; k<self.module_list.length; k++) {
+                for (var k = 0; k < self.module_list.length; k++) {
                     var m = self.module_list[k].module_name;
-                    $filterModules.append('<option value="'+m.toLowerCase()+'">'+m+'</option>');
+                    $filterModules.append('<option value="' + m.toLowerCase() + '">' + m + '</option>');
                 }
-                if(self.options.module_names) {
+                if (self.options.module_names) {
                     var names = self.options.module_names.split(';');
-                    if(names.length>0) {
+                    if (names.length > 0) {
                         $filterModules.val(names[0].toLowerCase());
                     }
                 }
@@ -209,9 +205,9 @@ define([
                 $setLimit.append('<option value="500">1000</option>');
                 $setLimit.val(self.options.limit);
 
-                $filterModules.on('change',function(){
+                $filterModules.on('change', function() {
                     var modules = [];
-                    if($filterModules.val() !== 'All.Modules') {
+                    if ($filterModules.val() !== 'All.Modules') {
                         modules = [$filterModules.val()];
                     }
                     self.getBuildStatus(
@@ -222,16 +218,16 @@ define([
                             function() { self.renderBuildList(); }
                         );
                 });
-                var $filterModulesDiv = 
-                        $('<div>').addClass('form-group')
-                            .append($('<label for="filter_modules">').append('Filter by Module'))
-                            .append($filterModules);
+                var $filterModulesDiv =
+                    $('<div>').addClass('form-group')
+                    .append($('<label for="filter_modules">').append('Filter by Module'))
+                    .append($filterModules);
 
-                
 
-                $setLimit.on('change',function(){
+
+                $setLimit.on('change', function() {
                     var modules = [];
-                    if($filterModules.val() !== 'All.Modules') {
+                    if ($filterModules.val() !== 'All.Modules') {
                         modules = [$filterModules.val()];
                     }
                     self.getBuildStatus(
@@ -243,33 +239,33 @@ define([
                         );
                 });
 
-                var $setLimitDiv = 
-                        $('<div>').addClass('form-group')
-                            .append($('<label for="filter_modules">').append('Showing:'))
-                            .append($setLimit);
+                var $setLimitDiv =
+                    $('<div>').addClass('form-group')
+                    .append($('<label for="filter_modules">').append('Showing:'))
+                    .append($setLimit);
 
 
                 var $refreshBtn = $('<button>').addClass('btn btn-default')
-                                    .append('<i class="fa fa-refresh fa-lg">');
-                $refreshBtn.on('click',function() {
+                    .append('<i class="fa fa-refresh fa-lg">');
+                $refreshBtn.on('click', function() {
                     var modules = [];
-                    if($filterModules.val() !== 'All.Modules') {
+                    if ($filterModules.val() !== 'All.Modules') {
                         modules = [$filterModules.val()];
                     }
                     self.getBuildStatus(
                         self.options.skip,
                         $setLimit.val(),
                         modules).then(
-                            function() {
-                                self.renderBuildList();
-                            }
-                        );
+                        function() {
+                            self.renderBuildList();
+                        }
+                    );
                 });
 
                 self.$controlToolbarPanel
-                        .append($('<div>').addClass('col-md-6').append($filterModulesDiv))
-                        .append($('<div>').addClass('col-md-2').append($setLimitDiv))
-                        .append($('<div>').addClass('col-md-2').append($refreshBtn));
+                    .append($('<div>').addClass('col-md-6').append($filterModulesDiv))
+                    .append($('<div>').addClass('col-md-2').append($setLimitDiv))
+                    .append($('<div>').addClass('col-md-2').append($refreshBtn));
 
             },
 
@@ -280,10 +276,10 @@ define([
                 self.$buildListPanel.empty();
 
                 self.$buildListPanel
-                        .append('<i>last refreshed: '+new Date().toLocaleString()+'</i>')
-                        .append('<br><br>');
+                    .append('<i>last refreshed: ' + new Date().toLocaleString() + '</i>')
+                    .append('<br><br>');
 
-                for(var k=0; k<self.build_list.length; k++) {
+                for (var k = 0; k < self.build_list.length; k++) {
                     self.$buildListPanel.append(
                         self.renderBuildInfo(self.build_list[k]));
                 }
@@ -301,9 +297,9 @@ define([
                     string git_url;
                 } BuildInfo;*/
                 var $row = $('<div role="alert">').addClass('alert');
-                if(info.registration === 'error') {
+                if (info.registration === 'error') {
                     $row.addClass('alert-danger');
-                } else if (info.registration === 'complete' ) {
+                } else if (info.registration === 'complete') {
                     $row.addClass('alert-success');
                 } else {
                     $row.addClass('alert-warning');
@@ -311,21 +307,21 @@ define([
 
                 // timestamp is part of the registration_id
                 var timestamp = self.util.getTimeStampStr(info.timestamp);
-                
-                if(info.module_name_lc) {
-                    $row.append('<strong><a href="#catalog/modules/'+info.module_name_lc+'">'+info.module_name_lc+'</a></strong> - ');
+
+                if (info.module_name_lc) {
+                    $row.append('<strong><a href="#catalog/modules/' + info.module_name_lc + '">' + info.module_name_lc + '</a></strong> - ');
                 } else {
                     $row.append('<strong>Module Name Not Detected</strong> - ');
                 }
-                $row.append('<a href="'+info.git_url+'">'+info.git_url+'</a>');
-                $row.append($('<span>').addClass('pull-right').css('color','#777')
-                                    .append(timestamp)
-                                    .append('<br>')
-                                    .append('<a href="#catalog/register/'+info.registration_id+'">'+info.registration_id+'</a>'));
+                $row.append('<a href="' + info.git_url + '">' + info.git_url + '</a>');
+                $row.append($('<span>').addClass('pull-right').css('color', '#777')
+                    .append(timestamp)
+                    .append('<br>')
+                    .append('<a href="#catalog/register/' + info.registration_id + '">' + info.registration_id + '</a>'));
                 $row.append('<br>');
-                $row.append('Status: '+ info.registration);
-                if(info.error_message) {
-                    $row.append(' - '+info.error_message);
+                $row.append('Status: ' + info.registration);
+                if (info.error_message) {
+                    $row.append(' - ' + info.error_message);
                 }
                 return $row;
             },
@@ -339,10 +335,10 @@ define([
                 };
 
                 return self.catalog.version()
-                    .then(function (version) {
+                    .then(function(version) {
                         self.catalog_version = version;
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         console.error('ERROR');
                         console.error(err);
                     });
@@ -360,10 +356,10 @@ define([
                     list <string> owners;
                 } RequestedReleaseInfo; */
                 return self.catalog.list_requested_releases()
-                    .then(function (requested_releases) {
+                    .then(function(requested_releases) {
                         self.requested_releases = requested_releases;
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         console.error('ERROR');
                         console.error(err);
                     });
@@ -377,10 +373,10 @@ define([
                     skip: skip,
                     limit: limit
                 };
-                if(module_names) {
-                    if(module_names.length>0) {
+                if (module_names) {
+                    if (module_names.length > 0) {
                         build_filter['modules'] = [];
-                        for(var k=0; k<module_names.length; k++) {
+                        for (var k = 0; k < module_names.length; k++) {
                             build_filter.modules.push({
                                 module_name: module_names[k]
                             });
@@ -391,10 +387,10 @@ define([
                 self.build_list = null;
 
                 return self.catalog.list_builds(build_filter)
-                    .then(function (builds) {
+                    .then(function(builds) {
                         self.build_list = builds;
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         console.error('ERROR');
                         console.error(err);
                     });
@@ -404,19 +400,19 @@ define([
                 var self = this;
 
                 return self.catalog.list_basic_module_info({
-                        include_unreleased:1
+                        include_unreleased: 1
                     })
-                    .then(function (module_list) {
+                    .then(function(module_list) {
                         var good_modules = [];
-                        for(var k=0; k<module_list.length; k++) {
-                            if(module_list[k].module_name) {
+                        for (var k = 0; k < module_list.length; k++) {
+                            if (module_list[k].module_name) {
                                 good_modules.push(module_list[k]);
                             }
                         }
                         good_modules.sort(function(a, b) {
-                            if(a.module_name.toLowerCase() < b.module_name.toLowerCase()){
+                            if (a.module_name.toLowerCase() < b.module_name.toLowerCase()) {
                                 return -1;
-                            } else if(a.module_name.toLowerCase() > b.module_name.toLowerCase()){
+                            } else if (a.module_name.toLowerCase() > b.module_name.toLowerCase()) {
                                 return 1;
                             }
                             return 0;
@@ -424,14 +420,14 @@ define([
 
                         self.module_list = good_modules;
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         console.error('ERROR');
                         console.error(err);
                     });
             },
 
 
-            showError: function (error) {
+            showError: function(error) {
                 this.$errorPanel.empty();
                 this.$errorPanel.append('<strong>Error when fetching App/Method information.</strong><br><br>');
                 this.$errorPanel.append(error.error.message);

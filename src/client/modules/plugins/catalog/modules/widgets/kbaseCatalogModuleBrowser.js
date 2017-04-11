@@ -6,20 +6,19 @@
  white: true
  */
 define([
-    'jquery',
-    'bluebird',
-    'kb/service/client/catalog',
-    '../catalog_util',
-    'datatables',
-    'kb_widget/legacy/authenticatedWidget',
-    'bootstrap'
-],
-    function ($, Promise, Catalog, CatalogUtil) {
+        'jquery',
+        'bluebird',
+        'kb/service/client/catalog',
+        '../catalog_util',
+        'datatables',
+        'kb_widget/legacy/authenticatedWidget',
+        'bootstrap'
+    ],
+    function($, Promise, Catalog, CatalogUtil) {
         $.KBWidget({
             name: "KBaseCatalogModuleBrowser",
-            parent: "kbaseAuthenticatedWidget",  // todo: do we still need th
-            options: {
-            },
+            parent: "kbaseAuthenticatedWidget", // todo: do we still need th
+            options: {},
 
             // clients to the catalog service and the NarrativeMethodStore
             catalog: null,
@@ -29,11 +28,11 @@ define([
             $mainPanel: null,
             $loadingPanel: null,
 
-            moduleList:null,
+            moduleList: null,
 
-            init: function (options) {
+            init: function(options) {
                 this._super(options);
-                
+
                 var self = this;
 
                 // new style we have a runtime object that gives us everything in the options
@@ -66,18 +65,18 @@ define([
                 var self = this;
 
 
-                if(self.myModuleList.length > 0) {
+                if (self.myModuleList.length > 0) {
 
-                    self.$moduleListPanel.append( $('<div>').append($('<h4>').append('My Modules')) );
+                    self.$moduleListPanel.append($('<div>').append($('<h4>').append('My Modules')));
                     var $myModuleTable = self.renderTable(self.myModuleList);
                     self.$moduleListPanel.append($myModuleTable);
-                    self.$moduleListPanel.append( $('<div>').css('height','30px') );
-                    self.$moduleListPanel.append( $('<div>').append($('<h4>').append('All Modules')) );
+                    self.$moduleListPanel.append($('<div>').css('height', '30px'));
+                    self.$moduleListPanel.append($('<div>').append($('<h4>').append('All Modules')));
                 }
 
                 var $moduleTable = self.renderTable(self.moduleList);
                 self.$moduleListPanel.append($moduleTable);
-                self.$moduleListPanel.append( $('<div>').css('height','100px') );
+                self.$moduleListPanel.append($('<div>').css('height', '100px'));
 
 
 
@@ -85,15 +84,16 @@ define([
             },
 
             renderTable: function(moduleData) {
-                var $table = $('<table>').addClass('table').css('width','100%');
+                var $table = $('<table>').addClass('table').css('width', '100%');
 
                 var $container = $('<div>').addClass('container')
-                        .append($('<div>').addClass('row')
-                            .append($('<div>').addClass('col-md-12')
-                                .append($table)));
+                    .append($('<div>').addClass('row')
+                        .append($('<div>').addClass('col-md-12')
+                            .append($table)));
 
-                var limit = 10000; var sDom = 'tipf';
-                if(moduleData.length<limit) {
+                var limit = 10000;
+                var sDom = 'tipf';
+                if (moduleData.length < limit) {
                     sDom = 'ift';
                 }
 
@@ -102,20 +102,24 @@ define([
                     "sPaginationType": "full_numbers",
                     "iDisplayLength": limit,
                     "sDom": sDom,
-                    "aaSorting": [[ 3, "dsc" ],[ 4, "dsc" ], [ 0, "asc" ]],
+                    "aaSorting": [
+                        [3, "dsc"],
+                        [4, "dsc"],
+                        [0, "asc"]
+                    ],
                     "columns": [
-                        {sTitle: 'Module Name', data: "module_name_link"},
-                        {sTitle: "Owners", data: "owners_link"},
-                        {sTitle: "Language", data: "language"},
-                        {sTitle: "Released?", data: "is_released"},
-                        {sTitle: "Beta?", data: "has_beta"},
-                        {sTitle: "Service?", data: "is_service"},
-                        {sTitle: "Git URL", data: "git_url_link"}
+                        { sTitle: 'Module Name', data: "module_name_link" },
+                        { sTitle: "Owners", data: "owners_link" },
+                        { sTitle: "Language", data: "language" },
+                        { sTitle: "Released?", data: "is_released" },
+                        { sTitle: "Beta?", data: "has_beta" },
+                        { sTitle: "Service?", data: "is_service" },
+                        { sTitle: "Git URL", data: "git_url_link" }
                     ],
                     "data": moduleData
                 };
                 $table.DataTable(tblSettings);
-                $table.find('th').css('cursor','pointer');
+                $table.find('th').css('cursor', 'pointer');
 
                 return $container;
             },
@@ -123,8 +127,7 @@ define([
 
             setupClients: function() {
                 this.catalog = new Catalog(
-                    this.runtime.getConfig('services.catalog.url'),
-                    { token: this.runtime.service('session').getAuthToken() }
+                    this.runtime.getConfig('services.catalog.url'), { token: this.runtime.service('session').getAuthToken() }
                 );
             },
 
@@ -132,9 +135,9 @@ define([
                 var $mainPanel = $('<div>').addClass('container');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
-                        .append($('<a href="#catalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog Index')));
+                    .append($('<a href="#catalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog Index')));
 
-                var $moduleListPanel =  $('<div>');
+                var $moduleListPanel = $('<div>');
                 $mainPanel.append($moduleListPanel);
 
                 return [$mainPanel, $moduleListPanel];
@@ -145,53 +148,52 @@ define([
                 var self = this
 
                 var moduleSelection = {
-                    include_released:1,
-                    include_unreleased:1,
-                    include_disabled:0
+                    include_released: 1,
+                    include_unreleased: 1,
+                    include_disabled: 0
                 };
 
                 return self.catalog.list_basic_module_info(moduleSelection)
-                    .then(function (modules) {
+                    .then(function(modules) {
                         self.moduleList = [];
                         self.myModuleList = [];
-                        for(var k=0; k<modules.length; k++) {
+                        for (var k = 0; k < modules.length; k++) {
                             var moduleData = modules[k];
 
                             moduleData['is_released'] = '';
-                            if(moduleData['release'] && moduleData['release']['git_commit_hash']) {
+                            if (moduleData['release'] && moduleData['release']['git_commit_hash']) {
                                 moduleData['is_released'] = 'Yes (' + moduleData['release_version_list'].length + ')';
                             }
 
                             moduleData['has_beta'] = '';
-                            if(moduleData['beta'] && moduleData['beta']['git_commit_hash']) {
+                            if (moduleData['beta'] && moduleData['beta']['git_commit_hash']) {
                                 moduleData['has_beta'] = 'Yes';
                             }
 
                             moduleData['is_service'] = '';
-                            if(moduleData['dynamic_service'] && moduleData['dynamic_service']==1) {
+                            if (moduleData['dynamic_service'] && moduleData['dynamic_service'] == 1) {
                                 moduleData['is_service'] = 'Yes';
                             }
 
-                            moduleData['module_name_link'] = '<a href="#catalog/modules/'+ moduleData['module_name'] +'">' + moduleData['module_name'] + '</a>';
-                            moduleData['git_url_link'] = '<a href="'+ moduleData['git_url'] +'" target="_blank">' + moduleData['git_url'] + '</a>';
+                            moduleData['module_name_link'] = '<a href="#catalog/modules/' + moduleData['module_name'] + '">' + moduleData['module_name'] + '</a>';
+                            moduleData['git_url_link'] = '<a href="' + moduleData['git_url'] + '" target="_blank">' + moduleData['git_url'] + '</a>';
                             moduleData['owners_link'] = '';
                             var isMyModule = false;
                             var me = self.runtime.service('session').getUsername();
-                            for(var o=0; o<moduleData['owners'].length; o++) {
-                                if(moduleData['owners'][o] === me) {
+                            for (var o = 0; o < moduleData['owners'].length; o++) {
+                                if (moduleData['owners'][o] === me) {
                                     isMyModule = true;
                                 }
-                                if(o>=1) { moduleData['owners_link'] += ', '; }
-                                moduleData['owners_link'] += '<a href="#people/'+ moduleData['owners'][o] +'">' + moduleData['owners'][o] + '</a>';
+                                if (o >= 1) { moduleData['owners_link'] += ', '; }
+                                moduleData['owners_link'] += '<a href="#people/' + moduleData['owners'][o] + '">' + moduleData['owners'][o] + '</a>';
                             }
                             self.moduleList.push(moduleData);
-                            if(isMyModule) {
+                            if (isMyModule) {
                                 self.myModuleList.push(moduleData);
                             }
                         }
-                        console.log(self.moduleList)
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         console.error('ERROR');
                         console.error(err);
                     });
@@ -209,6 +211,3 @@ define([
             }
         });
     });
-
-
-
