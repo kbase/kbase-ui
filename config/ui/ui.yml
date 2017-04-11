@@ -1,6 +1,6 @@
 deploy:
-    id: 
-    target: 
+    id: kbase-ui
+    target: /kb/deployment/services/kbase-ui
     environment: 
     hostname: 
     icon: 
@@ -36,7 +36,8 @@ ui:
                 # approx 2 years
                 maxAge: 63072000
             google:
-                code:
+                hostname: null
+                code: null
     features:
         auth:
             selected: null

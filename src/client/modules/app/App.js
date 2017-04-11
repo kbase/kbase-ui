@@ -338,7 +338,7 @@ define([
                 })
                 .then(function() {
                     // kick off handling of the current route.
-                    api.service('analytics').pageView('/index');
+                    // api.service('analytics').pageView('/index');
                     // remove the loading status.
 
                     send('app', 'do-route');

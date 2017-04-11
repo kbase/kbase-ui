@@ -1,0 +1,18 @@
+# Deploy-Time Config for Auth2 Local Development
+---
+deploy:
+  environment: narrative-dev
+  hostname: narrative.kbase.us
+  icon: space-shuttle
+  name: Narrative Dev
+  services:
+    urlBase: https://bullseye.kbase.us
+ui:
+  services:
+    analytics:
+      google:
+        hostname: kbase.us
+        code: UA-75446568-1
+  features:
+    auth:
+      selected: auth2

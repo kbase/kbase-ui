@@ -25,6 +25,7 @@
 
 var Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs-extra')),
+    path = require('path'),
     pathExists = require('path-exists'),
     findit = require('findit2'),
     mutant = require('./mutant'),
@@ -794,9 +795,10 @@ function mergeObjects(listOfObjects) {
  */
 function makeKbConfig(state) {
     var root = state.environment.path,
-        fileName = 'deploy-' + state.config.targets.deploy + '.yml';
+        fileName = state.config.targets.deploy + '.yml';
 
     return Promise.all([
+
             // loadIni(root.concat(['config', 'deploy', fileName])),
             mutant.loadYaml(root.concat(['config', 'deploy', fileName]))
             // fs.readFileAsync(root.concat(['config', 'service.yml']).join('/'), 'utf8')
@@ -842,6 +844,38 @@ function makeKbConfig(state) {
         .then(function() {
             return state;
         });
+}
+
+function makeDeployConfig(state) {
+    var root = state.environment.path;
+    var deployDir = root.concat(['build', 'deploy']);
+    var cfgDir = root.concat(['build', 'deploy', 'cfg']);
+    var sourceDir = root.concat(['config', 'deploy']);
+
+    // make deploy dir
+    return fs.mkdirsAsync(cfgDir.join('/'))
+        .then(function() {
+            // read yaml an write json deploy configs.
+            console.log('in', sourceDir.concat(['*.yml']).join('/'));
+            return glob(sourceDir.concat(['*.yml']).join('/'));
+        })
+        .then(function(matches) {
+            // console.log('got ', matches.length, ' matches');
+            return Promise.all(matches.map(function(match) {
+                var baseName = path.basename(match);
+                // console.log('found', match);
+                return mutant.loadYaml(match.split('/'))
+                    .then(function(config) {
+                        mutant.saveJson(cfgDir.concat([baseName + '.json']), config);
+                    });
+
+            }));
+        })
+        .then(function() {
+            return state;
+        });
+
+    // save the deploy script
 }
 
 function cleanup(state) {
@@ -1047,12 +1081,21 @@ function main(type) {
             return createBuildInfo(state);
         })
 
+
     .then(function(state) {
             return mutant.copyState(state);
         })
         .then(function(state) {
             console.log('Making KBase Config...');
             return makeKbConfig(state);
+        })
+
+    .then(function(state) {
+            return mutant.copyState(state);
+        })
+        .then(function(state) {
+            console.log('Making deploy configs');
+            return makeDeployConfig(state);
         })
 
     // Disable temporarily ... we don't want to wipe out bower.json

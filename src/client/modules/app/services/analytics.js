@@ -1,5 +1,3 @@
-/*global define */
-/*jslint white: true, browser: true */
 define([
     'bluebird',
     'uuid',
@@ -16,8 +14,8 @@ define([
     function factory(config) {
         var runtime = config.runtime,
             analytics = GoogleAnalytics.make({
-                code: runtime.config('ui.services.analytics.googleAnalytics.code'),
-                host: runtime.config('deployment.hostname')
+                code: runtime.config('ui.services.analytics.google.code'),
+                hostname: runtime.config('ui.services.analytics.google.hostname')
             });
 
         function pageView(path, clientId) {

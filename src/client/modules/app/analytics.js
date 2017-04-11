@@ -11,7 +11,7 @@ define([
 
     function factory(config) {
         var code = config.code,
-            host = config.host,
+            host = config.hostname,
             uuid = new Uuid(4).format();
 
         function encodeQuery(params) {
@@ -28,9 +28,9 @@ define([
                 t: 'pageview',
                 ds: 'kbase-ui',
                 dp: path,
-                dl: encodeURIComponent(document.location.href)
+                dl: encodeURIComponent(document.location.href),
+                dh: host
             };
-            console.log('sending', query);
             var data = encodeQuery(query);
             Ajax.post({
                     url: 'https://www.google-analytics.com/collect',

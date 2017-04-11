@@ -32,3 +32,15 @@ Each file contains per ui-build configuration (plugins, modules, menus)
 url endpoints for kbase services.
 
 ## ui.yml
+
+## Make
+
+make init
+
+make clean
+
+make build
+make build config=dev
+
+make deploy 
+make deploy config=dev
