@@ -8,8 +8,7 @@ define([
     'bootstrap',
     'css!font_awesome',
     'css!app/styles/kb-bootstrap',
-    'css!app/styles/kb-ui',
-    'domReady!'
+    'css!app/styles/kb-ui'
 ], function($, Promise, html) {
     'use strict';
     var t = html.tag,
@@ -129,7 +128,7 @@ define([
     UnauthenticatedError.prototype.constructor = UnauthenticatedError;
     UnauthenticatedError.prototype.name = 'UnauthenticatedError';
 
-    // UI Errors are the rich, display able errors thrown to and caught by the 
+    // UI Errors are the rich, display able errors thrown to and caught by the
     // top layer.
     function UIError(arg) {
         var that = this;
@@ -140,25 +139,6 @@ define([
     UIError.prototype = Object.create(Error.prototype);
     UIError.prototype.constructor = UIError;
     UIError.prototype.name = 'UIError';
-
-    /*function define(name, constructor, parent) {
-        var obj = Object.create(parent, {
-            name: {
-                value: name
-            }
-        });
-        function C()
-        Object.getPrototypeOf(obj).constructor = constructor;
-        return constructor;        
-    }
-    
-    
-    var TimeoutError = define('TimeoutError', function (elapsed, timeout) {
-        this.elapsed = elapsed;
-        this.timeout = timeout;
-    }, Error);
-    */
-
 
     function TimeoutError(elapsed, timeout) {
         this.elapsed = elapsed;
@@ -174,7 +154,6 @@ define([
             var xhr = new XMLHttpRequest();
             xhr.onload = function() {
                 var config;
-                console.log('LOADED', xhr, xhr.responseText);
                 switch (xhr.status) {
                     case 200:
                         // For /narrative/ checks, there is no 201 or 401, so we
@@ -188,7 +167,7 @@ define([
                         // brings a user here! This response should either be
                         // successful or a 502. If successful, the response will
                         // be the config file, and we know that it is both a json
-                        // file (and parsable) and will have some "well known" 
+                        // file (and parsable) and will have some "well known"
                         // properties.
 
                         try {
@@ -209,11 +188,11 @@ define([
                         break;
                     case 201:
                         // For check_narrative, this is the response which means
-                        // that a session has been created. 
+                        // that a session has been created.
                         resolve(true);
                         break;
                     case 502:
-                        // On the next request, though, we pass through to 
+                        // On the next request, though, we pass through to
                         // the Jupyter server, which will not be ready for some
                         // period of time, and this will trigger a 502 in the
                         // nginx proxy layer.
@@ -259,7 +238,6 @@ define([
     function tryLoading(narrativeId, options) {
         var tries = 0,
             narrativeUrl = document.location.origin + '/narrative/' + narrativeId,
-            // narrativeUrl = document.location.origin + narrativePath,
             checkUrl = document.location.origin + '/narrative/static/kbase/config/config.json?check=true';
 
         return new Promise(function(resolve, reject) {
@@ -529,9 +507,6 @@ define([
             'Starting a new Narrative session for you.',
             'Please wait...'
         ].map(p).join('\n'));
-
-        // should we even support this?
-        // var narrativeUrl = runtime.config('services.narrative.url') 
 
         return tryLoading(narrativeId, options)
             .then(function(narrativeUrl) {
