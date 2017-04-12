@@ -9,7 +9,7 @@ define([
     'css!font_awesome',
     'css!app/styles/kb-bootstrap',
     'css!app/styles/kb-ui',
-    'domReady!'
+    'domReady'
 ], function($, Promise, html) {
     'use strict';
     var t = html.tag,
@@ -129,7 +129,7 @@ define([
     UnauthenticatedError.prototype.constructor = UnauthenticatedError;
     UnauthenticatedError.prototype.name = 'UnauthenticatedError';
 
-    // UI Errors are the rich, display able errors thrown to and caught by the 
+    // UI Errors are the rich, display able errors thrown to and caught by the
     // top layer.
     function UIError(arg) {
         var that = this;
@@ -140,25 +140,6 @@ define([
     UIError.prototype = Object.create(Error.prototype);
     UIError.prototype.constructor = UIError;
     UIError.prototype.name = 'UIError';
-
-    /*function define(name, constructor, parent) {
-        var obj = Object.create(parent, {
-            name: {
-                value: name
-            }
-        });
-        function C()
-        Object.getPrototypeOf(obj).constructor = constructor;
-        return constructor;        
-    }
-    
-    
-    var TimeoutError = define('TimeoutError', function (elapsed, timeout) {
-        this.elapsed = elapsed;
-        this.timeout = timeout;
-    }, Error);
-    */
-
 
     function TimeoutError(elapsed, timeout) {
         this.elapsed = elapsed;
@@ -174,7 +155,6 @@ define([
             var xhr = new XMLHttpRequest();
             xhr.onload = function() {
                 var config;
-                console.log('LOADED', xhr, xhr.responseText);
                 switch (xhr.status) {
                     case 200:
                         // For /narrative/ checks, there is no 201 or 401, so we
@@ -188,7 +168,7 @@ define([
                         // brings a user here! This response should either be
                         // successful or a 502. If successful, the response will
                         // be the config file, and we know that it is both a json
-                        // file (and parsable) and will have some "well known" 
+                        // file (and parsable) and will have some "well known"
                         // properties.
 
                         try {
@@ -209,11 +189,11 @@ define([
                         break;
                     case 201:
                         // For check_narrative, this is the response which means
-                        // that a session has been created. 
+                        // that a session has been created.
                         resolve(true);
                         break;
                     case 502:
-                        // On the next request, though, we pass through to 
+                        // On the next request, though, we pass through to
                         // the Jupyter server, which will not be ready for some
                         // period of time, and this will trigger a 502 in the
                         // nginx proxy layer.
@@ -259,7 +239,6 @@ define([
     function tryLoading(narrativeId, options) {
         var tries = 0,
             narrativeUrl = document.location.origin + '/narrative/' + narrativeId,
-            // narrativeUrl = document.location.origin + narrativePath,
             checkUrl = document.location.origin + '/narrative/static/kbase/config/config.json?check=true';
 
         return new Promise(function(resolve, reject) {
@@ -302,33 +281,41 @@ define([
                         reject(err);
                     })
                     .catch(TimeoutError, function(err) {
-                        reject(new UIError({
-                            code: 'request-timed-out',
-                            message: 'Request timed out',
-                            description: [
-                                'A request to the Narrative session timed out.',
-                                'The request timed out after ' + err.elapsed + ' milliseconds (ms).',
-                                'The timeout limit is  ' + err.timeout + ' ms.',
-                                'This may indicate tha the Narrative service or one of the related KBase services are very busy, or the network is saturated.'
-                            ],
-                            suggestions: [{
-                                    label: 'Try again later',
-                                    url: '/load-narrative.html?n=' + narrativeId + '&check=true',
-                                    description: [
-                                        'This type of error is not permanent, so you should just try again later'
-                                    ]
-                                },
-                                {
-                                    label: 'Monitor KBase service status',
-                                    url: '',
-                                    description: [
-                                        'Since this indicates a problem with KBase services, ',
-                                        'you may wish to open our service monitoring page, ',
-                                        'which shoudl show any ongoing issues'
-                                    ]
-                                }
-                            ]
-                        }));
+                        // timeouts should be tried again. Might be due to the container still
+                        // spinning up...
+                        if (tries > options.maxTries) {
+                            hideElement('waiting');
+                            return reject(new UIError({
+                                code: 'request-timed-out',
+                                message: 'Request timed out',
+                                description: [
+                                    'A request to the Narrative session timed out too many times.',
+                                    'The last request timed out after ' + err.elapsed + ' milliseconds (ms).',
+                                    'The timeout limit is ' + err.timeout + ' ms.',
+                                    'This may indicate that the Narrative service or a related KBase service is very busy, or the network is saturated.'
+                                ],
+                                suggestions: [{
+                                        label: 'Try again later',
+                                        url: '/load-narrative.html?n=' + narrativeId + '&check=true',
+                                        description: [
+                                            'This type of error is not permanent, so you should just try again later'
+                                        ]
+                                    },
+                                    {
+                                        label: 'Monitor KBase service status',
+                                        url: '',
+                                        description: [
+                                            'Since this indicates a problem with KBase services, ',
+                                            'you may wish to open our service monitoring page, ',
+                                            'which shoudl show any ongoing issues'
+                                        ]
+                                    }
+                                ]
+                            }));
+                        }
+                        return Promise.delay(options.retryPause).then(function() {
+                            return loop(checkUrl);
+                        });
                     })
                     .catch(LoadingError, function(err) {
                         reject(new UIError({
@@ -529,9 +516,6 @@ define([
             'Starting a new Narrative session for you.',
             'Please wait...'
         ].map(p).join('\n'));
-
-        // should we even support this?
-        // var narrativeUrl = runtime.config('services.narrative.url') 
 
         return tryLoading(narrativeId, options)
             .then(function(narrativeUrl) {
