@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>KBase Narrative Interface</title>
+        <link rel="icon" type="image/x-icon" href="/favicon.ico">
+        <script src="/build-info.js"></script>
+        <script src="/require-config.js"></script>
+        <script src="/modules/bower_components/requirejs/require.js"></script>
+        <style type="text/css">
+            .remove-me-to-show-me {
+                display: none;
+                visibility: hidden;
+            }
+            table.table tr:first-child th, table.table tr:first-child td  {
+                border-top: none;
+            }
+        </style>
+    </head>
+    <body class="remove-me-to-show-me">
+        <div style="margin: 20px auto 20px auto; max-width: 600px;">
+            <div style="text-align: center; margin-bottom: 50px;">
+                <span style="width: 261px; height: 64px;" data-element="loader-animated" class="hidden">
+                    <img  src="/images/kbase_animated_logo.gif"></img>
+                    <img  src="/images/kbase-logo-web-just-kbase.png"></img>
+                </span>
+                <span style="width: 261px; height: 64px;" data-element="loader-static" class="hidden">
+                    <img  src="/images/kbase-logo-web.png"></img>
+                </span>
+            </div>
+
+            <div data-element="waiting">
+                <div data-element="status" style="text-align: center; font-size:146.5%; color:#006698; font-family:'OxygenBold', Arial, sans-serif;"></div>
+                <div data-element="progress" style="width: 400px; margin: 50px auto; font-family: monospace;"></div>
+            </div>
+
+            <div class="panel panel-danger hidden" data-element="error" style="margin-top: 20px;">
+                <div class="panel-heading">
+                    <div data-element="message"></div>
+                </div>
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <th>Description</th>
+                            <td><div data-element="description"></div></td>
+                        </tr>
+                        <tr>
+                            <th>Suggestions</th>
+                            <td><div data-element="suggestions"></div></td>
+                        </tr>
+                        <tr>
+                            <th>Error code</th>
+                            <td><span data-element="code"></span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+
+            <!--<div id="text" style="">
+                <br>
+                Starting a new Narrative session for you
+                <br>
+                Please wait...
+            </div>
+            -->
+        </div>
+    </body>
+    <script>
+        require([
+            'app/narrativeLoader'
+        ], function (Loader) {
+            Loader.loadNarrative({
+                timeout: 500,
+                retryPause: 1000,
+                maxTries: 20
+            });
+        })
+    </script>
+</html>
