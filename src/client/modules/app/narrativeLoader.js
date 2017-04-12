@@ -281,33 +281,41 @@ define([
                         reject(err);
                     })
                     .catch(TimeoutError, function(err) {
-                        reject(new UIError({
-                            code: 'request-timed-out',
-                            message: 'Request timed out',
-                            description: [
-                                'A request to the Narrative session timed out.',
-                                'The request timed out after ' + err.elapsed + ' milliseconds (ms).',
-                                'The timeout limit is  ' + err.timeout + ' ms.',
-                                'This may indicate tha the Narrative service or one of the related KBase services are very busy, or the network is saturated.'
-                            ],
-                            suggestions: [{
-                                    label: 'Try again later',
-                                    url: '/load-narrative.html?n=' + narrativeId + '&check=true',
-                                    description: [
-                                        'This type of error is not permanent, so you should just try again later'
-                                    ]
-                                },
-                                {
-                                    label: 'Monitor KBase service status',
-                                    url: '',
-                                    description: [
-                                        'Since this indicates a problem with KBase services, ',
-                                        'you may wish to open our service monitoring page, ',
-                                        'which shoudl show any ongoing issues'
-                                    ]
-                                }
-                            ]
-                        }));
+                        // timeouts should be tried again. Might be due to the container still
+                        // spinning up...
+                        if (tries > options.maxTries) {
+                            hideElement('waiting');
+                            return reject(new UIError({
+                                code: 'request-timed-out',
+                                message: 'Request timed out',
+                                description: [
+                                    'A request to the Narrative session timed out too many times.',
+                                    'The last request timed out after ' + err.elapsed + ' milliseconds (ms).',
+                                    'The timeout limit is ' + err.timeout + ' ms.',
+                                    'This may indicate that the Narrative service or a related KBase service is very busy, or the network is saturated.'
+                                ],
+                                suggestions: [{
+                                        label: 'Try again later',
+                                        url: '/load-narrative.html?n=' + narrativeId + '&check=true',
+                                        description: [
+                                            'This type of error is not permanent, so you should just try again later'
+                                        ]
+                                    },
+                                    {
+                                        label: 'Monitor KBase service status',
+                                        url: '',
+                                        description: [
+                                            'Since this indicates a problem with KBase services, ',
+                                            'you may wish to open our service monitoring page, ',
+                                            'which shoudl show any ongoing issues'
+                                        ]
+                                    }
+                                ]
+                            }));
+                        }
+                        return Promise.delay(options.retryPause).then(function() {
+                            return loop(checkUrl);
+                        });
                     })
                     .catch(LoadingError, function(err) {
                         reject(new UIError({
