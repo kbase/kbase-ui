@@ -2,9 +2,9 @@
 ---
 targets:
     ui: dev
-    deploy: dev
+    deploy: ci
 build:
-    dist: false
+    dist: true
     temp: ../temp
 bower:
     offline: false

@@ -1,8 +1,8 @@
 /*global define */
 /*jslint white: true, browser: true */
-define([
-], function () {
+define([], function() {
     'use strict';
+
     function factory(config) {
         // Heartbeat
         var heartbeat = 0,
@@ -12,11 +12,12 @@ define([
 
         function start() {
             heartbeat = 0;
-            heartbeatTimer = window.setInterval(function () {
+            heartbeatTimer = window.setInterval(function() {
                 heartbeat += 1;
-                runtime.send('app', 'heartbeat', {heartbeat: heartbeat});
+                runtime.send('app', 'heartbeat', { heartbeat: heartbeat });
             }, interval);
         }
+
         function stop() {
             if (heartbeatTimer) {
                 window.clearInterval(heartbeatTimer);
@@ -29,9 +30,8 @@ define([
     }
 
     return {
-        make: function (config) {
+        make: function(config) {
             return factory(config);
         }
     };
 });
- 

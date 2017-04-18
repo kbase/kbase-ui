@@ -1,0 +1,81 @@
+deploy:
+    id: kbase-ui
+    target: /kb/deployment/services/kbase-ui
+    environment: 
+    hostname: 
+    icon: 
+    name:
+# Settings in support of the user interface
+ui:
+    images:
+        spinner:
+            url: /images/ajax-loader.gif
+    constants:
+        client_timeout: 900000,
+        session_max_age: 5184000
+     # TODO: simply paths?
+    paths:
+        spa_root: '#'
+        landing_pages: '#dataview/'
+        # ws_browser: '#/ws'
+        version_check: /narrative_version
+        dashboard_metrics: /userMetrics
+    # TODO: simply urls?
+    urls:
+        reset_password: https://gologin.kbase.us/ResetPassword
+        status_page: http://kbase.us/internal/status
+        submit_jira_ticket: https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%20version
+        update_profile: https://gologin.kbase.us/account/UpdateProfile
+    backupCookie:
+      domain: null
+      enabled: false
+    services:
+        analytics:
+            cookie:
+                name: kbase_client_id
+                # approx 2 years
+                maxAge: 63072000
+            google:
+                hostname: null
+                code: null
+    features:
+        auth:
+            selected: null
+            available:
+                auth1:
+                    services:
+                        session:
+                            # note this is the actual js service module to associate
+                            # with the "session" ui service
+                            module: session                         
+                    widgets:
+                        login:
+                            # however, this is the widget id as established in the
+                            # plugin which provides the auth interface (login, logout)
+                            # at the usual endpoints as triggered from the widget
+                            # and session service api.
+                            name: globus_login 
+                    paths:
+                        login: login
+                    plugins:
+                        - login
+                auth2:
+                    services:
+                        session:
+                            module: auth2Session
+                    widgets:
+                        login:
+                            name: auth2_signin
+                    paths:
+                        login: login          
+                    plugins:
+                        - auth2-client
+# Primarily for output links for the docsite. 
+# TODO: merge with ui.outbound_links?        
+docsite:
+    base_url: http://kbase.us
+    host: kbase.us
+    paths:
+        about: /what-is-kbase
+        contact: /contact-us
+        browser_support: /supported-browsers

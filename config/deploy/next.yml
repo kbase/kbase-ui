@@ -1,0 +1,18 @@
+# Deploy-Time Config for Auth2 Local Development
+---
+deploy:
+  environment: next
+  hostname: next.kbase.us
+  icon: bullseye
+  name: Next
+  services:
+    urlBase: https://next.kbase.us
+ui:
+  services:
+    analytics:
+      google:
+        hostname: next.kbase.us
+        code: UA-74530365-1
+  features:
+    auth:
+      selected: auth1

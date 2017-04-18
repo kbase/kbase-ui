@@ -14,14 +14,34 @@ bowerFiles:
             - bluebird.js
         bowerComponent: true
     -
+        name: buffer
+        src:
+            - buffer.js
+        bowerComponent: true
+    # -
+    #     name: esprima
+    #     src: 
+    #         - esprima.js
+    #     bowerComponent: true        
+    -
         name: knockout
         cwd: dist
         src: knockout.js
         bowerComponent: true
     -
+        name: knockout-arraytransforms
+        cwd: dist
+        src: knockout-arraytransforms.js
+        bowerComponent: true
+    -
         name: knockout-validation
         cwd: dist
         src: knockout.validation.js
+        bowerComponent: true
+    -
+        name: bower-knockout-mapping
+        cwd: dist
+        src: knockout.mapping.js
         bowerComponent: true
     -
         name: bootstrap
@@ -58,7 +78,7 @@ bowerFiles:
             - normalize.js
         bowerComponent: true
     -
-        dir: require-yaml
+        dir: requirejs-yaml
         name: yaml
         bowerComponent: true
     -
@@ -78,7 +98,7 @@ bowerFiles:
         name: text
         bowerComponent: true
     -
-        dir: SparkMD5
+        dir: spark-md5
         name: spark-md5
         bowerComponent: true
     -
@@ -129,7 +149,7 @@ bowerFiles:
         dir: numeral
         src:
             - numeral.js
-            - languages/*.js
+            # - languages/*.js
         bowerComponent: true
     -
         name: blockui
@@ -153,34 +173,51 @@ bowerFiles:
             - highlight.pack.js
             - styles/*
         bowerComponent: true
-    -
-        # This one is an installable package, kbase style, so we just
-        # copy the whole thing in, and the install.yml says what to do
-        name: kbase-data-client-js
-        src: "**/*"
-        bowerComponent: true
+    # -
+    #     # This one is an installable package, kbase style, so we just
+    #     # copy the whole thing in, and the install.yml says what to do
+    #     name: kbase-data-client-js
+    #     src: "**/*"
+    #     bowerComponent: true   
+
+    # "kbase-common-ts": "0.8.0",
+    #     "kbase-common-js": "2.5.0",
+    #     "kbase-service-clients-js": "3.2.2",
+    #     "kbase-ui-widget": "k1.1.0-beta2",
     -
         name: plotly
+        dir: plotly.js
         cwd: dist
         src: plotly.js
         bowerComponent: true
     -
         name: kb_common
+        dir: kbase-common-js
         cwd: dist/kb_common
         src: "**/*"
         bowerComponent: false
     -
         name: kb_service
+        dir: kbase-service-clients-js
         cwd: dist/kb_service
         src: "**/*"
         bowerComponent: false
     -
         name: kb_widget
+        dir: kbase-ui-widget
         cwd: src/kb/widget
         src: "**/*"
         bowerComponent: false
     -
         name: kb_common_ts
+        dir: kbase-common-ts
         cwd: dist
         src: "*.js"
         bowerComponent: false
+    -
+        name: kb_sdk_clients
+        dir: kbase-sdk-clients-js
+        cwd: dist/amd/kb_sdk_clients
+        src: "**/*"
+        bowerComponent: false
+
