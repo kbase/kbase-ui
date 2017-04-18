@@ -7,7 +7,6 @@ var build = window.__kbase__build__;
 var buildKey;
 switch (build.deployType) {
 case 'dev':
-    // buildKey = new Date().getTime();
     buildKey = new Date().getTime();
     break;
 case 'prod':
@@ -22,10 +21,6 @@ window.require = {
     catchError: true,
     waitSeconds: 60,
     paths: {
-        // External Dependencies
-        // ----------------------
-
-        // For the ui
         bluebird: 'bower_components/bluebird/bluebird',
         bootstrap_css: 'bower_components/bootstrap/css/bootstrap',
         bootstrap: 'bower_components/bootstrap/js/bootstrap',
