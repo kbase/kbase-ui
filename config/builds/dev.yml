@@ -4,7 +4,7 @@ targets:
     ui: dev
     deploy: ci
 build:
-    dist: true
+    dist: false
     temp: ../temp
 bower:
     offline: false
