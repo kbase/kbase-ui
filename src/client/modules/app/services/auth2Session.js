@@ -1,10 +1,17 @@
-/*global define */
-/*jslint browser: true, white: true */
 define([
     'kb_common_ts/Auth2Session',
-    'kb_common/observed'
-], function(M_auth2Session, observed) {
+    'kb_common/observed',
+    'kb_common/html'
+], function (
+    M_auth2Session,
+    observed,
+    html) {
     'use strict';
+
+    var t = html.tag,
+        div = t('div'),
+        p = t('p'),
+        a = t('a');
 
     function factory(config) {
         var runtime = config.runtime;
@@ -73,25 +80,77 @@ define([
 
         function logout() {
             return auth2Session.logout()
-                .then(function(result) {
+                .then(function (result) {
                     state.setItem('loggedin', false);
                     runtime.send('session', 'loggedout');
                     return result;
                 });
         }
 
+        function notifyError(message) {
+            runtime.send('ui', 'alert', {
+                type: 'warning',
+                message: message.message,
+                description: message.description,
+                icon: 'exclamation-triangle',
+                name: 'auth-connection'
+            });
+        }
+
+        function notifyOk(message) {
+            runtime.send('ui', 'alert', {
+                type: 'success',
+                message: message.message,
+                description: message.description,
+                icon: 'check',
+                name: 'auth-connection',
+                timeout: 10000
+            });
+        }
+
+
         function start() {
             auth2Session.start()
-                .then(function() {
+                .then(function () {
                     // session.setSession(session.importFromCookie());
                     if (auth2Session.isAuthorized()) {
                         state.setItem('loggedin', true);
                         runtime.send('session', 'loggedin');
                     } else {
                         state.setItem('loggedin', false);
-                        runtime.send('session', 'loogedout');
+                        runtime.send('session', 'loggedout');
                     }
-                    auth2Session.onChange(function(change) {
+                    auth2Session.onChange(function (change) {
+                        switch (change) {
+                        case 'interrupted':
+                            // runtime.send('app', 'navigate', {
+                            //     path: 'auth2/interrupted'
+                            // });
+                            // runtime.send('connection', 'disconnected', {
+                            //     source: 'session'
+                            // });
+                            var description = div([
+                                p('Your session cannot be verified because the authorization service is currently inaccessible'),
+                                p([
+                                    'You may patiently await it\'s recovery or ',
+                                    a({
+                                        href: '#signout'
+                                    }, 'signout'),
+                                    ' and try again later'
+                                ])
+                            ]);
+                            notifyError({
+                                message: 'Session cannot be verified',
+                                description: description
+                            });
+                            return;
+                        case 'restored':
+                            notifyOk({
+                                message: 'Communication restored -- session has been verified',
+                                description: ''
+                            });
+                        }
+
                         if (auth2Session.isAuthorized()) {
                             if (change === 'newuser') {
                                 // TODO: do something special...
@@ -101,7 +160,11 @@ define([
                             runtime.send('session', 'loggedin');
                         } else {
                             state.setItem('loggedin', false);
-                            runtime.send('session', 'loogedout');
+                            // runtime.send('session', 'loggedout');
+                            // TODO: detect if already on signedout page.
+                            runtime.send('app', 'navigate', {
+                                path: 'auth2/signedout'
+                            });
                         }
                     });
                 });
@@ -109,14 +172,14 @@ define([
 
         function stop() {
             auth2Session.stop()
-                .then(function() {
+                .then(function () {
                     session = null;
                 });
         }
 
         function onChange(fun) {
             state.listen('loggedin', {
-                onSet: function(value) {
+                onSet: function (value) {
                     fun(value);
                 }
             });
@@ -144,10 +207,9 @@ define([
             loginStart: loginStart,
             logout: logout
         };
-
     }
     return {
-        make: function(config) {
+        make: function (config) {
             return factory(config);
         }
     };

@@ -1,7 +1,7 @@
 menus:
     authenticated:
         main: [narrative, appcatalog, search, dashboard, bulk-ui]
-        developer: [sdkclientstest, databrowser, typebrowser, jobbrowser, shockbrowser, visdemoBarchart, visdemoHeatmap, visdemoLinechart, visdemoScatterplot]
+        developer: [sdkclientstest, databrowser, typebrowser, jobbrowser, shockbrowser]
         help: [about, about-services, contact-kbase, about-kbase, help]
     unauthenticated:
         main: [appcatalog, search]

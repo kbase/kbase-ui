@@ -3,7 +3,7 @@
  white: true, browser: true
  */
 define([
-    'kb_common/pluginManager',
+    '../lib/pluginManager',
     'kb_common/dom',
     'kb_common/messenger',
     'kb_widget/widgetMount',
@@ -157,7 +157,6 @@ define([
                 // featureFlag = api.config('ui.features.' + featureSet + '.selected');
             }
             var featurePath = 'ui.features.' + featureSet + '.available.' + featureFlag + '.' + path;
-            // console.log('feature', featureFlag, featurePath);
             var result = getConfig(featurePath, null);
             if (result === null) {
                 throw new Error('Feature is not defined: ' + featurePath);
@@ -204,7 +203,6 @@ define([
             }
         };
 
-
         function begin() {
             // Register service handlers.
             var sessionConfig = {
@@ -220,42 +218,23 @@ define([
                 }];
             }
 
-            // var authService = 'auth2Session'; // or 'session'
-
-            //var authFeatureFlag = api.config('ui.features.auth.selected');
-            // api.config('ui.features.auth.available.' + authFeatureFlag + '.services.session.module')
-
-            // var sessionModule = ;
-
+            // Add a session service provided by the selected auth feature
             appServiceManager.addService({
                 name: 'session',
                 module: api.feature('auth', 'services.session.module'),
             }, sessionConfig);
 
-            // switch (authFeatureFlag) {
-            //     case 'auth1':
-            //         sessionConfig.loginUrl = api.config('services.auth.url');
-            //         appServiceManager.addService({
-            //             name: 'session',
-            //             module: 'session'
-            //         }, sessionConfig);
-            //         break;
-            //     case 'auth2':
-            //         appServiceManager.addService({
-            //             name: 'session',
-            //             module: 'auth2Session'
-            //         }, sessionConfig);
-            //         break;
-            //     default:
-            //         throw new Error('Invalid auth feature flag: ' + authFeatureFlag);
-            // }
-
+            // Add plugin(s) provided by the selected auth feature.
+            // By default a plugin which is provided for a feature must be set to 
+            // disabled state, and will be enabled here.
+            api.feature('auth', 'plugins').forEach(function(pluginName) {
+                config.plugins[pluginName].disabled = false;
+            });
 
             appServiceManager.addService('heartbeat', {
                 runtime: api,
                 interval: 500
             });
-
 
             appServiceManager.addService('route', {
                 runtime: api,
@@ -282,6 +261,9 @@ define([
                 runtime: api
             });
             appServiceManager.addService('analytics', {
+                runtime: api
+            });
+            appServiceManager.addService('connection', {
                 runtime: api
             });
 

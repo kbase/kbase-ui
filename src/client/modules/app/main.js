@@ -7,14 +7,14 @@ define([
     'kb_common/props',
     'yaml!config/plugin.yml',
     'json!config/config.json',
-    'json!config/deploy.json',
+    'json!deploy/config.json',
     'bootstrap',
     'css!font_awesome',
     'css!app/styles/kb-bootstrap',
     'css!app/styles/kb-icons',
     'css!app/styles/kb-ui',
     'css!app/styles/kb-datatables'
-], function(
+], function (
     Promise,
     App,
     dom,
@@ -44,7 +44,7 @@ define([
 
     function mergeObjects(listOfObjects) {
         function merge(obj1, obj2, keyStack) {
-            Object.keys(obj2).forEach(function(key) {
+            Object.keys(obj2).forEach(function (key) {
                 var obj1Value = obj1[key];
                 var obj2Value = obj2[key];
                 var obj1Type = typeof obj1Value;
@@ -60,7 +60,6 @@ define([
                 } else if (obj1Type === obj2Type) {
                     // same typed values may be overwritten, but with a warning.
                     obj1[key] = obj2[key];
-                    console.warn('Overwriting config at: ' + keyStack.join('.'), obj1Value, obj2Value);
                 } else {
                     console.error('Unmergable at ' + keyStack.join('.') + ':' + key, obj1Type, obj1Value, obj2Type, obj2Value);
                     throw new Error('Unmergable at ' + keyStack.join('.') + ':' + key);
@@ -120,13 +119,12 @@ define([
                 }
                 parsed.push(get(config, tag));
             } while (parsing);
-            // console.log('done', parsed.length, parsed, pos);
             parsed.push(str.substr(pos));
             return parsed.join('');
         }
 
         function fixit(branch) {
-            Object.keys(branch).forEach(function(key) {
+            Object.keys(branch).forEach(function (key) {
                 var value = branch[key];
                 if (typeof value === 'string') {
                     branch[key] = fix(value);
@@ -140,14 +138,10 @@ define([
     }
 
     return {
-        start: function() {
-
+        start: function () {
             // merge the deploy and app config.
-            // console.log('merging', appConfig, deployConfig);
             var merged = mergeObjects([appConfigBase, deployConfig])
-            console.log('merged!', JSON.parse(JSON.stringify(merged)));
             var appConfig = fixConfig(merged);
-            console.log('fixed config', appConfig);
             return App.run({
                     appConfig: appConfig,
                     nodes: {
@@ -164,17 +158,17 @@ define([
                     plugins: pluginConfig.plugins,
                     menus: appConfig.menus
                 })
-                .then(function(runtime) {
+                .then(function (runtime) {
                     switch (appConfig.deploy.environment) {
-                        case 'prod':
-                            // do nothing
-                            break;
-                        default:
-                            runtime.send('ui', 'alert', {
-                                type: 'info',
-                                message: 'You are operating in the ' + appConfig.deploy.name + ' environment',
-                                icon: appConfig.deploy.icon
-                            });
+                    case 'prod':
+                        // do nothing
+                        break;
+                    default:
+                        runtime.send('ui', 'alert', {
+                            type: 'info',
+                            message: 'You are operating in the ' + appConfig.deploy.name + ' environment',
+                            icon: appConfig.deploy.icon
+                        });
                     }
                 });
         }

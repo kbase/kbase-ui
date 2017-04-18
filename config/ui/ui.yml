@@ -57,15 +57,19 @@ ui:
                             name: globus_login 
                     paths:
                         login: login
+                    plugins:
+                        - login
                 auth2:
                     services:
                         session:
                             module: auth2Session
                     widgets:
                         login:
-                            name: auth2_login
+                            name: auth2_signin
                     paths:
-                        login: auth2/login           
+                        login: login          
+                    plugins:
+                        - auth2-client
 # Primarily for output links for the docsite. 
 # TODO: merge with ui.outbound_links?        
 docsite:
