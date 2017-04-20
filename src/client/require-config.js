@@ -29,7 +29,6 @@ var require = {
         'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
         'js-yaml': 'bower_components/js-yaml/js-yaml',
         'knockout-validation': 'bower_components/knockout-validation/knockout.validation',
-        // For the ui
         bluebird: 'bower_components/bluebird/bluebird',
         bootstrap_css: 'bower_components/bootstrap/css/bootstrap',
         bootstrap: 'bower_components/bootstrap/js/bootstrap',
