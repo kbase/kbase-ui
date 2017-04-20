@@ -2,7 +2,7 @@ define([
     'bluebird',
     'kb_common/router',
     'kb_common/lang'
-], function(Promise, Router, lang) {
+], function (Promise, Router, lang) {
     function factory(config) {
         var runtime = config.runtime,
             router = Router.make(config),
@@ -25,7 +25,7 @@ define([
             // console.log('routing...', handler);
             runtime.send('route', 'routing', handler);
             if (handler.route.authorization) {
-                if (!runtime.getService('session').isLoggedIn()) {
+                if (!runtime.service('session').isLoggedIn()) {
                     var loginParams = {};
                     if (handler.request.path) {
                         loginParams.nextrequest = JSON.stringify(handler.request);
@@ -51,7 +51,7 @@ define([
         }
 
         function installRoute(route) {
-            return Promise.try(function() {
+            return Promise.try(function () {
                 if (route.widget) {
                     router.addRoute(route);
                     return true;
@@ -75,7 +75,7 @@ define([
             if (!routes) {
                 return;
             }
-            return routes.map(function(route) {
+            return routes.map(function (route) {
                 return installRoute(route);
             });
         }
@@ -85,11 +85,11 @@ define([
         }
 
         function start() {
-            runtime.recv('app', 'do-route', function() {
+            runtime.recv('app', 'do-route', function () {
                 doRoute();
             });
 
-            runtime.recv('app', 'new-route', function(data) {
+            runtime.recv('app', 'new-route', function (data) {
                 if (data.routeHandler.route.redirect) {
                     send('app', 'route-redirect', data);
                 } else if (data.routeHandler.route.widget) {
@@ -99,43 +99,43 @@ define([
                 }
             });
 
-            runtime.recv('app', 'route-redirect', function(data) {
+            runtime.recv('app', 'route-redirect', function (data) {
                 runtime.send('app', 'navigate', {
                     path: data.routeHandler.route.redirect.path,
                     params: data.routeHandler.route.redirect.params
                 });
             });
 
-            runtime.recv('app', 'navigate', function(data) {
+            runtime.recv('app', 'navigate', function (data) {
                 router.navigateTo(data);
             });
 
-            runtime.recv('app', 'redirect', function(data) {
+            runtime.recv('app', 'redirect', function (data) {
                 router.redirectTo(data.url, data.new_window || data.newWindow);
             });
 
             eventListeners.push({
                 target: window,
                 type: 'hashchange',
-                listener: function(e) {
+                listener: function (e) {
                     // $(window).on('hashchange', function () {
                     // NB this is called AFTER it has changed. The browser will do nothing by
                     // default
                     doRoute();
                 }
             });
-            eventListeners.forEach(function(listener) {
+            eventListeners.forEach(function (listener) {
                 listener.target.addEventListener(listener.type, listener.listener);
             });
         }
 
         function stop() {
-            receivers.forEach(function(receiver) {
+            receivers.forEach(function (receiver) {
                 if (receiver) {
                     runtime.drop(receiver);
                 }
             });
-            eventListeners.forEach(function(listener) {
+            eventListeners.forEach(function (listener) {
                 listener.target.removeEventListener(listener.type, listener.listener);
             });
         }
@@ -147,7 +147,7 @@ define([
         };
     }
     return {
-        make: function(config) {
+        make: function (config) {
             return factory(config);
         }
     };
