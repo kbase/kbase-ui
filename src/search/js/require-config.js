@@ -6,7 +6,7 @@ define('kb_clients', [], function () {
    return 'KBCLIENTS DUMMY OBJECT';
 });
 //NB underscore, as of 1.6, inclues AMD compatible loading. However, other parts of the kbase
-// codebase may rely on underscore being loaded globally, so se just use the global version, which 
+// codebase may rely on underscore being loaded globally, so se just use the global version, which
 // must already be loaded.
 define('underscore', [], function () {
    return _;
@@ -24,7 +24,7 @@ for (var i in kbClients) {
          return client;
       };
    })(window[kbClients[i][1]]));
-      
+
 }
 
 define('postal', [], function () {
@@ -50,7 +50,7 @@ require.config({
       domReady: '../modules/bower_components/requirejs-domready/domReady',
       text: '../modules/bower_components/requirejs-text/text',
       json: '../modules/bower_components/requirejs-json/json',
-      
+
       // kbase utils
       'kb.utils': 'src/kbaseUtils',
       'kb.cookie': 'src/kbaseCookie',
@@ -58,9 +58,9 @@ require.config({
       'kb.utils.api': 'src/kbaseAPIUtils',
       'kb.alert': 'src/widgets/kbaseAlert',
       'kb.asyncqueue': 'src/kbaseAsyncQueue',
-      'kb.statemachine': 'src/kbaseStateMachine',  
+      'kb.statemachine': 'src/kbaseStateMachine',
       'kb.logger': 'src/kbaseLogger',
-      
+
       // kbase app
       'kb.appstate': 'src/kbaseAppState',
 
@@ -72,13 +72,15 @@ require.config({
       'kb.widget.social.user_search': 'src/widgets/social/kbaseUserSearch',
       'kb.widget.social.browse_narratives': 'src/widgets/social/kbaseUserBrowseNarratives',
       'kb.widget.social.collaborators': 'src/widgets/social/kbaseUserCollaboratorNetwork',
-      
+
       'kb.session': 'src/kbaseSession',
+      'kb.session.sync': 'src/kbaseSessionSync',
       'kb.config': 'src/kbaseConfig',
       'kb.widget.navbar': 'src/widgets/kbaseNavbar',
       'kb.widget.base': 'src/widgets/kbaseBaseWidget',
       'kb.widget.login': 'src/widgets/kbaseLoginWidget',
-      
+      'kb.widget.login.funcsite': 'src/widgets/kbaseLoginFuncSite',
+
       // Dashboard widgets
       'kb.widget.dashboard.base': 'src/widgets/dashboard/DashboardWidget',
       'kb.widget.dashboard.profile': 'src/widgets/dashboard/ProfileWidget',
@@ -87,21 +89,30 @@ require.config({
       'kb.widget.dashboard.publicNarratives': 'src/widgets/dashboard/PublicNarrativesWidget',
       'kb.widget.dashboard.apps': 'src/widgets/dashboard/AppsWidget',
       'kb.widget.dashboard.data': 'src/widgets/dashboard/DataWidget',
-      'kb.widget.dashboard.collaborators': 'src/widgets/dashboard/CollaboratorsWidget', 
+      'kb.widget.dashboard.collaborators': 'src/widgets/dashboard/CollaboratorsWidget',
       'kb.widget.dashboard.metrics': 'src/widgets/dashboard/MetricsWidget',
-      
+
       // Dataview widgets
       'kb.widget.dataview.base': 'src/widgets/dataview/DataviewWidget',
       'kb.widget.dataview.overview': 'src/widgets/dataview/OverviewWidget',
-      
+
       // KBase clients. Wrappers around the service clients to provide packaged operations with promises.
       'kb.client.workspace': 'src/clients/kbaseWorkspaceClient',
-      'kb.client.methods': 'src/clients/kbaseClientMethods'
+      'kb.client.methods': 'src/clients/kbaseClientMethods',
+
+      'Auth2Session' : '../modules/kb_common_ts/Auth2Session',
+      'Cookie' : '../modules/kb_common_ts/Cookie',
+      'Auth2' : '../modules/kb_common_ts/Auth2',
+      'bluebird' : '../modules/bower_components/bluebird/bluebird',
+      'Utils' : '../modules/kb_common_ts/Utils',
+      'Html' : '../modules/kb_common_ts/Html',
+      'HttpClient' : '../modules/kb_common_ts/HttpClient',
+      'HttpUtils' : '../modules/kb_common_ts/HttpUtils',
    },
    shim: {
       // Better standard naming: Prefix with kbc_ (KBase Client), followed
       // by the global object / base filename the client lib.
-     
+
       q: {
          exports: 'Q'
       }

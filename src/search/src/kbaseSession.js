@@ -1,8 +1,9 @@
 /*global define: true */
 /*jslint browser:true  vars: true */
-define(['jquery', 'q', 'kb.cookie', 'kb.config', 'kb.logger'],
-    function ($, Q, Cookie, Config, Logger) {
+define(['jquery', 'q', 'kb.cookie', 'kb.config', 'kb.logger', 'Auth2Session', 'postal', 'kb.appstate'],
+    function ($, Q, Cookie, Config, Logger, Auth2Session, Postal, AppState) {
         'use strict';
+
         var Session = Object.create({}, {
             // Property Constants
 
@@ -51,9 +52,46 @@ define(['jquery', 'q', 'kb.cookie', 'kb.config', 'kb.logger'],
             init: {
                 value: function () {
                     // The sessionObject is created in this method.
-                    this.setSession(this.importSessionFromCookie());
+                    //this.setSession(this.importSessionFromCookie());
                     // 1 hour is the default cookie max age.
-                    this.cookieMaxAge = Config.getConfig('session.cookie.max-age', 60 * 60);
+                    //this.cookieMaxAge = Config.getConfig('session.cookie.max-age', 60 * 60);
+
+                    var sessionCookie = Cookie.getItem(this.cookieName);
+
+                    //in our fancy new auth2 world, we basically delegate all login related functions to the auth2 libraries.
+                    // so we just read our cookie
+
+                    if (sessionCookie) {
+
+                      var session = new Auth2Session.Auth2Session( {
+                        cookieName : 'kbase_session',
+                        baseUrl : window.location.protocol + '//' + window.location.hostname + '/services/auth',
+                        providers : []
+                      });
+console.log("SESSION : ", session);
+                      var fakeSession = {
+                        token : sessionCookie,
+                        tokenObject : null,
+                        sessionId : sessionCookie
+                      };
+
+                      this.setSession ( fakeSession );
+
+                      session.evaluateSession()
+                        .then( function( ) {
+
+                          session.getMe().then( function(tokenObject) {
+
+                            session.tokenObject = tokenObject;
+                            fakeSession.tokenObject = tokenObject;
+                            fakeSession.username = tokenObject.user;
+                            fakeSession.realname = tokenObject.display;
+                            Postal.channel('session').publish('auth2.loaded', fakeSession);
+                            AppState.setItem('userprofile', fakeSession);
+                          });
+                        });
+                    };
+
 
                     return this;
                 }
@@ -118,50 +156,9 @@ define(['jquery', 'q', 'kb.cookie', 'kb.config', 'kb.logger'],
              */
             importSessionFromCookie: {
                 value: function () {
-                    var sessionCookie = Cookie.getItem(this.cookieName);
 
-                    if (!sessionCookie) {
-                        return null;
-                    }
-                    // first pass just break out the string into fields.
-                    var session = this.decodeToken(sessionCookie);
+                    return this.sessionObject;
 
-                    if (!(session.kbase_sessionid && session.un && session.user_id && session.token)) {
-                        this.removeSession();
-                        return null;
-                    }
-                    session.token = session.token.replace(/PIPESIGN/g, '|').replace(/EQUALSSIGN/g, '=');
-
-                    // Ensure that we have localStorage.
-                    // var storageSessionString = localStorage.getItem(this.cookieName);
-                    // if (!storageSessionString) {
-                    //     Logger.logWarning('Local Storage Cookie missing -- resetting session');
-                    //     this.removeSession();
-                    //     return null;
-                    // }
-
-                    // var storageSession = JSON.parse(storageSessionString);
-                    // if (session.token !== storageSession.token) {
-                    //     Logger.logWarning('Local Storage Cookie token different than cookie token -- resetting session');
-                    //     // console.log(session.token);
-                    //     // console.log(storageSession)
-                    //     this.removeSession();
-                    //     return null;
-                    // }
-
-                    // now we have a session object equivalent to the one returned by the auth service.
-                    var newSession = {
-                        username: session.user_id,
-                        token: session.token,
-                        tokenObject: this.decodeToken(session.token),
-                        sessionId: session.kbase_sessionid
-                    };
-
-                    if (this.validateSession(newSession)) {
-                        return newSession;
-                    } else {
-                        return null;
-                    }
                 }
             },
             /**
@@ -183,6 +180,7 @@ define(['jquery', 'q', 'kb.cookie', 'kb.config', 'kb.logger'],
                     // NB: the object returned from the auth service does NOT have the un field.
                     if (!(kbaseSession.kbase_sessionid && kbaseSession.user_id && kbaseSession.token)) {
                         // throw new Error('Invalid Kbase Session Cookie');
+
                         this.removeSession();
                         return null;
                     }
@@ -212,6 +210,7 @@ define(['jquery', 'q', 'kb.cookie', 'kb.config', 'kb.logger'],
              */
             refreshSession: {
                 value: function () {
+                return;
                     this.setSession(this.importSessionFromCookie());
                     return this.sessionObject;
                 }
@@ -325,6 +324,10 @@ define(['jquery', 'q', 'kb.cookie', 'kb.config', 'kb.logger'],
              */
             validateSession: {
                 value: function (sessionObject) {
+
+                    //we will blissfully assume that our new auth2 session is always valid.
+                    return true;
+
                     if (sessionObject === undefined) {
                         sessionObject = this.sessionObject;
                     }
@@ -425,6 +428,7 @@ define(['jquery', 'q', 'kb.cookie', 'kb.config', 'kb.logger'],
              * @returns {undefined} nothing
              */
             removeSession: {
+
                 value: function () {
                     Cookie.removeItem(this.cookieName, '/');
                     Cookie.removeItem(this.cookieName, '/', 'kbase.us');
@@ -560,7 +564,7 @@ define(['jquery', 'q', 'kb.cookie', 'kb.config', 'kb.logger'],
 
             isLoggedIn: {
                 value: function () {
-                    if (this.sessionObject && this.sessionObject.token) {
+                    if (this.sessionObject) {//&& this.sessionObject.token) {
                         return true;
                     }
                     return false;
