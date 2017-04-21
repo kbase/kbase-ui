@@ -48,7 +48,7 @@ plugins:
     -
         name: dashboard
         globalName: kbase-ui-plugin-dashboard
-        version: 2.1.1
+        version: 2.1.4
         cwd: src/plugin
         source:
             bower: {}
@@ -134,14 +134,14 @@ plugins:
         name: auth2-client
         disabled: true
         globalName: kbase-ui-plugin-auth2-client
-        version: 0.8.0
+        version: 0.9.1
         cwd: src/plugin
         source:
             bower: {}
     -
         name: user-profile
         globalName: kbase-ui-plugin-user-profile
-        version: 1.0.2
+        version: 1.0.3
         cwd: src/plugin
         source:
             bower: {}

@@ -110,7 +110,7 @@ define([
 
 
         function start() {
-            auth2Session.start()
+            return auth2Session.start()
                 .then(function () {
                     // session.setSession(session.importFromCookie());
                     if (auth2Session.isAuthorized()) {
