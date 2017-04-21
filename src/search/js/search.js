@@ -1373,7 +1373,6 @@ searchApp.controller('searchController', function searchCtrl($rootScope, $scope,
     $scope.listWorkspaces = function() {
         try {
             $scope.options.userState.session.displayWorkspaces = true;
-            console.log("MAKES A WS WITH TOKEN", $scope.options.userState.session.token);
             $scope.workspace_service = searchKBaseClientsService.getWorkspaceClient($scope.options.userState.session.token);
             $scope.options.userState.longterm.workspaces = [];
 
