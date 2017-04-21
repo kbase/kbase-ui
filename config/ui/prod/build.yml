@@ -50,7 +50,7 @@ plugins:
     -
         name: dashboard
         globalName: kbase-ui-plugin-dashboard
-        version: 2.1.2
+        version: 2.1.4
         cwd: src/plugin
         source:
             bower: {}
@@ -85,7 +85,7 @@ plugins:
     -
         name: auth2-client
         globalName: kbase-ui-plugin-auth2-client
-        version: 0.9.0
+        version: 0.9.1
         cwd: src/plugin
         source:
             bower: {}
