@@ -166,6 +166,19 @@ define([
             }
         }
 
+        function getItem(path, defaultValue) {
+            return Promise.try(function () {
+                var profile = state.getItem('userprofile');
+                if (profile) {
+                    return profile.getProp(path, defaultValue);
+                }
+                return whenChange()
+                    .then(function (profile) {
+                        return profile.getProp(path, defaultValue);
+                    });
+            });
+        }
+
         //runtime.recv('session', 'loggedin', function () {
         //    loadSession();
         //});
@@ -187,7 +200,7 @@ define([
         }
 
         function whenChange() {
-            return state.whenItem('userprofile')
+            return state.whenItem('userprofile');
         }
 
         return {
@@ -197,7 +210,8 @@ define([
             // useful api
             onChange: onChange,
             whenChange: whenChange,
-            getRealname: getRealname
+            getRealname: getRealname,
+            getItem: getItem
         };
     }
     return {
