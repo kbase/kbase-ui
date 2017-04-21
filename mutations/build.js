@@ -828,6 +828,19 @@ function makeKbConfig(state) {
                     }));
                 });
         })
+        // Rewrite the main entry point html files to add in cache-busting via the git commit hash
+        .then(function () {
+            Promise.all(['index.html', 'load-narrative.html', 'loading.html'].map(function (fileName) {
+                    return Promise.all([fileName, fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')]);
+                }))
+                .then(function (templates) {
+                    return Promise.all(templates.map(function (template) {
+                        var dest = root.concat(['build', 'client', template[0]]).join('/');
+                        var out = handlebars.compile(template[1])(state.buildInfo);
+                        return fs.writeFileAsync(dest, out);
+                    }));
+                });
+        })
         .then(function () {
             return state;
         });
