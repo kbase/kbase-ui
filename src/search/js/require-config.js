@@ -101,6 +101,7 @@ require.config({
       'kb.client.methods': 'src/clients/kbaseClientMethods',
 
       'Auth2Session' : '../modules/kb_common_ts/Auth2Session',
+      'Auth2Error' : '../modules/kb_common_ts/Auth2Error',
       'Cookie' : '../modules/kb_common_ts/Cookie',
       'Auth2' : '../modules/kb_common_ts/Auth2',
       'bluebird' : '../modules/bower_components/bluebird/bluebird',
