@@ -9,9 +9,9 @@ plugins:
     -
         welcome
     -
-        login
-    -
-        userprofile
+         name: login
+         internal: true
+         disabled: true
     -
         datasearch
     -
@@ -23,79 +23,79 @@ plugins:
         name: viswidgets
         globalName: kbase-ui-plugin-vis-widgets
         cwd: src/plugin
-        version: 1.1.4
+        version: 1.2.0
         source:
             bower: {}
     -
         name: typeview
         globalName: kbase-ui-plugin-typeview
         cwd: src/plugin
-        version: 1.0.3
+        version: 1.1.1
         source:
             bower: {}
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 3.0.1
+        version: 3.1.1
         cwd: src/plugin
         source:
             bower: {}
     -
         name: datawidgets
         globalName: kbase-ui-plugin-datawidgets
-        version: 0.3.0
+        version: 0.4.0
         cwd: src/plugin
         source:
             bower: {}
     -
         name: dashboard
         globalName: kbase-ui-plugin-dashboard
-        version: 2.0.5
+        version: 2.1.1
         cwd: src/plugin
         source:
             bower: {}
     -
         name: data-landing-pages
         globalName: kbase-ui-plugin-data-landing-pages
-        version: 0.7.1
+        version: 0.7.3
         cwd: src/plugin
         source:
             bower: {}
     -
         name: methodview
         globalName: kbase-ui-plugin-methodview
-        version: 1.0.1
+        version: 1.1.0
         cwd: src/plugin
         source:
             bower: {}
     -
         name: ontology-widgets
         globalName: kbase-ui-plugin-ontology-widgets
-        version: 1.0.1
+        version: 1.0.3
         cwd: src/plugin
         source:
             bower: {}
     -
         name: bulk-ui
         globalName: kbase-ui-plugin-bulk-ui
-        version: 0.3.6
+        version: 0.4.0
         cwd: src/plugin
         source:
             bower: {}    
     -
-        name: jgi-import
-        globalName: kbase-ui-plugin-jgi-import
-        version: 0.1.0
+        name: auth2-client
+        globalName: kbase-ui-plugin-auth2-client
+        version: 0.8.0
         cwd: src/plugin
         source:
             bower: {}
     -
-        name: auth2-client
-        globalName: kbase-ui-plugin-auth2-client
-        version: 0.5.0
+        name: user-profile
+        globalName: kbase-ui-plugin-user-profile
+        version: 1.0.2
         cwd: src/plugin
         source:
-            bower: {}
+            bower: {}            
 
 # Copy these directories into the modules
 # There are two forms, as for plugins.
@@ -103,24 +103,5 @@ plugins:
 # a copy: section will specify a directory to copy literally into modules
 # a link: section will specify a directory to link into modules
 
-modules:
-    -
-        globalName: kbase-ui-widget
-        version: 1.0.8
-        source:
-            bower: {}
-    -
-        globalName: kbase-common-js
-        version: 1.10.0
-        source:
-            bower: {}
-    -
-        globalName: kbase-service-clients-js
-        version: 1.10.0
-        source:
-            bower: {}
-    -
-        globalName: kbase-sdk-clients-js
-        version: 0.4.0
-        source:
-            bower: {}
+modules: []
+   

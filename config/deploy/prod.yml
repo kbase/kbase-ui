@@ -1,0 +1,24 @@
+# Deploy-Time Config for Auth2 Local Development
+---
+deploy:
+  environment: prod
+  hostname: narrative.kbase.us
+  icon: thumbs-up
+  name: Production
+  services:
+    urlBase: https://kbase.us
+ui:
+  backupCookie:
+    domain: kbase.us
+    enabled: true
+  services:
+    analytics:
+      google:
+        hostname: kbase.us
+        code: UA-74532966-1
+  features:
+    auth:
+      selected: auth1
+services:
+  narrative:
+    url: https://narrative.kbase.us

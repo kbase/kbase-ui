@@ -21,82 +21,82 @@
             '	</div>' +
             '</div>';
     }
-    
+
     function handleGlobalError(err) {
         'use strict';
 
 
         switch (err.requireType) {
-            case 'notloaded':
-                if (/esprima/.test(err.message)) {
-                    // ignore esprima for now. The loading is attempted within the 
-                    // yaml library ...
-                    console.warn('esprima require test detected');
-                    return;
-                }
-                break;
-            case 'timeout':
-                if (err.requireModules) {
-                    if (err.requireModules.some(function (module) {
+        case 'notloaded':
+            if (/esprima/.test(err.message)) {
+                // ignore esprima for now. The loading is attempted within the 
+                // yaml library ...
+                console.warn('esprima require test detected');
+                return;
+            } else if (/buffer/.test(err.message)) {
+                // blame js-yaml
+                console.warn('buffer require test detected');
+                return;
+            }
+            break;
+        case 'timeout':
+            if (err.requireModules) {
+                if (err.requireModules.some(function (module) {
                         if (module === '//www.google-analytics.com/analytics.js') {
                             return true;
                         }
                         return false;
                     })) {
-                        KBaseFallback.showError({
-                            title: 'Analytics Blocked (timeout)',
-                            content: [
-                                'A browser setting, plugin, or other constraint has prevented the Analytics module from loading. KBase uses this module to measure usage of the Narrative Interface. The Narrative Interface will not operate with this constraint in place.'
-                            ],
-                            references: [
-                                {
-                                    title: 'Incompatible Plugins',
-                                    url: 'http://kbase.us/incompatible-plugins'
-                                }
-                            ]
-                        })
-                    }
+                    KBaseFallback.showError({
+                        title: 'Analytics Blocked (timeout)',
+                        content: [
+                            'A browser setting, plugin, or other constraint has prevented the Analytics module from loading. KBase uses this module to measure usage of the Narrative Interface. The Narrative Interface will not operate with this constraint in place.'
+                        ],
+                        references: [{
+                            title: 'Incompatible Plugins',
+                            url: 'http://kbase.us/incompatible-plugins'
+                        }]
+                    })
                 }
-            case 'require':
-                console.error('Error in require-loaded code');
-                console.error(err);
-                return;
-            case 'scripterror':
-                if (err.requireModules) {
-                    if (err.requireModules.some(function (moduleName) {
+            }
+        case 'require':
+            console.error('Error in require-loaded code');
+            console.error(err);
+            return;
+        case 'scripterror':
+            if (err.requireModules) {
+                if (err.requireModules.some(function (moduleName) {
                         return (moduleName === 'app/googleAnalytics');
                     })) {
-                        // KBaseFallback.redirect('/pages/gablocked.html');
-                        KBaseFallback.showError({
-                            title: 'Analytics Blocked (scripterror)',
-                            content: [
-                                'A browser setting, plugin, or other constraint has prevented the Analytics module from loading. KBase uses this module to measure usage of the Narrative Interface. The Narrative Interface will not operate with this constraint in place.'
-                            ],
-                            references: [
-                                {
-                                    title: 'Incompatible Plugins',
-                                    url: 'http://kbase.us/incompatible-plugins'
-                                }
-                            ]
-                        });
-                        return;
-                    }
+                    // KBaseFallback.redirect('/pages/gablocked.html');
+                    KBaseFallback.showError({
+                        title: 'Analytics Blocked (scripterror)',
+                        content: [
+                            'A browser setting, plugin, or other constraint has prevented the Analytics module from loading. KBase uses this module to measure usage of the Narrative Interface. The Narrative Interface will not operate with this constraint in place.'
+                        ],
+                        references: [{
+                            title: 'Incompatible Plugins',
+                            url: 'http://kbase.us/incompatible-plugins'
+                        }]
+                    });
+                    return;
                 }
-                break;
-            case 'define':
-            case 'fromtexteval':
-            case 'mismatch':
-            case 'requireargs':
-            case 'nodefine':
-            case 'importscripts':
-                break;
+            }
+            break;
+        case 'define':
+        case 'fromtexteval':
+        case 'mismatch':
+        case 'requireargs':
+        case 'nodefine':
+        case 'importscripts':
+            break;
         }
 
-//        console.error('AMD Error');
-//        console.error('Type', err.requireType);
-//        console.error('Modules', err.requireModules);
-//        console.error('Message', err.message);
-//        console.error(err);
+        //        console.error('AMD Error');
+        //        console.error('Type', err.requireType);
+        //        console.error('Modules', err.requireModules);
+        //        console.error('Message', err.message);
+        //        console.error(err);
 
         KBaseFallback.showError({
             title: 'AMD Error',
@@ -106,12 +106,10 @@
                 'Type: ' + err.requireType,
                 err.requireModules ? 'Modules: ' + err.requireModules.join(', ') : null
             ],
-            references: [
-                {
-                    title: 'Reporting Application Errors',
-                    url: 'http://kbase.us/contact-us'
-                }
-            ]
+            references: [{
+                title: 'Reporting Application Errors',
+                url: 'http://kbase.us/contact-us'
+            }]
         });
 
         throw err;
@@ -121,36 +119,34 @@
         'use strict';
 
         switch (err.requireType) {
-            case 'notloaded':
-                if (/xesprima/.test(err.message)) {
-                    // ignore esprima for now. The loading is attempted within the 
-                    // yaml library ...
-                    console.warn('esprima require test detected');
-                    return;
-                }
-                break;
-            case 'scripterror':
-                if (err.requireModules) {
-                    if (err.requireModules.some(function (moduleName) {
+        case 'notloaded':
+            if (/xesprima/.test(err.message)) {
+                // ignore esprima for now. The loading is attempted within the 
+                // yaml library ...
+                console.warn('esprima require test detected');
+                return;
+            }
+            break;
+        case 'scripterror':
+            if (err.requireModules) {
+                if (err.requireModules.some(function (moduleName) {
                         return (moduleName === 'app/googleAnalytics');
                     })) {
-                        // KBaseFallback.redirect('/pages/gablocked.html');
-                        KBaseFallback.showError({
-                            title: 'Analytics Blocked',
-                            content: [
-                                'A browser setting, plugin, or other constraint has prevented the Analytics module from loading. KBase uses this module to measure usage of the Narrative Interface (NI). The Narrative Interface will not operate with this constraint in place.'
-                            ],
-                            references: [
-                                {
-                                    title: 'Incompatible Plugins',
-                                    url: 'http://kbase.us/incompatible-plugins'
-                                }
-                            ]
-                        });
-                        return;
-                    }
+                    // KBaseFallback.redirect('/pages/gablocked.html');
+                    KBaseFallback.showError({
+                        title: 'Analytics Blocked',
+                        content: [
+                            'A browser setting, plugin, or other constraint has prevented the Analytics module from loading. KBase uses this module to measure usage of the Narrative Interface (NI). The Narrative Interface will not operate with this constraint in place.'
+                        ],
+                        references: [{
+                            title: 'Incompatible Plugins',
+                            url: 'http://kbase.us/incompatible-plugins'
+                        }]
+                    });
+                    return;
                 }
-                break;
+            }
+            break;
         }
 
         KBaseFallback.showError({
@@ -161,12 +157,10 @@
                 'Type: ' + err.requireType,
                 err.requireModules ? 'Modules: ' + err.requireModules.join(', ') : null
             ],
-            references: [
-                {
-                    title: 'Reporting Application Errors',
-                    url: 'http://kbase.us/contact-us'
-                }
-            ]
+            references: [{
+                title: 'Reporting Application Errors',
+                url: 'http://kbase.us/contact-us'
+            }]
         });
 
         throw err;
@@ -188,12 +182,10 @@
                         'An error has occurred while starting the the KBase Application.',
                         err.message
                     ],
-                    references: [
-                        {
-                            title: 'Reporting Application Errors',
-                            url: 'http://kbase.us/contact-us'
-                        }
-                    ]
+                    references: [{
+                        title: 'Reporting Application Errors',
+                        url: 'http://kbase.us/contact-us'
+                    }]
                 });
                 // document.getElementById('root').innerHTML = 'Error starting KBase UI. Please consult the browser error log.';
             });

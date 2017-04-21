@@ -5,7 +5,7 @@ define([
     'kb_types_typeManager',
     'kb_plugin_types',
     'require'
-], function (Promise, TypeManager, Plugin, require) {
+], function(Promise, TypeManager, Plugin, require) {
     'use strict';
 
     function proxyMethod(obj, method, args) {
@@ -24,26 +24,26 @@ define([
             runtime = config.runtime;
 
         function start() {
-            return new Promise(function (resolve) {
-                require(['yaml!' + Plugin.plugin.path + '/data_types.yml'], function (typeDefs) {
+            return new Promise(function(resolve) {
+                require(['yaml!' + Plugin.plugin.path + '/data_types.yml'], function(typeDefs) {
                     typeManager = TypeManager.make({
                         runtime: config.runtime,
                         typeDefs: typeDefs
                     });
-                    console.log('created type manager');
                     resolve();
                 });
             });
         }
+
         function stop() {
             return true;
         }
+
         function pluginHandler(pluginConfig) {
             if (!pluginConfig) {
                 return;
             }
-            console.log()
-            return Promise.all(pluginConfig.map(function (typeDef) {
+            return Promise.all(pluginConfig.map(function(typeDef) {
                 var type = typeDef.type,
                     viewers = typeDef.viewers,
                     icon = typeDef.icon;
@@ -52,14 +52,13 @@ define([
                     typeManager.setIcon(type, icon);
                 }
 
-                viewers.forEach(function (viewerDef) {
-                    return new Promise(function (resolve, reject) {
+                viewers.forEach(function(viewerDef) {
+                    return new Promise(function(resolve, reject) {
                         try {
                             typeManager.addViewer(type, viewerDef);
                             resolve();
                         } catch (ex) {
-                            console.log('ERROR in plugin handler for type service');
-                            console.log(ex);
+                            console.error('ERROR in plugin handler for type service', ex);
                             reject(ex);
                         }
                     });
@@ -88,28 +87,28 @@ define([
             // plugin interface
             pluginHandler: pluginHandler,
             // API
-            getViewer: function () {
+            getViewer: function() {
                 return proxyMethod(typeManager, 'getViewer', arguments);
             },
-            parseTypeId: function () {
+            parseTypeId: function() {
                 return proxyMethod(typeManager, 'parseTypeId', arguments);
             },
-            getIcon: function () {
+            getIcon: function() {
                 return proxyMethod(typeManager, 'getIcon', arguments);
             },
-            makeVersion: function () {
+            makeVersion: function() {
                 return proxyMethod(typeManager, 'makeVersion', arguments);
             },
-            makeTypeId: function () {
+            makeTypeId: function() {
                 return proxyMethod(typeManager, 'makeTypeId', arguments);
             },
-            hasType: function () {
-                return proxyMethod(typeManager, 'hasType', arguments);                
+            hasType: function() {
+                return proxyMethod(typeManager, 'hasType', arguments);
             }
         };
     }
     return {
-        make: function (config) {
+        make: function(config) {
             return factory(config);
         }
     };

@@ -3,6 +3,7 @@
     <head>
         <title>KBase Narrative Interface</title>
         <link rel="icon" type="image/x-icon" href="/favicon.ico">
+        <script src="/build-info.js"></script>
         <script src="/require-config.js"></script>
         <script src="/modules/bower_components/requirejs/require.js"></script>
     </head>
@@ -35,16 +36,16 @@
                 numTries = 0,
                 siteError = false,
                 siteReady = false;
-                
+
             function showError(msg) {
                 $('#text').html(msg);
             }
             function getParams() {
                 var href = window.location.href,
-                    queryPosition = href.indexOf('?');                
+                    queryPosition = href.indexOf('?');
                 if (queryPosition < 0) {
                     return;
-                } 
+                }
                 var query = href.substring(queryPosition + 1).split('&'),
                     params = {};
                 query.forEach(function (paramString) {
@@ -54,22 +55,22 @@
                     }
                     params[param[0]] = decodeURIComponent(param[1]);
                 });
-                return params;                
+                return params;
             }
-            
+
             var params = getParams();
-            
+
             if (params === undefined || params.length === 0) {
                 showError('<p>Invalid narrative request -- missing narrative url.</p>');
                 return;
             }
-            
+
             var narrativeUrl = params.n;
             if (!narrativeUrl) {
                 showError('<p>Invalid narrative request -- missing narrative url.</p>');
                 return;
             }
-            
+
             // in case the server didn't get the memo that this is supposed to be https!
             narrativeUrl = narrativeUrl.replace(/https?\:/, window.location.protocol);
 

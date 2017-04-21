@@ -1,10 +1,8 @@
-/*global define */
-/*jslint browser:true,white:true */
 define([
     'jquery',
     'bluebird',
-    'kb/service/client/narrativeMethodStore',
-    'kb/service/client/catalog',
+    'kb_service/client/narrativeMethodStore',
+    'kb_service/client/catalog',
     '../catalog_util',
     '../app_card',
     'yaml!../data/categories.yml',
@@ -12,7 +10,7 @@ define([
     // for effect
     'kb_widget/legacy/authenticatedWidget',
     'bootstrap'
-], function(
+], function (
     $,
     Promise,
     NarrativeMethodStore,
@@ -23,8 +21,8 @@ define([
 ) {
     'use strict';
     $.KBWidget({
-        name: "KBaseCatalogBrowser",
-        parent: "kbaseAuthenticatedWidget", // todo: do we still need th
+        name: 'KBaseCatalogBrowser',
+        parent: 'kbaseAuthenticatedWidget', // todo: do we still need th
         options: {
             tag: null
         },
@@ -60,7 +58,7 @@ define([
 
         categories: {},
 
-        init: function(options) {
+        init: function (options) {
             this._super(options);
 
             var self = this;
@@ -131,12 +129,12 @@ define([
             }
 
             // when we have it all, then render the list
-            Promise.all(loadingCalls).then(function() {
+            Promise.all(loadingCalls).then(function () {
 
                 self.processData();
 
                 self.updateFavoritesCounts()
-                    .then(function() {
+                    .then(function () {
                         self.hideLoading();
                         //self.renderAppList('favorites');
                         // Instead of making the default sort by # of favorites, sort by category (more intuitive to users)
@@ -145,7 +143,7 @@ define([
                         self.sortBy('favorites');
                         self.renderAppList('category');
                         return Promise.all([self.updateRunStats(), self.updateMyFavorites()]);
-                    }).catch(function(err) {
+                    }).catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                         self.hideLoading();
@@ -158,7 +156,7 @@ define([
             return this;
         },
 
-        setupClients: function() {
+        setupClients: function () {
             this.catalog = new Catalog(
                 this.runtime.getConfig('services.catalog.url'), {
                     token: this.runtime.service('session').getAuthToken()
@@ -175,7 +173,7 @@ define([
 
         $ctrList: null,
 
-        renderControlToolbar: function() {
+        renderControlToolbar: function () {
             var self = this;
 
             // CONTROL BAR CONTAINER
@@ -191,10 +189,10 @@ define([
             // SEARCH
             var $searchBox = $('<input type="text" placeholder="Search" size="50">').addClass('form-control');
             $searchBox.on('input',
-                    function() {
+                    function () {
                         self.filterApps($searchBox.val());
                     })
-                .bind('keypress', function(e) {
+                .bind('keypress', function (e) {
                     if (e.keyCode === 13) {
                         return false;
                     }
@@ -204,7 +202,7 @@ define([
                     .append($searchBox)));
 
             // other controls list
-            var $ctrList = $('<ul>').addClass('nav navbar-nav').css('font-family', "'OxygenRegular', Arial, sans-serif");
+            var $ctrList = $('<ul>').addClass('nav navbar-nav').css('font-family', '\'OxygenRegular\', Arial, sans-serif');
             self.$ctrList = $ctrList;
             $content.append($ctrList);
 
@@ -212,44 +210,44 @@ define([
             var $obMyFavs = $('<a>');
             if (self.isLoggedIn) {
                 $obMyFavs.append('My Favorites')
-                    .on('click', function() {
+                    .on('click', function () {
                         self.renderAppList('my_favorites');
                     });
             }
             var $obFavs = $('<a>').append('Favorites Count')
-                .on('click', function() {
+                .on('click', function () {
                     self.renderAppList('favorites');
                 });
             var $obRuns = $('<a>').append('Run Count')
-                .on('click', function() {
+                .on('click', function () {
                     self.renderAppList('runs');
                 });
             var $obNameAz = $('<a>').append('Name (a-z)')
-                .on('click', function() {
+                .on('click', function () {
                     self.renderAppList('name_az');
                 });
             var $obNameZa = $('<a>').append('Name (z-a)')
-                .on('click', function() {
+                .on('click', function () {
                     self.renderAppList('name_za');
                 });
             var $obCat = $('<a>').append('Category')
-                .on('click', function() {
+                .on('click', function () {
                     self.renderAppList('category');
                 });
             var $obModule = $('<a>').append('Module')
-                .on('click', function() {
+                .on('click', function () {
                     self.renderAppList('module');
                 });
             var $obOwner = $('<a>').append('Developer')
-                .on('click', function() {
+                .on('click', function () {
                     self.renderAppList('developer');
                 });
             var $obInput = $('<a>').append('Input Types')
-                .on('click', function() {
+                .on('click', function () {
                     self.renderAppList('input_types');
                 });
             var $obOutput = $('<a>').append('Output Types')
-                .on('click', function() {
+                .on('click', function () {
                     self.renderAppList('output_types');
                 });
 
@@ -295,13 +293,13 @@ define([
             return [$nav, $searchBox];
         },
 
-        addUserControls: function() {
+        addUserControls: function () {
             var self = this;
             var $helpLink = $('<li>').append($('<a href="https://kbase.us/apps">').append('<i class="fa fa-question-circle"></i> Help'));
             self.$ctrList.append($helpLink);
         },
 
-        addDeveloperControls: function() {
+        addDeveloperControls: function () {
             var self = this;
 
             var $verR = $('<a href="#catalog/apps/release">').append('Released Apps');
@@ -337,7 +335,7 @@ define([
 
         },
 
-        filterApps: function(query) {
+        filterApps: function (query) {
             var self = this;
             query = query.trim();
             if (query) {
@@ -434,14 +432,14 @@ define([
 
         },
 
-        clearFilter: function() {
+        clearFilter: function () {
             var self = this;
             for (var k = 0; k < self.appList.length; k++) {
                 self.appList[k].show();
             }
         },
 
-        initMainPanel: function($appListPanel, $moduleListPanel) {
+        initMainPanel: function ($appListPanel, $moduleListPanel) {
             var $mainPanel = $('<div>').addClass('container');
             var $appListPanel = $('<div>');
             var $moduleListPanel = $('<div>');
@@ -450,12 +448,12 @@ define([
             return [$mainPanel, $appListPanel, $moduleListPanel];
         },
 
-        showLoading: function() {
+        showLoading: function () {
             var self = this;
             self.$loadingPanel.show();
             self.$mainPanel.hide();
         },
-        hideLoading: function() {
+        hideLoading: function () {
             var self = this;
             self.$loadingPanel.hide();
             self.$mainPanel.show();
@@ -464,7 +462,7 @@ define([
         // we assume context is:
         //    catalog: catalog_client
         //    browserWidget: this widget, so we can toggle any update
-        toggleFavorite: function(info, context) {
+        toggleFavorite: function (info, context) {
             var appCard = this;
             var params = {};
             if (info.module_name) {
@@ -477,25 +475,25 @@ define([
             // check if is a favorite
             if (appCard.isStarOn()) {
                 context.catalog.remove_favorite(params)
-                    .then(function() {
+                    .then(function () {
                         appCard.turnOffStar();
                         appCard.setStarCount(appCard.getStarCount() - 1);
                         context.browserWidget.updateMyFavorites();
                         return context.browserWidget.updateFavoritesCounts();
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                     });
             } else {
                 context.catalog.add_favorite(params)
-                    .then(function() {
+                    .then(function () {
                         appCard.turnOnStar();
                         appCard.setStarCount(appCard.getStarCount() + 1);
                         context.browserWidget.updateMyFavorites();
                         return context.browserWidget.updateFavoritesCounts();
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                     });
@@ -503,36 +501,36 @@ define([
         },
 
         apps: null,
-        populateAppList: function(tag) {
+        populateAppList: function (tag) {
             var self = this;
 
             // determine which set of methods to fetch
             return self.nms.list_methods({ tag: tag })
-                .then(function(apps) {
+                .then(function (apps) {
                     self.apps = apps;
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                     console.error('ERROR');
                     console.error(err);
                 });
         },
 
         legacyApps: null,
-        populateAppListWithLegacyApps: function() {
+        populateAppListWithLegacyApps: function () {
             var self = this;
 
             // apps cannot be registered via the SDK, so don't have tag info
             return self.nms.list_apps({})
-                .then(function(legacyApps) {
+                .then(function (legacyApps) {
                     self.legacyApps = legacyApps;
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                     console.error('ERROR');
                     console.error(err);
                 });
         },
 
-        populateModuleList: function(only_released) {
+        populateModuleList: function (only_released) {
             var self = this;
 
             var moduleSelection = {
@@ -545,26 +543,26 @@ define([
             }
 
             return self.catalog.list_basic_module_info(moduleSelection)
-                .then(function(modules) {
+                .then(function (modules) {
                     self.moduleLookup = {}; // {module_name: {info:{}, hash1:'tag', hash:'tag', ...}
                     var tags = ['release', 'beta', 'dev'];
                     for (var k = 0; k < modules.length; k++) {
                         self.moduleLookup[modules[k]['module_name']] = modules[k];
                     }
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                     console.error('ERROR');
                     console.error(err);
                 });
         },
 
-        updateRunStats: function() {
+        updateRunStats: function () {
             var self = this;
 
             var options = {};
 
             return self.catalog.get_exec_aggr_stats(options)
-                .then(function(stats) {
+                .then(function (stats) {
                     self.runStats = stats;
                     for (var k = 0; k < stats.length; k++) {
 
@@ -578,34 +576,34 @@ define([
                         }
                     }
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                     console.error('ERROR');
                     console.error(err);
                 });
         },
 
-        isDeveloper: function() {
+        isDeveloper: function () {
             var self = this;
 
             return self.catalog.is_approved_developer([self.runtime.service('session').getUsername()])
-                .then(function(isDev) {
+                .then(function (isDev) {
                     if (isDev && isDev.length > 0 && isDev[0] === 1) {
                         self.addDeveloperControls();
                     } else {
                         self.addUserControls();
                     }
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                     console.error('ERROR');
                     console.error(err);
                 });
         },
 
-        updateFavoritesCounts: function() {
+        updateFavoritesCounts: function () {
             var self = this;
             var listFavoritesParams = {};
             return self.catalog.list_favorite_counts(listFavoritesParams)
-                .then(function(counts) {
+                .then(function (counts) {
                     for (var k = 0; k < counts.length; k++) {
                         var c = counts[k];
                         var lookup = c.id;
@@ -617,18 +615,18 @@ define([
                         }
                     }
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                     console.error('ERROR');
                     console.error(err);
                 });
         },
 
         // warning!  will not return a promise if the user is not logged in!
-        updateMyFavorites: function() {
+        updateMyFavorites: function () {
             var self = this;
             if (self.isLoggedIn) {
                 return self.catalog.list_favorites(self.runtime.service('session').getUsername())
-                    .then(function(favorites) {
+                    .then(function (favorites) {
                         self.favoritesList = favorites;
                         for (var k = 0; k < self.favoritesList.length; k++) {
                             var fav = self.favoritesList[k];
@@ -641,14 +639,14 @@ define([
                             }
                         }
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                     });
             }
         },
 
-        processData: function() {
+        processData: function () {
             var self = this;
 
             // module lookup table should already exist
@@ -725,17 +723,17 @@ define([
             self.inputTypes = {};
             self.outputTypes = {};
 
-            this.appList.forEach(function(app) {
+            this.appList.forEach(function (app) {
                 if (app.info.app_type === 'app') {
-                    app.info.authors.forEach(function(author) {
+                    app.info.authors.forEach(function (author) {
                         this.developers[author] = true;
                     }.bind(this));
 
-                    app.info.input_types.forEach(function(inputType) {
+                    app.info.input_types.forEach(function (inputType) {
                         this.inputTypes[inputType] = true;
                     }.bind(this));
 
-                    app.info.output_types.forEach(function(outputType) {
+                    app.info.output_types.forEach(function (outputType) {
                         this.outputTypes[outputType] = true;
                     }.bind(this));
                 }
@@ -747,37 +745,37 @@ define([
          This is very useful to call before a viewer, since they
          may be chained together without re-rendering.
          */
-        sortBy: function(sortMethod) {
+        sortBy: function (sortMethod) {
             switch (sortMethod) {
-                case 'favorites':
-                    // sort by number of stars, then by app name
-                    this.appList.sort(function(a, b) {
-                        var aStars = a.getStarCount();
-                        var bStars = b.getStarCount();
-                        if (aStars > bStars)
-                            return -1;
-                        if (bStars > aStars)
-                            return 1;
-                        var aName = a.info.name.toLowerCase();
-                        var bName = b.info.name.toLowerCase();
-                        if (aName < bName)
-                            return -1;
-                        if (aName > bName)
-                            return 1;
-                        return 0;
-                    });
-                    break;
-                default:
-                    // do nothing.
-                    console.warn('Unsupported sort method "' + sortMethod + '"');
+            case 'favorites':
+                // sort by number of stars, then by app name
+                this.appList.sort(function (a, b) {
+                    var aStars = a.getStarCount();
+                    var bStars = b.getStarCount();
+                    if (aStars > bStars)
+                        return -1;
+                    if (bStars > aStars)
+                        return 1;
+                    var aName = a.info.name.toLowerCase();
+                    var bName = b.info.name.toLowerCase();
+                    if (aName < bName)
+                        return -1;
+                    if (aName > bName)
+                        return 1;
+                    return 0;
+                });
+                break;
+            default:
+                // do nothing.
+                console.warn('Unsupported sort method "' + sortMethod + '"');
             }
         },
 
-        renderByCategory: function() {
+        renderByCategory: function () {
             var cats = categoriesConfig.orderings[categoriesConfig.orderings.default];
             var $catDivLookup = {};
 
-            cats.forEach(function(category) {
+            cats.forEach(function (category) {
                 var $section = $('<div>').addClass('catalog-section');
                 var $catDiv = $('<div>').addClass('kbcb-app-card-list-container');
                 $catDivLookup[category] = $catDiv;
@@ -816,9 +814,9 @@ define([
             }
         },
 
-        renderByAZ: function() {
+        renderByAZ: function () {
             // sort by method name, A to Z
-            this.appList.sort(function(a, b) {
+            this.appList.sort(function (a, b) {
                 if (a.info.name.toLowerCase() < b.info.name.toLowerCase()) {
                     return -1;
                 }
@@ -835,9 +833,9 @@ define([
             this.$appListPanel.append($listContainer);
         },
 
-        renderByZA: function() {
+        renderByZA: function () {
             // sort by method name, Z to A
-            this.appList.sort(function(a, b) {
+            this.appList.sort(function (a, b) {
                 if (a.info.name.toLowerCase() < b.info.name.toLowerCase()) {
                     return 1;
                 }
@@ -854,10 +852,10 @@ define([
             this.$appListPanel.append($listContainer);
         },
 
-        renderByModule: function() {
+        renderByModule: function () {
             // Organization by module is simple because things can only be in one module, we sort and group them by module
 
-            this.appList.sort(function(a, b) {
+            this.appList.sort(function (a, b) {
                 if (a.info.module_name && b.info.module_name) {
                     if (a.info.module_name.toLowerCase() < b.info.module_name.toLowerCase())
                         return -1;
@@ -900,7 +898,7 @@ define([
             }
         },
 
-        renderByDeveloper: function() {
+        renderByDeveloper: function () {
             // get and sort the dev list
             var devs = [];
             for (var k in this.developers) {
@@ -946,9 +944,9 @@ define([
             }
         },
 
-        renderByMyFavorites: function() {
+        renderByMyFavorites: function () {
             // sort by number of stars, then by app name
-            this.appList.sort(function(a, b) {
+            this.appList.sort(function (a, b) {
                 // sort by time favorited
                 if (a.isStarOn() && b.isStarOn()) {
                     if (a.getStarTime() > b.getStarTime())
@@ -1002,9 +1000,9 @@ define([
             }
         },
 
-        renderByFavorites: function() {
+        renderByFavorites: function () {
             // sort by number of stars, then by app name
-            this.appList.sort(function(a, b) {
+            this.appList.sort(function (a, b) {
                 var aStars = a.getStarCount();
                 var bStars = b.getStarCount();
                 if (aStars > bStars)
@@ -1027,7 +1025,7 @@ define([
             this.$appListPanel.append($listContainer);
         },
 
-        renderbyInputTypes: function() {
+        renderbyInputTypes: function () {
             // get and sort the type list
             var types = [];
             for (var k in this.inputTypes) {
@@ -1075,7 +1073,7 @@ define([
             }
         },
 
-        renderByOutputTypes: function() {
+        renderByOutputTypes: function () {
             // get and sort the type list
             var types = [];
             for (var k in this.outputTypes) {
@@ -1125,11 +1123,11 @@ define([
             }
         },
 
-        renderByRuns: function() {
+        renderByRuns: function () {
             this.$appListPanel.append('<div><i>Note: Run counts for legacy methods released before 2016 are not reported.</i><br><br></div>');
 
             // sort by runs, then by app name
-            this.appList.sort(function(a, b) {
+            this.appList.sort(function (a, b) {
                 var aRuns = a.getRunCount();
                 var bRuns = b.getRunCount();
                 if (aRuns > bRuns)
@@ -1152,7 +1150,7 @@ define([
             this.$appListPanel.append($listContainer);
         },
 
-        renderAppList: function(organizeBy) {
+        renderAppList: function (organizeBy) {
             var self = this;
 
             self.$appListPanel.children().detach();
@@ -1201,7 +1199,7 @@ define([
             self.filterApps(self.$searchBox.val());
         },
 
-        showError: function(error) {
+        showError: function (error) {
             this.$errorPanel.empty();
             this.$errorPanel.append('<strong>Error when fetching App/Method information.</strong><br><br>');
             this.$errorPanel.append(error.error.message);

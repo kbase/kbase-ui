@@ -14,71 +14,71 @@ source:
 install:
     # Register the welcome widget
     widgets:
-        - 
+        -
             module: catalog_index
             id: catalog_index
             type: factory
-        - 
+        -
             module: catalog_app_browser
             id: catalog_home
             type: factory
-        - 
+        -
             module: catalog_app_viewer
             id: catalog_app_viewer
             type: factory
-        - 
+        -
             module: catalog_module_browser
             id: catalog_module_browser
             type: factory
-        - 
+        -
             module: catalog_module_viewer
             id: catalog_module_viewer
             type: factory
-        - 
+        -
             module: catalog_type_browser
             id: catalog_type_browser
             type: factory
-        - 
+        -
             module: catalog_module_dev_viewer
             id: catalog_module_dev_viewer
             type: factory
-        - 
+        -
             module: catalog_registration
             id: catalog_registration
             type: factory
-        - 
+        -
             module: catalog_status
             id: catalog_status
             type: factory
-        - 
+        -
             module: catalog_admin
             id: catalog_admin
             type: factory
-        - 
+        -
             module: catalog_function_browser
             id: catalog_function_browser
             type: factory
-        - 
+        -
             module: catalog_function_viewer
             id: catalog_function_viewer
             type: factory
-        - 
+        -
             module: catalog_stats
             id: catalog_stats
             type: factory
-        - 
+        -
             module: catalog_service
             id: catalog_service
             type: factory
-        - 
+        -
             module: catalog_util
             id: catalog_util
             type: widget
-        - 
+        -
             module: app_card
             id: app_card
             type: widget
-        - 
+        -
             module: function_card
             id: function_card
             type: widget
@@ -240,10 +240,10 @@ install:
         -
             path: ['catalog', 'functions', {type: param, name: tag}]
             widget: catalog_function_browser
-        -   
+        -
             path: ['catalog', 'functions', {type: param, name: module}, {type: param, name: function_id}]
             widget: catalog_function_viewer
-        -   
+        -
             path: ['catalog', 'functions', {type: param, name: module}, {type: param, name: function_id}, {type: param, name: ver} ]
             widget: catalog_function_viewer
 
