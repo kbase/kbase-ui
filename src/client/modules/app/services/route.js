@@ -91,11 +91,11 @@ define([
 
             runtime.recv('app', 'new-route', function (data) {
                 if (data.routeHandler.route.redirect) {
-                    send('app', 'route-redirect', data);
+                    runtime.send('app', 'route-redirect', data);
                 } else if (data.routeHandler.route.widget) {
-                    send('app', 'route-widget', data);
+                    runtime.send('app', 'route-widget', data);
                 } else if (data.routeHandler.route.handler) {
-                    send('app', 'route-handler', data);
+                    runtime.send('app', 'route-handler', data);
                 }
             });
 
