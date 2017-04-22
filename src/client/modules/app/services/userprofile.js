@@ -174,6 +174,9 @@ define([
                 }
                 return whenChange()
                     .then(function (profile) {
+                        if (!profile) {
+                            return defaultValue;
+                        }
                         return profile.getProp(path, defaultValue);
                     });
             });

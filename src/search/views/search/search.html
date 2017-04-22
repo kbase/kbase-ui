@@ -1,11 +1,13 @@
 <div class="container-fluid kbase-view kbase-search-view">
     <div class="row search-sections">
-        <div class="col-sm-3 col-md-3 col-lg-3 search-left-nav search-leftarea-size"> <!-- left navigation columns -->
-            <div class="search-leftarea-size"> <!-- Narrative selected -->                            
+        <div class="col-sm-3 col-md-3 col-lg-3 search-left-nav search-leftarea-size">
+            <!-- left navigation columns -->
+            <div class="search-leftarea-size">
+                <!-- Narrative selected -->
                 <div class="col-sm-12 col-md-12 col-lg-12 search-leftarea-size">
                     <div ng-hide="options.userState.session.token" class="alert alert-warning search-login">
                         <div id="login-message" class="text-center">
-                            <a href = '/#auth2/login'>Sign in</a> to select data and send to your Narratives
+                            <a href='/#login'>Sign in</a> to select data and send to your Narratives
                         </div>
                     </div>
                     <!--                  
@@ -39,7 +41,7 @@
                             <span class="badge badge-info" ng-repeat="w in options.userState.longterm.workspaces" ng-if="w[1] == options.userState.session.selectedWorkspace">{{w[4]}}</span>
                         </div>
                     </div>
-                    
+
                     <div ng-show="options.userState.session.selectedWorkspace" class="text-center">
                         <!--
                         <div class="search-transfer-row" ng-show="options.userState.session.transfer_cart.size > 0">
@@ -49,7 +51,7 @@
                             <p>Select data to copy.</p>
                         </div>
                         -->
-<!--
+                        <!--
                         <div class="search-transfer-row search-transfer-progress" ng-show="options.userState.session.data_cart.size >= 0 && options.transferring">
                             <div class="text-center">Object Copy Requests Sent</div>
                             <div class="progress">
@@ -85,7 +87,7 @@
 
 
 
-                    
+
                     <div ng-show="options.userState.session.token">
                         <div class='text-center search-selections-title'>
                             <h3 data-toggle="tooltip" data-placement="right" tooltip="Here you can see what data you have selected, organize it, and send it to Narratives." tooltip-placement="right">Selections</h3>
@@ -97,10 +99,11 @@
                                 <span class="glyphicon glyphicon-shopping-cart search-cart"></span>
                             </div>
                         </div>
-                
+
                         <div class="text-center">
                             <div style="margin-bottom: 5px;">
-                                <button rel="tooltip" tooltip="Transfer my selections to Narratives." tooltip-placement="bottom" data-placement="bottom" data-toggle="modal" data-target="#transferPanel" type="button" ng-class="{'disabled': options.userState.session.data_cart.size < 1 || !options.userState.session.selectedWorkspace}" class='btn btn-primary' ng-click="copyData(options.selectedCategory)">
+                                <button rel="tooltip" tooltip="Transfer my selections to Narratives." tooltip-placement="bottom" data-placement="bottom" data-toggle="modal" data-target="#transferPanel" type="button" ng-class="{'disabled': options.userState.session.data_cart.size < 1 || !options.userState.session.selectedWorkspace}"
+                                    class='btn btn-primary' ng-click="copyData(options.selectedCategory)">
                                     <span class="glyphicon glyphicon-hdd"></span>
                                     <span> </span>
                                     <span class="glyphicon glyphicon-transfer"></span>
@@ -118,17 +121,21 @@
                                 -->
                                 <button data-toggle="tooltip" data-placement="bottom" tooltip="Discard my data selections." tooltip-placement="bottom" type="button" ng-class="{'disabled': options.userState.session.data_cart.size < 1}" class='btn btn-danger' ng-click='emptyCart()'>
                                     <span class="glyphicon glyphicon-trash"></span>
-                                </button>              
-                            </div> <!-- end Narrative send button group -->
+                                </button>
+                            </div>
+                            <!-- end Narrative send button group -->
                         </div>
                     </div>
-                </div> <!-- end all Narrative button groups -->
-            </div> <!-- end Narrative-selected area -->
-        
-            <div ng-show="getTotalCount() > 0 && options.selectedCategory" class="col-sm-12 col-md-12 col-lg-12 search-categories search-leftarea-size"> <!-- categories -->
+                </div>
+                <!-- end all Narrative button groups -->
+            </div>
+            <!-- end Narrative-selected area -->
+
+            <div ng-show="getTotalCount() > 0 && options.selectedCategory" class="col-sm-12 col-md-12 col-lg-12 search-categories search-leftarea-size">
+                <!-- categories -->
                 <hr class="search-leftarea-size"></hr>
 
-                <div ng-hide="options.userState.session.data_cart.size > 0">                 
+                <div ng-hide="options.userState.session.data_cart.size > 0">
                     <div class='text-center search-categories-title'>
                         <h3 data-toggle="tooltip" data-placement="right" tooltip="Navigate between different data types that match your search." tooltip-placement="right">Show Results for</h3>
                     </div>
@@ -143,7 +150,8 @@
                                     <a ng-show="p.label.length < 23" id="{{p.category}}" href="" ng-class="{'search-selected-category-link': p.category == options.selectedCategory}" class="btn btn-link search-category-link" ng-click="$parent.selectCategory(p.category)">
                                         {{p.label}}<span class='search-space-left'> </span>({{options.categoryCounts[p.category] | number}})
                                     </a>
-                                    <a viewport=".search-category-nav" data-toggle="tooltip" data-placement="top" tooltip="{{p.label}}" tooltip-placement="top" ng-show="p.label.length >= 23" id="{{p.category}}" href="" ng-class="{'search-selected-category-link': p.category == options.selectedCategory}" class="btn btn-link search-category-link" ng-click="$parent.selectCategory(p.category)">
+                                    <a viewport=".search-category-nav" data-toggle="tooltip" data-placement="top" tooltip="{{p.label}}" tooltip-placement="top" ng-show="p.label.length >= 23" id="{{p.category}}" href="" ng-class="{'search-selected-category-link': p.category == options.selectedCategory}"
+                                        class="btn btn-link search-category-link" ng-click="$parent.selectCategory(p.category)">
                                         {{p.label | limitTo: 23}}...<span class='search-space-left'> </span>({{options.categoryCounts[p.category] | number}})
                                     </a>
                                 </div>
@@ -152,9 +160,12 @@
                                         {{k.label}}<span class='search-space-left'> </span>({{options.categoryCounts[k.category] | number}})
                                     </a>
                                 </div>
-                            </div> <!-- end children of Public category -->
-                        </div> <!-- end Public category -->
-                    </div> <!-- end category hierarchy -->
+                            </div>
+                            <!-- end children of Public category -->
+                        </div>
+                        <!-- end Public category -->
+                    </div>
+                    <!-- end category hierarchy -->
                 </div>
                 <div ng-hide="options.userState.session.data_cart.size == 0">
                     <div class="text-center">
@@ -163,14 +174,15 @@
                 </div>
 
                 <hr class="search-leftarea-size"></hr>
-    
+
                 <div ng-show="options.facets && options.resultJSON.totalResults > 0">
                     <div class='text-center search-filters-title'>
-                        <h3 data-toggle="tooltip" data-placement="right" tooltip="Select options to help narrow your search results." tooltip-placement="right">Refine by</h3>                    
-                        <button type="button" class="btn btn-danger btn-xs search-filter-remove-button" ng-click="removeAllFacets()" ng-if="options.active_facets[options.selectedCategory] && Object.keys(options.active_facets[options.selectedCategory]).length > 0" data-toggle="tooltip" data-placement="top" tooltip="Use this button to remove all the filters you have selected." tooltip-placement="top"><span class="glyphicon glyphicon-remove"></span></button>
+                        <h3 data-toggle="tooltip" data-placement="right" tooltip="Select options to help narrow your search results." tooltip-placement="right">Refine by</h3>
+                        <button type="button" class="btn btn-danger btn-xs search-filter-remove-button" ng-click="removeAllFacets()" ng-if="options.active_facets[options.selectedCategory] && Object.keys(options.active_facets[options.selectedCategory]).length > 0" data-toggle="tooltip"
+                            data-placement="top" tooltip="Use this button to remove all the filters you have selected." tooltip-placement="top"><span class="glyphicon glyphicon-remove"></span></button>
                     </div>
                     <div class="search-leftarea-size search-filter-groups">
-                        <div id="{{facet.key}}" class="panel-group" ng-repeat="facet in options.facets" ng-if="facet.count > 0">                            
+                        <div id="{{facet.key}}" class="panel-group" ng-repeat="facet in options.facets" ng-if="facet.count > 0">
                             <div class="panel panel-filter-content">
                                 <div class="panel-heading panel-filter-heading">
                                     <div ng-if="facet.key.length > 23" class="panel-title search-filter-title" data-toggle="tooltip" data-placement="right" tooltip="{{facet.key}}" tooltip-placement="right">
@@ -184,12 +196,12 @@
                                             <span>{{facet.key}}</span>
                                             <span ng-if="options.searchOptions.perCategory[options.selectedCategory]['facets'] && options.active_facets[options.selectedCategory][facet.key]" class="badge search-filter-count-badge">{{Object.keys(options.active_facets[options.selectedCategory][facet.key]).length}}</span>
                                         </div>
-                                    </div>                                    
+                                    </div>
                                 </div>
                                 <div id="{{facet.key}}_panel">
                                     <div ng-show="facet_option.value > 0" ng-repeat="facet_option in facet.value" class="row filter-section">
                                         <a href="" ng-click="toggleFacet(facet.key, facet_option.key, options.active_facets[options.selectedCategory][facet.key][facet_option.key])" class="search-checkbox-link">
-                                            <span class="glyphicon" ng-class="{'glyphicon-check': options.active_facets[options.selectedCategory][facet.key][facet_option.key],'glyphicon-unchecked': !options.active_facets[options.selectedCategory][facet.key][facet_option.key]}"/>                    
+                                            <span class="glyphicon" ng-class="{'glyphicon-check': options.active_facets[options.selectedCategory][facet.key][facet_option.key],'glyphicon-unchecked': !options.active_facets[options.selectedCategory][facet.key][facet_option.key]}" />
                                         </a>
                                         <span class="search-halfspace-left">{{facet_option.key}}</span>
                                         <span class="search-halfspace-left">({{facet_option.value | number}})</span>
@@ -199,18 +211,22 @@
                         </div>
                     </div>
                 </div>
-            </div> <!-- end categories -->
-        </div> <!-- end filter section -->
+            </div>
+            <!-- end categories -->
+        </div>
+        <!-- end filter section -->
 
-        <div ng-cloak class="col-sm-9 col-md-9 col-lg-9 search-result-section"> <!-- search results section -->
+        <div ng-cloak class="col-sm-9 col-md-9 col-lg-9 search-result-section">
+            <!-- search results section -->
 
             <div class="row search-bar">
                 <form class="input-group" ng-submit="newSearch()">
-                    <input data-toggle="tooltip" data-placement="bottom" tooltip="{{getSearchbarTooltipText()}}" tooltip-placement="bottom" class="form-control" autofocus required ng-model="options.searchOptions.general.q" placeholder="Search KBase Data" autocomplete="off" type="search"/> 
+                    <input data-toggle="tooltip" data-placement="bottom" tooltip="{{getSearchbarTooltipText()}}" tooltip-placement="bottom" class="form-control" autofocus required ng-model="options.searchOptions.general.q" placeholder="Search KBase Data" autocomplete="off"
+                        type="search" />
                     <span class="input-group-btn">
                         <button type="submit" class="btn" style="background-color: #ebebeb; border-color: #adadad; border-left:none">
                             <span class="glyphicon glyphicon-search" style="line-height: .9"></span>
-                        </button>
+                    </button>
                     </span>
                 </form>
                 <!--
@@ -219,7 +235,8 @@
                 -->
             </div>
 
-            <div class="col-md-12 col-lg-12 search-result-section"> <!-- all results -->                            
+            <div class="col-md-12 col-lg-12 search-result-section">
+                <!-- all results -->
                 <div ng-if="options.searchOptions.general.q && getTotalCount() < 1 && !options.selectedCategory && !searchActive" class="search-results-select-category">
                     <div class="alert alert-danger">
                         <strong>No results found for any data type.</strong>
@@ -234,8 +251,8 @@
 
                 <div class="col-md-12 col-lg-12 search-results">
                     <!-- Show this when no category is selected -->
-                    <div ng-if="!options.selectedCategory && getTotalCount() > 0" class="col-md-12 col-lg-12 search-results-select-category"> 
-                        <div class="row">                        
+                    <div ng-if="!options.selectedCategory && getTotalCount() > 0" class="col-md-12 col-lg-12 search-results-select-category">
+                        <div class="row">
                             <table>
                                 <h3>Objects that match <i>{{options.searchOptions.general.q}}</i></h3>
                                 <tr ng-if="options.searchCategories[p.category] && options.categoryCounts[p.category] > 0" ng-repeat="p in options.categoryInfo.displayTree['unauthenticated'].children">
@@ -245,10 +262,11 @@
                                     <td class="search-category-title search-space-left animated lightSpeedIn"><span class='search-space-left'>(</span>{{options.categoryCounts[p.category] | number}}<span>)</span></td>
                                 </tr>
                             </table>
-                        </div>                                    
+                        </div>
                     </div>
-                    <div class="col-md-12 col-lg-12 search-results" ng-show="options.resultsAvailable && options.selectedCategory && getTotalCount() > 0"> 
-                        <div class="col-md-12 col-lg-12 search-result-set-header" ng-show="options.resultJSON.totalResults > 0 && options.categoryRelationships[options.selectedCategory].children.length == 0"> <!-- result options -->
+                    <div class="col-md-12 col-lg-12 search-results" ng-show="options.resultsAvailable && options.selectedCategory && getTotalCount() > 0">
+                        <div class="col-md-12 col-lg-12 search-result-set-header" ng-show="options.resultJSON.totalResults > 0 && options.categoryRelationships[options.selectedCategory].children.length == 0">
+                            <!-- result options -->
                             <div class="col-md-12 search-results-counter">
                                 <div>
                                     <span><strong>{{ 1 + ((options.resultJSON.currentPage - 1) * options.resultJSON.itemsPerPage) | number }}-{{ options.resultJSON.itemCount + ((options.resultJSON.currentPage - 1) * options.resultJSON.itemsPerPage) | number }} out of {{ options.resultJSON.totalResults | number }} results for {{options.searchCategories[options.selectedCategory].label}}</strong></span>
@@ -280,11 +298,13 @@
                                         <input type="radio" name="rpp" >{{i}}</input>
                                     </label>
                                 </div>
-                            </div> <!-- end toolbar row -->
-                        </div> <!-- end result options -->
+                            </div>
+                            <!-- end toolbar row -->
+                        </div>
+                        <!-- end result options -->
                         <div class="col-md-12 col-lg-12">
                             <!-- our output should go here normally -->
-                            <div ng-show="options.resultJSON.totalResults > 0 || options.categoryRelationships[options.selectedCategory].children.length > 0 && getTotalCount() > 0" class="search-results-content-area" ng-include="options.templates[options.selectedCategory].root"></div> 
+                            <div ng-show="options.resultJSON.totalResults > 0 || options.categoryRelationships[options.selectedCategory].children.length > 0 && getTotalCount() > 0" class="search-results-content-area" ng-include="options.templates[options.selectedCategory].root"></div>
 
                             <!-- pagination controls should be at the bottom to slow down page requests through the UI -->
                             <div class="text-center search-results-content-area" ng-show="options.categoryRelationships[options.selectedCategory].children.length == 0">
@@ -298,19 +318,23 @@
                                     <li ng-if="(options.pageLinksRange[0] + options.numPageLinks) * options.resultJSON.itemsPerPage < options.resultJSON.totalResults">
                                         <a ng-click="setCurrentPage(options.pageLinksRange[0] + options.numPageLinks)">Next {{options.numPageLinks}} &rarr;</a>
                                     </li>
-                                </ul>                        
+                                </ul>
                             </div>
                         </div>
-                    </div> <!-- end specific category results row -->
-                </div> <!-- end results inner row -->
-            </div> <!-- end results outer row -->
-        </div> <!-- end results section -->
+                    </div>
+                    <!-- end specific category results row -->
+                </div>
+                <!-- end results inner row -->
+            </div>
+            <!-- end results outer row -->
+        </div>
+        <!-- end results section -->
 
         <div class="hidden">
             <div id="loading_message">
                 <strong>KBase</strong>
                 <div id="loading_message_icon">
-                    <img src="assets/img/kbase_animated_logo.gif" alt="animated_logo"/>
+                    <img src="assets/img/kbase_animated_logo.gif" alt="animated_logo" />
                 </div>
                 <div id="loading_message_text">Searching...</div>
             </div>
@@ -322,6 +346,7 @@
             <div id="error_text"></div>
         </div>
 
-    </div> <!-- end search sections -->
+    </div>
+    <!-- end search sections -->
 
 </div>

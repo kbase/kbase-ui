@@ -211,37 +211,66 @@
             });
         },
         fetchUserProfile: function () {
-            require(['kb.user_profile', 'kb.session', 'kb.appstate', 'postal'],
-                function (UserProfile, Session, AppState, Postal) {
-                    var userProfile = Object.create(UserProfile).init({username: Session.getUsername()});
-                    userProfile.loadProfile()
-                            .then(function (profile) {
-                                switch (profile.getProfileStatus()) {
-                                    case 'stub':
-                                    case 'profile':
+            require(['kb.user_profile', 'kb.session', 'kb.appstate', 'postal', 'kb_common_ts/Auth2Session'],
+                function (UserProfile, Session, AppState, Postal, Auth2Session) {
+
+                    var session = new Auth2Session.Auth2Session({
+                        cookieName: 'kbase_session',
+                        baseUrl: window.location.origin + '/services/auth',
+                        providers: []
+                    });
+
+                    session.start()
+                        .then(function () {
+                            return session.getMe();
+                        })
+                        .then(function (me) {
+                            Postal.channel('session').publish('me.loaded', {
+                                me: me
+                            });
+                            return me;
+                        })
+                        .catch(function (err) {
+                            console.error('ERR', err);
+                            Postal.channel('session').publish('me.loadfailure', {
+                                error: err,
+                                message: 'Error getting user info'
+                            });
+                        })
+                        .then(function (me) {
+                            var userProfile = Object.create(UserProfile).init({ username: me.user });
+                            return userProfile.loadProfile();
+                        })
+                        .then(function (profile) {
+                            switch (profile.getProfileStatus()) {
+                            case 'stub':
+                            case 'profile':
+                                AppState.setItem('userprofile', profile);
+                                Postal.channel('session').publish('profile.loaded', { profile: profile });
+                                break;
+                            case 'none':
+                                profile.createStubProfile({ createdBy: 'session' })
+                                    .then(function (profile) {
                                         AppState.setItem('userprofile', profile);
-                                        Postal.channel('session').publish('profile.loaded', {profile: profile});
-                                        break;
-                                    case 'none':
-                                        profile.createStubProfile({createdBy: 'session'})
-                                                .then(function (profile) {
-                                                    AppState.setItem('userprofile', profile);
-                                                    Postal.channel('session').publish('profile.loaded', {profile: profile});
-                                                })
-                                                .catch(function (err) {
-                                                    Postal.channel('session').publish('profile.loadfailure', {error: err});
-                                                })
-                                                .done();
-                                        break;
-                                }
-                            })
-                            .catch(function (err) {
-                                var errMsg = 'Error getting user profile';
-                                Postal.channel('session').publish('profile.loadfailure', {error: err, message: errMsg});
-                            })
-                            .done();
+                                        Postal.channel('session').publish('profile.loaded', { profile: profile });
+                                    })
+                                    .catch(function (err) {
+                                        Postal.channel('session').publish('profile.loadfailure', { error: err });
+                                    })
+                                    .done();
+                                break;
+                            }
+                        })
+                        .catch(function (err) {
+                            var errMsg = 'Error getting user profile';
+                            Postal.channel('session').publish('profile.loadfailure', { error: err, message: errMsg });
+                        })
+                        .finally(function () {
+                            return session.stop();
+                        })
+                        .done();
                 });
-        }
+        },
 
 
     });

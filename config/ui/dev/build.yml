@@ -15,8 +15,6 @@ plugins:
     -
         datasearch
     -
-        homologyservice
-    -
         narrativemanager
     -
         catalog
@@ -134,7 +132,7 @@ plugins:
         name: auth2-client
         disabled: true
         globalName: kbase-ui-plugin-auth2-client
-        version: 0.9.1
+        version: 0.9.2
         cwd: src/plugin
         source:
             bower: {}
