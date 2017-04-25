@@ -84,6 +84,15 @@ define([
                     .done();
             });
 
+            runtime.recv('profile', 'reload', function () {
+                return loadProfile()
+                    .then(function (profile) {
+                        state.setItem('userprofile', profile);
+                        runtime.send('profile', 'loaded', profile);
+                    })
+                    .done();
+            });
+
             runtime.getService('session').onChange(function (loggedIn) {
                 if (loggedIn) {
                     loadProfile()
@@ -182,6 +191,22 @@ define([
             });
         }
 
+        function getProfile() {
+            return Promise.try(function () {
+                var profile = state.getItem('userprofile');
+                if (profile) {
+                    return profile.userRecord;
+                }
+                return whenChange()
+                    .then(function (profile) {
+                        if (!profile) {
+                            return;
+                        }
+                        return profile.userRecord;
+                    });
+            });
+        }
+
         //runtime.recv('session', 'loggedin', function () {
         //    loadSession();
         //});
@@ -214,7 +239,8 @@ define([
             onChange: onChange,
             whenChange: whenChange,
             getRealname: getRealname,
-            getItem: getItem
+            getItem: getItem,
+            getProfile: getProfile
         };
     }
     return {
