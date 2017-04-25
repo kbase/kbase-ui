@@ -856,7 +856,7 @@ function makeDeployConfig(state) {
     return fs.mkdirsAsync(cfgDir.join('/'))
         .then(function () {
             // read yaml an write json deploy configs.
-            console.log('in', sourceDir.concat(['*.yml']).join('/'));
+            // console.log('in', sourceDir.concat(['*.yml']).join('/'));
             return glob(sourceDir.concat(['*.yml']).join('/'), {
                 nodir: true
             });
@@ -961,7 +961,7 @@ function makeDistBuild(state) {
         });
 }
 
-function makeModuleVFS(state) {
+function makeModuleVFS(state, whichBuild) {
     var root = state.environment.path,
         buildPath = ['..', 'build'];
 
@@ -972,7 +972,7 @@ function makeModuleVFS(state) {
 
             // just read in file and build a giant map...            
             var vfs = {};
-            var vfsDest = buildPath.concat(['dist', 'moduleVfs.json']);
+            var vfsDest = buildPath.concat([whichBuild, 'moduleVfs.json']);
             //console.log('matches', JSON.stringify(matches));
             return Promise.all(matches
                     .map(function (match) {
@@ -1179,8 +1179,17 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Making the module vfs...');
-            return makeModuleVFS(state);
+            // var vfs = [makeModuleVFS(state, 'build')];
+            // TODO: a build flag for the vfs.
+            // FORNOW: no vfs build for dev
+            var vfs = [];
+            if (state.config.build.dist) {
+                vfs.push(makeModuleVFS(state, 'dist'));
+            }
+            return Promise.all(vfs)
+                .then(function () {
+                    return state;
+                });
         })
 
     // Here we handle any developer links.
