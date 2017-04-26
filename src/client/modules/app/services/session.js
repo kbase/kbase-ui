@@ -3,8 +3,9 @@
 define([
     'kb_common/session',
     'kb_common/observed'
-], function (sessionFactory, observed) {
+], function(sessionFactory, observed) {
     'use strict';
+
     function factory(config) {
         var runtime = config.runtime,
             session = sessionFactory.make({
@@ -20,27 +21,36 @@ define([
         function getAuthToken() {
             return session.getAuthToken();
         }
+
         function getUsername() {
             return session.getUsername();
         }
+
         function isLoggedIn() {
             return session.isLoggedIn();
         }
+
+        function isAuthorized() {
+            return session.isLoggedIn();
+        }
+
         function getKbaseSession() {
             return session.getKbaseSession();
         }
+
         function login(arg) {
             return session.login(arg)
-                .then(function () {
+                .then(function() {
                     state.setItem('loggedin', true);
                     runtime.send('session', 'loggedin');
                 });
         }
+
         function logout() {
             return session.logout()
-                .then(function () {
+                .then(function() {
                     state.setItem('loggedin', false);
-                    runtime.send('session', 'loggedout');
+                    runtime.send('app', 'navigate', 'goodbye');
                 });
         }
 
@@ -54,13 +64,14 @@ define([
                 runtime.send('session', 'loogedout');
             }
         }
+
         function stop() {
             session = null;
         }
 
         function onChange(fun) {
             state.listen('loggedin', {
-                onSet: function (value) {
+                onSet: function(value) {
                     fun(value);
                 }
             });
@@ -73,6 +84,7 @@ define([
             getAuthToken: getAuthToken,
             getUsername: getUsername,
             isLoggedIn: isLoggedIn,
+            isAuthorized: isAuthorized,
             getKbaseSession: getKbaseSession,
             login: login,
             logout: logout
@@ -80,7 +92,7 @@ define([
 
     }
     return {
-        make: function (config) {
+        make: function(config) {
             return factory(config);
         }
     };

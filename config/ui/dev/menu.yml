@@ -1,0 +1,9 @@
+menus:
+    authenticated:
+        main: [narrative, appcatalog, search, dashboard, bulk-ui]
+        developer: [sdkclientstest, databrowser, typebrowser, jobbrowser, shockbrowser]
+        help: [about, about-services, contact-kbase, about-kbase, help]
+    unauthenticated:
+        main: [appcatalog, search]
+        developer: []
+        help: [contact-kbase, about-kbase, help]

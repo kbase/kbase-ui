@@ -1,5 +1,23 @@
-define(['kb.widget.base', 'kb.session', 'jquery', 'postal', 'q', 'kb.appstate', 'kb.utils', 'kb.user_profile'], 
-function (BaseWidget, Session, $, Postal, Q, AppState, Utils, UserProfile) {
+define([
+    'kb.widget.base',
+    'kb.session',
+    'jquery',
+    'postal',
+    'q',
+    'kb.appstate',
+    'kb.utils',
+    'kb_common/gravatar',
+    'kb.user_profile'
+], function (
+    BaseWidget,
+    Session,
+    $,
+    Postal,
+    Q,
+    AppState,
+    Utils,
+    Gravatar,
+    UserProfile) {
     'use strict';
     // make a widget ... on the fly?
     var W = Object.create(BaseWidget, {
@@ -8,11 +26,11 @@ function (BaseWidget, Session, $, Postal, Q, AppState, Utils, UserProfile) {
                 cfg.name = 'LoginWidget';
                 cfg.title = 'Login Widget';
                 this.BaseWidget_init(cfg);
-                
+
                 Postal.channel('app').subscribe('location.change', function () {
                     this.render();
                 }.bind(this));
-                
+
                 var widget = this;
                 this.container
                     .on('submit', '[data-dialog="login-dialog"] form', function (e) {
@@ -21,14 +39,15 @@ function (BaseWidget, Session, $, Postal, Q, AppState, Utils, UserProfile) {
                         var password = widget.container.find('form [name="password"]').val();
                         widget.login(username, password);
                     });
-                
+
                 return this;
             }
         },
         getUserLabel: {
             value: function (profile) {
                 if (profile) {
-                    return Utils.getProp(profile, 'user.realname') + '<br><i style="font-size=90%;">' + Utils.getProp(profile, 'user.username') + '</i>';
+                    return profile.realname + '<br><i style="font-size=90%;">' + profile.username + '</i>';
+                    //return Utils.getProp(profile, 'user.realname') + '<br><i style="font-size=90%;">' + Utils.getProp(profile, 'user.username') + '</i>';
                 } else if (this.sessionObject) {
                     return Utils.getProp('user_id');
                 } else {
@@ -60,9 +79,9 @@ function (BaseWidget, Session, $, Postal, Q, AppState, Utils, UserProfile) {
         },
         renderAvatar: {
             value: function (profile) {
-                var userProfile = profile.getProfile();
-                this.container.find('[data-element="user-label"]').html(this.getUserLabel(userProfile));
-                var url = profile.getAvatarURL({size: 40, rating: 'pg'});
+                this.container.find('[data-element="user-label"]').html(this.getUserLabel(profile));
+                this.container.find('[data-menu-item="userlabel"]').attr('href', '/#people/' + profile.username);
+                var url = Gravatar.make().makeGravatarUrl(profile.email, 40, 'pg', 'monsterid');
                 this.container.find('[data-element="avatar"]').attr('src', url);
             }
         },
@@ -71,9 +90,16 @@ function (BaseWidget, Session, $, Postal, Q, AppState, Utils, UserProfile) {
                 if (Session.isLoggedIn()) {
                     this.container.html(this.renderTemplate('loggedin'));
                     // a bit crood:
-                    AppState.whenItem('userprofile')
-                        .then(function (profile) {
-                            this.renderAvatar(profile);
+                    AppState.whenItem('me')
+                        .then(function (me) {
+                            if (me) {
+                                // "profile" just needs username and realname properties.
+                                this.renderAvatar({
+                                    username: me.user,
+                                    realname: me.display,
+                                    email: me.email
+                                });
+                            }
                         }.bind(this))
                         .done();
                     this.container.find('[data-menu-item="logout"]').on('click', function (e) {
@@ -88,7 +114,9 @@ function (BaseWidget, Session, $, Postal, Q, AppState, Utils, UserProfile) {
                     } else {
                         this.container.html(this.renderTemplate('loggedout'));
                         this.container.find('[data-button="signin"]').on('click', function () {
-                            Postal.channel('loginwidget').publish('login.prompt');
+                            location.href = '/#login';
+                            return;
+                            //Postal.channel('loginwidget').publish('login.prompt');
                         });
                     }
                 }
@@ -114,27 +142,27 @@ function (BaseWidget, Session, $, Postal, Q, AppState, Utils, UserProfile) {
         login: {
             value: function (userId, password) {
                 Session.login({
-                    username: userId,
-                    password: password
-                })
-                .then(function(session) {
-                    // omg this is the callback protocol 
-                    session.status = 1;
-                    session.success = 1;
+                        username: userId,
+                        password: password
+                    })
+                    .then(function (session) {
+                        // omg this is the callback protocol
+                        session.status = 1;
+                        session.success = 1;
 
-                    // Awaiting clients can get the session object directly, from the cookie, or query the 
-                    // global singleton session object.
-                    Postal.channel('session').publish('login.success', {session: session});
-                })
-                .catch(function(err) {
-                    var errObject = {
-                        status: 0,
-                        success: 0,
-                        message: err
-                    };
-                    Postal.channel('session').publish('login.failure', {error: errObject});
-                })
-                .done();
+                        // Awaiting clients can get the session object directly, from the cookie, or query the
+                        // global singleton session object.
+                        Postal.channel('session').publish('login.success', { session: session });
+                    })
+                    .catch(function (err) {
+                        var errObject = {
+                            status: 0,
+                            success: 0,
+                            message: err
+                        };
+                        Postal.channel('session').publish('login.failure', { error: errObject });
+                    })
+                    .done();
             }
         }
     });

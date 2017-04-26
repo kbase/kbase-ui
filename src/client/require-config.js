@@ -6,66 +6,62 @@
 var build = window.__kbase__build__;
 var buildKey;
 switch (build.deployType) {
-    case 'dev':
-        // buildKey = new Date().getTime();
-        buildKey = new Date().getTime();
-        break;
-    case 'prod':
-        buildKey = build.gitCommitHash;
-        break;
-    default:
-        throw new Error('Unsupported deploy type: ' + build.deployType);
+case 'dev':
+    buildKey = new Date().getTime();
+    break;
+case 'prod':
+    buildKey = build.gitCommitHash;
+    break;
+default:
+    throw new Error('Unsupported deploy type: ' + build.deployType);
 }
-var require = {
+window.require = {
     baseUrl: '/modules',
-    urlArgs: "cb=" + buildKey,
+    urlArgs: 'cb=' + buildKey,
     catchError: true,
     waitSeconds: 60,
     paths: {
-        // External Dependencies
-        // ----------------------
-        domReady: 'bower_components/requirejs-domready/domReady',
-        knockout: 'bower_components/knockout/knockout',
-        'knockout-validation': 'bower_components/knockout-validation/knockout.validation',
-        css: 'bower_components/require-css/css',
-        text: 'bower_components/requirejs-text/text',
-        json: 'bower_components/requirejs-json/json',
-        yaml: 'bower_components/require-yaml/yaml',
-        'js-yaml': 'bower_components/js-yaml/js-yaml',
-        esprima: 'bower_components/esprima/esprima',
-        csv: 'bower_components/kbase-common-js/dist/kb/common/requirejs-csv',
-        jquery: 'bower_components/jquery/jquery',
         bluebird: 'bower_components/bluebird/bluebird',
-        underscore: 'bower_components/underscore/underscore',
-        d3: 'bower_components/d3/d3',
-        d3_sankey: 'bower_components/d3-plugins-sankey/sankey',
-        d3_sankey_css: 'bower_components/d3-plugins-sankey/sankey',
-        postal: 'bower_components/postal.js/postal',
-        // For the ui
-        bootstrap: 'bower_components/bootstrap/js/bootstrap',
         bootstrap_css: 'bower_components/bootstrap/css/bootstrap',
-        datatables: 'bower_components/datatables/js/jquery.dataTables',
-        datatables_css: 'bower_components/datatables/css/jquery.dataTables',
-        datatables_bootstrap: 'bower_components/datatables-bootstrap3-plugin/js/datatables-bootstrap3',
+        bootstrap: 'bower_components/bootstrap/js/bootstrap',
+        css: 'bower_components/require-css/css',
+        csv: 'lib/requirejs-csv',
+        d3_sankey_css: 'bower_components/d3-plugins-sankey/sankey',
+        d3_sankey: 'bower_components/d3-plugins-sankey/sankey',
+        d3: 'bower_components/d3/d3',
         datatables_bootstrap_css: 'bower_components/datatables-bootstrap3-plugin/css/datatables-bootstrap3',
-        marked: 'bower_components/marked/marked',
-        md5: 'bower_components/SparkMD5/spark-md5',
-        'google-code-prettify': 'bower_components/google-code-prettify/prettify',
-        'google-code-prettify-style': 'bower_components/google-code-prettify/prettify',
-        handlebars: 'bower_components/handlebars/handlebars',
-        nunjucks: 'bower_components/nunjucks/nunjucks',
+        datatables_bootstrap: 'bower_components/datatables-bootstrap3-plugin/js/datatables-bootstrap3',
+        datatables_css: 'bower_components/datatables/css/jquery.dataTables',
+        datatables: 'bower_components/datatables/js/jquery.dataTables',
         font_awesome: 'bower_components/font-awesome/css/font-awesome',
-        // uuid: 'bower_components/pure-uuid/uuid',
-        uuid: 'bower_components/pure-uuid/uuid',
-        numeral: 'bower_components/numeral/numeral',
-        'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
-        plotly: 'bower_components/plotly/plotly',
-        kb_ui: 'css/kb-ui',
-        kb_datatables: 'css/kb-datatables',
-        kb_bootstrap: 'css/kb-bootstrap',
-        kb_icons: 'css/kb-icons',
+        'google-code-prettify-style': 'bower_components/google-code-prettify/prettify',
+        'google-code-prettify': 'bower_components/google-code-prettify/prettify',
+        handlebars: 'bower_components/handlebars/handlebars',
+        highlight_css: 'bower_components/highlightjs/styles/tomorrow',
         highlight: 'bower_components/highlightjs/highlight.pack',
-        highlight_css: 'bower_components/highlightjs/styles/tomorrow'
+        'jquery-svg': 'bower_components/jquery.svg/jquery.svg',
+        'js-yaml': 'bower_components/js-yaml/js-yaml',
+        jquery: 'bower_components/jquery/jquery',
+        json: 'bower_components/requirejs-json/json',
+        kb_bootstrap: 'css/kb-bootstrap',
+        kb_datatables: 'css/kb-datatables',
+        kb_icons: 'css/kb-icons',
+        kb_ui: 'css/kb-ui',
+        knockout: 'bower_components/knockout/knockout',
+        'knockout-arraytransforms': 'bower_components/knockout-arraytransforms/knockout-arraytransforms',
+        'knockout-mapping': 'bower_components/bower-knockout-mapping/knockout.mapping',
+        'knockout-plus': 'lib/knockout-plus',
+        'knockout-validation': 'bower_components/knockout-validation/knockout.validation',
+        marked: 'bower_components/marked/marked',
+        md5: 'bower_components/spark-md5/spark-md5',
+        numeral: 'bower_components/numeral/numeral',
+        nunjucks: 'bower_components/nunjucks/nunjucks',
+        plotly: 'bower_components/plotly.js/plotly',
+        postal: 'bower_components/postal.js/postal',
+        text: 'bower_components/requirejs-text/text',
+        underscore: 'bower_components/underscore/underscore',
+        uuid: 'bower_components/pure-uuid/uuid',
+        yaml: 'bower_components/requirejs-yaml/yaml'
     },
     shim: {
         bootstrap: {
@@ -81,6 +77,13 @@ var require = {
         highlight: {
             deps: ['css!highlight_css']
         }
+        // Activate this if using js-yaml with a need for these modules.
+        // At the moment, requirejs global handler catches errors loading
+        // this within js-yaml and allows js-yaml to detect that they are
+        // absent.
+        // 'js-yaml': {
+        //     deps: ['esprima', 'buffer']
+        // }
     },
     map: {
         '*': {
