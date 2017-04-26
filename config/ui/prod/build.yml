@@ -36,7 +36,7 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 3.1.1
+        version: 3.1.2
         cwd: src/plugin
         source:
             bower: {}
@@ -86,14 +86,14 @@ plugins:
         name: auth2-client
         disabled: true
         globalName: kbase-ui-plugin-auth2-client
-        version: 0.9.1
+        version: 0.10.1
         cwd: src/plugin
         source:
             bower: {}
     -
         name: user-profile
         globalName: kbase-ui-plugin-user-profile
-        version: 1.0.3
+        version: 1.0.4
         cwd: src/plugin
         source:
             bower: {}            
