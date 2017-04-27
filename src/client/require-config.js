@@ -29,6 +29,7 @@ window.require = {
         d3_sankey_css: 'bower_components/d3-plugins-sankey/sankey',
         d3_sankey: 'bower_components/d3-plugins-sankey/sankey',
         d3: 'bower_components/d3/d3',
+        domReady: 'bower_components/requirejs-domready/domReady',
         datatables_bootstrap_css: 'bower_components/datatables-bootstrap3-plugin/css/datatables-bootstrap3',
         datatables_bootstrap: 'bower_components/datatables-bootstrap3-plugin/js/datatables-bootstrap3',
         datatables_css: 'bower_components/datatables/css/jquery.dataTables',
