@@ -75,6 +75,7 @@
 
 .kbase-ui .kb-panel-light {
     border: none;
+    box-shadow: none;
 }
 
 .kbase-ui .panel-title>[data-toggle="collapse"]::before {
