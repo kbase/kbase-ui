@@ -24,106 +24,137 @@ define([
     'bluebird',
     'kb_common/dom',
     'kb_common/html',
-    'kb_widget/widgetSet'],
-    function (Promise, dom, html, WidgetSet) {
-        'ust strict';
-        /* Menu */
+    'kb_widget/widgetSet'
+], function (
+    Promise,
+    dom,
+    html,
+    WidgetSet
+) {
+    'ust strict';
+    /* Menu */
 
-        function factory(config) {
-            var mount, container, runtime = config.runtime,
-                widgetSet = WidgetSet.make({
-                    runtime: runtime
-                });
+    function factory(config) {
+        var mount, container, runtime = config.runtime,
+            widgetSet = WidgetSet.make({
+                runtime: runtime
+            });
 
-            function init(config) {
-                return new Promise(function (resolve) {
-                    resolve();
-                });
-            }
+        var t = html.tag,
+            div = t('div'),
+            span = t('span');
 
-            function renderNavbar() {
-                var div = html.tag('div'),
-                    cellStyle = {
-                        padding: '4px',
-                        display: 'inline-block',
-                        height: '100%',
-                        verticalAlign: 'top'
-                    },
-                    loginWidget =  runtime.feature('auth', 'widgets.login.name'),
-                content = div({style: {position: 'relative', height: '100%'}, class: 'kb-widget-mainWindow'}, [
-                    div({style: cellStyle, id: widgetSet.addWidget('menu')}),
-                    div({style: cellStyle, id: widgetSet.addWidget('logo')}),
-                    div({style: cellStyle, id: widgetSet.addWidget('title')}),
-                    div({style: {position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top'}}, [
-                        div({style: cellStyle, id: widgetSet.addWidget('buttonbar')}),
-                        div({style: {borderLeft: '0px #EEE solid', borderRight: '0px #EEE solid', padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top', width: '100px'}, id: widgetSet.addWidget('notification')}),
-                        div({style: cellStyle, class: 'navbar-right', id: widgetSet.addWidget(loginWidget)})
+        function init(config) {
+            return new Promise(function (resolve) {
+                resolve();
+            });
+        }
+
+        function renderNavbar() {
+            var cellStyle = {
+                    padding: '4px',
+                    display: 'inline-block',
+                    height: '100%',
+                    verticalAlign: 'top'
+                },
+                loginWidget = runtime.feature('auth', 'widgets.login.name'),
+                content = div({ style: { position: 'relative', height: '100%' }, class: 'kb-widget-mainWindow' }, [
+                    div({ style: cellStyle, id: widgetSet.addWidget('menu') }),
+                    div({ style: cellStyle, id: widgetSet.addWidget('logo') }),
+                    div({ style: cellStyle, id: widgetSet.addWidget('title') }),
+                    div({ style: { position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top' } }, [
+                        div({ style: cellStyle, id: widgetSet.addWidget('buttonbar') }),
+                        div({ style: { borderLeft: '0px #EEE solid', borderRight: '0px #EEE solid', padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top', width: '100px' }, id: widgetSet.addWidget('notification') }),
+                        div({ style: cellStyle, class: 'navbar-right', id: widgetSet.addWidget(loginWidget) })
                     ])
                 ]);
-                return content;
-            }
+            return content;
+        }
 
-            function renderLayout() {
-                var div = html.tag('div');
-                return div({id: 'wrap'}, [
-                    div({id: 'content'}, [
-                        div({class: 'navbar navbar-kbase navbar-fixed-top', id: 'kbase-navbar', style: 'padding: 0'}, renderNavbar()),
-                        div({class: 'kb-mainwindow-alert'}, div({id: widgetSet.addWidget('kb_mainWindow_alert')})),
-                        div({class: 'kb-mainwindow-body', style: {'padding-top': '1em'}}, [
-                            div({id: widgetSet.addWidget('body')})
+        function renderLayout() {
+            var div = html.tag('div');
+            return div({ id: 'wrap' }, [
+                div({ id: 'content' }, [
+                    div({ class: 'navbar navbar-kbase navbar-fixed-top', id: 'kbase-navbar', style: 'padding: 0' }, renderNavbar()),
+                    div({
+                        style: {
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'flex-start'
+                        }
+                    }, [
+                        div({
+                            style: {
+                                flex: '0 0 75px'
+                            }
+                        }, div({ id: widgetSet.addWidget('kb_mainWindow_sidebarNav') })),
+                        div({
+                            style: {
+                                flex: '1 1 100%',
+                                minWidth: '0'
+                            }
+                        }, [
+                            div({ class: 'kb-mainwindow-alert' }, div({ id: widgetSet.addWidget('kb_mainWindow_alert') })),
+                            div({ class: 'kb-mainwindow-body', style: { 'padding-top': '1em' } }, [
+                                div({ id: widgetSet.addWidget('body') })
+                            ])
                         ])
                     ])
-                ]);
-            }
+                ])
+            ]);
+        }
 
-            function attach(node) {
-                mount = node;
-                container = dom.createElement('div');
-                mount.appendChild(container);
-            }
+        function attach(node) {
+            mount = node;
+            container = dom.createElement('div');
+            mount.appendChild(container);
+        }
 
-            function start(params) {
-                container.innerHTML = renderLayout();
-                return widgetSet.init()
-                    .then(function () {
-                        return widgetSet.attach(container);
-                    })
-                    .then(function () {
-                        return widgetSet.start(params);
-                    });
-            }
+        function start(params) {
+            container.innerHTML = renderLayout();
+            return widgetSet.init()
+                .then(function () {
+                    return widgetSet.attach(container);
+                })
+                .then(function () {
+                    return widgetSet.start(params);
+                });
+        }
 
-            function run(params) {
-                return widgetSet.run(params);
-            }
-            function stop() {
-                return widgetSet.stop();
-            }
-            function detach() {
-                return widgetSet.detach()
-                    .then(function () {
-                        mount.removeChild(container);
-                        resolve();
-                    });
-            }
-            function destroy() {
-                return widgetSet.destroy();
-            }
+        function run(params) {
+            return widgetSet.run(params);
+        }
 
-            return {
-                init: init,
-                attach: attach,
-                start: start,
-                run: run,
-                stop: stop,
-                detach: detach,
-                destroy: destroy
-            };
+        function stop() {
+            return widgetSet.stop();
+        }
+
+        function detach() {
+            return widgetSet.detach()
+                .then(function () {
+                    mount.removeChild(container);
+                    resolve();
+                });
+        }
+
+        function destroy() {
+            return widgetSet.destroy();
         }
 
         return {
-            make: function (config) {
-                return factory(config);
-            }
+            init: init,
+            attach: attach,
+            start: start,
+            run: run,
+            stop: stop,
+            detach: detach,
+            destroy: destroy
         };
-    });
+    }
+
+    return {
+        make: function (config) {
+            return factory(config);
+        }
+    };
+});

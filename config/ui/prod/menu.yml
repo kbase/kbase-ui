@@ -1,9 +1,9 @@
 menus:
     authenticated: 
-        main: [narrative, appcatalog, search, dashboard, bulk-ui]
+        main: [narrative, search]
         developer: []
         help: [contact-kbase, about-kbase, help]
     unauthenticated: 
-        main: [appcatalog, search]
+        main: [search]
         developer: []
         help: [contact-kbase, about-kbase, help]
