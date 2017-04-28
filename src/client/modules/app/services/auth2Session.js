@@ -35,6 +35,10 @@ define([
             return auth2Session.getUsername();
         }
 
+        function getEmail() {
+            return auth2Session.getEmail();
+        }
+
         function getRealname() {
             return auth2Session.getRealname();
         }
@@ -121,6 +125,9 @@ define([
                         runtime.send('session', 'loggedout');
                     }
                     auth2Session.onChange(function (change) {
+                        runtime.send('session', 'change', {
+                            state: change
+                        });
                         switch (change) {
                         case 'interrupted':
                             // runtime.send('app', 'navigate', {
@@ -194,6 +201,7 @@ define([
             stop: stop,
             onChange: onChange,
             getAuthToken: getAuthToken,
+            getEmail: getEmail,
             getUsername: getUsername,
             getRealname: getRealname,
             isLoggedIn: isLoggedIn,

@@ -7,7 +7,7 @@ define([
         'kb_plugin_mainWindow',
         'bootstrap'
     ],
-    function(_, SimpleWidget, html, Plugin) {
+    function (_, SimpleWidget, html, Plugin) {
         'use strict';
 
         function myWidget(config) {
@@ -35,28 +35,28 @@ define([
                     }
                 }
                 switch (type) {
-                    case 'button':
-                        if (item.uri) {
-                            return (function() {
-                                var linkAttribs = { href: item.uri };
-                                if (item.newWindow) {
-                                    linkAttribs.target = '_blank';
-                                }
-                                return li({}, a(linkAttribs, [
-                                    icon,
-                                    item.label
-                                ]));
-                            }());
-                        }
-                        if (path !== undefined) {
-                            return li({}, a({ href: '#' + path }, [
+                case 'button':
+                    if (item.uri) {
+                        return (function () {
+                            var linkAttribs = { href: item.uri };
+                            if (item.newWindow) {
+                                linkAttribs.target = '_blank';
+                            }
+                            return li({}, a(linkAttribs, [
                                 icon,
                                 item.label
                             ]));
-                        }
-                        break;
-                    case 'divider':
-                        return li({ role: 'presentation', class: 'divider' });
+                        }());
+                    }
+                    if (path !== undefined) {
+                        return li({}, a({ href: '#' + path }, [
+                            icon,
+                            item.label
+                        ]));
+                    }
+                    break;
+                case 'divider':
+                    return li({ role: 'presentation', class: 'divider' });
                 }
             }
 
@@ -65,7 +65,7 @@ define([
                 if (!section && section.length === 0) {
                     return;
                 }
-                section.forEach(function(item) {
+                section.forEach(function (item) {
                     if (!item) {
                         console.warn('Menu item not defined');
                     } else {
@@ -82,12 +82,12 @@ define([
                         renderMenuSection(menu.main),
                         renderMenuSection(menu.developer),
                         renderMenuSection(menu.help)
-                    ].filter(function(items) {
+                    ].filter(function (items) {
                         if (!items || items.length > 0) {
                             return true;
                         }
                         return false;
-                    }).map(function(items) {
+                    }).map(function (items) {
                         return items.join('');
                     }).join(renderMenuItem({ type: 'divider' }));
 
@@ -97,12 +97,12 @@ define([
             return SimpleWidget.make({
                 runtime: runtime,
                 on: {
-                    start: function(params) {
-                        runtime.getService('menu').onChange(function(value) {
+                    start: function (params) {
+                        runtime.getService('menu').onChange(function (value) {
                             this.set('menu', value);
                         }.bind(this));
                     },
-                    render: function() {
+                    render: function () {
                         return div({ class: 'kb-widget-menu' }, [
                             button({
                                 id: 'kb-nav-menu',
@@ -120,7 +120,7 @@ define([
         }
 
         return {
-            make: function(config) {
+            make: function (config) {
                 return myWidget(config);
             }
         };
