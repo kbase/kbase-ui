@@ -7,6 +7,7 @@ define([
 
 
     ko.extenders.dirty = function (target, startDirty) {
+        var lastValue = target();
         var cleanValue = ko.observable(ko.mapping.toJSON(target));
         var dirtyOverride = ko.observable(ko.utils.unwrapObservable(startDirty));
 
@@ -16,10 +17,14 @@ define([
 
         target.markClean = function () {
             cleanValue(ko.mapping.toJSON(target));
+            lastValue = target();
             dirtyOverride(false);
         };
         target.markDirty = function () {
             dirtyOverride(true);
+        };
+        target.reset = function () {
+            target(lastValue);
         };
 
         return target;
