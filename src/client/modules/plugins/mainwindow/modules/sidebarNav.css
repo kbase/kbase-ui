@@ -1,3 +1,7 @@
+.kb-mainWindow-sidebarNav {
+    position: fixed;
+}
+
 .kb-mainWindow-sidebarNav .-nav-button {
     background-color: transparent;
 }

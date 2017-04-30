@@ -965,14 +965,14 @@ function makeModuleVFS(state, whichBuild) {
     var root = state.environment.path,
         buildPath = ['..', 'build'];
 
-    return glob(root.concat(['dist', 'client', 'modules', '**', '*.js']).join('/'), {
+    return glob(root.concat([whichBuild, 'client', 'modules', '**', '*.js']).join('/'), {
             nodir: true
         })
         .then(function (matches) {
 
             // just read in file and build a giant map...            
             var vfs = {};
-            var vfsDest = buildPath.concat([whichBuild, 'moduleVfs.json']);
+            var vfsDest = buildPath.concat([whichBuild, 'moduleVfs.js']);
             //console.log('matches', JSON.stringify(matches));
             return Promise.all(matches
                     .map(function (match) {
@@ -1183,6 +1183,7 @@ function main(type) {
             // TODO: a build flag for the vfs.
             // FORNOW: no vfs build for dev
             var vfs = [];
+            vfs.push(makeModuleVFS(state, 'build'));
             if (state.config.build.dist) {
                 vfs.push(makeModuleVFS(state, 'dist'));
             }

@@ -95,7 +95,13 @@ define([
                             }
                         }, [
                             div({ class: 'kb-mainwindow-alert' }, div({ id: widgetSet.addWidget('kb_mainWindow_alert') })),
-                            div({ class: 'kb-mainwindow-body', style: { 'padding-top': '1em' } }, [
+                            div({
+                                class: 'kb-mainwindow-body',
+                                style: {
+                                    paddingTop: '1em',
+                                    overflow: 'auto'
+                                }
+                            }, [
                                 div({ id: widgetSet.addWidget('body') })
                             ])
                         ])
