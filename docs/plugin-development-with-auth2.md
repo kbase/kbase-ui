@@ -124,6 +124,8 @@ add a line somewhere, e.g. the bottom, like:
 
 We will be mapping ci.kbase.us into the VM, and inside the VM using an nginx config to map service requests to the real ci.
 
+> Note that when you need to access the "real" ci.kbase.us you will need to disable this line in your /etc/hosts file.
+
 ## Set up Nginx 
 
 Back in the vagrant window we'll be setting 
