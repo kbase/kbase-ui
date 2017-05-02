@@ -9,6 +9,9 @@ switch (build.deployType) {
 case 'dev':
     buildKey = new Date().getTime();
     break;
+case 'ci':
+    buildKey = build.gitCommitHash;
+    break;
 case 'prod':
     buildKey = build.gitCommitHash;
     break;

@@ -96,7 +96,7 @@ plugins:
         version: 1.0.4
         cwd: src/plugin
         source:
-            bower: {}            
+            bower: {}
 
 # Copy these directories into the modules
 # There are two forms, as for plugins.
