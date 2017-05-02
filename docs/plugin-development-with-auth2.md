@@ -286,7 +286,7 @@ cp config/link.sh dev/test/link.sh
 The dev/test directory is ignored by git, so is a safe place to stash develop-time assets. The link script is merely a convenience to provide symbolic linking for various bits of the ui source into the built ui client, which is what is served by nginx.
 
 
-Edit the link.sh script to link in the auth2 client. Open the link.sh script in your editor, and in the EXTERNAL PLUGINS section add this line:
+Edit the link.sh script to link to the plugin. Open the link.sh script in your editor, and in the EXTERNAL PLUGINS section add this line:
 
 ```text
 linkPlugin "my-plugin"
@@ -294,7 +294,7 @@ linkPlugin "my-plugin"
 
 ### Link the plugin 
 
-The linking for the auth2 client must be done on the vagrant side.
+The linking for the plugin  must be done on the vagrant side.
 
 So, back in the terminal window **logged into vagrant**, do this:
 
