@@ -186,6 +186,9 @@ server {
     proxy_cookie_path /link /services/auth/link;
     proxy_pass https://ci.kbase.us/services;
   }
+  location /dynserv {
+    proxy_pass https://ci.kbase.us/dynserv;
+  }
   # Proxy the narrative including websockets
   location /narrative {
     proxy_pass https://ci.kbase.us/narrative;
