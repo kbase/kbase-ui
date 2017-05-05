@@ -32,8 +32,6 @@ define([
         ]);
     }
 
-
-
     function factory(config) {
         var hostNode, container, runtime = config.runtime;
 
@@ -60,15 +58,19 @@ define([
             authRequired: true
         }];
 
+        var currentButtons = [];
+        var currentPath;
+
         function buildNavStrip(buttons) {
             var loggedIn = runtime.service('session').isLoggedIn();
-            return div({}, buttons
+            currentButtons = buttons
                 .filter(function (button) {
                     if (button.authRequired && !loggedIn) {
                         return false;
                     }
                     return true;
-                })
+                });
+            return div({}, currentButtons
                 .map(function (button) {
                     var id = html.genId();
                     button.id = id;
@@ -89,37 +91,56 @@ define([
             container.innerHTML = build(buttons);
         }
 
-
         function attach(node) {
             hostNode = node;
             container = hostNode.appendChild(document.createElement('div'));
         }
 
+        function selectButton() {
+            // var hash = window.location.hash;
+            // if (!hash || hash.length === 0) {
+            //     return;
+            // }
+            // var path = hash.substr(1);
+            var path = currentPath;
+            currentButtons.forEach(function (button) {
+                var buttonNode = document.getElementById(button.id);
+                //  var pathPrefix = path.substr(0, button.path.length);
+                if (path === button.path) {
+                    buttonNode.classList.add('-active');
+                } else {
+                    buttonNode.classList.remove('-active');
+                }
+            });
+        }
+
+        function setPath(route) {
+            var path = [];
+            var i;
+            for (i = 0; i < route.route.path.length; i += 1) {
+                var pathElement = route.route.path[i];
+                if (pathElement.type !== 'literal') {
+                    break;
+                }
+                path.push(pathElement.value);
+            }
+            currentPath = path.join('/');
+        }
+
         function start(params) {
             return Promise.try(function () {
                 render();
-
-                window.addEventListener('hashchange', function () {
-                    var hash = window.location.hash;
-                    if (!hash || hash.length === 0) {
-                        return;
-                    }
-                    var path = hash.substr(1);
-                    buttons.forEach(function (button) {
-                        var buttonNode = document.getElementById(button.id);
-                        var pathPrefix = path.substr(0, button.path.length);
-                        if (pathPrefix === button.path) {
-                            buttonNode.classList.add('-active');
-                        } else {
-                            buttonNode.classList.remove('-active');
-                        }
-
-                    });
+                runtime.recv('route', 'routing', function (route) {
+                    setPath(route);
+                    // TODO: route.route.path contains the parsed route.
+                    // we should use it. But the session change event needs
+                    // to evaluate the path as
+                    selectButton();
                 });
 
                 runtime.recv('session', 'change', function (message) {
                     render();
-                    // console.log('changed', message);
+                    selectButton();
                 });
             });
         }
