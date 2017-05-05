@@ -22,7 +22,6 @@ define([
                     throw ex;
                 }
             }
-            // console.log('routing...', handler);
             runtime.send('route', 'routing', handler);
             if (handler.route.authorization) {
                 if (!runtime.service('session').isLoggedIn()) {
