@@ -8,11 +8,12 @@
 define([
     'promise',
     'kb_common/html',
-    'kb_common/dom'
-], function(Promise, html, dom) {
+    'bootstrap'
+], function (Promise, html) {
     'use strict';
     var t = html.tag,
         h1 = t('h1'),
+        h2 = t('h2'),
         p = t('p'),
         div = t('div'),
         a = t('a');
@@ -24,46 +25,98 @@ define([
         var mount, container,
             runtime = config.runtime;
 
-        function greeting() {
-            return p('Hello');
+        function buildLayout() {
+            return div({
+                class: 'container-fluid'
+            }, [
+                div({
+                    class: 'row'
+                }, [
+                    div({
+                        class: 'col-sm-6',
+                        style: {
+                            backgroundColor: 'silver'
+                        }
+                    }, [
+                        h1('KBase User Interface')
+                    ]),
+                    div({
+                        class: 'col-sm-6',
+                        style: {
+                            backgroundColor: 'silver'
+                        }
+                    })
+                ]),
+                div({
+                    class: 'row'
+                }, [
+                    div({
+                        class: 'col-sm-6',
+                        style: {
+                            backgroundColor: 'silver'
+                        }
+                    }, [
+                        h2('About'),
+                        p('What it is')
+                    ]),
+                    div({
+                        class: 'col-sm-6',
+                        style: {
+                            backgroundColor: 'silver'
+                        }
+                    }, [
+                        h2('Build'),
+                        p('build info here')
+                    ])
+                ]),
+                div({
+                    class: 'row'
+                }, [
+
+                    div({
+                        class: 'col-sm-12',
+                        style: {
+                            backgroundColor: 'silver'
+                        }
+                    }, [
+                        h2('Dependencies'),
+                        p('dependencies here...')
+                    ])
+                ])
+            ]);
         }
 
         function render() {
-            return [
-                h1('About KBase'),
-                div([
-                    greeting(),
-                    p(['This is KBase, the ...'])
-                ])
-            ];
+            container.innerHTML = buildLayout();
         }
         // Widget API
         function attach(node) {
-            return Promise.try(function() {
+            return Promise.try(function () {
                 mount = node;
                 container = mount.appendChild(document.createElement('div'));
             });
         }
 
         function detach() {
-            return Promise.try(function() {
+            return Promise.try(function () {
                 mount.removeChild(container);
                 container = null;
             });
         }
 
         function start() {
-            return Promise.try(function() {
-                runtime.send('ui', 'setTitle', 'About then FUNctional Site');
-                runtime.send('ui', 'render', {
-                    node: container,
-                    content: html.flatten(render())
-                });
+            return Promise.try(function () {
+                runtime.send('ui', 'setTitle', 'About then KBase User Interface');
+                render();
+                // runtime.send('ui', 'render', {
+                //     node: container,
+                //     content: html.flatten(render())
+                // });
             });
         }
 
         function stop() {
-            return Promise.try(function() {
+            return Promise.try(function () {
                 runtime.send('ui', 'setTitle', 'Leaving about...');
             });
         }
@@ -77,7 +130,7 @@ define([
     }
 
     return {
-        make: function(config) {
+        make: function (config) {
             return widget(config);
         }
     };
