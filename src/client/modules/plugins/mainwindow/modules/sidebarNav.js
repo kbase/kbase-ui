@@ -52,8 +52,8 @@ define([
             authRequired: true
         }, {
             //icon: 'user',
-            icon: 'gear',
-            label: 'Settings',
+            icon: 'user-circle-o',
+            label: 'Account',
             path: 'auth2/account',
             authRequired: true
         }];
