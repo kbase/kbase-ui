@@ -31,7 +31,7 @@
         "highlightjs": "9.10.0",
         "jquery": "2.2.4",
         "kbase-common-ts": "0.14.1",
-        "kbase-common-js": "2.7.0",
+        "kbase-common-js": "2.7.1",
         "kbase-sdk-clients-js": "0.5.0",
         "kbase-service-clients-js": "3.3.3",
         "kbase-ui-widget": "1.1.0",

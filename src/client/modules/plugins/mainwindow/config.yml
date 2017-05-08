@@ -11,8 +11,6 @@ source:
     ## NB: need to quote file names, otherwise 
     modules:
     styles:
-        -
-            file: navbar
 install:
     # NEW - a plugin may now specify a boot widget. This widget will be
     # installed on the window root upon app startup (boot)

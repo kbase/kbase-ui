@@ -125,11 +125,6 @@ hr.ws-hr {
     /*border: 1px solid #eee;*/
 }
 
-#wrap {
-    min-height: 100%;
-    position: relative;
-}
-
 #content {
     xpadding: 20px 20px 20px 20px;
 }
@@ -152,19 +147,6 @@ hr.ws-hr {
 
 .label {
     padding: .4em .6em .3em;
-}
-
-
-/* 
- *  Main Navigation Bar
-*/
-
-.navbar-kbase {
-    background-color: #fff;
-    border-bottom: 1px solid #E0E0E0;
-    -webkit-box-shadow: 0 1px 10px rgba(0, 0, 0, .1);
-    -moz-box-shadow: 0 1px 10px rgba(0, 0, 0, .1);
-    box-shadow: 0 1px 10px rgba(0, 0, 0, .1);
 }
 
 .nav>li>a:hover,
@@ -789,29 +771,6 @@ div::-webkit-scrollbar-thumb {
     margin: -5px 0 0 4px;
     /* adjust for container margin */
     font-size: 1.3em;
-}
-
-.navbar-nav {
-    color: #6DA8CF;
-    font-family: 'RobotoBlack', Arial, sans-serif;
-}
-
-.navbar-nav>li>a:hover {
-    background-color: #fff;
-}
-
-.navbar-nav>li.active>a,
-.navbar-nav>li.active:hover {
-    color: #2a6496 !important;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    height: 50px;
-    border-bottom: 4px solid #428bca;
-}
-
-.navbar-nav>.active:hover {
-    color: #2a6496;
 }
 
 .project-shared-with {

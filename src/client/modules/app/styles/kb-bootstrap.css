@@ -13,12 +13,8 @@
 }
 
 .btn-kbase {
-    xbackground-color: #2196F3;
     border-radius: 1px;
-    xcolor: #fff;
     border: none;
-    xpadding: 10px 20px;
-    xfont-size: 13px;
     box-shadow: 1px 1px 3px #aaa;
 }
 
@@ -33,7 +29,6 @@
 
 .btn-group .btn-kbase {
     box-shadow: none;
-    xmargin-bottom: 3px;
 }
 
 .btn-kbase[disabled=disabled] {
@@ -136,23 +131,3 @@
     padding-bottom: 2px;
     border-bottom: none;
 }
-
-
-/*
-
-.kbase-ui .nav-tabs {
-  background-color:#BBB;
-}
-.kbase-ui .tab-content {
-    background-color: #BBB;
-}
-.kbase-ui .nav-tabs > li.active {
-    background-color: #BBB;    
-}
-.kbase-ui .nav-tabs > li > a{
-  border: medium none;
-}
-.kbase-ui .nav-tabs > li > a:hover{
-  background-color: #888 !important;
-    
-}*/

@@ -54,7 +54,7 @@ define([
                     obj1[key] = obj2[key];
                 } else if (isSimpleObject(obj1Value) && isSimpleObject(obj2Value)) {
                     // thread through objects.
-                    keyStack.push(key)
+                    keyStack.push(key);
                     merge(obj1Value, obj2Value, keyStack);
                     keyStack.pop();
                 } else if (obj1Type === obj2Type) {
@@ -64,7 +64,7 @@ define([
                     console.error('Unmergable at ' + keyStack.join('.') + ':' + key, obj1Type, obj1Value, obj2Type, obj2Value);
                     throw new Error('Unmergable at ' + keyStack.join('.') + ':' + key);
                 }
-            })
+            });
         }
         var base = JSON.parse(JSON.stringify(listOfObjects[0]));
         for (var i = 1; i < listOfObjects.length; i += 1) {

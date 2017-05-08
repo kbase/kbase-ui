@@ -1,5 +1,3 @@
-/*global define: true */
-/*jslint browser:true  vars: true */
 /*
  * implements the kbase web app main interface
  * The Main Window implements the widget interface, of course. It is controlled
@@ -31,8 +29,7 @@ define([
     html,
     WidgetSet
 ) {
-    'ust strict';
-    /* Menu */
+    'use strict';
 
     function factory(config) {
         var mount, container, runtime = config.runtime,
@@ -41,16 +38,15 @@ define([
             });
 
         var t = html.tag,
-            div = t('div'),
-            span = t('span');
+            div = t('div');
 
-        function init(config) {
+        function init() {
             return new Promise(function (resolve) {
                 resolve();
             });
         }
 
-        function renderNavbar() {
+        function buildNavbar() {
             var cellStyle = {
                     padding: '4px',
                     display: 'inline-block',
@@ -73,9 +69,14 @@ define([
 
         function renderLayout() {
             var div = html.tag('div');
-            return div({ id: 'wrap' }, [
+            return div({
+                class: 'plugin-mainwindow widget-mainwindow -wrap'
+            }, [
                 div({ id: 'content' }, [
-                    div({ class: 'navbar navbar-kbase navbar-fixed-top', id: 'kbase-navbar', style: 'padding: 0' }, renderNavbar()),
+                    div({
+                        class: 'navbar navbar-fixed-top -navbar',
+                        style: 'padding: 0'
+                    }, buildNavbar()),
                     div({
                         style: {
                             display: 'flex',
