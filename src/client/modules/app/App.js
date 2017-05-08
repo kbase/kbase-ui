@@ -1,7 +1,3 @@
-/*global define */
-/*jslint
- white: true, browser: true
- */
 define([
     '../lib/pluginManager',
     'kb_common/dom',
@@ -11,7 +7,7 @@ define([
     'kb_common/asyncQueue',
     'kb_common/appServiceManager',
     'kb_common_ts/Cookie'
-], function(
+], function (
     pluginManagerFactory,
     dom,
     messengerFactory,
@@ -182,23 +178,23 @@ define([
             // navigation
             navigate: navigate,
             // Services
-            addService: function() {
+            addService: function () {
                 return proxyMethod(appServiceManager, 'addService', arguments);
             },
-            loadService: function() {
+            loadService: function () {
                 return proxyMethod(appServiceManager, 'loadService', arguments);
             },
-            getService: function() {
+            getService: function () {
                 return proxyMethod(appServiceManager, 'getService', arguments);
             },
-            service: function() {
+            service: function () {
                 var service = proxyMethod(appServiceManager, 'getService', arguments);
                 return service
             },
-            hasService: function() {
+            hasService: function () {
                 return proxyMethod(appServiceManager, 'hasService', arguments);
             },
-            dumpServices: function() {
+            dumpServices: function () {
                 return proxyMethod(appServiceManager, 'dumpServices', arguments);
             }
         };
@@ -227,7 +223,7 @@ define([
             // Add plugin(s) provided by the selected auth feature.
             // By default a plugin which is provided for a feature must be set to 
             // disabled state, and will be enabled here.
-            api.feature('auth', 'plugins').forEach(function(pluginName) {
+            api.feature('auth', 'plugins').forEach(function (pluginName) {
                 config.plugins[pluginName].disabled = false;
             });
 
@@ -279,7 +275,7 @@ define([
             //     send('app', 'navigate', 'goodbye');
             // });
 
-            receive('app', 'route-not-found', function(info) {
+            receive('app', 'route-not-found', function (info) {
                 // alert('help, the route was not found!: ' + route.path);
                 send('app', 'navigate', {
                     path: 'message/error/notfound',
@@ -293,9 +289,9 @@ define([
             // UI should be a service...
             // NB this was never developed beyond this stage, and should
             // probably be hunted down and removed.
-            receive('ui', 'render', function(arg) {
+            receive('ui', 'render', function (arg) {
                 renderQueue.addItem({
-                    onRun: function() {
+                    onRun: function () {
                         if (arg.node) {
                             arg.node.innerHTML = arg.content;
                         } else {
@@ -309,16 +305,16 @@ define([
             // ROUTING
 
             return appServiceManager.loadServices()
-                .then(function() {
+                .then(function () {
                     return installPlugins(config.plugins);
                 })
-                .then(function() {
+                .then(function () {
                     return appServiceManager.startServices();
                 })
-                .then(function() {
+                .then(function () {
                     return mountRootWidget('root', api);
                 })
-                .then(function() {
+                .then(function () {
                     // kick off handling of the current route.
                     // api.service('analytics').pageView('/index');
                     // remove the loading status.
@@ -332,11 +328,11 @@ define([
         };
     }
     return {
-        run: function(config) {
+        run: function (config) {
             var runtime = factory(config);
             return runtime.begin();
         },
-        version: function() {
+        version: function () {
             return moduleVersion;
         }
     };

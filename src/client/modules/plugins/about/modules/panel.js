@@ -1,15 +1,12 @@
-/*global
- define
- */
-/*jslint
- browser: true,
- white: true
- */
+/* global Promise */
 define([
-    'promise',
     'kb_common/html',
+    'kb_common/bootstrapUtils',
     'bootstrap'
-], function (Promise, html) {
+], function (
+    html,
+    BS
+) {
     'use strict';
     var t = html.tag,
         h1 = t('h1'),
@@ -25,6 +22,24 @@ define([
         var mount, container,
             runtime = config.runtime;
 
+        function buildBuildInfo() {
+            var buildInfo = runtime.config('buildInfo');
+
+            var info = {
+                builtAt: new Date(buildInfo.builtAt).toLocaleString(),
+                git: {
+                    root: buildInfo.git.root,
+                    commit: {
+                        hash: buildInfo.git.abbreviatedSha,
+                        message: buildInfo.git.commitMessage,
+                        date: new Date(buildInfo.git.committerDate).toLocaleString()
+                    }
+                }
+            };
+
+            return BS.buildPresentableJson(info);
+        }
+
         function buildLayout() {
             return div({
                 class: 'container-fluid'
@@ -34,50 +49,29 @@ define([
                 }, [
                     div({
                         class: 'col-sm-6',
-                        style: {
-                            backgroundColor: 'silver'
-                        }
+                        style: {}
                     }, [
-                        h1('KBase User Interface')
+                        h1('About the KBase User Interface')
                     ]),
                     div({
                         class: 'col-sm-6',
-                        style: {
-                            backgroundColor: 'silver'
-                        }
+                        style: {}
                     })
-                ]),
-                div({
-                    class: 'row'
-                }, [
-                    div({
-                        class: 'col-sm-6',
-                        style: {
-                            backgroundColor: 'silver'
-                        }
-                    }, [
-                        h2('About'),
-                        p('What it is')
-                    ]),
-                    div({
-                        class: 'col-sm-6',
-                        style: {
-                            backgroundColor: 'silver'
-                        }
-                    }, [
-                        h2('Build'),
-                        p('build info here')
-                    ])
                 ]),
                 div({
                     class: 'row'
                 }, [
 
                     div({
-                        class: 'col-sm-12',
-                        style: {
-                            backgroundColor: 'silver'
-                        }
+                        class: 'col-sm-6',
+                        style: {}
+                    }, [
+                        h2('Build'),
+                        buildBuildInfo()
+                    ]),
+                    div({
+                        class: 'col-sm-6',
+                        style: {}
                     }, [
                         h2('Dependencies'),
                         p('dependencies here...')
@@ -88,6 +82,7 @@ define([
 
         function render() {
             container.innerHTML = buildLayout();
+            console.log('build info?', runtime.config('buildInfo'));
         }
         // Widget API
         function attach(node) {

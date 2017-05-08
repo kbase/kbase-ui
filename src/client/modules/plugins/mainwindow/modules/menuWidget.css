@@ -1,17 +1,20 @@
-.kb-widget-menu {
+.plugin-mainwindow .widget-menu {
     margin-top: 12px;
     margin-left: 4px;
 }
-.navbar-kbase .dropdown-menu  .navbar-icon {
-  display:inline-block; 
-  width: 26px; 
-  text-align: center;
-  vertical-align: middle;
-  margin-right: 10px;
+
+.plugin-mainwindow .widget-menu .dropdown-menu .navbar-icon {
+    display: inline-block;
+    width: 26px;
+    text-align: center;
+    vertical-align: middle;
+    margin-right: 10px;
 }
-.navbar-kbase .dropdown-menu .navbar-icon .fa {
-  font-size: 150%;
+
+.plugin-mainwindow .widget-menu .dropdown-menu .navbar-icon .fa {
+    font-size: 150%;
 }
-.navbar-kbase .dropdown-menu li a {
+
+.plugin-mainwindow .widget-menu .dropdown-menu li a {
     vertical-align: middle;
 }
