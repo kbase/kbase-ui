@@ -71,6 +71,11 @@
 .kbase-ui .kb-panel-light {
     border: none;
     box-shadow: none;
+    background-color: transparent;
+}
+
+.kbase-ui .panel-title {
+    text-align: left;
 }
 
 .kbase-ui .panel-title>[data-toggle="collapse"]::before {
