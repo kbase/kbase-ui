@@ -1,13 +1,13 @@
-/* global Promise*/
 define([
+    'bluebird',
     'kb_common/html'
 ], function (
+    Promise,
     html
 ) {
     var t = html.tag,
         div = t('div'),
-        a = t('a'),
-        span = t('span');
+        a = t('a');
 
     function buildNavStripButton(cfg) {
         var icon = 'fa-' + cfg.icon;

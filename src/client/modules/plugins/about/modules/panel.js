@@ -1,9 +1,10 @@
-/* global Promise */
 define([
+    'bluebird',
     'kb_common/html',
     'kb_common/bootstrapUtils',
     'bootstrap'
 ], function (
+    Promise,
     html,
     BS
 ) {
@@ -82,7 +83,7 @@ define([
 
         function render() {
             container.innerHTML = buildLayout();
-            console.log('build info?', runtime.config('buildInfo'));
+            // console.log('build info?', runtime.config('buildInfo'));
         }
         // Widget API
         function attach(node) {

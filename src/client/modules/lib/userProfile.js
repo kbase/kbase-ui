@@ -1,10 +1,11 @@
-/* global Promise */
 define([
+    'bluebird',
     'md5',
     'kb_service/client/userProfile',
     'kb_common_ts/Auth2',
     './props'
 ], function (
+    Promise,
     md5,
     UserProfileService,
     Auth2,
