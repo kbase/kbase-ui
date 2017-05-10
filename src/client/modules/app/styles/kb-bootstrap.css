@@ -136,3 +136,104 @@
     padding-bottom: 2px;
     border-bottom: none;
 }
+
+
+/* Help panels */
+
+.kbase-ui .panel.kb-panel-help {
+    border: none;
+    box-shadow: none;
+}
+
+.kbase-ui .panel.kb-panel-help>.panel-heading {
+    background-color: transparent;
+    font-weight: bold;
+    color: #666;
+    padding-left: 0;
+    padding-bottom: 4px;
+    border: none;
+}
+
+.kbase-ui .panel.kb-panel-help .panel-body {
+    padding: 14px 10px 10px 14px;
+    border: none;
+}
+
+.kbase-ui .panel.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
+    font-size: 120%;
+    width: 18px;
+    content: "\f138";
+}
+
+.kbase-ui .panel.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
+    font-size: 120%;
+    width: 18px;
+    content: "\f13a";
+}
+
+.kbase-ui .panel.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
+    font-size: 150%;
+    width: 30px;
+    /*content: "\f13a";*/
+    content: "\f0a7";
+    vertical-align: middle;
+}
+
+.kbase-ui .panel.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
+    font-size: 150%;
+    width: 30px;
+    /*content: "\f138";*/
+    content: "\f0a4";
+    vertical-align: middle;
+}
+
+
+/* Bootrap semantic colors ... */
+
+.kbase-ui .panel-danger.kb-panel-help .panel-title {
+    color: #a94442;
+}
+
+.kbase-ui .panel-success.kb-panel-help .panel-title {
+    color: #3c763d;
+}
+
+.kbase-ui .panel-warning.kb-panel-help .panel-title {
+    color: #8a6d3b;
+}
+
+.kbase-ui .panel-info.kb-panel-help .panel-title {
+    color: blue;
+}
+
+.kbase-ui .panel.panel-danger.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
+    color: #a94442;
+}
+
+.kbase-ui .panel.panel-success.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
+    color: #3c763d;
+}
+
+.kbase-ui .panel.panel-warning.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
+    color: #8a6d3b;
+}
+
+.kbase-ui .panel.panel-info.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
+    color: blue;
+}
+
+.kbase-ui .panel.panel-danger.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
+    color: #a94442;
+}
+
+.kbase-ui .panel.panel-success.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
+    color: #3c763d;
+}
+
+.kbase-ui .panel.panel-warning.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
+    color: #8a6d3b;
+}
+
+.kbase-ui .panel.panel-info.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
+    color: blue;
+}
