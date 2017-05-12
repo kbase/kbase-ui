@@ -132,7 +132,7 @@ plugins:
         name: auth2-client
         disabled: true
         globalName: kbase-ui-plugin-auth2-client
-        version: 0.12.6
+        version: 0.12.7
         cwd: src/plugin
         source:
             bower: {}
@@ -150,6 +150,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: test-dynamic-table-widget
+        globalName: kbase-ui-plugin-test-dynamic-table-widget
+        version: 0.1.2
+        cwd: src/plugin
+        source:
+            bower: {}            
 
 
 # Copy these directories into the modules
