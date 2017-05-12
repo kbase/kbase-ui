@@ -52,6 +52,11 @@ bowerFiles:
         name: d3
         bowerComponent: true
     -
+        name: file-saver
+        src: 
+            - FileSaver.js
+        bowerComponent: true
+    -
         name: font-awesome
         src:
             - css/font-awesome.css
@@ -60,6 +65,9 @@ bowerFiles:
     -
         name: jquery
         cwd: dist
+        bowerComponent: true
+    -
+        name: jquery-ui
         bowerComponent: true
     -
         name: js-yaml

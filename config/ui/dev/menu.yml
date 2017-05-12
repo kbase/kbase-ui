@@ -1,7 +1,7 @@
 menus:
     authenticated:
         main: [narrative, search]
-        developer: [paveldemo, sdkclientstest, databrowser, typebrowser, jobbrowser, shockbrowser]
+        developer: [test_dynamic_table, paveldemo, sdkclientstest, databrowser, typebrowser, jobbrowser, shockbrowser]
         help: [about, about-services, contact-kbase, about-kbase, help]
     unauthenticated:
         main: [search]
