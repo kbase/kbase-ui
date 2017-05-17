@@ -44,8 +44,8 @@ var Promise = require('bluebird'),
 
 function copyFiles(from, to, globExpr) {
     return glob(globExpr, {
-        cwd: from.join('/')
-    })
+            cwd: from.join('/')
+        })
         .then(function (matches) {
             return Promise.all(matches.map(function (match) {
                 var fromPath = from.concat([match]).join('/'),
@@ -345,7 +345,7 @@ function injectPluginsIntoConfig(state) {
 
             // emulate the yaml file for now, or for ever.
             return fs.writeFileAsync(configPath.concat(['plugin.yml']).join('/'),
-                yaml.safeDump({plugins: newConfig}));
+                yaml.safeDump({ plugins: newConfig }));
         });
 }
 
@@ -382,7 +382,8 @@ function copyFromBower(state) {
                  but since this is not always the case, we allow the dir setting
                  to override this.
                  */
-                var dir = cfg.dir || cfg.name, sources, cwd, dest;
+                var dir = cfg.dir || cfg.name,
+                    sources, cwd, dest;
                 if (!dir) {
                     throw new Error('Either the name or dir property must be provided to establish the top level directory');
                 }
@@ -444,8 +445,8 @@ function copyFromBower(state) {
             // in the above spec.
             return Promise.all(copyJobs.map(function (copySpec) {
                 return glob(copySpec.src, {
-                    cwd: state.environment.path.concat(copySpec.cwd).join('/')
-                })
+                        cwd: state.environment.path.concat(copySpec.cwd).join('/')
+                    })
                     .then(function (matches) {
                         // Do the copy!
                         return Promise.all(matches.map(function (match) {
@@ -486,34 +487,34 @@ function installExternalPlugins(state) {
         })
         .then(function (externalPlugins) {
             return [externalPlugins, Promise.all(externalPlugins.map(function (plugin) {
-                    if (plugin.source.bower) {
-                        var cwds = plugin.cwd || 'dist/plugin',
-                            cwd = cwds.split('/'),
-                            srcDir = root.concat(['build', 'bower_components', plugin.globalName]).concat(cwd),
-                            destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
-                        return copyFiles(srcDir, destDir, '**/*');
-                    }
-                }))];
+                if (plugin.source.bower) {
+                    var cwds = plugin.cwd || 'dist/plugin',
+                        cwd = cwds.split('/'),
+                        srcDir = root.concat(['build', 'bower_components', plugin.globalName]).concat(cwd),
+                        destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+                    return copyFiles(srcDir, destDir, '**/*');
+                }
+            }))];
         })
         .spread(function (externalPlugins) {
             return [externalPlugins, Promise.all(externalPlugins
-                    .filter(function (plugin) {
-                        return plugin.source.directory ? true : false;
-                    })
-                    .map(function (plugin) {
-                        var cwds = plugin.cwd || 'dist/plugin',
-                            cwd = cwds.split('/'),
-                            // Our actual cwd is mutations, so we need to escape one up to the 
-                            // project root.
-                            repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..'],
-                            source = repoRoot.concat([plugin.globalName]).concat(cwd),
-                            destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
-//                    console.log('EXTERNAL plugin');
-//                    console.log(source);
-//                    console.log(destination);
+                .filter(function (plugin) {
+                    return plugin.source.directory ? true : false;
+                })
+                .map(function (plugin) {
+                    var cwds = plugin.cwd || 'dist/plugin',
+                        cwd = cwds.split('/'),
+                        // Our actual cwd is mutations, so we need to escape one up to the 
+                        // project root.
+                        repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..'],
+                        source = repoRoot.concat([plugin.globalName]).concat(cwd),
+                        destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+                    //                    console.log('EXTERNAL plugin');
+                    //                    console.log(source);
+                    //                    console.log(destination);
 
-                        return copyFiles(source, destination, '**/*');
-                    }))];
+                    return copyFiles(source, destination, '**/*');
+                }))];
         })
         .spread(function (externalPlugins) {
             return Promise.all(externalPlugins
@@ -528,9 +529,9 @@ function installExternalPlugins(state) {
                         repoRoot = (plugin.source.link.root && plugin.source.link.root.split('/')) || ['..', '..'],
                         source = repoRoot.concat([plugin.globalName]).concat(cwd),
                         destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
-//                    console.log('EXTERNAL plugin');
-//                    console.log(source);
-//                    console.log(destination);
+                    //                    console.log('EXTERNAL plugin');
+                    //                    console.log(source);
+                    //                    console.log(destination);
 
                     return fs.mkdirAsync(destination.join('/'));
                     // return linkDirectories(destination, source);
@@ -702,8 +703,8 @@ function copyUiConfig(state) {
         configFiles = ['settings.yml'];
 
     return Promise.all(configFiles.map(function (file) {
-        return mutant.copyFiles(configSource, configDest, file);
-    }))
+            return mutant.copyFiles(configSource, configDest, file);
+        }))
         .then(function () {
             return state;
         });
@@ -711,7 +712,7 @@ function copyUiConfig(state) {
 
 function createBuildInfo(state) {
     var root = state.environment.path,
-        configDest = root.concat(['build', 'client', 'modules', 'config','buildInfo.json']),
+        configDest = root.concat(['build', 'client', 'modules', 'config', 'buildInfo.json']),
         buildInfo = {
             features: state.config.features,
             targets: state.config.targets,
@@ -754,9 +755,9 @@ function makeKbConfig(state) {
         fileName = 'deploy-' + state.config.targets.deploy + '.cfg';
 
     return Promise.all([
-        loadIni(root.concat(['config', 'deploy', fileName])),
-        fs.readFileAsync(root.concat(['config', 'deploy', 'templates', 'service.yml']).join('/'), 'utf8')
-    ])
+            loadIni(root.concat(['config', 'deploy', fileName])),
+            fs.readFileAsync(root.concat(['config', 'deploy', 'templates', 'service.yml']).join('/'), 'utf8')
+        ])
         .spread(function (kbDeployConfig, template) {
             state.config.kbDeployConfig = kbDeployConfig;
             var compiled = underscore.template(template),
@@ -769,11 +770,24 @@ function makeKbConfig(state) {
         })
         .then(function () {
             fs.readFileAsync(root.concat(['config', 'deploy', 'templates', 'build-info.js']).join('/'), 'utf8')
-            .then(function (template) {
-                var dest = root.concat(['build', 'client', 'build-info.js']).join('/');
-                var out =  handlebars.compile(template)(state.buildInfo);
-                return fs.writeFileAsync(dest, out);
-            });
+                .then(function (template) {
+                    var dest = root.concat(['build', 'client', 'build-info.js']).join('/');
+                    var out = handlebars.compile(template)(state.buildInfo);
+                    return fs.writeFileAsync(dest, out);
+                });
+        })
+        // Rewrite the main entry point html files to add in cache-busting via the git commit hash
+        .then(function () {
+            Promise.all(['index.html', 'load-narrative.html', 'loading.html'].map(function (fileName) {
+                    return Promise.all([fileName, fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')]);
+                }))
+                .then(function (templates) {
+                    return Promise.all(templates.map(function (template) {
+                        var dest = root.concat(['build', 'client', template[0]]).join('/');
+                        var out = handlebars.compile(template[1])(state.buildInfo);
+                        return fs.writeFileAsync(dest, out);
+                    }));
+                })
         })
         // .then(function () {
         //     var dest = root.concat(['build', 'client', 'modules', 'config', 'build-info.json']).join('/');
@@ -867,9 +881,8 @@ function makeDistBuild(state) {
 
 
 function main(type) {
-// INPUT
-    var initialFilesystem = [
-        {
+    // INPUT
+    var initialFilesystem = [{
             cwd: ['..'],
             path: ['src']
         },
@@ -917,14 +930,14 @@ function main(type) {
             return setupBuild(state);
         })
 
-        // .then(function (state) {
-        //     return mutant.copyState(state);
-        // })
-        // .then(function (state) {
-        //     return makeBuildInfo(state);
-        // })
+    // .then(function (state) {
+    //     return mutant.copyState(state);
+    // })
+    // .then(function (state) {
+    //     return makeBuildInfo(state);
+    // })
 
-        .then(function (state) {
+    .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -932,7 +945,7 @@ function main(type) {
             return fetchPackagesWithBower(state);
         })
 
-        .then(function (state) {
+    .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -940,7 +953,7 @@ function main(type) {
             return installBowerPackages(state);
         })
 
-        .then(function (state) {
+    .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -949,7 +962,7 @@ function main(type) {
         })
 
 
-        .then(function (state) {
+    .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -957,7 +970,7 @@ function main(type) {
             return installModules(state);
         })
 
-        .then(function (state) {
+    .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -965,14 +978,14 @@ function main(type) {
             return installModulePackagesFromBower(state);
         })
 
-//        .then(function (state) {
-//            return mutant.copyState(state);
-//        })
-//        .then(function (state) {
-//            return installModulePackagesFromFilesystem(state);
-//        })
+    //        .then(function (state) {
+    //            return mutant.copyState(state);
+    //        })
+    //        .then(function (state) {
+    //            return installModulePackagesFromFilesystem(state);
+    //        })
 
-        .then(function (state) {
+    .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -980,7 +993,7 @@ function main(type) {
             return copyUiConfig(state);
         })
 
-         .then(function (state) {
+    .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -988,7 +1001,7 @@ function main(type) {
             return createBuildInfo(state);
         })
 
-        .then(function (state) {
+    .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -996,9 +1009,9 @@ function main(type) {
             return makeKbConfig(state);
         })
 
-        // Disable temporarily ... we don't want to wipe out bower.json
-        // until we have determined if we will be building a dist.
-        .then(function (state) {
+    // Disable temporarily ... we don't want to wipe out bower.json
+    // until we have determined if we will be building a dist.
+    .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1009,8 +1022,8 @@ function main(type) {
 
 
 
-        // From here, we can make a dev build, make a release
-        .then(function (state) {
+    // From here, we can make a dev build, make a release
+    .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1018,7 +1031,7 @@ function main(type) {
             return makeBaseBuild(state);
         })
 
-        .then(function (state) {
+    .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1029,15 +1042,15 @@ function main(type) {
             return state;
         })
 
-        // Here we handle any developer links.
-        //.then(function (state) {
-        //    return mutant.copyState(state);
-        //})
-        //.then(function (state) {
-        //    
-        //})
+    // Here we handle any developer links.
+    //.then(function (state) {
+    //    return mutant.copyState(state);
+    //})
+    //.then(function (state) {
+    //    
+    //})
 
-        .then(function (state) {
+    .then(function (state) {
             return mutant.finish(state);
         })
         .catch(function (err) {

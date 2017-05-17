@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <title>KBase | Interface</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="/fallback.js"></script>
-        <script src="/mustard.js"></script>
-        <script src="/modules/bower_components/bluebird/bluebird.js"></script>
-        <script src="/build-info.js"></script>
-        <script src="/require-config.js"></script>
-        <script src="/modules/bower_components/requirejs/require.js" data-main="startup"></script>
-    </head>
+<head>
+    <title>KBase | Interface</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/fallback.js?cb={{git.abbreviatedSha}}"></script>
+    <script src="/mustard.js?cb={{git.abbreviatedSha}}"></script>
+    <script src="/modules/bower_components/bluebird/bluebird.js?cb={{git.abbreviatedSha}}"></script>
+    <script src="/build-info.js?cb={{git.abbreviatedSha}}"></script>
+    <script src="/require-config.js?cb={{git.abbreviatedSha}}"></script>
+    <script src="/modules/bower_components/requirejs/require.js?cb={{git.abbreviatedSha}}" data-main="startup"></script>
+</head>
 
-    <body class="kbase-ui">
-        <div id="root"></div>
-        <div id="error"></div>
-        <div id="status"></div>
-        <noscript>
+<body class="kbase-ui">
+    <div id="root"></div>
+    <div id="error"></div>
+    <div id="status"></div>
+    <noscript>
         <h1>Javascript Required</h1>
         <p>
             KBase requires a web browser that supports Javascript and has Javascript enabled.
@@ -28,7 +28,7 @@
         <p>
             If you have additional questions or concerns please <a href="http://kbase.us/contact">contact us</a>.
         </p>
-        </noscript>
-    </body>
+    </noscript>
+</body>
 
 </html>
