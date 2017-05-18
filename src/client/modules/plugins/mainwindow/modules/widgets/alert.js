@@ -267,7 +267,16 @@ define([
     function component() {
         return {
             template: template(),
-            viewModel: viewModel
+            viewModel: viewModel,
+            // Required in order to make the alert component available within
+            // the service api start semantics.
+            // Component loading is asynchronous, and there is no hook for 
+            // getting component loading completion, which we could use to build a
+            // promise.
+            // TODO: see if there are changes in progress, or otherwise research what
+            // would be required for this. At the least, the viewmodel building would 
+            // need async hooks, as well as applyBindings.
+            synchronous: true
         };
     }
     ko.components.register('ui-alerts', component());

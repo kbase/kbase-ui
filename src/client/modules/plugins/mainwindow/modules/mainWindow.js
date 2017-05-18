@@ -31,14 +31,14 @@ define([
 ) {
     'use strict';
 
+    var t = html.tag,
+        div = t('div');
+
     function factory(config) {
         var mount, container, runtime = config.runtime,
             widgetSet = WidgetSet.make({
                 runtime: runtime
             });
-
-        var t = html.tag,
-            div = t('div');
 
         function init() {
             return new Promise(function (resolve) {
@@ -46,67 +46,60 @@ define([
             });
         }
 
-        function buildNavbar() {
+        function buildHeader() {
             var cellStyle = {
                     padding: '4px',
                     display: 'inline-block',
                     height: '100%',
                     verticalAlign: 'top'
                 },
-                loginWidget = runtime.feature('auth', 'widgets.login.name'),
-                content = div({ style: { position: 'relative', height: '100%' }, class: 'kb-widget-mainWindow' }, [
-                    div({ style: cellStyle, id: widgetSet.addWidget('menu') }),
-                    div({ style: cellStyle, id: widgetSet.addWidget('logo') }),
-                    div({ style: cellStyle, id: widgetSet.addWidget('title') }),
-                    div({ style: { position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top' } }, [
-                        div({ style: cellStyle, id: widgetSet.addWidget('buttonbar') }),
-                        div({ style: { borderLeft: '0px #EEE solid', borderRight: '0px #EEE solid', padding: '4px', display: 'inline-block', height: '100%', verticalAlign: 'top', width: '100px' }, id: widgetSet.addWidget('notification') }),
-                        div({ style: cellStyle, class: 'navbar-right', id: widgetSet.addWidget(loginWidget) })
-                    ])
-                ]);
-            return content;
+                loginWidget = runtime.feature('auth', 'widgets.login.name');
+
+            return div({
+                class: 'navbar navbar-fixed-top -navbar',
+                style: 'padding: 0'
+            }, div({ style: { position: 'relative', height: '100%' }, class: 'kb-widget-mainWindow' }, [
+                div({ style: cellStyle, id: widgetSet.addWidget('menu') }),
+                div({ style: cellStyle, id: widgetSet.addWidget('logo') }),
+                div({ style: cellStyle, id: widgetSet.addWidget('title') }),
+                div({ style: { position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top' } }, [
+                    div({ style: cellStyle, id: widgetSet.addWidget('buttonbar') }),
+                    div({ style: cellStyle, id: widgetSet.addWidget('deployment') }),
+                    // div({
+                    //     style: {
+                    //         borderLeft: '0px #EEE solid',
+                    //         borderRight: '0px #EEE solid',
+                    //         padding: '4px',
+                    //         display: 'inline-block',
+                    //         height: '100%',
+                    //         verticalAlign: 'top',
+                    //         width: '100px'
+                    //     },
+                    //     id: widgetSet.addWidget('notification')
+                    // }),
+                    div({ style: cellStyle, class: 'navbar-right', id: widgetSet.addWidget(loginWidget) })
+                ])
+            ]));
         }
 
         function renderLayout() {
-            var div = html.tag('div');
             return div({
-                class: 'plugin-mainwindow widget-mainwindow -wrap'
+                class: 'plugin-mainwindow widget-mainwindow -main'
             }, [
-                div({ id: 'content' }, [
+                div({
+                    class: '-header'
+                }, buildHeader()),
+                div({
+                    class: '-body'
+                }, [
                     div({
-                        class: 'navbar navbar-fixed-top -navbar',
-                        style: 'padding: 0'
-                    }, buildNavbar()),
+                        class: '-nav',
+                        id: widgetSet.addWidget('kb_mainWindow_sidebarNav')
+                    }),
                     div({
-                        style: {
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'flex-start'
-                        }
-                    }, [
-                        div({
-                            style: {
-                                flex: '0 0 75px'
-                            }
-                        }, div({ id: widgetSet.addWidget('kb_mainWindow_sidebarNav') })),
-                        div({
-                            style: {
-                                flex: '1 1 100%',
-                                minWidth: '0'
-                            }
-                        }, [
-                            div({ class: 'kb-mainwindow-alert' }, div({ id: widgetSet.addWidget('kb_mainWindow_alert') })),
-                            div({
-                                class: 'kb-mainwindow-body',
-                                style: {
-                                    paddingTop: '1em',
-                                    overflow: 'auto'
-                                }
-                            }, [
-                                div({ id: widgetSet.addWidget('body') })
-                            ])
-                        ])
-                    ])
+                        class: '-content',
+                        id: widgetSet.addWidget('body')
+                    })
                 ])
             ]);
         }

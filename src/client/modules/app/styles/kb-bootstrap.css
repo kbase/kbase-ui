@@ -237,3 +237,22 @@
 .kbase-ui .panel.panel-info.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
     color: blue;
 }
+
+
+/* remove the padding from first and last columns for edge-to-edge rows */
+
+
+/* nb nasty child div selector because no generic column class */
+
+.row.row-edgeless>div:nth-child(1) {
+    padding-left: 0;
+}
+
+.row.row-edgeless>div:last-child {
+    padding-right: 0;
+}
+
+.row.row-padless>div {
+    padding-left: 0;
+    padding-right: 0;
+}

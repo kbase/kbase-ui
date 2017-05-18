@@ -45,6 +45,11 @@ install:
             id: menu
             type: factory
         -
+            module: deploymentWidget
+            css: false
+            id: deployment
+            type: factory
+        -
             module: loginWidget
             css: true
             id: loginx

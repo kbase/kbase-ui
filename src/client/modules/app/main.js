@@ -140,7 +140,7 @@ define([
     return {
         start: function () {
             // merge the deploy and app config.
-            var merged = mergeObjects([appConfigBase, deployConfig])
+            var merged = mergeObjects([appConfigBase, deployConfig]);
             var appConfig = fixConfig(merged);
             return App.run({
                     appConfig: appConfig,

@@ -93,7 +93,7 @@ define([
 
         function attach(node) {
             hostNode = node;
-            container = hostNode.appendChild(document.createElement('div'));
+            container = hostNode;
         }
 
         function selectButton() {
@@ -150,8 +150,11 @@ define([
         }
 
         function detach() {
-            if (hostNode && container) {
-                hostNode.removeChild(container);
+            // if (hostNode && container) {
+            //     hostNode.removeChild(container);
+            // }
+            if (hostNode) {
+                hostNode.innerHTML = '';
             }
         }
 
