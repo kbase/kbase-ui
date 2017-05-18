@@ -25,7 +25,9 @@ define([
             runtime.send('route', 'routing', handler);
             if (handler.route.authorization) {
                 if (!runtime.service('session').isLoggedIn()) {
-                    var loginParams = {};
+                    var loginParams = {
+                        source: 'authorization'
+                    };
                     if (handler.request.path) {
                         loginParams.nextrequest = JSON.stringify(handler.request);
                     }

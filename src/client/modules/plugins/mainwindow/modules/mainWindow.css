@@ -1,3 +1,5 @@
+/* LAYOUT */
+
 .plugin-mainwindow.widget-mainwindow.-wrap {
     min-height: 100%;
     position: relative;
@@ -5,6 +7,42 @@
 
 .kb-widget-mainWindow .navbar-right {
     margin-right: 0;
+}
+
+
+/* NEW LAYOUT */
+
+.plugin-mainwindow.widget-mainwindow.-main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.plugin-mainwindow.widget-mainwindow.-main .-header {
+    flex: 0 0 70px;
+    /*background: yellow;*/
+}
+
+.plugin-mainwindow.widget-mainwindow.-main .-body {
+    flex: 1 1 0px;
+    /*height: calc(100vh - 70px);*/
+    /*background: aqua;*/
+    display: flex;
+    flex-direction: row;
+}
+
+.plugin-mainwindow.widget-mainwindow.-main .-body .-nav {
+    flex: 0 0 75px;
+    /*background-color: green;*/
+}
+
+.plugin-mainwindow.widget-mainwindow.-main .-body .-content {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    /*background-color: gray;*/
+    overflow-y: auto;
+    padding-top: 1em;
 }
 
 
@@ -197,7 +235,8 @@ Although the sidebar is partially positioned with part of the navbar.
 The content area is normal flow and just needs to have a matching top margin.
 */
 
-.sidebar {
+
+/*.sidebar {
     top: 70px;
 }
 
@@ -224,7 +263,7 @@ The content area is normal flow and just needs to have a matching top margin.
     overflow-y: hidden;
     background-color: #f9f9f9;
     border-right: 2px solid #eee;
-}
+}*/
 
 
 /* Top bar nav buttons

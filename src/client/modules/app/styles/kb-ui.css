@@ -101,10 +101,6 @@ body {
     height: 100%;
 }
 
-body {
-    overflow-y: scroll;
-}
-
 a:hover,
 .pointer {
     cursor: hand;
@@ -123,10 +119,6 @@ table {
 hr.ws-hr {
     margin: 5px -20px 10px -40px;
     /*border: 1px solid #eee;*/
-}
-
-#content {
-    xpadding: 20px 20px 20px 20px;
 }
 
 #logo {
@@ -192,13 +184,6 @@ hr.ws-hr {
     color: #fff;
     background: #a93c3c;
 }
-
-
-/*   Deprecated?
-.app-icon:hover {
-    opacity: 0.9;
-    text-decoration: none;
-} */
 
 .caret-left {
     display: inline-block;
@@ -280,11 +265,6 @@ hr.ws-hr {
     /* just perfect, due to positioning */
 }
 
-
-/*#select-box tr :hover {
-    background-color: #eee;
-}*/
-
 .narrative-filters .active,
 .selected-ws,
 .selected,
@@ -322,23 +302,6 @@ hr.ws-hr {
 
 .heatmap-view {
     overflow-x: scroll;
-}
-
-div::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
-
-div::-webkit-scrollbar-track {
-    /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);*/
-    border-radius: 10px;
-    background: #ececec;
-}
-
-div::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background: #666;
-    /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);*/
 }
 
 .modal-alert {
@@ -805,4 +768,22 @@ div::-webkit-scrollbar-thumb {
 
 .btn.btn-kbase-compact {
     padding: 3px 6px;
+}
+
+
+/* Safari fixes */
+
+div::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+div::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background: #ececec;
+}
+
+div::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #666;
 }
