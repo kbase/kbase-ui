@@ -1,10 +1,12 @@
-/*global define */
-/*jslint white: true, browser: true */
 define([
     'jquery',
     'bluebird'
-], function ($, Promise) {
+], function (
+    $,
+    Promise
+) {
     'use strict';
+
     function factory(config) {
         var runtime = config.runtime;
 
@@ -14,12 +16,14 @@ define([
                 return true;
             });
         }
+
         function stop() {
             // nothing to do?
             return Promise.try(function () {
                 return true;
             });
         }
+
         function getJson(arg) {
             if (arg.sync) {
                 var returnData;
@@ -31,21 +35,21 @@ define([
                         returnData = data;
                     },
                     error: function (err) {
-                        throw {
-                            type: 'AjaxError',
-                            reason: 'Unknown',
-                            message: 'There was an error fetching this data object',
-                            data: {
-                                arg: arg,
-                                error: err
-                            }
-                        };
-                        // throw new Error('Error getting data: ' + arg.file);
-                    }
-                    //complete: function (jq, status) {
-                    //    console.log('COMPLETE');
-                    //    console.log(status);
-                    // }
+                            throw {
+                                type: 'AjaxError',
+                                reason: 'Unknown',
+                                message: 'There was an error fetching this data object',
+                                data: {
+                                    arg: arg,
+                                    error: err
+                                }
+                            };
+                            // throw new Error('Error getting data: ' + arg.file);
+                        }
+                        //complete: function (jq, status) {
+                        //    console.log('COMPLETE');
+                        //    console.log(status);
+                        // }
                 });
                 return returnData;
             }
@@ -64,4 +68,3 @@ define([
         }
     };
 });
- 

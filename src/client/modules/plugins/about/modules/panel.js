@@ -83,7 +83,6 @@ define([
 
         function render() {
             container.innerHTML = buildLayout();
-            // console.log('build info?', runtime.config('buildInfo'));
         }
         // Widget API
         function attach(node) {
@@ -104,10 +103,6 @@ define([
             return Promise.try(function () {
                 runtime.send('ui', 'setTitle', 'About then KBase User Interface');
                 render();
-                // runtime.send('ui', 'render', {
-                //     node: container,
-                //     content: html.flatten(render())
-                // });
             });
         }
 

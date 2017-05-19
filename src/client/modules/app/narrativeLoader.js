@@ -10,7 +10,7 @@ define([
     'css!app/styles/kb-bootstrap',
     'css!app/styles/kb-ui',
     'domReady'
-], function($, Promise, html) {
+], function ($, Promise, html) {
     'use strict';
     var t = html.tag,
         div = t('div'),
@@ -52,7 +52,7 @@ define([
 
     function showError(arg) {
         if (arg.suggestions) {
-            arg.suggestions = ul({ style: { paddingLeft: '1.2em' } }, arg.suggestions.map(function(suggestion) {
+            arg.suggestions = ul({ style: { paddingLeft: '1.2em' } }, arg.suggestions.map(function (suggestion) {
                 if (suggestion.url) {
                     return li(a({ href: suggestion.url }, suggestion.label));
                 }
@@ -85,7 +85,7 @@ define([
             return params;
         }
         var query = href.substring(queryPosition + 1).split('&');
-        query.forEach(function(paramString) {
+        query.forEach(function (paramString) {
             var param = paramString.split('=');
             if (param.length === 2) {
                 params[param[0]] = decodeURIComponent(param[1]);
@@ -133,7 +133,7 @@ define([
     // top layer.
     function UIError(arg) {
         var that = this;
-        Object.keys(arg).forEach(function(key) {
+        Object.keys(arg).forEach(function (key) {
             that[key] = arg[key];
         });
     }
@@ -151,68 +151,65 @@ define([
 
     function checkNarrative(options) {
         var startTime = new Date().getTime();
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             var xhr = new XMLHttpRequest();
-            xhr.onload = function() {
+            xhr.onload = function () {
                 var config;
                 switch (xhr.status) {
-                    case 200:
-                        // For /narrative/ checks, there is no 201 or 401, so we
-                        // have to grok the state of a "successful" response from
-                        // the content.
-                        // If there is no auth cookie, set_proxy will redirect
-                        // to #login, but that will merely provide the stub index
-                        // page. This is our '401' signal.
-                        // If the response was the creation of a new session,
-                        // a different redirect is issued -- the one which normally
-                        // brings a user here! This response should either be
-                        // successful or a 502. If successful, the response will
-                        // be the config file, and we know that it is both a json
-                        // file (and parsable) and will have some "well known"
-                        // properties.
+                case 200:
+                    // For /narrative/ checks, there is no 201 or 401, so we
+                    // have to grok the state of a "successful" response from
+                    // the content.
+                    // If there is no auth cookie, set_proxy will redirect
+                    // to #login, but that will merely provide the stub index
+                    // page. This is our '401' signal.
+                    // If the response was the creation of a new session,
+                    // a different redirect is issued -- the one which normally
+                    // brings a user here! This response should either be
+                    // successful or a 502. If successful, the response will
+                    // be the config file, and we know that it is both a json
+                    // file (and parsable) and will have some "well known"
+                    // properties.
 
-                        try {
-                            config = JSON.parse(xhr.responseText);
-                        } catch (ex) {
-                            // This is our fake '401'
-                            return reject(new UnauthenticatedError());
-                        }
+                    try {
+                        config = JSON.parse(xhr.responseText);
+                    } catch (ex) {
+                        // This is our fake '401'
+                        return reject(new UnauthenticatedError());
+                    }
 
-                        // console.log('Successful!!!', config);
-                        // TODO: check the json
-                        if (config && config.version) {
-                            // console.log('Detected Narrative version ', config.version);
-                            resolve();
-                        } else {
-                            reject(new LoadingError('Error in Narrative check response', 'check'));
-                        }
-                        break;
-                    case 201:
-                        // For check_narrative, this is the response which means
-                        // that a session has been created.
-                        resolve(true);
-                        break;
-                    case 502:
-                        // On the next request, though, we pass through to
-                        // the Jupyter server, which will not be ready for some
-                        // period of time, and this will trigger a 502 in the
-                        // nginx proxy layer.
-                        // console.log('502 - try again...');
-                        resolve(true);
-                        break;
-                    default:
-                        reject(new LoadingHttpError(xhr.status, xhr.statusText, xhr.responseText));
+                    // TODO: check the json
+                    if (config && config.version) {
+                        resolve();
+                    } else {
+                        reject(new LoadingError('Error in Narrative check response', 'check'));
+                    }
+                    break;
+                case 201:
+                    // For check_narrative, this is the response which means
+                    // that a session has been created.
+                    resolve(true);
+                    break;
+                case 502:
+                    // On the next request, though, we pass through to
+                    // the Jupyter server, which will not be ready for some
+                    // period of time, and this will trigger a 502 in the
+                    // nginx proxy layer.
+                    resolve(true);
+                    break;
+                default:
+                    reject(new LoadingHttpError(xhr.status, xhr.statusText, xhr.responseText));
                 }
             };
 
-            xhr.ontimeout = function() {
+            xhr.ontimeout = function () {
                 var elapsed = new Date().getTime() - startTime;
                 reject(new TimeoutError(elapsed, options.timeout));
             };
-            xhr.onerror = function() {
+            xhr.onerror = function () {
                 reject(new LoadingError('General request error', 'error'));
             };
-            xhr.onabort = function() {
+            xhr.onabort = function () {
                 reject(new LoadingError('Request was aborted', 'aborted'));
             };
 
@@ -241,18 +238,16 @@ define([
             narrativeUrl = document.location.origin + '/narrative/' + narrativeId,
             checkUrl = document.location.origin + '/narrative/static/kbase/config/config.json?check=true';
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             function loop() {
                 tries += 1;
                 updateProgress(tries, options.maxTries);
-                console.log('Trying to load narrative resource ' + checkUrl + ' attempt ' + tries);
                 return checkNarrative({ url: checkUrl, timeout: options.timeout })
-                    .then(function(retry) {
+                    .then(function (retry) {
                         if (!retry) {
                             updateProgress(options.maxTries, options.maxTries);
                             return resolve(narrativeUrl);
                         }
-                        console.log('Hmm, still waiting after');
                         if (tries >= options.maxTries) {
                             hideElement('waiting');
                             return reject(new UIError({
@@ -273,14 +268,14 @@ define([
                                 ]
                             }));
                         }
-                        return Promise.delay(options.retryPause).then(function() {
+                        return Promise.delay(options.retryPause).then(function () {
                             return loop(checkUrl);
                         });
                     })
-                    .catch(UIError, function(err) {
+                    .catch(UIError, function (err) {
                         reject(err);
                     })
-                    .catch(TimeoutError, function(err) {
+                    .catch(TimeoutError, function (err) {
                         // timeouts should be tried again. Might be due to the container still
                         // spinning up...
                         if (tries > options.maxTries) {
@@ -313,144 +308,144 @@ define([
                                 ]
                             }));
                         }
-                        return Promise.delay(options.retryPause).then(function() {
+                        return Promise.delay(options.retryPause).then(function () {
                             return loop(checkUrl);
                         });
                     })
-                    .catch(LoadingError, function(err) {
+                    .catch(LoadingError, function (err) {
                         reject(new UIError({
                             code: 'loading-' + err.type,
                             message: 'Timeout accessing Narrative session',
                             description: err.message
                         }));
                     })
-                    .catch(LoadingHttpError, function(err) {
+                    .catch(LoadingHttpError, function (err) {
                         switch (err.status) {
-                            case 500:
-                                // TODO: Fix this, very dicey.
-                                var permErr = 'It looks like you don\'t have permission to view this Narrative.';
-                                var customErr = 'An error occurred while loading your narrative.';
-                                var grokkedError = 'An error occurred while setting up your narrative.';
+                        case 500:
+                            // TODO: Fix this, very dicey.
+                            var permErr = 'It looks like you don\'t have permission to view this Narrative.';
+                            var customErr = 'An error occurred while loading your narrative.';
+                            var grokkedError = 'An error occurred while setting up your narrative.';
 
-                                if (err.responseText) {
-                                    var $errorHTML = $($.parseHTML(err.responseText));
-                                    var msg = $errorHTML.find('#error-message > h3').text();
-                                    if (msg.indexOf('may not read workspace') !== -1) {
-                                        grokkedError = permErr;
-                                    } else {
-                                        grokkedError = customErr(msg);
-                                    }
+                            if (err.responseText) {
+                                var $errorHTML = $($.parseHTML(err.responseText));
+                                var msg = $errorHTML.find('#error-message > h3').text();
+                                if (msg.indexOf('may not read workspace') !== -1) {
+                                    grokkedError = permErr;
+                                } else {
+                                    grokkedError = customErr(msg);
                                 }
-                                reject(new UIError({
-                                    code: 'internal-error',
-                                    title: 'Internal server error',
-                                    message: [
-                                        'An unexpected internal server error was encountered accessing this Narrative.',
-                                        grokkedError
-                                    ],
-                                    suggestions: [{
-                                            label: 'Try again later',
-                                            url: ''
-                                        },
-                                        {
-                                            label: 'Report issue to KBase',
-                                            url: '//kbase.us/user-support/report-issue/'
-                                        }
-                                    ]
-                                }));
-                                break;
-                            case 401:
-                                // Do not have permission to open narrative.
-                                var nextRequest = {
-                                    path: currentPath(),
-                                    external: true
-                                };
-                                reject(new UIError({
-                                    code: 'not-logged-in',
-                                    message: 'You are not logged in',
-                                    description: [
-                                        'Narrative access requires that you be logged in to KBase'
-                                    ],
-                                    suggestions: [{
-                                            label: 'Log in',
-                                            url: document.location.origin + '#login?nextrequest=' + encodeURIComponent(JSON.stringify(nextRequest))
-                                        },
-                                        {
-                                            label: 'Sign up for KBase',
-                                            url: '//kbase.us/sign-up'
-                                        }
-                                    ]
-                                }));
-                                break;
-                            case 403:
-                                // Do not have permission to open narrative.
-                                var nextRequest = {
-                                    path: currentPath(),
-                                    external: true
-                                };
-                                reject(new UIError({
-                                    code: 'permission-denied',
-                                    message: 'You do not have access to this Narrative',
-                                    description: [
-                                        'You do not have read or write permission for this Narrative.'
-                                    ],
-                                    suggestions: [{
-                                            label: 'Contact the owner of this Narrative and request they share it with you'
-                                        },
-                                        {
-                                            label: 'Contact KBase, referencing narrative ' + narrativeId,
-                                            url: '//kbase.us/user-support/report-issue/'
-                                        }
-                                    ]
-                                }));
-                                break;
-                            case 404:
-                                // Do not have permission to open narrative.
-                                reject(new UIError({
-                                    code: 'does-not-exist',
-                                    message: 'Narrative could not be found',
-                                    description: [
-                                        'A Narrative could not be found matching the id provided',
-                                        narrativeId
-                                    ],
-                                    suggestions: [{
-                                        label: 'Contact KBase referencing this Narrative',
+                            }
+                            reject(new UIError({
+                                code: 'internal-error',
+                                title: 'Internal server error',
+                                message: [
+                                    'An unexpected internal server error was encountered accessing this Narrative.',
+                                    grokkedError
+                                ],
+                                suggestions: [{
+                                        label: 'Try again later',
+                                        url: ''
+                                    },
+                                    {
+                                        label: 'Report issue to KBase',
                                         url: '//kbase.us/user-support/report-issue/'
-                                    }]
-                                }));
-                                break;
-                            case 0:
-                                // network error
-                                reject(new UIError({
-                                    code: 'network-problem',
-                                    message: 'Problem accessing Narrative',
-                                    description: [
-                                        'There is a problem accessing the Narrative.',
-                                        'It is probably a network connection problem between your browser and the KBase services'
-                                    ],
-                                    suggestions: [{
-                                            label: 'KBase Service Status',
-                                            url: ''
-                                        },
-                                        {
-                                            label: 'Try again later',
-                                            url: ''
-                                        }
-                                    ]
-                                }));
-                                break;
-                            default:
-                                reject(new UIError({
-                                    code: 'unknown-error',
-                                    message: 'Unknown error',
-                                    description: [
-                                        'There was an unknown error accessing the narrative: ' + err.status
-                                    ]
-                                }));
-                                break;
+                                    }
+                                ]
+                            }));
+                            break;
+                        case 401:
+                            // Do not have permission to open narrative.
+                            var nextRequest = {
+                                path: currentPath(),
+                                external: true
+                            };
+                            reject(new UIError({
+                                code: 'not-logged-in',
+                                message: 'You are not logged in',
+                                description: [
+                                    'Narrative access requires that you be logged in to KBase'
+                                ],
+                                suggestions: [{
+                                        label: 'Log in',
+                                        url: document.location.origin + '#login?nextrequest=' + encodeURIComponent(JSON.stringify(nextRequest))
+                                    },
+                                    {
+                                        label: 'Sign up for KBase',
+                                        url: '//kbase.us/sign-up'
+                                    }
+                                ]
+                            }));
+                            break;
+                        case 403:
+                            // Do not have permission to open narrative.
+                            var nextRequest = {
+                                path: currentPath(),
+                                external: true
+                            };
+                            reject(new UIError({
+                                code: 'permission-denied',
+                                message: 'You do not have access to this Narrative',
+                                description: [
+                                    'You do not have read or write permission for this Narrative.'
+                                ],
+                                suggestions: [{
+                                        label: 'Contact the owner of this Narrative and request they share it with you'
+                                    },
+                                    {
+                                        label: 'Contact KBase, referencing narrative ' + narrativeId,
+                                        url: '//kbase.us/user-support/report-issue/'
+                                    }
+                                ]
+                            }));
+                            break;
+                        case 404:
+                            // Do not have permission to open narrative.
+                            reject(new UIError({
+                                code: 'does-not-exist',
+                                message: 'Narrative could not be found',
+                                description: [
+                                    'A Narrative could not be found matching the id provided',
+                                    narrativeId
+                                ],
+                                suggestions: [{
+                                    label: 'Contact KBase referencing this Narrative',
+                                    url: '//kbase.us/user-support/report-issue/'
+                                }]
+                            }));
+                            break;
+                        case 0:
+                            // network error
+                            reject(new UIError({
+                                code: 'network-problem',
+                                message: 'Problem accessing Narrative',
+                                description: [
+                                    'There is a problem accessing the Narrative.',
+                                    'It is probably a network connection problem between your browser and the KBase services'
+                                ],
+                                suggestions: [{
+                                        label: 'KBase Service Status',
+                                        url: ''
+                                    },
+                                    {
+                                        label: 'Try again later',
+                                        url: ''
+                                    }
+                                ]
+                            }));
+                            break;
+                        default:
+                            reject(new UIError({
+                                code: 'unknown-error',
+                                message: 'Unknown error',
+                                description: [
+                                    'There was an unknown error accessing the narrative: ' + err.status
+                                ]
+                            }));
+                            break;
                         }
                     })
-                    .catch(UnauthenticatedError, function() {
+                    .catch(UnauthenticatedError, function () {
                         // Not logged in.
                         var nextRequest = {
                             path: currentPath(),
@@ -518,15 +513,14 @@ define([
         ].map(p).join('\n'));
 
         return tryLoading(narrativeId, options)
-            .then(function(narrativeUrl) {
-                //console.log('got it', narrativeId, narrativeUrl);
+            .then(function (narrativeUrl) {
                 window.location.replace(narrativeUrl);
             })
-            .catch(UIError, function(err) {
+            .catch(UIError, function (err) {
                 hideElement('waiting');
                 showError(err);
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 showError({
                     code: 'unexpected-error',
                     message: 'Unexpected error',
