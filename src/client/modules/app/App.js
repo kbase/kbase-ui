@@ -267,6 +267,10 @@ define([
                 runtime: api
             });
 
+            appServiceManager.addService('ko-component', {
+                runtime: api
+            });
+
             pluginManager = pluginManagerFactory.make({
                 runtime: api
             });
