@@ -117,12 +117,14 @@ define([
         function setPath(route) {
             var path = [];
             var i;
-            for (i = 0; i < route.route.path.length; i += 1) {
-                var pathElement = route.route.path[i];
-                if (pathElement.type !== 'literal') {
-                    break;
+            if (route.route.path) {
+                for (i = 0; i < route.route.path.length; i += 1) {
+                    var pathElement = route.route.path[i];
+                    if (pathElement.type !== 'literal') {
+                        break;
+                    }
+                    path.push(pathElement.value);
                 }
-                path.push(pathElement.value);
             }
             currentPath = path.join('/');
         }

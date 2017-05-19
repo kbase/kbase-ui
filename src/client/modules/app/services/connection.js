@@ -76,7 +76,6 @@ define([
                     minimized.push(parts[i]);
                 }
             } else {
-                console.log('res', options.resolution, parts[i].unit);
                 minimized.push(parts[i]);
                 if (options.resolution &&
                     options.resolution === parts[i].unit) {
@@ -174,7 +173,6 @@ define([
                             url: document.location.origin + '/ping.txt'
                         })
                         .then(function (pong) {
-                            // console.log('ping', pong);
                             lastConnectionAt = new Date().getTime();
                             if (lastStatus === 'error') {
                                 interval = intervals.baseInterval;
@@ -209,7 +207,6 @@ define([
                             }
                             var elapsedDisplay = prefix + niceDuration(elapsed, { resolution: resolution }) + suffix;
 
-                            // console.log('elapsed?', currentTime, lastConnectionAt, currentTime - lastConnectionAt);
                             notifyError({
                                 message: 'Error connecting to KBase - last response ' + elapsedDisplay,
                                 description: div([
@@ -221,7 +218,6 @@ define([
                                     ])
                                 ])
                             });
-                            //console.log('general error', err);
                         })
                         .catch(HttpClient.TimeoutError, function (err) {
                             lastStatus = 'error';
@@ -236,21 +232,18 @@ define([
                                     ])
                                 ]
                             });
-                            //console.log('timeout error', err);
                         })
                         .catch(HttpClient.AbortError, function (err) {
                             lastStatus = 'error';
                             notifyError({
                                 message: 'Connection aborted connecting to KBase: ' + err.message
                             });
-                            //console.log('abort error', err);
                         })
                         .catch(function (err) {
                             lastStatus = 'error';
                             notifyError({
                                 message: 'Unknown error connecting to KBase: ' + err.message
                             });
-                            // console.log('unknown error', err);
                         })
                         .finally(function () {
                             checking = false;
@@ -259,10 +252,7 @@ define([
                 }
             });
 
-
             // also, monitor the kbase-ui server to ensure we are connected
-
-
         }
 
         function stop() {

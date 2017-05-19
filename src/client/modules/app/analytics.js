@@ -2,7 +2,7 @@ define([
     'bluebird',
     'uuid',
     'kb_common/ajax'
-], function(
+], function (
     Promise,
     Uuid,
     Ajax
@@ -15,7 +15,7 @@ define([
             uuid = new Uuid(4).format();
 
         function encodeQuery(params) {
-            return Object.keys(params).map(function(key) {
+            return Object.keys(params).map(function (key) {
                 return [encodeURIComponent(key), encodeURIComponent(params[key])].join('=');
             }).join('&');
         }
@@ -40,11 +40,10 @@ define([
                     withCredentials: true,
                     data: data
                 })
-                .then(function(result) {
-                    //alert('yay, sent pageview to analytics');
+                .then(function (result) {
                     // console.log('sent pageview to ga', result);
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                     //alert('boo, it failed. check the log');
 
                     console.error('ERROR sending to GA', err);
@@ -57,7 +56,7 @@ define([
     }
 
     return {
-        make: function(config) {
+        make: function (config) {
             return factory(config);
         }
     };

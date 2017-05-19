@@ -1,11 +1,9 @@
-/*global define */
-/*jslint white: true */
 define([
-    'promise',
-    'require'
-], function (Promise, require) {
+    'promise'
+], function (
+    Promise
+) {
     'use strict';
-
 
     function factory(config) {
         var runtime = config.runtime;
@@ -19,19 +17,10 @@ define([
                             module: serviceConfig.module
                         });
                     } catch (ex) {
-                        console.log('** ERROR ** ');
-                        console.log(ex);
+                        console.error('** ERROR ** ');
+                        console.error(ex);
                     }
                     return runtime.loadService(serviceConfig.name);
-
-//                    return new Promise(function (resolve) {
-//                        require([serviceConfig.module], function (serviceFactory) {
-//                            runtime.addService([serviceConfig.name], serviceFactory.make({
-//                                runtime: runtime
-//                            }));
-//                            resolve();
-//                        });
-//                    });
                 });
                 return Promise.all(services);
             });
@@ -40,10 +29,10 @@ define([
         function start() {
             return true;
         }
+
         function stop() {
             return true;
         }
-
 
         return {
             pluginHandler: pluginHandler,
@@ -51,8 +40,6 @@ define([
             stop: stop
         };
     }
-
-
 
     return {
         make: function (config) {

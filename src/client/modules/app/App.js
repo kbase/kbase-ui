@@ -235,7 +235,11 @@ define([
             appServiceManager.addService('route', {
                 runtime: api,
                 // notFoundRoute: {redirect: {path: 'message/notfound'}},
-                defaultRoute: { redirect: { path: 'dashboard' } }
+                defaultRoute: {
+                    redirect: {
+                        path: 'login'
+                    }
+                }
             });
             appServiceManager.addService('menu', {
                 runtime: api,

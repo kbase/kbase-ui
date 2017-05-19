@@ -23,7 +23,6 @@ define([
             if (runtime.config('deploy.name') === 'prod') {
                 return;
             }
-            console.log('deploy', runtime.config('deploy'));
             container.innerHTML = div({
                 style: {
                     height: '100%',

@@ -1,5 +1,3 @@
-/*global define */
-/*jslint white: true, browser: true */
 define([
     'bluebird',
     'kb_widget/bases/simpleWidget',
@@ -102,10 +100,14 @@ define([
                                     ]),
                                     li({ class: 'divider' }),
                                     li({}, [
-                                        a({ href: '#', 'data-menu-item': 'logout', id: events.addEvent({
-                                            type: 'click', 
-                                            handler: handleSignout
-                                        })}, [
+                                        a({
+                                            href: '#',
+                                            'data-menu-item': 'logout',
+                                            id: events.addEvent({
+                                                type: 'click',
+                                                handler: handleSignout
+                                            })
+                                        }, [
                                             div({ style: 'display: inline-block; width: 34px;' }, [
                                                 span({ class: 'fa fa-sign-out', style: 'font-size: 150%; margin-right: 10px;' })
                                             ]),
@@ -156,7 +158,7 @@ define([
                     render();
                 });
                 return render();
-                
+
             });
         }
 
@@ -178,31 +180,6 @@ define([
             stop: stop,
             detach: detach
         };
-
-        // return SimpleWidget.make({
-        //     runtime: runtime,
-        //     on: {
-        //         start: function (params) {
-        //             this.set('loggedin', runtime.service('session').isLoggedIn());
-        //             runtime.service('userprofile').onChange(function (data) {
-        //                 this.set('userProfile', data);
-        //             }.bind(this));
-        //         },
-        //         render: function () {
-        //             renderLogin(this)
-        //                 .then(function (content) {
-        //                     console.log('login rendered?', content);
-        //                     return {
-        //                         content: div({ class: 'kb-widget-login' }, [
-        //                             span({ id: 'signin-button', dataElement: 'signin-button' }, [
-        //                                 content
-        //                             ])
-        //                         ])
-        //                     };
-        //                 });
-        //         }
-        //     }
-        // });
     }
 
     return {
