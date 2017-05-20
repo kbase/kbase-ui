@@ -56,9 +56,10 @@
                             title: 'Incompatible Plugins',
                             url: 'http://kbase.us/incompatible-plugins'
                         }]
-                    })
+                    });
                 }
             }
+            break;
         case 'require':
             console.error('Error in require-loaded code');
             console.error(err);
