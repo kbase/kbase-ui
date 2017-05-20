@@ -4,8 +4,6 @@ define([
     'knockout-arraytransforms',
     'knockout-validation'
 ], function (ko) {
-
-
     ko.extenders.dirty = function (target, startDirty) {
         var lastValue = target();
         var cleanValue = ko.observable(ko.mapping.toJSON(target));
