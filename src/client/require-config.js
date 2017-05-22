@@ -82,7 +82,10 @@ window.require = {
         },
         highlight: {
             deps: ['css!highlight_css']
-        }
+        },
+        'knockout-plus': {
+            deps: ['knockout']
+        },
         // Activate this if using js-yaml with a need for these modules.
         // At the moment, requirejs global handler catches errors loading
         // this within js-yaml and allows js-yaml to detect that they are
