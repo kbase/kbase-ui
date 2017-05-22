@@ -185,8 +185,7 @@ define([
                             // }
                         })
                         .catch(function (err) {
-                            console.error('ERROR starting profile app service');
-                            console.error(err);
+                            console.error('ERROR starting profile app service', err);
                         });
                 } else {
                     state.setItem('userprofile', null);
