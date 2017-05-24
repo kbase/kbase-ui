@@ -20,3 +20,5 @@ services:
   auth2:
     # note that this overrides the auth2 url.
     url: https://authdev.kbase.us/services/auth
+  user_profile:
+    url: https://authdev.kbase.us/services/user_profile/rpc
