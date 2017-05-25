@@ -1,8 +1,8 @@
 ## Global Build Config
 ---
 targets:
-    ui: prod
-    deploy: next
+    ui: ci
+    deploy: ci
 build:
     dist: false
     temp: ../temp
