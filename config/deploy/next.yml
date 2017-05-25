@@ -15,4 +15,4 @@ ui:
         code: UA-74530365-1
   features:
     auth:
-      selected: auth1
+      selected: auth2

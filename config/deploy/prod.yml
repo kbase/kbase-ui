@@ -18,7 +18,7 @@ ui:
         code: UA-74532966-1
   features:
     auth:
-      selected: auth1
+      selected: auth2
 services:
   narrative:
     url: https://narrative.kbase.us
