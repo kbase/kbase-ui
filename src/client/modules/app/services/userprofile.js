@@ -56,52 +56,14 @@ define([
                 });
                 return client.get_user_profile([username])
                     .then(function (profiles) {
-                        if (!profiles || profiles.length === 0) {
-                            // TODO: create profile and return it.
-                            userProfileLib.createProfile(username);
+                        if (!profiles || profiles.length === 0 || profiles[0] === null) {
+                            // TODO: create profile and return it.f
+                            return userProfileLib.createProfile(username);
                         } else {
                             return userProfileLib.fixProfile(profiles[0]);
                         }
                     });
             });
-        }
-
-
-
-        function createProfileFromAccount(profile) {
-            var userProfileClient = new UserProfileService(runtime.config('services.user_profile.url'), {
-                token: runtime.service('session').getAuthToken()
-            });
-            return runtime.service('session').getMe()
-                .then(function (accountInfo) {
-                    // first just recreate the stub profile experience.
-                    // var newProfile = profile.makeProfile({
-                    //     username: accountInfo.user,
-                    //     realname: accountInfo.fullname,
-                    //     account: {},
-                    //     createdBy: 'userprofile_ui_service'
-                    // });
-                    var newProfile = {
-                        // note - don't use this any more.
-                        user: {
-                            username: accountInfo.user
-                        },
-                        profile: {
-                            metadata: {
-                                createdBy: 'userprofile_ui_service',
-                                created: new Date().toISOString()
-                            },
-                            // was globus info, no longer used
-                            account: {},
-                            preferences: {},
-                            // when auto-creating a profile, there is nothing to put here het.
-                            userdata: {}
-                        }
-                    };
-                    return userProfileClient.set_user_profile({
-                        profile: newProfile
-                    });
-                });
         }
 
         // list for request fetch the user profile
@@ -130,59 +92,6 @@ define([
                     loadProfile()
                         .then(function (profile) {
                             state.setItem('userprofile', profile);
-                            // var profileState = profile.getProfileStatus();
-                            // switch (profileState) {
-                            // case 'stub':
-                            //     // TODO: convert stub profile into a real profile, which is really just
-                            //     // converting the userdata property into a full fledged structure,
-                            //     // or at least simply just an empty structure.
-                            //     profile.updateProfile({
-                            //         profile: {
-                            //             userdata: {}
-                            //         }
-                            //     });
-                            //     return profile.saveProfile()
-                            //         .then(function () {
-                            //             state.setItem('userprofile', profile);
-                            //         });
-                            //     // runtime.send('ui', 'alert', {
-                            //     //     type: 'warning',
-                            //     //     message: 'Stub profile detected, converting to full profile.'
-                            //     // });
-                            // case 'profile':
-                            //     state.setItem('userprofile', profile);
-                            //     break;
-                            // case 'none':
-                            //     // this case should no longer occur.
-                            //     // but we can auto-recover
-                            //     // TODO:
-                            //     runtime.send('ui', 'alert', {
-                            //         type: 'danger',
-                            //         message: 'User profile not found.'
-                            //     });
-                            //     break;
-                            //     // return createProfileFromAccount(profile);
-
-                            //     // return profile.createStubProfile({ createdBy: 'session' })
-                            //     //     .then(function () {
-                            //     //         return profile.loadProfile();
-                            //     //     })
-                            //     //     .then(function (profile) {
-                            //     //         state.setItem('userprofile', profile);
-                            //     //     })
-                            //     //     .catch(function (err) {
-                            //     //         console.error(err);
-                            //     //         runtime.send('ui', 'alert', {
-                            //     //             type: 'danger',
-                            //     //             message: 'Error loading profile - could not create stub'
-                            //     //         });
-                            //     //     });
-                            // default:
-                            //     runtime.send('ui', 'alert', {
-                            //         type: 'danger',
-                            //         message: 'Error loading profile - invalid state ' + profileState
-                            //     });
-                            // }
                         })
                         .catch(function (err) {
                             console.error('ERROR starting profile app service', err);

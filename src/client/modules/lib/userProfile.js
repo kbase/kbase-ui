@@ -29,6 +29,49 @@ define([
 
         }
 
+        function createProfileFromAccount() {
+            var userProfileClient = new UserProfileService(runtime.config('services.user_profile.url'), {
+                token: runtime.service('session').getAuthToken()
+            });
+            return runtime.service('session').getMe()
+                .then(function (accountInfo) {
+                    var newProfile = {
+                        user: {
+                            username: accountInfo.user,
+                            realname: accountInfo.display
+                        },
+                        profile: {
+                            metadata: {
+                                createdBy: 'userprofile_ui_service',
+                                created: new Date().toISOString()
+                            },
+                            // was globus info, no longer used
+                            //account: {},                            
+                            preferences: {},
+                            // This is where all user-visible and user-controlled information goes.
+                            // when auto-creating a profile, there is nothing to put here yet.
+                            userdata: {
+                                avatarOption: 'gravatar',
+                                gravatarDefault: 'identicon'
+                            },
+                            // this is where synchronized data goes. not directly visible to the user.
+                            synced: {
+                                gravatarHash: gravatarHash(accountInfo.email)
+                            }
+                        }
+                    };
+                    return userProfileClient.set_user_profile({
+                            profile: newProfile
+                        })
+                        .then(function () {
+                            return userProfileClient.get_user_profile([accountInfo.user]);
+                        })
+                        .then(function (profiles) {
+                            return profiles[0];
+                        });
+                });
+        }
+
         function gravatarHash(email) {
             return md5.hash(email.trim().toLowerCase());
         }
@@ -86,6 +129,7 @@ define([
 
         function createProfile(username) {
             console.warn('creating missing profile...', username);
+            return createProfileFromAccount();
         }
 
         return {
