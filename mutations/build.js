@@ -27,7 +27,6 @@ var Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs-extra')),
     path = require('path'),
     pathExists = require('path-exists'),
-    findit = require('findit2'),
     mutant = require('./mutant'),
     yaml = require('js-yaml'),
     bower = require('bower'),
@@ -63,19 +62,6 @@ function loadYaml(yamlPath) {
             return yaml.safeLoad(contents);
         });
 }
-
-function loadIni(iniPath) {
-    var yamlPath = iniPath.join('/');
-    return fs.readFileAsync(yamlPath, 'utf8')
-        .then(function (contents) {
-            return ini.parse(contents);
-        });
-}
-
-function saveIni(path, iniData) {
-    return fs.writeFileAsync(path.join('/'), ini.stringify(iniData));
-}
-
 
 // SUB TASKS
 
@@ -515,7 +501,6 @@ function installExternalPlugins(state) {
                         repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..'],
                         source = repoRoot.concat([plugin.globalName]).concat(cwd),
                         destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
-
                     return copyFiles(source, destination, '**/*');
                 }))];
         })
@@ -532,14 +517,9 @@ function installExternalPlugins(state) {
                         repoRoot = (plugin.source.link.root && plugin.source.link.root.split('/')) || ['..', '..'],
                         source = repoRoot.concat([plugin.globalName]).concat(cwd),
                         destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
-
                     return fs.mkdirAsync(destination.join('/'));
                 }));
         });
-}
-
-function linkDirectories(source, destination) {
-    return fs.symlinkAsync(source.join('/'), destination.join('/'));
 }
 
 /*
@@ -735,20 +715,6 @@ function createBuildInfo(state) {
         });
 }
 
-// function makeBuildInfo(state) {
-//     return Promise.try(function () {
-//         state.buildInfo = {
-//             deployType: 'dev',
-//             git: git(),
-//             hostInfo: uname(),
-//             builtAt: new Date().getTime(),
-//             // buildHost: 'Darwin Eriks-MacBook-Pro.local 16.5.0 Darwin Kernel Version 16.5.0: Fri Mar  3 16:45:33 PST 2017; root:xnu-3789.51.2~1/RELEASE_X86_64 x86_64'
-//         }
-
-//     return state;
-//     });
-// }
-
 function mergeObjects(listOfObjects) {
     var simpleObjectPrototype = Object.getPrototypeOf({});
 
@@ -771,7 +737,7 @@ function mergeObjects(listOfObjects) {
                 // console.log(obj1Type, obj2Type, isSimpleObject(obj1Value), isSimpleObject(obj2Value));
                 throw new Error('Unmergable at ' + keyStack.join('.') + ':' + key);
             }
-        })
+        });
     }
 
     var base = JSON.parse(JSON.stringify(listOfObjects[0]));
@@ -1122,7 +1088,6 @@ function main(type) {
             console.log('Creating build record ...');
             return createBuildInfo(state);
         })
-
 
     .then(function (state) {
             return mutant.copyState(state);
