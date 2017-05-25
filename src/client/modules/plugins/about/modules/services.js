@@ -1,34 +1,30 @@
-/*global
- define
- */
-/*jslint
- browser: true,
- white: true
- */
 define([
     'bluebird',
     'kb_common/html',
     'kb_common/dom',
+    'kb_common/bootstrapUtils',
     'kb_service/client/narrativeMethodStore',
     'kb_service/client/workspace',
     'kb_service/client/catalog',
-    'kb_sdk_clients/genericClient',
+    'kb_common/jsonRpc/genericClient',
+    'kb_common/jsonRpc/dynamicServiceClient',
 
     'bootstrap'
-], function(
+], function (
     Promise,
     html,
     dom,
+    BS,
     NMS,
     Workspace,
     Catalog,
-    GenericClient) {
+    GenericClient,
+    DynamicServiceClient
+) {
     'use strict';
     var t = html.tag,
         h1 = t('h1'),
-        p = t('p'),
         div = t('div'),
-        a = t('a'),
         table = t('table'),
         tr = t('tr'),
         th = t('th'),
@@ -41,8 +37,24 @@ define([
     function widget(config) {
         var mount, container,
             runtime = config.runtime,
-            mounts = {
-                content: {
+            vm = {
+                nms: {
+                    id: html.genId(),
+                    node: null
+                },
+                workspace: {
+                    id: html.genId(),
+                    node: null
+                },
+                catalog: {
+                    id: html.genId(),
+                    node: null
+                },
+                serviceWizard: {
+                    id: html.genId(),
+                    node: null
+                },
+                dynamicServices: {
                     id: html.genId(),
                     node: null
                 }
@@ -57,18 +69,18 @@ define([
                 }, [
                     div({
                         class: 'col-sm-12'
-                    }, [
-                        div({
-                            id: mounts.content.id
-                        })
-                    ])
+                    }, ['nms', 'workspace', 'catalog', 'serviceWizard', 'dynamicServices'].map(function (id) {
+                        return div({
+                            id: vm[id].id
+                        });
+                    }))
                 ])
             ]);
         }
 
         function sum(array, fun) {
             var total = 0;
-            array.forEach(function(item) {
+            array.forEach(function (item) {
                 if (fun) {
                     total += fun(item);
                 } else {
@@ -81,7 +93,7 @@ define([
         function perf(call) {
             var measures = [];
             var iters = 5;
-            return new Promise(function(resolve) {
+            return new Promise(function (resolve) {
                 function next(itersLeft) {
                     if (itersLeft === 0) {
                         var stats = {
@@ -92,7 +104,7 @@ define([
                     } else {
                         var start = new Date().getTime();
                         call()
-                            .then(function() {
+                            .then(function () {
                                 var elapsed = new Date().getTime() - start;
                                 measures.push(elapsed);
                                 next(itersLeft - 1);
@@ -108,8 +120,10 @@ define([
                 token: runtime.service('session').getAuthToken()
             }));
 
+            vm.nms.node.innerHTML = html.loading();
+
             return Promise.all([nms.status(), nms.ver(), perf(nms.ver)])
-                .spread(function(status, version, perf) {
+                .spread(function (status, version, perf) {
                     var info = [];
                     // Version info
                     info.push({
@@ -137,19 +151,18 @@ define([
                     });
                     return info;
                 })
-                .then(function(info) {
-                    return div({}, [
+                .then(function (info) {
+                    vm.nms.node.innerHTML = div({}, [
                         h3('Narrative Method Store'),
                         table({
                             class: 'table table-striped'
-                        }, info.map(function(item) {
+                        }, info.map(function (item) {
                             return tr([
                                 th({
-                                        style: {
-                                            width: '10%'
-                                        }
-                                    },
-                                    item.label),
+                                    style: {
+                                        width: '10%'
+                                    }
+                                }, item.label),
                                 td(item.value)
                             ]);
                         }))
@@ -162,9 +175,10 @@ define([
             var workspace = new Workspace(runtime.config('services.workspace.url', {
                 token: runtime.service('session').getAuthToken()
             }));
+            vm.workspace.node.innerHTML = html.loading();
 
             return Promise.all([workspace.ver(), perf(workspace.ver)])
-                .spread(function(version, perf) {
+                .spread(function (version, perf) {
                     var info = [];
                     // Version info
                     info.push({
@@ -178,12 +192,12 @@ define([
 
                     return info;
                 })
-                .then(function(info) {
-                    return div({}, [
+                .then(function (info) {
+                    vm.workspace.node.innerHTML = div({}, [
                         h3('Workspace'),
                         table({
                             class: 'table table-striped'
-                        }, info.map(function(item) {
+                        }, info.map(function (item) {
                             return tr([
                                 th({
                                     style: {
@@ -201,9 +215,10 @@ define([
             var catalog = new Catalog(runtime.config('services.catalog.url', {
                 token: runtime.service('session').getAuthToken()
             }));
+            vm.catalog.node.innerHTML = html.loading();
 
             return Promise.all([catalog.version(), perf(catalog.version)])
-                .spread(function(version, perf) {
+                .spread(function (version, perf) {
                     var info = [];
                     // Version info
                     info.push({
@@ -217,12 +232,12 @@ define([
 
                     return info;
                 })
-                .then(function(info) {
-                    return div({}, [
+                .then(function (info) {
+                    vm.catalog.node.innerHTML = div({}, [
                         h3('Catalog'),
                         table({
                             class: 'table table-striped'
-                        }, info.map(function(item) {
+                        }, info.map(function (item) {
                             return tr([
                                 th({
                                     style: {
@@ -236,63 +251,136 @@ define([
                 });
         }
 
-        function renderServices() {
-            return Promise.all([renderNMS(), renderWorkspace(), renderCatalog()])
-                .then(function(results) {
-                    return results.join('\n');
-                });
-        }
+        function renderServiceWizard() {
+            var serviceWizard = new GenericClient({
+                url: runtime.config('services.service_wizard.url'),
+                token: runtime.service('session').getAuthToken(),
+                module: 'ServiceWizard'
+            });
 
-        function render() {
-            return renderServices()
-                .then(function(servicesContent) {
-                    return div({
-                        class: 'container-fluid'
-                    }, [
-                        div({
-                            class: 'row'
-                        }, [
-                            div({
-                                class: 'col-sm-12'
-                            }, [
-                                h1('KBase Services'),
-                                servicesContent
-                            ])
-                        ])
+            vm.serviceWizard.node.innerHTML = html.loading();
+
+            function theCall() {
+                return serviceWizard.callFunc('version', []);
+            }
+
+            return Promise.all([theCall(), perf(theCall)])
+                .spread(function (result, perf) {
+                    var version = result[0];
+                    var info = [];
+                    // Version info
+                    info.push({
+                        label: 'Version',
+                        value: version
+                    });
+                    info.push({
+                        label: 'Perf (ms/call)',
+                        value: perf.average
+                    });
+
+                    return info;
+                })
+                .then(function (info) {
+                    vm.serviceWizard.node.innerHTML = div({}, [
+                        h3('Service Wizard'),
+                        table({
+                            class: 'table table-striped'
+                        }, info.map(function (item) {
+                            return tr([
+                                th({
+                                    style: {
+                                        width: '10%'
+                                    }
+                                }, item.label),
+                                td(item.value)
+                            ]);
+                        }))
                     ]);
                 });
         }
 
+        function renderDynamicServices() {
+            var client = new GenericClient({
+                url: runtime.config('services.service_wizard.url'),
+                token: runtime.service('session').getAuthToken(),
+                module: 'ServiceWizard'
+            });
+            vm.dynamicServices.node.innerHTML = html.loading();
+            return client.callFunc('list_service_status', [{
+                    is_up: 0,
+                    module_names: ['NarrativeService']
+                }])
+                .then(function (result) {
+                    vm.dynamicServices.node.innerHTML = div({}, [
+                        h3('Dynamic Services'),
+                        table({
+                            class: 'table table-striped'
+                        }, BS.buildPresentableJson(result[0]))
+                    ]);
+                });
+        }
+
+
+        function render() {
+            return Promise.all([
+                renderNMS(),
+                renderWorkspace(),
+                renderCatalog(),
+                renderServiceWizard(),
+                renderDynamicServices()
+            ]);
+        }
+
+        // function render() {
+        //     return renderServices()
+        //         .then(function (servicesContent) {
+        //             return div({
+        //                 class: 'container-fluid'
+        //             }, [
+        //                 div({
+        //                     class: 'row'
+        //                 }, [
+        //                     div({
+        //                         class: 'col-sm-12'
+        //                     }, [
+        //                         h1('KBase Services'),
+        //                         servicesContent
+        //                     ])
+        //                 ])
+        //             ]);
+        //         });
+        // }
+
         // Widget API
         function attach(node) {
-            return Promise.try(function() {
+            return Promise.try(function () {
                 mount = node;
                 container = mount.appendChild(document.createElement('div'));
+                container.innerHTML = layout();
+                // bind
+                Object.keys(vm).forEach(function (id) {
+                    var vmNode = vm[id];
+                    vmNode.node = document.getElementById(vmNode.id);
+                });
             });
         }
 
         function detach() {
-            return Promise.try(function() {
+            return Promise.try(function () {
                 mount.removeChild(container);
                 container = null;
             });
         }
 
         function start() {
-            return Promise.try(function() {
-                    runtime.send('ui', 'setTitle', 'About then FUNctional Site');
-                    return render();
-                })
-                .then(function(content) {
-                    runtime.send('ui', 'render', {
-                        node: container,
-                        content: content
-                    });
-                });
+            return Promise.try(function () {
+                runtime.send('ui', 'setTitle', 'About the <strike>FUNctional Site</strike> UI');
+                return render();
+            });
         }
 
         function stop() {
-            return Promise.try(function() {
+            return Promise.try(function () {
                 runtime.send('ui', 'setTitle', 'Leaving about...');
             });
         }
@@ -306,7 +394,7 @@ define([
     }
 
     return {
-        make: function(config) {
+        make: function (config) {
             return widget(config);
         }
     };
