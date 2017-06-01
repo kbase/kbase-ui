@@ -114,7 +114,10 @@ define([
                     } else {
                         this.container.html(this.renderTemplate('loggedout'));
                         this.container.find('[data-button="signin"]').on('click', function () {
-                            location.href = '/#login';
+                            var pathBackHere = {
+                                redirect: window.location.pathname + window.location.hash
+                            };
+                            location.href = '/#login?nextrequest=' + encodeURIComponent(JSON.stringify(pathBackHere));
                             return;
                             //Postal.channel('loginwidget').publish('login.prompt');
                         });
