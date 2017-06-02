@@ -72,7 +72,7 @@ define([
             }
 
             return Promise.all(serviceConfigs.map(function (config) {
-                config.url = [window.location.origin, pluginConfig.resourcesRoot, config.path].join('/');
+                config.url = window.location.origin + [pluginConfig.resourcesRoot, config.path].join('/');
                 return addSchema(config);
             }));
         }
