@@ -271,6 +271,14 @@ define([
                 runtime: api
             });
 
+            appServiceManager.addService('notification', {
+                runtime: api
+            });
+
+            appServiceManager.addService('schema', {
+                runtime: api
+            });
+
             pluginManager = pluginManagerFactory.make({
                 runtime: api
             });
