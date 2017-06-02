@@ -1,7 +1,7 @@
 ## Global Build Config
 ---
 targets:
-    ui: ci
+    ui: dev
     deploy: ci
 build:
     dist: false

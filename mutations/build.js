@@ -439,13 +439,15 @@ function copyFromBower(state) {
             // in the above spec.
             return Promise.all(copyJobs.map(function (copySpec) {
                 return glob(copySpec.src, {
-                        cwd: state.environment.path.concat(copySpec.cwd).join('/')
+                        cwd: state.environment.path.concat(copySpec.cwd).join('/'),
+                        nodir: true
                     })
                     .then(function (matches) {
                         // Do the copy!
                         return Promise.all(matches.map(function (match) {
                             var fromPath = state.environment.path.concat(copySpec.cwd).concat([match]).join('/'),
                                 toPath = state.environment.path.concat(copySpec.dest).concat([match]).join('/');
+                            // console.log('copying', fromPath, toPath);
                             return fs.copy(fromPath, toPath, {});
                         }));
                     })

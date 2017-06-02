@@ -132,14 +132,14 @@ plugins:
         name: auth2-client
         disabled: true
         globalName: kbase-ui-plugin-auth2-client
-        version: 0.17.4
+        version: 0.18.0
         cwd: src/plugin
         source:
             bower: {}
     -
         name: user-profile
         globalName: kbase-ui-plugin-user-profile
-        version: 1.2.1
+        version: 1.3.0
         cwd: src/plugin
         source:
             bower: {}
@@ -154,6 +154,13 @@ plugins:
         name: test-dynamic-table-widget
         globalName: kbase-ui-plugin-test-dynamic-table-widget
         version: 0.1.2
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: tester
+        globalName: kbase-ui-plugin-tester
+        version: 0.1.0
         cwd: src/plugin
         source:
             bower: {}

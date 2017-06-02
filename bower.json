@@ -16,6 +16,7 @@
         "url": "git://github.com/kbase/kbase-ui"
     },
     "dependencies": {
+        "ajv": "5.1.5",
         "blockui": "2.70",
         "bluebird": "3.5.0",
         "bootstrap": "3.3.7",
@@ -33,7 +34,7 @@
         "jquery": "2.2.4",
         "jquery-ui": "1.12.1",
         "kbase-common-ts": "0.14.2",
-        "kbase-common-js": "2.8.2",
+        "kbase-common-js": "2.9.0",
         "kbase-sdk-clients-js": "0.5.1",
         "kbase-service-clients-js": "3.3.5",
         "kbase-ui-widget": "1.2.0",

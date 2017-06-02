@@ -21,6 +21,7 @@ nbproject
 /dev/test
 /dev/test-coverage
 /install/temp
+/errorShots
 
 # Editor and OS artifacts
 .DS_Store
