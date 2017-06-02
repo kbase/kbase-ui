@@ -1,5 +1,5 @@
 exports.config = {
-
+    
     //
     // ==================
     // Specify Test Files
@@ -39,15 +39,12 @@ exports.config = {
     // https://docs.saucelabs.com/reference/platforms-configurator
     //
     capabilities: [{
-        browserName: 'phantomjs',
-        ignoreSslErrors: true,
-        'phantomjs.binary.path': '/Volumes/KBaseWork/Work/sprints/auth2-2017/auth2/kbase-ui/node_modules/.bin/phantomjs',
-        'phantomjs.cli.args': ['--web-security=false', '--ssl-protocol=any', '--ignore-ssl-errors=true']
-    }, {
-        browserName: 'firefox',
+        // maxInstances can get overwritten per capability. So if you have an in-house Selenium
+        // grid with only 5 firefox instances available you can make sure that not more than
+        // 5 instances get started at a time.
         maxInstances: 5,
         //
-        acceptInsecureCerts: true
+        browserName: 'firefox'
     }],
     //
     // ===================
@@ -109,8 +106,7 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['selenium-standalone', 'phantomjs'],
-    // services: ['selenium-standalone'],
+    services: ['selenium-standalone','phantomjs'],
     //
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -124,7 +120,7 @@ exports.config = {
     // The only one supported by default is 'dot'
     // see also: http://webdriver.io/guide/testrunner/reporters.html
     reporters: ['dot'],
-
+    
     //
     // Options to be passed to Jasmine.
     jasmineNodeOpts: {
@@ -135,11 +131,11 @@ exports.config = {
         // The Jasmine framework allows interception of each assertion in order to log the state of the application
         // or website depending on the result. For example, it is pretty handy to take a screenshot every time
         // an assertion fails.
-        expectationResultHandler: function (passed, assertion) {
+        expectationResultHandler: function(passed, assertion) {
             // do something
         }
     },
-
+    
     //
     // =====
     // Hooks
