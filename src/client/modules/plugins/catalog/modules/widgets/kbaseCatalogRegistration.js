@@ -171,7 +171,7 @@ define([
 
 
         initMainPanel: function ($appListPanel, $moduleListPanel) {
-            var $mainPanel = $('<div>').addClass('container');
+            var $mainPanel = $('<div>').addClass('container-fluid');
             var $inputPanel = $('<div>');
             var $logPanel = $('<div>').hide();
             var $errorPanel = $('<div>').css('color', 'red').hide();

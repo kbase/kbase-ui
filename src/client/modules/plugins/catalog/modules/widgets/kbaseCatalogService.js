@@ -133,7 +133,7 @@ define([
 
             var $table = $('<table>').addClass('table').css('width', '100%');
 
-            var $container = $('<div>').addClass('container')
+            var $container = $('<div>').addClass('container-fluid')
                 .append($('<div>').addClass('row')
                     .append($('<div>').addClass('col-md-12')
                         .append($table)));
@@ -233,7 +233,7 @@ define([
 
             var $table = $('<table>').addClass('table').css('width', '100%');
 
-            var $container = $('<div>').addClass('container')
+            var $container = $('<div>').addClass('container-fluid')
                 .append($('<div>').addClass('row')
                     .append($('<div>').addClass('col-md-12')
                         .append($table)));
@@ -507,7 +507,7 @@ define([
 
         initMainPanel: function ($appListPanel, $moduleListPanel) {
             var self = this;
-            var $mainPanel = $('<div>').addClass('container');
+            var $mainPanel = $('<div>').addClass('container-fluid');
 
             $mainPanel.append($('<div>').addClass('kbcb-back-link')
                 .append($('<a href="#catalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog Index')));

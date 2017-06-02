@@ -4,10 +4,37 @@ define([
     'kb_service/client/narrativeMethodStore',
     'kb_service/client/catalog',
     '../catalog_util',
+
+    // for effect
     'kb_widget/legacy/prompt',
     'kb_widget/legacy/authenticatedWidget',
     'bootstrap',
-], function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil, KBasePrompt) {
+], function (
+    $,
+    Promise,
+    NarrativeMethodStore,
+    Catalog,
+    CatalogUtil
+) {
+    'use strict';
+
+    function getNiceDuration(seconds) {
+        var hours = Math.floor(seconds / 3600);
+        seconds = seconds - (hours * 3600);
+        var minutes = Math.floor(seconds / 60);
+        seconds = seconds - (minutes * 60);
+
+        var duration = '';
+        if (hours > 0) {
+            duration = hours + 'h ' + minutes + 'm';
+        } else if (minutes > 0) {
+            duration = minutes + 'm ' + Math.round(seconds) + 's';
+        } else {
+            duration = (Math.round(seconds * 100) / 100) + 's';
+        }
+        return duration;
+    }
+
     $.KBWidget({
         name: 'KBaseCatalogAppViewer',
         parent: 'kbaseAuthenticatedWidget',
@@ -30,7 +57,6 @@ define([
 
         // module details if an SDK module
         moduleDetails: null,
-
 
         init: function (options) {
             this._super(options);
@@ -66,7 +92,7 @@ define([
             self.isGithub = false;
 
             // initialize and add the main panel
-            //self.$elem.addClass('container');
+            //self.$elem.addClass('container-fluid');
             self.$errorPanel = $('<div>');
             self.$elem.append(self.$errorPanel);
 
@@ -120,7 +146,6 @@ define([
             return this;
         },
 
-
         setupClients: function () {
             this.catalog = new Catalog(
                 this.runtime.getConfig('services.catalog.url'), { token: this.runtime.service('session').getAuthToken() }
@@ -131,8 +156,6 @@ define([
             this.nms_base_url = this.runtime.getConfig('services.narrative_method_store.url');
             this.nms_base_url = this.nms_base_url.substring(0, this.nms_base_url.length - 3)
         },
-
-
 
         getAppFullInfo: function () {
             var self = this;
@@ -173,7 +196,6 @@ define([
                 });
         },
 
-
         getModuleInfo: function () {
             var self = this;
 
@@ -203,7 +225,7 @@ define([
                     self.moduleDetails.info = info;
                     var git_url = self.moduleDetails.info.git_url;
                     self.moduleDetails.info['original_git_url'] = self.moduleDetails.info.git_url;
-                    var github = 'https://github.com/'
+                    var github = 'https://github.com/';
                     if (git_url.substring(0, github.length) === github) {
                         self.isGithub = true;
                         // if it ends with .git and is github, truncate so we get the basic url
@@ -221,7 +243,7 @@ define([
         },
 
         initMainPanel: function ($appListPanel, $moduleListPanel) {
-            var $mainPanel = $('<div>').addClass('container');
+            var $mainPanel = $('<div>').addClass('container-fluid');
 
             var $header = $('<div>').css('margin', '1em');
             var $screenshotsPanel = $('<div>').css('margin', '1em');
@@ -260,7 +282,7 @@ define([
             this.$errorPanel.empty();
 
             var $alert = $('<div>').addClass('col-md-12 alert alert-danger');
-            this.$errorPanel.append($('<div>').addClass('container')
+            this.$errorPanel.append($('<div>').addClass('container-fluid')
                 .append($('<div>').addClass('row')
                     .append($alert)));
 
@@ -694,7 +716,7 @@ define([
 
 
         updateRunStats: function () {
-            var self = this
+            var self = this;
 
             var options = { full_app_ids: [self.appFullInfo.id] };
 
@@ -725,7 +747,7 @@ define([
                         */
                         var $row = $('<div>').addClass('row');
                         self.$headerPanel.find('.kbcb-runs')
-                            .append($('<div>').addClass('container').append($row))
+                            .append($('<div>').addClass('container-fluid').append($row));
 
                         $row
                             .append($('<div>').addClass('col-xs-2')
@@ -738,7 +760,7 @@ define([
                                     delay: { show: 400, hide: 40 }
                                 }));
 
-                        var goodCalls = s.number_of_calls - s.number_of_errors
+                        var goodCalls = s.number_of_calls - s.number_of_errors;
                         var successPercent = ((goodCalls) / s.number_of_calls) * 100;
 
                         $row
@@ -753,23 +775,7 @@ define([
                                     delay: { show: 400, hide: 40 }
                                 }));
 
-                        function getNiceDuration(seconds) {
-                            var hours = Math.floor(seconds / 3600);
-                            seconds = seconds - (hours * 3600);
-                            var minutes = Math.floor(seconds / 60);
-                            seconds = seconds - (minutes * 60);
 
-                            var duration = '';
-                            if (hours > 0) {
-                                duration = hours + 'h ' + minutes + 'm';
-                            } else if (minutes > 0) {
-                                duration = minutes + 'm ' + Math.round(seconds) + 's';
-                            } else {
-                                duration = (Math.round(seconds * 100) / 100) + 's';
-                            }
-                            return duration;
-
-                        }
                         var niceExecTime = getNiceDuration(s.total_exec_time / s.number_of_calls);
                         $row
                             .append($('<div>').addClass('col-xs-2')
