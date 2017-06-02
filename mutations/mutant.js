@@ -35,13 +35,13 @@ var findit = require('findit2'),
 
 function copyFiles(tryFrom, tryTo, globExpr) {
     return Promise.all([fs.realpathAsync(tryFrom.join('/')), fs.realpathAsync(tryTo.join('/'))])
-        .spread(function(from, to) {
+        .spread(function (from, to) {
             return [from.split('/'), to.split('/'), glob(globExpr, {
                 cwd: from
             })];
         })
-        .spread(function(from, to, matches) {
-            return Promise.all(matches.map(function(match) {
+        .spread(function (from, to, matches) {
+            return Promise.all(matches.map(function (match) {
                 var fromPath = from.concat([match]).join('/'),
                     toPath = to.concat([match]).join('/');
                 return fs.copy(fromPath, toPath, {});
@@ -54,10 +54,10 @@ function ensureEmptyDir(path) {
 
     // ensure dir
     return fs.ensureDirAsync(dir)
-        .then(function() {
+        .then(function () {
             return fs.readdirAsync(dir);
         })
-        .then(function(files) {
+        .then(function (files) {
             if (files.length > 0) {
                 throw new Error('Directory is not empty: ' + dir);
             }
@@ -67,14 +67,14 @@ function ensureEmptyDir(path) {
 function loadYaml(path) {
     var yamlPath = path.join('/');
     return fs.readFileAsync(yamlPath, 'utf8')
-        .then(function(contents) {
+        .then(function (contents) {
             return yaml.safeLoad(contents);
         });
 }
 
 function loadJson(path) {
     return fs.readFileAsync(path.join('/'), 'utf8')
-        .then(function(contents) {
+        .then(function (contents) {
             return JSON.parse(contents);
         });
 }
@@ -87,7 +87,7 @@ function saveYaml(path, data) {
 function loadIni(iniPath) {
     var yamlPath = iniPath.join('/');
     return fs.readFileAsync(yamlPath, 'utf8')
-        .then(function(contents) {
+        .then(function (contents) {
             return ini.parse(contents);
         });
 }
@@ -123,7 +123,7 @@ function uniqts(prefix) {
 function mkdir(inPath, dirPath) {
     var path = inPath.concat(dirPath),
         pathString = path.join('/');
-    if (fs.exists(pathString)) {
+    if (fs.existsSync(pathString)) {
         throw new Error('Sorry, this dir already exists: ' + pathString);
     }
     fs.ensureDirSync(pathString);
@@ -143,14 +143,14 @@ function copyfile(fromRoot, fromDir, toRoot, toDir) {
 }
 
 function deleteMatchingFiles(path, regex) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         var finder = findit(path),
             loadingFiles = true,
             processingFiles = {};
-        finder.on('file', function(file, stat, linkPath) {
+        finder.on('file', function (file, stat, linkPath) {
             if (file.match(regex)) {
                 processingFiles[file] = true;
-                fs.unlink(file, function(err) {
+                fs.unlink(file, function (err) {
                     if (err) {
                         finder.done();
                         reject(err);
@@ -163,7 +163,7 @@ function deleteMatchingFiles(path, regex) {
                 });
             }
         });
-        finder.on('end', function() {
+        finder.on('end', function () {
             loadingFiles = false;
             if (Object.keys(processingFiles).length === 0) {
                 resolve();
@@ -173,7 +173,7 @@ function deleteMatchingFiles(path, regex) {
 }
 
 function copyState(oldState) {
-    return Promise.try(function() {
+    return Promise.try(function () {
         if (oldState.config.debug) {
             var newState = JSON.parse(JSON.stringify(oldState)),
                 tempDir = uniq('temp_'),
@@ -189,7 +189,7 @@ function copyState(oldState) {
             start = (new Date()).getTime();
 
             return fs.copyAsync(oldState.environment.path.join('/'), newState.environment.path.join('/'))
-                .then(function() {
+                .then(function () {
                     return newState;
                 });
         }
@@ -209,7 +209,7 @@ function makeRunDir(state) {
 function removeRunDir(state) {
     if (state.environment.root) {
         return fs.removeAsync(state.environment.root.join('/'))
-            .then(function() {
+            .then(function () {
                 return state;
             });
     }
@@ -231,7 +231,7 @@ function createInitialState(initialConfig) {
     console.log('Creating initial state for app: ' + appName);
 
     return loadYaml(buildControlConfigPath)
-        .then(function(buildConfig) {
+        .then(function (buildConfig) {
             var state = {
                 environment: {},
                 data: {},
@@ -241,16 +241,16 @@ function createInitialState(initialConfig) {
             };
             return makeRunDir(state);
         })
-        .then(function(state) {
+        .then(function (state) {
             var inputFiles = mkdir(state.environment.root, ['inputfiles']),
                 inputFs = [];
 
             // We first copy the input directories into the input filesystem
-            initialFilesystem.forEach(function(spec) {
+            initialFilesystem.forEach(function (spec) {
                 if (spec.path) {
                     copydir(spec.cwd, spec.path, [], inputFiles.concat(spec.path));
                 } else if (spec.files) {
-                    spec.files.forEach(function(file) {
+                    spec.files.forEach(function (file) {
                         copyfile(spec.cwd, file, [], inputFiles.concat([file]));
                     });
                 }
@@ -274,12 +274,12 @@ function createInitialState(initialConfig) {
 }
 
 function finish(state) {
-    return Promise.try(function() {
+    return Promise.try(function () {
             if (!state.config.debug) {
                 return removeRunDir(state);
             }
         })
-        .then(function() {
+        .then(function () {
             console.log('Finished with mutations');
         });
 }
