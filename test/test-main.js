@@ -1,9 +1,10 @@
 var allTestFiles = [];
-var TEST_REGEXP = /(spec|test)\.js$/i;
+var TEST_REGEXP = /\/base\/test\/spec\/.*Spec\.js$/i;
 
 // Get a list of all the test files to include
 Object.keys(window.__karma__.files).forEach(function (file) {
     if (TEST_REGEXP.test(file)) {
+        console.log('using', file);
         // Normalize paths to RequireJS module names.
         // If you require sub-dependencies of test files to be loaded as-is (requiring file extension)
         // then do not normalize the paths

@@ -1,5 +1,3 @@
-/*global window*/
-/*jslint white:true,browser:true*/
 (function (root) {
     'use strict';
 
@@ -88,7 +86,7 @@
             '</div>',
             div = root.document.createElement('div');
         div.innerHTML = errorBody;
-        root.document.getElementById('error').appendChild(div);
+        root.document.getElementById('content').appendChild(div);
     }
 
     function makeUrl(path, query) {

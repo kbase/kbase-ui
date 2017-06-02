@@ -13,7 +13,7 @@ define([
         'kb_widget/legacy/authenticatedWidget',
         'bootstrap'
     ],
-    function($, NarrativeMethodStore, Catalog, CatalogUtil) {
+    function ($, NarrativeMethodStore, Catalog, CatalogUtil) {
         $.KBWidget({
             name: "KBaseCatalogAdmin",
             parent: "kbaseAuthenticatedWidget", // todo: do we still need th
@@ -38,7 +38,7 @@ define([
 
             isAdmin: null,
 
-            init: function(options) {
+            init: function (options) {
                 this._super(options);
 
                 var self = this;
@@ -79,12 +79,12 @@ define([
                 loadingCalls.push(self.checkIsAdmin());
 
                 // when we have it all, then render the list
-                Promise.all(loadingCalls).then(function() {
+                Promise.all(loadingCalls).then(function () {
 
                     if (self.isAdmin) {
                         var adminCalls = [];
                         adminCalls.push(self.getVolumeMounts())
-                        Promise.all(adminCalls).then(function() {
+                        Promise.all(adminCalls).then(function () {
                             self.render();
                             self.hideLoading();
                         });
@@ -98,7 +98,7 @@ define([
                 return this;
             },
 
-            render: function() {
+            render: function () {
                 var self = this;
                 self.renderBasicStatus();
                 self.renderPendingRelease();
@@ -110,14 +110,14 @@ define([
             },
 
 
-            setupClients: function() {
+            setupClients: function () {
                 this.catalog = new Catalog(
                     this.runtime.getConfig('services.catalog.url'), { token: this.runtime.service('session').getAuthToken() }
                 );
             },
 
-            initMainPanel: function($appListPanel, $moduleListPanel) {
-                var $mainPanel = $('<div>').addClass('container');
+            initMainPanel: function ($appListPanel, $moduleListPanel) {
+                var $mainPanel = $('<div>').addClass('container-fluid');
 
                 $mainPanel.append($('<div>').addClass('kbcb-back-link')
                     .append($('<a href="#catalog">').append('<i class="fa fa-chevron-left"></i> back to the Catalog Index')));
@@ -170,25 +170,25 @@ define([
                 ];
             },
 
-            initLoadingPanel: function() {
+            initLoadingPanel: function () {
                 var $loadingPanel = $('<div>').addClass('kbcb-loading-panel-div');
                 $loadingPanel.append($('<i>').addClass('fa fa-spinner fa-2x fa-spin'));
                 return $loadingPanel;
             },
 
-            showLoading: function() {
+            showLoading: function () {
                 var self = this;
                 self.$loadingPanel.show();
                 self.$mainPanel.hide();
             },
-            hideLoading: function() {
+            hideLoading: function () {
                 var self = this;
                 self.$loadingPanel.hide();
                 self.$mainPanel.show();
             },
 
 
-            renderBasicStatus: function() {
+            renderBasicStatus: function () {
                 var self = this;
 
                 self.$basicStatusDiv.append('<a href="#catalog/status">Catalog Status Page</a><br><br>');
@@ -201,18 +201,18 @@ define([
             },
 
 
-            rerenderPendingRelease: function() {
+            rerenderPendingRelease: function () {
                 var self = this;
                 self.$pendingReleaseDiv.empty();
 
                 self.getPendingReleases()
-                    .then(function() {
+                    .then(function () {
                         self.renderPendingRelease();
                     });
             },
 
 
-            renderModuleList: function() {
+            renderModuleList: function () {
                 var self = this;
 
 
@@ -239,32 +239,32 @@ define([
                         .append($('<span>').addClass('input-group-btn')
                             .append($activate).append($deactivate)))
                     .append($actResult);
-                $activate.on('click', function() {
+                $activate.on('click', function () {
                     var modName = $modNameAct.val();
                     $modNameAct.val('');
                     $actResult.empty();
                     self.catalog.set_to_active({ module_name: modName })
-                        .then(function() {
+                        .then(function () {
                             $actResult.prepend($('<div role=alert>').addClass('alert alert-success')
                                 .append('<b>Success.</b> The module ' + modName + ' was set to Active. Refresh this page to update the list.'));
                         })
-                        .catch(function(err) {
+                        .catch(function (err) {
                             console.error('ERROR');
                             console.error(err);
                             $actResult.prepend($('<div role=alert>').addClass('alert alert-danger')
                                 .append('<b>Error:</b> ' + err.error.message));
                         });
                 });
-                $deactivate.on('click', function() {
+                $deactivate.on('click', function () {
                     var modName = $modNameAct.val();
                     $modNameAct.val('');
                     $actResult.empty();
                     self.catalog.set_to_inactive({ module_name: modName })
-                        .then(function() {
+                        .then(function () {
                             $actResult.prepend($('<div role=alert>').addClass('alert alert-success')
                                 .append('<b>Success.</b> The module ' + modName + ' was set to Inactive. Refresh this page to update the list.'));
                         })
-                        .catch(function(err) {
+                        .catch(function (err) {
                             console.error('ERROR');
                             console.error(err);
                             $actResult.prepend($('<div role=alert>').addClass('alert alert-danger')
@@ -286,7 +286,7 @@ define([
                         .append($('<span>').addClass('input-group-btn')
                             .append($trash)))
                     .append($result);
-                $trash.on('click', function() {
+                $trash.on('click', function () {
                     $result.empty();
 
                     var modName = $modNameDel.val();
@@ -295,19 +295,19 @@ define([
                     $result.append($confirm);
                     var $cancel = $('<button>').addClass('btn btn-default').append('Nevermind.');
                     $result.append($cancel);
-                    $cancel.on('click', function() {
+                    $cancel.on('click', function () {
                         $result.empty();
                     });
 
 
-                    $confirm.on('click', function() {
+                    $confirm.on('click', function () {
                         $confirm.hide();
                         self.catalog.delete_module({ module_name: modName })
-                            .then(function() {
+                            .then(function () {
                                 $result.prepend($('<div role=alert>').addClass('alert alert-success')
                                     .append('<b>Success.</b> The module ' + modName + ' was deleted. Refresh this page to update the list.'));
                             })
-                            .catch(function(err) {
+                            .catch(function (err) {
                                 console.error('ERROR');
                                 console.error(err);
                                 $result.prepend($('<div role=alert>').addClass('alert alert-danger')
@@ -355,20 +355,20 @@ define([
 
             },
 
-            renderPendingRelease: function() {
+            renderPendingRelease: function () {
                 var self = this;
 
                 self.$pendingReleaseDiv.append(
                     $('<button>').addClass('btn btn-default').css('margin', '12px')
                     .append($('<i>').addClass('fa fa-refresh')).append(' Refresh')
-                    .on('click', function() { self.rerenderPendingRelease(); })
+                    .on('click', function () { self.rerenderPendingRelease(); })
                 );
 
                 if (self.requested_releases.length > 0) {
                     var $ul = $('<ul>');
                     for (var k = 0; k < self.requested_releases.length; k++) {
 
-                        var addRow = function(mod) {
+                        var addRow = function (mod) {
 
                             var $li = $('<li>');
                             $li.append('<a href="#catalog/modules/' + mod.module_name + '">' + mod.module_name + '</a>');
@@ -386,22 +386,22 @@ define([
                             var $approveBtn = $('<button>').addClass('btn btn-default').append('Approve Release').css('margin', '4px');
                             var $denyBtn = $('<button>').addClass('btn btn-default').append('Deny Release').css('margin', '4px');
 
-                            $approveBtn.on('click', function() {
+                            $approveBtn.on('click', function () {
                                 $approveBtn.prop('disabled', true);
                                 $denyBtn.prop('disabled', true);
                                 var $confirm = $('<button>').addClass('btn btn-danger').append('Confirm');
                                 var $confirmDiv = $('<div>').append($confirm);
-                                $confirm.on('click', function() {
+                                $confirm.on('click', function () {
                                     $confirmDiv.remove();
                                     self.catalog.review_release_request({
                                             module_name: mod.module_name,
                                             decision: 'approved'
                                         })
-                                        .then(function() {
+                                        .then(function () {
                                             $resultDiv.prepend($('<div role=alert>').addClass('alert alert-success')
                                                 .append('<b>Success</b>- Release request has been approved.'));
                                         })
-                                        .catch(function(err) {
+                                        .catch(function (err) {
                                             console.error("Could not deny release.");
                                             console.error(err);
                                             $resultDiv.prepend($('<div role=alert>').addClass('alert alert-danger')
@@ -412,7 +412,7 @@ define([
                                 $resultDiv.prepend($confirmDiv);
                             });
 
-                            $denyBtn.on('click', function() {
+                            $denyBtn.on('click', function () {
                                 $approveBtn.prop('disabled', true);
                                 $denyBtn.prop('disabled', true);
                                 var $reasonInput = $('<input type="text" size="100">').addClass('form-control').css('margin', '4px');
@@ -421,7 +421,7 @@ define([
                                     .append('Why no go? ')
                                     .append($reasonInput)
                                     .append($submit);
-                                $submit.on('click', function() {
+                                $submit.on('click', function () {
                                     $reason.remove();
 
                                     self.catalog.review_release_request({
@@ -429,11 +429,11 @@ define([
                                             decision: 'denied',
                                             review_message: $reasonInput.val()
                                         })
-                                        .then(function() {
+                                        .then(function () {
                                             $resultDiv.prepend($('<div role=alert>').addClass('alert alert-success')
                                                 .append('<b>Success</b>- Release request has been declined.'));
                                         })
-                                        .catch(function(err) {
+                                        .catch(function (err) {
                                             console.error("Could not deny release.");
                                             console.error(err);
                                             $resultDiv.prepend($('<div role=alert>').addClass('alert alert-danger')
@@ -464,17 +464,17 @@ define([
             },
 
 
-            refreshDevList: function() {
+            refreshDevList: function () {
                 var self = this;
                 self.$devListDiv.empty();
                 self.getDevList()
-                    .then(function() {
+                    .then(function () {
                         self.renderDevList();
                     });
             },
 
 
-            renderDevList: function() {
+            renderDevList: function () {
                 var self = this;
 
                 var $addDev = $('<div>').css('margin', '1em');
@@ -500,24 +500,24 @@ define([
                             .append($add)
                             .append($trash)))
                     .append($result);
-                $add.on('click', function() {
+                $add.on('click', function () {
                     self.catalog.approve_developer($devName.val())
-                        .then(function() {
+                        .then(function () {
                             self.refreshDevList();
                         })
-                        .catch(function(err) {
+                        .catch(function (err) {
                             console.error('ERROR');
                             console.error(err);
                             $result.prepend($('<div role=alert>').addClass('alert alert-danger')
                                 .append('<b>Error:</b> ' + err.error.message));
                         });
                 });
-                $trash.on('click', function() {
+                $trash.on('click', function () {
                     self.catalog.revoke_developer($devName.val())
-                        .then(function() {
+                        .then(function () {
                             self.refreshDevList();
                         })
-                        .catch(function(err) {
+                        .catch(function (err) {
                             console.error('ERROR');
                             console.error(err);
                             $result.prepend($('<div role=alert>').addClass('alert alert-danger')
@@ -534,16 +534,16 @@ define([
             },
 
 
-            refreshClientGroups: function() {
+            refreshClientGroups: function () {
                 var self = this;
                 self.$clientGroupList.empty();
                 return self.getClientGroups()
-                    .then(function() {
+                    .then(function () {
                         self.renderClientGroupList();
                     });
             },
 
-            renderClientGroupList: function() {
+            renderClientGroupList: function () {
                 var self = this;
 
                 var $modifyGroup = $('<div>').css('margin', '1em');
@@ -573,7 +573,7 @@ define([
                         .append($('<span>').addClass('input-group-btn')
                             .append($modify)))
                     .append($result);
-                $modify.on('click', function() {
+                $modify.on('click', function () {
                     var moduleName = $modName.val();
                     var functionName = $funcName.val();
                     var groups = $groups.val();
@@ -588,11 +588,11 @@ define([
                     }
 
                     self.catalog.set_client_group_config({ module_name: moduleName, function_name: functionName, client_groups: groupsList })
-                        .then(function() {
+                        .then(function () {
                             $result.empty();
                             return self.refreshClientGroups();
                         })
-                        .catch(function(err) {
+                        .catch(function (err) {
                             console.error('ERROR');
                             console.error(err);
                             $result.prepend($('<div role=alert>').addClass('alert alert-danger')
@@ -620,19 +620,19 @@ define([
 
                     var $trash = $('<span>').css('cursor', 'pointer').append($('<i class="fa fa-trash-o" aria-hidden="true">'));
 
-                    $trash.on('click', (function(cg) {
-                        return function() {
+                    $trash.on('click', (function (cg) {
+                        return function () {
                             var confirm = window.confirm("Are you sure you want to remove this client group configuration?");
                             if (confirm == true) {
                                 self.catalog.remove_client_group_config({
                                         'module_name': cg['module_name'],
                                         'function_name': cg['function_name']
                                     })
-                                    .then(function() {
+                                    .then(function () {
                                         $result.empty();
                                         return self.refreshClientGroups();
                                     })
-                                    .catch(function(err) {
+                                    .catch(function (err) {
                                         $result.empty();
                                         console.error('ERROR');
                                         console.error(err);
@@ -662,16 +662,16 @@ define([
 
 
 
-            refreshVolumeMounts: function() {
+            refreshVolumeMounts: function () {
                 var self = this;
                 self.$volumeMountList.empty();
                 return self.getVolumeMounts()
-                    .then(function() {
+                    .then(function () {
                         self.renderVolumeMountList();
                     });
             },
 
-            renderVolumeMountList: function() {
+            renderVolumeMountList: function () {
                 var self = this;
 
                 if (!self.isAdmin) {
@@ -728,7 +728,7 @@ define([
                     .append($modify)
                     .append($result);
 
-                $modify.on('click', function() {
+                $modify.on('click', function () {
                     var config = {
                         'volume_mounts': []
                     }
@@ -748,11 +748,11 @@ define([
                     }
 
                     self.catalog.set_volume_mount(config)
-                        .then(function() {
+                        .then(function () {
                             $result.empty();
                             return self.refreshVolumeMounts();
                         })
-                        .catch(function(err) {
+                        .catch(function (err) {
                             $result.empty();
                             console.error('ERROR');
                             console.error(err);
@@ -793,8 +793,8 @@ define([
 
                     var $trash = $('<span>').css('cursor', 'pointer').append($('<i class="fa fa-trash-o" aria-hidden="true">'));
 
-                    $trash.on('click', (function(vm) {
-                        return function() {
+                    $trash.on('click', (function (vm) {
+                        return function () {
                             var confirm = window.confirm("Are you sure you want to remove this volume mount?");
                             if (confirm == true) {
                                 self.catalog.remove_volume_mount({
@@ -802,11 +802,11 @@ define([
                                         'function_name': vm['function_name'],
                                         'client_group': vm['client_group']
                                     })
-                                    .then(function() {
+                                    .then(function () {
                                         $result.empty();
                                         return self.refreshVolumeMounts();
                                     })
-                                    .catch(function(err) {
+                                    .catch(function (err) {
                                         $result.empty();
                                         console.error('ERROR');
                                         console.error(err);
@@ -842,7 +842,7 @@ define([
              * 1. Get secure params - this lists the parameters and values (as *** if password)
              * 2. Set secure param - two inputs, a key and value.
              */
-            renderSecureParamsControls: function() {
+            renderSecureParamsControls: function () {
                 var self = this;
                 if (!self.isAdmin) {
                     self.$secureParams.append($('<div>').css('margin', '1em').append('Only Admins can manage secure parameters.'));
@@ -857,16 +857,16 @@ define([
 
                 // Make a select for all modules
                 var $moduleSelect = $('<select class="form-control">');
-                self.module_list.forEach(function(module, idx) {
+                self.module_list.forEach(function (module, idx) {
                     $moduleSelect.append('<option value="' + idx + '">' + module.module_name + '</option>');
                 });
 
-                var updateParamViewArea = function() {
+                var updateParamViewArea = function () {
                     $paramViewArea.empty();
                     self.catalog.get_secure_config_params({
                         module_name: currentModule,
                         version: currentVersion
-                    }).then(function(params) {
+                    }).then(function (params) {
                         if (!params || params.length === 0) {
                             var viewVer = currentVersion;
                             if (viewVer === '') {
@@ -875,11 +875,11 @@ define([
                             $paramViewArea.append('No secure parameters found for module "' + currentModule + '" with version "' + viewVer + '"');
                             return;
                         }
-                        params.sort(function(a, b) {
+                        params.sort(function (a, b) {
                             return a.param_name > b.param_name;
                         });
                         var $table = $('<table class="table table-hover table-condensed">').append('<tr><th>Name</th><th>Value</th><th>Delete?</th></tr>');
-                        params.forEach(function(param) {
+                        params.forEach(function (param) {
                             var val = param.param_value;
                             if (param.is_password === 1) {
                                 val = '***';
@@ -890,7 +890,7 @@ define([
                             var $delButton = $('<button>')
                                 .addClass('button btn-default btn-xs')
                                 .append('<i class="fa fa-trash-o">');
-                            $delButton.click(function(e) {
+                            $delButton.click(function (e) {
                                 var confirmStr = 'REALLY delete secure parameter "' +
                                     param.param_name +
                                     '" from module "' +
@@ -903,9 +903,9 @@ define([
                                             version: currentVersion,
                                             param_name: param.param_name,
                                         }]
-                                    }).then(function() {
+                                    }).then(function () {
                                         updateParamViewArea();
-                                    }).catch(function(error) {
+                                    }).catch(function (error) {
                                         alert('An error occurred while trying to delete your parameter.');
                                         console.error(error);
                                     });
@@ -915,16 +915,16 @@ define([
                             $table.append($trow);
                         });
                         $paramViewArea.append($table);
-                    }).catch(function(error) {
+                    }).catch(function (error) {
                         $paramViewArea.append('Error! Unable to retrieve secure parameters.');
                         console.error(error);
                     });
                 }
                 var $versionSelect = $('<select class="form-control">');
-                var verOption = function(ver, display) {
+                var verOption = function (ver, display) {
                     return '<option value="' + ver + '">' + display + '</option>';
                 }
-                $moduleSelect.on('change', function(e) {
+                $moduleSelect.on('change', function (e) {
                     $versionSelect.empty();
                     var module = self.module_list[$moduleSelect.val()];
                     currentModule = module.module_name;
@@ -947,7 +947,7 @@ define([
                     updateParamViewArea();
                 });
                 $moduleSelect.trigger('change');
-                $versionSelect.on('change', function(e) {
+                $versionSelect.on('change', function (e) {
                     currentVersion = $versionSelect.val();
                     updateParamViewArea();
                 });
@@ -970,11 +970,11 @@ define([
                     '</div>' +
                     '</div>'
                 );
-                $paramSetDiv.find('#pwcheck').on('change', function(e) {
+                $paramSetDiv.find('#pwcheck').on('change', function (e) {
                     var newType = this.checked ? 'password' : 'text';
                     $paramSetDiv.find('#spval').attr('type', newType);
                 });
-                $paramSetDiv.find('button#spsave').click(function() {
+                $paramSetDiv.find('button#spsave').click(function () {
                     self.catalog.set_secure_config_params({
                         data: [{
                             module_name: currentModule,
@@ -983,9 +983,9 @@ define([
                             param_value: $paramSetDiv.find('#spval').val(),
                             is_password: $paramSetDiv.find('#pwcheck').is(':checked') ? 1 : 0
                         }]
-                    }).then(function() {
+                    }).then(function () {
                         updateParamViewArea();
-                    }).catch(function(error) {
+                    }).catch(function (error) {
                         alert('An error occurred while setting a secure parameter!');
                         console.error(error);
                     });
@@ -1006,7 +1006,7 @@ define([
                     .append($paramSetDiv);
             },
 
-            getCatalogVersion: function() {
+            getCatalogVersion: function () {
                 var self = this;
 
                 var moduleSelection = {
@@ -1014,16 +1014,16 @@ define([
                 };
 
                 return self.catalog.version()
-                    .then(function(version) {
+                    .then(function (version) {
                         self.catalog_version = version;
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                     });
             },
 
-            getPendingReleases: function() {
+            getPendingReleases: function () {
                 var self = this
 
                 /* typedef structure {
@@ -1035,71 +1035,71 @@ define([
                     list <string> owners;
                 } RequestedReleaseInfo; */
                 return self.catalog.list_requested_releases()
-                    .then(function(requested_releases) {
+                    .then(function (requested_releases) {
                         self.requested_releases = requested_releases;
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                     });
             },
 
 
-            getDevList: function() {
+            getDevList: function () {
                 var self = this
                 self.dev_list = [];
                 return self.catalog.list_approved_developers()
-                    .then(function(devs) {
+                    .then(function (devs) {
                         self.dev_list = devs;
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                     });
             },
 
-            getClientGroups: function() {
+            getClientGroups: function () {
                 var self = this
                 self.client_groups = [];
                 return self.catalog.list_client_group_configs({})
-                    .then(function(groups) {
+                    .then(function (groups) {
                         self.client_groups = groups;
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                     });
             },
 
-            getVolumeMounts: function() {
+            getVolumeMounts: function () {
                 var self = this
                 self.volume_mounts = [];
                 return self.catalog.list_volume_mounts({})
-                    .then(function(mounts) {
+                    .then(function (mounts) {
                         self.volume_mounts = mounts;
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                     });
             },
 
 
-            getReleasedModuleList: function() {
+            getReleasedModuleList: function () {
                 var self = this
 
                 return self.catalog.list_basic_module_info({
                         include_unreleased: 0,
                         include_released: 1
                     })
-                    .then(function(module_list) {
+                    .then(function (module_list) {
                         var good_modules = []
                         for (var k = 0; k < module_list.length; k++) {
                             if (module_list[k].module_name) {
                                 good_modules.push(module_list[k]);
                             }
                         }
-                        good_modules.sort(function(a, b) {
+                        good_modules.sort(function (a, b) {
                             if (a.module_name.toLowerCase() < b.module_name.toLowerCase()) {
                                 return -1;
                             } else if (a.module_name.toLowerCase() > b.module_name.toLowerCase()) {
@@ -1110,27 +1110,27 @@ define([
 
                         self.released_modules = good_modules;
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                     });
             },
 
-            getUnreleasedModuleList: function() {
+            getUnreleasedModuleList: function () {
                 var self = this
 
                 return self.catalog.list_basic_module_info({
                         include_unreleased: 1,
                         include_released: 0
                     })
-                    .then(function(module_list) {
+                    .then(function (module_list) {
                         var good_modules = []
                         for (var k = 0; k < module_list.length; k++) {
                             if (module_list[k].module_name) {
                                 good_modules.push(module_list[k]);
                             }
                         }
-                        good_modules.sort(function(a, b) {
+                        good_modules.sort(function (a, b) {
                             if (a.module_name.toLowerCase() < b.module_name.toLowerCase()) {
                                 return -1;
                             } else if (a.module_name.toLowerCase() > b.module_name.toLowerCase()) {
@@ -1141,27 +1141,27 @@ define([
 
                         self.unreleased_modules = good_modules;
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                     });
             },
 
-            getModuleList: function() {
+            getModuleList: function () {
                 var self = this
 
                 return self.catalog.list_basic_module_info({
                         include_unreleased: 1,
                         include_released: 1
                     })
-                    .then(function(module_list) {
+                    .then(function (module_list) {
                         var good_modules = []
                         for (var k = 0; k < module_list.length; k++) {
                             if (module_list[k].module_name) {
                                 good_modules.push(module_list[k]);
                             }
                         }
-                        good_modules.sort(function(a, b) {
+                        good_modules.sort(function (a, b) {
                             if (a.module_name.toLowerCase() < b.module_name.toLowerCase()) {
                                 return -1;
                             } else if (a.module_name.toLowerCase() > b.module_name.toLowerCase()) {
@@ -1179,7 +1179,7 @@ define([
                                 include_unreleased: 1,
                                 include_released: 1,
                             })
-                            .then(function(module_list) {
+                            .then(function (module_list) {
                                 var good_modules = []
                                 for (var k = 0; k < module_list.length; k++) {
                                     if (module_list[k].module_name) {
@@ -1196,7 +1196,7 @@ define([
                                         good_modules.push(module_list[k]);
                                     }
                                 }
-                                good_modules.sort(function(a, b) {
+                                good_modules.sort(function (a, b) {
                                     if (a.module_name.toLowerCase() < b.module_name.toLowerCase()) {
                                         return -1;
                                     } else if (a.module_name.toLowerCase() > b.module_name.toLowerCase()) {
@@ -1207,28 +1207,28 @@ define([
 
                                 self.inactive_modules = good_modules;
                             })
-                            .catch(function(err) {
+                            .catch(function (err) {
                                 console.error('ERROR');
                                 console.error(err);
                             });
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                     });
             },
 
-            checkIsAdmin: function() {
+            checkIsAdmin: function () {
                 var self = this;
 
                 var me = self.runtime.service('session').getUsername();
                 return self.catalog.is_admin(me)
-                    .then(function(result) {
+                    .then(function (result) {
                         if (result) {
                             self.isAdmin = true;
                         }
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.error('ERROR');
                         console.error(err);
                     });

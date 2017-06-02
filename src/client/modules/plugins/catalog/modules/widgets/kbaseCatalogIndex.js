@@ -145,7 +145,7 @@ define([
         },
 
         initMainPanel: function ($appListPanel, $moduleListPanel) {
-            var $mainPanel = $('<div>').addClass('container');
+            var $mainPanel = $('<div>').addClass('container-fluid');
 
             var $adminLinks = $('<div>');
             $mainPanel.append($adminLinks);

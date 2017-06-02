@@ -60,7 +60,7 @@ define([
             self.setupClients();
 
             // initialize and add the control bar
-            var $container = $('<div>').addClass('container');
+            var $container = $('<div>').addClass('container-fluid');
             self.$elem.append($container);
             var ctrElements = this.renderControlToolbar();
             self.$controlToolbar = ctrElements[0];
@@ -360,7 +360,7 @@ define([
 
 
         initMainPanel: function ($appListPanel, $moduleListPanel) {
-            var $mainPanel = $('<div>').addClass('container');
+            var $mainPanel = $('<div>').addClass('container-fluid');
             var $functionListPanel = $('<div>');
             $mainPanel.append($functionListPanel);
             return [$mainPanel, $functionListPanel];

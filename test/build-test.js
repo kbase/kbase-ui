@@ -1,7 +1,9 @@
 var tests = [];
+var TEST_REGEXP = /^\/base\/test\/spec\/.*Spec\.js$/i;
+
 for (var file in window.__karma__.files) {
     if (window.__karma__.files.hasOwnProperty(file)) {
-        if (/[sS]pec\.js$/.test(file)) {
+        if (TEST_REGEXP.test(file)) {
             tests.push(file);
         }
     }

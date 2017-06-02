@@ -1,0 +1,138 @@
+.widget-notification {
+    position: relative;
+}
+
+.widget-notification .-summary {
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0;
+    margin: 0;
+}
+
+.widget-notification .-summary .-item {
+    padding: 0;
+    margin: 0;
+}
+
+.widget-notification .-container {
+    background-color: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.widget-notification .-notification-set {
+    /*border: 1px black solid;*/
+    padding: 3px;
+    position: relative;
+    background-color: silver;
+    /*max-height: 50vh;
+    overflow-y: auto;
+    overflow-x: hidden*/
+}
+
+.widget-notification .-notification-set .-triangle {
+    position: absolute;
+    top: -3px;
+    left: 196px;
+    font-size: 25px;
+}
+
+.widget-notification .-notification-set .-notification-container {
+    max-height: 50vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.widget-notification .-notification {
+    padding: 4px;
+    color: black;
+    margin: 2px;
+    /*background-color: rgb(225, 225, 225)*/
+    /*background-color: silver;*/
+}
+
+
+/*.widget-notification .-info .-notification:hover {
+    background-color: silver;
+}
+
+.widget-notification .-notification:hover {
+    background-color: silver;
+}*/
+
+.widget-notification a.-close-button {
+    float: right;
+    /*display: inline-block;*/
+    padding: 0 4px;
+    background-color: rgba(255, 255, 255, 0.5);
+    color: black;
+    user-select: none;
+}
+
+.widget-notification a.-close-button {
+    text-decoration: none;
+    color: black;
+}
+
+.widget-notification a.-close-button:hover,
+.widget-notification a.-close-button:hover {
+    color: black;
+}
+
+.widget-notification a.-close-button:hover,
+.widget-notification a.-close-button:active {
+    background-color: rgba(255, 255, 255, 1);
+    color: black;
+}
+
+
+/* new */
+
+.widget-notification .-notification.-success {
+    background-color: rgba(173, 234, 179, 1);
+}
+
+.widget-notification .-notification.-success:hover {
+    background-color: rgba(218, 245, 221, 1);
+}
+
+.widget-notification .-item.-success.-hasitems {
+    background-color: rgba(218, 245, 221, 1);
+}
+
+.widget-notification .-notification.-info {
+    background-color: rgba(23, 121, 198, 1);
+}
+
+.widget-notification .-notification.-info:hover {
+    background-color: rgba(69, 207, 212, 1);
+}
+
+.widget-notification .-item.-info.-hasitems {
+    background-color: rgba(69, 207, 212, 1);
+}
+
+.widget-notification .-notification.-warn {
+    background-color: rgb(245, 175, 24)
+}
+
+.widget-notification .-notification.-warn:hover {
+    background-color: rgb(255, 215, 122)
+}
+
+.widget-notification .-item.-warn.-hasitems {
+    background-color: rgb(255, 215, 122)
+}
+
+.widget-notification .-notification.-error {
+    background-color: rgb(188, 22, 0)
+}
+
+.widget-notification .-notification.-error:hover {
+    background-color: rgb(255, 83, 61)
+}
+
+.widget-notification .-item.-error.-hasitems {
+    background-color: rgb(255, 83, 61)
+}

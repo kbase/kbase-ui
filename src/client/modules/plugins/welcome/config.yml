@@ -61,7 +61,7 @@ install:
         -
             name: contact-kbase
             definition:
-                uri: https://kbase.us/contact
+                uri: https://kbase.us/contact-us
                 newWindow: true
                 label: Contact KBase
                 icon: envelope-o

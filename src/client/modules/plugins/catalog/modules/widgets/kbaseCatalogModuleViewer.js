@@ -460,7 +460,7 @@ define([
 
 
         initMainPanel: function ($appListPanel, $moduleListPanel) {
-            var $mainPanel = $('<div>').addClass('container');
+            var $mainPanel = $('<div>').addClass('container-fluid');
 
             var $header = $('<div>').css('margin', '1em');
             var $adminPanel = $('<div>').css('margin', '1em');
@@ -812,7 +812,7 @@ define([
             this.$errorPanel.empty();
 
             var $alert = $('<div>').addClass('col-md-12 alert alert-danger');
-            this.$errorPanel.append($('<div>').addClass('container')
+            this.$errorPanel.append($('<div>').addClass('container-fluid')
                 .append($('<div>').addClass('row')
                     .append($alert)));
 

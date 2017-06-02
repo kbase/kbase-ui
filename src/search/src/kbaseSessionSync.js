@@ -26,6 +26,16 @@
             }
         },
 
+        getAuthToken: {
+            value: function () {
+                var session = this.getKBaseSession();
+                if (!session) {
+                    return null;
+                }
+                return session.token;
+            }
+        },
+
         refreshSession: {
             value: function () {
                 try {

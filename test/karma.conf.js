@@ -34,6 +34,8 @@ module.exports = function (config) {
             // {pattern: 'build/client/bower_components/**/*.js', included: false},
             { pattern: 'test/spec/**/*.js', included: false },
             { pattern: 'build/build/client/modules/config/*.yml', included: false },
+            { pattern: 'build/build/client/modules/config/*.json', included: false },
+            { pattern: 'build/build/client/modules/deploy/*.json', included: false },
             'test/build-test.js',
         ],
         // list of files to exclude
