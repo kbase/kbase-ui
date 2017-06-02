@@ -180,7 +180,7 @@
                 KBaseFallback.showError({
                     title: 'KBase Application Startup Error',
                     content: [
-                        'An error has occurred while starting the the KBase Application.',
+                        'An error has occurred while starting the KBase Application.',
                         err.message
                     ],
                     references: [{

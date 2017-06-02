@@ -5,7 +5,7 @@ Allows ui components to provide a notification to the user.
 
 Notifications are classified as info, warn, and error.
 
-Notifications are displayed as soon as the are received, and may be removed, or the the container closed.
+Notifications are displayed as soon as the are received, and may be removed, or the container closed.
 
 Notification counts are displayed in the title bar until the notification is dismissed.
 
