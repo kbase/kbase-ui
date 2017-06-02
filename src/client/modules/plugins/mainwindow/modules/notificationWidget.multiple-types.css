@@ -1,0 +1,183 @@
+.widget-notification {}
+
+.widget-notification .-container {
+    background-color: white;
+}
+
+.widget-notification .-notification-set {
+    /*border: 1px black solid;*/
+    padding: 3px;
+    position: relative;
+    /*max-height: 50vh;
+    overflow-y: auto;
+    overflow-x: hidden*/
+}
+
+.widget-notification .-notification-set .-triangle {
+    position: absolute;
+    top: -3px;
+    left: 196px;
+    font-size: 25px;
+}
+
+.widget-notification .-notification-set .-notification-container {
+    max-height: 50vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.widget-notification .-notification {
+    padding: 4px;
+    color: black;
+    margin: 2px;
+    background-color: rgb(225, 225, 225)
+    /*background-color: silver;*/
+}
+
+.widget-notification .-info .-notification:hover {
+    /*background-color: rgba(69, 207, 212, 1);*/
+    background-color: silver;
+}
+
+.widget-notification .-notification:hover {
+    background-color: silver;
+}
+
+.widget-notification a.-close-button {
+    float: right;
+    /*display: inline-block;*/
+    padding: 0 4px;
+    background-color: silver;
+    color: black;
+}
+
+.widget-notification a.-close-button {
+    text-decoration: none;
+    color: black;
+}
+
+.widget-notification a.-close-button:hover,
+.widget-notification a.-close-button:hover {
+    color: black;
+}
+
+.widget-notification a.-close-button:hover,
+.widget-notification a.-close-button:active {
+    background-color: rgba(201, 201, 201, 0.8);
+    color: black;
+}
+
+
+/* info */
+
+.widget-notification .-info {
+    /*color: rgba(23, 121, 198, 1);*/
+    /*color: white;*/
+    color: black;
+}
+
+.widget-notification .-info .-notification-set .-triangle {
+    color: rgba(23, 121, 198, 1);
+}
+
+.widget-notification .-info .-notification-set {
+    background-color: rgba(23, 121, 198, 1);
+}
+
+.widget-notification .-info .-container.-active {
+    background-color: rgba(23, 121, 198, 1);
+}
+
+
+/*
+.widget-notification .-info .-container.-hover.-active {
+    background-color: rgba(69, 207, 212, 1);
+}*/
+
+
+/* warn */
+
+.widget-notification .-warn {
+    color: black;
+}
+
+.widget-notification .-warn .-notification-set .-triangle {
+    color: rgb(245, 175, 24)
+}
+
+.widget-notification .-warn .-notification-set {
+    background-color: rgb(245, 175, 24)
+}
+
+.widget-notification .-warn .-container.-active {
+    background-color: rgb(245, 175, 24)
+}
+
+
+/*.widget-notification .-warn .-notification {
+    background-color: brown;
+}
+
+.widget-notification .-warn .-container.-hover .-notification {
+    background-color: orange;
+}
+
+.widget-notification .-warn {
+    color: brown;
+}
+
+.widget-notification .-warn .-container.-hover {
+    background-color: brown;
+}
+
+.widget-notification .-warn .-container.-active {
+    background-color: brown;
+}
+
+.widget-notification .-warn .-container.-hover.-active {
+    background-color: orange;
+}*/
+
+
+/* error */
+
+.widget-notification .-error {
+    color: black;
+}
+
+.widget-notification .-error .-notification-set .-triangle {
+    color: rgb(188, 22, 0)
+}
+
+.widget-notification .-error .-notification-set {
+    background-color: rgb(188, 22, 0)
+}
+
+.widget-notification .-error .-container.-active {
+    background-color: rgb(188, 22, 0)
+}
+
+
+/*.widget-notification .-error .-notification {
+    background-color: red;
+}
+
+.widget-notification .-error .-container.-hover .-notification {
+    background-color: pink;
+}
+
+.widget-notification .-error {
+    color: red;
+}
+
+.widget-notification .-error .-container.-hover {
+    background-color: red;
+}
+
+.widget-notification .-error .-container.-active {
+    background-color: red;
+}
+
+.widget-notification .-error .-container.-hover.-active {
+    background-color: pink;
+}*/
