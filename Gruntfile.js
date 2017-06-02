@@ -39,7 +39,7 @@ module.exports = function (grunt) {
         console.error(message);
         process.exit(1);
     }
-        
+
     function readYaml(file) {
         var content = fs.readFileSync(file, 'utf8');
         return yaml.safeLoad(content);
@@ -72,9 +72,11 @@ module.exports = function (grunt) {
 
     // Manage state across tasks
     var STATE = {};
+
     function setTaskState(name, value) {
         STATE[name] = value;
     }
+
     function getTaskState(name, defaultValue) {
         var path = name.split('.'),
             key = path[0],
@@ -109,20 +111,19 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-filerev');
     grunt.loadNpmTasks('grunt-regex-replace');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-webdriver');
     //grunt.loadNpmTasks('grunt-markdown');
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         copy: {
             testfiles: {
-                files: [
-                    {
-                        cwd: 'test',
-                        src: '**/*',
-                        dest: 'dev/test',
-                        expand: true
-                    }
-                ]
+                files: [{
+                    cwd: 'test',
+                    src: '**/*',
+                    dest: 'dev/test',
+                    expand: true
+                }]
             }
         },
         // Testing with Karma!
@@ -137,7 +138,7 @@ module.exports = function (grunt) {
                 coverageReporter: {
                     dir: 'build/build-test-coverage/',
                     reporters: [
-                        {type: 'html', subdir: 'html'}
+                        { type: 'html', subdir: 'html' }
                     ]
                 },
                 autoWatch: true,
@@ -153,19 +154,16 @@ module.exports = function (grunt) {
                 src: 'build/build-test-coverage/lcov/**/*.info'
             }
         },
-        
+
         markdown: {
             build: {
-                files: [
-                    {
-                        expand: true,
-                        src: 'src/docs/**/*.md',
-                        dest: buildDir('docs'),
-                        ext: '.html'
-                    }
-                ],
-                options: {
-                }
+                files: [{
+                    expand: true,
+                    src: 'src/docs/**/*.md',
+                    dest: buildDir('docs'),
+                    ext: '.html'
+                }],
+                options: {}
             }
         },
         requirejs: {
@@ -197,11 +195,11 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: [{
-                        src: [
-                            'dist/client/modules/kbase-min.js'
-                        ],
-                        dest: 'dist/client/modules/'
-                    }]
+                    src: [
+                        'dist/client/modules/kbase-min.js'
+                    ],
+                    dest: 'dist/client/modules/'
+                }]
             }
         },
         // Once we have a revved file, this inserts that reference into page.html at
@@ -209,34 +207,30 @@ module.exports = function (grunt) {
         'regex-replace': {
             dist: {
                 src: ['dist/client/index.html'],
-                actions: [
-                    {
-                        name: 'requirejs-onefile',
-                        search: 'startup',
-                        replace: function (match) {
-                            // do a little sneakiness here. we just did the filerev thing, so get that mapping
-                            // and return that (minus the .js on the end)
-                            var revvedFile = grunt.filerev.summary['dist/client/modules/kbase-min.js'];
-                            console.log('REVVED');
-                            console.log(revvedFile);
-                            // starts with 'static/' and ends with '.js' so return all but the first 7 and last 3 characters
-                            return revvedFile.substr(20, revvedFile.length - 10);
-                        },
-                        flags: ''
-                    }
-                ]
+                actions: [{
+                    name: 'requirejs-onefile',
+                    search: 'startup',
+                    replace: function (match) {
+                        // do a little sneakiness here. we just did the filerev thing, so get that mapping
+                        // and return that (minus the .js on the end)
+                        var revvedFile = grunt.filerev.summary['dist/client/modules/kbase-min.js'];
+                        console.log('REVVED');
+                        console.log(revvedFile);
+                        // starts with 'static/' and ends with '.js' so return all but the first 7 and last 3 characters
+                        return revvedFile.substr(20, revvedFile.length - 10);
+                    },
+                    flags: ''
+                }]
             }
         },
         uglify: {
             dist: {
-                files: [
-                    {
-                        cwd: 'dist/client',
-                        src: '**/*.js',
-                        dest: 'dist/client',
-                        expand: true
-                    }
-                ]
+                files: [{
+                    cwd: 'dist/client',
+                    src: '**/*.js',
+                    dest: 'dist/client',
+                    expand: true
+                }]
             }
         },
         target: {
@@ -273,16 +267,28 @@ module.exports = function (grunt) {
                     'node_modules', 'bower_components'
                 ]
             }
+        },
+        webdriver: {
+            test: {
+                configFile: './test/wdio.conf.js'
+            },
+            local: {
+                configFile: './test/wdio.conf.local.js'
+            },
+            travis: {
+                configFile: './test/wdio.conf.travis.js'
+            }
         }
     });
-    
+
     grunt.registerTask('clean-all', [
         'clean:build', 'clean:dist', 'clean:test', 'clean:deps', 'clean:temp'
     ]);
 
     // Does a single, local, unit test run.
     grunt.registerTask('test', [
-        'karma:unit'
+        'karma:unit',
+        'webdriver:local'
     ]);
 
     // Does a single unit test run, then sends 
@@ -298,7 +304,7 @@ module.exports = function (grunt) {
     grunt.registerTask('develop', [
         'karma:dev'
     ]);
-    
+
     grunt.registerTask('init', [
         'copy:testfiles'
     ]);
