@@ -86,7 +86,7 @@ plugins:
         name: auth2-client
         disabled: true
         globalName: kbase-ui-plugin-auth2-client
-        version: 0.18.0
+        version: 0.18.2
         cwd: src/plugin
         source:
             bower: {}

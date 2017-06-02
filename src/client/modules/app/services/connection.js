@@ -123,7 +123,7 @@ define([
         }
 
         function notifyError(message) {
-            runtime.send('ui', 'alert', {
+            runtime.send('notification', 'notify', {
                 type: 'warning',
                 message: message.message,
                 description: message.description,
@@ -133,13 +133,13 @@ define([
         }
 
         function notifyOk(message) {
-            runtime.send('ui', 'alert', {
+            runtime.send('notification', 'notify', {
                 type: 'success',
                 message: message.message,
                 description: message.description,
                 icon: 'check',
                 name: 'connection',
-                timeout: 10000
+                autodismiss: 10000
             });
         }
 
