@@ -23,35 +23,10 @@ define([
         var runtime = config.runtime;
         var sendingChannel = new Uuid(4).format();
 
-        // individual notification item
-        function notification(params) {
-            var message = ko.observable(params.message.message);
-            var autodismiss = params.message.autodismiss;
-            var type = params.message.type;
-            var over = ko.observable(false);
-
-            function doMouseOver() {
-                over(true);
-            }
-
-            function doMouseOut() {
-                over(false);
-            }
-
-            return {
-                message: message,
-                autodismiss: autodismiss,
-                type: type,
-
-                over: over,
-                doMouseOver: doMouseOver,
-                doMouseOut: doMouseOut
-            };
-        }
-
         // a bunch of notifications together.
         function viewModel(params) {
-            var queue = ko.observableArray();
+            var notificationQueue = ko.observableArray();
+            var notificationMap = {};
             var over = ko.observable(false);
             var show = ko.observable(false);
             var autoDismisser;
@@ -59,23 +34,19 @@ define([
             function runAutoDismisser() {
                 var toRemove = [];
                 var now = new Date().getTime();
-                queue().forEach(function (item) {
-                    if (item.autodismiss) {
+                notificationQueue().forEach(function (item) {
+                    if (item.autodismiss()) {
                         var elapsed = now - item.addedAt;
-                        if (item.autodismiss < elapsed) {
+                        if (item.autodismiss() < elapsed) {
                             toRemove.push(item);
                         }
                     }
                 });
-                toRemove.forEach(function (item) {
-                    var summaryItem = summary[item.type];
-                    if (summaryItem) {
-                        summaryItem.count(summaryItem.count() - 1);
-                    }
 
-                    queue.remove(item);
+                toRemove.forEach(function (item) {
+                    removeNotification(item);
                 });
-                if (queue().length > 0) {
+                if (notificationQueue().length > 0) {
                     startAutoDismisser(true);
                 } else {
                     autoDismisser = null;
@@ -91,7 +62,7 @@ define([
                 }, 1000);
             }
 
-            queue.subscribe(function (newQueue) {
+            notificationQueue.subscribe(function (newQueue) {
                 // start or stop the autodismiss listener
                 var autoDismissable = false;
                 var newItems = false;
@@ -107,7 +78,7 @@ define([
                 if (newItems) {
                     show(true);
                 }
-                if (queue().length === 0) {
+                if (notificationQueue().length === 0) {
                     show(false);
                 }
                 if (autoDismissable) {
@@ -138,19 +109,12 @@ define([
             }
 
             function doCloseNotifications() {
-                console.log('closing?');
                 show(false);
             }
 
             function doClearNotification(data, event) {
                 event.stopPropagation();
-
-                var summaryItem = summary[data.type];
-                if (summaryItem) {
-                    summaryItem.count(summaryItem.count() - 1);
-                }
-
-                queue.remove(data);
+                removeNotification(data);
             }
 
             function summaryItem(name) {
@@ -175,22 +139,98 @@ define([
                 error: summaryItem('error'),
             };
 
-            function processMessage(message) {
-                // start simple, man.
-                if (!message.id) {
-                    message.id = new Uuid(4).format();
+
+
+            // function makeMessage(newMessage) {
+            //     return {
+            //         type: newMessage.type,
+            //         id: newMessage.id | new Uuid(4).format(),
+            //         message: ko.observable(newMessage.message),
+            //         autodismiss: ko.observable(newMessage.autodismiss)
+            //     };
+            // }
+            // individual notification item
+            function makeNotification(newNotification) {
+                var id = newNotification.id || new Uuid(4).format();
+                var message = ko.observable(newNotification.message);
+                var autodismiss = ko.observable(newNotification.autodismiss);
+                var type = newNotification.type;
+                var over = ko.observable(false);
+
+                function doMouseOver() {
+                    over(true);
                 }
-                var summaryItem = summary[message.type];
+
+                function doMouseOut() {
+                    over(false);
+                }
+
+                return {
+                    id: id,
+                    message: message,
+                    autodismiss: autodismiss,
+                    type: type,
+
+                    over: over,
+                    doMouseOver: doMouseOver,
+                    doMouseOut: doMouseOut
+                };
+            }
+
+            function addNotification(newMessage) {
+                var notification = makeNotification(newMessage);
+                // console.log('adding', newMessage, notification);
+                var summaryItem = summary[notification.type];
                 if (summaryItem) {
                     summaryItem.count(summaryItem.count() + 1);
                 }
-                queue.unshift(notification({
-                    message: message
-                }));
+                notificationQueue.unshift(notification);
+                notificationMap[notification.id] = notification;
+            }
+
+            function updateNotification(newMessage) {
+                var notification = notificationMap[newMessage.id];
+                if (!notification) {
+                    console.error('Cannot up date message, not found: ' + newMessage.id, newMessage);
+                    return;
+                }
+                notification.message(newMessage.message);
+                notification.autodismiss(newMessage.autodismiss);
+            }
+
+            function removeNotification(notification) {
+                var summaryItem = summary[notification.type];
+                if (summaryItem) {
+                    summaryItem.count(summaryItem.count() - 1);
+                }
+
+                notificationQueue.remove(notification);
+                delete notificationMap[notification.id];
+            }
+
+            function processMessage(message) {
+                // start simple, man.
+                if (!message.type) {
+                    console.error('Message not processed - no type', message);
+                    return;
+                }
+                if (['success', 'info', 'warn', 'error'].indexOf(message.type) === -1) {
+                    console.error('Message not processed - invalid type', message);
+                    return;
+                }
+                // console.log('processing', message, notificationMap);
+                if (message.id) {
+                    if (notificationMap[message.id]) {
+                        // just update it.
+                        updateNotification(message);
+                        return;
+                    }
+                }
+                addNotification(message);
             }
 
             var hasNotifications = ko.pureComputed(function () {
-                if (queue().length === 0) {
+                if (notificationQueue().length === 0) {
                     return false;
                 }
                 return true;
@@ -199,14 +239,14 @@ define([
             runtime.send('notification', 'ready', {
                 channel: sendingChannel
             });
+
             runtime.recv(sendingChannel, 'new', function (message) {
                 processMessage(message);
             });
 
-
             return {
                 label: params.label,
-                queue: queue,
+                notificationQueue: notificationQueue,
                 summary: summary,
                 over: over,
                 show: show,
@@ -322,7 +362,6 @@ define([
         function buildNotificationDisplay() {
             return div({
                 dataBind: {
-
                     css: {
                         '"-active"': 'show'
                     },
@@ -351,7 +390,7 @@ define([
                         style: {
                             display: 'inline-block'
                         }
-                    }, 'current messages'),
+                    }),
                     a({
                         dataBind: {
                             click: '$component.doCloseNotifications',
@@ -361,7 +400,7 @@ define([
                     div({
                         class: '-notification-container',
                         dataBind: {
-                            foreach: 'queue'
+                            foreach: 'notificationQueue'
                         }
                     }, div({
                         class: '-notification',
@@ -396,7 +435,7 @@ define([
         function template() {
             return div({
                 dataBind: {
-                    if: 'queue().length > 0'
+                    if: 'notificationQueue().length > 0'
                 },
                 dataElement: 'widget-notification',
                 class: 'widget-notification'
@@ -450,13 +489,9 @@ define([
 
         }
 
-        function stop() {
+        function stop() {}
 
-        }
-
-        function detach() {
-
-        }
+        function detach() {}
 
         return {
             attach: attach,
@@ -464,7 +499,6 @@ define([
             stop: stop,
             detach: detach
         };
-
     }
 
     return {

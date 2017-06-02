@@ -67,9 +67,8 @@ define([], function () {
             });
         }
 
-        function stop() {
+        function stop() {}
 
-        }
         return {
             pluginHandler: pluginHandler,
             start: start,
