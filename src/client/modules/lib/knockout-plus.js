@@ -73,6 +73,7 @@ define([
     ko.extenders.constraint = function (target, config) {
         target.constraint = {};
         target.constraint.description = config.description;
+        target.constraint.messages = config.messages || {};
 
         if (config.required) {
             if (ko.isComputed(config.required)) {
@@ -116,7 +117,7 @@ define([
                 // first evaluate the required condition
                 if (isEmpty(newValue)) {
                     if (target.constraint.isRequired()) {
-                        target.constraint.message('Required but empty');
+                        target.constraint.message(target.constraint.messages.requiredButEmpty || 'Required but empty');
                         target.constraint.isValid(false);
                         target.constraint.state('required-missing');
                         return;
