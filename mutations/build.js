@@ -906,13 +906,18 @@ function makeDistBuild(state) {
                             return !reProtected.test(match);
                         })
                         .map(function (match) {
-                            var result = uglify.minify(match, {
-                                output: {
-                                    beautify: false,
-                                    quote_style: 1
-                                }
-                            });
-                            return fs.writeFileAsync(match, result.code);
+                            return fs.readFileAsync(match, 'utf8')
+                                .then(function (contents) {
+                                    var result = uglify.minify(contents, {
+                                        output: {
+                                            beautify: false,
+                                            quote_style: 1
+                                        }
+                                    });
+                                    console.log('uglify', match, contents.length, result.code.length);
+                                    return fs.writeFileAsync(match, result.code);
+                                });
+
                         }));
                 });
         })
