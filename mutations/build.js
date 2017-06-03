@@ -916,7 +916,6 @@ function makeDistBuild(state) {
                                     });
                                     return fs.writeFileAsync(match, result.code);
                                 });
-
                         }));
                 });
         })
@@ -964,15 +963,11 @@ function makeModuleVFS(state, whichBuild) {
         });
 }
 
-
-
 // STATE
 // initial state
 /*
  * filesystem: an initial set files files
  */
-
-
 
 function main(type) {
     // INPUT
