@@ -207,7 +207,6 @@ function installModulePackagesFromBower(state) {
         })
         .then(function (installDirs) {
             return Promise.all(installDirs.map(function (installDir) {
-                // console.log('Installing module: ' + installDir.path);
                 return installModule(state, installDir.path);
             }));
         })
@@ -447,7 +446,6 @@ function copyFromBower(state) {
                         return Promise.all(matches.map(function (match) {
                             var fromPath = state.environment.path.concat(copySpec.cwd).concat([match]).join('/'),
                                 toPath = state.environment.path.concat(copySpec.dest).concat([match]).join('/');
-                            // console.log('copying', fromPath, toPath);
                             return fs.copy(fromPath, toPath, {});
                         }));
                     })
@@ -688,7 +686,6 @@ function copyUiConfig(state) {
                     return mergeObjects([baseConfig].concat(configs));
                 })
                 .then(function (mergedConfigs) {
-                    // console.log('merged', JSON.stringify(mergedConfigs, null, 4));
                     return mutant.saveYaml(configDest.concat(['ui.yml']), mergedConfigs);
                 });
         })
@@ -710,7 +707,6 @@ function createBuildInfo(state) {
             builtAt: new Date().getTime(),
         };
     state.buildInfo = buildInfo;
-    // console.log('info', buildInfo, state);
     return mutant.saveYaml(configDest, { buildInfo: buildInfo })
         .then(function () {
             return state;
@@ -736,7 +732,6 @@ function mergeObjects(listOfObjects) {
                 merge(obj1Value, obj2Value, keyStack.push(key));
                 keyStack.pop();
             } else {
-                // console.log(obj1Type, obj2Type, isSimpleObject(obj1Value), isSimpleObject(obj2Value));
                 throw new Error('Unmergable at ' + keyStack.join('.') + ':' + key);
             }
         });
@@ -824,16 +819,13 @@ function makeDeployConfig(state) {
     return fs.mkdirsAsync(cfgDir.join('/'))
         .then(function () {
             // read yaml an write json deploy configs.
-            // console.log('in', sourceDir.concat(['*.yml']).join('/'));
             return glob(sourceDir.concat(['*.yml']).join('/'), {
                 nodir: true
             });
         })
         .then(function (matches) {
-            // console.log('got ', matches.length, ' matches');
             return Promise.all(matches.map(function (match) {
                 var baseName = path.basename(match);
-                // console.log('found', match);
                 return mutant.loadYaml(match.split('/'))
                     .then(function (config) {
                         mutant.saveJson(cfgDir.concat([baseName + '.json']), config);
@@ -914,10 +906,8 @@ function makeDistBuild(state) {
                                             quote_style: 1
                                         }
                                     });
-                                    console.log('uglify', match, contents.length, result.code.length);
                                     return fs.writeFileAsync(match, result.code);
                                 });
-
                         }));
                 });
         })
@@ -946,7 +936,6 @@ function makeModuleVFS(state, whichBuild) {
             // just read in file and build a giant map...            
             var vfs = {};
             var vfsDest = buildPath.concat([whichBuild, 'moduleVfs.js']);
-            //console.log('matches', JSON.stringify(matches));
             return Promise.all(matches
                     .map(function (match) {
                         var relativePath = match.split('/').slice(root.length + 2);
@@ -965,15 +954,11 @@ function makeModuleVFS(state, whichBuild) {
         });
 }
 
-
-
 // STATE
 // initial state
 /*
  * filesystem: an initial set files files
  */
-
-
 
 function main(type) {
     // INPUT
@@ -1014,7 +999,6 @@ function main(type) {
         })
         .then(function (config) {
             console.log('Creating initial state with config: ');
-            // console.log(config);
             return mutant.createInitialState(config);
         })
         .then(function (state) {
