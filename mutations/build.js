@@ -31,15 +31,54 @@ var Promise = require('bluebird'),
     yaml = require('js-yaml'),
     bower = require('bower'),
     glob = Promise.promisify(require('glob').Glob),
-    ini = require('ini'),
+    exec = require('child_process').exec,
     dir = Promise.promisifyAll(require('node-dir')),
     util = require('util'),
-    git = require('git-repo-info'),
     // disabled - uname package fails to install
     // uname = require('uname'),
     handlebars = require('handlebars');
 
 // UTILS
+
+function gitinfo() {
+    function run(command) {
+        return new Promise(function (resolve, reject) {
+            exec(command, {}, function (err, stdout, stderr) {
+                if (err) {
+                    reject(Error);
+                }
+                if (stderr) {
+                    reject(new Error(stderr));
+                }
+                resolve(stdout);
+            });
+        });
+    }
+
+    return Promise.all([
+            run('git show --format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d'),
+            run('git show --format=%s'),
+            run('git show --format=%N'),
+            run('git config --get remote.origin.url'),
+            run('git rev-parse --abbrev-ref HEAD')
+        ])
+        .spread(function (infoString, subject, notes, url, branch) {
+            var info = infoString.split('\n');
+            return {
+                commitHash: info[0],
+                commitAbbreviatedHash: info[1],
+                authorName: info[2],
+                authorDate: new Date(parseInt(info[3]) * 1000).toISOString(),
+                committerName: info[4],
+                committerDate: new Date(parseInt(info[5]) * 1000).toISOString(),
+                reflogSelector: info[6],
+                subject: subject,
+                commitNotes: notes,
+                originUrl: url,
+                branch
+            };
+        });
+}
 
 function copyFiles(from, to, globExpr) {
     return glob(globExpr, {
@@ -695,21 +734,24 @@ function copyUiConfig(state) {
 }
 
 function createBuildInfo(state) {
-    var root = state.environment.path,
-        configDest = root.concat(['build', 'client', 'modules', 'config', 'buildInfo.yml']),
-        buildInfo = {
-            features: state.config.features,
-            targets: state.config.targets,
-            stats: state.stats,
-            git: git(),
-            // disabled for now, all uname packages are failing!
-            hostInfo: null,
-            builtAt: new Date().getTime(),
-        };
-    state.buildInfo = buildInfo;
-    return mutant.saveYaml(configDest, { buildInfo: buildInfo })
-        .then(function () {
-            return state;
+    return gitinfo()
+        .then(function (gitInfo) {
+            var root = state.environment.path,
+                configDest = root.concat(['build', 'client', 'modules', 'config', 'buildInfo.yml']),
+                buildInfo = {
+                    features: state.config.features,
+                    targets: state.config.targets,
+                    stats: state.stats,
+                    git: gitInfo,
+                    // disabled for now, all uname packages are failing!
+                    hostInfo: null,
+                    builtAt: new Date().getTime(),
+                };
+            state.buildInfo = buildInfo;
+            return mutant.saveYaml(configDest, { buildInfo: buildInfo })
+                .then(function () {
+                    return state;
+                });
         });
 }
 
