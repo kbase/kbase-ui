@@ -13,8 +13,7 @@ define([
         h1 = t('h1'),
         h2 = t('h2'),
         p = t('p'),
-        div = t('div'),
-        a = t('a');
+        div = t('div');
 
     /*
      * The widget factory function implements the widget interface.
@@ -29,11 +28,18 @@ define([
             var info = {
                 builtAt: new Date(buildInfo.builtAt).toLocaleString(),
                 git: {
-                    root: buildInfo.git.root,
+                    branch: buildInfo.git.branch,
+                    url: buildInfo.git.originUrl,
                     commit: {
-                        hash: buildInfo.git.abbreviatedSha,
-                        message: buildInfo.git.commitMessage,
+                        hash: buildInfo.git.commitHash,
+                        shortHash: buildInfo.git.commitAbbreviatedHash,
+                        message: buildInfo.git.subject,
+                        by: buildInfo.git.committerName,
                         date: new Date(buildInfo.git.committerDate).toLocaleString()
+                    },
+                    author: {
+                        author: buildInfo.git.authorName,
+                        authorDate: new Date(buildInfo.git.authorDate).toLocaleString()
                     }
                 }
             };
