@@ -20,7 +20,8 @@ define([
         }
 
         function start(params) {
-            if (runtime.config('deploy.name') === 'prod') {
+            // Do not show the deployment widget for prod
+            if (runtime.config('deploy.environment') === 'prod') {
                 return;
             }
             container.innerHTML = div({
