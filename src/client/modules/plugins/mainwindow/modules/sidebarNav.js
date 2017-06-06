@@ -46,11 +46,6 @@ define([
             path: 'appcatalog',
             authRequired: false
         }, {
-            icon: 'database',
-            label: 'Import',
-            path: 'bulk-ui',
-            authRequired: true
-        }, {
             //icon: 'user',
             icon: 'user-circle-o',
             label: 'Account',

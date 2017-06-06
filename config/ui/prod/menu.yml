@@ -1,6 +1,6 @@
 menus:
     authenticated: 
-        main: [narrative, search]
+        main: [narrative, search, bulk-ui]
         developer: []
         help: [contact-kbase, about-kbase, help]
     unauthenticated: 
