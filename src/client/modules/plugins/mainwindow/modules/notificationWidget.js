@@ -395,7 +395,7 @@ define([
                         dataBind: {
                             click: '$component.doCloseNotifications',
                         },
-                        class: '-close-button'
+                        class: '-button'
                     }, 'dismiss'),
                     div({
                         class: '-notification-container',
@@ -413,20 +413,18 @@ define([
                             }
                         },
                     }, [
-                        div({
-                            dataBind: {
-                                html: 'message'
-                            },
-                            style: {
-                                display: 'inline-block'
-                            }
-                        }),
                         a({
                             dataBind: {
                                 click: '$parent.doClearNotification',
                             },
-                            class: '-close-button'
-                        }, 'x')
+                            class: '-button -close-button'
+                        }, 'x'),
+                        div({
+                            dataBind: {
+                                html: 'message'
+                            },
+                            class: '-message'
+                        })
                     ]))
                 ])
             ]);
