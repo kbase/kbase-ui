@@ -61,13 +61,23 @@
     background-color: silver;
 }*/
 
-.widget-notification a.-close-button {
-    float: right;
-    /*display: inline-block;*/
+.widget-notification .-notification .-message {
+    display: inline;
+}
+
+.widget-notification a.-button {
     padding: 0 4px;
     background-color: rgba(255, 255, 255, 0.5);
     color: black;
     user-select: none;
+}
+
+.widget-notification .-notification a.-close-button {
+    position: relative;
+    right: -2px;
+    top: -2px;
+    float: right;
+    /*display: inline-block;*/
 }
 
 .widget-notification a.-close-button {
