@@ -1,6 +1,6 @@
 menus:
     authenticated:
-        main: [narrative, search]
+        main: [narrative, search, bulk-ui]
         developer: [tester, test_dynamic_table, paveldemo, sdkclientstest, databrowser, typebrowser, jobbrowser, shockbrowser]
         help: [about, about-services, contact-kbase, about-kbase, help]
     unauthenticated:
