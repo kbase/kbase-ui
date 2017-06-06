@@ -172,18 +172,20 @@
 }
 
 .kbase-ui .panel.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
-    font-size: 150%;
+    font-size: 130%;
     width: 30px;
     /*content: "\f13a";*/
-    content: "\f0a7";
+    /*content: "\f0a7";*/
+    content: "\25BD";
     vertical-align: middle;
 }
 
 .kbase-ui .panel.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
-    font-size: 150%;
+    font-size: 130%;
     width: 30px;
     /*content: "\f138";*/
-    content: "\f0a4";
+    /*content: "\f0a4";*/
+    content: "\25B7";
     vertical-align: middle;
 }
 
