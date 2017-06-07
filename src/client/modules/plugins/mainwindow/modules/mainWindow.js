@@ -69,7 +69,7 @@ define([
                 div({ style: cellStyle, id: widgetSet.addWidget('title') }),
                 div({ style: { position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top' } }, [
                     div({ style: cellStyle, id: widgetSet.addWidget('buttonbar') }),
-                    div({ style: bareCellStyle, id: widgetSet.addWidget('notification') }),
+                    div({ style: cellStyle, id: widgetSet.addWidget('notification') }),
                     div({ style: cellStyle, id: widgetSet.addWidget('deployment') }),
                     div({ style: cellStyle, class: 'navbar-right', id: widgetSet.addWidget(loginWidget) })
                 ])

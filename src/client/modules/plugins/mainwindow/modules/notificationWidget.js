@@ -16,6 +16,7 @@ define([
 
     var t = html.tag,
         div = t('div'),
+        span = t('span'),
         a = t('a');
 
     function factory(config) {
@@ -380,9 +381,11 @@ define([
                         top: '0px',
                         right: '20px',
                         zIndex: '100',
-                        width: '200px'
+                        width: '200px',
+                        textAlign: 'center'
                     }
                 }, [
+                    // triangle pointing to the notification summary box
                     div({
                         class: '-triangle'
                     }, '▶'),
@@ -391,17 +394,26 @@ define([
                             display: 'inline-block'
                         }
                     }),
+                    // dismiss button will close the list of notifications
                     a({
                         dataBind: {
                             click: '$component.doCloseNotifications',
                         },
-                        class: '-button'
+                        class: '-button',
+                        style: {
+                            padding: '2px 4px',
+                            display: 'inline-block',
+                            marginTop: '2px',
+                            marginBottom: '3px'
+                        }
                     }, 'dismiss'),
+                    // container for the list of notifications.
+                    // has a max-height and is vertically scrollable
                     div({
-                        class: '-notification-container',
                         dataBind: {
                             foreach: 'notificationQueue'
-                        }
+                        },
+                        class: '-notification-container'
                     }, div({
                         class: '-notification',
                         dataBind: {
@@ -418,7 +430,7 @@ define([
                                 click: '$parent.doClearNotification',
                             },
                             class: '-button -close-button'
-                        }, 'x'),
+                        }, span({ class: 'fa fa-times' })),
                         div({
                             dataBind: {
                                 html: 'message'
