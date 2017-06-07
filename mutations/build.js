@@ -806,7 +806,7 @@ function makeKbConfig(state) {
             mutant.saveJson(dest, deployConfig);
         })
         .then(function () {
-            return fs.readFileAsync(root.concat(['config', 'deploy', 'templates', 'build-info.js']).join('/'), 'utf8')
+            return fs.readFileAsync(root.concat(['config', 'deploy', 'templates', 'build-info.js.txt']).join('/'), 'utf8')
                 .then(function (template) {
                     var dest = root.concat(['build', 'client', 'build-info.js']).join('/');
                     var out = handlebars.compile(template)(state.buildInfo);
