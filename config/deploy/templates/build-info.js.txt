@@ -3,7 +3,7 @@
         // git rev-parse HEAD
         // dev or prod
         deployType: '{{ targets.ui }}',
-        gitCommitHash: '{{ git.abbreviatedSha }}',
+        gitCommitHash: '{{ git.commitAbbreviatedHash }}',
         builtAt: {{ stats.start }},
     };
 }(window));

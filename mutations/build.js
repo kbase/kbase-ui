@@ -57,8 +57,8 @@ function gitinfo() {
 
     return Promise.all([
             run('git show --format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d'),
-            run('git show --format=%s'),
-            run('git show --format=%N'),
+            run('git log -1 --pretty=%s'),
+            run('git log -1 --pretty=%N'),
             run('git config --get remote.origin.url'),
             run('git rev-parse --abbrev-ref HEAD')
         ])
@@ -72,10 +72,10 @@ function gitinfo() {
                 committerName: info[4],
                 committerDate: new Date(parseInt(info[5]) * 1000).toISOString(),
                 reflogSelector: info[6],
-                subject: subject,
-                commitNotes: notes,
-                originUrl: url,
-                branch
+                subject: subject.trim('\n'),
+                commitNotes: notes.trim('\n'),
+                originUrl: url.trim('\n'),
+                branch: branch.trim('\n')
             };
         });
 }
@@ -806,7 +806,7 @@ function makeKbConfig(state) {
             mutant.saveJson(dest, deployConfig);
         })
         .then(function () {
-            return fs.readFileAsync(root.concat(['config', 'deploy', 'templates', 'build-info.js']).join('/'), 'utf8')
+            return fs.readFileAsync(root.concat(['config', 'deploy', 'templates', 'build-info.js.txt']).join('/'), 'utf8')
                 .then(function (template) {
                     var dest = root.concat(['build', 'client', 'build-info.js']).join('/');
                     var out = handlebars.compile(template)(state.buildInfo);

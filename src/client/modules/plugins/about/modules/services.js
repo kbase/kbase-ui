@@ -46,6 +46,10 @@ define([
                     id: html.genId(),
                     node: null
                 },
+                userProfile: {
+                    id: html.genId(),
+                    node: null
+                },
                 catalog: {
                     id: html.genId(),
                     node: null
@@ -69,7 +73,7 @@ define([
                 }, [
                     div({
                         class: 'col-sm-12'
-                    }, ['nms', 'workspace', 'catalog', 'serviceWizard', 'dynamicServices'].map(function (id) {
+                    }, ['nms', 'workspace', 'userProfile', 'catalog', 'serviceWizard', 'dynamicServices'].map(function (id) {
                         return div({
                             id: vm[id].id
                         });
@@ -99,7 +103,7 @@ define([
                         var stats = {
                             measures: measures,
                             average: sum(measures) / measures.length
-                        }
+                        };
                         resolve(stats);
                     } else {
                         var start = new Date().getTime();
@@ -195,6 +199,54 @@ define([
                 .then(function (info) {
                     vm.workspace.node.innerHTML = div({}, [
                         h3('Workspace'),
+                        table({
+                            class: 'table table-striped'
+                        }, info.map(function (item) {
+                            return tr([
+                                th({
+                                    style: {
+                                        width: '10%'
+                                    }
+                                }, item.label),
+                                td(item.value)
+                            ]);
+                        }))
+                    ]);
+                });
+        }
+
+        function renderUserProfile() {
+
+            var client = new GenericClient({
+                url: runtime.config('services.user_profile.url'),
+                token: runtime.service('session').getAuthToken(),
+                module: 'UserProfile'
+            });
+
+            vm.userProfile.node.innerHTML = html.loading();
+
+            function theCall() {
+                return client.callFunc('ver', []);
+            }
+
+            return Promise.all([theCall(), perf(theCall)])
+                .spread(function (version, perf) {
+                    var info = [];
+                    // Version info
+                    info.push({
+                        label: 'Version',
+                        value: version[0]
+                    });
+                    info.push({
+                        label: 'Perf (ms/call)',
+                        value: perf.average
+                    });
+
+                    return info;
+                })
+                .then(function (info) {
+                    vm.userProfile.node.innerHTML = div({}, [
+                        h3('User Profile'),
                         table({
                             class: 'table table-striped'
                         }, info.map(function (item) {
@@ -325,6 +377,7 @@ define([
             return Promise.all([
                 renderNMS(),
                 renderWorkspace(),
+                renderUserProfile(),
                 renderCatalog(),
                 renderServiceWizard(),
                 renderDynamicServices()
