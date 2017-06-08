@@ -19,16 +19,6 @@ define([
         span = t('span'),
         a = t('a');
 
-    // from: https://github.com/knockout/knockout/issues/914
-    ko.subscribable.fn.subscribeChanged = function (callback, context) {
-        var savedValue = this.peek();
-        return this.subscribe(function (latestValue) {
-            var oldValue = savedValue;
-            savedValue = latestValue;
-            callback.call(context, latestValue, oldValue);
-        });
-    };
-
     function factory(config) {
         var container;
         var runtime = config.runtime;

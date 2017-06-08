@@ -4,6 +4,17 @@ define([
     'knockout-arraytransforms',
     'knockout-validation'
 ], function (ko) {
+
+    // from: https://github.com/knockout/knockout/issues/914
+    ko.subscribable.fn.subscribeChanged = function (callback, context) {
+        var savedValue = this.peek();
+        return this.subscribe(function (latestValue) {
+            var oldValue = savedValue;
+            savedValue = latestValue;
+            callback.call(context, latestValue, oldValue);
+        });
+    };
+
     ko.extenders.dirty = function (target, startDirty) {
         var lastValue = target();
         var cleanValue = ko.observable(ko.mapping.toJSON(target));
