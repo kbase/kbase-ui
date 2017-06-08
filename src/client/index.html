@@ -2,10 +2,9 @@
 <html lang="en">
 
 <head>
-    <title>KBase | Interface</title>
+    <title>KBase</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <script src="/moduleVfs.js"></script> -->
 </head>
 
 <body class="kbase-ui">
@@ -15,13 +14,13 @@
                 <div style="display: inline-block; background-color: #FFF; padding: 20px; line-height: 20px; position: inline-block; vertical-align: middle;">
                     <div>Loading KBase UI ...</div>
                     <img src="/images/kbase_animated_logo.gif">
-                    </ div>
                 </div>
             </div>
         </div>
         <div id="error"></div>
         <div id="status"></div>
-        <noscript>
+    </div>
+    <noscript>
         <h1>Javascript Required</h1>
         <p>
             KBase requires a web browser that supports Javascript and has Javascript enabled.
@@ -33,12 +32,13 @@
             If you have additional questions or concerns please <a href="http://kbase.us/contact">contact us</a>.
         </p>
     </noscript>
-        <script src="/fallback.js?cb={{git.commitAbbreviatedHash}}"></script>
-        <script src="/mustard.js?cb={{git.commitAbbreviatedHash}}"></script>
-        <script src="/modules/bower_components/bluebird/bluebird.js?cb={{git.commitAbbreviatedHash}}"></script>
-        <script src="/build-info.js?cb={{git.commitAbbreviatedHash}}"></script>
-        <script src="/require-config.js?cb={{git.commitAbbreviatedHash}}"></script>
-        <script src="/modules/bower_components/requirejs/require.js?cb={{git.commitAbbreviatedHash}}" data-main="startup"></script>
+    <script src="/fallback.js?cb={{git.commitAbbreviatedHash}}"></script>
+    <script src="/mustard.js?cb={{git.commitAbbreviatedHash}}"></script>
+    <script src="/modules/bower_components/bluebird/bluebird.js?cb={{git.commitAbbreviatedHash}}"></script>
+    <script src="/build-info.js?cb={{git.commitAbbreviatedHash}}"></script>
+    <!-- <script src="/moduleVfs.js"></script> -->
+    <script src="/require-config.js?cb={{git.commitAbbreviatedHash}}"></script>
+    <script src="/modules/bower_components/requirejs/require.js?cb={{git.commitAbbreviatedHash}}" data-main="startup"></script>
 </body>
 
 </html>
