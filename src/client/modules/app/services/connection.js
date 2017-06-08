@@ -176,11 +176,11 @@ define([
                         .then(function (pong) {
                             lastConnectionAt = new Date().getTime();
                             if (lastStatus === 'error') {
-                                interval = intervals.baseInterval;
                                 notifyOk({
                                     message: 'Connection Restored (connection to server had been lost)',
                                     description: ''
                                 });
+                                interval = intervals.normal;
                             }
                             lastStatus = 'ok';
                         })
