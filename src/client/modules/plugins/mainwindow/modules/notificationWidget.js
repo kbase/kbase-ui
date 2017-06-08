@@ -19,6 +19,16 @@ define([
         span = t('span'),
         a = t('a');
 
+    // from: https://github.com/knockout/knockout/issues/914
+    ko.subscribable.fn.subscribeChanged = function (callback, context) {
+        var savedValue = this.peek();
+        return this.subscribe(function (latestValue) {
+            var oldValue = savedValue;
+            savedValue = latestValue;
+            callback.call(context, latestValue, oldValue);
+        });
+    };
+
     function factory(config) {
         var container;
         var runtime = config.runtime;
@@ -37,7 +47,7 @@ define([
                 var now = new Date().getTime();
                 notificationQueue().forEach(function (item) {
                     if (item.autodismiss()) {
-                        var elapsed = now - item.addedAt;
+                        var elapsed = now - item.autodismiss.startedAt;
                         if (item.autodismiss() < elapsed) {
                             toRemove.push(item);
                         }
@@ -72,7 +82,10 @@ define([
                         newItems = true;
                         item.addedAt = new Date().getTime();
                     }
-                    if (item.autodismiss) {
+                    if (item.autodismiss()) {
+                        if (!item.autodismiss.startedAt) {
+                            item.autodismiss.startedAt = new Date().getTime();
+                        }
                         autoDismissable = true;
                     }
                 });
@@ -136,7 +149,7 @@ define([
             var summary = {
                 success: summaryItem('success'),
                 info: summaryItem('info'),
-                warn: summaryItem('warn'),
+                warning: summaryItem('warning'),
                 error: summaryItem('error'),
             };
 
@@ -155,8 +168,22 @@ define([
                 var id = newNotification.id || new Uuid(4).format();
                 var message = ko.observable(newNotification.message);
                 var autodismiss = ko.observable(newNotification.autodismiss);
-                var type = newNotification.type;
+                autodismiss.startedAt = newNotification.autodismiss ? new Date().getTime() : null;
+                var type = ko.observable(newNotification.type);
                 var over = ko.observable(false);
+
+                type.subscribeChanged(function (newVal, oldVal) {
+                    summary[oldVal].count(summary[oldVal].count() - 1);
+                    summary[newVal].count(summary[newVal].count() + 1);
+                });
+
+                autodismiss.subscribe(function (newVal) {
+                    if (newVal) {
+                        // TODO: this 
+                        autodismiss.startedAt = new Date().getTime();
+                        startAutoDismisser();
+                    }
+                });
 
                 function doMouseOver() {
                     over(true);
@@ -180,8 +207,7 @@ define([
 
             function addNotification(newMessage) {
                 var notification = makeNotification(newMessage);
-                // console.log('adding', newMessage, notification);
-                var summaryItem = summary[notification.type];
+                var summaryItem = summary[notification.type()];
                 if (summaryItem) {
                     summaryItem.count(summaryItem.count() + 1);
                 }
@@ -192,15 +218,16 @@ define([
             function updateNotification(newMessage) {
                 var notification = notificationMap[newMessage.id];
                 if (!notification) {
-                    console.error('Cannot up date message, not found: ' + newMessage.id, newMessage);
+                    console.error('Cannot update message, not found: ' + newMessage.id, newMessage);
                     return;
                 }
+                notification.type(newMessage.type);
                 notification.message(newMessage.message);
                 notification.autodismiss(newMessage.autodismiss);
             }
 
             function removeNotification(notification) {
-                var summaryItem = summary[notification.type];
+                var summaryItem = summary[notification.type()];
                 if (summaryItem) {
                     summaryItem.count(summaryItem.count() - 1);
                 }
@@ -215,11 +242,10 @@ define([
                     console.error('Message not processed - no type', message);
                     return;
                 }
-                if (['success', 'info', 'warn', 'error'].indexOf(message.type) === -1) {
+                if (['success', 'info', 'warning', 'error'].indexOf(message.type) === -1) {
                     console.error('Message not processed - invalid type', message);
                     return;
                 }
-                // console.log('processing', message, notificationMap);
                 if (message.id) {
                     if (notificationMap[message.id]) {
                         // just update it.
@@ -260,55 +286,6 @@ define([
                 doCloseNotifications: doCloseNotifications
             };
         }
-
-
-        // function xviewModel(params) {
-        //     var notifications = notificationSet();
-        //     //var notificationSummary = 
-        //     // var notifications = {
-        //     //     info: notificationSet({
-        //     //         label: 'info'
-        //     //     }),
-        //     //     warn: notificationSet({
-        //     //         label: 'warn'
-        //     //     }),
-        //     //     error: notificationSet({
-        //     //         label: 'error'
-        //     //     })
-        //     // };
-
-        //     function processMessage(message) {
-        //         // start simple, man.
-        //         var type = message.type;
-        //         if (!message.id) {
-        //             message.id = new Uuid(4).format();
-        //         }
-        //         notifications[type].queue.unshift(notification({
-        //             message: message
-        //         }));
-        //     }
-
-        //     var hasNotifications = ko.pureComputed(function () {
-        //         if (notifications.info.queue().length +
-        //             notifications.warn.queue().length +
-        //             notifications.error.queue().length === 0) {
-        //             return false;
-        //         }
-        //         return true;
-        //     });
-
-        //     runtime.send('notification', 'ready', {
-        //         channel: sendingChannel
-        //     });
-        //     runtime.recv(sendingChannel, 'new', function (message) {
-        //         processMessage(message);
-        //     });
-
-        //     return {
-        //         notifications: notifications,
-        //         hasNotifications: hasNotifications
-        //     };
-        // }
 
         function buildSummaryItem(name) {
             return div({
@@ -355,7 +332,7 @@ define([
             }, [
                 buildSummaryItem('success'),
                 buildSummaryItem('info'),
-                buildSummaryItem('warn'),
+                buildSummaryItem('warning'),
                 buildSummaryItem('error')
             ]);
         }
@@ -418,10 +395,10 @@ define([
                         class: '-notification',
                         dataBind: {
                             css: {
-                                '"-success"': 'type === "success"',
-                                '"-info"': 'type === "info"',
-                                '"-warn"': 'type === "warn"',
-                                '"-error"': 'type === "error"'
+                                '"-success"': 'type() === "success"',
+                                '"-info"': 'type() === "info"',
+                                '"-warning"': 'type() === "warning"',
+                                '"-error"': 'type() === "error"'
                             }
                         },
                     }, [

@@ -138,17 +138,17 @@
     background-color: #afd9ee;
 }
 
-.widget-notification .-notification.-warn {
+.widget-notification .-notification.-warning {
     /*background-color: rgb(245, 175, 24)*/
     background-color: #fcf8e3;
 }
 
-.widget-notification .-notification.-warn:hover {
+.widget-notification .-notification.-warning:hover {
     /*background-color: rgb(255, 215, 122)*/
     background-color: #f7ecb5;
 }
 
-.widget-notification .-item.-warn.-hasitems {
+.widget-notification .-item.-warning.-hasitems {
     /*background-color: rgb(255, 215, 122)*/
     background-color: #f7ecb5;
 }
