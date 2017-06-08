@@ -125,21 +125,21 @@ define([
         function notifyError(message) {
             runtime.send('notification', 'notify', {
                 type: 'warning',
-                message: message.message,
-                description: message.description,
+                id: 'connection',
                 icon: 'exclamation-triangle',
-                name: 'connection'
+                message: message.message,
+                description: message.description
             });
         }
 
         function notifyOk(message) {
             runtime.send('notification', 'notify', {
                 type: 'success',
+                id: 'connection',
+                icon: 'check',
                 message: message.message,
                 description: message.description,
-                icon: 'check',
-                name: 'connection',
-                autodismiss: 10000
+                autodismiss: 5000
             });
         }
 
@@ -170,14 +170,15 @@ define([
                     var httpClient = new HttpClient.HttpClient();
                     httpClient.request({
                             method: 'GET',
-                            url: document.location.origin + '/ping.txt'
+                            url: document.location.origin + '/ping.txt',
+                            timeout: 10000
                         })
                         .then(function (pong) {
                             lastConnectionAt = new Date().getTime();
                             if (lastStatus === 'error') {
                                 interval = intervals.baseInterval;
                                 notifyOk({
-                                    message: 'Connection Restored - it got better',
+                                    message: 'Connection Restored (connection to server had been lost)',
                                     description: ''
                                 });
                             }
