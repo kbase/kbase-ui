@@ -23,7 +23,7 @@
     /*background: yellow;*/
 }
 
-.plugin-mainwindow.widget-mainwindow.-main .-body {
+.plugin-mainwindow.widget-mainwindow.-main>.-body {
     flex: 1 1 0px;
     /*height: calc(100vh - 70px);*/
     /*background: aqua;*/
@@ -31,12 +31,12 @@
     flex-direction: row;
 }
 
-.plugin-mainwindow.widget-mainwindow.-main .-body .-nav {
+.plugin-mainwindow.widget-mainwindow.-main>.-body>.-nav {
     flex: 0 0 75px;
     /*background-color: green;*/
 }
 
-.plugin-mainwindow.widget-mainwindow.-main .-body .-content {
+.plugin-mainwindow.widget-mainwindow.-main>.-body>.-content {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
