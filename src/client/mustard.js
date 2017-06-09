@@ -1,4 +1,4 @@
-(function() {
+(function () {
     function supportsStrictMode() {
         'use strict';
         if (typeof this === 'undefined') {
@@ -6,8 +6,9 @@
         }
         return false;
     }
+
     function redirect(failed) {
-        var url = '/pages/unsupported.html?failed='+failed;
+        var url = '/pages/unsupported.html?failed=' + failed;
         window.location.href = url;
     }
     var failed = '';
@@ -20,6 +21,10 @@
     // IE9 < 
     if (!(supportsStrictMode())) {
         failed += 's';
+    }
+    // IE11 <
+    if (typeof window['location']['origin'] === 'undefined') {
+        failed += 'o';
     }
     if (failed.length > 0) {
         redirect(failed);
