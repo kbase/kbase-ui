@@ -28,11 +28,13 @@ define([
                     try {
                         schemaJson = JSON.parse(result.response);
                     } catch (ex) {
+                        console.error('Error json-decoding json spec', ex, def, result);
                         throw new Error('Error json-decoding json spec: ' + def.name);
                     }
                     try {
                         schemaCompiled = ajv.compile(schemaJson);
                     } catch (ex) {
+                        console.error('Error compiling json spec', ex, def, schemaJson);
                         throw new Error('Error compiling json spce: ' + def.name);
                     }
                     def.source = result.response;
