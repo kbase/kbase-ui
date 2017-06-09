@@ -1,11 +1,11 @@
 define([
     'bluebird',
     'uuid',
-    'kb_common/ajax'
+    'kb_common_ts/HttpClient'
 ], function (
     Promise,
     Uuid,
-    Ajax
+    HttpClient
 ) {
     'use strict';
 
@@ -32,11 +32,13 @@ define([
                 dh: host
             };
             var data = encodeQuery(query);
-            Ajax.post({
+            var http = new HttpClient.HttpClient();
+            http.request({
+                    method: 'POST',
                     url: 'https://www.google-analytics.com/collect',
-                    header: {
-                        'Content-type': 'application/x-www-form-urlencoded'
-                    },
+                    header: new HttpClient.HttpHeader({
+                        'content-type': 'application/x-www-form-urlencoded'
+                    }),
                     withCredentials: true,
                     data: data
                 })
