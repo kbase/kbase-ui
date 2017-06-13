@@ -1,15 +1,12 @@
-/*global define */
-/*jslint
- white: true, browser: true
- */
 define([
-    'kb/common/pluginManager',
-    'kb/common/dom',
-    'kb/common/messenger',
-    'kb/widget/widgetMount',
-    'kb/common/props',
-    'kb/common/asyncQueue',
-    'kb/common/appServiceManager'
+    '../lib/pluginManager',
+    'kb_common/dom',
+    'kb_common/messenger',
+    'kb_widget/widgetMount',
+    'kb_common/props',
+    'kb_common/asyncQueue',
+    'kb_common/appServiceManager',
+    'kb_common_ts/Cookie'
 ], function (
     pluginManagerFactory,
     dom,
@@ -17,36 +14,40 @@ define([
     widgetMountFactory,
     props,
     asyncQueue,
-    AppServiceManager
-    )
-{
+    AppServiceManager,
+    M_Cookie
+) {
     'use strict';
 
     var moduleVersion = '0.0.1';
 
     function factory(config) {
         var pluginManager,
-            serviceConfig = config.serviceConfig,
-            clientConfig = config.clientConfig,
-            clientConfigProps = props.make({data: clientConfig}),
+            appConfig = config.appConfig,
+            appConfigProps = props.make({
+                data: appConfig
+            }),
             rootNode;
 
         // quick hack:
-        Object.keys(serviceConfig).forEach(function (key) {
-            clientConfig[key] = serviceConfig[key];
-        });
 
         function getConfig(prop, defaultValue) {
-            return clientConfigProps.getItem(prop, defaultValue);
+            return appConfigProps.getItem(prop, defaultValue);
         }
+
         function hasConfig(prop) {
-            return clientConfigProps.hasItem(prop);
+            return appConfigProps.hasItem(prop);
+        }
+
+        function rawConfig() {
+            return appConfigProps.debug();
         }
 
         // Events
 
         // Our own events
         var messenger = messengerFactory.make();
+
         function receive(channel, message, fun) {
             return rcv({
                 channel: channel,
@@ -59,9 +60,11 @@ define([
         function rcv(spec) {
             return messenger.receive(spec);
         }
+
         function urcv(spec) {
             return messenger.unreceive(spec);
         }
+
         function snd(spec) {
             return messenger.send(spec);
         }
@@ -75,9 +78,11 @@ define([
                 data: data
             });
         }
+
         function drop(spec) {
             urcv(spec);
         }
+
         function sendp(channel, message, data) {
             return messenger.sendPromise({
                 channel: channel,
@@ -103,6 +108,7 @@ define([
         setRootNode(config.nodes.root.selector);
 
         var rootMount;
+
         function mountRootWidget(widgetId, runtime) {
             if (!rootNode) {
                 throw new Error('Cannot set root widget without a root node');
@@ -140,10 +146,26 @@ define([
             send('app', 'navigate', path);
         }
 
+        function feature(featureSet, path) {
+            var featureFlag = new M_Cookie.CookieManager().getItem('ui.features.auth.selected');
+            if (!featureFlag) {
+                featureFlag = api.config('ui.features.' + featureSet + '.selected');
+                // featureFlag = api.config('ui.features.' + featureSet + '.selected');
+            }
+            var featurePath = 'ui.features.' + featureSet + '.available.' + featureFlag + '.' + path;
+            var result = getConfig(featurePath, null);
+            if (result === null) {
+                throw new Error('Feature is not defined: ' + featurePath);
+            }
+            return result;
+        }
+
         var api = {
             getConfig: getConfig,
             config: getConfig,
             hasConfig: hasConfig,
+            rawConfig: rawConfig,
+            feature: feature,
             // Session
             installPlugins: installPlugins,
             send: send,
@@ -166,7 +188,8 @@ define([
                 return proxyMethod(appServiceManager, 'getService', arguments);
             },
             service: function () {
-                return proxyMethod(appServiceManager, 'getService', arguments);
+                var service = proxyMethod(appServiceManager, 'getService', arguments);
+                return service
             },
             hasService: function () {
                 return proxyMethod(appServiceManager, 'hasService', arguments);
@@ -176,25 +199,47 @@ define([
             }
         };
 
-
         function begin() {
             // Register service handlers.
-            appServiceManager.addService('session', {
+            var sessionConfig = {
                 runtime: api,
                 cookieName: 'kbase_session',
-                extraCookieNames: ['kbase_narr_session'],
-                loginUrl: serviceConfig.services.login.url,
-                cookieMaxAge: clientConfig.ui.constants.session_max_age
+                cookieMaxAge: appConfig.ui.constants.session_max_age
+            };
 
+            if (api.config('ui.backupCookie.enabled')) {
+                sessionConfig.extraCookies = [{
+                    name: 'kbase_session_backup',
+                    domain: api.config('ui.backupCookie.domain')
+                }];
+            }
+
+            // Add a session service provided by the selected auth feature
+            appServiceManager.addService({
+                name: 'session',
+                module: api.feature('auth', 'services.session.module'),
+            }, sessionConfig);
+
+            // Add plugin(s) provided by the selected auth feature.
+            // By default a plugin which is provided for a feature must be set to 
+            // disabled state, and will be enabled here.
+            api.feature('auth', 'plugins').forEach(function (pluginName) {
+                config.plugins[pluginName].disabled = false;
             });
+
             appServiceManager.addService('heartbeat', {
                 runtime: api,
                 interval: 500
             });
+
             appServiceManager.addService('route', {
                 runtime: api,
                 // notFoundRoute: {redirect: {path: 'message/notfound'}},
-                defaultRoute: {redirect: {path: 'dashboard'}}
+                defaultRoute: {
+                    redirect: {
+                        path: 'login'
+                    }
+                }
             });
             appServiceManager.addService('menu', {
                 runtime: api,
@@ -218,18 +263,33 @@ define([
             appServiceManager.addService('analytics', {
                 runtime: api
             });
+            appServiceManager.addService('connection', {
+                runtime: api
+            });
+
+            appServiceManager.addService('ko-component', {
+                runtime: api
+            });
+
+            appServiceManager.addService('notification', {
+                runtime: api
+            });
+
+            appServiceManager.addService('schema', {
+                runtime: api
+            });
 
             pluginManager = pluginManagerFactory.make({
                 runtime: api
             });
 
             // Behavior
-            // There are not too many global behaviors, and perhaps there should 
-            // even fewer or none. Most behavior is within services or 
+            // There are not too many global behaviors, and perhaps there should
+            // even fewer or none. Most behavior is within services or
             // active widgets themselves.
-            receive('session', 'loggedout', function () {
-                send('app', 'navigate', 'goodbye');
-            });
+            // receive('session', 'loggedout', function () {
+            //     send('app', 'navigate', 'goodbye');
+            // });
 
             receive('app', 'route-not-found', function (info) {
                 // alert('help, the route was not found!: ' + route.path);
@@ -272,9 +332,9 @@ define([
                 })
                 .then(function () {
                     // kick off handling of the current route.
-                    api.service('analytics').pageView('/index');
+                    // api.service('analytics').pageView('/index');
                     // remove the loading status.
-                    
+
                     send('app', 'do-route');
                     return api;
                 });

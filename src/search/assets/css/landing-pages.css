@@ -90,22 +90,19 @@ h4, .h4 {
     body{font-size: 10px;}
 }*/
 strong, b {
-    font-family: 'OxygenBold';
     font-weight: normal;
     }
 em, i {
-    font-family: 'OxygenItalic';
     font-style: normal;
     }
 strong em, em strong, b i, i b{
-    font-family: 'OxygenBoldItalic';
     font-style: normal;
     font-weight: normal;
     }
 
 body {
     padding-top: 65px;
-    font-family: 'OxygenRegular', Arial, sans-serif;
+    font-family: 'Oxygen', Arial, sans-serif;
     color: #333333;
 }
 
@@ -558,7 +555,8 @@ div::-webkit-scrollbar-thumb {
 
 #sortable-landing .panel-subtitle {
     color: #888;
-    font-family: 'OxygenBold', Arial, sans-serif;
+    font-family: 'Oxygen', Arial, sans-serif;
+    font-weight: bold;
 }
 
 .main #sortable-landing .panel-subtitle {
@@ -568,7 +566,7 @@ div::-webkit-scrollbar-thumb {
 
 
 #sortable-landing th {
-    font-family: 'OxygenBold', Arial, sans-serif; 
+    font-family: 'Oxygen', Arial, sans-serif; 
     font-weight: normal;
 }
 
@@ -578,7 +576,8 @@ div::-webkit-scrollbar-thumb {
 }
 .panel-title {
     /*color: #0072AF;*/
-    font-family: 'OxygenBold', Arial, sans-serif;
+    font-family: 'Oxygen', Arial, sans-serif;
+    font-weight: bold;
 }
 
 /* narrative page */
@@ -933,7 +932,8 @@ table.dataTable thead .sorting:after {
     padding-right: 20px;
     /*border: 1px solid #A5D4E1;*/
     border: 1px solid #428bca;
-    font-family: OxygenBold;
+    font-family: Oxygen;
+    font-weight: bold;
     font-size: 14px;
 }
 

@@ -29,11 +29,13 @@ module.exports = function (config) {
              * It's cleaner to just load the list of them by hand, then
              * have the Require apparatus take over.
              */
-            
-            {pattern: 'build/build/client/modules/**/*.js', included: false},
+
+            { pattern: 'build/build/client/modules/**/*.js', included: false },
             // {pattern: 'build/client/bower_components/**/*.js', included: false},
-            {pattern: 'test/spec/**/*.js', included: false},
-            {pattern: 'build/build/client/modules/config/*.yml', included: false},
+            { pattern: 'test/spec/**/*.js', included: false },
+            { pattern: 'build/build/client/modules/config/*.yml', included: false },
+            { pattern: 'build/build/client/modules/config/*.json', included: false },
+            { pattern: 'build/build/client/modules/deploy/*.json', included: false },
             'test/build-test.js',
         ],
         // list of files to exclude
@@ -43,14 +45,14 @@ module.exports = function (config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-          'build/build/client/modules/!(bower_components)/**/*.js': ['coverage']
+            'build/build/client/modules/!(bower_components)/**/*.js': ['coverage']
         },
 
         coverageReporter: {
             dir: 'build/build-test-coverage/',
             reporters: [
-                {type: 'html', subdir: 'html'},
-                {type: 'lcov', subdir: 'lcov'}
+                { type: 'html', subdir: 'html' },
+                { type: 'lcov', subdir: 'lcov' }
             ]
         },
         // test results reporter to use
@@ -72,5 +74,5 @@ module.exports = function (config) {
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
         singleRun: true
-    })
-}
+    });
+};

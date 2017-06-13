@@ -6,7 +6,7 @@ node_modules
 /temp
 
 # IDEs
-# put your ide here 
+# put your ide here
 nbproject
 
 # Build artifacts
@@ -21,3 +21,9 @@ nbproject
 /dev/test
 /dev/test-coverage
 /install/temp
+/errorShots
+/target
+
+# Editor and OS artifacts
+.DS_Store
+.vscode

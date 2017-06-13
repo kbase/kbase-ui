@@ -1,54 +1,18 @@
-/*global define*/
-/*jslint white:true,browser:true */
 define([
     'bluebird',
     'uuid',
-    'kb/common/ajax'
-        // 'https://www.google-analytics.com/analytics.js'
-], function (Promise, Uuid, Ajax) {
+    'kb_common_ts/HttpClient'
+], function (
+    Promise,
+    Uuid,
+    HttpClient
+) {
     'use strict';
 
     function factory(config) {
         var code = config.code,
-            host = config.host,
+            host = config.hostname,
             uuid = new Uuid(4).format();
-
-        function init(config) {
-            // This is what the analytics plugin will look for when it loads.
-            //window.GoogleAnalyticsObject = 'ga';
-            // The ga object is simply a queue, until the analytics script loads.
-//            window.ga = function () {
-//                if (!window.ga.q) {
-//                    window.ga.q = [];
-//                }
-//                window.ga.q.push(arguments);
-
-//            };
-
-            // Queue up the initialization 'create'
-//            console.log(GA);
-//            if (window.ga) {
-//                window.ga('create', config.code, config.host || 'auto');
-//            }
-
-            // Asynchrously load the ga app -- it picks up the queue left in window.ga
-//            return new Promise(function (resolve, reject) {
-//                return require([
-//                    '//www.google-analytics.com/analytics.js'
-//                ], function () {                
-//                    resolve();
-//                }, function (err) {
-//                    console.error('Error loading GA');
-//                    console.error(err);
-//                    reject(err);
-//                });
-//
-//            });
-        }
-
-        function create() {
-
-        }
 
         function encodeQuery(params) {
             return Object.keys(params).map(function (key) {
@@ -56,36 +20,39 @@ define([
             }).join('&');
         }
 
-        function send(path) {
-            var data = encodeQuery({
+        function send(path, clientId) {
+            var query = {
                 v: 1,
                 tid: code,
-                cid: uuid,
+                cid: clientId,
                 t: 'pageview',
-                dp: path
-            });
-            // console.log('SENDING', data);
-            Ajax.post({
-                url: 'https://www.google-analytics.com/collect',
-                header: {
-                    'Content-type': 'application/x-www-form-urlencoded'
-                },
-                withCredentials: true,
-                data: data
-            })
+                ds: 'kbase-ui',
+                dp: path,
+                dl: encodeURIComponent(document.location.href),
+                dh: host
+            };
+            var data = encodeQuery(query);
+            var http = new HttpClient.HttpClient();
+            http.request({
+                    method: 'POST',
+                    url: 'https://www.google-analytics.com/collect',
+                    header: new HttpClient.HttpHeader({
+                        'content-type': 'application/x-www-form-urlencoded'
+                    }),
+                    withCredentials: true,
+                    data: data
+                })
                 .then(function (result) {
-                    //alert('yay, sent pageview to analytics');
-                    // console.log(result);
+                    // console.log('sent pageview to ga', result);
                 })
                 .catch(function (err) {
                     //alert('boo, it failed. check the log');
-                
+
                     console.error('ERROR sending to GA', err);
                 });
         }
 
         return {
-            init: init,
             send: send
         };
     }
@@ -95,5 +62,4 @@ define([
             return factory(config);
         }
     };
-
 });

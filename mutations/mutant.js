@@ -37,8 +37,8 @@ function copyFiles(tryFrom, tryTo, globExpr) {
     return Promise.all([fs.realpathAsync(tryFrom.join('/')), fs.realpathAsync(tryTo.join('/'))])
         .spread(function (from, to) {
             return [from.split('/'), to.split('/'), glob(globExpr, {
-                    cwd: from
-                })];
+                cwd: from
+            })];
         })
         .spread(function (from, to, matches) {
             return Promise.all(matches.map(function (match) {
@@ -72,6 +72,18 @@ function loadYaml(path) {
         });
 }
 
+function loadJson(path) {
+    return fs.readFileAsync(path.join('/'), 'utf8')
+        .then(function (contents) {
+            return JSON.parse(contents);
+        });
+}
+
+function saveYaml(path, data) {
+    return fs.writeFileAsync(path.join('/'), yaml.safeDump(data));
+}
+
+
 function loadIni(iniPath) {
     var yamlPath = iniPath.join('/');
     return fs.readFileAsync(yamlPath, 'utf8')
@@ -90,6 +102,9 @@ function saveIni(path, iniData) {
     return fs.writeFileAsync(path.join('/'), ini.stringify(iniData));
 }
 
+function saveJson(path, jsonData) {
+    return fs.writeFileAsync(path.join('/'), JSON.stringify(jsonData, null, 4));
+}
 
 
 function uniq(prefix) {
@@ -108,7 +123,7 @@ function uniqts(prefix) {
 function mkdir(inPath, dirPath) {
     var path = inPath.concat(dirPath),
         pathString = path.join('/');
-    if (fs.exists(pathString)) {
+    if (fs.existsSync(pathString)) {
         throw new Error('Sorry, this dir already exists: ' + pathString);
     }
     fs.ensureDirSync(pathString);
@@ -177,7 +192,7 @@ function copyState(oldState) {
                 .then(function () {
                     return newState;
                 });
-        } 
+        }
         return oldState;
     });
 }
@@ -219,7 +234,10 @@ function createInitialState(initialConfig) {
         .then(function (buildConfig) {
             var state = {
                 environment: {},
-                data: {}, state: {}, config: buildConfig, history: []
+                data: {},
+                state: {},
+                config: buildConfig,
+                history: []
             };
             return makeRunDir(state);
         })
@@ -238,10 +256,18 @@ function createInitialState(initialConfig) {
                 }
             });
 
+            // And also create a temp staging dir for build processes to 
+            // place files
+            mkdir(state.environment.root.concat(['inputfiles']), 'tmp')
+
             inputFs = ['inputfiles'];
 
             state.environment.filesystem = inputFs;
             state.environment.path = state.environment.root.concat(inputFs);
+
+            state.stats = {
+                start: new Date().getTime()
+            }
 
             return state;
         });
@@ -249,10 +275,10 @@ function createInitialState(initialConfig) {
 
 function finish(state) {
     return Promise.try(function () {
-        if (!state.config.debug) {
-            return removeRunDir(state);
-        }
-    })
+            if (!state.config.debug) {
+                return removeRunDir(state);
+            }
+        })
         .then(function () {
             console.log('Finished with mutations');
         });
@@ -266,7 +292,10 @@ module.exports = {
     copyFiles: copyFiles,
     ensureEmptyDir: ensureEmptyDir,
     loadYaml: loadYaml,
+    saveYaml: saveYaml,
     loadIni: loadIni,
     saveIni: saveIni,
+    loadJson: loadJson,
+    saveJson: saveJson,
     rtrunc: rtrunc
 };

@@ -7,292 +7,181 @@ package:
     version: 0.1.0
 source:
     modules:
-        # not sure what modules are, but here is one per factory
-        -
-            module: catalog_index
-            file: catalog_index
-
-        -
-            module: catalog_home
-            file: catalog_app_browser
-
-
-        -
-            module: catalog_function_browser
-            file: catalog_function_browser
-
-        -
-            module: catalog_function_viewer
-            file: catalog_function_viewer
-
-
-        -
-            module: catalog_app_viewer
-            file: catalog_app_viewer
-        -
-            module: catalog_module_browser
-            file: catalog_module_browser
-        -
-            module: catalog_module_viewer
-            file: catalog_module_viewer
-        -
-            module: catalog_type_browser
-            file: catalog_type_browser
-        -
-            module: catalog_module_dev_viewer
-            file: catalog_module_dev_viewer
-        -
-            module: catalog_registration
-            file: catalog_registration
-        -
-            module: catalog_status
-            file: catalog_status
-        -
-            module: catalog_service
-            file: catalog_service
-        -
-            module: catalog_util
-            file: catalog_util
-        -
-            module: catalog_admin
-            file: catalog_admin
-        -
-            module: catalog_stats
-            file: catalog_stats
-        - 
-            module: app_card
-            file: app_card
-
-        - 
-            module: function_card
-            file: function_card
-
         # here is one per widget
-        -
-            module: catalog_index_widget
-            file: widgets/kbaseCatalogIndex
-        -
-            module: catalog_home_widget
-            file: widgets/kbaseCatalogBrowser
-        -
-            module: catalog_app_viewer_widget
-            file: widgets/kbaseCatalogAppViewer
-        -
-            module: catalog_module_browser_widget
-            file: widgets/kbaseCatalogModuleBrowser
-        -
-            module: catalog_module_viewer_widget
-            file: widgets/kbaseCatalogModuleViewer
-        -
-            module: catalog_type_browser_widget
-            file: widgets/kbaseCatalogTypeBrowser
-        -
-            module: catalog_module_dev_viewer_widget
-            file: widgets/kbaseCatalogModuleDevViewer
-        -
-            module: catalog_registration_widget
-            file: widgets/kbaseCatalogRegistration
-        -
-            module: catalog_status_widget
-            file: widgets/kbaseCatalogStatus
-        -
-            module: catalog_service_widget
-            file: widgets/kbaseCatalogService
-        -
-            module: catalog_admin_widget
-            file: widgets/kbaseCatalogAdmin
-        -
-            module: catalog_stats_widget
-            file: widgets/kbaseCatalogStats
-        -
-            module: catalog_view_sdk_registration_log_widget
-            file: widgets/kbaseViewSDKRegistrationLog
-        -
-            module: catalog_function_browser_widget
-            file: widgets/kbaseCatalogFunctionBrowser
-        -
-            module: catalog_function_viewer_widget
-            file: widgets/kbaseCatalogFunctionViewer
-
     styles:
         -
             file: catalog_styles
 install:
     # Register the welcome widget
     widgets:
-        - 
+        -
             module: catalog_index
             id: catalog_index
             type: factory
-        - 
-            module: catalog_home
+        -
+            module: catalog_app_browser
             id: catalog_home
             type: factory
-        - 
+        -
             module: catalog_app_viewer
             id: catalog_app_viewer
             type: factory
-        - 
+        -
             module: catalog_module_browser
             id: catalog_module_browser
             type: factory
-        - 
+        -
             module: catalog_module_viewer
             id: catalog_module_viewer
             type: factory
-        - 
+        -
             module: catalog_type_browser
             id: catalog_type_browser
             type: factory
-        - 
+        -
             module: catalog_module_dev_viewer
             id: catalog_module_dev_viewer
             type: factory
-        - 
+        -
             module: catalog_registration
             id: catalog_registration
             type: factory
-        - 
+        -
             module: catalog_status
             id: catalog_status
             type: factory
-        - 
+        -
             module: catalog_admin
             id: catalog_admin
             type: factory
-
-        - 
+        -
             module: catalog_function_browser
             id: catalog_function_browser
             type: factory
-
-        - 
+        -
             module: catalog_function_viewer
             id: catalog_function_viewer
             type: factory
-
-        - 
+        -
             module: catalog_stats
             id: catalog_stats
             type: factory
-        - 
+        -
             module: catalog_service
             id: catalog_service
             type: factory
-        - 
+        -
             module: catalog_util
             id: catalog_util
             type: widget
-        - 
+        -
             module: app_card
             id: app_card
             type: widget
-
-        - 
+        -
             module: function_card
             id: function_card
             type: widget
         -
-            module: catalog_home_widget
+            module: widgets/kbaseCatalogBrowser
             id: catalog_browser
             title: App Catalog
             config:
                 jqueryName: KBaseCatalogBrowser
             type: kbwidget
-
         -
-            module: catalog_index_widget
+            module: widgets/kbaseCatalogIndex
             id: catalog_index_widget
             title: Catalog Index
             config:
                 jqueryName: KBaseCatalogIndex
             type: kbwidget
         -
-            module: catalog_function_browser_widget
+            module:  widgets/kbaseCatalogFunctionBrowser
             id: catalog_function_browser_widget
             title: Developer Function Catalog
             config:
                 jqueryName: kbaseCatalogFunctionBrowser
             type: kbwidget
         -
-            module: catalog_app_viewer_widget
+            module: widgets/kbaseCatalogAppViewer
             id: catalog_app_viewer_widget
             title: App Catalog
             config:
                 jqueryName: KBaseCatalogAppViewer
             type: kbwidget
         -
-            module: catalog_module_browser_widget
+            module: widgets/kbaseCatalogModuleBrowser
             id: catalog_module_browser_widget
             title: Module Catalog
             config:
                 jqueryName: KBaseCatalogModuleBrowser
             type: kbwidget
         -
-            module: catalog_module_viewer_widget
+            module: widgets/kbaseCatalogModuleViewer
             id: catalog_module_viewer_widget
             title: App Catalog
             config:
                 jqueryName: KBaseCatalogModuleViewer
             type: kbwidget
         -
-            module: catalog_type_browser_widget
+            module: widgets/kbaseCatalogTypeBrowser
             id: catalog_type_browser_widget
             title: Data Type Catalog
             config:
                 jqueryName: KBaseCatalogTypeBrowser
             type: kbwidget
         -
-            module: catalog_module_dev_viewer_widget
+            module: widgets/kbaseCatalogModuleDevViewer
             id: catalog_module_dev_viewer_widget
             title: App Catalog
             config:
                 jqueryName: KBaseCatalogModuleDevViewer
             type: kbwidget
         -
-            module: catalog_registration_widget
+            module: widgets/kbaseCatalogRegistration
             id: catalog_registration_widget
             title: App Catalog Module Registration
             config:
                 jqueryName: KBaseCatalogRegistration
             type: kbwidget
         -
-            module: catalog_status_widget
+            module: widgets/kbaseCatalogStatus
             id: catalog_status_widget
             title: App Catalog Status
             config:
                 jqueryName: KBaseCatalogStatus
             type: kbwidget
         -
-            module: catalog_service_widget
+            module: widgets/kbaseCatalogService
             id: catalog_service_widget
             title: App Catalog Services
             config:
                 jqueryName: KBaseCatalogService
             type: kbwidget
         -
-            module: catalog_admin_widget
+            module: widgets/kbaseCatalogAdmin
             id: catalog_admin_widget
             title: App Catalog Admin
             config:
                 jqueryName: KBaseCatalogAdmin
             type: kbwidget
         -
-            module: catalog_stats_widget
+            module: widgets/kbaseCatalogStats
             id: catalog_stats_widget
             title: App Catalog Stats
             config:
                 jqueryName: KBaseCatalogStats
             type: kbwidget
         -
-            module: catalog_view_sdk_registration_log_widget
+            module: widgets/kbaseViewSDKRegistrationLog
             id: catalog_view_sdk_registration_log_widget
             title: App Catalog Module Registration Log
             config:
                 jqueryName: KBaseViewSDKRegistrationLog
             type: kbwidget
         -
-            module: catalog_function_viewer_widget
+            module: widgets/kbaseCatalogFunctionViewer
             id: catalog_function_viewer_widget
             title: App Catalog
             config:
@@ -351,10 +240,10 @@ install:
         -
             path: ['catalog', 'functions', {type: param, name: tag}]
             widget: catalog_function_browser
-        -   
+        -
             path: ['catalog', 'functions', {type: param, name: module}, {type: param, name: function_id}]
             widget: catalog_function_viewer
-        -   
+        -
             path: ['catalog', 'functions', {type: param, name: module}, {type: param, name: function_id}, {type: param, name: ver} ]
             widget: catalog_function_viewer
 
@@ -369,6 +258,7 @@ install:
         -
             path: ['catalog', 'register', {type: param, name: registration_id }]
             widget: catalog_registration
+            authorization: true
 
 
         # stats, status, admin
@@ -409,9 +299,11 @@ install:
         -
             path: ['appcatalog', 'register']
             widget: catalog_registration
+            authorization: true
         -
             path: ['appcatalog', 'register', {type: param, name: registration_id }]
             widget: catalog_registration
+            authorization: true
         -
             path: ['appcatalog', 'status']
             widget: catalog_status
@@ -434,5 +326,3 @@ install:
                 path: ['appcatalog']
                 label: App Catalog
                 icon: book
-
-

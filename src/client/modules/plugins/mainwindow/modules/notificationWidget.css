@@ -1,0 +1,169 @@
+.widget-notification {
+    position: relative;
+}
+
+.widget-notification .-summary {
+    cursor: pointer;
+    font-size: 10px;
+    padding: 0;
+    margin: 0;
+}
+
+.widget-notification .-summary .-item {
+    padding: 0;
+    margin: 0;
+}
+
+.widget-notification .-container {
+    background-color: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.widget-notification .-notification-set {
+    /*border: 1px black solid;*/
+    padding: 3px;
+    position: relative;
+    background-color: silver;
+    /*max-height: 50vh;
+    overflow-y: auto;
+    overflow-x: hidden*/
+}
+
+.widget-notification .-notification-set .-triangle {
+    position: absolute;
+    top: -3px;
+    left: 196px;
+    font-size: 25px;
+}
+
+.widget-notification .-notification-set .-notification-container {
+    max-height: 50vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    text-align: left;
+}
+
+.widget-notification .-notification {
+    padding: 4px;
+    color: black;
+    margin: 2px;
+    /*background-color: rgb(225, 225, 225)*/
+    /*background-color: silver;*/
+}
+
+
+/*.widget-notification .-info .-notification:hover {
+    background-color: silver;
+}
+
+.widget-notification .-notification:hover {
+    background-color: silver;
+}*/
+
+.widget-notification .-notification .-message {
+    display: inline;
+}
+
+.widget-notification a.-button {
+    padding: 0 4px;
+    background-color: rgba(255, 255, 255, 0.5);
+    color: black;
+    user-select: none;
+}
+
+.widget-notification .-notification a.-close-button .fa::before {
+    color: #666;
+}
+
+.widget-notification .-notification a.-close-button {
+    position: relative;
+    /*right: 2px;*/
+    /*top: 2px;*/
+    color: #000;
+    float: left;
+    margin-right: 4px;
+    /*display: inline-block;*/
+}
+
+.widget-notification a.-button {
+    text-decoration: none;
+    color: black;
+}
+
+.widget-notification a.-button:hover,
+.widget-notification a.-button:hover {
+    color: black;
+}
+
+.widget-notification a.-button:hover,
+.widget-notification a.-button:active {
+    background-color: rgba(255, 255, 255, 1);
+    color: black;
+}
+
+
+/* new */
+
+.widget-notification .-notification.-success {
+    /* bootstrap is dff0d8 */
+    /*background-color: rgba(223, 240, 216, 1);*/
+    background-color: #dff0d8;
+}
+
+.widget-notification .-notification.-success:hover {
+    /* bootstrap is #c1e2b3 */
+    /*background-color: rgba(218, 245, 221, 1);*/
+    background-color: #c1e2b3;
+}
+
+.widget-notification .-item.-success.-hasitems {
+    /*background-color: rgba(218, 245, 221, 1);*/
+    background-color: #c1e2b3;
+}
+
+.widget-notification .-notification.-info {
+    /*background-color: rgba(23, 121, 198, 1);*/
+    background-color: #d9edf7;
+}
+
+.widget-notification .-notification.-info:hover {
+    /*background-color: rgba(69, 207, 212, 1);*/
+    background-color: #afd9ee;
+}
+
+.widget-notification .-item.-info.-hasitems {
+    /*background-color: rgba(69, 207, 212, 1);*/
+    background-color: #afd9ee;
+}
+
+.widget-notification .-notification.-warning {
+    /*background-color: rgb(245, 175, 24)*/
+    background-color: #fcf8e3;
+}
+
+.widget-notification .-notification.-warning:hover {
+    /*background-color: rgb(255, 215, 122)*/
+    background-color: #f7ecb5;
+}
+
+.widget-notification .-item.-warning.-hasitems {
+    /*background-color: rgb(255, 215, 122)*/
+    background-color: #f7ecb5;
+}
+
+.widget-notification .-notification.-error {
+    /*background-color: rgb(188, 22, 0)*/
+    background-color: #f2dede;
+}
+
+.widget-notification .-notification.-error:hover {
+    /*background-color: rgb(255, 83, 61)*/
+    background-color: #e4b9b9;
+}
+
+.widget-notification .-item.-error.-hasitems {
+    /*background-color: rgb(255, 83, 61)*/
+    background-color: #e4b9b9;
+}

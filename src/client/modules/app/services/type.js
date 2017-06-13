@@ -1,21 +1,11 @@
-/*global define */
-/*jslint white: true */
 define([
     'promise',
-    'kb/common/typeManager'
-], function (Promise, TypeManager) {
+    'kb_common/typeManager'
+], function (
+    Promise,
+    TypeManager
+) {
     'use strict';
-
-    function proxyMethod(obj, method, args) {
-        if (!obj[method]) {
-            throw {
-                name: 'UndefinedMethod',
-                message: 'The requested method "' + method + '" does not exist on this object',
-                suggestion: 'This is a developer problem, not your fault'
-            };
-        }
-        return obj[method].apply(obj, args);
-    }
 
     function factory(config) {
         var runtime = config.runtime,
@@ -25,33 +15,22 @@ define([
             });
 
         function start() {
-            //return new Promise(function (resolve) {
-//                require(['yaml!' + Plugin.plugin.path + '/data_types.yml'], function (typeDefs) {
-//                    typeManager = TypeManager.make({
-//                        runtime: config.runtime,
-//                        typeDefs: typeDefs
-//                    });
-//                    console.log('created type manager');
-//                    resolve();
-//                });
-            //    resolve();
-            //});
             return Promise.try(function () {
                 var problems = typeManager.checkViewers(),
                     errors = [];
                 if (problems.length > 0) {
                     problems.forEach(function (problem) {
                         switch (problem.severity) {
-                            case 'warning': 
-                                console.warn(problem.message, problem);
-                                break;
-                            case 'error':
-                                console.error(problem.message, problem);
-                                errors.push(problem.message);
-                                break;
-                            default:
-                                console.log(problem.message, problem);
-                                break;
+                        case 'warning':
+                            console.warn(problem.message, problem);
+                            break;
+                        case 'error':
+                            console.error(problem.message, problem);
+                            errors.push(problem.message);
+                            break;
+                        default:
+                            console.error(problem.message, problem);
+                            break;
                         }
                     });
                     if (errors.length > 0) {
@@ -61,11 +40,13 @@ define([
                 return true;
             });
         }
+
         function stop() {
             return Promise.try(function () {
                 return true;
             });
         }
+
         function pluginHandler(pluginConfig) {
             if (!pluginConfig) {
                 return;
@@ -84,16 +65,6 @@ define([
                         return Promise.try(function () {
                             typeManager.addViewer(type, viewerDef);
                         });
-                        
-//                        return new Promise(function (resolve, reject) {
-//                            try {
-//                                typeManager.addViewer(type, viewerDef);
-//                                resolve();
-//                            } catch (ex) {
-//                                console.log('ERROR in plugin handler for type service', ex);
-//                                reject(ex);
-//                            }
-//                        });
                     }));
                 }
             }));
@@ -136,9 +107,9 @@ define([
             },
             makeType: function () {
                 return proxyMethod(typeManager, 'makeType', arguments);
-            },            
+            },
             hasType: function () {
-                return proxyMethod(typeManager, 'hasType', arguments);                
+                return proxyMethod(typeManager, 'hasType', arguments);
             }
         };
     }

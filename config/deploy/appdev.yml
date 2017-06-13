@@ -1,0 +1,19 @@
+# Deploy-Time Config for Auth2 Local Development
+---
+deploy:
+  environment: appdev
+  hostname: appdev.kbase.us
+  icon: wrench
+  name: App Dev
+  services:
+    urlBase: https://appdev.kbase.us
+ui:
+  services:
+    analytics:
+      google:
+        hostname: appdev.kbase.us
+        code: UA-74533556-1
+  features:
+    auth:
+      selected: auth2
+

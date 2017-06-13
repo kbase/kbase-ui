@@ -7,9 +7,9 @@
  */
 define([
     'bluebird',
-    'kb/common/dom',
-    'kb/common/html',
-    'kb/widget/widgetSet'
+    'kb_common/dom',
+    'kb_common/html',
+    'kb_widget/widgetSet'
 ], function (Promise, DOM, html, WidgetSet) {
     'use strict';
     function widget(config) {
@@ -24,9 +24,9 @@ define([
             // the catalog home page is simple the catalog browser
             var div=html.tag('div');
             return div({
-                id: widgetSet.addWidget('catalog_admin_widget', 
+                id: widgetSet.addWidget('catalog_admin_widget',
                     {
-                        jqueryName: 'KBaseCatalogAdmin', 
+                        jqueryName: 'KBaseCatalogAdmin',
                         jquery_name:'KBaseCatalogAdmin'
                     })
             });

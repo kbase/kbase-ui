@@ -4,122 +4,122 @@
 <html ng-app="landing-pages" lang="en">
 
 <head>
-   <title>KBase Narrative Interface</title>
-   <link rel="icon" type="image/x-icon" href="assets/img/KBase_favicon.ico">
+    <title>KBase Narrative Interface</title>
+    <link rel="icon" type="image/x-icon" href="assets/img/KBase_favicon.ico">
 
-   <!-- external css -->
-   <link rel="stylesheet" type="text/css" href="../modules/bower_components/bootstrap/css/bootstrap.min.css" />
+    <!-- external css -->
+    <link rel="stylesheet" type="text/css" href="../modules/bower_components/bootstrap/css/bootstrap.min.css" />
 
-   <!-- jquery-ui-1.10.0.custom.css is needed for the landing page card layout, some old landing pages still use this style -->
-   <!-- <link rel="stylesheet" type="text/css" href="../modules/bower_components/jquery-ui/themes/ui-lightness/jquery-ui.min.css" /> -->
+    <!-- jquery-ui-1.10.0.custom.css is needed for the landing page card layout, some old landing pages still use this style -->
+    <!-- <link rel="stylesheet" type="text/css" href="../modules/bower_components/jquery-ui/themes/ui-lightness/jquery-ui.min.css" /> -->
 
-   <!-- DataTable 1.10.4 css dependencies. 2014-01-29 eap -->
-   <!-- <link rel="stylesheet" type="text/css" href="assets/css/dataTables.bootstrap.css" /> -->
-   <!-- NB: should not include dataTables css if using bootstrap integration -->
-   <!--   <link rel="stylesheet" type="text/css" href="ext/dataTables/1.10.4/extensions/ColReorder/css/dataTables.colReorder.min.css" />
+    <!-- DataTable 1.10.4 css dependencies. 2014-01-29 eap -->
+    <!-- <link rel="stylesheet" type="text/css" href="assets/css/dataTables.bootstrap.css" /> -->
+    <!-- NB: should not include dataTables css if using bootstrap integration -->
+    <!--   <link rel="stylesheet" type="text/css" href="ext/dataTables/1.10.4/extensions/ColReorder/css/dataTables.colReorder.min.css" />
    <link rel="stylesheet" type="text/css" href="ext/dataTables/1.10.4/extensions/ColVis/css/dataTables.colVis.min.css" />
-   <link rel="stylesheet" type="text/css" href="/ext/dataTables/1.10.4/css/jquery.dataTables.bootstrap.css" /> --> 
+   <link rel="stylesheet" type="text/css" href="/ext/dataTables/1.10.4/css/jquery.dataTables.bootstrap.css" /> -->
 
-   <link rel="stylesheet" type="text/css" href="../modules/bower_components/datatables-bootstrap3-plugin/css/datatables-bootstrap3.css" />
+    <link rel="stylesheet" type="text/css" href="../modules/bower_components/datatables-bootstrap3-plugin/css/datatables-bootstrap3.css" />
 
-<!--   <link rel="stylesheet" type="text/css" href="ext/dataTables/1.10.4/plugins/integration/font-awesome/dataTables.fontAwesome.css" /> -->
+    <!--   <link rel="stylesheet" type="text/css" href="ext/dataTables/1.10.4/plugins/integration/font-awesome/dataTables.fontAwesome.css" /> -->
 
-   <link rel="stylesheet" type="text/css" href="assets/css/ws-browser.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/ws-browser.css" />
 
-   <!-- <link rel="stylesheet" type="text/css" href="assets/js/acute-select/acute/acute.select/acute.select.css" /> -->
+    <!-- <link rel="stylesheet" type="text/css" href="assets/js/acute-select/acute/acute.select/acute.select.css" /> -->
 
-   <!-- <link rel="stylesheet" type="text/css" href="assets/css/ng-grid.css" /> -->
-   <link rel="stylesheet" type="text/css" href="assets/css/jquery.jsonview.css" />
-   <link rel="stylesheet" type="text/css" href="assets/css/prettify.css" />
-   <link rel="stylesheet" type="text/css" href="assets/css/sankeystyle.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="assets/css/ng-grid.css" /> -->
+    <link rel="stylesheet" type="text/css" href="assets/css/jquery.jsonview.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/sankeystyle.css" />
 
-   <!-- TODO: remove this dependency ... or update cytoscape so it and kbase can be on the same font-awesome -->
-<!--
+    <!-- TODO: remove this dependency ... or update cytoscape so it and kbase can be on the same font-awesome -->
+    <!--
    <link rel="stylesheet" href="/ext/cytoscape.js/2.0.4-jmc/font-awesome-4.0.3/css/font-awesome.css" />
    <link rel="stylesheet" href="/ext/cytoscape.js/2.0.4-jmc/jquery.cytoscape.js-panzoom.css" />
    <link rel="stylesheet" href="/ext/animate/animate.css" />
  -->
 
-   <link rel="stylesheet" href="../modules/bower_components/font-awesome/css/font-awesome.css" type="text/css" />
+    <link rel="stylesheet" href="../modules/bower_components/font-awesome/css/font-awesome.css" type="text/css" />
 
-   <!-- End external css -->
+    <!-- End external css -->
 
 
-   <!-- kbase css -->
-   <link rel="stylesheet" type="text/css" href="assets/css/kb-ui.css" />
-   <link rel="stylesheet" type="text/css" href="assets/css/kb-visualizations.css" />
-   <link rel="stylesheet" type="text/css" href="assets/css/analysis.css" />
-   <link rel="stylesheet" type="text/css" href="assets/css/search.css" />
-   <!-- <link rel="stylesheet" type="text/css" href="assets/js/ws-widgets/style.css" /> -->
-   <link rel="stylesheet" type="text/css" href="assets/css/nc-tour.css" />
-   <link rel="stylesheet" type="text/css" href="assets/css/gwas.css" />
-   <link rel="stylesheet" type="text/css" href="assets/css/kb-new-dataview.css" />
+    <!-- kbase css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/kb-ui.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/kb-visualizations.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/analysis.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/search.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="assets/js/ws-widgets/style.css" /> -->
+    <link rel="stylesheet" type="text/css" href="assets/css/nc-tour.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/gwas.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/kb-new-dataview.css" />
 
-   <link rel="stylesheet" type="text/css" href="assets/css/kbaseLandingPageCard.css" />
-   <link rel="stylesheet" type="text/css" href="assets/css/kbaseSEEDFunctions.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/kbaseLandingPageCard.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/kbaseSEEDFunctions.css" />
 
-   <!-- kbase enhancments or orverrides for bootstrap -->
-   <link rel="stylesheet" type="text/css" href="assets/css/kb-bootstrap.css" />
+    <!-- kbase enhancments or orverrides for bootstrap -->
+    <link rel="stylesheet" type="text/css" href="assets/css/kb-bootstrap.css" />
 
-   <!-- Navbar - in order to avoid unstyled flash for core components, load the css
+    <!-- Navbar - in order to avoid unstyled flash for core components, load the css
               here or in the primary kbase stylesheet (which is...) -->
 
-   <link rel="stylesheet" type="text/css" href="src/widgets/Navbar/style.css" />
+    <link rel="stylesheet" type="text/css" href="src/widgets/Navbar/style.css" />
 
-   <!-- End kbase css -->
+    <!-- End kbase css -->
 
 
-   <!-- External javascript packages -->
-   <script src="../modules/bower_components/underscore/underscore.js"></script>
+    <!-- External javascript packages -->
+    <script src="../modules/bower_components/underscore/underscore.js"></script>
 
-   <!-- Google Analytics -->
+    <!-- Google Analytics -->
 
-   <script>
-      (function (i, s, o, g, r, a, m) {
-         i['GoogleAnalyticsObject'] = r;
-         i[r] = i[r] || function () {
-            (i[r].q = i[r].q || []).push(arguments)
-         }, i[r].l = 1 * new Date();
-         a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0];
-         a.async = 1;
-         a.src = g;
-         m.parentNode.insertBefore(a, m)
-      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+    <script>
+        (function(i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function() {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-      ga('create', 'UA-48256002-1', 'kbase.us');
-      ga('send', 'pageview');
-   </script>
+        ga('create', 'UA-48256002-1', 'kbase.us');
+        ga('send', 'pageview');
+    </script>
 
-   <script src="../modules/bower_components/jquery/jquery.js"></script>
-   <!-- <script src="../ext/jquery-migrate/jquery-migrate-1.2.1.js"></script> -->
-   <!-- <script src="../modules/bower_components/jquery-ui/jquery-ui.js"></script> -->
-   <script src="../modules/bower_components/blockui/jquery.blockUI.js"></script>
-   <script src="../modules/bower_components/bootstrap/js/bootstrap.min.js"></script>
-   <script src="../modules/bower_components/d3/d3.js"></script>
+    <script src="../modules/bower_components/jquery/jquery.js"></script>
+    <!-- <script src="../ext/jquery-migrate/jquery-migrate-1.2.1.js"></script> -->
+    <!-- <script src="../modules/bower_components/jquery-ui/jquery-ui.js"></script> -->
+    <script src="../modules/bower_components/blockui/jquery.blockUI.js"></script>
+    <script src="../modules/bower_components/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../modules/bower_components/d3/d3.js"></script>
 
-   <!-- datatables -->
-   <!--
+    <!-- datatables -->
+    <!--
         <script src="../ext/dataTables/1.10.1/js/jquery.dataTables.min.js"></script>
         <script src="../ext/dataTables/1.10.1/js/dataTables.colReorder.min.js"></script>
         <script src="../ext/dataTables/1.10.1/js/dataTables.colVis.min.js"></script>
         <script src="assets/js/dataTables.bootstrap.js"></script>
 
         -->
-   <!-- DataTables 1.10.4 -->
-   <script src="../modules/bower_components/datatables/js/jquery.dataTables.js"></script>
-<!--   <script src="ext/dataTables/1.10.4/extensions/ColReorder/js/dataTables.colReorder.min.js"></script>
+    <!-- DataTables 1.10.4 -->
+    <script src="../modules/bower_components/datatables/js/jquery.dataTables.js"></script>
+    <!--   <script src="ext/dataTables/1.10.4/extensions/ColReorder/js/dataTables.colReorder.min.js"></script>
    <script src="ext/dataTables/1.10.4/extensions/ColVis/js/dataTables.colVis.min.js"></script>
--->   
-   <script src="../modules/bower_components/datatables-bootstrap3-plugin/js/datatables-bootstrap3.js"></script>
+-->
+    <script src="../modules/bower_components/datatables-bootstrap3-plugin/js/datatables-bootstrap3.js"></script>
 
-   <!-- <script src="assets/js/FixedHeader.min.js"></script> -->
+    <!-- <script src="assets/js/FixedHeader.min.js"></script> -->
 
 
-   <script src="assets/js/jquery.jsonview.js"></script>
-   <script src="assets/js/nc-tour.js"></script>
-   <script src="assets/js/jquery.cookie.min.js"></script>
-<!--
+    <script src="assets/js/jquery.jsonview.js"></script>
+    <script src="assets/js/nc-tour.js"></script>
+    <script src="assets/js/jquery.cookie.min.js"></script>
+    <!--
    <script src="assets/js/viz/raphael-min.js"></script>
 
 
@@ -127,10 +127,10 @@
    <script src="ext/postal/postal-config.js"></script> -->
 
 
-   <!-- angular itself -->
-   <!-- order of angular file upload files is required -->
+    <!-- angular itself -->
+    <!-- order of angular file upload files is required -->
 
-   <!-- new causes problems with search. try again later
+    <!-- new causes problems with search. try again later
    <script src="/ext/angularjs/angular-1.3.11/angular.min.js"></script>
    <script src="/ext/angularjs/angular-1.3.11/angular-resource.min.js"></script>
    <script src="/ext/angularjs/angular-1.3.11/angular-animate.min.js"></script>
@@ -143,46 +143,46 @@
    -->
 
 
-   <script src="js/angular-1.2.14/angular.js"></script>
-   <script src="js/angular-1.2.14/angular-resource.min.js"></script>
-   <script src="js/angular-1.2.14/angular-animate.min.js"></script>
-   <!-- angular extensions -->
-<!--   <script src="assets/js/file-upload-1.6.12/angular-file-upload-shim.min.js"></script>
+    <script src="js/angular-1.2.14/angular.js"></script>
+    <script src="js/angular-1.2.14/angular-resource.min.js"></script>
+    <script src="js/angular-1.2.14/angular-animate.min.js"></script>
+    <!-- angular extensions -->
+    <!--   <script src="assets/js/file-upload-1.6.12/angular-file-upload-shim.min.js"></script>
    <script src="assets/js/file-upload-1.6.12/angular-file-upload.min.js"></script> -->
-   <script src="js/ui-router-0.2.10/angular-ui-router.min.js"></script>
-   <script src="js/ui-bootstrap-0.12.0/ui-bootstrap-tpls-0.12.0.min.js"></script>
+    <script src="js/ui-router-0.2.10/angular-ui-router.min.js"></script>
+    <script src="js/ui-bootstrap-0.12.0/ui-bootstrap-tpls-0.12.0.min.js"></script>
 
 
 
-   <!-- KBase client library javascript -->
-<!--   <script src="assets/js/kbclient/wikiScraper.js"></script> -->
-   <script src="js/kbase-client-api.js"></script>
-   <!-- The following are supserseded by /ext/js/kbase-clients/kbase-client-api[.min].js -->
-   <!-- <script src="assets/js/kbclient/kbase.js"></script>-->
-   <!--<script src="assets/js/kbclient/workspaceDeluxe-0.2.1.js"></script>-->
-   <!-- <script src="assets/js/kbclient/userandjobstate.js"></script>        -->
-   <!--<script src="assets/js/kbclient/kbaseTrees.js"></script>-->
-   <!--<script src="assets/js/kbclient/KBaseExpressionClient.js"></script>-->
-   <!--<script src="assets/js/kbclient/shock.js"></script> -->
-   <!--<script src="assets/js/kbclient/user_profile_Client.js"></script>-->
-<!--   <script src="/ext/kbase-clients/KBaseFeatureValues.js"></script>
+    <!-- KBase client library javascript -->
+    <!--   <script src="assets/js/kbclient/wikiScraper.js"></script> -->
+    <script src="js/kbase-client-api.js"></script>
+    <!-- The following are supserseded by /ext/js/kbase-clients/kbase-client-api[.min].js -->
+    <!-- <script src="assets/js/kbclient/kbase.js"></script>-->
+    <!--<script src="assets/js/kbclient/workspaceDeluxe-0.2.1.js"></script>-->
+    <!-- <script src="assets/js/kbclient/userandjobstate.js"></script>        -->
+    <!--<script src="assets/js/kbclient/kbaseTrees.js"></script>-->
+    <!--<script src="assets/js/kbclient/KBaseExpressionClient.js"></script>-->
+    <!--<script src="assets/js/kbclient/shock.js"></script> -->
+    <!--<script src="assets/js/kbclient/user_profile_Client.js"></script>-->
+    <!--   <script src="/ext/kbase-clients/KBaseFeatureValues.js"></script>
 
    <script src="assets/js/widgetMaxWidthCorrection.js"></script>
 -->
-   <!-- KBase support libs -->
-   <script src="src/kbaseSessionSync.js"></script>
+    <!-- KBase support libs -->
+    <script src="src/kbaseSessionSync.js"></script>
 
-   <!-- widgets -->
-   <script src="src/kbwidget.js"></script>
-   <script src="src/widgets/kbaseAuthenticatedWidget.js"></script>
-   <script src="src/widgets/kbasePanel.js"></script>
-   <script src="src/widgets/kbaseModal.js"></script>
+    <!-- widgets -->
+    <script src="src/kbwidget.js"></script>
+    <script src="src/widgets/kbaseAuthenticatedWidget.js"></script>
+    <script src="src/widgets/kbasePanel.js"></script>
+    <script src="src/widgets/kbaseModal.js"></script>
 
-   <script src="assets/js/kbasePromptNew.js"></script>
-<!--    <script src="assets/js/ws-widgets/tabs.js"></script> -->
-   <script src="src/widgets/kbaseLoginFuncSite.js"></script>
+    <script src="assets/js/kbasePromptNew.js"></script>
+    <!--    <script src="assets/js/ws-widgets/tabs.js"></script> -->
+    <script src="src/widgets/kbaseLoginFuncSite.js"></script>
 
-<!--
+    <!--
    <script src="src/widgets/models/kbaseModelMeta.js"></script>
    <script src="src/widgets/models/kbaseModelTabs.js"></script>
    <script src="src/widgets/models/kbaseModelCore.js"></script>
@@ -202,27 +202,28 @@
 
    <script src="src/widgets/jgi/kbaseJgiDataImportView.js"></script>
 -->
-   <!-- narrative related widgets/sources -->
-   <script src="src/widgets/narrativemanager/kbaseNarrativeManager.js"></script>
-   <script src="src/widgets/narrativemanager/NarrativeManager.js"></script>
-   <script src="src/widgets/narrativemanager/NarrativeMethodStore.js"></script>
-   <script src="src/widgets/narrativemanager/kbaseNarrativeStoreView.js"></script>
+    <!-- narrative related widgets/sources -->
+    <script src="src/widgets/narrativemanager/kbaseNarrativeManager.js"></script>
+    <script src="src/widgets/narrativemanager/NarrativeManager.js"></script>
+    <script src="src/widgets/narrativemanager/NarrativeMethodStore.js"></script>
+    <script src="src/widgets/narrativemanager/kbaseNarrativeStoreView.js"></script>
 
 
-   <!-- ws obj reference related widgets -->
-   <script src="../modules/bower_components/d3-plugins-sankey/sankey.js"></script>
-   <!-- this is a d3 plugin -->
+    <!-- ws obj reference related widgets -->
+    <script src="../modules/bower_components/d3-plugins-sankey/sankey.js"></script>
+    <!-- this is a d3 plugin -->
 
-<!--   <script src="../src/widgets/workspaces/kbaseWSButtons.js"></script>
+    <!--   <script src="../src/widgets/workspaces/kbaseWSButtons.js"></script>
    <script src="../src/widgets/workspaces/kbaseWSReferenceList.js"></script>
    <script src="../src/widgets/objgraphs/kbaseWSObjGraphView.js"></script>
    <script src="../src/widgets/objgraphs/kbaseWSObjGraphCenteredView.js"></script>
    <script src="../src/widgets/social/kbaseWSObjRefUsers.js"></script>
    <script src="../src/widgets/social/kbaseNarrativesUsingData.js"></script>
--->   <!-- end ws obj reference related widgets -->
+-->
+    <!-- end ws obj reference related widgets -->
 
-   <!-- Genome widgets -->
-<!--   <script src="../src/widgets/kbaseLandingPageCard.js"></script>
+    <!-- Genome widgets -->
+    <!--   <script src="../src/widgets/kbaseLandingPageCard.js"></script>
    <script src="../src/widgets/genomes/kbaseGenomePage.js"></script>
    <script src="../src/widgets/genomes/kbaseGenePage.js"></script>
    <script src="../src/widgets/genomes/kbaseGenomeWideOverview.js"></script>
@@ -245,11 +246,11 @@
    <script src="../src/widgets/genomes/kbaseFunctSeqGenomeComparison.js"></script>
 -->
 
-   <!-- protein structure KB widget and associated needs here -->
-   <!-- not sure if kbaseTable.js is automatically included already-->
-<!--   <script src='../src/widgets/kbaseTable.js'></script> -->
-   <!-- protein structure service client - maybe this should be moved upwards someplace? -->
-<!--   <script src="assets/js/kbclient/KBaseProteinStructureClient.js"></script>
+    <!-- protein structure KB widget and associated needs here -->
+    <!-- not sure if kbaseTable.js is automatically included already-->
+    <!--   <script src='../src/widgets/kbaseTable.js'></script> -->
+    <!-- protein structure service client - maybe this should be moved upwards someplace? -->
+    <!--   <script src="assets/js/kbclient/KBaseProteinStructureClient.js"></script>
    <script src="../src/widgets/genomes/kbaseGeneStructureMatches.js"></script>
 
 
@@ -264,23 +265,25 @@
    <script src="../src/widgets/genomes/kbaseSEEDFunctions.js"></script>
    <script src="../src/widgets/genomes/kbaseGenomeGeneTable.js"></script>
    <script src="../src/widgets/genomes/kbaseGeneExprLinePlot.js"></script>
--->   <!-- End Genome widgets -->
+-->
+    <!-- End Genome widgets -->
 
-   <!-- Taxonomy widgets -->
-<!--   <script src="../src/widgets/taxa/kbaseTaxonOverview.js"></script> -->
-   <!-- end taxonomy widgets -->
+    <!-- Taxonomy widgets -->
+    <!--   <script src="../src/widgets/taxa/kbaseTaxonOverview.js"></script> -->
+    <!-- end taxonomy widgets -->
 
-   <!-- Regulation widgets -->
-<!--   <script src="../src/widgets/regulation/kbasePromConstraint.js"></script>
+    <!-- Regulation widgets -->
+    <!--   <script src="../src/widgets/regulation/kbasePromConstraint.js"></script>
    <script src="../src/widgets/regulation/kbaseRegulome.js"></script>
--->   <!-- End Regulation widgets -->
+-->
+    <!-- End Regulation widgets -->
 
-   <!-- Expression widgets -->
-<!--   <script src="../src/widgets/expression/kbaseExpressionSeries.js"></script> -->
-   <!-- End Expression widgets -->
+    <!-- Expression widgets -->
+    <!--   <script src="../src/widgets/expression/kbaseExpressionSeries.js"></script> -->
+    <!-- End Expression widgets -->
 
-   <!-- Meme widgets -->
-<!--   <script src="../src/widgets/meme/logo.js"></script>
+    <!-- Meme widgets -->
+    <!--   <script src="../src/widgets/meme/logo.js"></script>
    <script src="../src/widgets/meme/kbaseMemeTable.js"></script>
    <script src="../src/widgets/meme/kbaseMemeRunResultCard.js"></script>
    <script src="../src/widgets/meme/kbaseMemeMotifCard.js"></script>
@@ -292,43 +295,49 @@
    <script src="../src/widgets/meme/kbaseMastRunResultCard.js"></script>
    <script src="../src/widgets/meme/kbaseMastHitsCard.js"></script>
    <script src="../src/widgets/meme/kbaseMastRunParametersCard.js"></script>
--->   <!-- End Meme widgets -->
+-->
+    <!-- End Meme widgets -->
 
-   <!-- Cmonkey widgets -->
-<!--   <script src="../src/widgets/cmonkey/kbaseCmonkeyRunResultCard.js"></script>
+    <!-- Cmonkey widgets -->
+    <!--   <script src="../src/widgets/cmonkey/kbaseCmonkeyRunResultCard.js"></script>
    <script src="../src/widgets/cmonkey/kbaseCmonkeyClusterCard.js"></script>
    <script src="../src/widgets/cmonkey/kbaseCmonkeyMotifCard.js"></script>
--->   <!-- End Cmonkey widgets -->
+-->
+    <!-- End Cmonkey widgets -->
 
-   <!-- Inferelator widgets -->
-<!--   <script src="../src/widgets/inferelator/kbaseInferelatorRunResultCard.js"></script>
+    <!-- Inferelator widgets -->
+    <!--   <script src="../src/widgets/inferelator/kbaseInferelatorRunResultCard.js"></script>
    <script src="../src/widgets/inferelator/kbaseInferelatorHitsCard.js"></script>
--->   <!-- End Inferelator widgets -->
+-->
+    <!-- End Inferelator widgets -->
 
-   <!-- Regprecise widgets -->
-<!--   <script src="../src/widgets/regprecise/kbaseRegulomeCard.js"></script>
+    <!-- Regprecise widgets -->
+    <!--   <script src="../src/widgets/regprecise/kbaseRegulomeCard.js"></script>
    <script src="../src/widgets/regprecise/kbaseRegulonCard.js"></script>
--->   <!-- End Regprecise widgets -->
+-->
+    <!-- End Regprecise widgets -->
 
-   <!-- MAK widgets -->
-<!--   <script src="../src/widgets/mak/kbaseMAKResultCard.js"></script>
+    <!-- MAK widgets -->
+    <!--   <script src="../src/widgets/mak/kbaseMAKResultCard.js"></script>
    <script src="../src/widgets/mak/kbaseBarChartCard.js"></script>
    <script src="../src/widgets/mak/kbaseMAKTilingCard.js"></script>
    <script src="../src/widgets/mak/kbaseMAKBiclusterCard.js"></script>
    <script src="../src/widgets/mak/kbaseHeatmapCard.js"></script>
    <script src="../src/widgets/mak/kbaseLineChartCard.js"></script>
--->   <!-- End MAK widgets -->
+-->
+    <!-- End MAK widgets -->
 
-   <!-- Bambi widgets -->
-<!--   <script src="../src/widgets/bambi/logo.js"></script>
+    <!-- Bambi widgets -->
+    <!--   <script src="../src/widgets/bambi/logo.js"></script>
    <script src="../src/widgets/bambi/kbaseBambiRunResultCard.js"></script>
    <script src="../src/widgets/bambi/kbaseBambiMotifCard.js"></script>
    <script src="../src/widgets/bambi/kbaseBambiRawOutputCard.js"></script>
    <script src="../src/widgets/bambi/kbaseBambiRunParametersCard.js"></script>
--->   <!-- End Bambi widgets -->
+-->
+    <!-- End Bambi widgets -->
 
-   <!-- GWAS widgets -->
-<!--   <script src='../src/widgets/kbaseAuthenticatedWidget.js'></script>
+    <!-- GWAS widgets -->
+    <!--   <script src='../src/widgets/kbaseAuthenticatedWidget.js'></script>
    <script src="//maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
    <script src='/ext/gmaps/gmap3.js'></script>
    <script src="../src/widgets/gwas/kbaseGWASPop.js"></script>
@@ -341,28 +350,30 @@
    <script src="../src/widgets/gwas/kbaseGWASGeneListTable.js"></script>
    <script src="../src/widgets/gwas/kbaseGWASTopVariations.js"></script>
    <script src="../src/widgets/gwas/kbaseGWASTopVariationsTable.js"></script>
--->   <!-- End GWAS widgets -->
+-->
+    <!-- End GWAS widgets -->
 
-   <!-- Social widgets -->
-   <!-- these are all loaded via requirejs -->
+    <!-- Social widgets -->
+    <!-- these are all loaded via requirejs -->
 
-   <!-- End Social widgets -->
+    <!-- End Social widgets -->
 
 
-   <!-- KBase new workspace client library javascript -->
-   <!-- Syntax Highlighter code -->
-<!--   <script src="assets/js/prettify.js"></script> -->
+    <!-- KBase new workspace client library javascript -->
+    <!-- Syntax Highlighter code -->
+    <!--   <script src="assets/js/prettify.js"></script> -->
 
-   <!-- Spec widgets -->
-<!--   <script src="../src/widgets/spec/kbaseSpecCommon.js"></script>
+    <!-- Spec widgets -->
+    <!--   <script src="../src/widgets/spec/kbaseSpecCommon.js"></script>
    <script src="../src/widgets/spec/kbaseSpecStorageCard.js"></script>
    <script src="../src/widgets/spec/kbaseSpecModuleCard.js"></script>
    <script src="../src/widgets/spec/kbaseSpecTypeCard.js"></script>
    <script src="../src/widgets/spec/kbaseSpecFunctionCard.js"></script>
    <script src="../src/widgets/spec/kbaseKidlWebEditor.js"></script>
--->   <!-- End Spec widgets -->
+-->
+    <!-- End Spec widgets -->
 
-<!--   <script src="../src/widgets/trees/kbaseTree.js"></script>
+    <!--   <script src="../src/widgets/trees/kbaseTree.js"></script>
    <script src="../src/widgets/trees/kbaseMSA.js"></script>
    <script src="lib/trees/canvastext.js"></script>
    <script src="lib/trees/excanvas.js"></script>
@@ -370,27 +381,29 @@
    <script src="lib/trees/knhx.js"></script>
    <script src="lib/trees/easytree.js"></script>
 -->
-   <!-- Network widgets and dependencies -->
-<!--   <script src="/ext/cytoscape.js/2.0.4-jmc/arbor.js"></script>
+    <!-- Network widgets and dependencies -->
+    <!--   <script src="/ext/cytoscape.js/2.0.4-jmc/arbor.js"></script>
    <script src="/ext/cytoscape.js/2.0.4-jmc/cytoscape.js"></script>
    <script src="/ext/cytoscape.js/2.0.4-jmc/jquery.cytoscape.js-panzoom.js"></script>
    <script src="/ext/cytoscape.js/2.0.4-jmc/layout.arbor.js"></script>
    <script src="/src/widgets/networks/kbasePPICard.js"></script>
    <script src="/src/widgets/networks/kbaseNetworkCard.js"></script>
--->   <!-- End Network widgets -->
+-->
+    <!-- End Network widgets -->
 
 
-<!--   <script src="../src/widgets/json/kbaseJsonView.js"></script>
+    <!--   <script src="../src/widgets/json/kbaseJsonView.js"></script>
    <script src="../src/widgets/contigset/kbaseContigSetView.js"></script>
    <script src="../src/widgets/protcmp/kbaseGenomeComparison.js"></script>
    <script src="../src/widgets/protcmp/kbaseGenomeComparisonViewer.js"></script>
 
    <script src="../src/widgets/dataview/kbaseDataViewGenericViz.js"></script>
    <script src="../src/widgets/dataview/kbaseDownloadPanel.js"></script>
--->   <!-- app -->
+-->
+    <!-- app -->
 
-   <!-- REVISED MODELING WIDGETS -->
-<!--   <script src="../src/widgets/modeling/KBModeling.js"></script>
+    <!-- REVISED MODELING WIDGETS -->
+    <!--   <script src="../src/widgets/modeling/KBModeling.js"></script>
    <script src="../src/widgets/modeling/KBaseBiochem.Media.js"></script>
    <script src="../src/widgets/modeling/KBaseFBA.FBA.js"></script>
    <script src="../src/widgets/modeling/KBaseFBA.FBAModel.js"></script>
@@ -404,11 +417,12 @@
    <script src="../src/widgets/modeling/msPathway.js"></script>
    <script src="../src/widgets/modeling/kbaseTabs.js"></script>
    <script src="../src/widgets/modeling/kbaseTabTable.js"></script>
--->   <!-- END REVISED MODELING WIDGETS -->
+-->
+    <!-- END REVISED MODELING WIDGETS -->
 
 
-   <!-- Assembly widgets -->
-<!--   <script src="../src/widgets/assembly/kbaseSingleObjectBasicWidget.js"></script>
+    <!-- Assembly widgets -->
+    <!--   <script src="../src/widgets/assembly/kbaseSingleObjectBasicWidget.js"></script>
    <script src="../src/widgets/assembly/kbaseAssemblyInput.js"></script>
    <script src="../src/widgets/assembly/kbasePairedEndLibrary.js"></script>
    <script src="../src/widgets/assembly/kbaseReferenceAssembly.js"></script>
@@ -416,13 +430,13 @@
    <script src="../src/widgets/assembly/kbaseFilePairedEndLibrary.js"></script>
 -->
 
-   <!-- END Assembly widgets -->
+    <!-- END Assembly widgets -->
 
 
 
 
-   <!-- Communities Widgets and dependencies -->
-<!--   <script src="../src/widgets/kbaseTabs.js"></script>
+    <!-- Communities Widgets and dependencies -->
+    <!--   <script src="../src/widgets/kbaseTabs.js"></script>
    <script src="../src/widgets/communities/jquery.svg.js"></script>
    <script src="../src/widgets/communities/rgbcolor.js"></script>
    <script src="../src/widgets/communities/kbStandaloneGraph.js"></script>
@@ -439,113 +453,115 @@
    <script src="../src/widgets/communities/kbaseMetagenomeView.js"></script>
    <script src="../src/widgets/communities/kbaseRankAbundancePlot.js"></script>
 -->
-   <!-- End Communities Widgets -->
-   <!-- Others from Narrative -->
-<!--   <script src="../src/widgets/from_narrative/kbaseDomainAnnotation.js"></script>
+    <!-- End Communities Widgets -->
+    <!-- Others from Narrative -->
+    <!--   <script src="../src/widgets/from_narrative/kbaseDomainAnnotation.js"></script>
    <script src="../src/widgets/from_narrative/kbaseAssemblyView.js"></script>
    <script src="../src/widgets/from_narrative/kbaseAnnotationSetTable.js"></script>
--->   <!-- End Communities Widgets -->
+-->
+    <!-- End Communities Widgets -->
 
-   <!-- KBaseFeatureValues related widgets -->
-<!--   <script src="../src/widgets/featurevalues/kbaseExpressionMatrix.js"></script>
+    <!-- KBaseFeatureValues related widgets -->
+    <!--   <script src="../src/widgets/featurevalues/kbaseExpressionMatrix.js"></script>
    <script src="../src/widgets/featurevalues/kbaseFeatureSet.js"></script>
    <script src="../src/widgets/featurevalues/kbaseExpressionFeatureClusters.js"></script>
    <script src="../src/widgets/featurevalues/kbaseExpressionEstimateKTable.js"></script>
--->   <!-- End of KBaseFeatureValues related widgets -->
+-->
+    <!-- End of KBaseFeatureValues related widgets -->
 
 
-   <!-- kbase angular -->
+    <!-- kbase angular -->
 
-   <script src="js/app.js"></script>
-   <script src="js/search.js"></script>
-   <script src="js/homology.js"></script>
-   <script src="js/directives/landingpages.js"></script>
-   <script src="js/directives/cards.js"></script>
-   <!-- <script src="js/directives/fav.js"></script> -->
-   <script src="js/directives/ws.js"></script>
-   <script src="js/directives/trees.js"></script>
-   <script src="js/directives/narrative.js"></script>
-   <script src="js/directives/autofillFix.js"></script>
-   <script src="js/directives/modeling.js"></script>
-   <script src="js/directives/communities.js"></script>
-   <script src="js/directives/social.js"></script>
-   <script src="js/directives/dashboard.js"></script>
-   <script src="js/directives/dataview.js"></script>
-   <script src="js/dataview.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/homology.js"></script>
+    <script src="js/directives/landingpages.js"></script>
+    <script src="js/directives/cards.js"></script>
+    <!-- <script src="js/directives/fav.js"></script> -->
+    <script src="js/directives/ws.js"></script>
+    <script src="js/directives/trees.js"></script>
+    <script src="js/directives/narrative.js"></script>
+    <script src="js/directives/autofillFix.js"></script>
+    <script src="js/directives/modeling.js"></script>
+    <script src="js/directives/communities.js"></script>
+    <script src="js/directives/social.js"></script>
+    <!--<script src="js/directives/dashboard.js"></script>-->
+    <script src="js/directives/dataview.js"></script>
+    <script src="js/dataview.js"></script>
 
-   <script src="js/controllers.js"></script>
-   <!-- <script src="js/services/favorites.js"></script>-->
-   <script src="js/services/workspaceUI.js"></script>
+    <script src="js/controllers.js"></script>
+    <!-- <script src="js/services/favorites.js"></script>-->
+    <script src="js/services/workspaceUI.js"></script>
 
-   <!-- <script src="assets/js/acute-select/acute/acute.select/acute.select.js"></script>         -->
-   <script src="js/services/narrativeUI.js"></script>
-   <script src="js/kbapi.js"></script>
-   <script src="assets/js/header.js"></script>
+    <!-- <script src="assets/js/acute-select/acute/acute.select/acute.select.js"></script>         -->
+    <script src="js/services/narrativeUI.js"></script>
+    <script src="js/kbapi.js"></script>
+    <script src="assets/js/header.js"></script>
 
-   <script src="assets/js/q.min.js"></script>
-<!--   <script src="../modules/bower_components/q/q.js"></script> -->
-   <script src="../modules/bower_components/postal/postal.js"></script>
+    <script src="assets/js/q.min.js"></script>
+    <!--   <script src="../modules/bower_components/q/q.js"></script> -->
+    <script src="../modules/bower_components/postal/postal.js"></script>
 
-   <!-- RequireJS should go after all other javascript imports -->
-   <script src="../modules/bower_components/requirejs/require.js"></script>
-   <script src="js/require-config.js"></script>
+    <!-- RequireJS should go after all other javascript imports -->
+    <script src="../modules/bower_components/requirejs/require.js"></script>
+    <script src="js/require-config.js"></script>
 
-   <!-- end application -->
+    <!-- end application -->
 
 </head>
 
 <body>
-   <div id="wrap">
-      <div id="content">
-         <!-- SB only one on page, so we can use the id here -->
-         <div class="navbar-kbase navbar-fixed-top" id="kbase-navbar">
-            <div class="container-fluid">
-               <!-- main menu -->
-               <div class="navbar-header navbar-menu">
-                  <div style="display:inline-block">
-                     <button id="kb-nav-menu" class="btn btn-default navbar-btn kb-nav-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <div id="wrap">
+        <div id="content">
+            <!-- SB only one on page, so we can use the id here -->
+            <div class="navbar-kbase navbar-fixed-top" id="kbase-navbar">
+                <div class="container-fluid">
+                    <!-- main menu -->
+                    <div class="navbar-header navbar-menu">
+                        <div style="display:inline-block">
+                            <button id="kb-nav-menu" class="btn btn-default navbar-btn kb-nav-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-navicon"></span>
                      </button>
-                     <ul class="dropdown-menu" role="menu" aria-labelledby="kb-nav-menu">
-                        <li><a href="/#/search/?q=*">Search Data</a>
-                        </li>
-                        <li><a href="/#/narrativemanager/start">Narrative</a>
-                        </li>
-                        <li role="presentation" class="divider"></li>
-                        <li><a target="_blank" href="https://kbase.us/about">About</a>
-                        </li>
-                        <li><a target="_blank" href="https://kbase.us/narrative-guide">Narrative Tutorial</a>
-                        </li>
-                        <li><a target="_blank" href="https://kbase.us/contact-us">Contact Us</a>
-                        </li>
-                     </ul>
-                  </div>
-                  <a href="http://kbase.us">
-                     <img id="logo" src="assets/navbar/images/kbase_logo.png" width="46">
-                  </a>
-               </div>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="kb-nav-menu">
+                                <li><a href="/#/search/?q=*">Search Data</a>
+                                </li>
+                                <li><a href="/#/narrativemanager/start">Narrative</a>
+                                </li>
+                                <li role="presentation" class="divider"></li>
+                                <li><a target="_blank" href="https://kbase.us/about">About</a>
+                                </li>
+                                <li><a target="_blank" href="https://kbase.us/narrative-guide">Narrative Tutorial</a>
+                                </li>
+                                <li><a target="_blank" href="https://kbase.us/contact-us">Contact Us</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="http://kbase.us">
+                            <img id="logo" src="assets/navbar/images/kbase_logo.png" width="46">
+                        </a>
+                    </div>
 
-               <!-- title area -->
-               <div class="navbar-text navbar-title">
-                  <!-- views and widgets can add title content here -->
-                  <span class="title"></span>
-               </div>
+                    <!-- title area -->
+                    <div class="navbar-text navbar-title">
+                        <!-- views and widgets can add title content here -->
+                        <span class="title"></span>
+                    </div>
 
-               <!-- button area -->
-               <div class="navbar-right">
+                    <!-- button area -->
+                    <div class="navbar-right">
 
-                  <!-- views and widets can place buttons here, see kbaseNavbar.js -->
-                  <span class="navbar-buttons">
+                        <!-- views and widets can place buttons here, see kbaseNavbar.js -->
+                        <span class="navbar-buttons">
                             </span>
-                  <span id="signin-button"></span>
-               </div>
+                        <span id="signin-button"></span>
+                    </div>
+                </div>
             </div>
-         </div>
-         <div class="container-fluid">
-            <div id="app" ui-view></div>
-         </div>
-      </div>
-   </div>
+            <div class="container-fluid">
+                <div id="app" ui-view></div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

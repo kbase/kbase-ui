@@ -1,0 +1,16 @@
+## Global Build Config
+---
+targets:
+    ui: dev
+    deploy: dev-auth2
+build:
+    dist: false
+    temp: ../temp
+bower:
+    offline: false
+debug: false
+server:
+    port: 8080
+features:
+    auth:
+        selected: auth2

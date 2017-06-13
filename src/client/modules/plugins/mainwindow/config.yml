@@ -10,93 +10,69 @@ source:
     ## sources are relative to build/plugins/PACKAGE/source/javascript
     ## NB: need to quote file names, otherwise 
     modules:
-        -
-            module: kb_widget_mainWindow
-            file: mainWindow
-            css: true
-        -
-            module: kb_widget_hamburgerMenu
-            file: hamburgerMenu
-        -
-            module: kb_widget_title
-            file: titleWidget
-            css: true
-        -
-            module: kb_widget_buttonbar
-            file: buttonbarWidget
-            css: true
-        -
-            module: kb_widget_logo
-            file: logoWidget
-            css: true
-        -
-            module: kb_widget_menu
-            file: menuWidget
-            css: true
-        -
-            module: kb_widget_login
-            file: loginWidget
-            css: true
-        -
-            module: kb_widget_body
-            file: bodyWidget
-            css: false
-        -
-            module: kb_widget_notification
-            file: notificationWidget
-            css: false
-        -
-            module: kb_widget_error
-            file: widgets/error
-            css: false
     styles:
-        -
-            file: navbar
 install:
     # NEW - a plugin may now specify a boot widget. This widget will be
     # installed on the window root upon app startup (boot)
     widgets:
         - 
-            module: kb_widget_mainWindow
+            module: mainWindow
+            css: true
             id: root
             type: factory
         -
-            module: kb_widget_hamburgerMenu
+            module: hamburgerMenu
             id: hamburgerMenu
             type: factory
         -
-            module: kb_widget_title
+            module: titleWidget
+            css: true
             id: title
             type: factory
         -
-            module: kb_widget_buttonbar
+            module: buttonbarWidget
+            css: true
             id: buttonbar
             type: factory
         -
-            module: kb_widget_logo
+            module: logoWidget
+            css: true
             id: logo
             type: factory
         -
-            module: kb_widget_menu
+            module: menuWidget
+            css: true
             id: menu
             type: factory
         -
-            module: kb_widget_login
-            id: login
+            module: deploymentWidget
+            css: false
+            id: deployment
             type: factory
         -
-            module: kb_widget_body
+            module: loginWidget
+            css: true
+            id: loginx
+            type: factory
+        -
+            module: bodyWidget
             id: body
             type: factory
         -
-            module: kb_widget_notification
+            module: notificationWidget
+            css: true
             id: notification
             type: factory
         -
-            module: kb_widget_error
+            module: widgets/error
             id: error
             type: factory
         -
-            module: plugins/mainwindow/modules/widgets/alert
+            module: widgets/alert
             id: kb_mainWindow_alert
             type: factory
+        -
+            module: sidebarNav
+            id: kb_mainWindow_sidebarNav
+            type: factory
+            css: true

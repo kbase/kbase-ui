@@ -2,35 +2,42 @@
 ---
 package:
     author: Erik Pearson
-    name: narrative_manager
+    name: narrativemanager
     description: The narrative manager
-    date: August 8, 2015
-    version: 0.0.2
+    date: January 26, 2017
+    version: 0.0.3
 source:
     modules:
         #-
         #    module: kb_handler_narrativeManager
         #    file: handler
-        -
-            module: kb_narrativeManager_narrativeManagerService
-            file: narrativeManager
-        -
-            module: kb_narrativeManager_startPanel
-            file: startPanel
-        -
-            module: kb_narrativeManager_createNewPanel
-            file: createNewPanel
-            
+        #-
+        #    module: kb_narrativeManager_narrativeManagerService
+        #    file: narrativeManager
+        #-
+        #    module: kb_narrativeManager_startPanel
+        #    file: startPanel
+        #-
+        ##    module: kb_narrativeManager_createNewPanel
+        #    file: createNewPanel
+
 install:
     widgets:
         -
-            module: kb_narrativeManager_startPanel
+            module: ./startPanel
             id: narrativeManager_start
             type: factory
         -
-            module: kb_narrativeManager_createNewPanel
+            module: ./createNewPanel
             id: narrativeManager_createNew
             type: factory
+    menu:
+        -
+            name: narrative
+            definition:
+                path: narrativemanager/start
+                label: Narrative Interface
+                icon: file
     routes:
         -
             path: [narrativemanager, start]
@@ -47,7 +54,7 @@ install:
             queryParams:
                 app: {}
                 method: {}
+                markdown: {}
                 copydata: {}
-                appparam: {} 
+                appparam: {}
             widget: narrativeManager_createNew
-        

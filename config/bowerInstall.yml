@@ -3,6 +3,9 @@
 # format, and some bower repos are complete source hairballs. We reduce the code
 # side significantly, and eliminate the possibility of serving up hairball files
 # from the kbase-ui service.
+# TODO: I've learned more about bower conventions since this time -- the main
+# property is pretty well supported. Not universally, but better. We only really
+# need to list the packages here and create config for exceptions
 bowerFiles:
     -
         name: bluebird
@@ -11,9 +14,34 @@ bowerFiles:
             - bluebird.js
         bowerComponent: true
     -
+        name: buffer
+        src:
+            - buffer.js
+        bowerComponent: true
+    # -
+    #     name: esprima
+    #     src: 
+    #         - esprima.js
+    #     bowerComponent: true        
+    -
         name: knockout
         cwd: dist
         src: knockout.js
+        bowerComponent: true
+    -
+        name: knockout-arraytransforms
+        cwd: dist
+        src: knockout-arraytransforms.js
+        bowerComponent: true
+    -
+        name: knockout-validation
+        cwd: dist
+        src: knockout.validation.js
+        bowerComponent: true
+    -
+        name: bower-knockout-mapping
+        cwd: dist
+        src: knockout.mapping.js
         bowerComponent: true
     -
         name: bootstrap
@@ -24,6 +52,11 @@ bowerFiles:
         name: d3
         bowerComponent: true
     -
+        name: file-saver
+        src: 
+            - FileSaver.js
+        bowerComponent: true
+    -
         name: font-awesome
         src:
             - css/font-awesome.css
@@ -32,6 +65,9 @@ bowerFiles:
     -
         name: jquery
         cwd: dist
+        bowerComponent: true
+    -
+        name: jquery-ui
         bowerComponent: true
     -
         name: js-yaml
@@ -50,12 +86,16 @@ bowerFiles:
             - normalize.js
         bowerComponent: true
     -
-        dir: require-yaml
+        dir: requirejs-yaml
         name: yaml
         bowerComponent: true
     -
         dir: requirejs
         name: require
+        bowerComponent: true
+    -
+        dir: requirejs-domready
+        name: domReady
         bowerComponent: true
     -
         dir: requirejs-json
@@ -66,7 +106,7 @@ bowerFiles:
         name: text
         bowerComponent: true
     -
-        dir: SparkMD5
+        dir: spark-md5
         name: spark-md5
         bowerComponent: true
     -
@@ -88,13 +128,13 @@ bowerFiles:
             - css/datatables-bootstrap3.css
             - js/datatables-bootstrap3.js
         bowerComponent: true
-    - 
+    -
         name: google-code-prettify
         cwd: src
         src:
             - prettify.js
             - prettify.css
-        bowerComponent: true        
+        bowerComponent: true
     -
         dir: d3-plugins-sankey
         src:
@@ -105,6 +145,10 @@ bowerFiles:
         name: handlebars
         bowerComponent: true
     -
+        name: marked
+        bowerComponent: true
+        cwd: lib
+    -
         name: nunjucks
         cwd: browser
         src: nunjucks.js
@@ -113,7 +157,7 @@ bowerFiles:
         dir: numeral
         src:
             - numeral.js
-            - languages/*.js
+            # - languages/*.js
         bowerComponent: true
     -
         name: blockui
@@ -125,27 +169,63 @@ bowerFiles:
         src:
             - q.js
         bowerComponent: true
-    - 
+    -
         name: postal
         cwd: lib
-        src: 
-            - postal.js        
+        src:
+            - postal.js
         bowerComponent: true
     -
         dir: highlightjs
         src:
-            - highlight.pack.js   
+            - highlight.pack.js
             - styles/*
         bowerComponent: true
-    -
-        # This one is an installable package, kbase style, so we just
-        # copy the whole thing in, and the install.yml says what to do
-        name: kbase-data-client-js
-        src: "**/*"
-        bowerComponent: true   
+    # -
+    #     # This one is an installable package, kbase style, so we just
+    #     # copy the whole thing in, and the install.yml says what to do
+    #     name: kbase-data-client-js
+    #     src: "**/*"
+    #     bowerComponent: true   
+
+    # "kbase-common-ts": "0.8.0",
+    #     "kbase-common-js": "2.5.0",
+    #     "kbase-service-clients-js": "3.2.2",
+    #     "kbase-ui-widget": "k1.1.0-beta2",
     -
         name: plotly
+        dir: plotly.js
         cwd: dist
         src: plotly.js
         bowerComponent: true
-            
+    -
+        name: kb_common
+        dir: kbase-common-js
+        cwd: dist/kb_common
+        src: "**/*"
+        bowerComponent: false
+    -
+        name: kb_service
+        dir: kbase-service-clients-js
+        cwd: dist/kb_service
+        src: "**/*"
+        bowerComponent: false
+    -
+        name: kb_widget
+        dir: kbase-ui-widget
+        cwd: src/kb/widget
+        src: "**/*"
+        bowerComponent: false
+    -
+        name: kb_common_ts
+        dir: kbase-common-ts
+        cwd: dist
+        src: "*.js"
+        bowerComponent: false
+    -
+        name: kb_sdk_clients
+        dir: kbase-sdk-clients-js
+        cwd: dist/amd/kb_sdk_clients
+        src: "**/*"
+        bowerComponent: false
+

@@ -1,0 +1,24 @@
+# Deploy-Time Config for Auth2 Local Development
+---
+deploy:
+  environment: ci
+  hostname: dev.kbase.us
+  icon: flask
+  name: Continuous Integration
+  services:
+    urlBase: https://dev.kbase.us
+ui:
+  services:
+    analytics:
+      google:
+        hostname: dev.kbase.us
+        code: UA-74532036-1
+  features:
+    auth:
+      selected: auth2
+services:
+  auth2:
+    # note that this overrides the auth2 url.
+    url: https://authdev.kbase.us/services/auth
+  user_profile:
+    url: https://authdev.kbase.us/services/user_profile/rpc

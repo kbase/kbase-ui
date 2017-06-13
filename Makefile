@@ -21,7 +21,7 @@ DISTLIB			= $(TOPDIR)/build
 DOCSLIB			= $(TOPDIR)/docs
 DEPLOY_CFG		= deploy-$(TARGET).cfg
 KB_TOP			= /kb
-GRUNT		        = ./node_modules/.bin/grunt
+GRUNT		    = ./node_modules/.bin/grunt
 KARMA			= ./node_modules/.bin/karma
 config			= dev
 directory		= build
@@ -40,17 +40,29 @@ default:
 # Note that this uses the default targets -- which are least disruptive (to production)
 # and most experimental (development ui, ci services)
 run: init build start pause preview
+
+NODE=$(shell node --version 2> /dev/null)
+NODE_REQUIRED="v6"
+majorver=$(word 1, $(subst ., ,$1))
+
+preconditions:
+	@echo "> Testing for preconditions."	
+	@echo $(if $(findstring $(call majorver, $(NODE)), $(NODE_REQUIRED)), "Good node version ($(NODE))", $(error "! Node major version must be $(NODE_REQUIRED), it is $(NODE).") )
 	
 
 # Initialization here pulls in all dependencies from Bower and NPM.
 # This is **REQUIRED** before any build process can proceed.
 # bower install is not part of the build process, since the bower
 # config is not known until the parts are assembled...
-init:
-	@echo "> Initialiing the repo for work."
+
+install_tools:
+	@echo "> Installing build and test tools."
 	npm install
 	cd tools/server; npm install
 	$(GRUNT) init
+
+init: preconditions install_tools
+
 	
 # Perform the build. Build scnearios are supported through the config option
 # which is passed in like "make build config=ci"

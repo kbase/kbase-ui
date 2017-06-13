@@ -2,14 +2,27 @@
 
 # Set the root of the project.
 # This is the directory which contains kbase-ui and any plugin repo directories.
-export DEVDIR=/your/dev/dir
+export DEVDIR=`pwd`/../../..
+echo "Dev dir is $DEVDIR"
 
 function linkLib() {
    local package=$1
    local module=$2
 
-    rm -rf ../../build/build/client/modules/kb/$package
-    ln -s $DEVDIR/kbase-$module/dist/kb/$package ../../build/build/client/modules/kb/$package
+    rm -rf ../../build/build/client/modules/$package
+    ln -s $DEVDIR/kbase-$module/dist/amd/$package ../../build/build/client/modules/$package
+}
+
+function linkLib2() {
+   local package=$1
+   local module=$2
+   local sourcePath=$3
+
+   echo $DEVDIR/kbase-$module/$sourcePath
+   echo ../../build/build/client/modules/$package
+
+    rm -rf ../../build/build/client/modules/$package
+    ln -s $DEVDIR/kbase-$module/$sourcePath ../../build/build/client/modules/$package
 }
 
 function linkPlugin() {
@@ -17,6 +30,12 @@ function linkPlugin() {
 
     rm -rf ../../build/build/client/modules/plugins/$plugin
     ln -s $DEVDIR/kbase-ui-plugin-$plugin/src/plugin ../../build/build/client/modules/plugins/$plugin
+}
+
+function linkInternalPlugin() {
+    local plugin=$1
+    rm -rf ../../build/build/client/modules/plugins/$plugin
+    ln -s $DEVDIR/kbase-ui/src/client/modules/plugins/$plugin ../../build/build/client/modules/plugins/$plugin
 }
 
 
@@ -40,6 +59,14 @@ function linkPlugin() {
 # module is the repo directory following the kbase- namespacing prefix
 # linkLib "common" "common-js"
 
+# linkLib 'kb_sdk_clients' 'sdk-clients-js'
+
+# linkLib2 'kb_service' 'service-clients-js' 'dist/kb_service'
+
+# linkLib2 'kb_common' 'common-js' 'dist/kb_common'
+
+
+
 #
 # EXTERNAL PLUGINS
 #
@@ -53,6 +80,9 @@ function linkPlugin() {
 
 # linkPlugin "dataview"
 # linkPlugin "data-landing-pages"
+# linkPlugin "datawidgets"
+#linkPlugin "data-api-demo"
+#linkPlugin "sdk-clients-test"
 
 #
 # INTERNAL PLUGINS
@@ -61,8 +91,4 @@ function linkPlugin() {
 # This is helpful if you are working on plugins built in to kbase-ui. What you are doing is 
 # linking the source plugin directory to the corresponding build plugin directory.
 #
-
-
-# rm -rf ../../build/build/client/modules/plugins/PLUGIN
-# ln -s /DEVDIR/kbase-ui/src/client/modules/plugins/PLUGIN ../../build/build/client/modules/plugins/PLUGIN
 

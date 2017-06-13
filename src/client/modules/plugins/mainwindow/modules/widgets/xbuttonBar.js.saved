@@ -2,8 +2,8 @@
 /*jslint white:true */
 define([
     'promise',
-    'kb/common/dom',
-    'kb/common/html'
+    'kb_common/dom',
+    'kb_common/html'
 ],
     function (Promise, dom, html) {
         'use strict';

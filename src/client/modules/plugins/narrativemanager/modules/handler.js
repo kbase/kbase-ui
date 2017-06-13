@@ -7,8 +7,8 @@
  */
 define([
     'bluebird',
-    'kb/common/html',
-    'kb_narrativeManager_narrativeManagerService'
+    'kb_common/html',
+    './narrativeManager'
 ],
     function (Promise, html, NarrativeManagerService) {
         'use strict';

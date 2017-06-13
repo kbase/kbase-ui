@@ -2,87 +2,259 @@
    NB: we are still utilizing the main bs button styles for basic color, hover, active
    states, so btn-bare cannot be used on its own.
 */
+
 .btn-bare {
-   background: none;
-   border-color: transparent;
+    background: none;
+    border-color: transparent;
 }
+
 .btn-bare:hover {
-   border-color: transparent;
+    border-color: transparent;
 }
 
 .btn-kbase {
-   xbackground-color: #2196F3;
-   border-radius: 1px;
-   xcolor: #fff;
-   border: none;
-   xpadding: 10px 20px;
-   xfont-size: 13px;
-   box-shadow: 1px 1px 3px #aaa;
+    border-radius: 1px;
+    border: none;
+    box-shadow: 1px 1px 3px #aaa;
 }
 
 .btn-kbase:hover {
-   xbackground-color: #1E88E5;
+    xbackground-color: #1E88E5;
 }
 
 .btn-group-kbase {
-   xbox-shadow: 1px 1px 3px #aaa;
-   xmargin-bottom: 4px;
+    xbox-shadow: 1px 1px 3px #aaa;
+    xmargin-bottom: 4px;
 }
+
 .btn-group .btn-kbase {
-   box-shadow: none;
-   xmargin-bottom: 3px;
+    box-shadow: none;
 }
 
 .btn-kbase[disabled=disabled] {
-   box-shadow: none;
-   background-color: #BBDEFB;
-   color: #fff;
+    box-shadow: none;
+    background-color: #BBDEFB;
+    color: #fff;
 }
 
 .btn-kbase.round-button {
-   border-radius: 100%;
-   padding: 10px 12px;
-   border-radius: none;
-   color: #fff;
+    border-radius: 100%;
+    padding: 10px 12px;
+    border-radius: none;
+    color: #fff;
 }
 
 .btn-kbase.round-button span {
-   font-size: 18px;
+    font-size: 18px;
 }
 
 .form-control-kbase {
-   border-radius: 1px;
+    border-radius: 1px;
 }
+
 .well-kbase {
-   border-radius: 1px;
+    border-radius: 1px;
 }
+
 .alert-kbase {
-   border-radius: 1px;
+    border-radius: 1px;
 }
 
 .modal-kbase {
     width: 263px;
 }
+
 .modal-kbase .modal-content {
     border-radius: 1px;
 }
 
-
-
-.kbase-ui .panel-title > [data-toggle="collapse"]::before {
-  display: inline-block;
-  margin-left: 0px;
-  margin-right: 4px;
-  font-family: "FontAwesome";
-  font-style: normal;
-  font-weight: normal;
-  font-size: 90%;
-  width: 12px;
-  color: silver;
-  line-height: 1;
-  vertical-align: baseline;
-  content: "\f078 ";
+.kbase-ui .kb-panel-light {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
 }
-.kbase-ui .panel-title > [data-toggle="collapse"].collapsed::before {
-    margin-left: 2px; margin-right: 2px;
-  content: "\f054 ";
+
+.kbase-ui .panel-title {
+    text-align: left;
+}
+
+.kbase-ui .panel-title>[data-toggle="collapse"]::before {
+    display: inline-block;
+    margin-left: 0px;
+    margin-right: 4px;
+    font-family: "FontAwesome";
+    font-style: normal;
+    font-weight: normal;
+    font-size: 90%;
+    width: 12px;
+    color: silver;
+    line-height: 1;
+    vertical-align: baseline;
+    content: "\f078 ";
+}
+
+.kbase-ui .panel-title>[data-toggle="collapse"].collapsed::before {
+    margin-left: 2px;
+    margin-right: 2px;
+    content: "\f054 ";
+}
+
+.kbase-ui .panel-danger.kb-panel-light .panel-title {
+    color: #a94442;
+}
+
+.kbase-ui .panel-success.kb-panel-light .panel-title {
+    color: #3c763d;
+}
+
+.kbase-ui .panel-warning.kb-panel-light .panel-title {
+    color: #8a6d3b;
+}
+
+.kbase-ui .panel-info.kb-panel-light .panel-title {
+    color: blue;
+}
+
+.kbase-ui .panel.kb-panel-light>.panel-heading {
+    background-color: transparent;
+    font-weight: bold;
+    color: #666;
+    padding-left: 0;
+    padding-bottom: 2px;
+    border-bottom: 1px #CCC solid;
+}
+
+.kbase-ui .panel.kb-panel-light .panel-body {
+    padding: 14px 0 14px 0;
+}
+
+.kbase-ui .panel.kb-panel-light.-lighter>.panel-heading {
+    background-color: transparent;
+    font-weight: bold;
+    color: #666;
+    padding-left: 0;
+    padding-bottom: 2px;
+    border-bottom: none;
+}
+
+
+/* Help panels */
+
+.kbase-ui .panel.kb-panel-help {
+    border: none;
+    box-shadow: none;
+}
+
+.kbase-ui .panel.kb-panel-help>.panel-heading {
+    background-color: transparent;
+    font-weight: bold;
+    color: #666;
+    padding-left: 0;
+    padding-bottom: 4px;
+    border: none;
+}
+
+.kbase-ui .panel.kb-panel-help .panel-body {
+    padding: 14px 10px 10px 14px;
+    border: none;
+}
+
+.kbase-ui .panel.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
+    font-size: 120%;
+    width: 18px;
+    content: "\f138";
+}
+
+.kbase-ui .panel.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
+    font-size: 120%;
+    width: 18px;
+    content: "\f13a";
+}
+
+.kbase-ui .panel.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
+    font-size: 130%;
+    width: 30px;
+    /*content: "\f13a";*/
+    /*content: "\f0a7";*/
+    content: "\25BD";
+    vertical-align: middle;
+}
+
+.kbase-ui .panel.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
+    font-size: 130%;
+    width: 30px;
+    /*content: "\f138";*/
+    /*content: "\f0a4";*/
+    content: "\25B7";
+    vertical-align: middle;
+}
+
+
+/* Bootrap semantic colors ... */
+
+.kbase-ui .panel-danger.kb-panel-help .panel-title {
+    color: #a94442;
+}
+
+.kbase-ui .panel-success.kb-panel-help .panel-title {
+    color: #3c763d;
+}
+
+.kbase-ui .panel-warning.kb-panel-help .panel-title {
+    color: #8a6d3b;
+}
+
+.kbase-ui .panel-info.kb-panel-help .panel-title {
+    color: blue;
+}
+
+.kbase-ui .panel.panel-danger.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
+    color: #a94442;
+}
+
+.kbase-ui .panel.panel-success.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
+    color: #3c763d;
+}
+
+.kbase-ui .panel.panel-warning.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
+    color: #8a6d3b;
+}
+
+.kbase-ui .panel.panel-info.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
+    color: blue;
+}
+
+.kbase-ui .panel.panel-danger.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
+    color: #a94442;
+}
+
+.kbase-ui .panel.panel-success.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
+    color: #3c763d;
+}
+
+.kbase-ui .panel.panel-warning.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
+    color: #8a6d3b;
+}
+
+.kbase-ui .panel.panel-info.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
+    color: blue;
+}
+
+
+/* remove the padding from first and last columns for edge-to-edge rows */
+
+
+/* nb nasty child div selector because no generic column class */
+
+.row.row-edgeless>div:nth-child(1) {
+    padding-left: 0;
+}
+
+.row.row-edgeless>div:last-child {
+    padding-right: 0;
+}
+
+.row.row-padless>div {
+    padding-left: 0;
+    padding-right: 0;
+}

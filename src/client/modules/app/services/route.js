@@ -1,7 +1,7 @@
 define([
     'bluebird',
-    'kb/common/router',
-    'kb/common/lang'
+    'kb_common/router',
+    'kb_common/lang'
 ], function (Promise, Router, lang) {
     function factory(config) {
         var runtime = config.runtime,
@@ -22,14 +22,17 @@ define([
                     throw ex;
                 }
             }
+            runtime.send('route', 'routing', handler);
             if (handler.route.authorization) {
-                if (!runtime.getService('session').isLoggedIn()) {
-                    var loginParams = {};
+                if (!runtime.service('session').isLoggedIn()) {
+                    var loginParams = {
+                        source: 'authorization'
+                    };
                     if (handler.request.path) {
                         loginParams.nextrequest = JSON.stringify(handler.request);
                     }
                     runtime.send('app', 'navigate', {
-                        path: 'login',
+                        path: runtime.feature('auth', 'paths.login'),
                         // TODO: path needs to be the path + params
                         params: loginParams
                     });
@@ -46,23 +49,13 @@ define([
             } else if (handler.route.handler) {
                 runtime.send('app', 'route-handler', route);
             }
-            //runtime.send('app', 'new-route', {
-            //    routeHandler: handler
-            //});
         }
+
         function installRoute(route) {
             return Promise.try(function () {
                 if (route.widget) {
-                    // ADD ROUTE WIDGET HERE...
                     router.addRoute(route);
                     return true;
-//                    router.addRoute({
-//                        path: route.path,
-//                        queryParams: route.queryParams,
-//                        config: {
-//                        },
-//                        widget: route.widget
-//                    });
                 } else if (route.redirectHandler) {
                     router.addRoute(route);
                     return true;
@@ -78,6 +71,7 @@ define([
                 }
             });
         }
+
         function installRoutes(routes) {
             if (!routes) {
                 return;
@@ -86,6 +80,7 @@ define([
                 return installRoute(route);
             });
         }
+
         function pluginHandler(pluginConfig) {
             return installRoutes(pluginConfig);
         }
@@ -97,11 +92,11 @@ define([
 
             runtime.recv('app', 'new-route', function (data) {
                 if (data.routeHandler.route.redirect) {
-                    send('app', 'route-redirect', data);
+                    runtime.send('app', 'route-redirect', data);
                 } else if (data.routeHandler.route.widget) {
-                    send('app', 'route-widget', data);
+                    runtime.send('app', 'route-widget', data);
                 } else if (data.routeHandler.route.handler) {
-                    send('app', 'route-handler', data);
+                    runtime.send('app', 'route-handler', data);
                 }
             });
 
@@ -130,7 +125,7 @@ define([
                     doRoute();
                 }
             });
-            eventListeners.forEach(function(listener) {
+            eventListeners.forEach(function (listener) {
                 listener.target.addEventListener(listener.type, listener.listener);
             });
         }

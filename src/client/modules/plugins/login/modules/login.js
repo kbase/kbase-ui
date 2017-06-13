@@ -6,8 +6,8 @@
  white: true
  */
 define([
-    'kb/common/html',
-    'kb/common/domEvent',
+    'kb_common/html',
+    'kb_common/domEvent',
     'jquery',
     'bluebird',
     'kb_plugin_login'
@@ -71,13 +71,13 @@ function (html, domEvent, $, Promise, Plugin) {
                             runtime.send('app', 'navigate', '');
                         }
                     })
-                    .catch(function (errorMsg) {
+                    .catch(function (err) {
                         runtime.send('ui', 'setTitle', 'Sign In Error');
                         element('running').hide();
-                        if (errorMsg === "LoginFailure: Authentication failed.") {
-                            errorMsg = "Login Failed: your username/password is incorrect.";
+                        if (err.message === "LoginFailure: Authentication failed.") {
+                            err.message = "Login Failed: your username/password is incorrect.";
                         }
-                        element('error').html(errorMsg).show();
+                        element('error').html(err.message).show();
                         element('sign-in').show();
                         element('signing-in').hide();
                     })
