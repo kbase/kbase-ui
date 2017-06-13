@@ -1,0 +1,19 @@
+# Deploy-Time Config for Auth2 Local Development
+---
+deploy:
+  environment: cialt
+  hostname: cialt.kbase.us
+  icon: flask
+  name: Continuous Integration Alternative Host
+  services:
+    urlBase: https://cialt.kbase.us
+ui:
+  services:
+    analytics:
+      google:
+        hostname: cialt.kbase.us
+        code: UA-74532036-1
+  features:
+    auth:
+      selected: auth2
+
