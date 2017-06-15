@@ -38,17 +38,20 @@ exports.config = {
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://docs.saucelabs.com/reference/platforms-configurator
     //
-    capabilities: [{
-        browserName: 'phantomjs',
-        ignoreSslErrors: true,
-        'phantomjs.binary.path': '/Volumes/KBaseWork/Work/sprints/auth2-2017/auth2/kbase-ui/node_modules/.bin/phantomjs',
-        'phantomjs.cli.args': ['--web-security=false', '--ssl-protocol=any', '--ignore-ssl-errors=true']
-    }, {
-        browserName: 'firefox',
-        maxInstances: 5,
-        //
-        acceptInsecureCerts: true
-    }],
+    capabilities: [
+        //     {
+        //     browserName: 'phantomjs',
+        //     ignoreSslErrors: true,
+        //     'phantomjs.binary.path': '/Volumes/KBaseWork/Work/sprints/auth2-2017/auth2/kbase-ui/node_modules/.bin/phantomjs',
+        //     'phantomjs.cli.args': ['--web-security=false', '--ssl-protocol=any', '--ignore-ssl-errors=true']
+        // },
+        {
+            browserName: 'firefox',
+            maxInstances: 5,
+            //
+            acceptInsecureCerts: true
+        }
+    ],
     //
     // ===================
     // Test Configurations
