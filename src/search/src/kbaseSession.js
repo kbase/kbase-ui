@@ -70,10 +70,11 @@ define([
                 // so we just read our cookie
 
                 if (sessionCookie) {
-
+                    var baseUrl = Config.getConfig('auth_service_base_url');
                     var session = new Auth2Session.Auth2Session({
                         cookieName: 'kbase_session',
-                        baseUrl: window.location.protocol + '//' + window.location.hostname + '/services/auth',
+                        // NB: use the configured host not the window hostname.
+                        baseUrl: baseUrl,
                         providers: []
                     });
                     var fakeSession = {
