@@ -213,10 +213,15 @@
         fetchUserProfile: function () {
             require(['kb.user_profile', 'kb.config', 'kb.session', 'kb.appstate', 'postal', 'kb_common_ts/Auth2Session'],
                 function (UserProfile, Config, Session, AppState, Postal, Auth2Session) {
-                    var baseUrl = Config.getConfig('auth_service_base_url');
+                    var authBaseUrl;
+                    if (window.location.host === 'narrative.kbase.us') {
+                        authBaseUrl = window.location.protocol + '//' + 'kbase.us' + '/services/auth';
+                    } else {
+                        authBaseUrl = window.location.protocol + '//' + window.location.host + '/services/auth';
+                    }
                     var session = new Auth2Session.Auth2Session({
                         cookieName: 'kbase_session',
-                        baseUrl: baseUrl,
+                        baseUrl: authBaseUrl,
                         providers: []
                     });
 

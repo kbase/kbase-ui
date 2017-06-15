@@ -70,11 +70,17 @@ define([
                 // so we just read our cookie
 
                 if (sessionCookie) {
-                    var baseUrl = Config.getConfig('auth_service_base_url');
+                    // TODO: get this working. It requires changes to the deploy script, which is not in this repo.
+                    var authBaseUrl;
+                    if (window.location.host === 'narrative.kbase.us') {
+                        authBaseUrl = window.location.protocol + '//' + 'kbase.us' + '/services/auth';
+                    } else {
+                        authBaseUrl = window.location.protocol + '//' + window.location.host + '/services/auth';
+                    }
                     var session = new Auth2Session.Auth2Session({
                         cookieName: 'kbase_session',
                         // NB: use the configured host not the window hostname.
-                        baseUrl: baseUrl,
+                        baseUrl: authBaseUrl,
                         providers: []
                     });
                     var fakeSession = {
