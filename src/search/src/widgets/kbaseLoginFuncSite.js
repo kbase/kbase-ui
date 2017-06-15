@@ -211,12 +211,17 @@
             });
         },
         fetchUserProfile: function () {
-            require(['kb.user_profile', 'kb.session', 'kb.appstate', 'postal', 'kb_common_ts/Auth2Session'],
-                function (UserProfile, Session, AppState, Postal, Auth2Session) {
-
+            require(['kb.user_profile', 'kb.config', 'kb.session', 'kb.appstate', 'postal', 'kb_common_ts/Auth2Session'],
+                function (UserProfile, Config, Session, AppState, Postal, Auth2Session) {
+                    var authBaseUrl;
+                    if (window.location.host === 'narrative.kbase.us') {
+                        authBaseUrl = window.location.protocol + '//' + 'kbase.us' + '/services/auth';
+                    } else {
+                        authBaseUrl = window.location.protocol + '//' + window.location.host + '/services/auth';
+                    }
                     var session = new Auth2Session.Auth2Session({
                         cookieName: 'kbase_session',
-                        baseUrl: window.location.origin + '/services/auth',
+                        baseUrl: authBaseUrl,
                         providers: []
                     });
 
@@ -240,26 +245,6 @@
                         .then(function (me) {
                             var userProfile = Object.create(UserProfile).init({ username: me.user });
                             return userProfile.loadProfile();
-                        })
-                        .then(function (profile) {
-                            switch (profile.getProfileStatus()) {
-                            case 'stub':
-                            case 'profile':
-                                AppState.setItem('userprofile', profile);
-                                Postal.channel('session').publish('profile.loaded', { profile: profile });
-                                break;
-                            case 'none':
-                                profile.createStubProfile({ createdBy: 'session' })
-                                    .then(function (profile) {
-                                        AppState.setItem('userprofile', profile);
-                                        Postal.channel('session').publish('profile.loaded', { profile: profile });
-                                    })
-                                    .catch(function (err) {
-                                        Postal.channel('session').publish('profile.loadfailure', { error: err });
-                                    })
-                                    .done();
-                                break;
-                            }
                         })
                         .catch(function (err) {
                             var errMsg = 'Error getting user profile';
