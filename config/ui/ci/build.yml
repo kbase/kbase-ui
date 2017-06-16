@@ -132,7 +132,7 @@ plugins:
         name: auth2-client
         disabled: true
         globalName: kbase-ui-plugin-auth2-client
-        version: 1.1.9
+        version: 1.1.10
         cwd: src/plugin
         source:
             bower: {}

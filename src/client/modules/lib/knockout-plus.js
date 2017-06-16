@@ -15,13 +15,60 @@ define([
         });
     };
 
+    function isEmpty(value) {
+        switch (typeof value) {
+        case 'string':
+            return (value.length === 0);
+        case 'undefined':
+            return true;
+        case 'number':
+            return false;
+        case 'boolean':
+            return false;
+        case 'object':
+            if (value instanceof Array) {
+                return (value.length === 0);
+            }
+            if (value === null) {
+                return true;
+            }
+            return false;
+        default:
+            return false;
+        }
+    }
+
+    function isEmptyJSON(value) {
+        if (value === undefined) {
+            return true;
+        }
+        switch (value) {
+        case '""':
+            return true;
+        case '[]':
+            return true;
+        case '{}':
+            return true;
+        case 'null':
+            return true;
+        }
+    }
+
     ko.extenders.dirty = function (target, startDirty) {
         var lastValue = target();
         var cleanValue = ko.observable(ko.mapping.toJSON(target));
+
         var dirtyOverride = ko.observable(ko.utils.unwrapObservable(startDirty));
 
         target.isDirty = ko.computed(function () {
-            return dirtyOverride() || ko.mapping.toJSON(target) !== cleanValue();
+            var currentValue = ko.mapping.toJSON(target);
+            var currentIsEmpty = isEmptyJSON(currentValue);
+            var lastCleanValue = cleanValue();
+            var cleanIsEmpty = isEmptyJSON(lastCleanValue);
+            if (currentIsEmpty & cleanIsEmpty) {
+                return false;
+            }
+            return dirtyOverride() || currentValue !== lastCleanValue;
         });
 
         target.markClean = function () {
