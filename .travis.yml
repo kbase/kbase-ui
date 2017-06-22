@@ -1,3 +1,4 @@
+dist: trusty
 sudo: false
 language: node_js
 
@@ -6,7 +7,14 @@ language: node_js
 # branch, but it is actually 4.4
 node_js:
   - "6.9"
-  
+
+# upcoming
+# addons:
+#     apt:
+#         packages:
+#             - nginx
+#     sauce_connect: true
+
 #cache:
 #  directories:
 #  - bower_components
@@ -16,16 +24,18 @@ branches:
         - master
         - develop
 
-
-#branches:
-#  only:
-#    - develop
-#    - staging
-#    - master
-#before_install:
-#  - npm install -g bower
-#  - npm install -g grunt-cli
 install:
     - make init
     - make build config=ci
+
+# upcoming
+# Sets up the nginx server for proxying
+# before_script:
+#     - tools/travis/deploy-travis.sh
+#     - tools/travis/start-nginx.sh
+
 script: make test-travis
+
+# upcoming
+# after_script:
+#     - tools/travis/stop-nginx.sh
