@@ -37,7 +37,7 @@
         "kbase-common-js": "2.9.1",
         "kbase-sdk-clients-js": "0.5.1",
         "kbase-service-clients-js": "3.3.5",
-        "kbase-ui-widget": "1.2.0",
+        "kbase-ui-widget": "1.2.1",
         "knockout-arraytransforms": "2.1.1",
         "knockout-validation": "2.0.3",
         "knockout": "3.4.2",
