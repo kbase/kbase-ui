@@ -275,6 +275,9 @@ module.exports = function (grunt) {
             local: {
                 configFile: './test/wdio.conf.local.js'
             },
+            sauce: {
+                configFile: './test/wdio.conf.sauce.js'
+            },
             travis: {
                 configFile: './test/wdio.conf.travis.js'
             }
@@ -296,6 +299,8 @@ module.exports = function (grunt) {
     // from travis-ci.
     grunt.registerTask('test-travis', [
         'karma:unit',
+        // upcoming
+        // 'webdriver:travis',
         'coveralls'
     ]);
 

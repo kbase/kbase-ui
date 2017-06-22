@@ -1,5 +1,10 @@
 exports.config = {
 
+    sauceConnect: 'true',
+    sauceConnectOpts: {
+        doctor: true
+    },
+
     //
     // ==================
     // Specify Test Files
@@ -38,15 +43,28 @@ exports.config = {
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://docs.saucelabs.com/reference/platforms-configurator
     //
-    capabilities: [{
-        // maxInstances can get overwritten per capability. So if you have an in-house Selenium
-        // grid with only 5 firefox instances available you can make sure that not more than
-        // 5 instances get started at a time.
-        maxInstances: 5,
-        //
-        browserName: 'firefox',
-        acceptInsecureCerts: true
-    }],
+    capabilities: [
+        // Firefox
+        {
+            // maxInstances can get overwritten per capability. So if you have an in-house Selenium
+            // grid with only 5 firefox instances available you can make sure that not more than
+            // 5 instances get started at a time.
+            maxInstances: 5,
+            //
+            browserName: 'firefox',
+            platform: 'macOS 10.12',
+            version: '39.0',
+            acceptInsecureCerts: true
+        },
+        // Chrome
+        {
+            maxInstances: 5,
+            browserName: 'chrome',
+            platform: 'macOS 10.12',
+            version: '59.0',
+            acceptInsecureCerts: true
+        }
+    ],
     //
     // ===================
     // Test Configurations
@@ -56,7 +74,7 @@ exports.config = {
     // By default WebdriverIO commands are executed in a synchronous way using
     // the wdio-sync package. If you still want to run your tests in an async way
     // e.g. using promises you can set the sync option to false.
-    sync: true,
+    sync: false,
     //
     // Level of logging verbosity: silent | verbose | command | data | result | error
     logLevel: 'verbose',
@@ -107,7 +125,8 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['phantomjs'],
+    services: ['sauce'],
+    // services: ['phantomjs', 'sauce'],
     // services: ['selenium-standalone'],
     //
     // Framework you want to run your specs with.
@@ -247,4 +266,4 @@ exports.config = {
      */
     // onComplete: function(exitCode) {
     // }
-}
+};
