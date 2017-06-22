@@ -1,12 +1,14 @@
 exports.config = {
-
-    user: 'eapearson',
-    key: '070e4128-36ea-4cb0-ae54-8ded7d2c352e',
+    // user: 'eapearson',
+    // key: '070e4128-36ea-4cb0-ae54-8ded7d2c352e',
+    // Note: for local testing, these should be set in a script or by hand in the shell that is invoking the 
+    // tests. In Travis they will be set as encrypted keys.
+    user: process.env.SAUCE_USERNAME,
+    key: process.env.SAUCE_ACCESS_KEY,
     sauceConnect: 'true',
     sauceConnectOpts: {
         doctor: true
     },
-
     //
     // ==================
     // Specify Test Files
@@ -55,7 +57,7 @@ exports.config = {
             //
             browserName: 'firefox',
             platform: 'macOS 10.12',
-            version: '39.0',
+            version: 'latest',
             acceptInsecureCerts: true
         },
         // Chrome
@@ -63,10 +65,11 @@ exports.config = {
             maxInstances: 5,
             browserName: 'chrome',
             platform: 'macOS 10.12',
-            version: '59.0',
+            version: 'latest',
             acceptInsecureCerts: true
         }
     ],
+    port: 4445,
     //
     // ===================
     // Test Configurations
@@ -76,7 +79,7 @@ exports.config = {
     // By default WebdriverIO commands are executed in a synchronous way using
     // the wdio-sync package. If you still want to run your tests in an async way
     // e.g. using promises you can set the sync option to false.
-    sync: false,
+    sync: true,
     //
     // Level of logging verbosity: silent | verbose | command | data | result | error
     logLevel: 'verbose',
@@ -127,8 +130,7 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['sauce'],
-    // services: ['phantomjs', 'sauce'],
+    // services: ['sauce'],
     // services: ['selenium-standalone'],
     //
     // Framework you want to run your specs with.
@@ -149,7 +151,7 @@ exports.config = {
     jasmineNodeOpts: {
         //
         // Jasmine default timeout
-        defaultTimeoutInterval: 10000,
+        defaultTimeoutInterval: 30000,
         //
         // The Jasmine framework allows interception of each assertion in order to log the state of the application
         // or website depending on the result. For example, it is pretty handy to take a screenshot every time
@@ -268,4 +270,4 @@ exports.config = {
      */
     // onComplete: function(exitCode) {
     // }
-};
+}
