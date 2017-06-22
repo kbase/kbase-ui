@@ -61,6 +61,7 @@
         "path-exists": "3.0.0",
         "phantomjs-prebuilt": "2.1.14",
         "requirejs": "2.3.3",
+        "sauce-connect-launcher": "1.2.2",
         "selenium-standalone": "6.5.0",
         "simple-git": "1.73.0",
         "uglify-js": "3.0.16",
