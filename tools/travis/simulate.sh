@@ -29,9 +29,7 @@ if [ $ERROR ]
 fi
 
 
-export KBASE_SESSION=VRYX2RS4T3CFWMZSXK3FQ6R3MBJNDWQE
-export SAUCE_USERNAME=eapearson
-export SAUCE_ACCESS_KEY=070e4128-36ea-4cb0-ae54-8ded7d2c352e
+
 #SC=$SCRIPT_PATH/../../../sc-4.4.7-osx/bin/sc
 #echo "Starting the sauce connect server ... $SC"
 #daemon --name=sauce_connect -- $SC -d sauce-connect.pid
