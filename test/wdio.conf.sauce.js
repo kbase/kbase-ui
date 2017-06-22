@@ -1,6 +1,4 @@
 exports.config = {
-    // user: 'eapearson',
-    // key: '070e4128-36ea-4cb0-ae54-8ded7d2c352e',
     // Note: for local testing, these should be set in a script or by hand in the shell that is invoking the 
     // tests. In Travis they will be set as encrypted keys.
     user: process.env.SAUCE_USERNAME,
