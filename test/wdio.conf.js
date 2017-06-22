@@ -1,7 +1,5 @@
 exports.config = {
 
-    user: 'eapearson',
-    key: '070e4128-36ea-4cb0-ae54-8ded7d2c352e',
     sauceConnect: 'true',
     sauceConnectOpts: {
         doctor: true
