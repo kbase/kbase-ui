@@ -164,6 +164,14 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: search
+        globalName: kbase-ui-plugin-reske-search
+        version: 0.1.5
+        cwd: src/plugin
+        source:
+            bower: {}
+            
 
 # Copy these directories into the modules
 # There are two forms, as for plugins.

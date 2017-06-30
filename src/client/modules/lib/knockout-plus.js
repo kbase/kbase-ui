@@ -2,7 +2,8 @@ define([
     'knockout',
     'knockout-mapping',
     'knockout-arraytransforms',
-    'knockout-validation'
+    'knockout-validation',
+    'knockout-switch-case'
 ], function (ko) {
 
     // from: https://github.com/knockout/knockout/issues/914
