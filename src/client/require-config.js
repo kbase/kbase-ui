@@ -55,6 +55,7 @@ window.require = {
         kb_ui: 'css/kb-ui',
         knockout: 'bower_components/knockout/knockout',
         'knockout-arraytransforms': 'bower_components/knockout-arraytransforms/knockout-arraytransforms',
+        'knockout-switch-case': 'bower_components/knockout-switch-case/knockout-switch-case',
         'knockout-mapping': 'bower_components/bower-knockout-mapping/knockout.mapping',
         'knockout-plus': 'lib/knockout-plus',
         'knockout-validation': 'bower_components/knockout-validation/knockout.validation',

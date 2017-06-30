@@ -59,6 +59,9 @@ services:
     doc_site:
         url: http://kbase.us
         name: Documentation and Support Site
+    reske:
+        url: '{{ deploy.services.urlBase }}/services/reske'
+        name: Search Two
 resources:
     docSite:
         base:

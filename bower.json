@@ -39,6 +39,7 @@
         "kbase-service-clients-js": "3.3.5",
         "kbase-ui-widget": "1.2.1",
         "knockout-arraytransforms": "2.1.1",
+        "knockout-switch-case": "2.1.0",
         "knockout-validation": "2.0.3",
         "knockout": "3.4.2",
         "marked": "0.3.6",
