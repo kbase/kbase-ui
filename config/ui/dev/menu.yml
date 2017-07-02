@@ -1,7 +1,7 @@
 menus:
     authenticated:
         main: [narrative, search, bulk-ui]
-        developer: [reske-search, tester, test_dynamic_table, paveldemo, sdkclientstest, databrowser, typebrowser, jobbrowser, shockbrowser]
+        developer: [reske-search, reske-type-search, tester, test_dynamic_table, paveldemo, sdkclientstest, databrowser, typebrowser, jobbrowser, shockbrowser]
         help: [about, about-services, contact-kbase, about-kbase, help]
     unauthenticated:
         main: [search]
