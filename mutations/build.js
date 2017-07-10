@@ -970,24 +970,109 @@ function makeModuleVFS(state, whichBuild) {
     var root = state.environment.path,
         buildPath = ['..', 'build'];
 
-    return glob(root.concat([whichBuild, 'client', 'modules', '**', '*.js']).join('/'), {
+    return glob(root.concat([whichBuild, 'client', 'modules', '**', '*']).join('/'), {
             nodir: true
         })
         .then(function (matches) {
 
             // just read in file and build a giant map...            
-            var vfs = {};
-            var vfsDest = buildPath.concat([whichBuild, 'moduleVfs.js']);
+            var vfs = {
+                scripts: {},
+                resources: {
+                    json: {},
+                    text: {},
+                    csv: {},
+                    css: {}
+                }
+            };
+            var vfsDest = buildPath.concat([whichBuild, 'client', 'moduleVfs.js']);
+            var skipped = 0;
+            var exceptions = [
+                /\/modules\/plugins\/.*?\/iframe_root\//,
+                /main\.css$/,
+                /^\/modules\/bower_components\/bootstrap\//,
+                /^\/modules\/bower_components\/font-awesome\//,
+                /^\/modules\/bower_components\/datatables\//,
+                /^\/modules\/bower_components\/highlightjs\//
+            ];
             return Promise.all(matches
                     .map(function (match) {
                         var relativePath = match.split('/').slice(root.length + 2);
                         return fs.readFileAsync(match, 'utf8')
                             .then(function (contents) {
-                                vfs[relativePath.join('/')] = contents;
+                                // skip iframe_root directories, which are simply spliced
+                                // into an iframe.
+                                // if (relativePath.some(function (pathComponent) {
+                                //         return (pathComponent === 'iframe_root');
+                                //     })) {
+                                //     // console.warn('skipping iframe_root: ' + relativePath.join('/'));
+                                //     skipped += 1;
+                                //     return;
+                                // }
+                                var path = '/' + relativePath.join('/');
+                                if (exceptions.some(function (re) {
+                                        return (re.test(path));
+                                    })) {
+                                    skipped += 1;
+                                    return;
+                                }
+                                var m = /^(.*)\.([^.]+)$/.exec(path);
+                                if (m) {
+                                    var base = m[1];
+                                    var ext = m[2];
+                                    // requirejs keeps the root forward slash.
+                                    switch (ext) {
+                                    case 'js':
+                                        vfs.scripts[path] = 'function () { ' + contents + ' }';
+                                        break;
+                                    case 'yaml':
+                                    case 'yml':
+                                        vfs.resources.json[base] = yaml.safeLoad(contents);
+                                        break;
+                                    case 'json':
+                                        if (vfs.resources.json[base]) {
+                                            throw new Error('duplicate entry for json detected: ' + path);
+                                        }
+                                        try {
+                                            vfs.resources.json[base] = JSON.parse(contents);
+                                        } catch (ex) {
+                                            console.error('Error parsing json file: ' + path + ':' + ex.message);
+                                            // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
+                                        }
+                                        break;
+                                    case 'text':
+                                    case 'txt':
+                                        vfs.resources.text[base] = contents;
+                                        break;
+                                    case 'css':
+                                        vfs.resources.css[base] = contents;
+                                        break;
+                                    case 'csv':
+                                        console.warn('csv not handled yet: ' + path);
+                                        skipped += 1;
+                                        break;
+                                    default:
+                                        skipped += 1;
+                                        // console.warn('File type "' + ext + '" not supported: ' + path);
+                                        // break;
+                                    }
+                                } else {
+                                    skipped += 1;
+                                    console.warn('module vfs cannot include file without extension: ' + path);
+                                }
                             });
                     }))
                 .then(function () {
-                    var script = 'window.kbase_modules = ' + JSON.stringify(vfs, null, 4);
+                    // var script = 'window.require_modules = ' + JSON.stringify(vfs, null, 4);
+                    console.log('vfs created, skipped: ' + skipped);
+                    var modules = '{' + Object.keys(vfs.scripts).map(function (path) {
+                        return '"' + path + '": ' + vfs.scripts[path];
+                    }).join(', \n') + '}';
+                    var script = [
+                        'window.require_modules = ' + modules,
+                        'window.require_resources = ' + JSON.stringify(vfs.resources, null, 4)
+                    ].join(';\n');
+
                     fs.writeFileAsync(vfsDest.join('/'), script);
                 });
         })
