@@ -132,7 +132,7 @@ plugins:
         name: auth2-client
         disabled: true
         globalName: kbase-ui-plugin-auth2-client
-        version: 1.1.11
+        version: 1.1.13
         cwd: src/plugin
         source:
             bower: {}
@@ -167,7 +167,7 @@ plugins:
     -
         name: reske-search
         globalName: kbase-ui-plugin-reske-search
-        version: 0.4.0
+        version: 0.5.0
         cwd: src/plugin
         source:
             bower: {}

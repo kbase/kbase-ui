@@ -839,9 +839,10 @@ function makeKbConfig(state) {
                     return Promise.all([fileName, fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')]);
                 }))
                 .then(function (templates) {
+                    // +++ 
                     return Promise.all(templates.map(function (template) {
                         var dest = root.concat(['build', 'client', template[0]]).join('/');
-                        var out = handlebars.compile(template[1])(state.buildInfo);
+                        var out = handlebars.compile(template[1])(state);
                         return fs.writeFileAsync(dest, out);
                     }));
                 });
@@ -970,24 +971,165 @@ function makeModuleVFS(state, whichBuild) {
     var root = state.environment.path,
         buildPath = ['..', 'build'];
 
-    return glob(root.concat([whichBuild, 'client', 'modules', '**', '*.js']).join('/'), {
+    return glob(root.concat([whichBuild, 'client', 'modules', '**', '*']).join('/'), {
             nodir: true
         })
         .then(function (matches) {
 
             // just read in file and build a giant map...            
-            var vfs = {};
-            var vfsDest = buildPath.concat([whichBuild, 'moduleVfs.js']);
+            var vfs = {
+                scripts: {},
+                resources: {
+                    json: {},
+                    text: {},
+                    csv: {},
+                    css: {}
+                }
+            };
+            var vfsDest = buildPath.concat([whichBuild, 'client', 'moduleVfs.js']);
+            var skipped = {};
+
+            function skip(ext) {
+                if (!skipped[ext]) {
+                    skipped[ext] = 1;
+                } else {
+                    skipped[ext] += 1;
+                }
+            }
+            var included = {};
+
+            function include(ext) {
+                if (!included[ext]) {
+                    included[ext] = 1;
+                } else {
+                    included[ext] += 1;
+                }
+            }
+
+            function showStats(db) {
+                Object.keys(db).map(function (key) {
+                        return {
+                            key: key,
+                            count: db[key]
+                        };
+                    })
+                    .sort(function (a, b) {
+                        return b.count - a.count;
+                    })
+                    .forEach(function (item) {
+                        console.log(item.key + ':' + item.count);
+                    });
+            }
+            var exceptions = [
+                /\/modules\/plugins\/.*?\/iframe_root\//
+            ];
+            var cssExceptions = [
+                /@import/,
+                /@font-face/
+            ];
+            // css in these libraries uses import. We _could_
+            // var cssExceptions = [
+            //     /main\.css$/,
+            //     /^\/modules\/bower_components\/bootstrap\//,
+            //     /^\/modules\/bower_components\/font-awesome\//,
+            //     /^\/modules\/bower_components\/datatables\//,
+            //     /^\/modules\/bower_components\/highlightjs\//
+            // ];
             return Promise.all(matches
                     .map(function (match) {
                         var relativePath = match.split('/').slice(root.length + 2);
                         return fs.readFileAsync(match, 'utf8')
                             .then(function (contents) {
-                                vfs[relativePath.join('/')] = contents;
+                                // skip iframe_root directories, which are simply spliced
+                                // into an iframe.
+                                // if (relativePath.some(function (pathComponent) {
+                                //         return (pathComponent === 'iframe_root');
+                                //     })) {
+                                //     // console.warn('skipping iframe_root: ' + relativePath.join('/'));
+                                //     skipped += 1;
+                                //     return;
+                                // }
+                                var path = '/' + relativePath.join('/');
+                                if (exceptions.some(function (re) {
+                                        return (re.test(path));
+                                    })) {
+                                    skip('excluded');
+                                    return;
+                                }
+                                var m = /^(.*)\.([^.]+)$/.exec(path);
+                                if (m) {
+                                    var base = m[1];
+                                    var ext = m[2];
+                                    // requirejs keeps the root forward slash.
+                                    switch (ext) {
+                                    case 'js':
+                                        include(ext);
+                                        vfs.scripts[path] = 'function () { ' + contents + ' }';
+                                        break;
+                                    case 'yaml':
+                                    case 'yml':
+                                        include(ext);
+                                        vfs.resources.json[base] = yaml.safeLoad(contents);
+                                        break;
+                                    case 'json':
+                                        if (vfs.resources.json[base]) {
+                                            throw new Error('duplicate entry for json detected: ' + path);
+                                        }
+                                        try {
+                                            include(ext);
+                                            vfs.resources.json[base] = JSON.parse(contents);
+                                        } catch (ex) {
+                                            skip('error');
+                                            console.error('Error parsing json file: ' + path + ':' + ex.message);
+                                            // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
+                                        }
+                                        break;
+                                    case 'text':
+                                    case 'txt':
+                                        include(ext);
+                                        vfs.resources.text[base] = contents;
+                                        break;
+                                    case 'css':
+                                        if (cssExceptions.some(function (re) {
+                                                return re.test(contents);
+                                            })) {
+                                            skip('css excluded');
+                                        } else {
+                                            // console.log('css included', base);
+                                            include(ext);
+                                            vfs.resources.css[base] = contents;
+                                        }
+                                        break;
+                                    case 'csv':
+                                        // console.warn('csv not handled yet: ' + path);
+                                        skip(ext);
+                                        break;
+                                    default:
+                                        skip(ext);
+                                        // console.warn('File type "' + ext + '" not supported: ' + path);
+                                        // break;
+                                    }
+                                } else {
+                                    skip('no extension');
+                                    console.warn('module vfs cannot include file without extension: ' + path);
+                                }
                             });
                     }))
                 .then(function () {
-                    var script = 'window.kbase_modules = ' + JSON.stringify(vfs, null, 4);
+                    // var script = 'window.require_modules = ' + JSON.stringify(vfs, null, 4);
+                    console.log('vfs created');
+                    console.log('skipped: ');
+                    showStats(skipped);
+                    console.log('included:');
+                    showStats(included);
+                    var modules = '{' + Object.keys(vfs.scripts).map(function (path) {
+                        return '"' + path + '": ' + vfs.scripts[path];
+                    }).join(', \n') + '}';
+                    var script = [
+                        'window.require_modules = ' + modules,
+                        'window.require_resources = ' + JSON.stringify(vfs.resources, null, 4)
+                    ].join(';\n');
+
                     fs.writeFileAsync(vfsDest.join('/'), script);
                 });
         })
