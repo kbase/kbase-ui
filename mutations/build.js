@@ -839,9 +839,10 @@ function makeKbConfig(state) {
                     return Promise.all([fileName, fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')]);
                 }))
                 .then(function (templates) {
+                    // +++ 
                     return Promise.all(templates.map(function (template) {
                         var dest = root.concat(['build', 'client', template[0]]).join('/');
-                        var out = handlebars.compile(template[1])(state.buildInfo);
+                        var out = handlebars.compile(template[1])(state);
                         return fs.writeFileAsync(dest, out);
                     }));
                 });
@@ -986,15 +987,54 @@ function makeModuleVFS(state, whichBuild) {
                 }
             };
             var vfsDest = buildPath.concat([whichBuild, 'client', 'moduleVfs.js']);
-            var skipped = 0;
+            var skipped = {};
+
+            function skip(ext) {
+                if (!skipped[ext]) {
+                    skipped[ext] = 1;
+                } else {
+                    skipped[ext] += 1;
+                }
+            }
+            var included = {};
+
+            function include(ext) {
+                if (!included[ext]) {
+                    included[ext] = 1;
+                } else {
+                    included[ext] += 1;
+                }
+            }
+
+            function showStats(db) {
+                Object.keys(db).map(function (key) {
+                        return {
+                            key: key,
+                            count: db[key]
+                        };
+                    })
+                    .sort(function (a, b) {
+                        return b.count - a.count;
+                    })
+                    .forEach(function (item) {
+                        console.log(item.key + ':' + item.count);
+                    });
+            }
             var exceptions = [
-                /\/modules\/plugins\/.*?\/iframe_root\//,
-                /main\.css$/,
-                /^\/modules\/bower_components\/bootstrap\//,
-                /^\/modules\/bower_components\/font-awesome\//,
-                /^\/modules\/bower_components\/datatables\//,
-                /^\/modules\/bower_components\/highlightjs\//
+                /\/modules\/plugins\/.*?\/iframe_root\//
             ];
+            var cssExceptions = [
+                /@import/,
+                /@font-face/
+            ];
+            // css in these libraries uses import. We _could_
+            // var cssExceptions = [
+            //     /main\.css$/,
+            //     /^\/modules\/bower_components\/bootstrap\//,
+            //     /^\/modules\/bower_components\/font-awesome\//,
+            //     /^\/modules\/bower_components\/datatables\//,
+            //     /^\/modules\/bower_components\/highlightjs\//
+            // ];
             return Promise.all(matches
                     .map(function (match) {
                         var relativePath = match.split('/').slice(root.length + 2);
@@ -1013,7 +1053,7 @@ function makeModuleVFS(state, whichBuild) {
                                 if (exceptions.some(function (re) {
                                         return (re.test(path));
                                     })) {
-                                    skipped += 1;
+                                    skip('excluded');
                                     return;
                                 }
                                 var m = /^(.*)\.([^.]+)$/.exec(path);
@@ -1023,10 +1063,12 @@ function makeModuleVFS(state, whichBuild) {
                                     // requirejs keeps the root forward slash.
                                     switch (ext) {
                                     case 'js':
+                                        include(ext);
                                         vfs.scripts[path] = 'function () { ' + contents + ' }';
                                         break;
                                     case 'yaml':
                                     case 'yml':
+                                        include(ext);
                                         vfs.resources.json[base] = yaml.safeLoad(contents);
                                         break;
                                     case 'json':
@@ -1034,37 +1076,52 @@ function makeModuleVFS(state, whichBuild) {
                                             throw new Error('duplicate entry for json detected: ' + path);
                                         }
                                         try {
+                                            include(ext);
                                             vfs.resources.json[base] = JSON.parse(contents);
                                         } catch (ex) {
+                                            skip('error');
                                             console.error('Error parsing json file: ' + path + ':' + ex.message);
                                             // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
                                         }
                                         break;
                                     case 'text':
                                     case 'txt':
+                                        include(ext);
                                         vfs.resources.text[base] = contents;
                                         break;
                                     case 'css':
-                                        vfs.resources.css[base] = contents;
+                                        if (cssExceptions.some(function (re) {
+                                                return re.test(contents);
+                                            })) {
+                                            skip('css excluded');
+                                        } else {
+                                            // console.log('css included', base);
+                                            include(ext);
+                                            vfs.resources.css[base] = contents;
+                                        }
                                         break;
                                     case 'csv':
-                                        console.warn('csv not handled yet: ' + path);
-                                        skipped += 1;
+                                        // console.warn('csv not handled yet: ' + path);
+                                        skip(ext);
                                         break;
                                     default:
-                                        skipped += 1;
+                                        skip(ext);
                                         // console.warn('File type "' + ext + '" not supported: ' + path);
                                         // break;
                                     }
                                 } else {
-                                    skipped += 1;
+                                    skip('no extension');
                                     console.warn('module vfs cannot include file without extension: ' + path);
                                 }
                             });
                     }))
                 .then(function () {
                     // var script = 'window.require_modules = ' + JSON.stringify(vfs, null, 4);
-                    console.log('vfs created, skipped: ' + skipped);
+                    console.log('vfs created');
+                    console.log('skipped: ');
+                    showStats(skipped);
+                    console.log('included:');
+                    showStats(included);
                     var modules = '{' + Object.keys(vfs.scripts).map(function (path) {
                         return '"' + path + '": ' + vfs.scripts[path];
                     }).join(', \n') + '}';

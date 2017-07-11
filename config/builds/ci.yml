@@ -6,6 +6,7 @@ targets:
 build:
     dist: true
     temp: temp
+vfs: true
 bower:
     offline: false
 debug: false
