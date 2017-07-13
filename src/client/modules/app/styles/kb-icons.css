@@ -1,44 +1,39 @@
 /* ICONS FROM NARRATIVE kbaseIcons.css */
 
 @charset "UTF-8";
-
 @font-face {
-  font-family: "kbase-icons";
-  src:url("icons/custom_icons/kbase-icons.eot");
-  src:url("icons/custom_icons/kbase-icons.eot?#iefix") format("embedded-opentype"),
-    url("icons/custom_icons/kbase-icons.woff") format("woff"),
-    url("icons/custom_icons/kbase-icons.ttf") format("truetype"),
-    url("icons/custom_icons/kbase-icons.svg#kbase-icons") format("svg");
-  font-weight: normal;
-  font-style: normal;
-
+    font-family: "kbase-icons";
+    src: url("icons/custom_icons/kbase-icons.eot");
+    src: url("icons/custom_icons/kbase-icons.eot?#iefix") format("embedded-opentype"), url("icons/custom_icons/kbase-icons.woff") format("woff"), url("icons/custom_icons/kbase-icons.ttf") format("truetype"), url("icons/custom_icons/kbase-icons.svg#kbase-icons") format("svg");
+    font-weight: normal;
+    font-style: normal;
 }
 
 [data-icon]:before {
-  font-family: "kbase-icons" !important;
-  content: attr(data-icon);
-  font-style: normal !important;
-  font-weight: normal !important;
-  font-variant: normal !important;
-  text-transform: none !important;
-  speak: none;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: "kbase-icons" !important;
+    content: attr(data-icon);
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    speak: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 [class^="icon-"]:before,
 [class*=" icon-"]:before {
-  font-family: "kbase-icons" !important;
-  font-style: normal !important;
-  font-weight: normal !important;
-  font-variant: normal !important;
-  text-transform: none !important;
-  vertical-align: top;
-  speak: none;
-  line-height: 0.8;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: "kbase-icons" !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    vertical-align: top;
+    speak: none;
+    line-height: 0.8;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 
@@ -47,44 +42,54 @@
  * larger makes them look different in firefox vs chrome; so yet another temporary hack -- mike*/
 
 .icon-compare:before {
-  content: "a";
-  font-size: 24pt;
+    content: "a";
+    font-size: 16px;
 }
+
 .icon-genome:before {
-  content: "b";
-  font-size: 24pt;
+    content: "b";
+    font-size: 16px;
 }
+
 .icon-metabolism:before {
-  content: "c";
-  font-size: 24pt;
+    content: "c";
+    font-size: 16px;
 }
+
 .icon-metagenome:before {
-  content: "d";
-  font-size: 24pt;
+    content: "d";
+    font-size: 16px;
 }
+
 .icon-reads:before {
-  content: "e";
-  font-size: 24pt;
+    content: "e";
+    font-size: 16px;
 }
+
 .icon-tree:before {
-  content: "f";
-  font-size: 24pt;
+    content: "f";
+    font-size: 16px;
 }
 
 .icon-md:before {
     font-size: 16pt;
 }
 
+
 /* Nudge the data icon a bit to the left or right */
+
 .kb-data-icon-rnudge {
-  margin-left: 3px;
+    margin-left: 3px;
 }
+
 .kb-data-icon-lnudge {
-  margin-right: 3px;
+    margin-right: 3px;
 }
+
 .kb-data-icon-unudge {
-  margin-bottom: 0.5em;
+    margin-bottom: 0.5em;
 }
+
 .kb-data-icon-dnudge {
-  margin-top: 0.5em;
+    margin-top: 0.5em;
 }
