@@ -32,8 +32,12 @@ define([
                     // oops, that would break the model...
 
                     return new Promise(function (resolve, reject) {
-                        var modulePath = [pluginConfig.moduleRoot, componentConfig.module].join('/');
-                        require([modulePath], function (result) {
+                        var modulePaths = [];
+                        modulePaths.push([pluginConfig.moduleRoot, componentConfig.module].join('/'));
+                        if (componentConfig.css) {
+                            modulePaths.push('css!' + [pluginConfig.moduleRoot, componentConfig.module].join('/'));
+                        }
+                        require(modulePaths, function (result) {
                             resolve(result);
                         }, function (err) {
                             reject(err);
