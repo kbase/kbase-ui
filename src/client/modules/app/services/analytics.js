@@ -3,7 +3,7 @@ define([
     'uuid',
     'app/analytics',
     'kb_common_ts/Cookie'
-], function(
+], function (
     Promise,
     Uuid,
     GoogleAnalytics,
@@ -13,18 +13,23 @@ define([
 
     function factory(config) {
         var runtime = config.runtime,
-            analytics = GoogleAnalytics.make({
-                code: runtime.config('ui.services.analytics.google.code'),
-                hostname: runtime.config('ui.services.analytics.google.hostname')
-            });
+            analytics;
 
-        function pageView(path, clientId) {
-            analytics.send(path, clientId);
+        function pageView(path) {
+            return analytics.send(path);
+        }
+
+        function sendEvent(arg) {
+            return analytics.sendEvent(arg);
+        }
+
+        function sendTiming(arg) {
+            return analytics.sendTiming(arg);
         }
 
         function ensureCookie() {
             var cookieManager = new Cookie.CookieManager();
-            var cookieName = runtime.config('ui.services.analytics.cookie.name', 'kbase_client_id');
+            // var cookieName = runtime.config('ui.services.analytics.cookie.name', 'kbase_client_id');
             var analyticsCookie = cookieManager.getItem('kbase_client_id');
             if (!analyticsCookie) {
                 analyticsCookie = new Uuid(4).format();
@@ -42,24 +47,16 @@ define([
         // API
 
         function start() {
-            return Promise.try(function() {
+            return Promise.try(function () {
                 var clientId = ensureCookie();
-                runtime.recv('route', 'routing', function(route) {
-                    pageView(route.request.original, clientId);
+                analytics = GoogleAnalytics.make({
+                    code: runtime.config('ui.services.analytics.google.code'),
+                    hostname: runtime.config('ui.services.analytics.google.hostname'),
+                    clientId: clientId
                 });
-                // window.addEventListener('hashchange', function(e) {
-
-                // });
-                // eventListeners.push({
-                //     target: window,
-                //     type: 'hashchange',
-                //     listener: function(e) {
-
-                //     }
-                // });
-                // eventListeners.forEach(function(listener) {
-                //     listener.target.addEventListener(listener.type, listener.listener);
-                // });
+                runtime.recv('route', 'routing', function (route) {
+                    pageView(route.request.original);
+                });
             });
         }
 
@@ -73,12 +70,14 @@ define([
         return {
             start: start,
             stop: stop,
-            pageView: pageView
+            pageView: pageView,
+            sendEvent: sendEvent,
+            sendTiming: sendTiming
         };
     }
 
     return {
-        make: function(config) {
+        make: function (config) {
             return factory(config);
         }
     };
