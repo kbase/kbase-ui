@@ -12,6 +12,7 @@ define([
     function factory(config) {
         var code = config.code,
             host = config.hostname,
+            clientId = config.clientId,
             uuid = new Uuid(4).format();
 
         function encodeQuery(params) {
@@ -20,7 +21,25 @@ define([
             }).join('&');
         }
 
-        function send(path, clientId) {
+        function sendToGA(query) {
+            var data = encodeQuery(query);
+            var http = new HttpClient.HttpClient();
+            return http.request({
+                    method: 'POST',
+                    url: 'https://www.google-analytics.com/collect',
+                    header: new HttpClient.HttpHeader({
+                        'content-type': 'application/x-www-form-urlencoded'
+                    }),
+                    withCredentials: true,
+                    data: data
+                })
+                .catch(function (err) {
+                    //alert('boo, it failed. check the log');
+                    console.error('ERROR sending to GA', err);
+                });
+        }
+
+        function send(path) {
             var query = {
                 v: 1,
                 tid: code,
@@ -31,29 +50,51 @@ define([
                 dl: encodeURIComponent(document.location.href),
                 dh: host
             };
-            var data = encodeQuery(query);
-            var http = new HttpClient.HttpClient();
-            http.request({
-                    method: 'POST',
-                    url: 'https://www.google-analytics.com/collect',
-                    header: new HttpClient.HttpHeader({
-                        'content-type': 'application/x-www-form-urlencoded'
-                    }),
-                    withCredentials: true,
-                    data: data
-                })
-                .then(function (result) {
-                    // console.log('sent pageview to ga', result);
-                })
-                .catch(function (err) {
-                    //alert('boo, it failed. check the log');
+            return sendToGA(query);
+        }
 
-                    console.error('ERROR sending to GA', err);
-                });
+        function sendEvent(arg) {
+            // see https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters#ec
+
+            var query = {
+                v: 1,
+                tid: code,
+                cid: clientId,
+
+                t: 'event',
+                ec: arg.category, // event category, required
+                ea: arg.action, // event action, required
+            };
+            if (arg.label) {
+                query.el = arg.label;
+            }
+            if (arg.value) {
+                query.ev = arg.value;
+            }
+            return sendToGA(query);
+        }
+
+        function sendTiming(arg) {
+            // see https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters#ec
+
+            var query = {
+                v: 1,
+                tid: code,
+                cid: clientId,
+
+                t: 'timing',
+                utc: arg.category,
+                utv: arg.variable,
+                utt: arg.time,
+                utl: arg.label
+            };
+            return sendToGA(query);
         }
 
         return {
-            send: send
+            send: send,
+            sendEvent: sendEvent,
+            sendTiming: sendTiming
         };
     }
 
