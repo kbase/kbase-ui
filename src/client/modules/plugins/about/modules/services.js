@@ -8,6 +8,7 @@ define([
     'kb_service/client/catalog',
     'kb_common/jsonRpc/genericClient',
     'kb_common/jsonRpc/dynamicServiceClient',
+    'kb_common_ts/httpClient',
 
     'bootstrap'
 ], function (
@@ -19,11 +20,11 @@ define([
     Workspace,
     Catalog,
     GenericClient,
-    DynamicServiceClient
+    DynamicServiceClient,
+    HttpClient
 ) {
     'use strict';
     var t = html.tag,
-        h1 = t('h1'),
         div = t('div'),
         table = t('table'),
         tr = t('tr'),
@@ -38,6 +39,10 @@ define([
         var mount, container,
             runtime = config.runtime,
             vm = {
+                auth: {
+                    id: html.genId(),
+                    node: null
+                },
                 nms: {
                     id: html.genId(),
                     node: null
@@ -73,7 +78,7 @@ define([
                 }, [
                     div({
                         class: 'col-sm-12'
-                    }, ['nms', 'workspace', 'userProfile', 'catalog', 'serviceWizard', 'dynamicServices'].map(function (id) {
+                    }, ['auth', 'nms', 'workspace', 'userProfile', 'catalog', 'serviceWizard', 'dynamicServices'].map(function (id) {
                         return div({
                             id: vm[id].id
                         });
@@ -199,6 +204,64 @@ define([
                 .then(function (info) {
                     vm.workspace.node.innerHTML = div({}, [
                         h3('Workspace'),
+                        table({
+                            class: 'table table-striped'
+                        }, info.map(function (item) {
+                            return tr([
+                                th({
+                                    style: {
+                                        width: '10%'
+                                    }
+                                }, item.label),
+                                td(item.value)
+                            ]);
+                        }))
+                    ]);
+                });
+        }
+
+
+        function renderAuth() {
+            // +++ 
+            var http = new HttpClient.HttpClient();
+            vm.auth.node.innerHTML = html.loading();
+
+            function getRoot() {
+                var header = new HttpClient.HttpHeader();
+                header.setHeader('accept', 'application/json');
+                return http.request({
+                        method: 'GET',
+                        url: runtime.config('services.auth2.url'),
+                        header: header
+                    })
+                    .then(function (result) {
+                        try {
+                            var data = JSON.parse(result.response);
+                            return data.version;
+                        } catch (ex) {
+                            return 'ERROR: ' + ex.message;
+                        }
+                    });
+            }
+
+            return Promise.all([getRoot(), perf(getRoot)])
+                .spread(function (version, perf) {
+                    var info = [];
+                    // Version info
+                    info.push({
+                        label: 'Version',
+                        value: version
+                    });
+                    info.push({
+                        label: 'Perf (ms/call)',
+                        value: perf.average
+                    });
+
+                    return info;
+                })
+                .then(function (info) {
+                    vm.auth.node.innerHTML = div({}, [
+                        h3('Auth'),
                         table({
                             class: 'table table-striped'
                         }, info.map(function (item) {
@@ -375,6 +438,7 @@ define([
 
         function render() {
             return Promise.all([
+                renderAuth(),
                 renderNMS(),
                 renderWorkspace(),
                 renderUserProfile(),
@@ -383,26 +447,6 @@ define([
                 renderDynamicServices()
             ]);
         }
-
-        // function render() {
-        //     return renderServices()
-        //         .then(function (servicesContent) {
-        //             return div({
-        //                 class: 'container-fluid'
-        //             }, [
-        //                 div({
-        //                     class: 'row'
-        //                 }, [
-        //                     div({
-        //                         class: 'col-sm-12'
-        //                     }, [
-        //                         h1('KBase Services'),
-        //                         servicesContent
-        //                     ])
-        //                 ])
-        //             ]);
-        //         });
-        // }
 
         // Widget API
         function attach(node) {
