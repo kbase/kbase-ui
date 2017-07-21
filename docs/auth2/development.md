@@ -46,7 +46,8 @@ Edit the ```Vagrantfile``` to set it up for better local development:
 config.vm.network "private_network", type: "dhcp"
 config.vm.synced_folder ".", "/vagrant", type: "nfs"
 config.vm.provider "virtualbox" do |vb|
-  vb.memory = "1024"
+  vb.memory = 2048
+  vb.cpus = 2
   vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/vagrant", "1"]
 end
 ```
@@ -75,11 +76,12 @@ vagrant up
 vagrant ssh
 sudo su
 add-apt-repository ppa:nginx/stable
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 apt-get update
 apt-get upgrade -y
 apt-get dist-upgrade -y
 apt-get autoremove -y
-apt-get install nginx-extras -y
+apt-get install git nginx-extras nodejs -y
 ```
 
 > Note that for all subsequent commands in the vagrant window, we'll assume that "sudo su" is still active.
@@ -229,7 +231,9 @@ Exit out of vagrant
 exit
 ```
 
-### Build and set up kbase-ui
+### Build and set up kbase-ui in host
+
+Typically you will be building kbase-ui in your host (e.g. Mac) environment and not in the VM. This is simply because it is a faster workflow.
 
 In the kbase-ui repo, build it:
 
@@ -238,6 +242,20 @@ cd kbase-ui
 make init
 make build
 ```
+
+Bring it up in the browser: https://ci.kbase.us
+
+### Now try in the vagrant vm
+
+First clean it in the host
+
+### Set up linking
+
+Linking source assets into the build directory tree is the primary tool for rapid kbase-ui development.
+
+In this example below, we are linkin the auth2 plugin
+
+> TODO: this needs to be generalized to any plugin...
 
 Now we'll need to set up the linking script, by copying it from config/link.sh to dev/test/link.sh
 
