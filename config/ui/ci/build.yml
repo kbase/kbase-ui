@@ -171,6 +171,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: jgi-search
+        globalName: kbase-ui-plugin-jgi-search
+        version: 0.1.0
+        cwd: src/plugin
+        source: 
+            bower: {}
             
 
 # Copy these directories into the modules
