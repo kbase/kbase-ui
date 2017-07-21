@@ -49,9 +49,6 @@ services:
         url: '{{ deploy.services.urlBase }}/services/kb-ftp-api/v0'
         root: /data/bulk
         name: FTP Service
-    auth:
-        url: '{{ deploy.services.urlBase }}/services/authorization/Sessions/Login'
-        name: Authorization Service
     auth2:
         url: '{{ deploy.services.urlBase }}/services/auth'
         cookieName: kbase_session
