@@ -167,14 +167,14 @@ plugins:
     -
         name: reske-search
         globalName: kbase-ui-plugin-reske-search
-        version: 0.6.2
+        version: 0.7.0
         cwd: src/plugin
         source:
             bower: {}
     -
         name: jgi-search
         globalName: kbase-ui-plugin-jgi-search
-        version: 0.2.0
+        version: 0.3.0
         cwd: src/plugin
         source: 
             bower: {}
