@@ -8,7 +8,7 @@ define([
     'kb_service/client/catalog',
     'kb_common/jsonRpc/genericClient',
     'kb_common/jsonRpc/dynamicServiceClient',
-    'kb_common_ts/httpClient',
+    'kb_common_ts/HttpClient',
 
     'bootstrap'
 ], function (
@@ -107,6 +107,7 @@ define([
                     if (itersLeft === 0) {
                         var stats = {
                             measures: measures,
+                            total: sum(measures),
                             average: sum(measures) / measures.length
                         };
                         resolve(stats);
@@ -141,8 +142,12 @@ define([
                     });
 
                     info.push({
-                        label: 'Perf (ms/call)',
-                        value: perf.average
+                        label: 'Perf avg (ms/call)',
+                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
+                    });
+                    info.push({
+                        label: 'Perf calls (ms))',
+                        value: perf.measures.join(', ')
                     });
 
                     // Status info
@@ -195,8 +200,12 @@ define([
                         value: version
                     });
                     info.push({
-                        label: 'Perf (ms/call)',
-                        value: perf.average
+                        label: 'Perf avg (ms/call)',
+                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
+                    });
+                    info.push({
+                        label: 'Perf calls (ms/call)',
+                        value: perf.measures.join(', ')
                     });
 
                     return info;
@@ -253,8 +262,12 @@ define([
                         value: version
                     });
                     info.push({
-                        label: 'Perf (ms/call)',
-                        value: perf.average
+                        label: 'Perf avg (ms/call)',
+                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
+                    });
+                    info.push({
+                        label: 'Perf calls (ms/call)',
+                        value: perf.measures.join(', ')
                     });
 
                     return info;
@@ -301,9 +314,14 @@ define([
                         value: version[0]
                     });
                     info.push({
-                        label: 'Perf (ms/call)',
-                        value: perf.average
+                        label: 'Perf avg (ms/call)',
+                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
                     });
+                    info.push({
+                        label: 'Perf calls (ms/call)',
+                        value: perf.measures.join(', ')
+                    });
+
 
                     return info;
                 })
@@ -341,8 +359,12 @@ define([
                         value: version
                     });
                     info.push({
-                        label: 'Perf (ms/call)',
-                        value: perf.average
+                        label: 'Perf avg (ms/call)',
+                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
+                    });
+                    info.push({
+                        label: 'Perf calls (ms/call)',
+                        value: perf.measures.join(', ')
                     });
 
                     return info;
@@ -389,8 +411,12 @@ define([
                         value: version
                     });
                     info.push({
-                        label: 'Perf (ms/call)',
-                        value: perf.average
+                        label: 'Perf avg (ms/call)',
+                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
+                    });
+                    info.push({
+                        label: 'Perf calls (ms/call)',
+                        value: perf.measures.join(', ')
                     });
 
                     return info;
