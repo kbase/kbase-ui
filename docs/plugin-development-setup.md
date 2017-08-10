@@ -25,15 +25,11 @@ In a dedicated directory clone the following repos
 ```
 mkdir dev
 cd dev
-git clone -b develop https://github.com/kbase/kbase-ui
-git clone https://github.com/your-github-account/kbase-ui-plugin-YOUR-PLUGIN
+git clone -b develop ssh://git@github.com/your-github-account/kbase-ui
+git clone ssh://git@github.com/your-github-account/kbase-ui-plugin-YOUR-PLUGIN
 ```
 
-or as I prefer, using ssh
-
-```text
-git clone ssh://git@github.com/eapearson/kbase-ui-plugin-YOUR-PLUGIN
-```
+> A git-based workflow is a bit easier if you use an ssh public key in your github account; this is enabled via the ssh: url format.
 
 ## Set up Vagrant
 
@@ -51,7 +47,10 @@ Edit the ```Vagrantfile``` to set it up for better local development:
 
 ```text
 config.vm.network "private_network", type: "dhcp"
-config.vm.synced_folder ".", "/vagrant", type: "nfs"
+# comment after fixing /etc/exports
+config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: true
+# uncomment after fixing /etc/exports
+# config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: false
 config.vm.provider "virtualbox" do |vb|
   vb.memory = "1024"
   vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/vagrant", "1"]
@@ -73,12 +72,19 @@ This:
 config.vm.network "private_network", ip: "1.2.3.4"
 ```
 
+> You may wish to simply copy the Vagrantfile from the docs/examples directory; it is very similar to the one above, but provides more resources to enable deploying a service inside the vm.
+
 The funny business with NFS is required to allow symbolic linking within the vm using shared folders. The linking is a necessary part of the workflow for kbase-ui plugins.
 
 ### Set up the VM
 
-```text
+```
 vagrant up
+```
+
+When vagrant prompts for your password, enter the password for your local host account (assuming it is an Admin account.) Vagrant needs this in order to edit your nfs /etc/exports file (more on that later.)
+
+```
 vagrant ssh
 sudo su
 add-apt-repository ppa:nginx/stable
@@ -89,21 +95,21 @@ apt-get autoremove -y
 apt-get install nginx-extras -y
 ```
 
-> Note that for all subsequent commands in the vagrant window, we'll assume that "sudo su" is still active.
+> Note: If you received an NFS error when first starting up VM with "vagrant up", you can ignore the error message for now and proceed with the setup. The step below, "Fix the NFS configuration" will take care of this.
 
 > Note that as you start up the vagrant-managed vm you will be asked for your password. This is your Mac password, assuming you are an Admin user. This is required for vagrant to update your local Mac nfs configuration.
 
 ### Determine the IP of the VM and set up a local host mapping
 
-Within the VM, obtain the IP address assigned via DHCP and then back on the host add it to the /etc/hosts file.
+Still within the VM, obtain the IP address assigned via DHCP and then back on the host add it to the /etc/hosts file.
 
-```text
+```
 ifconfig | grep "inet addr:"
 ```
 
 You'll need to hunt in the output for a line which is not using a private ip. E.g. in the following output 10.0.2.15 and 127.0.0.1 are both private IPs, so 172.28.128.3 is the one we want.
 
-```text
+```
           inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
           inet addr:172.28.128.3  Bcast:172.28.128.255  Mask:255.255.255.0
           inet addr:127.0.0.1  Mask:255.0.0.0
@@ -111,14 +117,14 @@ You'll need to hunt in the output for a line which is not using a private ip. E.
 
 Open a new terminal window, edit the /etc/hosts file on your Mac host:
 
-```text
+```
 exit
 sudo vi /etc/hosts
 ```
 
-add a line somewhere, e.g. the bottom, like:
+add a line somewhere, e.g. at the bottom, like:
 
-```text
+```
 1.2.3.4 ci.kbase.us
 ```
 
@@ -126,13 +132,83 @@ We will be mapping ci.kbase.us into the VM, and inside the VM using an nginx con
 
 > Note that when you need to access the "real" ci.kbase.us you will need to disable this line in your /etc/hosts file.
 
+### Fix the NFS configuration
+
+At present, a bug in Vagrant causes it to tend to grab the wrong ip address from inside the VM and insert it into the host nfs exports file, which provides the nfs directory sharing.
+
+If Vagrant does this, the nfs integration will fail, although the VM itself will start and be available via ssh.
+
+To fix this we need to:
+
+1. start vagrant once with the configuration above
+2. get the ip address of the vm
+3. ensure that the host's /etc/exports file contains the correct ip address
+  - if not, correct it
+4. disable nfs exports file writing
+
+1 and 2. You should have already done steps 1 and 2 above.
+
+3. Inspect the host's /etc/exports file
+
+When vagrant detects nfs file sharing, it will create the mappings between the VM and host system in the host's /etc/exports file.
+
+First open /etc/exports back on your host (mac) system
+
+```
+sudo vi /etc/exports
+```
+
+You should see an entry for the virtual machine.
+
+Each entry is wrapped in comments provided by Vagrant which contain the vm's id. You can identify your section by the mappings that are shown. You can also identify the section by the vm's id, but that is not covered here [yet].
+
+We are interested in the second value in the export entry, the ip address. If the value is not the same you you noted above, edit the ip address to correct it. If it is the same, simply leave it alone. If there are multiple lines in the section, check and correct each one.
+
+When you have saved and exited the file, you'll need to adjust the Vagrantfile:
+
+```
+vi Vagrantfile
+```
+
+Comment out the line ending in ```nfs_export: true```, and uncomment the one ending in ```nfs_export: false```.
+
+Before: 
+
+```
+# comment after fixing /etc/exports
+config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: true
+# uncomment after fixing /etc/exports
+# config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: false
+```
+
+After: 
+
+```
+# comment after fixing /etc/exports
+# config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: true
+# uncomment after fixing /etc/exports
+config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: false
+```
+
+Restart vagrant to ensure that it starts error-free:
+
+``` 
+vagrant reload 
+```
+
+You may be pleased to learn that you will no longer be required to enter your host password upon vagrant startup.
+
 ## Set up Nginx 
 
-Back in the vagrant window we'll be setting 
+Back in the VM we'll be setting up nginx.
+
+``` 
+vagrant ssh
+```
 
 ### Install self signed cert
 
-We must always run auth2 over https. For local development in a browser the self-signed certificate is adequate.
+All services are typically operated over https, so we set up even the development environment for https. For local development a self-signed certificate is adequate, even if it does cause the browser to complain.
 
 ```
 cd /vagrant
@@ -166,58 +242,90 @@ i
 copy this 
 
 ```text
-#  redirect accidental insecure requests to https
+#
+# A minimal proxying configuration for running kbase-ui through a secure proxy
+# against ci.
+# 
+# It is designed to operate inside a VM which naturally routes ci.kbase.us to its
+# real location, while the host has ci mapped to the vm via /etc/hosts.
+#
+
+# Route insecure requests to secure.
 server {
   listen 80 default_server;
   listen [::]:80 default_server;
-  server_name dev.kbase.us;
+  server_name ci.kbase.us;
   return 301 https://ci.kbase.us$request_uri;
 }
+
 server {
   listen 443 ssl;
   server_name ci.kbase.us;
   ssl_certificate /vagrant/test.crt;
   ssl_certificate_key /vagrant/test.key;
-  # Proxy all service call to the real CI
-  # nb the proxie_cookie_path is for the auth service
-  # could be a separate location at /services/auth
+  
+  # Proxy all service calls, including auth2, to the real CI
   location /services {
+    # The cookie path rewriting is just for auth2
     proxy_cookie_path /login /services/auth/login;
     proxy_cookie_path /link /services/auth/link;
     proxy_pass https://ci.kbase.us/services;
+    client_max_body_size 300M;
   }
+
+  # Needed for dynamic service calls
   location /dynserv {
     proxy_pass https://ci.kbase.us/dynserv;
   }
-  location /geonames {
-     proxy_pass http://api.geonames.org/;
-  }
-  # Proxy the narrative including websockets
+
+  # Needed for running narratives
   location /narrative {
     proxy_pass https://ci.kbase.us/narrative;
-    proxy_http_version 1.1;
+    # Uncomment the following lines for a narrative deployed
+    # within the proxy's vm.
+    #proxy_pass http://localhost:8888/narrative;
+
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
+    proxy_http_version 1.1;
+    proxy_set_header Origin http://localhost;
+    proxy_set_header Host localhost;
   }
+
   # Proxy all non-services to the local kbase-ui running in the vm
   location / {
     # next line for node testing server.
+    gzip on;
+    gzip_types text/css application/json application/javascript;
+    
     root /vagrant/kbase-ui/build/build/client;
+
+    # Uncomment to work against the minified dist build.
+    # root /vagrant/kbase-ui/build/build/client;
+
     index index.html;
+  }
+
+  # We need to proxy RESKE search, since the dev service is insecure.
+  location /services/reske {
+	proxy_pass http://dev01.kbase.lbl.gov:29999;
+
+    # Enable for RESKE deployed inside the proxy's vm.
+    # proxy_pass http://localhost:5000;
   }
 }
 ```
 
-paste into the terminal running vi
+paste into the terminal running vi, then save and exit.
 
 ```text
 <esc>
 ZZ
 ```
 
-##
-
 Now we need to restart the virtual machine in order to map the directories and enable the other changes we made to Vagrantfile.
+
+Exit back to the host, and reload vagrant.
 
 ```
 exit
@@ -226,15 +334,6 @@ vagrant reload
 ```
 
 The first time reloading the virtual machine may take a while, as the system update may force a rebuild of the virtual box guest additions.
-
-At the end of the reload (and every time you reload or start the virtual machine), vagrant will prompt you for your password. Assuming you have admin rights, this is necessary to temporarily configure NFS on the host mac for interacting with the virtual machine.
-
-If this error occurs
-
-> No guest IP was given to the Vagrant core NFS helper. This is an
-internal error that should be reported as a bug.
-
-Just try again. I've found that initial vagrant setup can be buggy, perhaps due to the upgrading of the internal client and the length of time it may take leading to timeouts, but that after this it is stable.
 
 ### Test it
 
@@ -283,7 +382,6 @@ Confirm quickly that the base build is working by visiting https://ci.kbase.us.
 > Note - your browser will give you a security warning, due to the usage of the self-signed certificate. Each browser is different, but it should provide you with a way to bypass the error or add a security exception.
 
 Assuming all has gone well...
-
 
 Now we'll need to set up the linking script, by copying it from config/link.sh to dev/test/link.sh
 
