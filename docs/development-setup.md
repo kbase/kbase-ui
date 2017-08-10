@@ -65,19 +65,45 @@ vagrant init ubuntu/trusty64
 
 Edit the ```Vagrantfile``` to set it up for better local development:
 
-```text
-config.vm.network "private_network", type: "dhcp"
-# comment after fixing /etc/exports
-config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: true
-# uncomment after fixing /etc/exports
-# config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: false
-config.vm.provider "virtualbox" do |vb|
-  vb.memory = "1024"
-  vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/vagrant", "1"]
+```
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # Current standard Linux deployment is Ubuntu 14.04
+  config.vm.box = "ubuntu/trusty64"
+
+  # I prefer to just use dhcp and discover the ip address, but you may prefer a static ip.
+  config.vm.network "private_network", type: "dhcp"
+  
+  # For static.
+  # config.vm.network "private_network", ip: "1.2.3.4"
+
+  # comment after fixing /etc/exports
+  config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: true
+
+  # uncomment after fixing /etc/exports
+  # config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: false
+
+  # This will start nginx after the vm is started, and shared folders mounted.
+  config.vm.provision :shell, :inline => "sudo service nginx start", run: "always"
+
+  # The resource allocation is suitable for most development needs, including running a Narrative instance
+  # inside the VM, but does not impact the host machine much.
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+    v.cpus = 2
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
+    # This option, in concert with the usage of nfs, allows for the creation of symlinks
+    # inside the vm
+    v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/vagrant", "1"]
+  end
 end
 ```
 
-You can place this anywhere in the file. I usually disperse these where they occur in the Vagrantfile, but they can also be inserted as a lump, for example, at the end of the file just before the final "end".vagr
+> Tip: You can find this Vagrant file as well as nginx configuration files in docs/examples
+
+You can place this anywhere in the file. I usually disperse these where they occur in the Vagrantfile, but they can also be inserted as a lump, for example, at the end of the file just before the final "end".
 
 This:
 
@@ -86,15 +112,15 @@ This:
 - sets the memory to a reasonable minimum
 - enables the usage of symlinking in shared folders
 
-> You may wish to use a static ip rather than dhcp, in which case the following would apply, where you must obtain the ip from your host configuration.
+You may wish to use a static ip rather than dhcp, in which case the following would apply, where you must obtain the ip from your host configuration.
 
 ```text
 config.vm.network "private_network", ip: "1.2.3.4"
 ```
 
-> You may wish to simply copy the Vagrantfile from the docs/examples directory; it is very similar to the one above, but provides more resources to enable deploying a service inside the vm.
+For example, since you are probably using VirtualBox for virtualization, you can set up VirtualBox to reserve some ip addresses for static ips. This is located under Settings > network > vboxnet0 > DHCP Server. The DHCP range should default to 172.28.128.3 - 254. To play well with DHCP with static ips you could change this to 172.28.128.3 - 100, and use 101 through 254 for static. (You may already have DHCP assigned addresses, so using the high part of the range is more pleasant.)
 
-The funny business with NFS is required to allow symbolic linking within the vm using shared folders. The linking is a necessary part of the workflow for kbase-ui plugins.
+The funny business with NFS is required to allow symbolic linking within the vm using shared folders. The linking is a necessary part of the workflow for kbase-ui plugins, libraries, or other external components.
 
 ### Set up the VM
 
@@ -102,12 +128,25 @@ The funny business with NFS is required to allow symbolic linking within the vm 
 vagrant up
 ```
 
-When vagrant prompts for your password, enter the password for your local host account (assuming it is an Admin account.) Vagrant needs this in order to edit your nfs /etc/exports file (more on that later.)
+Vagrant will display a bunch of messages, ending with an error message you may ignore:
+
+```
+==> default: nginx: unrecognized service
+The SSH command responded with a non-zero exit status. Vagrant
+assumes that this means the command failed. The output for this command
+should be in the log above. Please read the output to determine what
+went wrong.
+```
+
+This is displayed because the nginx server is not installed in the vm yet.
+
+> TODO: enmbed the following in a provisioning script...
+
 
 ```
 vagrant ssh
 sudo su
-add-apt-repository ppa:nginx/stable
+add-apt-repository ppa:nginx/stable -y
 apt-get update
 apt-get upgrade -y
 apt-get dist-upgrade -y
@@ -117,11 +156,11 @@ apt-get install nginx-extras -y
 
 > Note: If you received an NFS error when first starting up VM with "vagrant up", you can ignore the error message for now and proceed with the setup. The step below, "Fix the NFS configuration" will take care of this.
 
-> Note that as you start up the vagrant-managed vm you will be asked for your password. This is your Mac password, assuming you are an Admin user. This is required for vagrant to update your local Mac nfs configuration.
+> Note that as you start up the vagrant-managed vm you may be be asked for your password. This is your Mac password, assuming you are an Admin user. This is required for vagrant to update your local Mac nfs configuration.
 
 ### Determine the IP of the VM and set up a local host mapping
 
-Still within the VM, obtain the IP address assigned via DHCP and then back on the host add it to the /etc/hosts file.
+Still within the VM, obtain the IP address assigned via DHCP or simply use the IP address you assigned to Vagrant, and then back on the host add it to the /etc/hosts file.
 
 ```
 ifconfig | grep "inet addr:"
@@ -253,7 +292,10 @@ Edit the main nginx config file. Nginx installs with a single example, functiona
 
 We are going to edit that file, erase the contents, and insert our config. E.g.
 
+> Note: We'll be going back into superuser mode now
+
 ```text
+sudo su
 vi /etc/nginx/sites-available/default
 :1,$d
 i
@@ -357,21 +399,76 @@ if all goes well restart nginx
 service nginx restart
 ```
 
-## Set up kbase-ui
+#### Done with the VM
 
-This is a host-based development workflow, so most of your work will be on the host side of things from now on.
-
-Exit out of vagrant
-
-```text
-exit
-```
+That should be it with the VM for the general kbase-ui development setup. There is more to do in there for plugin development, co-development with the Narrative, and testing.
 
 ### Confirm that it works
 
-Let's confirm that the base build is working by visiting https://ci.kbase.us.
+Let's confirm that the base build is working by visiting https://ci.kbase.us in your favorite browser. KBase supports all modern desktop browsers, so take your pick.
 
 Your browser will give you a security warning, due to the usage of the self-signed certificate. Each browser is different, but it should provide you with a way to bypass the error or add a security exception.
+
+#### Firefox
+
+- click the "Advanced" button
+- click the "Add Exception ..." button
+- click the "Confirm Security Exception" button
+
+#### Chrome
+
+- click the "ADVANCED" button
+- click the "Proceed to ci.kbase.us (unsafe)" link
+
+#### Safari
+
+- click the "Show Details" button
+- click the "visit this website" link
+- click the "Visit Website" button
+- enter your host password
+- click "Update Settings"
+
+## Troubleshooting
+
+### 502 when accessing ci.kbase.us in browser
+
+If you find that you get a 502 from the auth service after initial installation, you may have accidentally created a ci.kbase.us entry in the /etc/hosts file *inside* the VM. This entry should be created on your host machine.
+
+### Vagrant complains when going up (or reload)
+
+If you see this message:
+
+```
+==> default: start: Job is already running: nginx
+The SSH command responded with a non-zero exit status. Vagrant
+assumes that this means the command failed. The output for this command
+should be in the log above. Please read the output to determine what
+went wrong.
+```
+
+Then chances are that the nginx provisioning line in the Vagrantfile is not required. You may comment out this line
+
+```
+  config.vm.provision :shell, :inline => "sudo service nginx start", run: "always"
+```
+
+### GuestAdditions warnings during vagrant up
+
+Don't worry if you see messages like this:
+
+```
+Got different reports about installed GuestAdditions version:
+Virtualbox on your host claims:   4.3.36
+VBoxService inside the vm claims: 5.1.24
+Going on, assuming VBoxService is correct...
+Got different reports about installed GuestAdditions version:
+Virtualbox on your host claims:   4.3.36
+VBoxService inside the vm claims: 5.1.24
+Going on, assuming VBoxService is correct...
+```
+
+It takes one or more times starting Vagrant when using the GuestAdditions plugin mentioned at the very top of this document to get GuestAdditions updated in the VM and for Vagrant to stop complaining.
+
 
 ## Fin
 

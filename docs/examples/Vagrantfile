@@ -11,12 +11,11 @@ Vagrant.configure("2") do |config|
   # For static.
   # config.vm.network "private_network", ip: "1.2.3.4"
 
-  # Enable the following line the first time in order to create the entry in the host's /etc/exports
-  # config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: true
+  # comment after fixing /etc/exports
+  config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: true
 
-  # Normally you should be running with the nfs_export option disabled, however, so that Vagrant does not
-  # overwrite the /etc/exports file with a bad ip address.
-  config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: false
+  # uncomment after fixing /etc/exports
+  # config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: false
 
   # This will start nginx after the vm is started, and shared folders mounted.
   config.vm.provision :shell, :inline => "sudo service nginx start", run: "always"
