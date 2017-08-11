@@ -16,11 +16,8 @@ nbproject
 /mutations/mutantfiles
 
 # Developer artifacts
-/dev/temp
-/dev/config
-/dev/test
-/dev/tools
-/dev/test-coverage
+/dev/*
+!/dev/README.md
 /install/temp
 /errorShots
 /target
