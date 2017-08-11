@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
   # Current standard Linux deployment is Ubuntu 14.04
   config.vm.box = "ubuntu/trusty64"
 
-  # I prefer to just use dhcp and discover the ip address, but you may prefer a static ip.
+  # DHCP works fine
   config.vm.network "private_network", type: "dhcp"
   
   # For static.

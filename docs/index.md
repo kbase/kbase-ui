@@ -2,7 +2,8 @@
 
 ## Contents
 
-- [Developer Setup](developer-setup.md)
+- [Prerequisites for Development](development-prerequisites.md)
+- [Development Setup](development-setup.md)
 
 ## Under Revision
 

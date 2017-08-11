@@ -2,18 +2,11 @@
 
 ## Prerequisites
 
-- VirtualBox
-  - https://www.virtualbox.org/wiki/Downloads
-- Vagrant
-  - https://www.vagrantup.com/downloads.html
-- Vagrant virtualbox guest update plugin (optional)
-  - https://github.com/dotless-de/vagrant-vbguest
-- git
-  - git is included with Apple's Xcode command line tools, directly from git folks https://git-scm.com/download/mac, or with mac package managers like macports or brew.
+see [Development Prerequisites](development-prerequisites.md)
 
 ## Assumptions
 
-- You want to create a base kbase-ui development environment
+You want to create a base kbase-ui development environment
 
 ## Get Repos
 
@@ -53,7 +46,9 @@ That is all we will do here for now.
 
 ## Set up Vagrant
 
-## Create and set up an VM for Ubuntu 14.04 via Vagrant
+## Create and set up a virtual machine for Ubuntu 14.04 via Vagrant
+
+> Installation of vagrant and virtualbox is covered in the [development prerequisites](development-prerequisites.md) document.
 
 ### Initialize Vagrant:
 
@@ -73,7 +68,7 @@ Vagrant.configure("2") do |config|
   # Current standard Linux deployment is Ubuntu 14.04
   config.vm.box = "ubuntu/trusty64"
 
-  # I prefer to just use dhcp and discover the ip address, but you may prefer a static ip.
+  # DHCP works fine
   config.vm.network "private_network", type: "dhcp"
   
   # For static.
@@ -103,7 +98,7 @@ end
 
 > Tip: You can find this Vagrant file as well as nginx configuration files in docs/examples
 
-You can place this anywhere in the file. I usually disperse these where they occur in the Vagrantfile, but they can also be inserted as a lump, for example, at the end of the file just before the final "end".
+You can place this anywhere in the file. It is easiets to just inserted it as a lump, for example, at the end of the file just before the final "end".
 
 This:
 
@@ -112,15 +107,35 @@ This:
 - sets the memory to a reasonable minimum
 - enables the usage of symlinking in shared folders
 
-You may wish to use a static ip rather than dhcp, in which case the following would apply, where you must obtain the ip from your host configuration.
+You may wish to use a static ip rather than dhcp. To enable a static ip for your VM, comment out the line
 
-```text
-config.vm.network "private_network", ip: "1.2.3.4"
+```
+  config.vm.network "private_network", type: "dhcp"
 ```
 
-For example, since you are probably using VirtualBox for virtualization, you can set up VirtualBox to reserve some ip addresses for static ips. This is located under Settings > network > vboxnet0 > DHCP Server. The DHCP range should default to 172.28.128.3 - 254. To play well with DHCP with static ips you could change this to 172.28.128.3 - 100, and use 101 through 254 for static. (You may already have DHCP assigned addresses, so using the high part of the range is more pleasant.)
+and uncomment this line
 
-The funny business with NFS is required to allow symbolic linking within the vm using shared folders. The linking is a necessary part of the workflow for kbase-ui plugins, libraries, or other external components.
+```
+# config.vm.network "private_network", ip: "1.2.3.4"
+```
+
+replacing the ip address "1.2.3.4" with one that you have selected from your local host configuration.
+
+#### Virtualbox example
+
+For example, since you are using VirtualBox for virtualization, you can set up VirtualBox to reserve some ip addresses for static ips. This is located under the menu:
+
+Settings > network > vboxnet0 > DHCP Server
+
+The DHCP range should default to 172.28.128.3 - 254. To play well with DHCP with static ips you could change this to 172.28.128.3 - 100, and use 101 through 254 for static. (You may already have DHCP assigned addresses, so using the high part of the range is more pleasant.)
+
+Your configuration line would look like this:
+
+```
+  config.vm.network "private_network", ip: "172.28.128.101"
+```
+
+> The funny business with NFS is required to allow symbolic linking within the vm using shared folders. The linking is a necessary part of the workflow for kbase-ui plugins, libraries, or other external components.
 
 ### Set up the VM
 
@@ -158,23 +173,30 @@ apt-get install nginx-extras -y
 
 > Note that as you start up the vagrant-managed vm you may be be asked for your password. This is your Mac password, assuming you are an Admin user. This is required for vagrant to update your local Mac nfs configuration.
 
-### Determine the IP of the VM and set up a local host mapping
+### Set up a local host mapping
 
 Still within the VM, obtain the IP address assigned via DHCP or simply use the IP address you assigned to Vagrant, and then back on the host add it to the /etc/hosts file.
+
+
+#### Determine DHCP-assigned IP address (if necessary)
+
+If you set up Vagrant to use DHCP, use the following commands to discover the ip address assigned to the VM:
 
 ```
 ifconfig | grep "inet addr:"
 ```
 
-You'll need to hunt in the output for a line which is not using a private ip. E.g. in the following output 10.0.2.15 and 127.0.0.1 are both private IPs, so 172.28.128.3 is the one we want.
+You'll need to locate the IP address used by VirtualBox, which seems to use the 172.28.128 subnet. (You can also find this out directly from the VirtualBox settings.)
 
 ```
           inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
           inet addr:172.28.128.3  Bcast:172.28.128.255  Mask:255.255.255.0
           inet addr:127.0.0.1  Mask:255.0.0.0
-```          
+```
 
-Open a new terminal window, edit the /etc/hosts file on your Mac host:
+#### Add host mapping to /etc/hosts file
+
+Back on the host, edit the /etc/hosts file on your Mac host:
 
 ```
 exit
@@ -186,6 +208,8 @@ add a line somewhere, e.g. at the bottom, like:
 ```
 1.2.3.4 ci.kbase.us
 ```
+
+Where ```1.2.3.4``` is the ip address you recorded above.
 
 We will be mapping ci.kbase.us into the VM, and inside the VM using an nginx config to map service requests to the real ci.
 
@@ -199,17 +223,13 @@ If Vagrant does this, the nfs integration will fail, although the VM itself will
 
 To fix this we need to:
 
-1. start vagrant once with the configuration above
-2. get the ip address of the vm
-3. ensure that the host's /etc/exports file contains the correct ip address
-  - if not, correct it
-4. disable nfs exports file writing
+1. ensure that the host's /etc/exports file contains the correct ip address
+2. if it isn't correct, correct it
+3. disable nfs exports file writing
 
-1 and 2. You should have already done steps 1 and 2 above.
+#### 1. Inspect the host's /etc/exports file
 
-3. Inspect the host's /etc/exports file
-
-When vagrant detects nfs file sharing, it will create the mappings between the VM and host system in the host's /etc/exports file.
+When vagrant is configured for nfs file sharing, it will create the mappings between the VM and host system in the host's /etc/exports file.
 
 First open /etc/exports back on your host (mac) system
 
@@ -221,9 +241,27 @@ You should see an entry for the virtual machine.
 
 Each entry is wrapped in comments provided by Vagrant which contain the vm's id. You can identify your section by the mappings that are shown. You can also identify the section by the vm's id, but that is not covered here [yet].
 
+An example exports entry for Vagrant:
+
+```
+# VAGRANT-BEGIN: 501 ac6c700e-5bfa-45b0-adb6-94d9f7a740c7
+"/Users/erik/work/kbase/projects/test-docs/dev" 172.28.128.101 -alldirs -mapall=501:20
+# VAGRANT-END: 501 ac6c700e-5bfa-45b0-adb6-94d9f7a740c7
+```
+
 We are interested in the second value in the export entry, the ip address. If the value is not the same you you noted above, edit the ip address to correct it. If it is the same, simply leave it alone. If there are multiple lines in the section, check and correct each one.
 
-When you have saved and exited the file, you'll need to adjust the Vagrantfile:
+```
+sudo vi /etc/exports
+```
+
+If you made changes to /etc/exports you will need to restart the nfs service:
+
+```
+sudo nfsd restart
+```
+
+When you have saved and exited the file, and possibly restarted nfsd, you'll need to adjust the Vagrantfile:
 
 ```
 vi Vagrantfile
@@ -254,8 +292,6 @@ Restart vagrant to ensure that it starts error-free:
 ``` 
 vagrant reload 
 ```
-
-You may be pleased to learn that you will no longer be required to enter your host password upon vagrant startup.
 
 ## Set up Nginx 
 
@@ -473,3 +509,9 @@ It takes one or more times starting Vagrant when using the GuestAdditions plugin
 ## Fin
 
 Now you should be ready to hack on kbase-ui, or move onto other workflows such as plugin or narrative development.
+
+---
+
+[Index](index.md) - [README](../README.md) - [KBase](http://kbase.us)
+
+---
