@@ -87,6 +87,7 @@ apt-get upgrade -y
 apt-get dist-upgrade -y
 apt-get autoremove -y
 apt-get install nginx-extras -y
+apt-get install nginx -y
 ```
 
 > Note that for all subsequent commands in the vagrant window, we'll assume that "sudo su" is still active.
@@ -126,9 +127,9 @@ We will be mapping ci.kbase.us into the VM, and inside the VM using an nginx con
 
 > Note that when you need to access the "real" ci.kbase.us you will need to disable this line in your /etc/hosts file.
 
-## Set up Nginx 
+## Set up Nginx
 
-Back in the vagrant window we'll be setting 
+Back in the vagrant window we'll be setting
 
 ### Install self signed cert
 
@@ -163,7 +164,7 @@ vi /etc/nginx/sites-available/default
 i
 ```
 
-copy this 
+copy this
 
 ```text
 #  redirect accidental insecure requests to https
@@ -255,7 +256,7 @@ sudo nginx -t
 if all goes well
 
 ```text
-service nginx restart
+service nginx start
 ```
 
 ## Set up kbase-ui
@@ -300,7 +301,7 @@ Edit the link.sh script to link to the plugin. Open the link.sh script in your e
 linkPlugin "my-plugin"
 ```
 
-### Link the plugin 
+### Link the plugin
 
 The linking for the plugin  must be done on the vagrant side.
 
@@ -311,7 +312,7 @@ cd /vagrant/kbase-ui/dev/test
 sudo bash link.sh
 ```
 
-> Note that you must issue the linking from within the VM. In these instructions the javascript building and testing occurs in the Mac host environment, and the linking in the Ubuntu vm. This is purely a nod to the convenience of local development with the requirement that linking be within the vm to satisfy nginx with nfs hosted directories. 
+> Note that you must issue the linking from within the VM. In these instructions the javascript building and testing occurs in the Mac host environment, and the linking in the Ubuntu vm. This is purely a nod to the convenience of local development with the requirement that linking be within the vm to satisfy nginx with nfs hosted directories.
 
 You should just need to do this once per development effort. If for some reason you need to rebuild kbase-ui, the linking will need to be repeated.
 
