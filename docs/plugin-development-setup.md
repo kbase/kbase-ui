@@ -93,6 +93,7 @@ apt-get upgrade -y
 apt-get dist-upgrade -y
 apt-get autoremove -y
 apt-get install nginx-extras -y
+apt-get install nginx -y
 ```
 
 > Note: If you received an NFS error when first starting up VM with "vagrant up", you can ignore the error message for now and proceed with the setup. The step below, "Fix the NFS configuration" will take care of this.
@@ -239,7 +240,7 @@ vi /etc/nginx/sites-available/default
 i
 ```
 
-copy this 
+copy this
 
 ```text
 #
@@ -354,7 +355,7 @@ sudo nginx -t
 if all goes well
 
 ```text
-service nginx restart
+service nginx start
 ```
 
 ## Set up kbase-ui
@@ -398,7 +399,7 @@ Edit the link.sh script to link to the plugin. Open the link.sh script in your e
 linkPlugin "my-plugin"
 ```
 
-### Link the plugin 
+### Link the plugin
 
 The linking for the plugin  must be done on the vagrant side.
 
@@ -409,7 +410,7 @@ cd /vagrant/kbase-ui/dev/test
 sudo bash link.sh
 ```
 
-> Note that you must issue the linking from within the VM. In these instructions the javascript building and testing occurs in the Mac host environment, and the linking in the Ubuntu vm. This is purely a nod to the convenience of local development with the requirement that linking be within the vm to satisfy nginx with nfs hosted directories. 
+> Note that you must issue the linking from within the VM. In these instructions the javascript building and testing occurs in the Mac host environment, and the linking in the Ubuntu vm. This is purely a nod to the convenience of local development with the requirement that linking be within the vm to satisfy nginx with nfs hosted directories.
 
 You should just need to do this once per development effort. If for some reason you need to rebuild kbase-ui, the linking will need to be repeated.
 
