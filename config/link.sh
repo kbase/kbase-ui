@@ -71,12 +71,12 @@ function linkInternalPlugin() {
 # EXTERNAL PLUGINS
 #
 
-# An external plugin is one that is installed into kbase-ui from bower during the build process. None of the code, other than 
+# An external plugin is one that is installed into kbase-ui from bower during the build process. None of the code, other than
 # configuration for the bower package name and version, resides in KBase.
 # To link it into the build, you want to grag the src/plugin directory within it and point it to biuld/build/client/modules/plugins/PLUGIN
 # The build process performs no special transformations on the plugin
-# 
-# 
+#
+#
 
 # linkPlugin "dataview"
 # linkPlugin "data-landing-pages"
@@ -84,11 +84,13 @@ function linkInternalPlugin() {
 #linkPlugin "data-api-demo"
 #linkPlugin "sdk-clients-test"
 
+
+rm -rf ../../build/build/client/modules/plugins/dataview
+ln -s /DEVDIR/kbase-ui-plugin-dataview/src/plugin ../../build/build/client/modules/plugins/dataview
 #
 # INTERNAL PLUGINS
 #
 
-# This is helpful if you are working on plugins built in to kbase-ui. What you are doing is 
+# This is helpful if you are working on plugins built in to kbase-ui. What you are doing is
 # linking the source plugin directory to the corresponding build plugin directory.
 #
-
