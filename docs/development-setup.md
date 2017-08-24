@@ -15,9 +15,9 @@ In a dedicated directory clone the kbase-ui repo
 - https://github.com/kbase/kbase-ui
 
 ```
-mkdir dev
-cd dev
-git clone -b develop https://github.com/kbase/kbase-ui
+$ mkdir dev
+$ cd dev
+$ git clone -b develop https://github.com/kbase/kbase-ui
 ```
 
 > A git-based workflow is a bit easier if you use an ssh public key in your github account; this is enabled via the ssh: url format.
@@ -36,31 +36,63 @@ We might as well get this over with, because the nginx configuration below presu
 
 In the kbase-ui repo, build it:
 
-```text
-cd kbase-ui
-make init
-make build
+```
+$ cd kbase-ui
+$ make init
+$ make build
 ```
 
 That is all we will do here for now.
 
 ## Set up Vagrant
 
-## Create and set up a virtual machine for Ubuntu 14.04 via Vagrant
+### Create and set up a virtual machine for Ubuntu 14.04 via Vagrant
 
 > Installation of vagrant and virtualbox is covered in the [development prerequisites](development-prerequisites.md) document.
 
-### Initialize Vagrant:
+### Select an IP address for the vm
+
+Since you are using VirtualBox for virtualization, you can set up VirtualBox to reserve some ip addresses for static ips. This is located under the VirtualBox menu:
+
+Settings > network > vboxnet0 > DHCP Server
+
+The DHCP range should default to 172.28.128.3 - 254. To play well with DHCP with static ips you could change this to 172.28.128.3 - 100, and use 101 through 254 for static. (You may already have DHCP assigned addresses, so using the high part of the range is more pleasant.)
+
+Your configuration line would look like this:
 
 ```
-vagrant init ubuntu/trusty64
+  config.vm.network "private_network", ip: "172.28.128.xxx"
+```
+
+> TODO: write a script to query virtualbox to report the ips of all registered vms and select the next highest value. 
+
+### Initialize Vagrant:
+
+Back up in the dev directory, initialize a 
+
+```
+$ cd ..
+$ vagrant init ubuntu/trusty64
 ```
 
 ### Set up Vagrant
 
-Edit the ```Vagrantfile``` to set it up for better local development:
+Edit the ```Vagrantfile``` to set it up for better local development.
 
+It is simplest just to replace the entire file with the sample shown below (also found in
+ the example file examples/Vagrantfile.)
+
+For example, using vi from the Terminal:
+
+```bash
+$ vi Vagrantfile
+:1,$d
+i
 ```
+
+the copy and paste the example text below:
+
+```ruby
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
@@ -68,12 +100,12 @@ Vagrant.configure("2") do |config|
   # Current standard Linux deployment is Ubuntu 14.04
   config.vm.box = "ubuntu/trusty64"
 
-  # DHCP works fine
-  config.vm.network "private_network", type: "dhcp"
-  
-  # For static.
-  # config.vm.network "private_network", ip: "1.2.3.4"
+  # Static ip is the default.
+  config.vm.network "private_network", ip: "172.28.128.xxx"
 
+  # DHCP works fine too, but requires a bit of extra work.
+  # config.vm.network "private_network", type: "dhcp"
+  
   # comment after fixing /etc/exports
   config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: true
 
@@ -81,6 +113,7 @@ Vagrant.configure("2") do |config|
   # config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: false
 
   # This will start nginx after the vm is started, and shared folders mounted.
+  config.vm.provision :shell, path: "kbase-ui/tools/vagrant-provision.sh", run: "once"
   config.vm.provision :shell, :inline => "sudo service nginx start", run: "always"
 
   # The resource allocation is suitable for most development needs, including running a Narrative instance
@@ -98,76 +131,25 @@ end
 
 > Tip: You can find this Vagrant file as well as nginx configuration files in docs/examples
 
-You can place this anywhere in the file. It is easiets to just inserted it as a lump, for example, at the end of the file just before the final "end".
+You can place this anywhere in the file. It is easiest to just inserted it as a lump, for example, at the end of the file just before the final "end".
 
 This:
 
-- creates a network interface to your VM, so that you can connect to services running in side it
+- creates a network interface to your VM, so that you can connect to services running inside it
 - uses the ```nfs``` file system for mounting the shared folder inside the vm (which is located inside it at /vagrant)
 - sets the memory to a reasonable minimum
 - enables the usage of symlinking in shared folders
-
-You may wish to use a static ip rather than dhcp. To enable a static ip for your VM, comment out the line
-
-```
-  config.vm.network "private_network", type: "dhcp"
-```
-
-and uncomment this line
-
-```
-# config.vm.network "private_network", ip: "1.2.3.4"
-```
-
-replacing the ip address "1.2.3.4" with one that you have selected from your local host configuration.
-
-#### Virtualbox example
-
-For example, since you are using VirtualBox for virtualization, you can set up VirtualBox to reserve some ip addresses for static ips. This is located under the menu:
-
-Settings > network > vboxnet0 > DHCP Server
-
-The DHCP range should default to 172.28.128.3 - 254. To play well with DHCP with static ips you could change this to 172.28.128.3 - 100, and use 101 through 254 for static. (You may already have DHCP assigned addresses, so using the high part of the range is more pleasant.)
-
-Your configuration line would look like this:
-
-```
-  config.vm.network "private_network", ip: "172.28.128.101"
-```
 
 > The funny business with NFS is required to allow symbolic linking within the vm using shared folders. The linking is a necessary part of the workflow for kbase-ui plugins, libraries, or other external components.
 
 ### Set up the VM
 
 ```
-vagrant up
+$ vagrant up
 ```
 
-Vagrant will display a bunch of messages, ending with an error message you may ignore:
+Vagrant will display a many messages as it sets up the vm.
 
-```
-==> default: nginx: unrecognized service
-The SSH command responded with a non-zero exit status. Vagrant
-assumes that this means the command failed. The output for this command
-should be in the log above. Please read the output to determine what
-went wrong.
-```
-
-This is displayed because the nginx server is not installed in the vm yet.
-
-> TODO: enmbed the following in a provisioning script...
-
-
-```
-vagrant ssh
-sudo su
-add-apt-repository ppa:nginx/stable -y
-apt-get update
-apt-get upgrade -y
-apt-get dist-upgrade -y
-apt-get autoremove -y
-apt-get install nginx-extras -y
-```
 
 > Note: If you received an NFS error when first starting up VM with "vagrant up", you can ignore the error message for now and proceed with the setup. The step below, "Fix the NFS configuration" will take care of this.
 
@@ -175,31 +157,11 @@ apt-get install nginx-extras -y
 
 ### Set up a local host mapping
 
-Still within the VM, obtain the IP address assigned via DHCP or simply use the IP address you assigned to Vagrant, and then back on the host add it to the /etc/hosts file.
-
-
-#### Determine DHCP-assigned IP address (if necessary)
-
-If you set up Vagrant to use DHCP, use the following commands to discover the ip address assigned to the VM:
-
-```
-ifconfig | grep "inet addr:"
-```
-
-You'll need to locate the IP address used by VirtualBox, which seems to use the 172.28.128 subnet. (You can also find this out directly from the VirtualBox settings.)
-
-```
-          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
-          inet addr:172.28.128.3  Bcast:172.28.128.255  Mask:255.255.255.0
-          inet addr:127.0.0.1  Mask:255.0.0.0
-```
-
 #### Add host mapping to /etc/hosts file
 
-Back on the host, edit the /etc/hosts file on your Mac host:
+Still on the host, edit the /etc/hosts file:
 
 ```
-exit
 sudo vi /etc/hosts
 ```
 
@@ -303,6 +265,8 @@ vagrant ssh
 
 ### Install self signed cert
 
+> TODO: this should be part of provisioning
+
 All services are typically operated over https, so we set up even the development environment for https. For local development a self-signed certificate is adequate, even if it does cause the browser to complain.
 
 ```
@@ -324,6 +288,8 @@ Email Address []:
 
 ### Install the Nginx config
 
+> TODO: this should be part of provisioning
+
 Edit the main nginx config file. Nginx installs with a single example, functional config file in /etc/nginx/sites-available/default. config files in /etc/nginx/sites-available are symlinked into /etc/nginx/sites-enabled. Thus to disable a config temporarily, remove the symlinked version in /etc/nginx/sites-enabled, and symlink it back later. In any case, we always edit the one in sites-available.
 
 We are going to edit that file, erase the contents, and insert our config. E.g.
@@ -331,10 +297,10 @@ We are going to edit that file, erase the contents, and insert our config. E.g.
 > Note: We'll be going back into superuser mode now
 
 ```text
-sudo su
-vi /etc/nginx/sites-available/default
-:1,$d
-i
+$ sudo su
+# vi /etc/nginx/sites-available/default
+# :1,$d
+# i
 ```
 
 copy this 
@@ -426,13 +392,13 @@ ZZ
 Then test the ngninx configuration:
 
 ```
-sudo nginx -t
+# nginx -t
 ```
 
 if all goes well restart nginx
 
 ```
-service nginx restart
+# service nginx restart
 ```
 
 #### Done with the VM

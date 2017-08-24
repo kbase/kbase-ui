@@ -14,4 +14,4 @@
 - [Create Plugin From Scratch](topics/create-plugin-from-scratch.md)
 - [Testing a Pull Request](topics/testing-pull-request.md)
 - [Token Export/Import](topics/token-export-import.md)
-
+- [Error Handling](topics/error-handling.md)
