@@ -59,6 +59,8 @@ services:
     reske:
         url: '{{ deploy.services.urlBase }}/services/reske'
         name: Search Two
+    # jgi_gateway_eap:
+    #     url: '{{ deploy.services.urlBase }}/devservices/jgi_gateway_clj/rpc'        
 resources:
     docSite:
         base:
