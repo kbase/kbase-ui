@@ -5,6 +5,9 @@ node_modules
 # General purpose temp directory
 /temp
 
+# Any trash directories
+_trash
+
 # IDEs
 # put your ide here
 nbproject
