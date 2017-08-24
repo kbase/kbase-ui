@@ -3,9 +3,7 @@ menus:
         main: [narrative, search, bulk-ui]
         developer: [jgi-search, reske-search, reske-type-search, reske-narrative-search, tester, test_dynamic_table, paveldemo, sdkclientstest, databrowser, typebrowser, jobbrowser, shockbrowser]
         help: [about, about-services, contact-kbase, about-kbase, help]
-        sidebar: [dashboard, catalog, account, reske-narrative-search]
     unauthenticated:
         main: [search]
         developer: []
         help: [contact-kbase, about-kbase, help]
-        sidebar: [catalog]
