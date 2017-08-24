@@ -5,6 +5,9 @@ node_modules
 # General purpose temp directory
 /temp
 
+# Any trash directories
+_trash
+
 # IDEs
 # put your ide here
 nbproject
@@ -16,10 +19,8 @@ nbproject
 /mutations/mutantfiles
 
 # Developer artifacts
-/dev/temp
-/dev/config
-/dev/test
-/dev/test-coverage
+/dev/*
+!/dev/README.md
 /install/temp
 /errorShots
 /target

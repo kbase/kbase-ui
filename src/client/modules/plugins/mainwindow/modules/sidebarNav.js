@@ -36,27 +36,41 @@ define([
         var hostNode, container, runtime = config.runtime;
 
         var buttons = [{
-            icon: 'dashboard',
-            label: 'Dashboard',
-            path: 'dashboard',
-            authRequired: true
-        }, {
-            icon: 'book',
-            label: 'Catalog',
-            path: 'appcatalog',
-            authRequired: false
-        }, {
-            icon: 'search',
-            label: 'Search',
-            path: 'reske/search',
-            authRequired: true
-        }, {
-            //icon: 'user',
-            icon: 'user-circle-o',
-            label: 'Account',
-            path: 'auth2/account',
-            authRequired: true
-        }];
+                icon: 'dashboard',
+                label: 'Dashboard',
+                path: 'dashboard',
+                authRequired: true
+            }, {
+                icon: 'book',
+                label: 'Catalog',
+                path: 'appcatalog',
+                authRequired: false
+            }, {
+                icon: 'search',
+                label: 'Search',
+                path: 'reske/search',
+                authRequired: true
+            },
+            {
+                icon: 'file-o',
+                label: 'Narrative',
+                path: 'reske/search/narrative',
+                authRequired: true
+            },
+            // {
+            //     icon: 'database',
+            //     label: 'Data',
+            //     path: 'reske/search/data',
+            //     authhRequired: true
+            // }
+            {
+                //icon: 'user',
+                icon: 'user-circle-o',
+                label: 'Account',
+                path: 'auth2/account',
+                authRequired: true
+            }
+        ];
 
         var currentButtons = [];
         var currentPath;

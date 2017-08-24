@@ -18,6 +18,7 @@ Vagrant.configure("2") do |config|
   # config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: false
 
   # This will start nginx after the vm is started, and shared folders mounted.
+  config.vm.provision :shell, path: "kbase-ui/tools/vagrant-provision.sh", run: "once"
   config.vm.provision :shell, :inline => "sudo service nginx start", run: "always"
 
   # The resource allocation is suitable for most development needs, including running a Narrative instance

@@ -1,9 +1,11 @@
 define([
     'require',
-    'promise'
+    'promise',
+    'knockout'
 ], function (
     require,
-    Promise
+    Promise,
+    ko
 ) {
     'use strict';
 
@@ -38,7 +40,14 @@ define([
                             modulePaths.push('css!' + [pluginConfig.moduleRoot, componentConfig.module].join('/'));
                         }
                         require(modulePaths, function (result) {
-                            resolve(result);
+                            // The result is a component factory which takes no arguments.
+                            // console.log('registering', componentConfig, result);
+                            try {
+                                ko.components.register(componentConfig.name, result());
+                                resolve(result);
+                            } catch (ex) {
+                                reject(ex);
+                            }
                         }, function (err) {
                             reject(err);
                         });

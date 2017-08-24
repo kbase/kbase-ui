@@ -5,6 +5,7 @@ define([
     'kb_common/observed'
 ], function (Promise, observed) {
     'use strict';
+
     function factory(config) {
         var state = observed.make(),
             runtime = config.runtime;
@@ -13,22 +14,16 @@ define([
             from = from || {};
             var menu = {
                 authenticated: {
-                    main: [
-                    ],
-                    developer: [
-                    ],
-                    help: [
-                    ]
+                    main: [],
+                    developer: [],
+                    help: []
                 },
                 unauthenticated: {
-                    main: [
-                    ],
-                    developer: [
-                    ],
-                    help: [
-                    ]
+                    main: [],
+                    developer: [],
+                    help: []
                 }
-            }
+            };
 
             // Sets each menu menu item as the actual menu definition.
             Object.keys(from).forEach(function (menuSet) {
@@ -39,25 +34,20 @@ define([
 
             state.setItem('menus', menu);
         }
+
         function setupMenus() {
             var menu = {
                 authenticated: {
-                    main: [
-                    ],
-                    developer: [
-                    ],
-                    help: [
-                    ]
+                    main: [],
+                    developer: [],
+                    help: []
                 },
                 unauthenticated: {
-                    main: [
-                    ],
-                    developer: [
-                    ],
-                    help: [
-                    ]
+                    main: [],
+                    developer: [],
+                    help: []
                 }
-            }
+            };
             state.setItem('menus', menu);
         }
 
@@ -72,6 +62,7 @@ define([
         function clearMenu() {
             state.setItem('menu', []);
         }
+
         function addMenuItem(id, menuDef) {
             state.modifyItem('menuItems', function (menuItems) {
                 menuItems[id] = menuDef;
@@ -104,6 +95,12 @@ define([
                 position = 'bottom';
             }
             state.modifyItem('menus', function (menus) {
+                if (!menus[id]) {
+                    throw new Error('Menu type not defined: ' + id);
+                }
+                if (!menus[id][section]) {
+                    throw new Error('Menu section not defined for type ' + id + ':' + section);
+                }
                 if (position === 'top') {
                     menus[id][section].unshift(menuItems[item]);
                 } else {
@@ -133,12 +130,12 @@ define([
             return Promise.try(function () {
                 newMenus.forEach(function (menu) {
                     addMenuItem(menu.name, menu.definition);
-//                    if (menu.menus) {
-//                        menu.menus.forEach(function (menuEntry) {
-//                            
-//                            addToMenu(menuEntry, menu.name);
-//                        });
-//                    }
+                    //                    if (menu.menus) {
+                    //                        menu.menus.forEach(function (menuEntry) {
+                    //                            
+                    //                            addToMenu(menuEntry, menu.name);
+                    //                        });
+                    //                    }
                 });
             });
         }
@@ -181,7 +178,6 @@ define([
 
         state.setItem('menu', []);
         setupMenus();
-
 
 
         // API
