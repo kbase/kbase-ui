@@ -59,7 +59,7 @@ install_tools:
 	@echo "> Installing build and test tools."
 	npm install
 	cd tools/server; npm install
-	mkdir -p dev/tools
+	mkdir dev/tools
 	cp tools/link.sh dev/tools
 	$(GRUNT) init
 
