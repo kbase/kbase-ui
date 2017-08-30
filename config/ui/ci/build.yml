@@ -178,6 +178,13 @@ plugins:
         cwd: src/plugin
         source: 
             bower: {}
+    -
+        name: reske-admin
+        globalName: kbase-ui-plugin-reske-admin
+        version: 0.1.0
+        cwd: src/plugin
+        source:
+            bower: {}
             
 
 # Copy these directories into the modules
