@@ -56,13 +56,11 @@ Since you are using VirtualBox for virtualization, you can set up VirtualBox to 
 
 Settings > network > vboxnet0 > DHCP Server
 
-The DHCP range should default to 172.28.128.3 - 254. To play well with DHCP with static ips you could change this to 172.28.128.3 - 100, and use 101 through 254 for static. (You may already have DHCP assigned addresses, so using the high part of the range is more pleasant.)
+The DHCP configuration will have defaulted to some range. E.g. on older macOS machines, 172.28.128.3 - 254. To play well with DHCP with static ips you could change this to 172.28.128.3 - 100, and use 101 through 254 for static. (You may already have DHCP assigned addresses, so using the high part of the range is more pleasant.)
 
-Your configuration line would look like this:
+Newer macOS machines have a default range with a built-in static range.
 
-```
-  config.vm.network "private_network", ip: "172.28.128.xxx"
-```
+> document this!
 
 > TODO: write a script to query virtualbox to report the ips of all registered vms and select the next highest value. 
 
@@ -100,7 +98,7 @@ Vagrant.configure("2") do |config|
   # Current standard Linux deployment is Ubuntu 14.04
   config.vm.box = "ubuntu/trusty64"
 
-  # Static ip is the default.
+  # Static ip is the default. Fill in the ip with one compatible with your virtualbox client.
   config.vm.network "private_network", ip: "172.28.128.xxx"
 
   # DHCP works fine too, but requires a bit of extra work.
@@ -168,10 +166,10 @@ sudo vi /etc/hosts
 add a line somewhere, e.g. at the bottom, like:
 
 ```
-1.2.3.4 ci.kbase.us
+172.28.128.xxx ci.kbase.us
 ```
 
-Where ```1.2.3.4``` is the ip address you recorded above.
+Where ```172.28.128.xxx``` is the ip address you recorded above.
 
 We will be mapping ci.kbase.us into the VM, and inside the VM using an nginx config to map service requests to the real ci.
 
@@ -372,7 +370,7 @@ server {
 
   # We need to proxy RESKE search, since the dev service is insecure.
   location /services/reske {
-	proxy_pass http://dev01.kbase.lbl.gov:29999;
+    proxy_pass https://ci.kbase.us/services/reske;
 
     # Enable for RESKE deployed inside the proxy's vm.
     # proxy_pass http://localhost:5000;
