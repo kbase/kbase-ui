@@ -57,13 +57,12 @@ define([
                 path: 'reske/search/narrative',
                 authRequired: true
             },
-            // {
-            //     icon: 'database',
-            //     label: 'Data',
-            //     path: 'reske/search/data',
-            //     authhRequired: true
-            // }
             {
+                icon: 'database',
+                label: 'Data',
+                path: 'reske/search/data',
+                authhRequired: true
+            }, {
                 //icon: 'user',
                 icon: 'user-circle-o',
                 label: 'Account',
