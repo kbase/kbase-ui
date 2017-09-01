@@ -181,14 +181,14 @@ plugins:
     -
         name: reske-admin
         globalName: kbase-ui-plugin-reske-admin
-        version: 0.2.1
+        version: 0.2.2
         cwd: src/plugin
         source:
             bower: {}
     -
         name: reske-genome-browser
         globalName: kbase-ui-plugin-reske-genome-browser
-        version: 0.1.0
+        version: 0.2.0
         cwd: src/plugin
         source:
             bower: {}
