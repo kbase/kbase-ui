@@ -1,10 +1,16 @@
 define([
+    'numeral',
     'knockout',
     'knockout-mapping',
     'knockout-arraytransforms',
     'knockout-validation',
     'knockout-switch-case'
-], function (ko) {
+], function (
+    numeral,
+    ko
+) {
+    // Knockout Defaults
+    ko.options.deferUpdates = true;
 
     // from: https://github.com/knockout/knockout/issues/914
     ko.subscribable.fn.subscribeChanged = function (callback, context) {
@@ -238,6 +244,18 @@ define([
     ko.components.loaders.unshift({
         loadTemplate: svgTemplateLoader
     });
+
+    // BINDINGS
+
+    ko.bindingHandlers.numberText = {
+        update: function (element, valueAccessor, allBindings) {
+            var value = valueAccessor();
+            var valueUnwrapped = ko.unwrap(value);
+            var format = allBindings.get('numberFormat') || '';
+            var formatted = numeral(valueUnwrapped).format(format);
+            element.innerText = formatted;
+        }
+    };
 
     return ko;
 });
