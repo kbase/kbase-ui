@@ -949,7 +949,14 @@ function makeDistBuild(state) {
                                             quote_style: 1
                                         }
                                     });
-                                    return fs.writeFileAsync(match, result.code);
+                                    if (result.error) {
+                                        console.error('Error minifying file: ' + match, result);
+                                        throw new Error('Error minifying file ' + match) + ':' + result.error;
+                                    } else if (result.code.length === 0) {
+                                        console.warn('Skipping empty file: ' + match);
+                                    } else {
+                                        return fs.writeFileAsync(match, result.code);
+                                    }
                                 });
                         }));
                 });
