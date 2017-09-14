@@ -167,7 +167,7 @@ plugins:
     -
         name: reske-search
         globalName: kbase-ui-plugin-reske-search
-        version: 0.10.3
+        version: 0.10.10
         cwd: src/plugin
         source:
             bower: {}
@@ -188,7 +188,7 @@ plugins:
     -
         name: reske-genome-browser
         globalName: kbase-ui-plugin-reske-genome-browser
-        version: 0.6.0
+        version: 0.6.1
         cwd: src/plugin
         source:
             bower: {}

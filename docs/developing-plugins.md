@@ -165,8 +165,155 @@ To ensure that the linking was successful, you may wish to make a small change t
 
 ### Pull Request to the main repo
 
+
+
 ### Testing your PR
 
+Testing the PR can take place alongside the development stuff, taking advantage of the vm and proxy that are already set up.
+
+All this should be done in the vm, so open up a terminal in the vm if you don't have one already.
+
+```
+vagrant ssh
+```
+
+#### Ensure that the vm has the required kbase-ui dev dependencies:
+
+```
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+sudo apt-get install -y nodejs git
+```
+
+#### Set up testing directory and clone repos
+
+In the /vagrant directory, create a directory pr-testing
+
+```
+cd /vagrant
+mkdir pr-testing
+```
+
+In this directory, clone the plugin and kbase-ui from the kbase account at github:
+
+```
+git clone -b develop https://github.com/kbase/kbase-ui
+git clone https://github.com/kbase/kbase-ui-plugin-MYPLUGIN
+```
+
+In the plugin directory fetch the pull request 123 into a branch:
+
+```
+git fetch origin pull/123/head:test-123
+git checkout test-123
+```
+
+#### Set up kbase-ui to use a local plugin directory 
+
+Configure the build to use the local plugin for the build
+
+```
+cd kbase-ui
+vi config/ui/ci/build.yml
+```
+
+in the section for the plugin change the source:
+
+```
+    -
+        name: dataview
+        globalName: kbase-ui-plugin-dataview
+        version: 3.1.6
+        cwd: src/plugin
+        source:
+            bower: {}
+```
+
+to this
+
+```
+    -
+        name: dataview
+        globalName: kbase-ui-plugin-dataview
+        version: 3.1.6
+        cwd: src/plugin
+        source:
+            directory: {}
+```
+
+> Note: be sure to preserve spaces and not use tabs; otherwise you will get a yaml error during the build
+
+Build kbase-ui
+
+```
+make init
+make build config=ci
+```
+
+#### Configure the vm's nginx for the testing directory
+
+In the vm, edit the proxy root to point to this directory:
+
+sudo vi /etc/nginx/sites-available/default
+
+```
+  location / {
+    # next line for node testing server.
+    gzip on;
+    gzip_types text/css application/json application/javascript;
+
+    # root /vagrant/kbase-ui/build/build/client;
+    root /vagrant/pr-testing/kbase-ui/build/dist/client;
+
+    # Uncomment to work against the minified dist build.
+    # root /vagrant/kbase-ui/build/build/client;
+
+    index index.html;
+  }
+  ```
+
+  restart nginx
+
+  ```
+  service nginx restart 
+  ```
+
+### Test it
+
+You should now be able to pull up https://ci.kbase.us in your favorite browser and confirm the changes.
+
+
 ### Merge and release into CI
+
+When you are happy with the testing you can go ahead and have the PR merged.
+
+[ TODO ]
+
+merge the PR
+
+tag the repo with a new version
+
+update your local kbase-ui with the new version
+
+your local kbase-ui, the one you are using for development, should be updated with the new plugin version. 
+
+config/ui/dev/build.yml
+config/ui/ci/build.yml
+
+and if you are targeting production as well:
+
+config/ui/prod/build.yml
+
+then build kbase-ui and make sure it is working.
+
+> If you want to, you can make the same change in your testing environment, since it is fully embedded in the vm.
+
+with the changed config in kbase-ui
+
+push it up to your repo
+
+issue a PR against kbase-ui
+
+have the PR merged
+
 
 

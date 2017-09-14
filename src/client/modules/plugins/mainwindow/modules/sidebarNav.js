@@ -45,21 +45,22 @@ define([
                 label: 'Catalog',
                 path: 'appcatalog',
                 authRequired: false
-            }, {
-                icon: 'search',
-                label: 'Search',
-                path: 'reske/search',
-                authRequired: true
             },
+            // {
+            //     icon: 'search',
+            //     label: 'Search',
+            //     path: 'reske/search',
+            //     authRequired: true
+            // },
             {
-                icon: 'file-o',
-                label: 'Narrative',
+                icon: 'files-o',
+                label: 'Narratives',
                 path: 'reske/search/narrative',
                 authRequired: true
             },
             {
-                icon: 'database',
-                label: 'Data',
+                icon: 'search',
+                label: 'Search Data',
                 path: 'reske/search/data',
                 authhRequired: true
             }, {
