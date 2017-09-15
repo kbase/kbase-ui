@@ -59,6 +59,15 @@ services:
     reske:
         url: '{{ deploy.services.urlBase }}/services/reske'
         name: Search Two
+    # Service Entries in the New Style - the key is the module name, not some
+    # arbitrary string.
+    Workspace:
+        url: '{{ deploy.services.urlBase }}/services/ws'
+        name: Workspace    
+
+    # Overrides for dynamic services can go here. Use the module name for the
+    # key and a config-aware dsclient wrapper can use generic client instead
+    # to reach this service.
     # jgi_gateway_eap:
     #     url: '{{ deploy.services.urlBase }}/devservices/jgi_gateway_clj/rpc'        
 resources:
