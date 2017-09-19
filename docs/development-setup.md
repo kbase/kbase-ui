@@ -54,7 +54,7 @@ That is all we will do here for now.
 
 Since you are using VirtualBox for virtualization, you can set up VirtualBox to reserve some ip addresses for static ips. This is located under the VirtualBox menu:
 
-Settings > network > vboxnet0 > DHCP Server
+VirtualBox > Preferences > network > vboxnet0 > DHCP Server
 
 The DHCP configuration will have defaulted to some range. E.g. on older macOS machines, 172.28.128.3 - 254. To play well with DHCP with static ips you could change this to 172.28.128.3 - 100, and use 101 through 254 for static. (You may already have DHCP assigned addresses, so using the high part of the range is more pleasant.)
 
