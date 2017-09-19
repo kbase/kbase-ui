@@ -62,7 +62,7 @@ define([
                 icon: 'search',
                 label: 'Search Data',
                 path: 'reske/search/data',
-                authhRequired: true
+                authRequired: true
             }, {
                 //icon: 'user',
                 icon: 'user-circle-o',
