@@ -15,7 +15,7 @@ from: https://nodesource.com/blog/installing-node-js-tutorial-ubuntu/
 
 ```bash
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-sudo apt-get install -y nodejs
+sudo apt-get install -y nodejs git
 ```
 
 ### nodejs dependencies
@@ -23,26 +23,34 @@ sudo apt-get install -y nodejs
 install global npm packages:
 
 ```bash
-npm install -g grunt-cli bower
+sudo npm install -g grunt-cli bower
 ```
 
 ### Set up python
 
 ```bash
+# NO
 sudo add-apt-repository ppa:jonathonf/python-2.7
 sudo apt-get update
-sudo apt-get install python-dev libzmq-dev python-numpy python-scipy -y
+sudo apt-get upgrade -y
+sudo apt-get dist-upgrade -y
+sudo apt-get autoremove -y
+sudo apt-get install python-dev python-virtualenv libzmq-dev -y
+### do not build at least with newer pythons
+### python-numpy python-scipy -y
+cd /vagrant/narrative
 virtualenv venvs/v
-source venvs/b/bin/activate
- pip install -r src/requirements.txt
- ```
+source venvs/v/bin/activate
+### pip install --upgrade pip
+### pip install -r src/requirements.txt
+```
 
  ### Slip in ipywidgets
 
  The install_narrative.sh script will otherwise install the current master, which is incompatible with ipython 4.x which we use.
 
  ```bash
- pip install ipywidgets==5.0.0
+ ### pip install ipywidgets==5.0.0
  ```
 
 ### Build it
