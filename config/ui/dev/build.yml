@@ -39,7 +39,7 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 3.2.0-alpha2
+        version: 3.2.0-alpha3
         cwd: src/plugin
         source:
             bower: {}
@@ -167,7 +167,7 @@ plugins:
     -
         name: reske-search
         globalName: kbase-ui-plugin-reske-search
-        version: 0.11.0
+        version: 0.12.0
         cwd: src/plugin
         source:
             bower: {}
@@ -188,7 +188,7 @@ plugins:
     -
         name: reske-genome-browser
         globalName: kbase-ui-plugin-reske-genome-browser
-        version: 0.6.1
+        version: 0.7.0
         cwd: src/plugin
         source:
             bower: {}
