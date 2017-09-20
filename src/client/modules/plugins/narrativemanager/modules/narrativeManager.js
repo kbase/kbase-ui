@@ -3,11 +3,13 @@
 define([
     'bluebird',
     'kb_service/utils',
-    'kb_sdk_clients/genericClient'
+    'kb_common/jsonRpc/genericClient',
+    'kb_common/jsonRpc/dynamicServiceClient'
 ], function (
     Promise,
     serviceUtils,
-    GenericClient
+    GenericClient,
+    DynamicServiceClient
 ) {
     'use strict';
 
@@ -15,10 +17,10 @@ define([
         var runtime = config.runtime,
             workspaceClient = new GenericClient({
                 module: 'Workspace',
-                url: runtime.config('services.service_wizard.url'),
+                url: runtime.config('services.workspace.url'),
                 token: runtime.service('session').getAuthToken()
             }),
-            narrativeService = new GenericClient({
+            narrativeService = new DynamicServiceClient({
                 module: 'NarrativeService',
                 url: runtime.config('services.service_wizard.url'),
                 token: runtime.service('session').getAuthToken()
