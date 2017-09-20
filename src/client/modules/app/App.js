@@ -43,6 +43,14 @@ define([
             return appConfigProps.debug();
         }
 
+        function allow(tag) {
+            var allowed = appConfigProps.getItem('ui.allow', []);
+            if (!(allowed instanceof Array)) {
+                allowed = [allowed];
+            }
+            return (allowed.indexOf(tag) >= 0);
+        }
+
         // Events
 
         // Our own events
@@ -166,6 +174,7 @@ define([
             hasConfig: hasConfig,
             rawConfig: rawConfig,
             feature: feature,
+            allow: allow,
             // Session
             installPlugins: installPlugins,
             send: send,

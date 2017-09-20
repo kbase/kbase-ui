@@ -54,7 +54,7 @@ define([
             //     authRequired: true
             // },
             (function () {
-                if (runtime.config('deploy.environment') === 'prod') {
+                if (!runtime.allow('alpha')) {
                     return;
                 }
                 return {
@@ -65,7 +65,7 @@ define([
                 };
             }()),
             (function () {
-                if (runtime.config('deploy.environment') === 'prod') {
+                if (!runtime.allow('alpha')) {
                     return;
                 }
                 return {
