@@ -35,6 +35,7 @@ define([
     function factory(config) {
         var hostNode, container, runtime = config.runtime;
 
+        // TODO: this really needs to be in configuration!
         var buttons = [{
                 icon: 'dashboard',
                 label: 'Dashboard',
@@ -52,25 +53,37 @@ define([
             //     path: 'reske/search',
             //     authRequired: true
             // },
-            {
-                icon: 'files-o',
-                label: 'Narratives',
-                path: 'reske/search/narrative',
-                authRequired: true
-            },
-            {
-                icon: 'search',
-                label: 'Search Data',
-                path: 'reske/search/data',
-                authRequired: true
-            }, {
+            (function () {
+                if (runtime.config('deploy.environment') === 'prod') {
+                    return;
+                }
+                return {
+                    icon: 'files-o',
+                    label: 'Narratives',
+                    path: 'reske/search/narrative',
+                    authRequired: true
+                };
+            }()),
+            (function () {
+                if (runtime.config('deploy.environment') === 'prod') {
+                    return;
+                }
+                return {
+                    icon: 'search',
+                    label: 'Search Data',
+                    path: 'reske/search/data',
+                    authRequired: true
+                };
+            }()), {
                 //icon: 'user',
                 icon: 'user-circle-o',
                 label: 'Account',
                 path: 'auth2/account',
                 authRequired: true
             }
-        ];
+        ].filter(function (item) {
+            return item;
+        });
 
         var currentButtons = [];
         var currentPath;
