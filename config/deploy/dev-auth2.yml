@@ -16,6 +16,7 @@ ui:
   features:
     auth:
       selected: auth2
+  allow: [alpha, beta]
 services:
   auth2:
     # note that this overrides the auth2 url.

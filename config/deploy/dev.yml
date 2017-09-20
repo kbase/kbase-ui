@@ -16,4 +16,5 @@ ui:
   features:
     auth:
       selected: auth2
+  allow: [alpha, beta]
 
