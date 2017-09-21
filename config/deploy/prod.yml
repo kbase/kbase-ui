@@ -19,6 +19,7 @@ ui:
   features:
     auth:
       selected: auth2
+  allow: []
 services:
   narrative:
     url: https://narrative.kbase.us

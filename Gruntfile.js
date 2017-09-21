@@ -117,11 +117,23 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         copy: {
+            // The entire test directory is copied into the dev/test
+            // directory.
             testfiles: {
                 files: [{
                     cwd: 'test',
                     src: '**/*',
                     dest: 'dev/test',
+                    expand: true
+                }]
+            },
+            // The link script is copied so it can be tweaked
+            // at dev time and changes not checked in.
+            linker: {
+                files: [{
+                    cwd: 'tools',
+                    src: 'link.sh',
+                    dest: 'dev/tools',
                     expand: true
                 }]
             }
@@ -311,7 +323,8 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask('init', [
-        'copy:testfiles'
+        'copy:testfiles',
+        'copy:linker'
     ]);
 
 };

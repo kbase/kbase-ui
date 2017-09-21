@@ -20,27 +20,22 @@
 
 .plugin-mainwindow.widget-mainwindow.-main .-header {
     flex: 0 0 70px;
-    /*background: yellow;*/
 }
 
 .plugin-mainwindow.widget-mainwindow.-main>.-body {
     flex: 1 1 0px;
-    /*height: calc(100vh - 70px);*/
-    /*background: aqua;*/
     display: flex;
     flex-direction: row;
 }
 
 .plugin-mainwindow.widget-mainwindow.-main>.-body>.-nav {
     flex: 0 0 75px;
-    /*background-color: green;*/
 }
 
 .plugin-mainwindow.widget-mainwindow.-main>.-body>.-content {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
-    /*background-color: gray;*/
     overflow-y: auto;
     padding-top: 1em;
 }
@@ -78,9 +73,6 @@
 .plugin-mainwindow.widget-mainwindow .-navbar {
     background-color: #fff;
     border-bottom: 5px solid #E0E0E0 !important;
-    /*-webkit-box-shadow: 0 1px 10px rgba(0, 0, 0, .1);
-    -moz-box-shadow: 0 1px 10px rgba(0, 0, 0, .1);
-    box-shadow: 0 1px 10px rgba(0, 0, 0, .1);*/
     padding: 8px;
     z-index: 3;
     height: 70px;
@@ -180,38 +172,6 @@
 /* Body */
 
 
-/*.plugin-mainwindow.widget-mainwindow .kb-mainwindow-body {
-    max-width: 1024px;
-}*/
-
-
-/* but not for the top level buttons
-
-
-/*.navbar-nav {
-    color: #6DA8CF;
-    font-family: 'RobotoBlack', Arial, sans-serif;
-}
-
-.navbar-nav>li>a:hover {
-    background-color: #fff;
-}
-
-.navbar-nav>li.active>a,
-.navbar-nav>li.active:hover {
-    color: #2a6496 !important;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    height: 50px;
-    border-bottom: 4px solid #428bca;
-}
-
-.navbar-nav>.active:hover {
-    color: #2a6496;
-}*/
-
-
 /* Tweak navbar, sidebar and main content areas to fit together 
 The navbar and sidebar are fixed -- so out of flow and need absolute positioning 
 Although the sidebar is partially positioned with part of the navbar.
@@ -219,51 +179,6 @@ The content area is normal flow and just needs to have a matching top margin.
 */
 
 .navbar-kbase {}
-
-
-/*.plugin-mainwindow.widget-mainwindow .-navbar .navbar-buttons .btn.kb-nav-btn:hover {
-    background-color: #F5F5F5;
-}*/
-
-
-/* ??? */
-
-
-/* Tweak navbar, sidebar and main content areas to fit together 
-The navbar and sidebar are fixed -- so out of flow and need absolute positioning 
-Although the sidebar is partially positioned with part of the navbar.
-The content area is normal flow and just needs to have a matching top margin.
-*/
-
-
-/*.sidebar {
-    top: 70px;
-}
-
-#content {
-    position: relative;
-    top: 70px;
-    padding: 0;
-}
-
-.sidebar {
-    z-index: auto;
-    border-right: 5px solid #E0E0E0;
-}
-
-.main {
-    position: fixed;
-    top: 70px;
-    bottom: 0;
-    left: 0;
-    z-index: auto;
-    display: block;
-    padding: 5px 10px;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    background-color: #f9f9f9;
-    border-right: 2px solid #eee;
-}*/
 
 
 /* Top bar nav buttons
@@ -281,8 +196,8 @@ The content area is normal flow and just needs to have a matching top margin.
     margin-right: 0;
 }
 
-.btn-xs {
-    /* don't use drop-shadow on profile menu */
+
+/*.xbtn-xs {
     border: 0;
     box-shadow: none;
     -webkit-box-shadow: none;
@@ -290,7 +205,6 @@ The content area is normal flow and just needs to have a matching top margin.
     font-size: 18px;
 }
 
-.btn-xs .glyphicon-user {
-    /* also resize user btn */
+.xbtn-xs .glyphicon-user {
     padding: 14px 5px 14px 5px;
-}
+}*/

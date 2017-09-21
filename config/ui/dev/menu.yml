@@ -1,9 +1,13 @@
 menus:
     authenticated:
-        main: [narrative, search, bulk-ui]
-        developer: [tester, test_dynamic_table, paveldemo, sdkclientstest, databrowser, typebrowser, jobbrowser, shockbrowser]
+        main: [narrative, bulk-ui]
+        developer: [reske-admin, jgi-search, reske-search, reske-type-search, reske-narrative-search, tester, test_dynamic_table, paveldemo, sdkclientstest, databrowser, typebrowser, jobbrowser, shockbrowser]
         help: [about, about-services, contact-kbase, about-kbase, help]
+        # TODO: congigurable sidebar menu items
+        # sidebar: [dashboard, catalog, account, reske-narrative-search]
     unauthenticated:
-        main: [search]
+        main: []
         developer: []
         help: [contact-kbase, about-kbase, help]
+        # TODO: congigurable sidebar menu items
+        # sidebar: [catalog]

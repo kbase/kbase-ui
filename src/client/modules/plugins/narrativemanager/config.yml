@@ -8,19 +8,6 @@ package:
     version: 0.0.3
 source:
     modules:
-        #-
-        #    module: kb_handler_narrativeManager
-        #    file: handler
-        #-
-        #    module: kb_narrativeManager_narrativeManagerService
-        #    file: narrativeManager
-        #-
-        #    module: kb_narrativeManager_startPanel
-        #    file: startPanel
-        #-
-        ##    module: kb_narrativeManager_createNewPanel
-        #    file: createNewPanel
-
 install:
     widgets:
         -

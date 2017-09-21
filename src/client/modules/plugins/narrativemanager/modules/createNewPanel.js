@@ -5,8 +5,12 @@ define([
     'kb_common/html',
     'kb_common/dom',
     './narrativeManager'
-
-], function(Promise, html, dom, NarrativeManagerService) {
+], function (
+    Promise,
+    html,
+    dom,
+    NarrativeManagerService
+) {
     'use strict';
 
     function factory(config) {
@@ -18,10 +22,10 @@ define([
         }
 
         function createNewNarrative(params) {
-            return Promise.try(function() {
+            return Promise.try(function () {
                 params = params || {};
                 if (params.app && params.method) {
-                    throw "Must provide no more than one of the app or method params";
+                    throw 'Must provide no more than one of the app or method params';
                 }
                 var importData, appData, tmp, i, cells;
                 if (params.copydata) {
@@ -34,12 +38,12 @@ define([
                     for (i = 0; i < tmp.length; i += 1) {
                         appData[i] = tmp[i].split(',');
                         if (appData[i].length !== 3) {
-                            throw new Error("Illegal app parameter set, expected 3 parameters separated by commas: " + tmp[i]);
+                            throw new Error('Illegal app parameter set, expected 3 parameters separated by commas: ' + tmp[i]);
                         }
                         /* TODO: use standard lib for math and string->number conversions) */
                         appData[i][0] = parseInt(appData[i][0], 10);
                         if (isNaN(appData[i][0]) || appData[i][0] < 1) {
-                            throw new Error("Illegal app parameter set, first item in set must be an integer > 0: " + tmp[i]);
+                            throw new Error('Illegal app parameter set, first item in set must be an integer > 0: ' + tmp[i]);
                         }
                     }
                 }
@@ -58,7 +62,7 @@ define([
                         parameters: appData,
                         importData: importData
                     })
-                    .then(function(info) {
+                    .then(function (info) {
                         var wsId = info.narrativeInfo.wsid,
                             objId = info.narrativeInfo.id,
                             path = makeNarrativePath(wsId, objId);
@@ -98,9 +102,9 @@ define([
                 a = html.tag('a'),
                 p = html.tag('p');
             container.innerHTML = wrapPanel(html.loading('Creating a new Narrative for you...'));
-            return new Promise(function(resolve, reject) {
+            return new Promise(function (resolve, reject) {
                 createNewNarrative(params)
-                    .then(function(result) {
+                    .then(function (result) {
                         container.innerHTML = wrapPanel([
                             p('Opening your new Narrative.'),
                             p('If the Narrative did not open, use this link'),
@@ -115,7 +119,7 @@ define([
                         });
                         resolve();
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         container.innerHTML = 'ERROR creating and opening a new narrative';
                         console.error('ERROR creating and opening a new narrative', err);
                         reject(err);
@@ -142,7 +146,7 @@ define([
     }
 
     return {
-        make: function(config) {
+        make: function (config) {
             return factory(config);
         }
     };

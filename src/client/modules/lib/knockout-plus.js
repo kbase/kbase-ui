@@ -1,9 +1,16 @@
 define([
+    'numeral',
     'knockout',
     'knockout-mapping',
     'knockout-arraytransforms',
-    'knockout-validation'
-], function (ko) {
+    'knockout-validation',
+    'knockout-switch-case'
+], function (
+    numeral,
+    ko
+) {
+    // Knockout Defaults
+    ko.options.deferUpdates = true;
 
     // from: https://github.com/knockout/knockout/issues/914
     ko.subscribable.fn.subscribeChanged = function (callback, context) {
@@ -223,6 +230,54 @@ define([
         target.constraint.isRequired.subscribe(validate);
 
         return target;
+    };
+
+    function svgTemplateLoader(name, templateConfig, callback) {
+        if (!templateConfig.svg) {
+            callback(null);
+            return;
+        }
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.innerHTML = templateConfig.svg;
+        callback(svg.childNodes);
+    }
+    ko.components.loaders.unshift({
+        loadTemplate: svgTemplateLoader
+    });
+
+    // BINDINGS
+
+    ko.bindingHandlers.numberText = {
+        update: function (element, valueAccessor, allBindings) {
+            var value = valueAccessor();
+            var valueUnwrapped = ko.unwrap(value);
+            var format = allBindings.get('numberFormat') || '';
+            var formatted = numeral(valueUnwrapped).format(format);
+            element.innerText = formatted;
+        }
+    };
+
+    ko.bindingHandlers.typedText = {
+        update: function (element, valueAccessor) {
+            var value = valueAccessor();
+            var valueUnwrapped = ko.unwrap(value.value);
+            var format = value.format;
+            var type = value.type;
+            // var format = allBindings.get('type') || '';
+            // var format = allBindings.get('numberFormat') || '';
+            var formatted;
+            switch (type) {
+            case 'number':
+                formatted = numeral(valueUnwrapped).format(format);
+                break;
+            case 'text':
+            case 'string':
+            default:
+                formatted = valueUnwrapped;
+            }
+
+            element.innerText = formatted;
+        }
     };
 
     return ko;

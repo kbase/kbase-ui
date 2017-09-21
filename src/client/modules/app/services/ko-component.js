@@ -1,9 +1,11 @@
 define([
     'require',
-    'promise'
+    'promise',
+    'knockout'
 ], function (
     require,
-    Promise
+    Promise,
+    ko
 ) {
     'use strict';
 
@@ -32,9 +34,20 @@ define([
                     // oops, that would break the model...
 
                     return new Promise(function (resolve, reject) {
-                        var modulePath = [pluginConfig.moduleRoot, componentConfig.module].join('/');
-                        require([modulePath], function (result) {
-                            resolve(result);
+                        var modulePaths = [];
+                        modulePaths.push([pluginConfig.moduleRoot, componentConfig.module].join('/'));
+                        if (componentConfig.css) {
+                            modulePaths.push('css!' + [pluginConfig.moduleRoot, componentConfig.module].join('/'));
+                        }
+                        require(modulePaths, function (result) {
+                            // The result is a component factory which takes no arguments.
+                            // console.log('registering', componentConfig, result);
+                            try {
+                                ko.components.register(componentConfig.name, result());
+                                resolve(result);
+                            } catch (ex) {
+                                reject(ex);
+                            }
                         }, function (err) {
                             reject(err);
                         });

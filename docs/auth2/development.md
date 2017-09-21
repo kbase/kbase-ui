@@ -3,36 +3,29 @@
 ## Prerequisites
 
 - VirtualBox
-  - https://www.virtualbox.org/wiki/Downloads
 - Vagrant
-  - https://www.vagrantup.com/downloads.html
-- Vagrant virtualbox guest update plugin (optional)
-  - https://github.com/dotless-de/vagrant-vbguest
 - git
-  - git is included with Apple's Xcode command line tools, directly from git folks https://git-scm.com/download/mac, or with mac package managers like macports or brew.
 
-## Assumptions
-
-- working on a plugin that is already configured into the kbase-ui, either the dev or prod build (or both.)
+## Without local Auth2 
 
 ## Get Repos
 
 In a dedicated directory clone the following repos
 
 - https://github.com/kbase/kbase-ui
-- https://github.com/kbase/kbase-ui-plugin-YOUR-PLUGIN
+- https://github.com/kbase/kbase-ui-plugin-auth2-client
 
 ```
-mkdir dev
-cd dev
+mkdir auth2dev
+cd auth2dev
 git clone -b develop https://github.com/kbase/kbase-ui
-git clone https://github.com/your-github-account/kbase-ui-plugin-YOUR-PLUGIN
+git clone https://github.com/your-github-account/kbase-ui-plugin-auth2-client
 ```
 
 or as I prefer, using ssh
 
 ```text
-git clone ssh://git@github.com/eapearson/kbase-ui-plugin-YOUR-PLUGIN
+git clone ssh://git@github.com/eapearson/kbase-ui-plugin-auth2-client
 ```
 
 ## Set up Vagrant
@@ -45,7 +38,7 @@ git clone ssh://git@github.com/eapearson/kbase-ui-plugin-YOUR-PLUGIN
 vagrant init ubuntu/trusty64
 ```
 
-### Set up Vagrant
+### Set it Vagrant
 
 Edit the ```Vagrantfile``` to set it up for better local development:
 
@@ -53,12 +46,13 @@ Edit the ```Vagrantfile``` to set it up for better local development:
 config.vm.network "private_network", type: "dhcp"
 config.vm.synced_folder ".", "/vagrant", type: "nfs"
 config.vm.provider "virtualbox" do |vb|
-  vb.memory = "1024"
+  vb.memory = 2048
+  vb.cpus = 2
   vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/vagrant", "1"]
 end
 ```
 
-You can place this anywhere in the file. I usually disperse these where they occur in the Vagrantfile, but they can also be inserted as a lump, for example, at the end of the file just before the final "end".vagr
+You can place this anywhere in the file. I usually disperse these where they occur in the Vagrantfile, but they can also be inserted as a lump.
 
 This:
 
@@ -73,7 +67,7 @@ This:
 config.vm.network "private_network", ip: "1.2.3.4"
 ```
 
-The funny business with NFS is required to allow symbolic linking within the vm using shared folders. The linking is a necessary part of the workflow for kbase-ui plugins.
+The funny business with NFS is required to allow symbolic linking within the vm using shared folders. The linking is a necessary part of quickly working on kbase-ui plugins.
 
 ### Set up the VM
 
@@ -82,16 +76,19 @@ vagrant up
 vagrant ssh
 sudo su
 add-apt-repository ppa:nginx/stable
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 apt-get update
 apt-get upgrade -y
 apt-get dist-upgrade -y
 apt-get autoremove -y
-apt-get install nginx-extras -y
+apt-get install git nginx-extras nodejs -y
 ```
 
 > Note that for all subsequent commands in the vagrant window, we'll assume that "sudo su" is still active.
 
 > Note that as you start up the vagrant-managed vm you will be asked for your password. This is your Mac password, assuming you are an Admin user. This is required for vagrant to update your local Mac nfs configuration.
+
+> NB I've found that sometimes on the first vagrant up, there is an NFS failure. Doing a vagrant reload should work.
 
 ### Determine the IP of the VM and set up a local host mapping
 
@@ -124,8 +121,6 @@ add a line somewhere, e.g. the bottom, like:
 
 We will be mapping ci.kbase.us into the VM, and inside the VM using an nginx config to map service requests to the real ci.
 
-> Note that when you need to access the "real" ci.kbase.us you will need to disable this line in your /etc/hosts file.
-
 ## Set up Nginx 
 
 Back in the vagrant window we'll be setting 
@@ -145,8 +140,8 @@ Openssl will prompt for certificate information. It doesn't really matter what y
 Country Name (2 letter code) [AU]:US
 State or Province Name (full name) [Some-State]:California
 Locality Name (eg, city) []:Berkeley
-Organization Name (eg, company) [Internet Widgits Pty Ltd]:LBNL
-Organizational Unit Name (eg, section) []:KBase
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:KBase
+Organizational Unit Name (eg, section) []:web dev
 Common Name (e.g. server FQDN or YOUR name) []:ci.kbase.us
 Email Address []:
 ```
@@ -166,11 +161,11 @@ i
 copy this 
 
 ```text
-#  redirect accidental insecure requests to https
+# redirect accidental insecure requests to https
 server {
   listen 80 default_server;
   listen [::]:80 default_server;
-  server_name dev.kbase.us;
+  server_name ci.kbase.us;
   return 301 https://ci.kbase.us$request_uri;
 }
 server {
@@ -178,21 +173,17 @@ server {
   server_name ci.kbase.us;
   ssl_certificate /vagrant/test.crt;
   ssl_certificate_key /vagrant/test.key;
-  # Proxy all service call to the real CI
-  # nb the proxie_cookie_path is for the auth service
-  # could be a separate location at /services/auth
+  # Proxy all service calls, including auth2, to the real CI
   location /services {
     proxy_cookie_path /login /services/auth/login;
     proxy_cookie_path /link /services/auth/link;
     proxy_pass https://ci.kbase.us/services;
   }
+  # Needed for dynamic service calls
   location /dynserv {
     proxy_pass https://ci.kbase.us/dynserv;
   }
-  location /geonames {
-     proxy_pass http://api.geonames.org/;
-  }
-  # Proxy the narrative including websockets
+  # Needed for running narratives
   location /narrative {
     proxy_pass https://ci.kbase.us/narrative;
     proxy_http_version 1.1;
@@ -202,6 +193,7 @@ server {
   # Proxy all non-services to the local kbase-ui running in the vm
   location / {
     # next line for node testing server.
+    # proxy_pass http://127.0.0.1:8080;
     root /vagrant/kbase-ui/build/build/client;
     index index.html;
   }
@@ -215,41 +207,12 @@ paste into the terminal running vi
 ZZ
 ```
 
-##
-
-Now we need to restart the virtual machine in order to map the directories and enable the other changes we made to Vagrantfile.
-
-```
-exit
-exit
-vagrant reload
-```
-
-The first time reloading the virtual machine may take a while, as the system update may force a rebuild of the virtual box guest additions.
-
-At the end of the reload (and every time you reload or start the virtual machine), vagrant will prompt you for your password. Assuming you have admin rights, this is necessary to temporarily configure NFS on the host mac for interacting with the virtual machine.
-
-If this error occurs
-
-> No guest IP was given to the Vagrant core NFS helper. This is an
-internal error that should be reported as a bug.
-
-Just try again. I've found that initial vagrant setup can be buggy, perhaps due to the upgrading of the internal client and the length of time it may take leading to timeouts, but that after this it is stable.
-
 ### Test it
 
-The server should be set up enough to verify that it will build. Note that we do not yet have an instance of kbase-ui running, but the configuration is complete enough to test.
-
-First enter the virtual machine:
-
-```
-vagrant ssh
-```
-
-Then test the ngninx configuration:
+The server should be set up enough to verify that it will build. Note that we do not yet have an instance of kbase-ui running, but the configuration is complete enough to test:
 
 ```text
-sudo nginx -t
+nginx -t
 ```
 
 if all goes well
@@ -268,7 +231,9 @@ Exit out of vagrant
 exit
 ```
 
-### Build and set up kbase-ui
+### Build and set up kbase-ui in host
+
+Typically you will be building kbase-ui in your host (e.g. Mac) environment and not in the VM. This is simply because it is a faster workflow.
 
 In the kbase-ui repo, build it:
 
@@ -278,12 +243,19 @@ make init
 make build
 ```
 
-Confirm quickly that the base build is working by visiting https://ci.kbase.us.
+Bring it up in the browser: https://ci.kbase.us
 
-> Note - your browser will give you a security warning, due to the usage of the self-signed certificate. Each browser is different, but it should provide you with a way to bypass the error or add a security exception.
+### Now try in the vagrant vm
 
-Assuming all has gone well...
+First clean it in the host
 
+### Set up linking
+
+Linking source assets into the build directory tree is the primary tool for rapid kbase-ui development.
+
+In this example below, we are linkin the auth2 plugin
+
+> TODO: this needs to be generalized to any plugin...
 
 Now we'll need to set up the linking script, by copying it from config/link.sh to dev/test/link.sh
 
@@ -291,35 +263,19 @@ Now we'll need to set up the linking script, by copying it from config/link.sh t
 cp config/link.sh dev/test/link.sh
 ```
 
-The dev/test directory is ignored by git, so is a safe place to stash develop-time assets. The link script is merely a convenience to provide symbolic linking for various bits of the ui source into the built ui client, which is what is served by nginx.
-
-
-Edit the link.sh script to link to the plugin. Open the link.sh script in your editor, and in the EXTERNAL PLUGINS section add this line:
+Edit the link.sh script to link in the auth2 client. Open the link.sh script in your editor, and in the EXTERNAL PLUGINS section add this line
 
 ```text
-linkPlugin "my-plugin"
+linkPlugin "auth2-client"
 ```
 
-### Link the plugin 
+### Link the auth2 client
 
-The linking for the plugin  must be done on the vagrant side.
+The linking for the auth2 client must be done on the vagrant side.
 
-So, back in the terminal window **logged into vagrant**, do this:
+So, back in the terminal window logged into vagrant, do this:
 
 ```text
 cd /vagrant/kbase-ui/dev/test
 sudo bash link.sh
 ```
-
-> Note that you must issue the linking from within the VM. In these instructions the javascript building and testing occurs in the Mac host environment, and the linking in the Ubuntu vm. This is purely a nod to the convenience of local development with the requirement that linking be within the vm to satisfy nginx with nfs hosted directories. 
-
-You should just need to do this once per development effort. If for some reason you need to rebuild kbase-ui, the linking will need to be repeated.
-
-### Verify
-
-Pull up the kbase-ui web app again in the browser to ensure that the plugin works. You may want to make a quick minor change to the plugin and verify that the change appears in the ui.
-
-
-## Fin
-
-Now you should be ready to hack on the plugin.

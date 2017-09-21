@@ -1,0 +1,34 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # Current standard Linux deployment is Ubuntu 14.04
+  config.vm.box = "ubuntu/trusty64"
+
+  # DHCP works fine
+  config.vm.network "private_network", type: "dhcp"
+  
+  # For static.
+  # config.vm.network "private_network", ip: "1.2.3.4"
+
+  # comment after fixing /etc/exports
+  config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: true
+
+  # uncomment after fixing /etc/exports
+  # config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, nfs_version: 3, nfs_export: false
+
+  # This will start nginx after the vm is started, and shared folders mounted.
+  config.vm.provision :shell, path: "kbase-ui/tools/vagrant-provision.sh", run: "once"
+  config.vm.provision :shell, :inline => "sudo service nginx start", run: "always"
+
+  # The resource allocation is suitable for most development needs, including running a Narrative instance
+  # inside the VM, but does not impact the host machine much.
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+    v.cpus = 2
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
+    # This option, in concert with the usage of nfs, allows for the creation of symlinks
+    # inside the vm
+    v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/vagrant", "1"]
+  end
+end

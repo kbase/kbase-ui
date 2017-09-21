@@ -34,11 +34,12 @@
         "jquery": "2.2.4",
         "jquery-ui": "1.12.1",
         "kbase-common-ts": "0.16.3",
-        "kbase-common-js": "2.9.1",
+        "kbase-common-js": "2.10.3",
         "kbase-sdk-clients-js": "0.5.1",
         "kbase-service-clients-js": "3.3.5",
         "kbase-ui-widget": "1.2.1",
         "knockout-arraytransforms": "2.1.1",
+        "knockout-switch-case": "2.1.0",
         "knockout-validation": "2.0.3",
         "knockout": "3.4.2",
         "marked": "0.3.6",
@@ -55,7 +56,7 @@
         "requirejs-domready": "2.0.1",
         "requirejs-json": "0.0.3",
         "requirejs-text": "2.0.15",
-        "requirejs": "2.3.3",
+        "requirejs": "eapearson/requirejs#3.0.0-alpha4",
         "spark-md5": "3.0.0",
         "underscore": "1.8.3",
         "js-yaml": "3.8.3"
@@ -66,7 +67,8 @@
         "numeral": "2.0.6",
         "nunjucks": "3.0.0",
         "kbase-common-js": "^2.5.0",
-        "kbase-service-clients-js": "^3.0.0"
+        "kbase-service-clients-js": "^3.0.0",
+        "requirejs": "3.0.0-alpha4"
     },
     "devDependencies": {},
     "license": "SEE LICENSE IN LICENSE"
