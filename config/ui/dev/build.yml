@@ -192,6 +192,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: feeds
+        globalName: kbase-ui-plugin-feeds
+        version: 0.1.0
+        cwd: src/plugin
+        source:
+            bower: {}
 
 
 # Copy these directories into the modules
