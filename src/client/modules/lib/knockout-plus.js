@@ -1,5 +1,6 @@
 define([
     'numeral',
+    'moment',
     'knockout',
     'knockout-mapping',
     'knockout-arraytransforms',
@@ -7,6 +8,7 @@ define([
     'knockout-switch-case'
 ], function (
     numeral,
+    moment,
     ko
 ) {
     // Knockout Defaults
@@ -269,6 +271,9 @@ define([
             switch (type) {
             case 'number':
                 formatted = numeral(valueUnwrapped).format(format);
+                break;
+            case 'date':
+                formatted = moment(valueUnwrapped).format(format);
                 break;
             case 'text':
             case 'string':

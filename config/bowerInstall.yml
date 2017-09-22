@@ -161,8 +161,12 @@ bowerFiles:
         dir: numeral
         src:
             - numeral.js
-            # - languages/*.js
         bowerComponent: true
+    -
+        dir: moment
+        src:
+            - moment.js
+        bowerComponent: true        
     -
         name: blockui
         src:

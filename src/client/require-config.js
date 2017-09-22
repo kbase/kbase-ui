@@ -62,6 +62,7 @@
             'knockout-validation': 'bower_components/knockout-validation/knockout.validation',
             marked: 'bower_components/marked/marked',
             md5: 'bower_components/spark-md5/spark-md5',
+            moment: 'bower_components/moment/moment',
             numeral: 'bower_components/numeral/numeral',
             nunjucks: 'bower_components/nunjucks/nunjucks',
             plotly: 'bower_components/plotly.js/plotly',
