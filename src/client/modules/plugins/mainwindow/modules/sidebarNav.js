@@ -7,10 +7,41 @@ define([
 ) {
     var t = html.tag,
         div = t('div'),
-        a = t('a');
+        a = t('a'),
+        table = t('table'),
+        tr = t('tr'),
+        td = t('td'),
+        th = t('th');
 
     function buildNavStripButton(cfg) {
         var icon = 'fa-' + cfg.icon;
+        var info;
+        if (cfg.info) {
+            info = table({
+                style: {
+                    margin: 0,
+                    padding: 0,
+                    width: '100%'
+                }
+            }, cfg.info.map(function (row) {
+                return tr({}, [
+                    td({
+                        style: {
+                            width: '50%',
+                            textAlign: 'right',
+                            paddingRight: '2px'
+                        }
+                    }, row.value),
+                    td({
+                        style: {
+                            width: '50%',
+                            textAlign: 'left',
+                            paddingLeft: '2px'
+                        }
+                    }, row.label)
+                ]);
+            }));
+        }
         return a({
             href: '#' + cfg.path,
             class: '-nav-button',
@@ -28,7 +59,8 @@ define([
             div({
                 class: 'fa fa-3x ' + icon
             }),
-            div({}, cfg.label)
+            div({}, cfg.label),
+            info
         ]);
     }
 
@@ -80,7 +112,22 @@ define([
                 label: 'Account',
                 path: 'auth2/account',
                 authRequired: true
-            }
+            },
+            (function () {
+                if (!runtime.allow('alpha')) {
+                    return;
+                }
+                return {
+                    icon: 'bullhorn',
+                    label: 'Feeds',
+                    path: 'feeds',
+                    authRequired: true,
+                    info: [{
+                        label: 'new',
+                        value: '3'
+                    }]
+                };
+            }())
         ].filter(function (item) {
             return item;
         });
