@@ -188,7 +188,7 @@ plugins:
     -
         name: reske-genome-browser
         globalName: kbase-ui-plugin-reske-genome-browser
-        version: 0.7.0
+        version: 0.8.0
         cwd: src/plugin
         source:
             bower: {}
