@@ -181,7 +181,7 @@ plugins:
     -
         name: reske-admin
         globalName: kbase-ui-plugin-reske-admin
-        version: 0.3.1
+        version: 0.3.2
         cwd: src/plugin
         source:
             bower: {}
