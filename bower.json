@@ -44,7 +44,7 @@
         "knockout": "3.4.2",
         "marked": "0.3.6",
         "moment": "2.18.1",
-        "numeral": "2.0.6",
+        "numeral": "2.0.4",
         "nunjucks": "3.0.0",
         "plotly.js": "1.26.0",
         "postal": "1.0.7",
@@ -64,7 +64,7 @@
     "resolutions": {
         "font-awesome": "4.7.0",
         "datatables-bootstrap3-plugin": "1.0.1",
-        "numeral": "2.0.6",
+        "numeral": "2.0.4",
         "nunjucks": "3.0.0",
         "kbase-common-js": "^2.5.0",
         "kbase-service-clients-js": "^3.0.0",
