@@ -125,7 +125,7 @@ define([
             }
             return {
                 icon: 'bullhorn',
-                label: 'Feed',
+                label: 'Feeds',
                 path: 'feeds',
                 authRequired: true,
                 status: {
