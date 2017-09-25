@@ -265,15 +265,25 @@ define([
             var valueUnwrapped = ko.unwrap(value.value);
             var format = value.format;
             var type = value.type;
+            var missing = value.missing || '';
             // var format = allBindings.get('type') || '';
             // var format = allBindings.get('numberFormat') || '';
             var formatted;
+
             switch (type) {
             case 'number':
-                formatted = numeral(valueUnwrapped).format(format);
+                if (valueUnwrapped === undefined || valueUnwrapped === null) {
+                    formatted = missing;
+                } else {
+                    formatted = numeral(valueUnwrapped).format(format);
+                }
                 break;
             case 'date':
-                formatted = moment(valueUnwrapped).format(format);
+                if (valueUnwrapped === undefined || valueUnwrapped === null) {
+                    formatted = missing;
+                } else {
+                    formatted = moment(valueUnwrapped).format(format);
+                }
                 break;
             case 'text':
             case 'string':
