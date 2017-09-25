@@ -42,6 +42,19 @@ define([
                 ]);
             }));
         }
+        var status;
+        if (cfg.status) {
+            status = div({
+                style: {
+                    position: 'absolute',
+                    right: '0',
+                    top: '0',
+                    backgroundColor: 'red',
+                    color: 'white',
+                    padding: '2px'
+                }
+            }, String(cfg.status.new));
+        }
         return a({
             href: '#' + cfg.path,
             class: '-nav-button',
@@ -53,14 +66,16 @@ define([
                 margin: '6px 0',
                 display: 'block',
                 color: '#000',
-                textDecoration: 'none'
+                textDecoration: 'none',
+                position: 'relative'
             }
         }, [
             div({
-                class: 'fa fa-3x ' + icon
+                class: 'fa fa-3x ' + icon,
             }),
             div({}, cfg.label),
-            info
+            info,
+            status
         ]);
     }
 
@@ -69,66 +84,59 @@ define([
 
         // TODO: this really needs to be in configuration!
         var buttons = [{
-                icon: 'dashboard',
-                label: 'Dashboard',
-                path: 'dashboard',
+            icon: 'dashboard',
+            label: 'Dashboard',
+            path: 'dashboard',
+            authRequired: true
+        }, {
+            icon: 'book',
+            label: 'Catalog',
+            path: 'appcatalog',
+            authRequired: false
+        }, (function () {
+            if (!runtime.allow('alpha')) {
+                return;
+            }
+            return {
+                icon: 'files-o',
+                label: 'Narratives',
+                path: 'reske/search/narrative',
                 authRequired: true
-            }, {
-                icon: 'book',
-                label: 'Catalog',
-                path: 'appcatalog',
-                authRequired: false
-            },
-            // {
-            //     icon: 'search',
-            //     label: 'Search',
-            //     path: 'reske/search',
-            //     authRequired: true
-            // },
-            (function () {
-                if (!runtime.allow('alpha')) {
-                    return;
-                }
-                return {
-                    icon: 'files-o',
-                    label: 'Narratives',
-                    path: 'reske/search/narrative',
-                    authRequired: true
-                };
-            }()),
-            (function () {
-                if (!runtime.allow('alpha')) {
-                    return;
-                }
-                return {
-                    icon: 'search',
-                    label: 'Search Data',
-                    path: 'reske/search/data',
-                    authRequired: true
-                };
-            }()), {
-                //icon: 'user',
-                icon: 'user-circle-o',
-                label: 'Account',
-                path: 'auth2/account',
+            };
+        }()), (function () {
+            if (!runtime.allow('alpha')) {
+                return;
+            }
+            return {
+                icon: 'search',
+                label: 'Search Data',
+                path: 'reske/search/data',
                 authRequired: true
-            },
-            (function () {
-                if (!runtime.allow('alpha')) {
-                    return;
+            };
+        }()), {
+            //icon: 'user',
+            icon: 'user-circle-o',
+            label: 'Account',
+            path: 'auth2/account',
+            authRequired: true
+        }, (function () {
+            if (!runtime.allow('alpha')) {
+                return;
+            }
+            return {
+                icon: 'bullhorn',
+                label: 'Feeds',
+                path: 'feeds',
+                authRequired: true,
+                status: {
+                    new: 6
                 }
-                return {
-                    icon: 'bullhorn',
-                    label: 'Feeds',
-                    path: 'feeds',
-                    authRequired: true,
-                    info: [{
-                        label: 'new',
-                        value: '3'
-                    }]
-                };
-            }())
-        ].filter(function (item) {
+                // info: [{
+                //     label: 'new',
+                //     value: '3'
+                // }]
+            };
+        }())].filter(function (item) {
             return item;
         });
 
