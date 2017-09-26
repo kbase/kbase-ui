@@ -74,6 +74,10 @@
     background-color: transparent;
 }
 
+.kbase-ui .kb-panel-light>.panel-heading+.panel-collapse>.panel-body {
+    border-top: none;
+}
+
 .kbase-ui .panel-title {
     text-align: left;
 }
