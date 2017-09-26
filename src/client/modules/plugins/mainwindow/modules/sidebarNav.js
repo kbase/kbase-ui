@@ -45,14 +45,7 @@ define([
         var status;
         if (cfg.status) {
             status = div({
-                style: {
-                    position: 'absolute',
-                    right: '0',
-                    top: '0',
-                    backgroundColor: 'red',
-                    color: 'white',
-                    padding: '2px'
-                }
+                class: '-status-indicator',
             }, String(cfg.status.new));
         }
         return a({
