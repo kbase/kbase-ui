@@ -3,6 +3,11 @@
    states, so btn-bare cannot be used on its own.
 */
 
+.btn.btn-flat {
+    /* background: none; */
+    border: none;
+}
+
 .btn-bare {
     background: none;
     border-color: transparent;
