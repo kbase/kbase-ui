@@ -67,7 +67,16 @@ define([
                 div({ style: cellStyle, id: widgetSet.addWidget('menu') }),
                 div({ style: cellStyle, id: widgetSet.addWidget('logo') }),
                 div({ style: cellStyle, id: widgetSet.addWidget('title') }),
-                div({ style: { position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top' } }, [
+                div({
+                    style: {
+                        position: 'absolute',
+                        right: '0',
+                        top: '0',
+                        bottom: '0',
+                        verticalAlign: 'top',
+                        backgroundColor: 'white'
+                    }
+                }, [
                     div({ style: cellStyle, id: widgetSet.addWidget('buttonbar') }),
                     div({ style: cellStyle, id: widgetSet.addWidget('notification') }),
                     div({ style: cellStyle, id: widgetSet.addWidget('deployment') }),
