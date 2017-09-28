@@ -93,7 +93,7 @@ define([
             return {
                 icon: 'files-o',
                 label: 'Narratives',
-                path: 'reske/search/narrative',
+                path: 'reske-search/narrative',
                 authRequired: true
             };
         }()), (function () {
@@ -103,7 +103,7 @@ define([
             return {
                 icon: 'search',
                 label: 'Search Data',
-                path: 'reske/search/data',
+                path: 'reske-search/data',
                 authRequired: true
             };
         }()), {
