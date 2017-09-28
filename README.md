@@ -2,42 +2,9 @@
 
 ## Current Status
 
-<table class="table table-bordered">
-    <tr>
-        <th width="20%">Branch</th>
-        <td width="80%">master</td>
-    </tr>
-    <tr>
-        <th>Status</th>
-        <td>
-            <table class="table table-striped">
-                <tr>
-                    <th width="33%">
-                        Build
-                    </th>        
-                    <td width="33%">
-                        <img src="https://travis-ci.org/kbase/kbase-ui.svg?branch=master">
-                    </td>
-                    <td width="33%">
-                        <a href="https://travis-ci.org/kbase/kbase-ui">details</a>
-                    </td>
-                </tr>
-                <tr>
-                    <th>
-                        Coverage
-                    </th>
-                    <td>
-                        <img src="https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master">
-                    </td>
-                    <td>
-                        <a href="ttps://coveralls.io/r/kbase/kbase-ui?branch=master">details</a>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    
-</table>
+| Branch   | Build  |   | Coverage |   |
+|----------|--------|---|----------|---|
+| master   | ![travis](https://travis-ci.org/kbase/kbase-ui.svg?branch=master) | [details](https://travis-ci.org/kbase/kbase-ui) | ![coveralls](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master) | [details](https://coveralls.io/r/kbase/kbase-ui?branch=master)  |
 
 ## About
 
@@ -67,6 +34,10 @@ Please see the [documentation](docs/index.md) for additional information on deve
 ## Contributing
 
 The KBase UI is an open source project, managed through github. As such, contributions, even internally within KBase, are conducted through fork and PR.
+
+## Release Notes
+
+The current released version is [1.5.0](release-notes/RELEASE_NOTES_1.5.0.md). 
 
 ## Reporting Bugs
 
