@@ -2,7 +2,7 @@
 
 ## Current Status
 
-| Branch   | Build  |   | Coverage |   |
+| Branch   | Build  || Coverage ||
 |----------|--------|---|----------|---|
 | master   | ![travis](https://travis-ci.org/kbase/kbase-ui.svg?branch=master) | [details](https://travis-ci.org/kbase/kbase-ui) | ![coveralls](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master) | [details](https://coveralls.io/r/kbase/kbase-ui?branch=master)  |
 
