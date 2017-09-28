@@ -167,7 +167,7 @@ plugins:
     -
         name: reske-search
         globalName: kbase-ui-plugin-reske-search
-        version: 0.12.6
+        version: 0.12.7
         cwd: src/plugin
         source:
             bower: {}
