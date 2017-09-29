@@ -92,30 +92,24 @@ define([
         }
         // Widget API
         function attach(node) {
-            return Promise.try(function () {
-                mount = node;
-                container = mount.appendChild(document.createElement('div'));
-            });
+            mount = node;
+            container = mount.appendChild(document.createElement('div'));
         }
 
         function detach() {
-            return Promise.try(function () {
+            if (mount && container) {
                 mount.removeChild(container);
                 container = null;
-            });
+            }
         }
 
         function start() {
-            return Promise.try(function () {
-                runtime.send('ui', 'setTitle', 'About then KBase User Interface');
-                render();
-            });
+            runtime.send('ui', 'setTitle', 'About then KBase User Interface');
+            return render();
         }
 
         function stop() {
-            return Promise.try(function () {
-                runtime.send('ui', 'setTitle', 'Leaving about...');
-            });
+            return null;
         }
 
         return {

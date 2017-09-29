@@ -40,26 +40,37 @@ Under the hood, a new module-caching system allows nearly all code to be pre-loa
 
 Post-auth2, some elements of the ui needed updating. The development process was markedly different and more complex, so the documentation was rewritten and reorgnaized to support virtual machine with proxying. A couple of landing pages, FBA and Assembly, had also fallen victim to changes in the KBase infrastructure during the auth2 upgrade, and were repaired. There is still much work to be done in this area, as the landing pages and Narrative data viewers do not share much code and should be brought into alignment.
 
-## NEW
-- added custom knockoutjs extensions 
-- Legacy data search removed (from menu, exists in codebase still)
+### Documentation Updates
+
+Due to new staff additions, in combination with many changes to the KBase instrastructure especially authentication and authorization, developer documentation needed a good refresh. New development workflows require a more complex setup, utiliziing a virtual machine hosting a proxy server in order to route ui, service, and auth requests to the corresponding endppoints in ci, next, appdev and prod.
+
+## CHANGES
+
+Each significant change should be noted below, with the accompanying JIRA ticket which it was associated with, if any.
+
+If you, dear reader, notice anything missing or mistakeng, please file a ticket at ___ or ___ and the release notes will be corrected, in a future release.
+
+> Note that the JIRA system is accessible only to KBase staff and affiliated persons, although Public JIRA issues, noted by the ```PUBLIC-``` prefix are publicly available.
+
+### NEW
+- added custom knockoutjs extensions, supporting more extensive use of knockout esp. in the new RESKE front end - [TASK-1021](https://kbase-jira.atlassian.net/browse/TASK-1021)
+- Legacy data search removed (from menu, exists in codebase still) - [TASK-1051](https://kbase-jira.atlassian.net/browse/TASK-1051)
 - new cached-module method for pre-loading modules in non-dev builds
   - slightly longer initial load time, but reduced latency and increased reliability
     for all subsequent module invocations (e.g. navigation)
 - auth service added to the about-services panel
 
-## UNRELEASED
-- RESKE search and Knowledge Engine plugins added for dev and CI builds
-  - also added to the hamburger and sidenav and only enabled for those envs.
-- RESKE-based Narrative Browser and Data Search thus added for dev and CI builds.
-  - Prototype, but have become an expected new feature
-- JGI search added to dev and CI builds, in hamburger menu
-- new landing page Provenance widget for dev and CI builds
-  - conditionally appears in landing page in thi the dev and ci build
-- Prototype Feeds panel added, only enabled in dev and CI builds
+### UNRELEASED
+- RESKE search plugin added for dev and CI builds. This new functionality provides a user tools for accessing the RESKE search service - [TASK-1051](https://kbase-jira.atlassian.net/browse/TASK-1051)
+  - Resulted in prototype Narrative Browser and Data Search tools for dev and CI builds.
+- RESKE Knowledge Engine plugin added for dev and CI builds. This new functionality is provided by a new plugin and a new widget for the landing pages - [TASK-1087](https://kbase-jira.atlassian.net/browse/TASK-1087)
+- RESKE Knowledge Engine admin prototype added for dev and CI builds [TASK-1022](https://kbase-jira.atlassian.net/browse/TASK-1022)
+- JGI search added to dev and CI builds, in hamburger menu - [TASK-921](https://kbase-jira.atlassian.net/browse/TASK-921)
+- new landing page Provenance widget for dev and CI builds [TASK-966]https://kbase-jira.atlassian.net/browse/TASK-966)
+- Prototype Feeds panel added, only enabled in dev and CI builds - [TASK-1090](https://kbase-jira.atlassian.net/browse/TASK-1090)
 
-## IMPROVEMENTS
-- documentation improvements
+### IMPROVEMENTS
+- documentation improvements - [TASK-986](https://kbase-jira.atlassian.net/browse/TASK-986)
   - development setup, plugin development, under auth2
   - example nginx files improved to support local auth2 Narrative + services
 - knockout components can now be specified in plugin config and loaded at initial ui load
@@ -73,14 +84,14 @@ Post-auth2, some elements of the ui needed updating. The development process was
   - now uses the better generic clients from kb common
   - unmounts widget correctly
 
-## FIXES
+### FIXES
 
-- fix and improve assembly landing page, aligning with Narrative 
-- fba landing pages (Media, FBA Model) fixed - uses new api
+- fix and improve assembly landing page, aligning with Narrative - [TASK-852](https://kbase-jira.atlassian.net/browse/TASK-852)
+- fba landing pages (Media, FBA Model) fixed - uses new api - [TASK-1081](https://kbase-jira.atlassian.net/browse/TASK-1081)
 - data icons fixed - did not scale correctly
 - new build config "allow" provides for deployment-specific tags which may
   be used to allow or omit certain features
   - created for and used by the new RESKE and Provenance features
-- fix tab selection after tab close in reske search results
-- downgrade numeral library 2.0.6 -> 2.0.4 to work around regression in it
+- fix tab selection after tab close in reske search results [TASK-1051](https://kbase-jira.atlassian.net/browse/TASK-1051)
+- downgrade numeral library 2.0.6 -> 2.0.4 to work around regression in it- [TASK-1025](https://kbase-jira.atlassian.net/browse/TASK-1025)
 - improve title display so long titles don't bleed through the header right-side items 

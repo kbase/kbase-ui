@@ -476,36 +476,30 @@ define([
 
         // Widget API
         function attach(node) {
-            return Promise.try(function () {
-                mount = node;
-                container = mount.appendChild(document.createElement('div'));
-                container.innerHTML = layout();
-                // bind
-                Object.keys(vm).forEach(function (id) {
-                    var vmNode = vm[id];
-                    vmNode.node = document.getElementById(vmNode.id);
-                });
+            mount = node;
+            container = mount.appendChild(document.createElement('div'));
+            container.innerHTML = layout();
+            // bind
+            Object.keys(vm).forEach(function (id) {
+                var vmNode = vm[id];
+                vmNode.node = document.getElementById(vmNode.id);
             });
         }
 
         function detach() {
-            return Promise.try(function () {
+            if (mount && container) {
                 mount.removeChild(container);
                 container = null;
-            });
+            }
         }
 
         function start() {
-            return Promise.try(function () {
-                runtime.send('ui', 'setTitle', 'About the <strike>FUNctional Site</strike> UI');
-                return render();
-            });
+            runtime.send('ui', 'setTitle', 'About the <strike>FUNctional Site</strike> UI');
+            return render();
         }
 
         function stop() {
-            return Promise.try(function () {
-                runtime.send('ui', 'setTitle', 'Leaving about...');
-            });
+            return null;
         }
 
         return {
