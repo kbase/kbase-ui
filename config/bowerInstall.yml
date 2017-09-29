@@ -6,6 +6,7 @@
 # TODO: I've learned more about bower conventions since this time -- the main
 # property is pretty well supported. Not universally, but better. We only really
 # need to list the packages here and create config for exceptions
+# TODO: document the format
 bowerFiles:
     -
         name: bluebird

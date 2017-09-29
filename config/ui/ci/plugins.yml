@@ -132,7 +132,7 @@ plugins:
         name: auth2-client
         disabled: true
         globalName: kbase-ui-plugin-auth2-client
-        version: 1.2.1
+        version: 1.2.2
         cwd: src/plugin
         source:
             bower: {}
@@ -199,11 +199,3 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
-
-# Copy these directories into the modules
-# There are two forms, as for plugins.
-# a bower: section will specify a bower dependency
-# a copy: section will specify a directory to copy literally into modules
-# a link: section will specify a directory to link into modules
-
-modules: []

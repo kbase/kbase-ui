@@ -54,16 +54,29 @@ function gitinfo() {
             });
         });
     }
-
+    // fatal: no tag exactly matches 'bf5efa0810d9f097b7c6ba8390f97c008d98d80e'
     return Promise.all([
             run('git show --format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d'),
             run('git log -1 --pretty=%s'),
             run('git log -1 --pretty=%N'),
-            run('git config --get remote.origin.url'),
-            run('git rev-parse --abbrev-ref HEAD')
+            run('git remote get-url origin'),
+            run('git rev-parse --abbrev-ref HEAD'),
+            run('git describe --exact-match --tags $(git log -n1 --pretty=\'%h\')')
         ])
-        .spread(function (infoString, subject, notes, url, branch) {
+        .spread(function (infoString, subject, notes, url, branch, tag) {
             var info = infoString.split('\n');
+            var version;
+            tag = tag.trim('\n');
+            if (/^fatal/.test(tag)) {
+                version = null;
+            } else {
+                var m = /^v([\d]+)\.([\d]+)\.([\d]+)$/.exec(tag);
+                if (m) {
+                    version = m.slice(1).join('.');
+                } else {
+                    version = null;
+                }
+            }
             return {
                 commitHash: info[0],
                 commitAbbreviatedHash: info[1],
@@ -75,7 +88,9 @@ function gitinfo() {
                 subject: subject.trim('\n'),
                 commitNotes: notes.trim('\n'),
                 originUrl: url.trim('\n'),
-                branch: branch.trim('\n')
+                branch: branch.trim('\n'),
+                tag: tag,
+                version: version
             };
         });
 }
@@ -95,7 +110,7 @@ function copyFiles(from, to, globExpr) {
 }
 
 function loadYaml(yamlPath) {
-    var yamlPath = yamlPath.join('/');
+    yamlPath = yamlPath.join('/');
     return fs.readFileAsync(yamlPath, 'utf8')
         .then(function (contents) {
             return yaml.safeLoad(contents);
@@ -160,28 +175,28 @@ function copyDirFiles(pathFrom, pathTo) {
  * Simply copies directory trees into the top level of the modules client directory
  *
  */
-function copyLocalModules(state) {
-    var root = state.environment.path,
-        projectRoot = root.concat(['..', '..', '..']),
-        configFilePath = root.concat(['config', 'ui', state.config.targets.ui, 'build.yml']).join('/');
-    return fs.readFileAsync(configFilePath, 'utf8')
-        .then(function (configFile) {
-            return yaml.safeLoad(configFile);
-        })
-        .then(function (config) {
-            return Promise.all(config.modules.filter(function (spec) {
-                if (spec.directory) {
-                    return true;
-                }
-                return false;
-            }).map(function (spec) {
-                var from = projectRoot.concat(spec.directory.path.split('/')),
-                    to = root.concat(['build', 'local_modules']);
+// function copyLocalModules(state) {
+//     var root = state.environment.path,
+//         projectRoot = root.concat(['..', '..', '..']),
+//         configFilePath = root.concat(['config', 'ui', state.config.targets.ui, 'build.yml']).join('/');
+//     return fs.readFileAsync(configFilePath, 'utf8')
+//         .then(function (configFile) {
+//             return yaml.safeLoad(configFile);
+//         })
+//         .then(function (config) {
+//             return Promise.all(config.modules.filter(function (spec) {
+//                 if (spec.directory) {
+//                     return true;
+//                 }
+//                 return false;
+//             }).map(function (spec) {
+//                 var from = projectRoot.concat(spec.directory.path.split('/')),
+//                     to = root.concat(['build', 'local_modules']);
 
-                return copyDirFiles(from, to);
-            }));
-        });
-}
+//                 return copyDirFiles(from, to);
+//             }));
+//         });
+// }
 
 function dirList(dir) {
     return fs.readdirAsync(dir.join('/'))
@@ -283,39 +298,39 @@ function installModulePackagesFromFilesystem(state) {
         });
 }
 
-function injectModulesIntoBower(state) {
-    // Load plugin config        
-    var root = state.environment.path,
-        pluginConfig, pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, 'build.yml']).join('/'),
-        bowerConfig, bowerConfigFile = root.concat(['build', 'bower.json']).join('/');
-    return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8'), fs.readFileAsync(bowerConfigFile, 'utf8')])
-        .spread(function (pluginFile, bowerFile) {
-            pluginConfig = yaml.safeLoad(pluginFile);
-            bowerConfig = JSON.parse(bowerFile);
-        })
-        .then(function () {
-            // First ensure all plugin packages are installed via bower.
-            pluginConfig.modules
-                .filter(function (module) {
-                    if (typeof module === 'object' && module.source.bower) {
-                        return true;
-                    }
-                    return false;
-                })
-                .forEach(function (module) {
-                    var name = module.source.bower.name || module.globalName,
-                        version = module.source.bower.version || module.version;
-                    bowerConfig.dependencies[name] = version;
-                });
+// function injectModulesIntoBower(state) {
+//     // Load plugin config        
+//     var root = state.environment.path,
+//         pluginConfig, pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, 'plugins.yml']).join('/'),
+//         bowerConfig, bowerConfigFile = root.concat(['build', 'bower.json']).join('/');
+//     return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8'), fs.readFileAsync(bowerConfigFile, 'utf8')])
+//         .spread(function (pluginFile, bowerFile) {
+//             pluginConfig = yaml.safeLoad(pluginFile);
+//             bowerConfig = JSON.parse(bowerFile);
+//         })
+//         .then(function () {
+//             // First ensure all plugin packages are installed via bower.
+//             pluginConfig.modules
+//                 .filter(function (module) {
+//                     if (typeof module === 'object' && module.source.bower) {
+//                         return true;
+//                     }
+//                     return false;
+//                 })
+//                 .forEach(function (module) {
+//                     var name = module.source.bower.name || module.globalName,
+//                         version = module.source.bower.version || module.version;
+//                     bowerConfig.dependencies[name] = version;
+//                 });
 
-            return fs.writeFileAsync(root.concat(['build', 'bower.json']).join('/'), JSON.stringify(bowerConfig, null, 4));
-        });
-}
+//             return fs.writeFileAsync(root.concat(['build', 'bower.json']).join('/'), JSON.stringify(bowerConfig, null, 4));
+//         });
+// }
 
 function injectPluginsIntoBower(state) {
     // Load plugin config        
     var root = state.environment.path,
-        pluginConfig, pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, 'build.yml']).join('/'),
+        pluginConfig, pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, 'plugins.yml']).join('/'),
         bowerConfig, bowerConfigFile = root.concat(['build', 'bower.json']).join('/');
     return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8'), fs.readFileAsync(bowerConfigFile, 'utf8')])
         .spread(function (pluginFile, bowerFile) {
@@ -351,7 +366,7 @@ function injectPluginsIntoConfig(state) {
     // Load plugin config        
     var root = state.environment.path,
         configPath = root.concat(['build', 'client', 'modules', 'config']),
-        pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, 'build.yml']).join('/');
+        pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, 'plugins.yml']).join('/');
 
     return fs.ensureDirAsync(configPath.join('/'))
         .then(function () {
@@ -508,7 +523,7 @@ function installExternalPlugins(state) {
     // Load plugin config
     var root = state.environment.path,
         pluginConfig,
-        pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, '/build.yml']).join('/');
+        pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, '/plugins.yml']).join('/');
     return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8')])
         .spread(function (pluginFile) {
             pluginConfig = yaml.safeLoad(pluginFile);
@@ -566,37 +581,37 @@ function installExternalPlugins(state) {
  * Messy, but necessary for development.
  */
 
-function installModules(state) {
-    return installExternalModules(state)
-        .then(function () {
-            return state;
-        });
-}
+// function installModules(state) {
+//     return installExternalModules(state)
+//         .then(function () {
+//             return state;
+//         });
+// }
 
-function installExternalModules(state) {
-    // Load plugin config
-    var root = state.environment.path,
-        buildConfig,
-        buildConfigFile = root.concat(['config', 'ui', state.config.targets.ui, '/build.yml']).join('/');
-    return fs.readFileAsync(buildConfigFile, 'utf8')
-        .then(function (contents) {
-            buildConfig = yaml.safeLoad(contents);
-            return buildConfig.modules.filter(function (module) {
-                if (module.source.directory) {
-                    return true;
-                }
-                return false;
-            });
-        })
-        .then(function (modules) {
-            return Promise.all(modules.map(function (module) {
-                var repoRoot = (module.source.directory.root && module.source.directory.root.split('/')) || ['..', '..'],
-                    source = repoRoot.concat([module.globalName]),
-                    destination = root.concat(['build', 'client', 'modules', 'bower_components', module.globalName]);
-                return copyFiles(source, destination, '**/*');
-            }));
-        });
-}
+// function installExternalModules(state) {
+//     // Load plugin config
+//     var root = state.environment.path,
+//         buildConfig,
+//         buildConfigFile = root.concat(['config', 'ui', state.config.targets.ui, '/build.yml']).join('/');
+//     return fs.readFileAsync(buildConfigFile, 'utf8')
+//         .then(function (contents) {
+//             buildConfig = yaml.safeLoad(contents);
+//             return buildConfig.modules.filter(function (module) {
+//                 if (module.source.directory) {
+//                     return true;
+//                 }
+//                 return false;
+//             });
+//         })
+//         .then(function (modules) {
+//             return Promise.all(modules.map(function (module) {
+//                 var repoRoot = (module.source.directory.root && module.source.directory.root.split('/')) || ['..', '..'],
+//                     source = repoRoot.concat([module.globalName]),
+//                     destination = root.concat(['build', 'client', 'modules', 'bower_components', module.globalName]);
+//                 return copyFiles(source, destination, '**/*');
+//             }));
+//         });
+// }
 
 // PROCESSES
 
@@ -651,12 +666,12 @@ function setupBuild(state) {
         .then(function () {
             return injectPluginsIntoConfig(state);
         })
-        .then(function () {
-            return copyLocalModules(state);
-        })
-        .then(function () {
-            return injectModulesIntoBower(state);
-        })
+        // .then(function () {
+        //     return copyLocalModules(state);
+        // })
+        // .then(function () {
+        //     return injectModulesIntoBower(state);
+        // })
         .then(function () {
             return state;
         });
@@ -712,7 +727,7 @@ function installPlugins(state) {
 function copyUiConfig(state) {
     var root = state.environment.path,
         configSource = root.concat(['config', 'ui', state.config.targets.ui]),
-        configFiles = ['menu.yml'],
+        configFiles = ['menus.yml'],
         configDest = root.concat(['build', 'client', 'modules', 'config']),
         baseUiConfig = root.concat('config', 'ui', 'ui.yml');
 
@@ -824,6 +839,20 @@ function makeKbConfig(state) {
             return Promise.all(configs.map(loadYaml))
                 .then(function (yamls) {
                     var merged = mergeObjects(yamls);
+                    // expand aliases for services
+                    Object.keys(merged.services).forEach(function (serviceKey) {
+                        var serviceConfig = merged.services[serviceKey];
+                        var aliases = serviceConfig.aliases;
+                        if (serviceConfig.aliases) {
+                            delete serviceConfig.aliases;
+                            aliases.forEach(function (alias) {
+                                if (merged.services[alias]) {
+                                    throw new Error('Service alias for ' + serviceKey + ' already in used: ' + alias);
+                                }
+                                merged.services[alias] = serviceConfig;
+                            });
+                        }
+                    });
                     var dest = root.concat(['build', 'client', 'modules', 'config', 'config.json']);
                     return mutant.saveJson(dest, merged);
                 })
@@ -1154,18 +1183,15 @@ function makeModuleVFS(state, whichBuild) {
 function main(type) {
     // INPUT
     var initialFilesystem = [{
-            cwd: ['..'],
-            path: ['src']
-        },
-        {
-            cwd: ['..'],
-            files: ['bower.json']
-        },
-        {
-            cwd: ['..'],
-            path: ['install']
-        }
-    ];
+        cwd: ['..'],
+        path: ['src']
+    }, {
+        cwd: ['..'],
+        files: ['bower.json']
+    }, {
+        cwd: ['..'],
+        path: ['install']
+    }];
     return pathExists('../dev/config')
         .then(function (exists) {
             // ugly work around for now
@@ -1232,13 +1258,13 @@ function main(type) {
         })
 
 
-    .then(function (state) {
-            return mutant.copyState(state);
-        })
-        .then(function (state) {
-            console.log('Installing Modules...');
-            return installModules(state);
-        })
+    // .then(function (state) {
+    //         return mutant.copyState(state);
+    //     })
+    //     .then(function (state) {
+    //         console.log('Installing Modules...');
+    //         return installModules(state);
+    //     })
 
     .then(function (state) {
             return mutant.copyState(state);
