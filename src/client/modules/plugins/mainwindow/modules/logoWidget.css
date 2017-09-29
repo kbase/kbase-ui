@@ -1,3 +1,24 @@
-.kb-logo-widget {
-    margin-top: 3px;
+.plugin-mainwindow .widget-logo {
+    /* white-space: nowrap; */
+    /* display: inline-block; */
+    /* line-height: 46px; */
+    display: flex;
+    align-items: flex-end;
+}
+
+.plugin-mainwindow .widget-logo .-logo {
+    /* font-size: 30px;
+    display: inline-block;
+    vertical-align: baseline; */
+    flex: 1;
+}
+
+.plugin-mainwindow .widget-logo .-label {
+    font-size: 30px;
+    /* display: inline-block;
+    vertical-align: baseline; */
+    white-space: nowrap;
+    line-height: 30px;
+    flex: 1;
+    margin-left: 5px;
 }

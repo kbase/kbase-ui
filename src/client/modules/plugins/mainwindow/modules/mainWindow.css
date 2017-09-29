@@ -20,6 +20,7 @@
 
 .plugin-mainwindow.widget-mainwindow.-main .-header {
     flex: 0 0 70px;
+    /* line-height: 65px; */
 }
 
 .plugin-mainwindow.widget-mainwindow.-main>.-body {
@@ -62,6 +63,59 @@
     border-right: 2px solid #e0e0e0;
 }
 
+.plugin-mainwindow.widget-mainwindow .-navbar .-cell {
+    /* padding: 4px;
+    display: inline-block;
+    height: 100%;
+    vertical-align: top;
+     */
+    flex: 0 1 0px;
+}
+
+.plugin-mainwindow.widget-mainwindow .-navbar .-cell.-menu {
+    /* flex: auto; */
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.plugin-mainwindow.widget-mainwindow .-navbar .-cell.-logo {
+    /* flex: auto; */
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.plugin-mainwindow.widget-mainwindow .-navbar .-cell.-title {
+    flex: 1 1 0px;
+}
+
+.plugin-mainwindow.widget-mainwindow .-navbar .-cell.-menu {}
+
+.plugin-mainwindow.widget-mainwindow .-navbar .-cell.-title {
+    padding: 10px 0 4px 10px;
+}
+
+.plugin-mainwindow.widget-mainwindow .-navbar .-cell.-notification {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.plugin-mainwindow.widget-mainwindow .-navbar .-cell.-deployment {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    margin-right: 4px;
+}
+
+.plugin-mainwindow.widget-mainwindow .-navbar .-cell.-login {
+    margin-right: 4px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
 
 /* Navbar */
 
@@ -71,14 +125,17 @@
 */
 
 .plugin-mainwindow.widget-mainwindow .-navbar {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: row;
     background-color: #fff;
     border-bottom: 5px solid #E0E0E0 !important;
-    padding: 8px;
-    z-index: 3;
+    /* padding: 8px; */
+    /* z-index: 3; */
     height: 70px;
-    -webkit-box-shadow: none;
+    /* -webkit-box-shadow: none;
     box-shadow: none;
-    -moz-box-shadow: none;
+    -moz-box-shadow: none; */
 }
 
 .navbar-fixed-top {
