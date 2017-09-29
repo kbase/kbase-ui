@@ -35,7 +35,7 @@ define([
                 }, [
                     'hub',
                     span({
-                        class: 'fa fa-chevron-right',
+                        class: 'fa fa-chevron-right -icon',
                         style: {
                             color: 'silver'
                         }
