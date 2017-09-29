@@ -59,7 +59,7 @@ function gitinfo(state) {
             run('git show --format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d'),
             run('git log -1 --pretty=%s'),
             run('git log -1 --pretty=%N'),
-            run('git remote get-url origin'),
+            run('git config --get remote.origin.url'),
             run('git rev-parse --abbrev-ref HEAD'),
             run('git describe --exact-match --tags $(git log -n1 --pretty=\'%h\')')
             .catch(function (err) {
