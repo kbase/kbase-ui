@@ -8,6 +8,6 @@ menus:
     unauthenticated:
         main: []
         developer: []
-        help: [contact-kbase, about-kbase, help]
+        help: [about, contact-kbase, about-kbase, help]
         # TODO: congigurable sidebar menu items
         # sidebar: [catalog]
