@@ -40,7 +40,7 @@ var Promise = require('bluebird'),
 
 // UTILS
 
-function gitinfo() {
+function gitinfo(state) {
     function run(command) {
         return new Promise(function (resolve, reject) {
             exec(command, {}, function (err, stdout, stderr) {
@@ -62,6 +62,14 @@ function gitinfo() {
             run('git remote get-url origin'),
             run('git rev-parse --abbrev-ref HEAD'),
             run('git describe --exact-match --tags $(git log -n1 --pretty=\'%h\')')
+            .catch(function (err) {
+                // For non-prod ui we can be tolerant of a missing version, but not for prod.
+                if (state.config.targets.ui === 'prod') {
+                    throw new Error('Not on a tag, cannot deploy');
+                }
+                console.warn('Not on a tag ... version will be unavailable');
+                return '';
+            })
         ])
         .spread(function (infoString, subject, notes, url, branch, tag) {
             var info = infoString.split('\n');
@@ -749,7 +757,7 @@ function copyUiConfig(state) {
 }
 
 function createBuildInfo(state) {
-    return gitinfo()
+    return gitinfo(state)
         .then(function (gitInfo) {
             var root = state.environment.path,
                 configDest = root.concat(['build', 'client', 'modules', 'config', 'buildInfo.yml']),
@@ -1378,13 +1386,15 @@ function main(type) {
             return mutant.finish(state);
         })
         .catch(function (err) {
-            console.log('ERROR');
-            console.log(err);
-            console.log(util.inspect(err, {
+            console.error('ERROR');
+            console.error(err);
+            console.error(util.inspect(err, {
                 showHidden: false,
                 depth: 10
             }));
-            console.log(err.stack);
+            console.error(err.message);
+            console.error(err.name);
+            console.error(err.stack);
         });
 }
 
