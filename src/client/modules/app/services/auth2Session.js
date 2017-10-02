@@ -16,6 +16,17 @@ define([
     function factory(config) {
         var runtime = config.runtime;
 
+        var cookieName = config.cookie.name;
+        var cookieMaxAge = config.cookie.maxAge;
+
+        var extraCookies = [];
+        if (config.cookie.backup.enabled) {
+            extraCookies.push({
+                name: config.cookie.backup.name,
+                domain: config.cookie.backup.domain
+            });
+        }
+
         // TODO: all of this from config?
         var auth2Session = new M_auth2Session.Auth2Session({
             cookieName: runtime.config('services.auth2.cookieName'),
@@ -65,10 +76,6 @@ define([
 
         function getLastProvider() {
             return auth2Session.getLastProvider();
-        }
-
-        function setLastProvider() {
-            return auth2Session.setLastProvider.apply(null, arguments);
         }
 
         function getProviders() {
