@@ -125,7 +125,9 @@ define([
         function detach() {
             return widgetSet.detach()
                 .then(function () {
-                    mount.removeChild(container);
+                    if (mount && container) {
+                        mount.removeChild(container);
+                    }
                 });
         }
 

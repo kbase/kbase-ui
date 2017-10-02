@@ -61,7 +61,7 @@ function gitinfo(state) {
             run('git log -1 --pretty=%N'),
             run('git config --get remote.origin.url'),
             run('git rev-parse --abbrev-ref HEAD'),
-            run('git describe --exact-match --tags $(git log -n1 --pretty=\'%h\')')
+            run('git describe --exact-match --tags $(git rev-parse HEAD)')
             .catch(function (err) {
                 // For non-prod ui we can be tolerant of a missing version, but not for prod.
                 if (state.config.targets.ui === 'prod') {
@@ -735,7 +735,7 @@ function installPlugins(state) {
 function copyUiConfig(state) {
     var root = state.environment.path,
         configSource = root.concat(['config', 'ui', state.config.targets.ui]),
-        configFiles = ['menus.yml'],
+        configFiles = ['menus.yml', 'services.yml'],
         configDest = root.concat(['build', 'client', 'modules', 'config']),
         baseUiConfig = root.concat('config', 'ui', 'ui.yml');
 
@@ -794,9 +794,11 @@ function mergeObjects(listOfObjects) {
             if (obj1Type === 'undefined') {
                 obj1[key] = obj2[key];
             } else if (isSimpleObject(obj1Value) && isSimpleObject(obj2Value)) {
-                merge(obj1Value, obj2Value, keyStack.push(key));
+                keyStack.push(key);
+                merge(obj1Value, obj2Value, keyStack);
                 keyStack.pop();
             } else {
+                console.error('UNMERGABLE', obj1Type, obj1Value);
                 throw new Error('Unmergable at ' + keyStack.join('.') + ':' + key);
             }
         });

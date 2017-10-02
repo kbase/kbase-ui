@@ -34,12 +34,16 @@ define([
                     class: '-label'
                 }, [
                     'hub',
-                    span({
-                        class: 'fa fa-chevron-right -icon',
-                        style: {
-                            color: 'silver'
-                        }
+                    img({
+                        src: Plugin.plugin.fullPath + '/images/hub32.png',
+                        width: '32px'
                     })
+                    // span({
+                    //     class: 'fa fa-asterisk -icon',
+                    //     style: {
+                    //         color: 'silver'
+                    //     }
+                    // })
                 ])
             ].join('');
         }
