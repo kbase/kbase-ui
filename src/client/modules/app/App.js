@@ -128,11 +128,12 @@ define([
                 var service = {
                     name: serviceName
                 };
-                if (serviceConfig.module) {
-                    service.module = serviceConfig.module;
-                } else {
-                    service.module = serviceName;
-                }
+                service.module = serviceName;
+                // if (serviceConfig.module) {
+                //     service.module = serviceConfig.module;
+                // } else {
+                //     service.module = serviceName;
+                // }
                 // var config = appConfig.getItem(['ui', 'services', serviceName], {});
                 // TODO does not support paths, but we don't want to keep this mechamism anyway.
                 if (serviceConfig.configs) {
@@ -165,8 +166,6 @@ define([
             api.feature('auth', 'plugins').forEach(function (pluginName) {
                 plugins[pluginName].disabled = false;
             });
-
-
 
             // Behavior
             // There are not too many global behaviors, and perhaps there should

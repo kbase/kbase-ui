@@ -12,7 +12,6 @@ ui:
     notification: {}
     schema: {}
     route: {}
+    session: {}
     menu:
       configs: [menus]
-    session:
-      module: auth2Session
