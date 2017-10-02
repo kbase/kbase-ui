@@ -38,11 +38,11 @@ define([
 
         // feature set path
         function feature(featureSet, path) {
-            var featureFlag = new Cookie.CookieManager().getItem('ui.features.auth.selected');
-            if (!featureFlag) {
-                featureFlag = configProps.getItem('ui.features.' + featureSet + '.selected');
-                // featureFlag = api.config('ui.features.' + featureSet + '.selected');
-            }
+            // var featureFlag = new Cookie.CookieManager().getItem('ui.features.auth.selected');
+            // if (!featureFlag) {
+            var featureFlag = configProps.getItem('ui.features.' + featureSet + '.selected');
+            // featureFlag = api.config('ui.features.' + featureSet + '.selected');
+            // }
             var featurePath = 'ui.features.' + featureSet + '.available.' + featureFlag + '.' + path;
             var result = configProps.getItem(featurePath, null);
             if (result === null) {
