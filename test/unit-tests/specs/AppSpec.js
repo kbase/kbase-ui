@@ -16,7 +16,7 @@ define([
             var rootNode = document.createElement('div');
             rootNode.id = 'myrootnode';
             document.body.appendChild(rootNode);
-            console.log('hmm, ', rootNode, document.querySelector('#myrootnode'));
+            // console.log('hmm, ', rootNode, document.querySelector('#myrootnode'));
             var app = App.make({
                 appConfig: {
                     some: 'property'
@@ -26,7 +26,8 @@ define([
                         selector: '#myrootnode'
                     }
                 },
-                plugins: []
+                plugins: [],
+                services: {}
             });
             expect(app).toBeTruthy();
             done();

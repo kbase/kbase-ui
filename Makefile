@@ -109,11 +109,14 @@ preview:
 unit-tests:
 	$(KARMA) start test/unit-tests/karma.conf.js
 
+travis-tests:
+	$(GRUNT) test-travis	
+
 
 test: unit-tests
 	
-test-travis:
-	$(GRUNT) test-travis	
+test-travis: unit-tests travis-tests
+	
 
 # Clean slate
 clean:
