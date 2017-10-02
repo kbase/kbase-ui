@@ -106,8 +106,11 @@ preview:
 
 # Tests are managed by grunt, but this also mimics the workflow.
 #init build
-test:
-	$(KARMA) start test/karma.conf.js
+unit-tests:
+	$(KARMA) start test/unit-tests/karma.conf.js
+
+
+test: unit-tests
 	
 test-travis:
 	$(GRUNT) test-travis	
