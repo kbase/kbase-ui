@@ -36,7 +36,7 @@ Two landing pages specifically had fallen behind changes in the Narrative and de
 
 Under the hood, a new module-caching system allows nearly all code to be pre-loaded when the initial ui becomes available in the browser. Although the initial load time might be longer on slow connections, subsequent access is faster because fewer network calls are required -| almost none for the sake of the ui. This is achieved by building a simple "virtual file system" (vfs) of javascript, css, and selected other files, and changing the module loader to first look in the vfs before attempting to load the file over the network from the server. This was inspired by a period of unstable network access, during which connections would be randomly dropped. When the ui encounters a failure to load a critical module, it may fail, so pre-loading modules increases reliabiltity in this sense.
 
-### Catching up with auth2 changes
+### Catchup post-auth2
 
 Post-auth2, some elements of the ui needed updating. The development process was markedly different and more complex, so the documentation was rewritten and reorgnaized to support virtual machine with proxying. A couple of landing pages, FBA and Assembly, had also fallen victim to changes in the KBase infrastructure during the auth2 upgrade, and were repaired. There is still much work to be done in this area, as the landing pages and Narrative data viewers do not share much code and should be brought into alignment.
 

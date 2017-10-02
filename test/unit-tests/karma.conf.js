@@ -4,7 +4,7 @@
 module.exports = function (config) {
     config.set({
         // base path that will be used to resolve all patterns (eg. files, exclude)
-        basePath: '..',
+        basePath: '../..',
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
         frameworks: ['jasmine', 'requirejs'],
@@ -19,24 +19,20 @@ module.exports = function (config) {
             'karma-requirejs'
         ],
         // list of files / patterns to load in the browser
+        // NB: paths are relative to the root of the project, which is 
+        // set in the basePath property above.
         files: [
-            // had to add these all by hand, or Karma goes bugnuts.
-            /* These are the external dependencies. The bower components
-             * come with a LOT of stuff that isn't necessary, and causes
-             * problems when loaded in the test browser. Things like tests,
-             * or auto-generated minified AND maxified files that overlap.
-             * 
-             * It's cleaner to just load the list of them by hand, then
-             * have the Require apparatus take over.
-             */
-
+            // All of the AMD modules in the hub.
             { pattern: 'build/build/client/modules/**/*.js', included: false },
             // {pattern: 'build/client/bower_components/**/*.js', included: false},
-            { pattern: 'test/spec/**/*.js', included: false },
+            // Our test specs
+            { pattern: 'test/unit-tests/specs/**/*.js', included: false },
+            // Spot pickup the config files
             { pattern: 'build/build/client/modules/config/*.yml', included: false },
             { pattern: 'build/build/client/modules/config/*.json', included: false },
             { pattern: 'build/build/client/modules/deploy/*.json', included: false },
-            'test/build-test.js',
+
+            'test/unit-tests/setup.js',
         ],
         // list of files to exclude
         exclude: [
@@ -44,10 +40,14 @@ module.exports = function (config) {
         ],
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+        // Note that we exclude all of the external modules (bower_components).
+        // TODO: We may want to find a way to evaluate dependency test coverage at some point.
         preprocessors: {
             'build/build/client/modules/!(bower_components)/**/*.js': ['coverage']
+                // 'build/build/client/modules/**/*.js': ['coverage']
         },
 
+        // TODO: we should put this somewhere else?
         coverageReporter: {
             dir: 'build/build-test-coverage/',
             reporters: [
@@ -55,6 +55,7 @@ module.exports = function (config) {
                 { type: 'lcov', subdir: 'lcov' }
             ]
         },
+
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter

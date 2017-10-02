@@ -12,12 +12,14 @@ define([
 ) {
     'use strict';
     var t = html.tag,
+        span = t('span'),
         a = t('a'),
         h2 = t('h2'),
         h3 = t('h3'),
         ul = t('ul'),
         li = t('li'),
         p = t('p'),
+        img = t('img'),
         div = t('div');
 
     /*
@@ -52,12 +54,30 @@ define([
             return BS.buildPresentableJson(info);
         }
 
+        function buildHub() {
+            return span({
+                style: {
+                    whiteSpace: 'nowrap'
+                }
+            }, [
+                span({
+                    style: {
+                        fontWeight: 'bold'
+                    }
+                }, 'KBase hub '),
+                img({
+                    src: '/images/hub32.png',
+                    width: '20px'
+                })
+            ]);
+        }
+
         function buildWelcome() {
             var narrativeUrl = runtime.config('services.narrative.url');
             var docSiteUrl = runtime.config('resources.docSite.base.url');
 
             return [
-                p('This is the KBase Hub, a collection of tools for KBase Users and Developers. This is where you log in and out of KBase, can access your Narratives and those shared with you, access a catalog of Narrative Apps, and search for data. As a developer you can register and manage your apps as well.'),
+                p(['This is ', buildHub(), ', a collection of tools for KBase Users and Developers. This is where you log in and out of KBase, can access your Narratives and those shared with you, access a catalog of Narrative Apps, and search for data. As a developer you can register and manage your apps as well.']),
                 p('The Hub is just one of three primary user interfaces:'),
                 ul([
                     li('The Hub, which provides login, account management, dashboard, catalog, data object viewing, and search services'),
@@ -67,7 +87,7 @@ define([
                             href: narrativeUrl,
                             target: '_blank',
                         }, 'Narrative Interface'),
-                        ' tool for creating, editing, running and publishing Narratives '
+                        ', a tool for creating, editing, running and publishing active scienctific documents called Narratives '
                     ]),
                     li([
                         'The ',
@@ -77,6 +97,9 @@ define([
                         }, 'Documentation Site'),
                         ', which provides tutorials and developer documenation, communications and publications, links to social media outlets, developer documentation, and background on KBase.'
                     ])
+                ]),
+                p([
+                    'KBase is under active development, adding new features, tools and content all the time. '
                 ])
             ];
         }
@@ -84,7 +107,6 @@ define([
         function buildVersionInfo() {
             var buildInfo = runtime.config('buildInfo');
             var builtAt = moment(new Date(buildInfo.builtAt));
-            var version = buildInfo.git.version || 'n/a';
             var buildDate = builtAt.format('dddd MMMM D, YYYY');
             var buildTime = builtAt.format('h:mm:ss a ');
             var repoUrl = buildInfo.git.originUrl; // 'https://github.com/kbase/kbase-ui';
@@ -95,31 +117,80 @@ define([
                 repoUrl = 'https://' + m[1] + '/' + m[2];
             }
 
-            var relNotesUrl = [
-                repoUrl,
-                'blob',
-                hash,
-                'release-notes',
-                'RELEASE_NOTES_' + version + '.md'
-            ].join('/');
+
 
             var docSiteUrl = runtime.config('resources.docSite.base.url');
-            var contactUrl = runtime.config('resources.docSite.contact.url');
+            var contactUrl = runtime.config('resources.contact.url');
+            var helpUrl = runtime.config('resources.help.url');
+            var aboutKbase = runtime.config('resources.documentation.aboutKbase.url');
 
-            return [
-                p([
+            var commitHash = buildInfo.git.commitHash;
+
+            var githubUrl;
+            var relNotesUrl;
+            var versionMessage;
+            if (buildInfo.git.tag) {
+                relNotesUrl = [
+                    repoUrl,
+                    'blob',
+                    hash,
+                    'release-notes',
+                    'RELEASE_NOTES_' + buildInfo.git.version + '.md'
+                ].join('/');
+                githubUrl = [
+                    repoUrl,
+                    'tree',
+                    buildInfo.git.tag
+                ].join('/');
+
+                versionMessage = p([
                     'You are currently using version ',
                     a({
                         href: relNotesUrl,
+                        target: '_blank',
+                        style: {
+                            fontWeight: 'bold'
+                        }
+                    }, buildInfo.git.version),
+                    ' of ',
+                    buildHub(),
+                    '.'
+                ]);
+            } else {
+                relNotesUrl = [
+                    repoUrl,
+                    'blob',
+                    hash,
+                    'release-notes',
+                    'index.md'
+                ].join('/');
+                githubUrl = [
+                    repoUrl,
+                    'tree',
+                    hash
+                ].join('/');
+                versionMessage = p([
+                    'This build is not currently located at a tagged commit. ',
+                    'The current commit is ',
+                    a({
+                        href: [
+                            repoUrl,
+                            'commit',
+                            hash
+                        ].join('/'),
                         target: '_blank'
-                    }, version),
-                    ' of the KBase Hub. '
-                ]),
+                    }, commitHash),
+                    '.'
+                ]);
+            }
+
+            return [
+                versionMessage,
                 p([
                     'It was built on ', buildDate, ' at ', buildTime, '.'
                 ]),
                 h3([
-                    'More information'
+                    'You may also be interested in:'
                 ]),
                 ul([
                     li(a({
@@ -127,11 +198,11 @@ define([
                         target: '_blank'
                     }, 'Release Notes')),
                     li(a({
-                        href: repoUrl,
+                        href: githubUrl,
                         target: '_blank'
                     }, 'Github Repo')),
                     li(a({
-                        href: 'https://kbase-jira.atlassian.net/projects/PUBLIC/summary',
+                        href: helpUrl,
                         target: '_blank'
                     }, 'Public Help Board')),
                     li(a({
@@ -139,7 +210,7 @@ define([
                         target: '_blank'
                     }, 'Contact KBase')),
                     li(a({
-                        href: docSiteUrl,
+                        href: aboutKbase,
                         target: '_blank'
                     }, 'About KBase')),
                 ])
@@ -172,6 +243,30 @@ define([
             ]);
         }
 
+        function buildLayoutNoHub() {
+            return div({
+                class: 'container-fluid'
+            }, [
+                div({
+                    class: 'row'
+                }, [
+                    div({
+                        class: 'col-sm-6',
+                        style: {}
+                    }, [
+                        h2('This Version'),
+                        buildVersionInfo()
+                    ]),
+                    div({
+                        class: 'col-sm-6',
+                        style: {}
+                    }, [
+
+                    ])
+                ])
+            ]);
+        }
+
         function render() {
             container.innerHTML = buildLayout();
         }
@@ -189,7 +284,7 @@ define([
         }
 
         function start() {
-            runtime.send('ui', 'setTitle', 'About the KBase Hub');
+            runtime.send('ui', 'setTitle', 'About');
             render();
         }
 

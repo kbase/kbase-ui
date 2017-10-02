@@ -141,11 +141,11 @@ module.exports = function (grunt) {
         // Testing with Karma!
         karma: {
             unit: {
-                configFile: 'test/karma.conf.js'
+                configFile: 'test/unit-tests/karma.conf.js'
             },
             dev: {
                 // to do - add watch here
-                configFile: 'test/karma.conf.js',
+                configFile: 'test/unit-tests/karma.conf.js',
                 reporters: ['progress', 'coverage'],
                 coverageReporter: {
                     dir: 'build/build-test-coverage/',
@@ -301,6 +301,7 @@ module.exports = function (grunt) {
     ]);
 
     // Does a single, local, unit test run.
+    // TODO: more work on the webdriver tests, don't work now.
     grunt.registerTask('test', [
         'karma:unit',
         'webdriver:local'
@@ -310,7 +311,7 @@ module.exports = function (grunt) {
     // the lcov results to coveralls. Intended for running
     // from travis-ci.
     grunt.registerTask('test-travis', [
-        'karma:unit',
+        // 'karma:unit',
         // upcoming
         // 'webdriver:travis',
         'coveralls'

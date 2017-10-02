@@ -12,7 +12,7 @@ ui:
             url: /images/ajax-loader.gif
     constants:
         client_timeout: 900000,
-        session_max_age: 5184000
+        # session_max_age: 5184000
      # TODO: simply paths?
     paths:
         spa_root: '#'
@@ -26,9 +26,10 @@ ui:
         status_page: http://kbase.us/internal/status
         submit_jira_ticket: https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%20version
         update_profile: https://gologin.kbase.us/account/UpdateProfile
-    backupCookie:
-      domain: null
-      enabled: false
+    # backupCookie:
+    #   domain: null
+    #   enabled: false
+    # Services are configured here...
     services:
         analytics:
             cookie:
@@ -38,6 +39,20 @@ ui:
             google:
                 hostname: null
                 code: null
+        session:
+            cookie:
+                maxAge: 5184000
+                name: kbase_session
+                backup:
+                    name: kbase_session_backup
+                    domain: null
+                    enabled: false
+        route:
+            defaultRoute: 
+                redirect:
+                    path: login
+        heartbeat:
+            interval: 500
     features:
         auth:
             selected: null

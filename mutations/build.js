@@ -61,7 +61,7 @@ function gitinfo(state) {
             run('git log -1 --pretty=%N'),
             run('git config --get remote.origin.url'),
             run('git rev-parse --abbrev-ref HEAD'),
-            run('git describe --exact-match --tags $(git log -n1 --pretty=\'%h\')')
+            run('git describe --exact-match --tags $(git rev-parse HEAD)')
             .catch(function (err) {
                 // For non-prod ui we can be tolerant of a missing version, but not for prod.
                 if (state.config.targets.ui === 'prod') {
@@ -735,19 +735,23 @@ function installPlugins(state) {
 function copyUiConfig(state) {
     var root = state.environment.path,
         configSource = root.concat(['config', 'ui', state.config.targets.ui]),
-        configFiles = ['menus.yml'],
+        releaseVersionConfig = root.concat(['config', 'version.yml']),
+        configFiles = ['menus.yml', 'services.yml'].map(function (file) {
+            return configSource.concat(file);
+        }).concat([releaseVersionConfig]),
         configDest = root.concat(['build', 'client', 'modules', 'config']),
         baseUiConfig = root.concat('config', 'ui', 'ui.yml');
 
     return mutant.loadYaml(baseUiConfig)
         .then(function (baseConfig) {
             return Promise.all(configFiles.map(function (file) {
-                    return mutant.loadYaml(configSource.concat(file));
+                    return mutant.loadYaml(file);
                 }))
                 .then(function (configs) {
                     return mergeObjects([baseConfig].concat(configs));
                 })
                 .then(function (mergedConfigs) {
+                    state.mergedConfig = mergedConfigs;
                     return mutant.saveYaml(configDest.concat(['ui.yml']), mergedConfigs);
                 });
         })
@@ -778,6 +782,44 @@ function createBuildInfo(state) {
         });
 }
 
+function getReleaseNotes(state, version) {
+    // lives in release-notes/RELEASE_NOTES_#.#.#.md
+    var root = state.environment.path;
+    var releaseNotesPath = root.concat(['release-notes', 'RELEASE_NOTES_' + version + '.md']);
+    return fs.readFileAsync(releaseNotesPath.join('/'), 'utf8')
+        .catch(function (err) {
+            console.warn('release notes file not found: ' + releaseNotesPath.join('/'), err);
+            return null;
+        });
+}
+
+function verifyVersion(state) {
+    return Promise.try(function () {
+            console.log('Verifying version...');
+            var releaseVersion = state.mergedConfig.release.version;
+            var gitVersion = state.buildInfo.git.version;
+
+            if (state.config.targets.ui === 'prod') {
+                if (releaseVersion === gitVersion) {
+                    console.log('release and git agree on ' + releaseVersion);
+                } else {
+                    throw new Error('Release and git versions are different; release says "' + releaseVersion + '", git says "' + gitVersion + '"');
+                }
+                return getReleaseNotes(state, releaseVersion)
+                    .then(function (releaseNotesFile) {
+                        console.log('have release notes?', releaseNotesFile);
+                    });
+            } else {
+                // we have no assumptions. Well, either there is a release notes file and release.version in agreement, 
+                // or a new release notes is being worked on and is a higher version. Could check this...
+                console.warn('In a dev build, release version not checked.');
+            }
+        })
+        .then(function () {
+            return state;
+        });
+}
+
 function mergeObjects(listOfObjects) {
     var simpleObjectPrototype = Object.getPrototypeOf({});
 
@@ -794,9 +836,11 @@ function mergeObjects(listOfObjects) {
             if (obj1Type === 'undefined') {
                 obj1[key] = obj2[key];
             } else if (isSimpleObject(obj1Value) && isSimpleObject(obj2Value)) {
-                merge(obj1Value, obj2Value, keyStack.push(key));
+                keyStack.push(key);
+                merge(obj1Value, obj2Value, keyStack);
                 keyStack.pop();
             } else {
+                console.error('UNMERGABLE', obj1Type, obj1Value);
                 throw new Error('Unmergable at ' + keyStack.join('.') + ':' + key);
             }
         });
@@ -1199,7 +1243,12 @@ function main(type) {
     }, {
         cwd: ['..'],
         path: ['install']
+    }, {
+        cwd: ['..'],
+        path: ['release-notes']
     }];
+    // Use a copy of the configs in the dev directory; this supports local hacking without worry
+    // of accidentally checking in temporary config changes.
     return pathExists('../dev/config')
         .then(function (exists) {
             // ugly work around for now
@@ -1303,6 +1352,19 @@ function main(type) {
         .then(function (state) {
             console.log('Creating build record ...');
             return createBuildInfo(state);
+        })
+
+    // Here we verify that the verion stamp, release notes, and tag are consistent.
+    // For prod we need to compare all three and fail the build if there is not a match.
+    // For dev, we need to compare the stamp and release notes, not the tag.
+    // At some future time when working solely off of master, we will be able to compare
+    // to the most recent tag.
+    .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            console.log('Verifying version...');
+            return verifyVersion(state);
         })
 
     .then(function (state) {

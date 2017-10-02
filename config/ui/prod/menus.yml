@@ -2,8 +2,8 @@ menus:
     authenticated: 
         main: [narrative, bulk-ui]
         developer: []
-        help: [about, contact-kbase, about-kbase, help]
+        help: [about, contact-kbase, help]
     unauthenticated: 
         main: []
         developer: []
-        help: [about, contact-kbase, about-kbase, help]
+        help: [about, contact-kbase, help]

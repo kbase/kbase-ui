@@ -1,0 +1,17 @@
+# UI SErvices
+---
+ui:
+  services:
+    heartbeat: {}
+    widget: {}
+    data: {}
+    type: {}
+    userprofile: {}
+    analytics: {}
+    ko-component: {}
+    notification: {}
+    schema: {}
+    route: {}
+    session: {}
+    menu:
+      configs: [menus]
