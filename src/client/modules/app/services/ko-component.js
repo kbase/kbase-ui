@@ -41,7 +41,6 @@ define([
                         }
                         require(modulePaths, function (result) {
                             // The result is a component factory which takes no arguments.
-                            // console.log('registering', componentConfig, result);
                             try {
                                 ko.components.register(componentConfig.name, result());
                                 resolve(result);

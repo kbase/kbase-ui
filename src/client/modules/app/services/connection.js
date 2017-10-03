@@ -148,7 +148,7 @@ define([
 
             // listen for disconnection events.
             // runtime.recv('connection', 'disconnected', function() {
-            //     console.log('disconnected!!!');
+            //     console.warn('disconnected!!!');
             //     // alert('disconnected');
             //     // verify this is true
 

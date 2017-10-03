@@ -111,7 +111,6 @@ define([
 
         function render(params) {
             var error;
-            console.log('error?', params, isType(params.error, serviceError), isType(params.error, error1));
             if (typeof params.error === 'string') {
                 error = {
                     message: params.error
