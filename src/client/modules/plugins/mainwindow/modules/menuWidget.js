@@ -88,12 +88,7 @@ define([
                 }).map(function (items) {
                     return items.join('');
                 }).join(renderMenuItem({ type: 'divider' }));
-
-            return ul({
-                class: 'dropdown-menu',
-                role: 'menu',
-                ariaLabeledby: 'kb-nav-menu'
-            }, items);
+            container.querySelector('.dropdown-menu').innerHTML = items;
         }
 
         function attach(node) {
@@ -103,11 +98,6 @@ define([
         }
 
         function start() {
-            // runtime.service('menu').onChange(function (value) {
-            //     this.set('menu', value);
-            // }.bind(this));
-            // container.innerHTML = 'XXX';
-            // return;
             container.innerHTML = div({
                 class: 'navbar'
             }, [
@@ -119,8 +109,16 @@ define([
                 }, [
                     span({ class: 'fa fa-navicon' })
                 ]),
-                renderMenu()
+                ul({
+                    class: 'dropdown-menu',
+                    role: 'menu',
+                    ariaLabeledby: 'kb-nav-menu'
+                })
             ]);
+            renderMenu();
+            runtime.service('menu').onChange(function (value) {
+                renderMenu();
+            }.bind(this));
         }
 
         function detach() {
