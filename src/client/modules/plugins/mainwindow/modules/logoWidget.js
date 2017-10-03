@@ -22,6 +22,13 @@ define([
         }
 
         function start() {
+            var version;
+            var uiTarget = runtime.config('buildInfo.targets.ui');
+            if (uiTarget === 'prod') {
+                version = runtime.config('release.version');
+            } else {
+                version = uiTarget;
+            }
             container.innerHTML = [
                 a({
                     href: runtime.config('resources.docSite.base.url'),
@@ -33,7 +40,27 @@ define([
                 div({
                     class: '-label'
                 }, [
-                    'hub',
+                    div({
+                        style: {
+                            display: 'inline-block',
+                            lineHeight: 'normal',
+                            verticalAlign: 'bottom'
+                        }
+                    }, [
+                        div({
+                            style: {
+                                marginBottom: '-6px'
+                            }
+                        }, 'hub'),
+                        div({
+                            style: {
+                                textAlign: 'right',
+                                fontSize: '10px',
+                                fontWeight: 'bold',
+                                color: 'gray'
+                            }
+                        }, version)
+                    ]),
                     img({
                         src: Plugin.plugin.fullPath + '/images/hub32.png',
                         width: '32px'
