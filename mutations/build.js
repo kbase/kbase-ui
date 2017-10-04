@@ -45,7 +45,7 @@ function gitinfo(state) {
         return new Promise(function (resolve, reject) {
             exec(command, {}, function (err, stdout, stderr) {
                 if (err) {
-                    reject(Error);
+                    reject(err);
                 }
                 if (stderr) {
                     reject(new Error(stderr));
@@ -56,7 +56,7 @@ function gitinfo(state) {
     }
     // fatal: no tag exactly matches 'bf5efa0810d9f097b7c6ba8390f97c008d98d80e'
     return Promise.all([
-            run('git show --format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d'),
+            run('git show --format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d --name-status | head -n 8'),
             run('git log -1 --pretty=%s'),
             run('git log -1 --pretty=%N'),
             run('git config --get remote.origin.url'),
@@ -916,7 +916,7 @@ function makeKbConfig(state) {
         })
         // Rewrite the main entry point html files to add in cache-busting via the git commit hash
         .then(function () {
-            Promise.all(['index.html', 'load-narrative.html', 'loading.html'].map(function (fileName) {
+            Promise.all(['index.html', 'load-narrative.html'].map(function (fileName) {
                     return Promise.all([fileName, fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')]);
                 }))
                 .then(function (templates) {

@@ -430,18 +430,7 @@ define([
 
                     self.$paramsPanel.append(code);
                 }
-
-                /*                  if(self.module_version) {
-                                        if(self.module_version.compilation_report) {
-                                            if(self.module_version.compilation_report) {
-                                                console.log(self.module_version)
-                                            }
-                                        }
-                                    }*/
-
             }
-
-            //self.$paramsPanel.append('<h3>KIDL Source</h3>')
         },
 
         escapeHtml: function (text) {

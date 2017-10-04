@@ -142,7 +142,6 @@ define([
                     });
                     delete serviceConfig.configs;
                 }
-                // console.log('adding service', serviceName, config);
                 serviceConfig.runtime = api;
                 appServiceManager.addService(service, serviceConfig);
             });
