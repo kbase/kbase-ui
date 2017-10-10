@@ -47,44 +47,16 @@ ui:
                     name: kbase_session_backup
                     domain: null
                     enabled: false
+            # The widget id of the current login widget; supplied by the
+            # auth plugin.
+            loginWidget: auth2_signin
+
         route:
             defaultRoute: 
                 redirect:
                     path: login
         heartbeat:
             interval: 500
-    features:
-        auth:
-            selected: null
-            available:
-                auth1:
-                    services:
-                        session:
-                            # note this is the actual js service module to associate
-                            # with the "session" ui service
-                            module: session                         
-                    widgets:
-                        login:
-                            # however, this is the widget id as established in the
-                            # plugin which provides the auth interface (login, logout)
-                            # at the usual endpoints as triggered from the widget
-                            # and session service api.
-                            name: globus_login 
-                    paths:
-                        login: login
-                    plugins:
-                        - login
-                auth2:
-                    services:
-                        session:
-                            module: auth2Session
-                    widgets:
-                        login:
-                            name: auth2_signin
-                    paths:
-                        login: login          
-                    plugins:
-                        - auth2-client
 # Primarily for output links for the docsite. 
 # TODO: merge with ui.outbound_links?        
 docsite:

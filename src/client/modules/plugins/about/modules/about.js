@@ -117,8 +117,6 @@ define([
                 repoUrl = 'https://' + m[1] + '/' + m[2];
             }
 
-
-
             var docSiteUrl = runtime.config('resources.docSite.base.url');
             var contactUrl = runtime.config('resources.contact.url');
             var helpUrl = runtime.config('resources.help.url');

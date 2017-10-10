@@ -28,3 +28,4 @@ nbproject
 # Editor and OS artifacts
 .DS_Store
 .vscode
+.idea

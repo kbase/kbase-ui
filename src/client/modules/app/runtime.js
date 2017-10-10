@@ -36,21 +36,6 @@ define([
             return (allowed.indexOf(tag) >= 0);
         }
 
-        // feature set path
-        function feature(featureSet, path) {
-            // var featureFlag = new Cookie.CookieManager().getItem('ui.features.auth.selected');
-            // if (!featureFlag) {
-            var featureFlag = configProps.getItem('ui.features.' + featureSet + '.selected');
-            // featureFlag = api.config('ui.features.' + featureSet + '.selected');
-            // }
-            var featurePath = 'ui.features.' + featureSet + '.available.' + featureFlag + '.' + path;
-            var result = configProps.getItem(featurePath, null);
-            if (result === null) {
-                throw new Error('Feature is not defined: ' + featurePath);
-            }
-            return result;
-        }
-
         // The receive and send functions are the primary message methods
 
         // Receive a message on a channel, and have function fun handle
@@ -129,8 +114,6 @@ define([
             rawConfig: rawConfig,
 
             allow: allow,
-
-            feature: feature,
 
             // Messaging
             send: send,

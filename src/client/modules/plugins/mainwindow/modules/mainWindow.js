@@ -39,7 +39,8 @@ define([
             });
 
         function buildHeader() {
-            var loginWidget = runtime.feature('auth', 'widgets.login.name');
+            // var loginWidget = runtime.feature('auth', 'widgets.login.name');
+            var loginWidget = runtime.config('ui.services.session.loginWidget');
 
             return div({
                 class: '-navbar',

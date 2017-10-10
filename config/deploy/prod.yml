@@ -21,9 +21,6 @@ ui:
         backup:
           domain: kbase.us
           enabled: true
-  features:
-    auth:
-      selected: auth2
   allow: []
 services:
   narrative:

@@ -1,22 +1,22 @@
 /*
  * MUTANT
  * Not a build system, a mutation machine.
- * 
+ *
  */
 
 /*
  * Here is the idea of mutant. It decomposes the build process into a map of mutation
  * machines. The initial raw material + inputs enters the first process, which
  * works on it, then passes it to a second, and so forth.
- * 
+ *
  * The main ideas are:
  * - the system travels between processes, does not exist anywhere else.
- * - each process may mutate the system, and must pass those mutations to 
+ * - each process may mutate the system, and must pass those mutations to
  *   the next process.
  * - processes are just javascript, so may include conditional branching, etc.
- * - procsses are asynchronous by nature, promises, so may arbitrarily contain 
+ * - procsses are asynchronous by nature, promises, so may arbitrarily contain
  *   async tasks, as long as they adhere to the promises api.
- *   
+ *
  */
 
 /*global define*/
@@ -64,7 +64,7 @@ function gitinfo(state) {
             run('git describe --exact-match --tags $(git rev-parse HEAD)')
             .catch(function (err) {
                 // For non-prod ui we can be tolerant of a missing version, but not for prod.
-                if (state.config.targets.ui === 'prod') {
+                if (state.buildConfig.target === 'prod') {
                     throw new Error('Not on a tag, cannot deploy');
                 }
                 console.warn('Not on a tag ... version will be unavailable');
@@ -141,7 +141,7 @@ function arrayDiff(a, b) {
 }
 
 /*
- * 
+ *
  * Copy files from one directory to another, creating any required directories,
  * but of course requiring the source to exist.
  */
@@ -178,33 +178,6 @@ function copyDirFiles(pathFrom, pathTo) {
             }));
         });
 }
-
-/*
- * Simply copies directory trees into the top level of the modules client directory
- *
- */
-// function copyLocalModules(state) {
-//     var root = state.environment.path,
-//         projectRoot = root.concat(['..', '..', '..']),
-//         configFilePath = root.concat(['config', 'ui', state.config.targets.ui, 'build.yml']).join('/');
-//     return fs.readFileAsync(configFilePath, 'utf8')
-//         .then(function (configFile) {
-//             return yaml.safeLoad(configFile);
-//         })
-//         .then(function (config) {
-//             return Promise.all(config.modules.filter(function (spec) {
-//                 if (spec.directory) {
-//                     return true;
-//                 }
-//                 return false;
-//             }).map(function (spec) {
-//                 var from = projectRoot.concat(spec.directory.path.split('/')),
-//                     to = root.concat(['build', 'local_modules']);
-
-//                 return copyDirFiles(from, to);
-//             }));
-//         });
-// }
 
 function dirList(dir) {
     return fs.readdirAsync(dir.join('/'))
@@ -306,39 +279,10 @@ function installModulePackagesFromFilesystem(state) {
         });
 }
 
-// function injectModulesIntoBower(state) {
-//     // Load plugin config        
-//     var root = state.environment.path,
-//         pluginConfig, pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, 'plugins.yml']).join('/'),
-//         bowerConfig, bowerConfigFile = root.concat(['build', 'bower.json']).join('/');
-//     return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8'), fs.readFileAsync(bowerConfigFile, 'utf8')])
-//         .spread(function (pluginFile, bowerFile) {
-//             pluginConfig = yaml.safeLoad(pluginFile);
-//             bowerConfig = JSON.parse(bowerFile);
-//         })
-//         .then(function () {
-//             // First ensure all plugin packages are installed via bower.
-//             pluginConfig.modules
-//                 .filter(function (module) {
-//                     if (typeof module === 'object' && module.source.bower) {
-//                         return true;
-//                     }
-//                     return false;
-//                 })
-//                 .forEach(function (module) {
-//                     var name = module.source.bower.name || module.globalName,
-//                         version = module.source.bower.version || module.version;
-//                     bowerConfig.dependencies[name] = version;
-//                 });
-
-//             return fs.writeFileAsync(root.concat(['build', 'bower.json']).join('/'), JSON.stringify(bowerConfig, null, 4));
-//         });
-// }
-
 function injectPluginsIntoBower(state) {
-    // Load plugin config        
+    // Load plugin config
     var root = state.environment.path,
-        pluginConfig, pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, 'plugins.yml']).join('/'),
+        pluginConfig, pluginConfigFile = root.concat(['config', 'app', state.buildConfig.target, 'plugins.yml']).join('/'),
         bowerConfig, bowerConfigFile = root.concat(['build', 'bower.json']).join('/');
     return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8'), fs.readFileAsync(bowerConfigFile, 'utf8')])
         .spread(function (pluginFile, bowerFile) {
@@ -365,16 +309,16 @@ function injectPluginsIntoBower(state) {
 }
 
 /*
- * 
+ *
  * Create the plugins load config from the plugins master config. The load config
  * just lists the plugins to be loaded. The master config also provides the locations
  * for external plugins.
  */
 function injectPluginsIntoConfig(state) {
-    // Load plugin config        
+    // Load plugin config
     var root = state.environment.path,
         configPath = root.concat(['build', 'client', 'modules', 'config']),
-        pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, 'plugins.yml']).join('/');
+        pluginConfigFile = root.concat(['config', 'app', state.buildConfig.target, 'plugins.yml']).join('/');
 
     return fs.ensureDirAsync(configPath.join('/'))
         .then(function () {
@@ -410,8 +354,6 @@ function bowerInstall(state) {
         bower.commands
             .install(undefined, undefined, {
                 cwd: base,
-                offline: state.config.bower.offline || false,
-                // registry: "http://localhost:5678",
                 timeout: 300000
             })
             .on('end', function (installed) {
@@ -444,7 +386,7 @@ function copyFromBower(state) {
                 }
 
                 /*
-                 The source defaults to the package name with .js, unless the 
+                 The source defaults to the package name with .js, unless the
                  src property is provided, in which case it must be either a single
                  or set of glob-compatible strings.*/
                 if (cfg.src) {
@@ -460,8 +402,8 @@ function copyFromBower(state) {
                 }
 
                 /*
-                 Finally, the cwd serves as a way to dig into a subdirectory and use it as the 
-                 basis for copying. This allows us to "bring up" files to the top level of 
+                 Finally, the cwd serves as a way to dig into a subdirectory and use it as the
+                 basis for copying. This allows us to "bring up" files to the top level of
                  the destination. Since we are relative to the root of this process, we
                  need to jigger that here.
                  */
@@ -475,11 +417,11 @@ function copyFromBower(state) {
                 }
 
                 /*
-                 The destination will be composed of 'bower_components' at the top 
+                 The destination will be composed of 'bower_components' at the top
                  level, then the package name or dir (as specified above).
-                 This is the core of our "thinning and flattening", which is part of the 
+                 This is the core of our "thinning and flattening", which is part of the
                  point of this bower copy process.
-                 In addition, if the spec includes a dest property, we will use that 
+                 In addition, if the spec includes a dest property, we will use that
                  */
                 if (cfg.bowerComponent) {
                     dest = ['build', 'client', 'modules', 'bower_components'].concat([cfg.dir || cfg.name]);
@@ -522,16 +464,16 @@ function copyFromBower(state) {
  * Copy plugins from the bower module installation directory into the plugins
  * directory. We _could_ reference plugins directly from the bower directory,
  * as we do for other bower-installed dependencies, but it seems to be easier
- * to keep track of (and to be able to manipulate) plugins if they are all 
+ * to keep track of (and to be able to manipulate) plugins if they are all
  * located in a single, well-defined location.
- * 
+ *
  * @returns {undefined}
  */
 function installExternalPlugins(state) {
     // Load plugin config
     var root = state.environment.path,
         pluginConfig,
-        pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, '/plugins.yml']).join('/');
+        pluginConfigFile = root.concat(['config', 'app', state.buildConfig.target, '/plugins.yml']).join('/');
     return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8')])
         .spread(function (pluginFile) {
             pluginConfig = yaml.safeLoad(pluginFile);
@@ -558,7 +500,7 @@ function installExternalPlugins(state) {
                 .map(function (plugin) {
                     var cwds = plugin.cwd || 'dist/plugin',
                         cwd = cwds.split('/'),
-                        // Our actual cwd is mutations, so we need to escape one up to the 
+                        // Our actual cwd is mutations, so we need to escape one up to the
                         // project root.
                         repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..'],
                         source = repoRoot.concat([plugin.globalName]).concat(cwd),
@@ -574,7 +516,7 @@ function installExternalPlugins(state) {
                 .map(function (plugin) {
                     var cwds = plugin.cwd || 'dist/plugin',
                         cwd = cwds.split('/'),
-                        // Our actual cwd is mutations, so we need to escape one up to the 
+                        // Our actual cwd is mutations, so we need to escape one up to the
                         // project root.
                         repoRoot = (plugin.source.link.root && plugin.source.link.root.split('/')) || ['..', '..'],
                         source = repoRoot.concat([plugin.globalName]).concat(cwd),
@@ -584,62 +526,25 @@ function installExternalPlugins(state) {
         });
 }
 
-/*
- * Simply copies any modules which have a directory source into the bower components tree.
- * Messy, but necessary for development.
- */
-
-// function installModules(state) {
-//     return installExternalModules(state)
-//         .then(function () {
-//             return state;
-//         });
-// }
-
-// function installExternalModules(state) {
-//     // Load plugin config
-//     var root = state.environment.path,
-//         buildConfig,
-//         buildConfigFile = root.concat(['config', 'ui', state.config.targets.ui, '/build.yml']).join('/');
-//     return fs.readFileAsync(buildConfigFile, 'utf8')
-//         .then(function (contents) {
-//             buildConfig = yaml.safeLoad(contents);
-//             return buildConfig.modules.filter(function (module) {
-//                 if (module.source.directory) {
-//                     return true;
-//                 }
-//                 return false;
-//             });
-//         })
-//         .then(function (modules) {
-//             return Promise.all(modules.map(function (module) {
-//                 var repoRoot = (module.source.directory.root && module.source.directory.root.split('/')) || ['..', '..'],
-//                     source = repoRoot.concat([module.globalName]),
-//                     destination = root.concat(['build', 'client', 'modules', 'bower_components', module.globalName]);
-//                 return copyFiles(source, destination, '**/*');
-//             }));
-//         });
-// }
-
 // PROCESSES
 
 /*
  * setupBuild
- * 
- * Responsible for creating the basic build. 
- * 
+ *
+ * Responsible for creating the basic build.
+ *
  * The basic build may be deployed for development or distribution.
- * 
+ *
  * The deployment process is separate and guided by the configuration input
  * into the overall build.
- * 
- * The build setup is responsible for the initial juggling of files to represent 
+ *
+ * The build setup is responsible for the initial juggling of files to represent
  * the rough state of the delivered system. Including
- * 
+ *
  * - remove extraneous files
  * - move search into the client
  * - ??
- * 
+ *
  * @param {type} state
  * @returns {Array}
  */
@@ -689,11 +594,19 @@ function setupBuild(state) {
  * Returns a Promise that sets the search config 'setup' to use the right target based on this build config.
  * Any errors are expected to be caught by the caller's catch().
  */
+ // TODO: refactor into deploy scripts
+ // we can no longer rely upon replacing the search config's "setup" property with the
+ // deployment id in order to invoke the right branch of the config.
+ // In reality, in prod and appdev devops must be replacing it by hand anyway, since it is the
+ // build phase which sets this.
+ // For now we keep doing this, which will work for dev and ci builds, but not for others, since the
+ // target is prod for next, prod, and appdev.
+
 function configureSearch(state) {
     var configFile = state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/');
     return fs.readJson(configFile,
         function (err, config) {
-            var target = state.config.targets.deploy;
+            var target = state.buildConfig.target;
             config.setup = target;
             return fs.outputJson(configFile, config);
         }
@@ -728,19 +641,19 @@ function installPlugins(state) {
 }
 
 /*
- * 
+ *
  * Copy the ui configuration files into the build.
  * settings.yml
  */
 function copyUiConfig(state) {
     var root = state.environment.path,
-        configSource = root.concat(['config', 'ui', state.config.targets.ui]),
-        releaseVersionConfig = root.concat(['config', 'version.yml']),
+        configSource = root.concat(['config', 'app', state.buildConfig.target]),
+        releaseVersionConfig = root.concat(['config', 'release.yml']),
         configFiles = ['menus.yml', 'services.yml'].map(function (file) {
             return configSource.concat(file);
         }).concat([releaseVersionConfig]),
         configDest = root.concat(['build', 'client', 'modules', 'config']),
-        baseUiConfig = root.concat('config', 'ui', 'ui.yml');
+        baseUiConfig = root.concat('config', 'app', 'ui.yml');
 
     return mutant.loadYaml(baseUiConfig)
         .then(function (baseConfig) {
@@ -766,8 +679,7 @@ function createBuildInfo(state) {
             var root = state.environment.path,
                 configDest = root.concat(['build', 'client', 'modules', 'config', 'buildInfo.yml']),
                 buildInfo = {
-                    features: state.config.features,
-                    targets: state.config.targets,
+                    target: state.buildConfig.target,
                     stats: state.stats,
                     git: gitInfo,
                     // disabled for now, all uname packages are failing!
@@ -799,7 +711,7 @@ function verifyVersion(state) {
             var releaseVersion = state.mergedConfig.release.version;
             var gitVersion = state.buildInfo.git.version;
 
-            if (state.config.targets.ui === 'prod') {
+            if (state.buildConfig.target === 'prod') {
                 if (releaseVersion === gitVersion) {
                     console.log('release and git agree on ' + releaseVersion);
                 } else {
@@ -810,7 +722,7 @@ function verifyVersion(state) {
                         console.log('have release notes?', releaseNotesFile);
                     });
             } else {
-                // we have no assumptions. Well, either there is a release notes file and release.version in agreement, 
+                // we have no assumptions. Well, either there is a release notes file and release.version in agreement,
                 // or a new release notes is being worked on and is a higher version. Could check this...
                 console.warn('In a dev build, release version not checked.');
             }
@@ -853,15 +765,26 @@ function mergeObjects(listOfObjects) {
     return base;
 }
 
+// TODO: the deploy will be completely replaced with a deploy script.
+// For now, the deploy is still required for dev and ci builds to work
+// without the deploy script being integrated into the ci, next, appdev, and prod
+// environments.
+// TODO: those environments WILL need to be updated to support redeployment.
 /*
- * 
+  The kbase-ui deploy config is the only part of the config which changes between
+  environments. (In reality the ui target does also determine what "type" of
+  ui is built.)
+  It provides the service url base, analytics keys, feature filters, ui elements.
+*/
+/*
+ * obsolete:
  * The standard kbase deploy config lives in the root, and is named deploy.cfg
  * We pick one of the preconfigured deploy config files based on the deploy
  * target key passed in and found on state.config.targets.kbDeployConfig
  */
 function makeKbConfig(state) {
     var root = state.environment.path,
-        fileName = state.config.targets.deploy + '.yml',
+        fileName = state.buildConfig.target + '.yml',
         deployModules = root.concat(['build', 'client', 'modules', 'deploy']);
 
     return Promise.all([
@@ -920,7 +843,7 @@ function makeKbConfig(state) {
                     return Promise.all([fileName, fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')]);
                 }))
                 .then(function (templates) {
-                    // +++ 
+                    // +++
                     return Promise.all(templates.map(function (template) {
                         var dest = root.concat(['build', 'client', template[0]]).join('/');
                         var out = handlebars.compile(template[1])(state);
@@ -1064,7 +987,7 @@ function makeModuleVFS(state, whichBuild) {
         })
         .then(function (matches) {
 
-            // just read in file and build a giant map...            
+            // just read in file and build a giant map...
             var vfs = {
                 scripts: {},
                 resources: {
@@ -1409,15 +1332,13 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            if (state.config.build.dist) {
+            if (state.buildConfig.dist) {
                 console.log('Making the dist build...');
                 return makeDistBuild(state);
             }
             return state;
         })
 
-    // DISABLE VFS FOR NOW
-    // TODO: determine if this is worth doing...
     .then(function (state) {
             return mutant.copyState(state);
         })
@@ -1426,8 +1347,8 @@ function main(type) {
             // TODO: a build flag for the vfs.
             // FORNOW: no vfs build for dev
             var vfs = [];
-            vfs.push(makeModuleVFS(state, 'build'));
-            if (state.config.build.dist) {
+            // vfs.push(makeModuleVFS(state, 'build'));
+            if (state.buildConfig.vfs && state.buildConfig.dist) {
                 vfs.push(makeModuleVFS(state, 'dist'));
             }
             return Promise.all(vfs)
@@ -1441,7 +1362,7 @@ function main(type) {
     //    return mutant.copyState(state);
     //})
     //.then(function (state) {
-    //    
+    //
     //})
 
     .then(function (state) {
