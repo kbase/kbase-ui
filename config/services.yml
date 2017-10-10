@@ -3,7 +3,7 @@
 # TODO: ensure that this list includes all supported services
 
 # Services represent kbase core services. The key for each service
-# is the module name as defined in the services spec file. 
+# is the module name as defined in the services spec file.
 # Traditionally arbitrary strings were assigned as these keys, typically
 # matching the first path component in the proxy (/services/PATH/) url.
 # When switching over module name as the canonical service key, these
@@ -38,7 +38,7 @@ services:
         url: '{{ deploy.services.urlBase }}/services/narrative_method_store/rpc'
         image_url: '{{ deploy.services.urlBase }}/services/narrative_method_store/'
         name: Narrative Method Store
-    shock: 
+    shock:
         url: '{{ deploy.services.urlBase }}/services/shock-api'
         name: Shock
     UserProfile:
@@ -68,7 +68,7 @@ services:
     # Not services, but useful endpoints
     doc_site:
         url: http://kbase.us
-        name: Documentation and Support Site    
+        name: Documentation and Support Site
     narrative:
         url: '{{ deploy.services.urlBase }}'
         name: Narrative User Interface
@@ -98,11 +98,11 @@ resources:
         aboutKbase:
             url: http://kbase.us/what-is-kbase/
     userAccount:
-        resetPassword: 
+        resetPassword:
             url: http://kbase.us/reset-password
-        updateProfile: 
+        updateProfile:
             url: https://www.globusid.org/profile
-        update_profile: 
+        update_profile:
             url: https://www.globusid.org/profile
         access:
             url: https://gologin.kbase.us/globus-app/account
@@ -111,7 +111,7 @@ resources:
     contact:
         url: http://kbase.us/contact-us
         name: Contact KBase
-    help: 
+    help:
         url: http://kbase.us/using-the-kbase-help-board/
         name: KBase Help Board
     status_page:  http://kbase.us/internal/status

@@ -9,12 +9,6 @@ plugins:
     -
         welcome
     -
-         name: login
-         internal: true
-         disabled: true
-    -
-        datasearch
-    -
         narrativemanager
     -
         catalog
@@ -130,16 +124,15 @@ plugins:
             bower: {}
     -
         name: auth2-client
-        disabled: true
         globalName: kbase-ui-plugin-auth2-client
-        version: 1.2.2
+        version: 1.2.3
         cwd: src/plugin
         source:
             bower: {}
     -
         name: user-profile
         globalName: kbase-ui-plugin-user-profile
-        version: 1.4.0
+        version: 1.4.1
         cwd: src/plugin
         source:
             bower: {}
@@ -174,9 +167,9 @@ plugins:
     -
         name: jgi-search
         globalName: kbase-ui-plugin-jgi-search
-        version: 0.9.0
+        version: 0.10.0
         cwd: src/plugin
-        source: 
+        source:
             bower: {}
     -
         name: reske-admin
@@ -199,4 +192,10 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
-
+    -
+        name: example-gopherjs
+        globalName: kbase-ui-plugin-example-gopherjs
+        version: 0.1.0
+        cwd: src/plugin
+        source:
+            bower: {}

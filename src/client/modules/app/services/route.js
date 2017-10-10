@@ -32,7 +32,8 @@ define([
                         loginParams.nextrequest = JSON.stringify(handler.request);
                     }
                     runtime.send('app', 'navigate', {
-                        path: runtime.feature('auth', 'paths.login'),
+                        path: 'login',
+                        // path: runtime.feature('auth', 'paths.login'),
                         // TODO: path needs to be the path + params
                         params: loginParams
                     });

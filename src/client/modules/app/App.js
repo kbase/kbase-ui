@@ -153,19 +153,9 @@ define([
             runtime: api
         });
 
-
         addServices(services);
 
         function start() {
-            // Add plugin(s) provided by the selected auth feature.
-            // By default a plugin which is provided for a feature must be set to 
-            // disabled state, and will be enabled here.
-            // TODO: we can probably remove the "feature" feature now that 
-            // auth, the only user of it, is past.
-            api.feature('auth', 'plugins').forEach(function (pluginName) {
-                plugins[pluginName].disabled = false;
-            });
-
             // Behavior
             // There are not too many global behaviors, and perhaps there should
             // even fewer or none. Most behavior is within services or
