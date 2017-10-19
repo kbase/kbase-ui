@@ -34,7 +34,7 @@
         "jquery": "2.2.4",
         "jquery-ui": "1.12.1",
         "kbase-common-ts": "0.16.3",
-        "kbase-common-js": "2.10.4",
+        "kbase-common-js": "2.11.0",
         "kbase-sdk-clients-js": "0.5.1",
         "kbase-service-clients-js": "3.3.5",
         "kbase-ui-widget": "1.2.1",
