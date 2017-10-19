@@ -8,14 +8,14 @@ package:
     version: 0.0.1
 source:
     ## sources are relative to build/plugins/PACKAGE/source/javascript
-    ## NB: need to quote file names, otherwise 
+    ## NB: need to quote file names, otherwise
     modules:
     styles:
 install:
     # NEW - a plugin may now specify a boot widget. This widget will be
     # installed on the window root upon app startup (boot)
     widgets:
-        - 
+        -
             module: mainWindow
             css: true
             id: root
@@ -76,3 +76,7 @@ install:
             id: kb_mainWindow_sidebarNav
             type: factory
             css: true
+        -
+            module: widgets/notFound
+            id: notFound
+            type: factory
