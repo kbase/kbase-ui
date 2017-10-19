@@ -83,6 +83,7 @@ If you, dear reader, notice anything missing or mistakeng, please file a ticket 
 - improved narrative manager plugin
   - now uses the better generic clients from kb common
   - unmounts widget correctly
+- should not rewrite url to messages panel when path not found [TASK-5258](https://kbase-jira.atlassian.net/browse/KBASE-5358)
 
 ### FIXES
 
@@ -95,3 +96,4 @@ If you, dear reader, notice anything missing or mistakeng, please file a ticket 
 - fix tab selection after tab close in reske search results [TASK-1051](https://kbase-jira.atlassian.net/browse/TASK-1051)
 - downgrade numeral library 2.0.6 -> 2.0.4 to work around regression in it- [TASK-1025](https://kbase-jira.atlassian.net/browse/TASK-1025)
 - improve title display so long titles don't bleed through the header right-side items 
+- catalog would fail if authors property empty for any app [IMPL-242](https://kbase-jira.atlassian.net/browse/IMPL-242)
