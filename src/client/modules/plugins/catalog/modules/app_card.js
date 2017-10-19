@@ -8,13 +8,13 @@ define([
     'use strict';
 
     // favorites callback should accept:
-    //  
+    //
     //  favoritesCallback(this.info)
-    //    info = 
+    //    info =
     //      id:
     //      module_name:
     //      ...
-    //     
+    //
 
     //params = {
     //    legacy : true | false // indicates if this is a legacy App or SDK App
@@ -39,6 +39,12 @@ define([
         this.linkTag = params.linkTag;
         if (params.showReleaseTagLabels && params.showReleaseTagLabels == true) {
             this.showReleaseTagLabels = true;
+        }
+
+        // fix missing fields
+        if (!this.info.authors) {
+            console.warn('authors property missing in app info', this.info);
+            this.info.authors = [];
         }
 
         this.cardsAdded = 0;
