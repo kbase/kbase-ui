@@ -8,6 +8,13 @@ language: node_js
 node_js:
   - "6.9"
 
+# These are travis encrypted var for the DOCKER_USER and DOCKER_PASS creds
+# used in the build/push2dockerhub.sh script
+env:
+  global:
+    secure: "ieF/z0r1VJ8P8UoLwtS5q4MFAVW0zWNqYk/bLf8aMznl6vQwLLpvSdDJUwUVBR+4/YX3/W5PmsBmby31tZ7byhfHguLpZq7MhSukZ8Fv942D89OQjKdJaTQNXfJDnN4p7wtuOVQKhZjHvFDtrZq2f+dLXuNv4tBxz/IJ+hY9Eq4TPvFvuvUW8uod4hV97WH4/YaKy8hv+I50xrhyQqiT9Ful6lYMQUOuKTTO5iCGT03wjUmQ52hsyCJ8aMtPbn2oc8m3lvJlRUgCWCZ9fxUj9PdWzVCUXqWJWPHiK1b44Tr30m7TNhQZuYvSZcLF4dx/9ZxEFRq4mPaM9ZpHg0T/nfX4nExHfYIuIdOLaTcGkOnj9EaE2raWeHCC/wIa/Ow2Rs8Xgl+pTQkOadpaQRwJ5mn0SC7GakXYp7jWsMNv8806MSC4GJG1uhIE/I28Zwc8GPkx6zou5yqKFP9gbKN6qPKT+rdVcx0CazhPGowbO4dNT2l2fPqwdxSorlam13cCf/xSmeO1/1VMmCxUaLupJNSfbmLWMSQkhb9arE7iOK0jaClE1e1DuBV4t4pyMED7mioFWaszMs6RWgbnBCkNX8fv0kOSUL31vq8dafFtHVorzfX1JmOyQylRCmDunG/KxGLQzBIXP39rWwqBEDRA+ZO2DpXPUWCZ1QEIb8OXd2Q="
+    secure: "gBWTr/CjR2u909c+TwPnbEm4BKOewmGAR1DUzmV8aEF7WFEGZzCO1q9d8uiTWLKQTqOnaABWB/snvOTC0/5ma+YwbRimef1PM4feJyQlxZ+ZTcj36IGriGCTvcnMuv5T/WZ30bS2gJowqo0xnAp7bsdeIeh4FZWt0gh14+4vN5ZKcCWjKpm8He+F91TkrEKYhjy/YWT9UNWrtCAAOxhGDfoMNxreieX+pEue1f3GBoYRy0rXTxts4wb4jEUQKr8Ob59+VucrkoHCrk63aWcf/JVQ+lRqqYR/2QJ0H0isR/KSWrR5uaBjRhI9oG+Q6ouFk14wac4FXp7GOJXWtVTskWIH4tX+uSUWUt7tpPC/H5FklpqLP8MdvrUG1FNlFiaaP+x1OGRyyydooPlk+LZTFORXgZFNAWsFGHjEdP9uJJLENuGmzdL0b4XjYpSQASiN0l7zfeRoYk+VY1VBV5gREqXu2xt9UTbeXxZrYAqqTMRjkueZzKoMCqyVl+CQz0HjHD26M7FsItX+gC+sSh+Yj6Ix8IqaqXLXfKSc5iSFV3CMcUt/viuPaOof/qT3RIbwqo75oSVi6e1NruSZDhyqtzNnueU1Y97fSv2Z/FoSfXJkey63HOp710YSBVX/RsjACJl83EM6HmNP8U+wkzdbnnMhjMMr1Xwb4S4rJlKBqes="
+
 # upcoming
 # addons:
 #     apt:
@@ -39,3 +46,6 @@ script: make test-travis
 # upcoming
 # after_script:
 #     - tools/travis/stop-nginx.sh
+after_success:
+  - make docker_image
+  - IMAGE_NAME=kbase/kbase_ui ./build/push2dockerhub.sh
