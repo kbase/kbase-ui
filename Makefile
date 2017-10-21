@@ -25,6 +25,7 @@ GRUNT		    = ./node_modules/.bin/grunt
 KARMA			= ./node_modules/.bin/karma
 config			= dev
 directory		= build
+DEPLOY_DEST		= ./deployment/services/kbase-ui
 
 # Standard 'all' target = just do the standard build
 all:
@@ -71,6 +72,14 @@ init: preconditions install_tools
 build:	
 	@echo "> Building."
 	cd mutations; node build $(config)
+
+# Build the docker image, assumes that make init and make build have been done already
+docker_image:
+	@echo "> Building docker image."
+	rm -rf $(DEPLOY_DEST)
+	mkdir -p $(DEPLOY_DEST)
+	cp -pr build/build/client/* $(DEPLOY_DEST)
+	build/build_docker_image.sh
 
 # The deploy step will copy the files according to the instructions in the deploy
 # config. See mutations/deploy.js for details.

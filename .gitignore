@@ -17,7 +17,7 @@ nbproject
 /build/build
 /build/build-test-coverage
 /mutations/mutantfiles
-
+/deployment/services/kbase-ui/
 # Developer artifacts
 /dev/*
 !/dev/README.md
