@@ -1,0 +1,3 @@
+# Configuration files
+
+This is a placeholder for deployment configuration files

@@ -35,18 +35,18 @@ define([
     Much of what plugin loading involves is interation with services, which is
     usually literally providing a configuration object to the service and allowing
     the service to do its thing.
-    This makes for a very small core, in which nearly all of the functionality is 
+    This makes for a very small core, in which nearly all of the functionality is
     provided by plugins and services.
 
     The config object looks like this:
     TODO: add a json spec for it.
 
-    appConfig - 
-    plugins - 
-    nodes - 
+    appConfig -
+    plugins -
+    nodes -
 
     appConfig
-    at the heart of the configurability of the app is the appConfig. This is a 
+    at the heart of the configurability of the app is the appConfig. This is a
     plain JS object containing
 
     nodes
@@ -69,8 +69,8 @@ define([
             data: _config.appConfig
         });
 
-        // The entire ui (from the app's perspective) hinges upon a single 
-        // root node, which must already be establibished by the 
+        // The entire ui (from the app's perspective) hinges upon a single
+        // root node, which must already be establibished by the
         // calling code. If this node is absent, we simply fail here.
         var rootNode = document.querySelector(nodes.root.selector);
         if (!rootNode) {
@@ -79,7 +79,7 @@ define([
 
         // Events
 
-        // Our own event system. 
+        // Our own event system.
         var messenger = messengerFactory.make();
 
         // DOM

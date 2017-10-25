@@ -17,13 +17,42 @@ nbproject
 /build/build
 /build/build-test-coverage
 /mutations/mutantfiles
-/deployment/services/kbase-ui/
+
 # Developer artifacts
 /dev/*
 !/dev/README.md
+_attic
+
 /install/temp
 /errorShots
 /target
+
+# package caches wherever they may be installed
+bower_components
+node_modules
+
+# General purpose temp directory
+/temp
+
+# Any trash directories
+_trash
+
+# IDEs
+# put your ide here
+nbproject
+
+# Build artifacts
+/build/dist
+/build/build
+/build/build-test-coverage
+/mutations/mutantfiles
+
+
+# Deployment artifacts
+/deployment/dev/docker/context/contents
+/deployment/ci/docker/context/contents
+/deployment/prod/docker/context/contents
+
 
 # Editor and OS artifacts
 .DS_Store
