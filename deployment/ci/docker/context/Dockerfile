@@ -28,7 +28,6 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.schema-version="1.0.0-rc1" \
       us.kbase.vcs-branch=$BRANCH  \
-      us.kbase.vcs-tag=$TAG \
       maintainer="Steve Chan sychan@lbl.gov"
 
 EXPOSE 80

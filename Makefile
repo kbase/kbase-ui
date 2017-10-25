@@ -105,8 +105,9 @@ ci-image:
 	cp -pr build/dist/client/* $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui
 	@echo "> Copying kb/deployment entrypoint and config templates..."
 	cp -pr $(CI_DOCKER_CONTEXT)/../kb-deployment/* $(CI_DOCKER_CONTEXT)/contents
+	chmod u+x $(CI_DOCKER_CONTEXT)/contents/bin/entrypoint.sh
 	@echo "> Beginning docker build..."
-	cd $(CI_DOCKER_CONTEXT)/..; bash tools/build_docker_image.sh
+	cd $(CI_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
 
 prod-image:
 	@echo "> Building docker image."
@@ -118,11 +119,12 @@ prod-image:
 	cp -pr build/dist/client/* $(PROD_DOCKER_CONTEXT)/contents/services/kbase-ui
 	@echo "> Copying kb/deployment entrypoint and config templates..."
 	cp -pr $(PROD_DOCKER_CONTEXT)/../kb-deployment/* $(PROD_DOCKER_CONTEXT)/contents
+	chmod u+x $(PROD_DOCKER_CONTEXT)/contents/bin/entrypoint.sh
 	@echo "> Beginning docker build..."
-	cd $(PROD_DOCKER_CONTEXT)/..; bash tools/build_docker_image.sh
+	cd $(PROD_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
 
 
-prod_image: init build-prod dist-image
+# prod_image: init build-prod prod-image
 
 # The deploy step will copy the files according to the instructions in the deploy
 # config. See mutations/deploy.js for details.

@@ -3,18 +3,6 @@
 # Much much longer than the original. Just wanted to get a handle
 # on explicit error capture and handling.
 
-function get_tag() {
-    # local error variable captures subprocess exit code in $?
-    # need this so that other commands don't overwrite it
-    # the variable holding the git command subprocess output must be
-    # declared local previously because local itself will reset $?
-    local tag
-    tag=$(git describe --exact-match --tags $(git rev-parse HEAD) 2>&1)
-    local err=$?
-    echo $tag
-    exit $err
-}
-
 function get_branch() {
     local branch
     branch=$(git symbolic-ref --short HEAD 2>&1)
@@ -34,7 +22,6 @@ function get_commit() {
 function build_image() {
     local branch=$TRAVIS_BRANCH
     local commit=$TRAVIS_COMMIT
-    local tag=$TRAVIS_TAG
     local date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     local err
 
@@ -60,26 +47,20 @@ function build_image() {
     fi
     echo "COMMIT: $commit"
 
-    if [[ -z "$tag" ]]; then
-        tag=$(get_tag)
-        err=$?
-        if (( $err > 0 )); then
-            echo "Sorry, not on a tag, won't build: ${tag}">&2
-            exit 3
-        fi
-    fi
-    echo "TAG $tag"
-
     local here=`pwd`
     echo "Running docker build in context ${here}/docker/context"
     # TODO: don't know why can't run this in a subprocess
-    docker build --build-arg BUILD_DATE=$date --build-arg VCS_REF=$commit --build-arg BRANCH=$branch --build-arg TAG=$tag -t kbase/kbase-ui:$tag ${here}/docker/context
-
+    docker build \
+        --build-arg BUILD_DATE=$date \
+        --build-arg VCS_REF=$commit \
+        --build-arg BRANCH=$branch \
+        --tag kbase/kbase-ui:$commit ${here}/docker/context
     err=$?
+
     if (( $err > 0 )); then
         echo "Error running docker build: $err"
     else
-        echo "Successfully build docker image. You may invoke it "
+        echo "Successfully built docker image. You may invoke it "
         echo "with tag \"kbase/kbase-ui:${tag}\""
     fi
 }
