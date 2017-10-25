@@ -129,8 +129,8 @@ run-dev-image:
 	@echo "> You will need to inspect the docker container for the ip address "
 	@echo ">   set your /etc/hosts for ci.kbase.us accordingly."
 	@echo "> To map host directories into the container, you will need to run "
-	@echo ">   deploymnet/dev/tools/run-docker.sh with appropriate options."
-	bash $(TOPDIR)/deployment/dev/tools/run-docker.sh dev
+	@echo ">   deploymnet/dev/tools/run-image.sh with appropriate options."
+	bash $(TOPDIR)/deployment/dev/tools/run-image.sh dev
 
 
 # prod_image: init build-prod prod-image

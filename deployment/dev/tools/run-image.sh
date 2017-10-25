@@ -57,7 +57,21 @@ POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
 key="$1"
+#
+function linkSrcFile() {
+    # from is relative to the dev dir, the container for all repos
+   local from=$1
+   # to is relative to this directory, but could be DEVDIR/kbase-ui
+   local to=$2
 
+   local source=$DEVDIR/kbase-ui/src/client/$from
+   local dest=../../build/build/client/$to
+
+   echo "Linking source file $from"
+
+    rm -rf $dest
+    ln -s $source $dest
+}
 case $key in
     -p|--plugin)
     plugin="$2"
@@ -72,6 +86,19 @@ case $key in
     mounts="$mounts --mount type=bind,src=${root}/src/client/modules/plugins/${plugin},dst=/kb/deployment/services/kbase-ui/modules/plugins/${plugin}"
     shift # past argument
     shift # past value
+    ;;
+    -l|--lib)
+    lib="$2"
+    local l
+    read libModule libName libPath <<<$(IFS=':';echo $lib)
+    # IFS=':';l=($lib);unset IFS
+    # local libModule="${l[0]}"
+    # local libName="${l[1]}"
+    # local libPath="${l[2]}"
+    echo "Using library repo: $lib, $libModule, $libName, $libPath"
+     mounts="$mounts --mount type=bind,src=${root}/../kbase-${libName}/${libPath},dst=/kb/deployment/services/kbase-ui/modules/${libModule}"
+    shift
+    shift
     ;;
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later
