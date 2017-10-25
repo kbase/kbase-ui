@@ -129,3 +129,33 @@ The setup for working on external plugins is very similar to that of working on 
 - local testing again with new version
 - pr, merge ui changes (just config)
 - redeploy on CI
+
+## Other handy dockerisms
+
+
+### Stop running containers
+
+docker stop $(docker ps -q)
+
+> If you just have one running container, it just stops that one.
+
+### Stop all containers
+
+docker stop $(docker ps -aq)
+
+
+### Delete all containers
+
+docker rm $(docker ps -aq)
+
+### Remove all images
+
+docker rmi -f $(docker images -q)
+
+### Shell in docker container
+
+docker exec -i -t <containerid> /bin/bash
+
+e.g.
+
+docker exec -i -t $(docker ps -q) /bin/bash
