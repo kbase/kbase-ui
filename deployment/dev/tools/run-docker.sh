@@ -33,6 +33,12 @@
 # export config_mount=$1
 
 environment=$1
+
+if [ -z "$environment" ]; then 
+    echo "'environment' shell variable not set"
+    exit 1
+fi
+
 root=$(git rev-parse --show-toplevel)
 config_mount="${root}/deployment/conf"
 

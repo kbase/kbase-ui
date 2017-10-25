@@ -124,6 +124,15 @@ prod-image:
 	cd $(PROD_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
 
 
+run-dev-image:
+	@echo "> Running dev image."
+	@echo "> You will need to inspect the docker container for the ip address "
+	@echo ">   set your /etc/hosts for ci.kbase.us accordingly."
+	@echo "> To map host directories into the container, you will need to run "
+	@echo ">   deploymnet/dev/tools/run-docker.sh with appropriate options."
+	bash $(TOPDIR)/deployment/dev/tools/run-docker.sh dev
+
+
 # prod_image: init build-prod prod-image
 
 # The deploy step will copy the files according to the instructions in the deploy
