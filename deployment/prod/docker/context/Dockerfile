@@ -1,11 +1,12 @@
 FROM alpine:latest
-RUN apk add --no-cache 
+RUN apk add --no-cache
 # Container designed to serve up static KBase UI contents
 
 # These ARGs values are passed in via the docker build command
 ARG BUILD_DATE
 ARG VCS_REF
 ARG BRANCH=develop
+ARG TAG
 
 # Shinto-cli is a jinja2 template cmd line tool
 # Install perl dependencies. Force Moose and RPC::Any::Server::JSONRPC::PSGI installation
@@ -13,12 +14,12 @@ ARG BRANCH=develop
 RUN apk --update upgrade && \
     apk add ca-certificates nginx python py-pip openssl wget bash bash-completion && \
     update-ca-certificates && \
-    pip install shinto-cli[yaml]
+    pip install jinja2-cli[yaml]
 
 # Setup the base perl libs
 RUN mkdir -p /kb/deployment/lib
 
-COPY deployment /kb/deployment
+COPY contents /kb/deployment
 
 # The BUILD_DATE value seem to bust the docker cache when the timestamp changes, move to
 # the end
@@ -27,6 +28,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.schema-version="1.0.0-rc1" \
       us.kbase.vcs-branch=$BRANCH  \
+      us.kbase.vcs-tag=$TAG \
       maintainer="Steve Chan sychan@lbl.gov"
 
 EXPOSE 80

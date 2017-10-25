@@ -13,5 +13,6 @@ ui:
     schema: {}
     route: {}
     session: {}
+    # dynamic-service: {}
     menu:
       configs: [menus]

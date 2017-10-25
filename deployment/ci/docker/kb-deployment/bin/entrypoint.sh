@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # This script is used as the entrypoint for the docker image
-# 
+#
 # This entrypoint script defaults to using environment variables to populate
 # a jinja2 config template and writing out the config before starting the service
 #
@@ -29,18 +29,18 @@ function error_exit
 
 # This is the path to the jinja2 template tool, some derivative of
 # this: https://github.com/kolypto/j2cli
-export J2=/usr/bin/j2
+export J2=/usr/bin/jinja2
 
 
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 # Default config template
-TEMPLATE=$DIR/../conf/.templates/nginx.conf.j2
+TEMPLATE=$DIR/../conf/deployment_templates/nginx.conf.j2
 
 # This is the path to the nginx config created by template above
 NGINX_CONFIG=/etc/nginx/nginx.conf
 
 # Config.json template, uses the same data source
-CFG_JSON_TEMPLATE=$DIR/../conf/.templates/config.json.j2
+CFG_JSON_TEMPLATE=$DIR/../conf/deployment_templates/config.json.j2
 
 # Destination for the config.json template above
 CONFIG_JSON=$DIR/../services/kbase-ui/modules/deploy/config.json
@@ -103,6 +103,10 @@ if [ "$2" ] ; then
         TEMPLATE=$TMPDIR2/*
     fi
 fi
+
+echo "TEMPLATE ${TEMPLATE}"
+echo "DATA SRC ${DATA_SRC}"
+echo "CFG TEMPLATE ${CFG_JSON_TEMPLATE}"
 
 # Populate the nginx config as well as the config.json
 ${J2} $TEMPLATE $DATA_SRC > $NGINX_CONFIG && \

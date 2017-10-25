@@ -4,6 +4,7 @@
 
 - [Prerequisites for Development](development-prerequisites.md)
 - [Development Setup](development-setup.md)
+- [Docker Based Workflow](development-with-docker.md)
 
 ### Development Scenarios
 - [Developing Plugins](developing-plugins.md)

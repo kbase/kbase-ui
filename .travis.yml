@@ -5,7 +5,7 @@ services:
   - docker
 
 # Note that travis-ci docs do not always reflect the current state of
-# node_js support. E.g. at the moment the docs say 4.2 is the latest on the 4.X 
+# node_js support. E.g. at the moment the docs say 4.2 is the latest on the 4.X
 # branch, but it is actually 4.4
 node_js:
   - "6.9"
@@ -48,5 +48,5 @@ script: make test-travis
 # after_script:
 #     - tools/travis/stop-nginx.sh
 after_success:
-  - make docker_image
-  - IMAGE_NAME=kbase/kbase_ui ./build/push2dockerhub.sh
+  - make ci-image
+  - IMAGE_NAME=kbase/kbase-ui ./deployment/ci/tools/push2dockerhub.sh

@@ -1,0 +1,31 @@
+{
+    "deploy": {
+        "environment": "{{ kbase_ui.deploy_environment }}",
+        "hostname": "{{ kbase_ui.deploy_hostname }}",
+        "icon": "{{ kbase_ui.deploy_icon }}",
+        "name": "{{ kbase_ui.deploy_name }}",
+        "services": {
+            "urlBase": "{{ kbase_ui.deploy_services_urlBase }}"
+        }
+    },
+    "ui": {
+        "backupCookie": {
+            "domain": "{{ kbase_ui.ui_backupCookie_domain }}",
+            "enabled": {{ kbase_ui.ui_backupCookie_enabled }}
+        },
+        "services": {
+            "analytics": {
+                "google": {
+                    "hostname": "{{ kbase_ui.ui_services_analytics_google_hostname }}",
+                    "code": "{{ kbase_ui.ui_services_analytics_google_code }}"
+                }
+            }
+        },
+        "allow": {{ kbase_ui.allow }}
+    },
+    "services": {
+        "narrative": {
+            "url": "{{ kbase_ui.services_narrative_url }}"
+        }
+    }
+}
