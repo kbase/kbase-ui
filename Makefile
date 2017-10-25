@@ -75,9 +75,13 @@ build:
 	@echo "> Building."
 	cd mutations; node build $(config)
 
+build-ci:
+	@echo "> Building for CI."
+	cd mutations; node build ci
+
 build-prod:
 	@echo "> Building for prod."
-	cd mutations; node build --config=prod
+	cd mutations; node build prod
 
 # Build the docker image, assumes that make init and make build have been done already
 
@@ -94,6 +98,20 @@ dev-image:
 	chmod u+x $(DEV_DOCKER_CONTEXT)/contents/bin/entrypoint.sh
 	@echo "> Beginning docker build..."
 	cd $(DEV_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
+
+dev-dist-image:
+	@echo "> Building development docker image."
+	@echo "> Cleaning out old contents"
+	rm -rf $(DEV_DOCKER_CONTEXT)/contents
+	@echo "> Copying current build of kbase-ui into contents..."
+	mkdir -p $(DEV_DOCKER_CONTEXT)/contents/services/kbase-ui
+	# Note that we copy the "build" build, not the dist build.
+	cp -pr build/dist/client/* $(DEV_DOCKER_CONTEXT)/contents/services/kbase-ui
+	@echo "> Copying kb/deployment entrypoint and config templates..."
+	cp -pr $(DEV_DOCKER_CONTEXT)/../kb-deployment/* $(DEV_DOCKER_CONTEXT)/contents
+	chmod u+x $(DEV_DOCKER_CONTEXT)/contents/bin/entrypoint.sh
+	@echo "> Beginning docker build..."
+	cd $(DEV_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh	
 
 ci-image:
 	@echo "> Building CI docker image."
@@ -123,14 +141,17 @@ prod-image:
 	@echo "> Beginning docker build..."
 	cd $(PROD_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
 
-
 run-dev-image:
 	@echo "> Running dev image."
-	@echo "> You will need to inspect the docker container for the ip address "
-	@echo ">   set your /etc/hosts for ci.kbase.us accordingly."
+	# @echo "> You will need to inspect the docker container for the ip address "
+	# @echo ">   set your /etc/hosts for ci.kbase.us accordingly."
 	@echo "> To map host directories into the container, you will need to run "
 	@echo ">   deploymnet/dev/tools/run-image.sh with appropriate options."
 	bash $(TOPDIR)/deployment/dev/tools/run-image.sh dev
+
+preview-ci: build-ci dev-image run-dev-image	
+
+
 
 
 # prod_image: init build-prod prod-image
