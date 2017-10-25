@@ -1,9 +1,9 @@
 deploy:
     id: kbase-ui
     target: /kb/deployment/services/kbase-ui
-    environment: 
-    hostname: 
-    icon: 
+    environment:
+    hostname:
+    icon:
     name:
 # Settings in support of the user interface
 ui:
@@ -52,13 +52,16 @@ ui:
             loginWidget: auth2_signin
 
         route:
-            defaultRoute: 
+            defaultRoute:
                 redirect:
                     path: login
         heartbeat:
             interval: 500
-# Primarily for output links for the docsite. 
-# TODO: merge with ui.outbound_links?        
+        # dynamic-service:
+        #     hardTtl: 3600000 # 1 min
+        #     hotTtl:  18000000 # 5 min
+# Primarily for output links for the docsite.
+# TODO: merge with ui.outbound_links?
 docsite:
     base_url: http://kbase.us
     host: kbase.us
