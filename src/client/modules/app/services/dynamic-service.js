@@ -38,11 +38,10 @@ define([
             stop: stop,
             additem: addItem,
             getItem: getItem
-        })
-
+        });
     }
 
     return {
         make: factory
     };
-}
+});
