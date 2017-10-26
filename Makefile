@@ -149,7 +149,7 @@ run-dev-image:
 	@echo ">   deploymnet/dev/tools/run-image.sh with appropriate options."
 	bash $(TOPDIR)/deployment/dev/tools/run-image.sh dev
 
-preview-ci: build-ci dev-image run-dev-image	
+preview-ci: build-ci dev-dist-image run-dev-image	
 
 
 

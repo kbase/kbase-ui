@@ -594,13 +594,13 @@ function setupBuild(state) {
  * Returns a Promise that sets the search config 'setup' to use the right target based on this build config.
  * Any errors are expected to be caught by the caller's catch().
  */
- // TODO: refactor into deploy scripts
- // we can no longer rely upon replacing the search config's "setup" property with the
- // deployment id in order to invoke the right branch of the config.
- // In reality, in prod and appdev devops must be replacing it by hand anyway, since it is the
- // build phase which sets this.
- // For now we keep doing this, which will work for dev and ci builds, but not for others, since the
- // target is prod for next, prod, and appdev.
+// TODO: refactor into deploy scripts
+// we can no longer rely upon replacing the search config's "setup" property with the
+// deployment id in order to invoke the right branch of the config.
+// In reality, in prod and appdev devops must be replacing it by hand anyway, since it is the
+// build phase which sets this.
+// For now we keep doing this, which will work for dev and ci builds, but not for others, since the
+// target is prod for next, prod, and appdev.
 
 function configureSearch(state) {
     var configFile = state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/');
