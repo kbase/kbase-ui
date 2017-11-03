@@ -24,13 +24,15 @@ make init; make build; make dev-image; make run-dev-image
 
 (4) Point your localhost to the containers nginx
 
-Add to your hosts /etc/hosts the following line:
+Add to your host's /etc/hosts the following line:
 
 ```
 127.0.0.1 ci.kbase.us
 ```
 
-Note that this disables access to the publicly available ci.kbase.us, so you'll need to comment it out when you want to get back to the real ci.
+> Note: This is on your _host_ machine, not in the container.
+
+> Note:  This disables access to the publicly available ci.kbase.us, so you'll need to comment it out when you want to get back to the real ci.
 
 The docker container maps ports 80 and 443 to your host interface. If you have something else running on those ports you'll need to stop them first.
 

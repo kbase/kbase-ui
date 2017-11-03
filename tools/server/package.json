@@ -8,11 +8,10 @@
     },
     "dependencies": {
         "node-static": "0.7.7",
-        "bluebird": "3.0.6", 
+        "bluebird": "3.0.6",
         "open": "0.0.3",
-        "js-yaml": "3.4.3",        
+        "js-yaml": "3.4.3",
         "path-exists": "2.1.0"
     },
     "license": "SEE LICENSE IN ../LICENSE"
-    
 }
