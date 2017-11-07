@@ -20,10 +20,9 @@ define([
     ],
     function ($, Promise, NarrativeMethodStore, Catalog, NarrativeJobService, CatalogUtil) {
 
-        function renderDate ( data, type, full ) {
-          var date = data;
+        function renderDate ( date, type, full ) {
           if(type == "display"){
-            date = new Date(data * 1000).toLocaleString();
+            date = new Date(date * 1000).toLocaleString();
           }
           return date;
         }
