@@ -19,6 +19,14 @@ define([
         'datatables_bootstrap'
     ],
     function ($, Promise, NarrativeMethodStore, Catalog, NarrativeJobService, CatalogUtil) {
+
+        function renderDate ( date, type, full ) {
+          if(type == "display"){
+            date = new Date(date * 1000).toLocaleString();
+          }
+          return date;
+        }
+
         $.KBWidget({
             name: "KBaseCatalogStats",
             parent: "kbaseAuthenticatedWidget", // todo: do we still need th
@@ -128,9 +136,9 @@ define([
                             { sTitle: "App Id", data: "app_id" },
                             { sTitle: "Job Id", data: "job_id" },
                             { sTitle: "Module", data: "app_module_name" },
-                            { sTitle: "Submission Time", data: "creation_time" },
-                            { sTitle: "Start Time", data: "exec_start_time" },
-                            { sTitle: "End Time", data: "finish_time" },
+                            { sTitle: "Submission Time", data: "creation_time", mRender : renderDate },
+                            { sTitle: "Start Time", data: "exec_start_time", mRender : renderDate },
+                            { sTitle: "End Time", data: "finish_time", mRender : renderDate },
                             { sTitle: "Run Time", data: "run_time" },
                             { sTitle: "Result", data: "result", className: "job-log" },
                         ],
@@ -431,9 +439,6 @@ define([
                         self.adminRecentRuns = [];
                         for (var k = 0; k < data.length; k++) {
                             var rt = data[k]['finish_time'] - data[k]['exec_start_time'];
-                            data[k]['creation_time'] = new Date(data[k]['creation_time'] * 1000).toLocaleString();
-                            data[k]['exec_start_time'] = new Date(data[k]['exec_start_time'] * 1000).toLocaleString();
-                            data[k]['finish_time'] = new Date(data[k]['finish_time'] * 1000).toLocaleString();
                             data[k]['user_id'] = '<a href="#people/' + data[k]['user_id'] + '">' + data[k]['user_id'] + '</a>'
                             data[k]['run_time'] = '<!--' + rt + '-->' + self.getNiceDuration(rt);
 
