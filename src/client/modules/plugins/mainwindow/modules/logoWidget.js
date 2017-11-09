@@ -9,8 +9,7 @@ define([
     var t = html.tag,
         a = t('a'),
         img = t('img'),
-        div = t('div'),
-        span = t('span');
+        div = t('div');
 
     function factory(config) {
         var hostNode, container, runtime = config.runtime;
@@ -36,42 +35,36 @@ define([
                 }, img({
                     src: Plugin.plugin.fullPath + '/images/kbase_logo.png',
                     width: '46px'
-                })),
-                div({
-                    class: '-label'
-                }, [
-                    div({
-                        style: {
-                            display: 'inline-block',
-                            lineHeight: 'normal',
-                            verticalAlign: 'bottom'
-                        }
-                    }, [
-                        div({
-                            style: {
-                                marginBottom: '-6px'
-                            }
-                        }, 'hub'),
-                        div({
-                            style: {
-                                textAlign: 'right',
-                                fontSize: '10px',
-                                fontWeight: 'bold',
-                                color: 'gray'
-                            }
-                        }, version)
-                    ]),
-                    img({
-                        src: Plugin.plugin.fullPath + '/images/hub32.png',
-                        width: '32px'
-                    })
-                    // span({
-                    //     class: 'fa fa-asterisk -icon',
-                    //     style: {
-                    //         color: 'silver'
-                    //     }
-                    // })
-                ])
+                }))
+                // div({
+                //     class: '-label'
+                // }, [
+                //     div({
+                //         style: {
+                //             display: 'inline-block',
+                //             lineHeight: 'normal',
+                //             verticalAlign: 'bottom'
+                //         }
+                //     }, [
+                //         div({
+                //             style: {
+                //                 marginBottom: '-6px'
+                //             }
+                //         }, 'hub'),
+                //         div({
+                //             style: {
+                //                 textAlign: 'right',
+                //                 fontSize: '10px',
+                //                 fontWeight: 'bold',
+                //                 color: 'gray'
+                //             }
+                //         }, version)
+                //     ]),
+                //     img({
+                //         src: Plugin.plugin.fullPath + '/images/hub32.png',
+                //         width: '32px'
+                //     })
+                // ])
             ].join('');
         }
 
