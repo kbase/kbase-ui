@@ -32,10 +32,21 @@
 
 # export config_mount=$1
 
+function usage() {
+    echo 'Usage: run-image.sh env [-p external-plugin] [-i internal-plugin] [-l lib-module-dir:lib-name:source-path]'
+}
+
 environment=$1
 
 if [ -z "$environment" ]; then 
-    echo "'environment' shell variable not set"
+    echo "ERROR: argument 1, 'environment', not provided"
+    usage
+    exit 1
+fi
+
+if [ ! -e "deployment/conf/${environment}.ini" ]; then
+    echo "ERROR: environment (arg 1) does not resolve to a config file in deployment/conf/${environment}.ini"
+    usage
     exit 1
 fi
 
@@ -89,7 +100,7 @@ case $key in
     ;;
     -l|--lib)
     lib="$2"
-    local l
+    # local l
     read libModule libName libPath <<<$(IFS=':';echo $lib)
     # IFS=':';l=($lib);unset IFS
     # local libModule="${l[0]}"

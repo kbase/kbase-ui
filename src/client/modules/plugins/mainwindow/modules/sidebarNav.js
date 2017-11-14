@@ -5,13 +5,14 @@ define([
     Promise,
     html
 ) {
+    'use strict'; 
+    
     var t = html.tag,
         div = t('div'),
         a = t('a'),
         table = t('table'),
         tr = t('tr'),
-        td = t('td'),
-        th = t('th');
+        td = t('td');
 
     function buildNavStripButton(cfg) {
         var icon = 'fa-' + cfg.icon;
@@ -87,49 +88,49 @@ define([
             path: 'appcatalog',
             authRequired: false
         }, (function () {
-            if (!runtime.allow('alpha')) {
-                return;
-            }
-            return {
-                icon: 'files-o',
-                label: 'Narratives',
-                path: 'reske-search/narrative',
-                authRequired: true
-            };
-        }()), (function () {
-            if (!runtime.allow('alpha')) {
-                return;
-            }
-            return {
-                icon: 'search',
-                label: 'Search Data',
-                path: 'reske-search/data',
-                authRequired: true
-            };
-        }()), {
-            //icon: 'user',
-            icon: 'user-circle-o',
-            label: 'Account',
-            path: 'auth2/account',
-            authRequired: true
-        }, (function () {
-            if (!runtime.allow('alpha')) {
-                return;
-            }
-            return {
-                icon: 'bullhorn',
-                label: 'Feeds',
-                path: 'feeds',
-                authRequired: true,
-                status: {
-                    new: 6
+                if (!runtime.allow('alpha')) {
+                    return;
                 }
+                return {
+                    icon: 'files-o',
+                    label: 'Narratives',
+                    path: 'reske-search/narrative',
+                    authRequired: true
+                };
+            }()), (function () {
+                if (!runtime.allow('alpha')) {
+                    return;
+                }
+                return {
+                    icon: 'search',
+                    label: 'Search',
+                    path: 'search',
+                    authRequired: true
+                };
+            }()), {
+            //icon: 'user',
+                icon: 'user-circle-o',
+                label: 'Account',
+                path: 'auth2/account',
+                authRequired: true
+            }, (function () {
+                if (!runtime.allow('alpha')) {
+                    return;
+                }
+                return {
+                    icon: 'bullhorn',
+                    label: 'Feeds',
+                    path: 'feeds',
+                    authRequired: true,
+                    status: {
+                        new: 6
+                    }
                 // info: [{
                 //     label: 'new',
                 //     value: '3'
                 // }]
-            };
-        }())].filter(function (item) {
+                };
+            }())].filter(function (item) {
             return item;
         });
 
@@ -172,11 +173,6 @@ define([
         }
 
         function selectButton() {
-            // var hash = window.location.hash;
-            // if (!hash || hash.length === 0) {
-            //     return;
-            // }
-            // var path = hash.substr(1);
             var path = currentPath;
             currentButtons.forEach(function (button) {
                 var buttonNode = document.getElementById(button.id);
@@ -204,7 +200,7 @@ define([
             currentPath = path.join('/');
         }
 
-        function start(params) {
+        function start() {
             return Promise.try(function () {
                 render();
                 runtime.recv('route', 'routing', function (route) {
@@ -215,7 +211,7 @@ define([
                     selectButton();
                 });
 
-                runtime.recv('session', 'change', function (message) {
+                runtime.recv('session', 'change', function () {
                     render();
                     selectButton();
                 });

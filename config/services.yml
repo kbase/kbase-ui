@@ -53,7 +53,7 @@ services:
         aliases: ['narrative_job_service']
         url: '{{ deploy.services.urlBase }}/services/njs_wrapper'
         name: Narrative Job Service
-    KBaseKnowledgeEngine:
+    KBaseRelationEngine:
         aliases: ['reske']
         url: '{{ deploy.services.urlBase }}/services/reske'
         name: Search Two
