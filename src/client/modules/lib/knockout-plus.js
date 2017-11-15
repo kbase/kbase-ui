@@ -295,5 +295,14 @@ define([
         }
     };
 
+    ko.subscribable.fn.subscribeChanged = function (callback, context) {
+        var savedValue = this.peek();
+        return this.subscribe(function (latestValue) {
+            var oldValue = savedValue;
+            savedValue = latestValue;
+            callback.call(context, latestValue, oldValue);
+        });
+    };
+
     return ko;
 });
