@@ -304,5 +304,17 @@ define([
         });
     };
 
+
+    ko.subscribable.fn.syncWith = function (targetObservable, callbackTarget, event) {
+        var sourceObservable = this; 
+        sourceObservable.subscribe(function (v) { 
+            targetObservable(v); 
+        }, callbackTarget, event); 
+        targetObservable.subscribe(function (v) { 
+            sourceObservable(v); 
+        }, callbackTarget, event); 
+        return sourceObservable; 
+    };
+
     return ko;
 });
