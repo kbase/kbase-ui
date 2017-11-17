@@ -6,7 +6,7 @@ define([
     'knockout-mapping',
     'knockout-arraytransforms',
     'knockout-validation',
-    'knockout-switch-case',
+    'knockout-switch-case'
 ], function (
     numeral,
     moment,
