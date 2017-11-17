@@ -2,6 +2,7 @@ define([
     'numeral',
     'moment',
     'knockout',
+    'kb_common/utils',
     'knockout-mapping',
     'knockout-arraytransforms',
     'knockout-validation',
@@ -9,7 +10,8 @@ define([
 ], function (
     numeral,
     moment,
-    ko
+    ko,
+    Utils
 ) {
     // Knockout Defaults
     ko.options.deferUpdates = true;
@@ -282,7 +284,12 @@ define([
                 if (valueUnwrapped === undefined || valueUnwrapped === null) {
                     formatted = missing;
                 } else {
-                    formatted = moment(valueUnwrapped).format(format);
+                    switch (format) {
+                    case 'nice-elapsed':
+                        formatted = Utils.niceElapsedTime(moment(valueUnwrapped).toDate());
+                        break;
+                    default: formatted = moment(valueUnwrapped).format(format);
+                    }
                 }
                 break;
             case 'text':
