@@ -1,22 +1,22 @@
 /*
  * MUTANT
  * Not a build system, a mutation machine.
- * 
+ *
  */
 
 /*
  * Here is the idea of mutant. It decomposes the build process into a map of mutation
  * machines. The initial raw material + inputs enters the first process, which
  * works on it, then passes it to a second, and so forth.
- * 
+ *
  * The main ideas are:
  * - the system travels between processes, does not exist anywhere else.
- * - each process may mutate the system, and must pass those mutations to 
+ * - each process may mutate the system, and must pass those mutations to
  *   the next process.
  * - processes are just javascript, so may include conditional branching, etc.
- * - procsses are asynchronous by nature, promises, so may arbitrarily contain 
+ * - procsses are asynchronous by nature, promises, so may arbitrarily contain
  *   async tasks, as long as they adhere to the promises api.
- *   
+ *
  */
 
 /*global define*/
@@ -118,7 +118,7 @@ function arrayDiff(a, b) {
 }
 
 /*
- * 
+ *
  * Copy files from one directory to another, creating any required directories,
  * but of course requiring the source to exist.
  */
@@ -284,7 +284,7 @@ function installModulePackagesFromFilesystem(state) {
 }
 
 function injectModulesIntoBower(state) {
-    // Load plugin config        
+    // Load plugin config
     var root = state.environment.path,
         pluginConfig, pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, 'build.yml']).join('/'),
         bowerConfig, bowerConfigFile = root.concat(['build', 'bower.json']).join('/');
@@ -313,7 +313,7 @@ function injectModulesIntoBower(state) {
 }
 
 function injectPluginsIntoBower(state) {
-    // Load plugin config        
+    // Load plugin config
     var root = state.environment.path,
         pluginConfig, pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, 'build.yml']).join('/'),
         bowerConfig, bowerConfigFile = root.concat(['build', 'bower.json']).join('/');
@@ -342,13 +342,13 @@ function injectPluginsIntoBower(state) {
 }
 
 /*
- * 
+ *
  * Create the plugins load config from the plugins master config. The load config
  * just lists the plugins to be loaded. The master config also provides the locations
  * for external plugins.
  */
 function injectPluginsIntoConfig(state) {
-    // Load plugin config        
+    // Load plugin config
     var root = state.environment.path,
         configPath = root.concat(['build', 'client', 'modules', 'config']),
         pluginConfigFile = root.concat(['config', 'ui', state.config.targets.ui, 'build.yml']).join('/');
@@ -421,7 +421,7 @@ function copyFromBower(state) {
                 }
 
                 /*
-                 The source defaults to the package name with .js, unless the 
+                 The source defaults to the package name with .js, unless the
                  src property is provided, in which case it must be either a single
                  or set of glob-compatible strings.*/
                 if (cfg.src) {
@@ -437,8 +437,8 @@ function copyFromBower(state) {
                 }
 
                 /*
-                 Finally, the cwd serves as a way to dig into a subdirectory and use it as the 
-                 basis for copying. This allows us to "bring up" files to the top level of 
+                 Finally, the cwd serves as a way to dig into a subdirectory and use it as the
+                 basis for copying. This allows us to "bring up" files to the top level of
                  the destination. Since we are relative to the root of this process, we
                  need to jigger that here.
                  */
@@ -452,11 +452,11 @@ function copyFromBower(state) {
                 }
 
                 /*
-                 The destination will be composed of 'bower_components' at the top 
+                 The destination will be composed of 'bower_components' at the top
                  level, then the package name or dir (as specified above).
-                 This is the core of our "thinning and flattening", which is part of the 
+                 This is the core of our "thinning and flattening", which is part of the
                  point of this bower copy process.
-                 In addition, if the spec includes a dest property, we will use that 
+                 In addition, if the spec includes a dest property, we will use that
                  */
                 if (cfg.bowerComponent) {
                     dest = ['build', 'client', 'modules', 'bower_components'].concat([cfg.dir || cfg.name]);
@@ -499,9 +499,9 @@ function copyFromBower(state) {
  * Copy plugins from the bower module installation directory into the plugins
  * directory. We _could_ reference plugins directly from the bower directory,
  * as we do for other bower-installed dependencies, but it seems to be easier
- * to keep track of (and to be able to manipulate) plugins if they are all 
+ * to keep track of (and to be able to manipulate) plugins if they are all
  * located in a single, well-defined location.
- * 
+ *
  * @returns {undefined}
  */
 function installExternalPlugins(state) {
@@ -535,7 +535,7 @@ function installExternalPlugins(state) {
                 .map(function (plugin) {
                     var cwds = plugin.cwd || 'dist/plugin',
                         cwd = cwds.split('/'),
-                        // Our actual cwd is mutations, so we need to escape one up to the 
+                        // Our actual cwd is mutations, so we need to escape one up to the
                         // project root.
                         repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..'],
                         source = repoRoot.concat([plugin.globalName]).concat(cwd),
@@ -551,7 +551,7 @@ function installExternalPlugins(state) {
                 .map(function (plugin) {
                     var cwds = plugin.cwd || 'dist/plugin',
                         cwd = cwds.split('/'),
-                        // Our actual cwd is mutations, so we need to escape one up to the 
+                        // Our actual cwd is mutations, so we need to escape one up to the
                         // project root.
                         repoRoot = (plugin.source.link.root && plugin.source.link.root.split('/')) || ['..', '..'],
                         source = repoRoot.concat([plugin.globalName]).concat(cwd),
@@ -602,21 +602,21 @@ function installExternalModules(state) {
 
 /*
  * setupBuild
- * 
- * Responsible for creating the basic build. 
- * 
+ *
+ * Responsible for creating the basic build.
+ *
  * The basic build may be deployed for development or distribution.
- * 
+ *
  * The deployment process is separate and guided by the configuration input
  * into the overall build.
- * 
- * The build setup is responsible for the initial juggling of files to represent 
+ *
+ * The build setup is responsible for the initial juggling of files to represent
  * the rough state of the delivered system. Including
- * 
+ *
  * - remove extraneous files
  * - move search into the client
  * - ??
- * 
+ *
  * @param {type} state
  * @returns {Array}
  */
@@ -670,8 +670,10 @@ function configureSearch(state) {
     var configFile = state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/');
     return fs.readJson(configFile,
         function (err, config) {
-            var target = state.config.targets.deploy;
-            config.setup = target;
+            // Don't fix up the target any longer -- this needs to be done
+            // at deploy time.
+            // var target = state.config.targets.deploy;
+            // config.setup = target;
             return fs.outputJson(configFile, config);
         }
     );
@@ -705,7 +707,7 @@ function installPlugins(state) {
 }
 
 /*
- * 
+ *
  * Copy the ui configuration files into the build.
  * settings.yml
  */
@@ -736,6 +738,7 @@ function copyUiConfig(state) {
 function createBuildInfo(state) {
     return gitinfo()
         .then(function (gitInfo) {
+            state.config.targets.deploy = '{{ deploy.environment }}';
             var root = state.environment.path,
                 configDest = root.concat(['build', 'client', 'modules', 'config', 'buildInfo.yml']),
                 buildInfo = {
@@ -787,24 +790,24 @@ function mergeObjects(listOfObjects) {
 }
 
 /*
- * 
+ *
  * The standard kbase deploy config lives in the root, and is named deploy.cfg
  * We pick one of the preconfigured deploy config files based on the deploy
  * target key passed in and found on state.config.targets.kbDeployConfig
  */
 function makeKbConfig(state) {
     var root = state.environment.path,
-        fileName = state.config.targets.deploy + '.yml',
+        // fileName = state.config.targets.deploy + '.yml',
         deployModules = root.concat(['build', 'client', 'modules', 'deploy']);
 
     return Promise.all([
-            mutant.loadYaml(root.concat(['config', 'deploy', fileName])),
+            // mutant.loadYaml(root.concat(['config', 'deploy', fileName])),
             fs.mkdirsAsync(deployModules.join('/'))
         ])
-        .spread(function (deployConfig) {
-            var dest = deployModules.concat(['config.json']);
-            mutant.saveJson(dest, deployConfig);
-        })
+        // .spread(function (deployConfig) {
+        //     var dest = deployModules.concat(['config.json']);
+        //     mutant.saveJson(dest, deployConfig);
+        // })
         .then(function () {
             return fs.readFileAsync(root.concat(['config', 'deploy', 'templates', 'build-info.js.txt']).join('/'), 'utf8')
                 .then(function (template) {
@@ -839,7 +842,7 @@ function makeKbConfig(state) {
                     return Promise.all([fileName, fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')]);
                 }))
                 .then(function (templates) {
-                    // +++ 
+                    // +++
                     return Promise.all(templates.map(function (template) {
                         var dest = root.concat(['build', 'client', template[0]]).join('/');
                         var out = handlebars.compile(template[1])(state);
@@ -979,11 +982,13 @@ function makeModuleVFS(state, whichBuild) {
         buildPath = ['..', 'build'];
 
     return glob(root.concat([whichBuild, 'client', 'modules', '**', '*']).join('/'), {
-            nodir: true
+            nodir: true,
+            exclude: [
+                [whichBuild, 'client', 'modules', 'deploy', 'config.json']
+            ]
         })
         .then(function (matches) {
-
-            // just read in file and build a giant map...            
+            // just read in file and build a giant map...
             var vfs = {
                 scripts: {},
                 resources: {
@@ -1345,7 +1350,7 @@ function main(type) {
     //    return mutant.copyState(state);
     //})
     //.then(function (state) {
-    //    
+    //
     //})
 
     .then(function (state) {
