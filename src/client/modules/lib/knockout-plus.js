@@ -274,9 +274,10 @@ define([
 
             switch (type) {
             case 'number':
+                numeral.nullFormat('');
                 if (valueUnwrapped === undefined || valueUnwrapped === null) {
                     formatted = missing;
-                } else {
+                } else {                    
                     formatted = numeral(valueUnwrapped).format(format);
                 }
                 break;
