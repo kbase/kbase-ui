@@ -32,7 +32,7 @@ services:
         aliases: ['ftp']
         url: '{{ deploy.services.urlBase }}/services/kb-ftp-api/v0'
         root: /data/bulk
-        name: FTP Service
+        name: Staging Service
     NarrativeMethodStore:
         aliases: ['narrative_method_store']
         url: '{{ deploy.services.urlBase }}/services/narrative_method_store/rpc'
@@ -75,6 +75,9 @@ services:
     search:
         url: https://kbase.us/services/search/
         name: Data Search
+    staging:
+        aliases: ['staging_service']
+        url: '{{ deploy.services.urlBase }}/services/staging_service'
     # Overrides for dynamic services can go here. Use the module name for the
     # key and a config-aware dsclient wrapper can use generic client instead
     # to reach this service.
