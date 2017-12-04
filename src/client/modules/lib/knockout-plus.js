@@ -399,7 +399,6 @@ define([
         });
     };
 
-
     ko.subscribable.fn.syncWith = function (targetObservable, callbackTarget, event) {
         var sourceObservable = this; 
         sourceObservable.subscribe(function (v) { 
@@ -407,6 +406,22 @@ define([
         }, callbackTarget, event); 
         targetObservable.subscribe(function (v) { 
             sourceObservable(v); 
+        }, callbackTarget, event); 
+        return sourceObservable; 
+    };
+
+    ko.subscribable.fn.syncFrom = function (targetObservable, callbackTarget, event) {
+        var sourceObservable = this; 
+        targetObservable.subscribe(function (v) { 
+            sourceObservable(v); 
+        }, callbackTarget, event); 
+        return sourceObservable; 
+    };
+
+    ko.subscribable.fn.syncTo = function (targetObservable, callbackTarget, event) {
+        var sourceObservable = this; 
+        sourceObservable.subscribe(function (v) { 
+            targetObservable(v); 
         }, callbackTarget, event); 
         return sourceObservable; 
     };
