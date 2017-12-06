@@ -14,7 +14,8 @@ The KBase User Interface (*kbase-ui*) is a web browser Single Page App (SPA) pro
 - *User Profile*, for viewing any user profile and editing their own, 
 - *Data Viewer*, for inspecting any data object a user has access to (aka "landing pages"),
 - *Type Viewer*, for inspecting the attributes of any data type,
-- *Authenticator*, for logging into and out of user's KBase Account and granting authorization to the web app.
+- *Authenticator*, for logging into and out of user's KBase Account and granting authorization to the web app,
+- *Catalog*, for browsing, searching and (for developers) managing KBase Narrative Apps.
 
 > If you have stumbled up on this project, you may first want to [find out about KBase](http://kbase.us). 
 > The *KBase UI* is not a general purpose tool -- it is designed to work inside the KBase ecosystem. 
