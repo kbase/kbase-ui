@@ -55,8 +55,8 @@ function build_image() {
     local here=`pwd`
     echo "Running docker build in context ${here}/docker/context"
     # TODO: don't know why can't run this in a subprocess
-    docker build --build-arg BUILD_DATE=$date \
-        --build-arg VCS_REF=$commit \
+    # NOTE: the dev build does not use the build date -- we don't want to bust the cache
+    docker build --build-arg VCS_REF=$commit \
         --build-arg BRANCH=$branch \
         --build-arg TAG=$tag \
         -t kbase/kbase-ui:$tag \
