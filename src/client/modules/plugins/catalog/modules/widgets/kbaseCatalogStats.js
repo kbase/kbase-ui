@@ -13,12 +13,16 @@ define([
         'kb_service/client/catalog',
         'kb_service/client/narrativeJobService',
         '../catalog_util',
+        'kb_common/dynamicTable',
+        //'kb_sdk_clients/genericClient',
+        'kb_common/jsonRpc/genericClient',
+        'kb_common/jsonRpc/dynamicServiceClient',
         'datatables',
         'kb_widget/legacy/authenticatedWidget',
         'bootstrap',
-        'datatables_bootstrap'
+        'datatables_bootstrap',
     ],
-    function ($, Promise, NarrativeMethodStore, Catalog, NarrativeJobService, CatalogUtil) {
+    function ($, Promise, NarrativeMethodStore, Catalog, NarrativeJobService, CatalogUtil, DynamicTable, GenericClient, DynamicService) {
 
         function renderDate ( date, type, full ) {
           if(type == "display"){
@@ -76,162 +80,323 @@ define([
                     self.hideLoading();
                 });
 
+var client = new DynamicService({
+                url: self.runtime.config('services.service_wizard.url'),
+                token: self.runtime.service('session').getAuthToken(),
+                version : 'dev',
+                module : 'kb_JobStats',
+            });
+console.log("CLIENT IS ", client);
+client.callFunc('get_app_metrics', [{}]).then(function(a,b,c,d) {
+  console.log("GOT METRICS", a, b, c, d);
+})
+.catch(function(a,b,c,d) {
+  console.log("FAILED : ", a, b, c, d);
+});
+/*
+console.log("GOT ME A TABLE : ", DynamicTable, GenericClient);
+var client = new GenericClient({
+                url: self.runtime.config('services.service_wizard.url'),
+                token: self.runtime.service('session').getAuthToken(),
+                //module : 'kb_JobStats',
+                version : 'dev'
+            });
+console.log("CLIENT IS ", client, self.runtime.service('session').getAuthToken());
+client.callFunc('kb_JobStats.get_app_metrics', [{}]).then(function(a,b,c,d) {
+  console.log("GOT METRICS", a, b, c, d);
+})
+.catch(function(a,b,c,d) {
+  console.log("FAILED : ", a, b, c, d);
+});
+*/
                 return this;
+            },
+
+            createDynamicUpdateFunction : function ( config, rows ) {
+              return function(pageNum, query, sortColId, sortColDir) {
+
+                var reducedRows = rows;
+
+                if (query) {
+                  query = query.replace(/ /g, '|');
+                  reducedRows = reducedRows.filter( function(row) {
+                    return row.query.match(query);
+                  });
+                }
+
+                if (sortColId) {
+
+                  var sortIdx = config.headers.reduce( function(acc, curr, idx) {
+                    if (curr.id === sortColId) {
+                      acc = idx;
+                    }
+                    return acc;
+                  }, 0);
+
+                  reducedRows = reducedRows
+                    .sort( function(a,b) {
+
+                      var aX = sortColDir === -1 ? b[sortIdx] : a[sortIdx];
+                      var bX = sortColDir === -1 ? a[sortIdx] : b[sortIdx];
+
+                      if (!$.isNumeric(aX)) { aX = aX.toString().toLowerCase(); }
+                      if (!$.isNumeric(bX)) { bX = bX.toString().toLowerCase(); }
+
+                           if ( aX < bX ) { return -1 }
+                      else if ( aX > bX ) { return 1 }
+                      else                { return 0 }
+
+                    })
+                  ;
+                };
+
+                reducedRows = reducedRows.slice(pageNum * config.rowsPerPage, (pageNum + 1) * config.rowsPerPage);
+
+                return Promise.try(function() {
+                  return {
+                    rows  : reducedRows,
+                    start : pageNum * config.rowsPerPage,
+                    query : query,
+                    total : rows.length,
+                  };
+                });
+              }
+
+            },
+
+            restructureRows : function(config, rows) {
+              return rows.map( function(row) {
+                var rowArray = [];
+                config.headers.forEach( function (header) {
+                  rowArray.push(row[header.id]);
+                });
+                rowArray.query = rowArray.join(',');
+                return rowArray;
+              });
+            },
+
+            reformatDateInTD : function($td) {
+              var timestamp = parseInt($td.text(), 10);
+              var date = new Date(timestamp * 1000).toLocaleString();
+              $td.text(date);
+            },
+
+            reformatIntervalInTD : function($td) {
+              var timestamp = parseInt($td.text(), 10);
+              $td.text( this.getNiceDuration(timestamp) );
             },
 
             render: function () {
                 var self = this;
 
-                // Custom data tables sorting function, that takes a number in an html comment
-                // and sorts numerically by that number
-                $.extend($.fn.dataTableExt.oSort, {
-                    "hidden-number-stats-pre": function (a) {
-                        // extract out the first comment if it exists, then parse as number
-                        var t = a.split('-->');
-                        if (t.length > 1) {
-                            var t2 = t[0].split('<!--');
-                            if (t2.length > 1) {
-                                return Number(t2[1]);
-                            }
-                        }
-                        return Number(a);
-                    },
-
-                    "hidden-number-stats-asc": function (a, b) {
-                        return ((a < b) ? -1 : ((a > b) ? 1 : 0));
-                    },
-
-                    "hidden-number-stats-desc": function (a, b) {
-                        return ((a < b) ? 1 : ((a > b) ? -1 : 0));
-                    }
-                });
-
                 if (self.isAdmin) {
 
-                    var $adminUserStatsTable = $('<table>').addClass('table').css('width', '100%');
-                    var $adminRecentRunsTable = $('<table>').addClass('table').css('width', '100%');
+                    var $adminRecentRunsFilterContainer = $('<div>')
+                      .addClass('row')
+                      .css('margin-bottom', '10px')
+                      .append(
+                        $.jqElem('div')
+                          .addClass('col-sm-1')
+                          .append(
+                            $('<label>')
+                              .append(
+                                $('<input>')
+                                  .attr('type', 'checkbox')
+                                  .addClass('form-check-input')
+                              )
+                              .append(' Finished ')
+                          )
+                      )
+                      .append(
+                        $.jqElem('div')
+                          .addClass('col-sm-1')
+                          .append(
+                            $('<label>')
+                              .append(
+                                $('<input>')
+                                  .attr('type', 'checkbox')
+                                  .addClass('form-check-input')
+                              )
+                              .append(' Queued ')
+                          )
+                      )
+                      .append(
+                        $.jqElem('div')
+                          .addClass('col-sm-1')
+                          .append(
+                            $('<label>')
+                              .append(
+                                $('<input>')
+                                  .attr('type', 'checkbox')
+                                  .addClass('form-check-input')
+                              )
+                              .append(' Running ')
+                          )
+                      )
+                      .append(
+                        $.jqElem('div')
+                          .addClass('col-sm-1')
+                          .append(
+                            $('<label>')
+                              .append(
+                                $('<input>')
+                                  .attr('type', 'checkbox')
+                                  .addClass('form-check-input')
+                              )
+                              .append(' Success ')
+                          )
+                      )
+                      .append(
+                        $.jqElem('div')
+                          .addClass('col-sm-1')
+                          .append(
+                            $('<label>')
+                              .append(
+                                $('<input>')
+                                  .attr('type', 'checkbox')
+                                  .addClass('form-check-input')
+                              )
+                              .append(' Error ')
+                          )
+                      )
+                      .append(
+                        $.jqElem('div')
+                          .addClass('col-sm-2 col-sm-offset-5')
+                          .append(
+                            $.jqElem('select')
+                              .addClass('form-control')
+                              .append( $.jqElem('option').append('Last 48 hours') )
+                              .append( $.jqElem('option').append('Last week') )
+                              .append( $.jqElem('option').append('Last month') )
+                              .append( $.jqElem('option').append('Custom') )
+                          )
+                      )
+                    ;
+
+
+                    // prep the container + data for admin recent runs stats
+                    var $adminRecentRunsContainer = $('<div>').css('width', '100%');
+
+                    var adminRecentRunsConfig = {
+                      rowsPerPage : 50,
+                      headers : [
+                        { text : 'User', id : 'user_id', isSortable : true },
+                        { text : 'App ID', id : 'app_id', isSortable : true },
+                        { text : 'Job ID', id : 'job_id', isSortable : true },
+                        { text : 'Module', id : 'app_module_name', isSortable : true },
+                        { text : 'Submission Time', id : 'creation_time', isSortable : true },
+                        { text : 'Start Time', id : 'exec_start_time', isSortable : true },
+                        { text : 'End Time', id : 'finish_time', isSortable : true },
+                        { text : 'Run Time', id : 'run_time', isSortable : true },
+                        { text : 'Status', id : 'result', isSortable : true },
+                      ],
+                    };
+
+                    var adminRecentRunsRestructuredRows = self.restructureRows(adminRecentRunsConfig, self.adminRecentRuns);
+
+                    var $adminRecentRunsTable = new DynamicTable($adminRecentRunsContainer,
+                      {
+                        headers : adminRecentRunsConfig.headers,
+                        rowsPerPage : adminRecentRunsConfig.rowsPerPage,
+                        enableDownload : false,
+                        updateFunction : self.createDynamicUpdateFunction(adminRecentRunsConfig, adminRecentRunsRestructuredRows),
+                        rowFunction : function($row) {
+
+                          self.reformatDateInTD( $row.children().eq(4) );
+                          self.reformatDateInTD( $row.children().eq(5) );
+                          self.reformatDateInTD( $row.children().eq(6) );
+                          self.reformatIntervalInTD( $row.children().eq(7) );
+
+                          return $row;
+                        }
+                      }
+                    );
+                    // done prep the container + data for admin recent runs stats
+
+
+                    // prep the container + data for admin user stats
+                    var $adminUserStatsContainer = $('<div>').css('width', '100%');
+
+                    var adminUserStatsConfig = {
+                      rowsPerPage : 50,
+                      headers : [
+                        { text : 'User', id : 'u', isSortable : true },
+                        { text : 'App ID', id : 'id', isSortable : true },
+                        { text : 'Module', id : 'module', isSortable : true },
+                        { text : 'Total Runs', id : 'n', isSortable : true },
+                      ],
+                    };
+
+                    var adminUserStatsRestructuredRows = self.restructureRows(adminUserStatsConfig, self.adminStats);
+
+                    var $adminUserStatsTable = new DynamicTable($adminUserStatsContainer,
+                      {
+                        headers : adminUserStatsConfig.headers,
+                        rowsPerPage : adminUserStatsConfig.rowsPerPage,
+                        enableDownload : false,
+                        updateFunction : self.createDynamicUpdateFunction(adminUserStatsConfig, adminUserStatsRestructuredRows)
+                      }
+                    );
+                    // done prep the container + data for admin recent runs stats
 
 
                     var $adminContainer = $('<div>').addClass('container-fluid')
                         .append($('<div>').addClass('row')
                             .append($('<div>').addClass('col-md-12')
                                 .append('<h4>(Admin View) Recent Runs (completed in last 48h):</h4>')
-                                .append($adminRecentRunsTable)
+                                .append( $adminRecentRunsFilterContainer )
+                                .append( $adminRecentRunsContainer)
                                 .append('<br><br>')
                                 .append('<h4>(Admin View) User Run Summary:</h4>')
-                                .append($adminUserStatsTable)
+                                .append($adminUserStatsContainer)
                                 .append('<br><br>')
                                 .append('<h4>Public Stats:</h4>')));
-
-                    var adminRecentRunsTblSettings = {
-                        "bFilter": true,
-                        "sPaginationType": "full_numbers",
-                        "iDisplayLength": 50,
-                        "sDom": 'ft<ip>',
-                        "aaSorting": [
-                            [3, "dsc"]
-                        ],
-                        "columns": [
-                            { sTitle: 'User', data: "user_id" },
-                            { sTitle: "App Id", data: "app_id" },
-                            { sTitle: "Job Id", data: "job_id" },
-                            { sTitle: "Module", data: "app_module_name" },
-                            { sTitle: "Submission Time", data: "creation_time", mRender : renderDate },
-                            { sTitle: "Start Time", data: "exec_start_time", mRender : renderDate },
-                            { sTitle: "End Time", data: "finish_time", mRender : renderDate },
-                            { sTitle: "Run Time", data: "run_time" },
-                            { sTitle: "Result", data: "result", className: "job-log" },
-                        ],
-                        "columnDefs": [
-                            { "type": "hidden-number-stats", targets: [7] }
-                        ],
-                        "data": self.adminRecentRuns,
-                        fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-                            $('td:eq(8)', nRow).find('.btn').on('click', function (e) {
-                                var row = renderedTable.row(nRow);
-                                if (row.child.isShown()) {
-                                    row.child.hide();
-                                } else {
-                                    row.child(self.renderJobLog(aData.job_id)).show();
-                                }
-                            })
-                        }
-                    };
-                    var renderedTable = $adminRecentRunsTable.DataTable(adminRecentRunsTblSettings);
-                    $adminRecentRunsTable.find('th').css('cursor', 'pointer');
-
-                    //
-                    // $adminRecentRunsTable.find('tbody').on('click', 'td.job-log', function() {
-                    //     var tr = $(this).closest('tr');
-                    //     var row = renderedTable.row('tr');
-                    //     if (row.child.isShown()) {
-                    //         row.child.hide();
-                    //         tr.removeClass('shown');
-                    //     } else {
-                    //         row.child("i'm a log! job id " + (row.data())['job_id']).show();
-                    //         tr.addClass('shown');
-                    //     }
-                    // })
-
-
-                    var adminUserStatsTblSettings = {
-                        "bFilter": true,
-                        "sPaginationType": "full_numbers",
-                        "iDisplayLength": 50,
-                        "sDom": 'ft<ip>',
-                        "aaSorting": [
-                            [3, "dsc"],
-                            [1, "asc"]
-                        ],
-                        "columns": [
-                            { sTitle: 'User', data: "u" },
-                            { sTitle: "App Id", data: "id" },
-                            { sTitle: "Module", data: "module" },
-                            { sTitle: "Total Runs", data: "n" }
-                        ],
-                        "data": self.adminStats
-                    };
-                    $adminUserStatsTable.DataTable(adminUserStatsTblSettings);
-                    $adminUserStatsTable.find('th').css('cursor', 'pointer');
 
                     self.$basicStatsDiv.append($adminContainer);
 
                 }
 
+                // prep the container + data for basic stats
+                var $basicStatsContainer = $('<div>').css('width', '100%');
 
-                var $table = $('<table>').addClass('table').css('width', '100%');
+                var basicStatsConfig = {
+                  rowsPerPage : 50,
+                  headers : [
+                    { text : 'ID', id : 'id', isSortable : true },
+                    { text : 'Module', id : 'module', isSortable : true },
+                    { text : 'Total Runs', id : 'nCalls', isSortable : true },
+                    { text : 'Errors', id : 'nErrors', isSortable : true },
+                    { text: "Success %", id: "success", isSortable : true },
+                    { text: "Avg Run Time", id: "meanRunTime", isSortable : true },
+                    { text: "Avg Queue Time", id: "meanQueueTime", isSortable : true },
+                    { text: "Total Run Time", id: "totalRunTime", isSortable : true },
+                  ],
+                };
+
+                var basicStatsRestructuredRows = self.restructureRows(basicStatsConfig, self.allStats);
+
+                var $basicStatsTable = new DynamicTable($basicStatsContainer,
+                  {
+                    headers : basicStatsConfig.headers,
+                    rowsPerPage : basicStatsConfig.rowsPerPage,
+                    enableDownload : false,
+                    updateFunction : self.createDynamicUpdateFunction(basicStatsConfig, basicStatsRestructuredRows),
+                    rowFunction : function($row) {
+
+                      self.reformatIntervalInTD( $row.children().eq(5) );
+                      self.reformatIntervalInTD( $row.children().eq(6) );
+                      self.reformatIntervalInTD( $row.children().eq(7) );
+
+                      return $row;
+                    }
+                  }
+                );
+                // done prep the container + id for basic stats
 
                 var $container = $('<div>').addClass('container-fluid')
                     .append($('<div>').addClass('row')
                         .append($('<div>').addClass('col-md-12')
-                            .append($table)));
-
-                var tblSettings = {
-                    "bFilter": true,
-                    "sPaginationType": "full_numbers",
-                    "iDisplayLength": 50,
-                    "sDom": 'ft<ip>',
-                    "aaSorting": [
-                        [2, "dsc"],
-                        [1, "asc"]
-                    ],
-                    "columns": [
-                        { sTitle: 'ID', data: "id" },
-                        { sTitle: "Module", data: "module" },
-                        { sTitle: "Total Runs", data: "nCalls" },
-                        { sTitle: "Errors", data: "nErrors" },
-                        { sTitle: "Success %", data: "success" },
-                        { sTitle: "Avg Run Time", data: "meanRunTime" },
-                        { sTitle: "Avg Queue Time", data: "meanQueueTime" },
-                        { sTitle: "Total Run Time", data: "totalRunTime" }
-                    ],
-                    "columnDefs": [
-                        { "type": "hidden-number-stats", targets: [5, 6, 7] }
-                    ],
-                    "data": self.allStats
-                };
-                $table.DataTable(tblSettings);
-                $table.find('th').css('cursor', 'pointer');
+                            .append($basicStatsContainer)));
 
                 self.$basicStatsDiv.append($container);
             },
@@ -344,9 +509,9 @@ define([
                                 nCalls: s.number_of_calls,
                                 nErrors: s.number_of_errors,
                                 success: successPercent.toPrecision(3),
-                                meanRunTime: '<!--' + meanRunTime + '-->' + self.getNiceDuration(meanRunTime),
-                                meanQueueTime: '<!--' + meanQueueTime + '-->' + self.getNiceDuration(meanQueueTime),
-                                totalRunTime: '<!--' + s.total_exec_time + '-->' + self.getNiceDuration(s.total_exec_time),
+                                meanRunTime: meanRunTime,
+                                meanQueueTime: meanQueueTime,
+                                totalRunTime: s.total_exec_time,
                             }
                             self.allStats.push(stat);
                         }
@@ -387,7 +552,7 @@ define([
 
                 return self.catalog.get_exec_aggr_table({})
                     .then(function (adminStats) {
-
+console.log("RAW ADMIN STATS", adminStats);
                         self.adminStats = [];
 
                         for (var k = 0; k < adminStats.length; k++) {
@@ -436,11 +601,12 @@ define([
 
                 return self.catalog.get_exec_raw_stats({ begin: seconds })
                     .then(function (data) {
+                    console.log("RAW DATA IS :", data);
                         self.adminRecentRuns = [];
                         for (var k = 0; k < data.length; k++) {
                             var rt = data[k]['finish_time'] - data[k]['exec_start_time'];
                             data[k]['user_id'] = '<a href="#people/' + data[k]['user_id'] + '">' + data[k]['user_id'] + '</a>'
-                            data[k]['run_time'] = '<!--' + rt + '-->' + self.getNiceDuration(rt);
+                            data[k]['run_time'] = rt;
 
                             if (data[k]['is_error']) {
                                 data[k]['result'] = '<span class="label label-danger">Error</span>';
