@@ -380,6 +380,12 @@ define([
                     }
                 }
                 break;
+            case 'bool':
+            case 'boolean':
+                if (valueUnwrapped) {
+                    return 'true';
+                }
+                return 'false';
             case 'text':
             case 'string':
             default:
