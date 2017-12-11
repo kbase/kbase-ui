@@ -167,7 +167,7 @@ plugins:
     -
         name: jgi-search
         globalName: kbase-ui-plugin-jgi-search
-        version: 0.23.2
+        version: 0.23.3
         cwd: src/plugin
         source:
             bower: {}
@@ -205,6 +205,13 @@ plugins:
         version: 0.3.8
         cwd: src/plugin
         source:
+            bower: {}
+    -
+        name: staging-browser
+        globalName: kbase-ui-plugin-staging-browser
+        version: 0.1.0
+        cwd: src/plugin
+        source: 
             bower: {}
     # -
     #     name: profile-admin
