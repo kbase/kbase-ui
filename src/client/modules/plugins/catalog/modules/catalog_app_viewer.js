@@ -1,16 +1,12 @@
-/*global
- define
- */
-/*jslint
- browser: true,
- white: true
- */
 define([
     'bluebird',
-    'kb_common/dom',
     'kb_common/html',
     'kb_widget/widgetSet'
-], function (Promise, DOM, html, WidgetSet) {
+], function (
+    Promise, 
+    html, 
+    WidgetSet
+) {
     'use strict';
     function widget(config) {
         var mount, container, runtime = config.runtime,
@@ -20,8 +16,7 @@ define([
         // Mini widget manager
         // TODO: the jquery name should be stored in the widget definition not here.
         function render() {
-
-            // the catalog home page is simple the catalog browser
+            // the catalog home page is simply the catalog browser
             var div=html.tag('div');
             return div({
                 id: widgetSet.addWidget('catalog_app_viewer_widget', 
@@ -37,19 +32,14 @@ define([
         // Widget Interface Implementation
 
         function init(config) {
-            return Promise.try(function () {
-                return widgetSet.init(config);
-            });
+            return widgetSet.init(config);
         }
         function attach(node) {
-            runtime.send('ui', 'setTitle', 'App Catalog');
-            return Promise.try(function () {
-                mount = node;
-                container = mount.appendChild(DOM.createElement('div'));
-                container.innerHTML = layout;
-                // mount.appendChild(container);
-                return widgetSet.attach();
-            });
+            // runtime.send('ui', 'setTitle', 'App Catalog');
+            mount = node;
+            container = mount.appendChild(document.createElement('div'));
+            container.innerHTML = layout;
+            return widgetSet.attach();
         }
         function start(params) {
             return Promise.try(function () {
@@ -91,9 +81,6 @@ define([
     }
 
     return {
-        make: function (config) {
-            return widget(config);
-        }
+        make: widget
     };
-
 });

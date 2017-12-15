@@ -6,7 +6,14 @@ define([
     '../catalog_util',
     'kb_widget/legacy/authenticatedWidget',
     'bootstrap',
-], function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil) {
+], function (
+    $, 
+    Promise, 
+    NarrativeMethodStore, 
+    Catalog, 
+    CatalogUtil
+) {
+    'use strict';
     $.KBWidget({
         name: 'KBaseCatalogFunctionViewer',
         parent: 'kbaseAuthenticatedWidget',
@@ -71,14 +78,12 @@ define([
             return this;
         },
 
-
         setupClients: function () {
             this.catalog = new Catalog(
-                this.runtime.getConfig('services.catalog.url'), { token: this.runtime.service('session').getAuthToken() }
-            );
+                this.runtime.getConfig('services.catalog.url'), { 
+                    token: this.runtime.service('session').getAuthToken() 
+                });
         },
-
-
 
         getFunctionInfo: function () {
             var self = this;
@@ -86,7 +91,7 @@ define([
             var params = {
                 module_name: self.module,
                 function_id: self.function_id
-            }
+            };
             if (self.ver) {
                 if (self.ver === 'dev' || self.ver === 'beta' || self.ver === 'release') {
                     params['release_tag'] = self.ver;
@@ -104,6 +109,10 @@ define([
                         return;
                     }
                     self.functionInfo = info_list[0];
+                    // Sorry that this is buried down in here.
+                    if (self.functionInfo) {
+                        self.runtime.send('ui', 'setTitle', [self.functionInfo.info.name, 'Function Catalog'].join(' | '));
+                    }
                     return self.getModuleInfo(self.functionInfo.info.module_name, self.functionInfo.info.git_commit_hash);
                 })
                 .catch(function (err) {
@@ -114,14 +123,13 @@ define([
                 });
         },
 
-
         getModuleInfo: function (module_name, git_commit_hash) {
             var self = this;
             return self.catalog.get_module_version({
-                    module_name: module_name,
-                    git_commit_hash: git_commit_hash,
-                    'include_compilation_report': 1
-                })
+                module_name: module_name,
+                git_commit_hash: git_commit_hash,
+                'include_compilation_report': 1
+            })
                 .then(function (module_version) {
                     if (!module_version === 0) {
                         console.error('ERROR: could not fetch module information');
@@ -138,8 +146,7 @@ define([
                 });
         },
 
-
-        initMainPanel: function ($appListPanel, $moduleListPanel) {
+        initMainPanel: function () {
             var $mainPanel = $('<div>').addClass('container-fluid');
 
             var $header = $('<div>').css('margin', '1em');
@@ -191,9 +198,7 @@ define([
             this.$errorPanel.show();
         },
 
-
         renderInfo: function () {
-
             var self = this;
 
             var info = self.functionInfo.info;
@@ -204,28 +209,23 @@ define([
             // HEADER - contains logo, title, module link, authors
             var $header = $('<div>').addClass('kbcb-app-page');
             var $topDiv = $('<div>').addClass('kbcb-app-page-header');
-            var $logoSpan = $('<div>').addClass('kbcb-app-page-logo');
 
             var $titleSpan = $('<div>').addClass('kbcb-app-page-title-panel');
 
             var version_string = info.version;
 
             if (module_version.release_tags) {
-                version_string += ' ' + module_version.release_tags.join(', ');;
+                version_string += ' ' + module_version.release_tags.join(', ');
             }
 
             $titleSpan.append($('<div>').addClass('kbcb-app-page-title').append(info.name).append(
                 $('<span>').css({ 'font-size': '0.5em', 'margin-left': '0.5em' })
-                .append(version_string)));
+                    .append(version_string)));
 
 
             $titleSpan.append($('<div>').addClass('kbcb-app-page-module').append(
                 $('<a href="#catalog/modules/' + info.module_name + '">')
-                .append(info.module_name)));
-
-
-
-
+                    .append(info.module_name)));
 
             if (info.authors.length > 0) {
                 var $authorDiv = $('<div>').addClass('kbcb-app-page-authors').append('by ');
@@ -243,21 +243,17 @@ define([
                 $titleSpan.append($authorDiv);
             }
 
-
-
             $header.append(
                 $topDiv
-                .append($('<table>').css('width', '100%')
-                    .append($('<tr>')
-                        .append($('<td>')
-                            .css({ 'width': '20px', 'vertical-align': 'top' })
-                            .append()) // logo would go here..
-                        .append($('<td>')
-                            .append($titleSpan))
-                    )));
+                    .append($('<table>').css('width', '100%')
+                        .append($('<tr>')
+                            .append($('<td>')
+                                .css({ 'width': '20px', 'vertical-align': 'top' })
+                                .append()) // logo would go here..
+                            .append($('<td>')
+                                .append($titleSpan))
+                        )));
 
-
-            var $footerRow = $('<div>').addClass('row');
 
             // spacer used to be favorites area...
             var $spacer = $('<div>').addClass('col-xs-2');
@@ -271,35 +267,31 @@ define([
             $header.append(
                 $('<div>').addClass('kbcb-app-page-stats-bar container').append(
                     $('<div>').addClass('row')
-                    .append($spacer)
-                    .append($nRuns)));
-
+                        .append($spacer)
+                        .append($nRuns)));
 
             self.$headerPanel.append($header);
 
-
             // show subtitle information just below the other header information
-            var $short_description = $('<div>').addClass('kbcb-app-page-subtitle').append(info.short_description)
+            var $short_description = $('<div>').addClass('kbcb-app-page-subtitle').append(info.short_description);
             self.$headerPanel.append($short_description);
-
-
 
             self.$descriptionPanel
                 .append(
                     $.jqElem('div')
-                    .addClass('row')
-                    .css('width', '95%')
-                    .append(
-                        $.jqElem('div')
-                        .addClass('col-md-12')
+                        .addClass('row')
+                        .css('width', '95%')
                         .append(
                             $.jqElem('div')
-                            .append($.jqElem('hr'))
-                            .append(description)
+                                .addClass('col-md-12')
+                                .append(
+                                    $.jqElem('div')
+                                        .append($.jqElem('hr'))
+                                        .append(description)
+                                )
                         )
-                    )
                 )
-                .append($.jqElem('hr'))
+                .append($.jqElem('hr'));
 
             if (self.module_version) {
                 var git_url = self.module_version.git_url;
@@ -319,8 +311,6 @@ define([
                         if (self.module_version.compilation_report.function_places &&
                             self.module_version.compilation_report.impl_file_path) {
 
-                            var start = 0;
-                            var stop = 0;
                             if (self.module_version.compilation_report.function_places[self.functionInfo.info.function_id]) {
                                 var places = self.module_version.compilation_report.function_places[self.functionInfo.info.function_id];
                                 var impl_path = self.module_version.compilation_report.impl_file_path;
@@ -329,27 +319,19 @@ define([
                                 var implUrl = git_url + '/tree/' + self.functionInfo.info.git_commit_hash +
                                     '/' + impl_path + '#L' + places.start_line + '-' + places.end_line;
                                 $gitDiv.append('<b>Implementation:</b>&nbsp; &nbsp; <a href="' + implUrl + '" target="_blank">' + implUrl + '</a><br>');
-
-
                             }
                         }
                     }
-
-
-
                 } else {
                     $gitDiv.append('<b>Git URL:</b> ' + git_url + '<br>');
-                    $gitDiv.append('<b>Source Commit:</b> ' + version.git_commit_hash + '<br>');
+                    $gitDiv.append('<b>Source Commit:</b> ' + self.module_version.git_commit_hash + '<br>');
                 }
                 self.$infoPanel.append($('<h3>').append('Function Source Files')).append($gitDiv);
             }
         },
 
-
-
         renderParseInfo: function () {
             var self = this;
-
 
             if (self.functionInfo.info.kidl) {
                 if (self.functionInfo.info.kidl.parse) {
@@ -372,7 +354,9 @@ define([
                                     type = tokens[1];
                                 }
                             }
-                            if (i > 0) { inputs += ', ' }
+                            if (i > 0) { 
+                                inputs += ', ';
+                            }
                             inputs += type;
                             if (parse.input[i].comment) {
                                 has_input_comments = true;
@@ -385,16 +369,18 @@ define([
                     var outputs = '';
                     var output_comments = $('<div>').css({ 'margin-left': '1em' });
                     var has_output_comments = false;
-                    for (var i = 0; i < parse.output.length; i++) {
+                    for (i = 0; i < parse.output.length; i++) {
                         if (parse.output[i].type) {
-                            var type = parse.output[i].type;
-                            var tokens = type.split('.');
+                            type = parse.output[i].type;
+                            tokens = type.split('.');
                             if (tokens.length === 2) {
                                 if (tokens[0] === self.functionInfo.info.module_name) {
                                     type = tokens[1];
                                 }
                             }
-                            if (i > 0) { inputs += ', ' }
+                            if (i > 0) { 
+                                inputs += ', ';
+                            }
                             outputs += type;
                             if (parse.output[i].comment) {
                                 has_output_comments = true;
@@ -435,10 +421,9 @@ define([
 
         escapeHtml: function (text) {
             'use strict';
-            return text.replace(/[\"&<>]/g, function (a) {
+            return text.replace(/["&<>]/g, function (a) {
                 return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
-            }).replace(/(?:\r\n|\r|\n)/g, '<br />');;
+            }).replace(/(?:\r\n|\r|\n)/g, '<br />');
         }
-
     });
 });

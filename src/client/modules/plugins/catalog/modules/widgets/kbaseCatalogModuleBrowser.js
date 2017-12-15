@@ -6,7 +6,13 @@ define([
     'datatables',
     'kb_widget/legacy/authenticatedWidget',
     'bootstrap'
-], function ($, Promise, Catalog, CatalogUtil) {
+], function (
+    $, 
+    Promise, 
+    Catalog,
+    CatalogUtil
+) {
+    'use strict';
     $.KBWidget({
         name: 'KBaseCatalogModuleBrowser',
         parent: 'kbaseAuthenticatedWidget', // todo: do we still need th
@@ -56,7 +62,6 @@ define([
         render: function () {
             var self = this;
 
-
             if (self.myModuleList.length > 0) {
 
                 self.$moduleListPanel.append($('<div>').append($('<h4>').append('My Modules')));
@@ -69,10 +74,6 @@ define([
             var $moduleTable = self.renderTable(self.moduleList);
             self.$moduleListPanel.append($moduleTable);
             self.$moduleListPanel.append($('<div>').css('height', '100px'));
-
-
-
-
         },
 
         renderTable: function (moduleData) {
@@ -116,7 +117,6 @@ define([
             return $container;
         },
 
-
         setupClients: function () {
             this.catalog = new Catalog(
                 this.runtime.getConfig('services.catalog.url'), { token: this.runtime.service('session').getAuthToken() }
@@ -135,9 +135,8 @@ define([
             return [$mainPanel, $moduleListPanel];
         },
 
-
         populateModuleList: function () {
-            var self = this
+            var self = this;
 
             var moduleSelection = {
                 include_released: 1,
