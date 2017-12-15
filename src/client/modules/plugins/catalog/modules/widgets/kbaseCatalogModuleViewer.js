@@ -718,8 +718,9 @@ define([
                         ModuleVersionInfo beta;
                         ModuleVersionInfo dev;
                     } ModuleInfo;*/
-                    self.runtime.send('ui', 'setTitle', [info.module_name, 'Module Catalog'].join(' | '));
-                    console.log('got module info...', info);
+                    if (info) {
+                        self.runtime.send('ui', 'setTitle', [info.module_name, 'Module Catalog'].join(' | '));
+                    }
                     self.moduleDetails.info = info;
                     var git_url = self.moduleDetails.info.git_url;
                     self.moduleDetails.info['original_git_url'] = self.moduleDetails.info.git_url;
