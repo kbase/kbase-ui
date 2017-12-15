@@ -1,28 +1,23 @@
-/*global
- define
- */
-/*jslint
- browser: true,
- white: true
- */
 define([
     'bluebird',
     'kb_common/dom',
     'kb_common/html',
     'kb_widget/widgetSet'
-], function (Promise, DOM, html, WidgetSet) {
+], function (
+    Promise, 
+    DOM, 
+    html, 
+    WidgetSet
+) {
     'use strict';
     function widget(config) {
         var mount, container, runtime = config.runtime,
             widgetSet = WidgetSet.make({runtime: runtime}),
             layout;
+        var t = html.tag,
+            div = t('div');
 
-        // Mini widget manager
-        // TODO: the jquery name should be stored in the widget definition not here.
         function render() {
-
-            // the catalog home page is simple the catalog browser
-            var div=html.tag('div');
             return div({
                 id: widgetSet.addWidget('catalog_module_viewer_widget', 
                     {
@@ -42,7 +37,6 @@ define([
             });
         }
         function attach(node) {
-            runtime.send('ui', 'setTitle', 'Module Catalog');
             return Promise.try(function () {
                 mount = node;
                 container = mount.appendChild(DOM.createElement('div'));

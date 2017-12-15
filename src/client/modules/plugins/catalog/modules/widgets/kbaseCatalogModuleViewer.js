@@ -10,7 +10,16 @@ define([
     './kbaseCatalogRegistration',
     'kb_widget/legacy/authenticatedWidget',
     'bootstrap'
-], function ($, Promise, NarrativeMethodStore, Catalog, CatalogUtil, AppCard, FunctionCard) {
+], function (
+    $, 
+    Promise, 
+    NarrativeMethodStore, 
+    Catalog, 
+    CatalogUtil, 
+    AppCard, 
+    FunctionCard
+) {
+    'use strict';
     $.KBWidget({
         name: 'KBaseCatalogModuleViewer',
         parent: 'kbaseAuthenticatedWidget', // todo: do we still need th
@@ -165,7 +174,6 @@ define([
             $header.append($owners);
             self.$headerPanel.append($header);
 
-
             // ADMIN PANEL IF OWNER
             if (isOwner) {
                 self.$adminPanel.append('<b>You are a module owner</b><br>');
@@ -175,12 +183,8 @@ define([
                 self.$adminPanel.append(self.renderModuleAdminDiv());
             }
 
-
             //DESCRIPTION PANEL
             self.$descriptionPanel.append($('<div>').html(info.description));
-
-
-
 
             //VERSIONS PANEL
             var $versionDiv = $('<div>');
@@ -278,7 +282,6 @@ define([
                 $verDiv.append('none<br>');
             }
 
-
             $verDiv.append('<b>Functions Exposed:</b> ');
             if (version.local_functions) {
                 if (version.local_functions.length > 0) {
@@ -299,9 +302,6 @@ define([
 
             return $verDiv;
         },
-
-
-
 
         renderModuleAdminDiv: function () {
             var self = this;
@@ -327,7 +327,6 @@ define([
                     }
                 }));
 
-
             $adminContent.append('<br><a href="#catalog/status/' +
                 self.moduleDetails.info.module_name + '">View recent registrations</a><br>')
 
@@ -341,7 +340,6 @@ define([
                     $stateTable.append('<tr><th width="' + width + '">' + key + '</th><td>' + JSON.stringify(state[key]) + '</td></tr>');
                 }
             }
-
 
             $adminContent.append(
                 $('<div>')
@@ -397,8 +395,6 @@ define([
             return $adminDiv;
         },
 
-
-
         renderRegisterDiv: function () {
             var self = this;
             var $logWidgetDiv = $('<div>')
@@ -411,8 +407,6 @@ define([
             });
             return $logWidgetDiv;
         },
-
-
 
         renderApps: function () {
             var self = this;
@@ -445,19 +439,18 @@ define([
             }
         },
 
-
-
         setupClients: function () {
             this.catalog = new Catalog(
-                this.runtime.getConfig('services.catalog.url'), { token: this.runtime.service('session').getAuthToken() }
-            );
+                this.runtime.getConfig('services.catalog.url'), { 
+                    token: this.runtime.service('session').getAuthToken() 
+                });
             this.nms = new NarrativeMethodStore(
-                this.runtime.getConfig('services.narrative_method_store.url'), { token: this.runtime.service('session').getAuthToken() }
-            );
+                this.runtime.getConfig('services.narrative_method_store.url'), { 
+                    token: this.runtime.service('session').getAuthToken() 
+                });
             this.nms_base_url = this.runtime.getConfig('services.narrative_method_store.url');
             this.nms_base_url = this.nms_base_url.substring(0, this.nms_base_url.length - 3)
         },
-
 
         initMainPanel: function ($appListPanel, $moduleListPanel) {
             var $mainPanel = $('<div>').addClass('container-fluid');
@@ -615,8 +608,6 @@ define([
                 });
         },
 
-
-
         getAppInfo: function () {
             var self = this;
 
@@ -703,9 +694,7 @@ define([
                     console.error(err);
                     self.showError(err);
                 });
-
         },
-
 
         getModuleInfo: function () {
             var self = this;
@@ -729,6 +718,8 @@ define([
                         ModuleVersionInfo beta;
                         ModuleVersionInfo dev;
                     } ModuleInfo;*/
+                    self.runtime.send('ui', 'setTitle', [info.module_name, 'Module Catalog'].join(' | '));
+                    console.log('got module info...', info);
                     self.moduleDetails.info = info;
                     var git_url = self.moduleDetails.info.git_url;
                     self.moduleDetails.info['original_git_url'] = self.moduleDetails.info.git_url;
@@ -748,7 +739,6 @@ define([
                     self.showError(err);
                 });
         },
-
 
         getModuleVersions: function () {
             var self = this
@@ -806,7 +796,6 @@ define([
                     self.showError(err);
                 });
         },
-
 
         showError: function (error) {
             this.$errorPanel.empty();

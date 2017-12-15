@@ -154,7 +154,7 @@ define([
                 this.runtime.getConfig('services.narrative_method_store.url'), { token: this.runtime.service('session').getAuthToken() }
             );
             this.nms_base_url = this.runtime.getConfig('services.narrative_method_store.url');
-            this.nms_base_url = this.nms_base_url.substring(0, this.nms_base_url.length - 3)
+            this.nms_base_url = this.nms_base_url.substring(0, this.nms_base_url.length - 3);
         },
 
         getAppFullInfo: function () {
@@ -192,6 +192,10 @@ define([
 
             return self.nms.get_method_spec(params)
                 .then(function (specs) {
+                    // A bit of a hack to bury setting the page title here.
+                    if (specs[0]) {
+                        self.runtime.send('ui', 'setTitle', [specs[0].info.name, 'App Catalog'].join(' | '));
+                    }
                     self.appSpec = specs[0];
                 });
         },
@@ -242,7 +246,7 @@ define([
                 });
         },
 
-        initMainPanel: function ($appListPanel, $moduleListPanel) {
+        initMainPanel: function () {
             var $mainPanel = $('<div>').addClass('container-fluid');
 
             var $header = $('<div>').css('margin', '1em');
@@ -316,12 +320,12 @@ define([
                             /*.append($('<tr>')
                                 .append($('<th>').append('NMS Store URL  '))
                                 .append($('<td>').append(self.runtime.getConfig('services.narrative_method_store.url'))))*/
-                            .append($('<tr>')
-                                .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Yaml/Spec Location '))
-                                .append($('<td>').append('<a href="' + url + '" target="_blank">' + url + '</a>')))
-                            .append($('<tr>')
-                                .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Method Spec Commit  '))
-                                .append($('<td>').append(commit)))
+                                .append($('<tr>')
+                                    .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Yaml/Spec Location '))
+                                    .append($('<td>').append('<a href="' + url + '" target="_blank">' + url + '</a>')))
+                                .append($('<tr>')
+                                    .append($('<th style = "vertical-align : top; padding-right : 5px">').append('Method Spec Commit  '))
+                                    .append($('<td>').append(commit)))
                         );
                     });
             } else {
@@ -334,23 +338,23 @@ define([
                         self.$infoPanel.append('<br>');
                         self.$infoPanel.append(
                             $('<table>').css({ border: '1px solid #bbb', margin: '10px' })
-                            .append($('<tr>')
-                                .append($('<th style = "vertical-align : top;" >').css('padding', p).append('App Specification: '))
-                                .append($('<td>').css('padding', p).append('<a href="' + url + '" target="_blank">' + url + '</a>')))
-                            .append($('<tr>')
-                                .append($('<th style = "vertical-align : top;" >').css('padding', p).append('Module Commit:  '))
-                                .append($('<td>').css('padding', p).append(self.moduleDetails.info.git_commit_hash)))
+                                .append($('<tr>')
+                                    .append($('<th style = "vertical-align : top;" >').css('padding', p).append('App Specification: '))
+                                    .append($('<td>').css('padding', p).append('<a href="' + url + '" target="_blank">' + url + '</a>')))
+                                .append($('<tr>')
+                                    .append($('<th style = "vertical-align : top;" >').css('padding', p).append('Module Commit:  '))
+                                    .append($('<td>').css('padding', p).append(self.moduleDetails.info.git_commit_hash)))
                         );
                     } else {
                         self.$infoPanel.append('<br>');
                         self.$infoPanel.append(
                             $('<table>').css({ border: '1px solid #bbb', margin: '10px' })
-                            .append($('<tr>')
-                                .append($('<th style = "vertical-align : top;" >').css('padding', p).append('Git URL: '))
-                                .append($('<td>').css('padding', p).append('<a href="' + self.moduleDetails.info.git_url + '" target="_blank">' + self.moduleDetails.info.git_url + '</a>')))
-                            .append($('<tr>')
-                                .append($('<th style = "vertical-align : top;" >').css('padding', p).append('Module Commit:  '))
-                                .append($('<td>').css('padding', p).append(self.moduleDetails.info.git_commit_hash)))
+                                .append($('<tr>')
+                                    .append($('<th style = "vertical-align : top;" >').css('padding', p).append('Git URL: '))
+                                    .append($('<td>').css('padding', p).append('<a href="' + self.moduleDetails.info.git_url + '" target="_blank">' + self.moduleDetails.info.git_url + '</a>')))
+                                .append($('<tr>')
+                                    .append($('<th style = "vertical-align : top;" >').css('padding', p).append('Module Commit:  '))
+                                    .append($('<td>').css('padding', p).append(self.moduleDetails.info.git_commit_hash)))
                         );
                     }
                 }
@@ -405,7 +409,7 @@ define([
                             var fav = self.favoritesList[k];
                             var lookup = fav.id;
                             if (fav.module_name_lc != 'nms.legacy') {
-                                lookup = fav.module_name_lc + '/' + lookup
+                                lookup = fav.module_name_lc + '/' + lookup;
                             }
                             if (self.appLookup[lookup]) {
                                 self.appLookup[lookup].turnOnStar();
@@ -421,7 +425,7 @@ define([
 
         onStar: false,
         starCount: null,
-        getStarCount: function (count) {
+        getStarCount: function () {
             if (this.starCount) return this.starCount;
             return 0;
         },
@@ -478,7 +482,7 @@ define([
             var params = {};
             if (info.module_name) {
                 params['module_name'] = info.module_name;
-                params['id'] = info.id.split('/')[1]
+                params['id'] = info.id.split('/')[1];
             } else {
                 params['id'] = info.id;
             }
@@ -589,21 +593,17 @@ define([
                 });
         },
 
-
-
         renderMethod: function () {
             var self = this;
             var m = self.appFullInfo;
             var spec = self.appSpec;
-
-
 
             // HEADER - contains logo, title, module link, authors
             var $header = $('<div>').addClass('kbcb-app-page');
             var $topDiv = $('<div>').addClass('kbcb-app-page-header');
             var $logoSpan = $('<div>').addClass('kbcb-app-page-logo');
             // add actual logos here
-            $logoSpan.append('<div class="fa-stack fa-3x"><i class="fa fa-square fa-stack-2x method-icon"></i><i class="fa fa-inverse fa-stack-1x fa-cube"></i></div>')
+            $logoSpan.append('<div class="fa-stack fa-3x"><i class="fa fa-square fa-stack-2x method-icon"></i><i class="fa fa-inverse fa-stack-1x fa-cube"></i></div>');
 
             // add actual logos here
             if (m.icon && self.nms_base_url) {
@@ -628,7 +628,7 @@ define([
 
             if (self.moduleDetails.info) {
                 $titleSpan.append($('<div>').addClass('kbcb-app-page-module').append(
-                        $('<a href="#catalog/modules/' + self.moduleDetails.info.module_name + '">')
+                    $('<a href="#catalog/modules/' + self.moduleDetails.info.module_name + '">')
                         .append(self.moduleDetails.info.module_name))
                     .append(' v.' + self.moduleDetails.info.version));
             }
@@ -653,17 +653,14 @@ define([
 
             $header.append(
                 $topDiv
-                .append($('<table>').css('width', '100%')
-                    .append($('<tr>')
-                        .append($('<td>')
-                            .css({ 'width': '150px', 'vertical-align': 'top' })
-                            .append($logoSpan))
-                        .append($('<td>')
-                            .append($titleSpan))
-                    )));
-
-
-            var $footerRow = $('<div>').addClass('row');
+                    .append($('<table>').css('width', '100%')
+                        .append($('<tr>')
+                            .append($('<td>')
+                                .css({ 'width': '150px', 'vertical-align': 'top' })
+                                .append($logoSpan))
+                            .append($('<td>')
+                                .append($titleSpan))
+                        )));
 
             var $starDiv = $('<div>').addClass('col-xs-2');
             var $star = $('<span>').addClass('kbcb-star').append('<i class="fa fa-star"></i>');
@@ -744,46 +741,17 @@ define([
             $header.append(
                 $('<div>').addClass('kbcb-app-page-stats-bar container').append(
                     $('<div>').addClass('row')
-                    .append($starDiv)
-                    .append($releaseTagsDiv)
-                    .append($nRuns)));
+                        .append($starDiv)
+                        .append($releaseTagsDiv)
+                        .append($nRuns)));
 
 
             self.$headerPanel.append($header);
 
 
             // SUBTITLE -  show subtitle information just below the other header information
-            var $subtitle = $('<div>').addClass('kbcb-app-page-subtitle').append(m.subtitle)
+            var $subtitle = $('<div>').addClass('kbcb-app-page-subtitle').append(m.subtitle);
             self.$headerPanel.append($subtitle);
-
-            //if (m['ver']) {
-            //$basicInfo.append('<div><strong>Version: </strong>&nbsp&nbsp'+m['ver']+"</div>");
-            //}
-
-            if (m.contact) {
-                /*$basicInfo
-                    .append('<div>')
-                    .append('<strong>Help or Questions? Contact: </strong>&nbsp&nbsp')
-                    .append(
-                        $.jqElem('a')
-                        .attr('href', 'mailto:' + m.contact)
-                        .append(m.contact))*/
-            }
-
-            var $topButtons =
-                $.jqElem('div')
-                .addClass('col-md-4')
-                .css('text-align', 'right')
-                .append(
-                    $.jqElem('div')
-                    .addClass('btn-group')
-                );
-
-
-            // $header.append($basicInfo);
-            //  $header.append($topButtons);
-
-            //  self.$headerPanel.append($header);
 
             if (m.screenshots && m.screenshots.length) {
                 var $ssPanel = $.jqElem('div');
@@ -793,30 +761,29 @@ define([
                         $ssPanel
                             .append(
                                 $.jqElem('a')
-                                .on('click', function (e) {
+                                    .on('click', function () {
+                                        var $img = $.jqElem('img')
+                                            .attr('src', self.nms_base_url + s.url)
+                                            .css('width', '100%');
 
-                                    var $img = $.jqElem('img')
-                                        .attr('src', self.nms_base_url + s.url)
-                                        .css('width', '100%');
+                                        var $prompt = $.jqElem('div').kbasePrompt({
+                                            body: $img
+                                        });
 
-                                    var $prompt = $.jqElem('div').kbasePrompt({
-                                        body: $img
-                                    });
+                                        $prompt.dialogModal()
+                                            .css('width', '100%');
 
-                                    $prompt.dialogModal()
-                                        .css('width', '100%');
+                                        $prompt.dialogModal().find('.modal-dialog')
+                                            .css('width', '100%');
 
-                                    $prompt.dialogModal().find('.modal-dialog')
-                                        .css('width', '100%');
-
-                                    $prompt.openPrompt();
-                                })
-                                .append(
-                                    $.jqElem('img')
-                                    .attr('src', self.nms_base_url + s.url)
-                                    .attr('width', '300')
-                                )
-                            )
+                                        $prompt.openPrompt();
+                                    })
+                                    .append(
+                                        $.jqElem('img')
+                                            .attr('src', self.nms_base_url + s.url)
+                                            .attr('width', '300')
+                                    )
+                            );
                     }
                 );
 
@@ -833,19 +800,19 @@ define([
                 self.$descriptionPanel
                     .append(
                         $.jqElem('div')
-                        .addClass('row')
-                        .css('width', '95%')
-                        .append(
-                            $.jqElem('div')
-                            .addClass('col-md-12')
+                            .addClass('row')
+                            .css('width', '95%')
                             .append(
                                 $.jqElem('div')
-                                .append($.jqElem('hr'))
-                                .append(d_text)
+                                    .addClass('col-md-12')
+                                    .append(
+                                        $.jqElem('div')
+                                            .append($.jqElem('hr'))
+                                            .append(d_text)
+                                    )
                             )
-                        )
                     )
-                    .append($.jqElem('hr'))
+                    .append($.jqElem('hr'));
             }
 
 
@@ -890,7 +857,7 @@ define([
 
                         if (sortedParams[ui_class].length === 0) {
                             return;
-                        };
+                        }
 
                         var $li = $.jqElem('li').append($.jqElem('h4').append(ucfirst(ui_class)));
                         var $ui_classList = $.jqElem('ul')
@@ -923,19 +890,19 @@ define([
                                 }
                                 $li.append(
                                     $.jqElem('ul')
-                                    .css('list-style-type', 'none')
-                                    .append(
-                                        $.jqElem('li')
+                                        .css('list-style-type', 'none')
                                         .append(
-                                            $.jqElem('b').append(param.ui_name)
+                                            $.jqElem('li')
+                                                .append(
+                                                    $.jqElem('b').append(param.ui_name)
+                                                )
+                                                .append(types)
+                                                .append(
+                                                    $.jqElem('ul')
+                                                        .css('list-style-type', 'none')
+                                                        .append($.jqElem('li').append(description))
+                                                )
                                         )
-                                        .append(types)
-                                        .append(
-                                            $.jqElem('ul')
-                                            .css('list-style-type', 'none')
-                                            .append($.jqElem('li').append(description))
-                                        )
-                                    )
                                 );
 
                                 $ui_classList.append($li);
@@ -949,11 +916,11 @@ define([
 
             if (spec.fixed_parameters && spec.fixed_parameters.length) {
 
-                var $parametersDiv =
+                $parametersDiv =
                     $.jqElem('div')
-                    .append($.jqElem('h4').append('Fixed parameters'));
+                        .append($.jqElem('h4').append('Fixed parameters'));
 
-                var $paramList = $.jqElem('ul')
+                $paramList = $.jqElem('ul')
                     .css('list-style-type', 'none')
                     .css('padding-left', '0px');
                 $parametersDiv.append($paramList);
@@ -964,18 +931,18 @@ define([
                         var $li = $.jqElem('li'); //.append('Parameter ' + (idx + 1)));
                         $li.append(
                             $.jqElem('ul')
-                            .css('list-style-type', 'none')
-                            .append(
-                                $.jqElem('li')
+                                .css('list-style-type', 'none')
                                 .append(
-                                    $.jqElem('b').append(param.ui_name)
+                                    $.jqElem('li')
+                                        .append(
+                                            $.jqElem('b').append(param.ui_name)
+                                        )
+                                        .append(
+                                            $.jqElem('ul')
+                                                .css('list-style-type', 'none')
+                                                .append($.jqElem('li').append(param.description))
+                                        )
                                 )
-                                .append(
-                                    $.jqElem('ul')
-                                    .css('list-style-type', 'none')
-                                    .append($.jqElem('li').append(param.description))
-                                )
-                            )
                         );
                         $paramList.append($li);
                     }
@@ -986,7 +953,7 @@ define([
             if (m.publications && m.publications.length) {
                 var $pubsDiv =
                     $.jqElem('div')
-                    .append($.jqElem('strong').append('Related publications'))
+                        .append($.jqElem('strong').append('Related publications'));
                 var $publications =
                     $.jqElem('ul');
                 $.each(
@@ -994,13 +961,13 @@ define([
                     function (idx, pub) {
                         $publications.append(
                             $.jqElem('li')
-                            .append(pub.display_text)
-                            .append(
-                                $.jqElem('a')
-                                .attr('href', pub.link)
-                                .attr('target', '_blank')
-                                .append(pub.link)
-                            )
+                                .append(pub.display_text)
+                                .append(
+                                    $.jqElem('a')
+                                        .attr('href', pub.link)
+                                        .attr('target', '_blank')
+                                        .append(pub.link)
+                                )
                         );
                     }
                 );
@@ -1009,17 +976,12 @@ define([
             }
 
             if (m.kb_contributors !== undefined && m.kb_contributors.length) {
-                var $contributorsDiv =
-                    $.jqElem('div')
-                    .append($.jqElem('strong').append('Team members'))
-                var $contributors =
-                    $.jqElem('ul');
                 $.each(
                     m.publications,
                     function (idx, name) {
                         $publications.append(
                             $.jqElem('li')
-                            .append(name)
+                                .append(name)
                         );
                     }
                 );
