@@ -719,7 +719,6 @@ define([
                         ModuleVersionInfo dev;
                     } ModuleInfo;*/
                     self.runtime.send('ui', 'setTitle', [info.module_name, 'Module Catalog'].join(' | '));
-                    console.log('got module info...', info);
                     self.moduleDetails.info = info;
                     var git_url = self.moduleDetails.info.git_url;
                     self.moduleDetails.info['original_git_url'] = self.moduleDetails.info.git_url;
