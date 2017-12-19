@@ -40,7 +40,8 @@ define([
             catalog: null,
             util: null,
             njs: null,
-            numHours : 48,
+            numHours : 48,  /* there are two ways to call get_app_metrics - either set a thenDate and nowDate to use as the range, or numHours here which is
+                               how many hours before whatever the current timestamp is through to current */
 
             // main panel and elements
             $mainPanel: null,
@@ -81,6 +82,7 @@ define([
                     self.hideLoading();
                 });
 
+                // set up the metrics client. NOTE that this is only used for the admin view recent run stats ATM.
                 self.metricsClient = new DynamicService({
                   url: self.runtime.config('services.service_wizard.url'),
                   token: self.runtime.service('session').getAuthToken(),
@@ -90,6 +92,11 @@ define([
                 return this;
             },
 
+            /*
+              I feel like I'm using the kbase dynamicTable widget wrong. This'll produce an update function for each of the 3 tables which are used
+              on the page, and also dynamically make a new update function for the admin stats as we change the filtering range. Presumably, that step
+              isn't required and there's a way to just bake a single updateFunction and call it for everything, given a little bit of config info.
+            */
             createDynamicUpdateFunction : function ( config, rows ) {
 
               return function(pageNum, query, sortColId, sortColDir) {
@@ -143,6 +150,7 @@ define([
 
             },
 
+            // this just takes the rows that come back from the various stats methods and reformats them into the arrays of arrays that dynamicTable likes.
             restructureRows : function(config, rows) {
               return rows.map( function(row) {
                 var rowArray = [];
@@ -154,6 +162,8 @@ define([
               });
             },
 
+            /* takes a timestamp and turns it into a locale string. If no timestamp is present, then it'll put in ...
+               atm, the only place this should happen is the finish_time on an unfinished job. */
             reformatDateInTD : function($td) {
               var timestamp = parseInt($td.text(), 10);
               if (Number.isNaN(timestamp)) {
@@ -175,16 +185,25 @@ define([
 
                 if (self.isAdmin) {
 
+                    /*
+                      the admins have a lot of extra toys. First of all, there's the list of flags across the top of the page.
+                      Each of those flags maps to a filter function, which is used to remove rows from the table. This keeps
+                      track of those filter functions.
+                    */
                     var filters = {
-                      finished : function(row) { return row.complete === true },
-                      queued : function(row) { return row.exec_start_time === undefined },
-                      running : function(row) { return row.complete === false },
-                      success : function(row) { return row.complete === true && row.error !== true },
-                      error : function(row) { return row.complete === true && row.error === true }
+                      finished  : function(row) { return row.complete === true },
+                      queued    : function(row) { return row.exec_start_time === undefined },
+                      running   : function(row) { return row.complete === false },
+                      success   : function(row) { return row.complete === true && row.error !== true },
+                      error     : function(row) { return row.complete === true && row.error === true }
                     };
 
+                    // this one is a list of any filters which are active.
                     var activeFilters = {};
 
+
+                    // and this function is a wrapper to restructure the rows based on the recent runs config, and strip out anything
+                    // that doesn't meet a filter.
                     var makeRecentRunsTableRows = function() {
                       return self.restructureRows(
                         adminRecentRunsConfig,
@@ -200,34 +219,60 @@ define([
                       )
                     }
 
-                    var makeClicker = function(filter) {
-                        return function(e) {
-                          var $target = $(e.target);
-                          var $container = $target.prop('tagName') === 'LABEL'
-                            ? $target
-                            : $target.parent()
-                          ;
+                    /* the checkboxes at the top need functions to filter on them. This creates the div that contains them, plus a custom onClick
+                       tied to the filter.
+                       You give it the string which is the VISIBLE name of the filter, and its bootstrap column width. It'll add it in and create the clicker.
+                       It'll re-style the label with something that looks like the jgi search classes.
+                       Then it'll create a new updateFunction with the reduced rows as per the function up above, and finally call getNewData.
+                       Again, seems convoluted.
+                    */
+                    var createDivForFilter = function(filterLabel, width) {
 
-                          activeFilters[filter] = $target.prop('checked');
+                      var filter = filterLabel.toLowerCase();
 
-                          if (activeFilters[filter]) {
-                            $container.addClass('kbcb-active-filter');
-                          }
-                          else {
-                            $container.removeClass('kbcb-active-filter');
-                          }
 
-                          var rows = makeRecentRunsTableRows();
-                          $adminRecentRunsTable.currentPage = 0;
-                          $adminRecentRunsTable.options.updateFunction = self.createDynamicUpdateFunction( adminRecentRunsConfig, rows);
-                          $adminRecentRunsTable.getNewData();
-                        }
+                       return $.jqElem('div')
+                        .addClass('col-sm-' + width)
+                        .append(
+                          $('<label>')
+                            .append(
+                              $('<input>')
+                                .attr('type', 'checkbox')
+                                .addClass('form-check-input')
+                            )
+                            .append(' ' + filterLabel + ' ')
+                            .on('click',  function(e) {
+                              var $target = $(e.target);
+                              var $container = $target.prop('tagName') === 'LABEL'
+                                ? $target
+                                : $target.parent()
+                              ;
+
+                              activeFilters[filter] = $target.prop('checked');
+
+                              if (activeFilters[filter]) {
+                                $container.addClass('kbcb-active-filter');
+                              }
+                              else {
+                                $container.removeClass('kbcb-active-filter');
+                              }
+
+                              var rows = makeRecentRunsTableRows();
+                              $adminRecentRunsTable.currentPage = 0;
+                              $adminRecentRunsTable.options.updateFunction = self.createDynamicUpdateFunction( adminRecentRunsConfig, rows);
+                              $adminRecentRunsTable.getNewData();
+                            })
+                        )
 
                     }
 
+                    /* yet another function, this one is called when the user changes the date range. It updates the thenDate/nowDate fields
+                       and re-calls the get_app_metrics() function. It'll blank out the table and show the loading element and then re-call
+                       the function. Once it's back, it'll update the updateFunction and re-populate the table.
+                    */
                     var getLatestRunsInCustomRange = function(fromDate, toDate) {
                       self.thenDate = fromDate;
-                      self.nowDate = toDate;
+                      self.nowDate  = toDate;
 
                       $adminRecentRunsTable.$tBody.empty();
                       $adminRecentRunsTable.$loadingElement.show();
@@ -244,77 +289,16 @@ define([
                     var $adminRecentRunsFilterContainer = $('<div>')
                       .addClass('row')
                       .css('margin-bottom', '10px')
+                      .append( createDivForFilter('Finished', 2) )
+                      .append( createDivForFilter('Queued', 2) )
+                      .append( createDivForFilter('Running', 2) )
+                      .append( createDivForFilter('Success', 2) )
+                      .append( createDivForFilter('Error', 1) )
                       .append(
-                        $.jqElem('div')
-                          .addClass('col-sm-2')
-                          .append(
-                            $('<label>')
-                              .append(
-                                $('<input>')
-                                  .attr('type', 'checkbox')
-                                  .addClass('form-check-input')
-                              )
-                              .append(' Finished ')
-                              .on('click', makeClicker( 'finished' ) )
-                          )
-                      )
-                      .append(
-                        $.jqElem('div')
-                          .addClass('col-sm-2')
-                          .append(
-                            $('<label>')
-                              .append(
-                                $('<input>')
-                                  .attr('type', 'checkbox')
-                                  .addClass('form-check-input')
-                              )
-                              .append(' Queued ')
-                              .on('click', makeClicker( 'queued' ) )
-                          )
-                      )
-                      .append(
-                        $.jqElem('div')
-                          .addClass('col-sm-2')
-                          .append(
-                            $('<label>')
-                              .append(
-                                $('<input>')
-                                  .attr('type', 'checkbox')
-                                  .addClass('form-check-input')
-                              )
-                              .append(' Running ')
-                              .on('click', makeClicker( 'running' ) )
-                          )
-                      )
-                      .append(
-                        $.jqElem('div')
-                          .addClass('col-sm-2')
-                          .append(
-                            $('<label>')
-                              .append(
-                                $('<input>')
-                                  .attr('type', 'checkbox')
-                                  .addClass('form-check-input')
-                              )
-                              .append(' Success ')
-                              .on('click', makeClicker( 'success' ) )
-                          )
-                      )
-                      .append(
-                        $.jqElem('div')
-                          .addClass('col-sm-1')
-                          .append(
-                            $('<label>')
-                              .append(
-                                $('<input>')
-                                  .attr('type', 'checkbox')
-                                  .addClass('form-check-input')
-                              )
-                              .append(' Error ')
-                              .on('click', makeClicker( 'error' ) )
-                          )
-                      )
-                      .append(
+                        /* This final element is a selector to change the range and update the admin table.
+                           If the user chooses "Custom", it'll make two date fields visible. It'd probably be good to re-visit these and
+                           turn them into calendar pop ups. Only so many hours in a day.
+                        */
                         $.jqElem('div')
                           .addClass('col-sm-3')
                           .append(
@@ -350,6 +334,9 @@ define([
                               })
                           )
                           .append(
+                            /* And this div contains the range input boxes, which are hidden below the selectbox until
+                               custom is chosen.
+                            */
                             $.jqElem('div')
                             .css('display', 'none')
                             .append(
@@ -424,6 +411,13 @@ define([
                           var $jobLogButton = $row.children().eq(8).find('button');
                           var job_id = $jobLogButton.data('job-id');
 
+                          /* The Status field has a button which'll show the job log. This wires it up to do so.
+                             Note that it cheats out the ass - it'll manually append a new row to the table, which is outside
+                             of the purview of dynamicTable. That means that if you sort the table or change the parameters that
+                             the job info row will disappear. This is by design.
+
+                             If you click on the button and already have a job-log row next, it'll remove it instead.
+                          */
                           $jobLogButton.on('click', function(e) {
                             if ($row.next().data('job-log')) {
                               $row.next().remove();
@@ -470,6 +464,8 @@ define([
                     );
                     // done prep the container + data for admin recent runs stats
 
+                    // we need to update the length of time that displays in the section header. Note that this is
+                    // somewhat manually wired and may deviate from what's in the select box. A more clever solution would be handy.
                     self.numHoursField = $('<span>').text('last ' + self.numHours + ' hours');
                     var $adminContainer = $('<div>').addClass('container-fluid')
                         .append($('<div>').addClass('row')
@@ -727,6 +723,10 @@ define([
                     });
             },
 
+            /* This is the only method that uses the new kb_metrics get_app_metrics method.
+               Call it with a millisecond time range, which is either now - numHours to now
+               or the thenDate to the nowDate, should those be specified.
+            */
             getAdminLatestRuns: function () {
                 var self = this;
                 if (!self.isAdmin) {
@@ -735,7 +735,7 @@ define([
 
                 var seconds = (new Date().getTime() / 1000) - 172800;
 
-                var now = self.nowDate || (new Date()).getTime();
+                var now  = self.nowDate  || (new Date()).getTime();
                 var then = self.thenDate || now - self.numHours * 60 * 60 * 1000;
 
                 return self.metricsClient.callFunc('get_app_metrics', [{epoch_range : [then, now]}]).then(function(data) {
@@ -744,11 +744,13 @@ define([
                   self.adminRecentRuns = [];
                   jobs.forEach( function( job, idx ) {
 
+
+                    // various tidying up and re-formatting of the results which came back from the service.
                     job.user_id = '<a href="#people/' + job.user + '" target="_blank">' + job.user + '</a>'
 
                     if (job.app_id) {
                       var appModule = job.app_id.split('/');
-                      job.app_id           = '<a href="#catalog/apps/' + appModule[0] + '/' + appModule[1] + '" target="_blank">' + appModule[1] + '</a>';
+                      job.app_id           = '<a href="#catalog/apps/'    + appModule[0] + '/' + appModule[1] + '" target="_blank">' + appModule[1] + '</a>';
                       job.app_module_name  = '<a href="#catalog/modules/' + appModule[0] + '" target="_blank">' + appModule[0] + '</a>';
                     }
                     else if (job.method) {
