@@ -40,6 +40,7 @@ define([
             catalog: null,
             util: null,
             njs: null,
+            numHours : 48,
 
             // main panel and elements
             $mainPanel: null,
@@ -80,39 +81,17 @@ define([
                     self.hideLoading();
                 });
 
-var client = new DynamicService({
-                url: self.runtime.config('services.service_wizard.url'),
-                token: self.runtime.service('session').getAuthToken(),
-                version : 'dev',
-                module : 'kb_JobStats',
-            });
-console.log("CLIENT IS ", client);
-client.callFunc('get_app_metrics', [{}]).then(function(a,b,c,d) {
-  console.log("GOT METRICS", a, b, c, d);
-})
-.catch(function(a,b,c,d) {
-  console.log("FAILED : ", a, b, c, d);
-});
-/*
-console.log("GOT ME A TABLE : ", DynamicTable, GenericClient);
-var client = new GenericClient({
-                url: self.runtime.config('services.service_wizard.url'),
-                token: self.runtime.service('session').getAuthToken(),
-                //module : 'kb_JobStats',
-                version : 'dev'
-            });
-console.log("CLIENT IS ", client, self.runtime.service('session').getAuthToken());
-client.callFunc('kb_JobStats.get_app_metrics', [{}]).then(function(a,b,c,d) {
-  console.log("GOT METRICS", a, b, c, d);
-})
-.catch(function(a,b,c,d) {
-  console.log("FAILED : ", a, b, c, d);
-});
-*/
+                self.metricsClient = new DynamicService({
+                  url: self.runtime.config('services.service_wizard.url'),
+                  token: self.runtime.service('session').getAuthToken(),
+                  version : 'dev',
+                  module : 'kb_Metrics',
+                });
                 return this;
             },
 
             createDynamicUpdateFunction : function ( config, rows ) {
+
               return function(pageNum, query, sortColId, sortColDir) {
 
                 var reducedRows = rows;
@@ -177,8 +156,13 @@ client.callFunc('kb_JobStats.get_app_metrics', [{}]).then(function(a,b,c,d) {
 
             reformatDateInTD : function($td) {
               var timestamp = parseInt($td.text(), 10);
-              var date = new Date(timestamp * 1000).toLocaleString();
-              $td.text(date);
+              if (Number.isNaN(timestamp)) {
+                $td.text('...');
+              }
+              else {
+                var date = new Date(timestamp).toLocaleString();
+                $td.text(date);
+              }
             },
 
             reformatIntervalInTD : function($td) {
@@ -191,12 +175,78 @@ client.callFunc('kb_JobStats.get_app_metrics', [{}]).then(function(a,b,c,d) {
 
                 if (self.isAdmin) {
 
+                    var filters = {
+                      finished : function(row) { return row.complete === true },
+                      queued : function(row) { return row.exec_start_time === undefined },
+                      running : function(row) { return row.complete === false },
+                      success : function(row) { return row.complete === true && row.error !== true },
+                      error : function(row) { return row.complete === true && row.error === true }
+                    };
+
+                    var activeFilters = {};
+
+                    var makeRecentRunsTableRows = function() {
+                      return self.restructureRows(
+                        adminRecentRunsConfig,
+                        self.adminRecentRuns.filter( function (row) {
+                          var result = true;
+                          Object.keys(activeFilters).forEach( function(filter) {
+                            if (activeFilters[filter]) {
+                              result = result && filters[filter](row);
+                            }
+                          })
+                          return result;
+                        } )
+                      )
+                    }
+
+                    var makeClicker = function(filter) {
+                        return function(e) {
+                          var $target = $(e.target);
+                          var $container = $target.prop('tagName') === 'LABEL'
+                            ? $target
+                            : $target.parent()
+                          ;
+
+                          activeFilters[filter] = $target.prop('checked');
+
+                          if (activeFilters[filter]) {
+                            $container.addClass('kbcb-active-filter');
+                          }
+                          else {
+                            $container.removeClass('kbcb-active-filter');
+                          }
+
+                          var rows = makeRecentRunsTableRows();
+                          $adminRecentRunsTable.currentPage = 0;
+                          $adminRecentRunsTable.options.updateFunction = self.createDynamicUpdateFunction( adminRecentRunsConfig, rows);
+                          $adminRecentRunsTable.getNewData();
+                        }
+
+                    }
+
+                    var getLatestRunsInCustomRange = function(fromDate, toDate) {
+                      self.thenDate = fromDate;
+                      self.nowDate = toDate;
+
+                      $adminRecentRunsTable.$tBody.empty();
+                      $adminRecentRunsTable.$loadingElement.show();
+
+                      self.getAdminLatestRuns()
+                        .then( function() {
+                          var rows = makeRecentRunsTableRows();
+                          $adminRecentRunsTable.currentPage = 0;
+                          $adminRecentRunsTable.options.updateFunction = self.createDynamicUpdateFunction( adminRecentRunsConfig, rows);
+                          $adminRecentRunsTable.getNewData();
+                        });
+                    }
+
                     var $adminRecentRunsFilterContainer = $('<div>')
                       .addClass('row')
                       .css('margin-bottom', '10px')
                       .append(
                         $.jqElem('div')
-                          .addClass('col-sm-1')
+                          .addClass('col-sm-2')
                           .append(
                             $('<label>')
                               .append(
@@ -205,11 +255,12 @@ client.callFunc('kb_JobStats.get_app_metrics', [{}]).then(function(a,b,c,d) {
                                   .addClass('form-check-input')
                               )
                               .append(' Finished ')
+                              .on('click', makeClicker( 'finished' ) )
                           )
                       )
                       .append(
                         $.jqElem('div')
-                          .addClass('col-sm-1')
+                          .addClass('col-sm-2')
                           .append(
                             $('<label>')
                               .append(
@@ -218,11 +269,12 @@ client.callFunc('kb_JobStats.get_app_metrics', [{}]).then(function(a,b,c,d) {
                                   .addClass('form-check-input')
                               )
                               .append(' Queued ')
+                              .on('click', makeClicker( 'queued' ) )
                           )
                       )
                       .append(
                         $.jqElem('div')
-                          .addClass('col-sm-1')
+                          .addClass('col-sm-2')
                           .append(
                             $('<label>')
                               .append(
@@ -231,11 +283,12 @@ client.callFunc('kb_JobStats.get_app_metrics', [{}]).then(function(a,b,c,d) {
                                   .addClass('form-check-input')
                               )
                               .append(' Running ')
+                              .on('click', makeClicker( 'running' ) )
                           )
                       )
                       .append(
                         $.jqElem('div')
-                          .addClass('col-sm-1')
+                          .addClass('col-sm-2')
                           .append(
                             $('<label>')
                               .append(
@@ -244,6 +297,7 @@ client.callFunc('kb_JobStats.get_app_metrics', [{}]).then(function(a,b,c,d) {
                                   .addClass('form-check-input')
                               )
                               .append(' Success ')
+                              .on('click', makeClicker( 'success' ) )
                           )
                       )
                       .append(
@@ -257,18 +311,78 @@ client.callFunc('kb_JobStats.get_app_metrics', [{}]).then(function(a,b,c,d) {
                                   .addClass('form-check-input')
                               )
                               .append(' Error ')
+                              .on('click', makeClicker( 'error' ) )
                           )
                       )
                       .append(
                         $.jqElem('div')
-                          .addClass('col-sm-2 col-sm-offset-5')
+                          .addClass('col-sm-3')
                           .append(
                             $.jqElem('select')
                               .addClass('form-control')
-                              .append( $.jqElem('option').append('Last 48 hours') )
-                              .append( $.jqElem('option').append('Last week') )
-                              .append( $.jqElem('option').append('Last month') )
-                              .append( $.jqElem('option').append('Custom') )
+                              .append( $.jqElem('option').attr('value', 48).append('Last 48 hours') )
+                              .append( $.jqElem('option').attr('value', 24 * 7).append('Last week') )
+                              .append( $.jqElem('option').attr('value', 24 * 30).append('Last month') )
+                              .append( $.jqElem('option').attr('value', 'custom').append('Custom Range') )
+                              .on('change', function(e) {
+
+                                var $customDiv = $(e.target).next();
+                                self.numHoursField.text($(e.target).find('option:selected').text().toLowerCase());
+
+                                if ($(e.target).val() === 'custom') {
+                                  var now = (new Date()).getTime();
+                                  var then = now - self.numHours * 60 * 60 * 1000;
+                                  $customDiv.show();
+                                  var inputs = $customDiv.find('input');
+
+                                  $(inputs[0]).val((new Date(then)).toLocaleString());
+                                  $(inputs[1]).val((new Date(now)).toLocaleString());
+                                }
+                                else {
+                                  self.nowDate = undefined;
+                                  self.thenDate = undefined;
+                                  $customDiv.hide();
+
+                                  self.numHours = $(e.target).val();
+
+                                  getLatestRunsInCustomRange(undefined, undefined);
+                                }
+                              })
+                          )
+                          .append(
+                            $.jqElem('div')
+                            .css('display', 'none')
+                            .append(
+                              'From: ',
+                              $.jqElem('input')
+                                .attr('type', 'date')
+                                .on('input', function(e) {
+                                  var fromVal = $(e.target).val();
+                                  var fromDate = Date.parse(fromVal);
+
+                                  var toVal = $(e.target).next().val();
+                                  var toDate = Date.parse(toVal);
+
+                                  if (!Number.isNaN(fromDate) && !Number.isNaN(toDate)) {
+                                    getLatestRunsInCustomRange(fromDate, toDate);
+                                  }
+                                })
+                              ,
+                              'To: ',
+                              $.jqElem('input')
+                                .attr('type', 'date')
+                                .on('input', function(e) {
+                                  var fromVal = $(e.target).prev().val();
+                                  var fromDate = Date.parse(fromVal);
+
+                                  var toVal = $(e.target).val();
+                                  var toDate = Date.parse(toVal);
+
+                                  if (!Number.isNaN(fromDate) && !Number.isNaN(toDate)) {
+                                    getLatestRunsInCustomRange(fromDate, toDate);
+                                  }
+                                })
+                            )
                           )
                       )
                     ;
@@ -292,7 +406,7 @@ client.callFunc('kb_JobStats.get_app_metrics', [{}]).then(function(a,b,c,d) {
                       ],
                     };
 
-                    var adminRecentRunsRestructuredRows = self.restructureRows(adminRecentRunsConfig, self.adminRecentRuns);
+                    var adminRecentRunsRestructuredRows = makeRecentRunsTableRows();
 
                     var $adminRecentRunsTable = new DynamicTable($adminRecentRunsContainer,
                       {
@@ -306,6 +420,23 @@ client.callFunc('kb_JobStats.get_app_metrics', [{}]).then(function(a,b,c,d) {
                           self.reformatDateInTD( $row.children().eq(5) );
                           self.reformatDateInTD( $row.children().eq(6) );
                           self.reformatIntervalInTD( $row.children().eq(7) );
+
+                          var $jobLogButton = $row.children().eq(8).find('button');
+                          var job_id = $jobLogButton.data('job-id');
+
+                          $jobLogButton.on('click', function(e) {
+                            if ($row.next().data('job-log')) {
+                              $row.next().remove();
+                            }
+                            else {
+                              var $tr = $.jqElem('tr').data('job-log', 1).append(
+                                $.jqElem('td')
+                                  .attr('colspan', 9)
+                                  .append(self.renderJobLog(job_id))
+                              );
+                              $row.after($tr);
+                            }
+                          });
 
                           return $row;
                         }
@@ -339,11 +470,16 @@ client.callFunc('kb_JobStats.get_app_metrics', [{}]).then(function(a,b,c,d) {
                     );
                     // done prep the container + data for admin recent runs stats
 
-
+                    self.numHoursField = $('<span>').text('last ' + self.numHours + ' hours');
                     var $adminContainer = $('<div>').addClass('container-fluid')
                         .append($('<div>').addClass('row')
                             .append($('<div>').addClass('col-md-12')
-                                .append('<h4>(Admin View) Recent Runs (completed in last 48h):</h4>')
+                                .append(
+                                  $('<h4>')
+                                    .append('(Admin View) Recent Runs (submitted in ')
+                                  .append(self.numHoursField)
+                                  .append('):')
+                                )
                                 .append( $adminRecentRunsFilterContainer )
                                 .append( $adminRecentRunsContainer)
                                 .append('<br><br>')
@@ -552,7 +688,7 @@ client.callFunc('kb_JobStats.get_app_metrics', [{}]).then(function(a,b,c,d) {
 
                 return self.catalog.get_exec_aggr_table({})
                     .then(function (adminStats) {
-console.log("RAW ADMIN STATS", adminStats);
+
                         self.adminStats = [];
 
                         for (var k = 0; k < adminStats.length; k++) {
@@ -599,51 +735,58 @@ console.log("RAW ADMIN STATS", adminStats);
 
                 var seconds = (new Date().getTime() / 1000) - 172800;
 
-                return self.catalog.get_exec_raw_stats({ begin: seconds })
-                    .then(function (data) {
-                    console.log("RAW DATA IS :", data);
-                        self.adminRecentRuns = [];
-                        for (var k = 0; k < data.length; k++) {
-                            var rt = data[k]['finish_time'] - data[k]['exec_start_time'];
-                            data[k]['user_id'] = '<a href="#people/' + data[k]['user_id'] + '">' + data[k]['user_id'] + '</a>'
-                            data[k]['run_time'] = rt;
+                var now = self.nowDate || (new Date()).getTime();
+                var then = self.thenDate || now - self.numHours * 60 * 60 * 1000;
 
-                            if (data[k]['is_error']) {
-                                data[k]['result'] = '<span class="label label-danger">Error</span>';
-                            } else {
-                                data[k]['result'] = '<span class="label label-success">Success</span>';
-                            }
-                            data[k]['result'] += '<span class="btn btn-default btn-xs"><i class="fa fa-file-text"></i></span>';
+                return self.metricsClient.callFunc('get_app_metrics', [{epoch_range : [then, now]}]).then(function(data) {
+                  var jobs = data[0].job_states;
 
-                            if (data[k]['app_id']) {
-                                var mod = ''; //data[k]['app_module_name'];
-                                if (data[k]['app_module_name']) {
-                                    mod = data[k]['app_module_name'];
-                                    data[k]['app_module_name'] = '<a href="#catalog/modules/' + mod + '">' +
-                                        mod + '</a>';
-                                }
-                                data[k]['app_id'] = '<a href="#catalog/apps/' + mod + '/' + data[k]['app_id'] + '">' +
-                                    data[k]['app_id'] + '</a>';
-                            } else {
-                                if (data[k]['func_name']) {
-                                    data[k]['app_id'] = '(API):' + data[k]['func_name'];
-                                    if (data[k]['func_module_name']) {
-                                        mod = data[k]['func_module_name'];
-                                        data[k]['app_module_name'] = '<a href="#catalog/modules/' + mod + '">' +
-                                            mod + '</a>';
-                                    } else {
-                                        data[k]['app_module_name'] = 'Unknown'
-                                    }
+                  self.adminRecentRuns = [];
+                  jobs.forEach( function( job, idx ) {
 
-                                } else {
-                                    data[k]['app_id'] = 'Unknown'
-                                    data[k]['app_module_name'] = 'Unknown'
-                                }
-                            }
+                    job.user_id = '<a href="#people/' + job.user + '" target="_blank">' + job.user + '</a>'
 
-                        }
-                        self.adminRecentRuns = data;
-                    });
+                    if (job.app_id) {
+                      var appModule = job.app_id.split('/');
+                      job.app_id           = '<a href="#catalog/apps/' + appModule[0] + '/' + appModule[1] + '" target="_blank">' + appModule[1] + '</a>';
+                      job.app_module_name  = '<a href="#catalog/modules/' + appModule[0] + '" target="_blank">' + appModule[0] + '</a>';
+                    }
+                    else if (job.method) {
+                      var methodPieces = job.method.split('.');
+                      job.app_id = '(API):' + methodPieces[1];
+                      job.app_module_name  = '<a href="#catalog/modules/' + methodPieces[0] + '" target="_blank">' + methodPieces[0] + '</a>';
+                    }
+                    else {
+                      job.app_id = 'Unknown';
+                      job.app_module_name = 'Unknown';
+                    }
+
+                    job.result = job.error
+                      ? '<span class="label label-danger">Error</span>'
+                      : '<span class="label label-success">Success</span>';
+
+                    job.result += '<button class="btn btn-default btn-xs" data-job-id="' + job.job_id + '"> <i class="fa fa-file-text"></i></button>';
+
+                    self.adminRecentRuns.push(job);
+
+                  });
+
+                  /*
+                    user
+                    app_id (SPLIT ON slashes - has module)
+                    job_id
+                    app_id (SPLIT ON slashes - has app_id)
+                    creation_time
+                    exec_start_time
+                    finish_time
+                    run_time
+                    status
+                  */
+                })
+                .catch(function(xhr) {
+                  console.log("FAILED : ", [xhr.type, xhr.message].join(':') );
+                });//*/
+
             },
 
 
