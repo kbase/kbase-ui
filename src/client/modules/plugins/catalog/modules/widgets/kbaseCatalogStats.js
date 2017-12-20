@@ -87,6 +87,9 @@ define([
                   version : 'dev',
                   module : 'kb_Metrics',
                 });
+
+                self.adminRecentRuns = [];
+
                 return this;
             },
 
@@ -150,6 +153,7 @@ define([
 
             // this just takes the rows that come back from the various stats methods and reformats them into the arrays of arrays that dynamicTable likes.
             restructureRows : function(config, rows) {
+              if (!rows) { return [] }
               return rows.map( function(row) {
                 var rowArray = [];
                 config.headers.forEach( function (header) {
@@ -736,10 +740,11 @@ define([
                 var now  = self.nowDate  || (new Date()).getTime();
                 var then = self.thenDate || now - self.numHours * 60 * 60 * 1000;
 
+                self.adminRecentRuns = [];
+
                 return self.metricsClient.callFunc('get_app_metrics', [{epoch_range : [then, now]}]).then(function(data) {
                   var jobs = data[0].job_states;
 
-                  self.adminRecentRuns = [];
                   jobs.forEach( function( job, idx ) {
 
 
