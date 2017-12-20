@@ -13,12 +13,14 @@ define([
         'kb_service/client/catalog',
         'kb_service/client/narrativeJobService',
         '../catalog_util',
+        'kb_common/dynamicTable',
+        'kb_common/jsonRpc/dynamicServiceClient',
         'datatables',
         'kb_widget/legacy/authenticatedWidget',
         'bootstrap',
-        'datatables_bootstrap'
+        'datatables_bootstrap',
     ],
-    function ($, Promise, NarrativeMethodStore, Catalog, NarrativeJobService, CatalogUtil) {
+    function ($, Promise, NarrativeMethodStore, Catalog, NarrativeJobService, CatalogUtil, DynamicTable, DynamicService) {
 
         function renderDate ( date, type, full ) {
           if(type == "display"){
@@ -36,6 +38,8 @@ define([
             catalog: null,
             util: null,
             njs: null,
+            numHours : 48,  /* there are two ways to call get_app_metrics - either set a thenDate and nowDate to use as the range, or numHours here which is
+                               how many hours before whatever the current timestamp is through to current */
 
             // main panel and elements
             $mainPanel: null,
@@ -76,162 +80,457 @@ define([
                     self.hideLoading();
                 });
 
+                // set up the metrics client. NOTE that this is only used for the admin view recent run stats ATM.
+                self.metricsClient = new DynamicService({
+                  url: self.runtime.config('services.service_wizard.url'),
+                  token: self.runtime.service('session').getAuthToken(),
+                  version : 'dev',
+                  module : 'kb_Metrics',
+                });
+
+                self.adminRecentRuns = [];
+
                 return this;
+            },
+
+            /*
+              I feel like I'm using the kbase dynamicTable widget wrong. This'll produce an update function for each of the 3 tables which are used
+              on the page, and also dynamically make a new update function for the admin stats as we change the filtering range. Presumably, that step
+              isn't required and there's a way to just bake a single updateFunction and call it for everything, given a little bit of config info.
+            */
+            createDynamicUpdateFunction : function ( config, rows ) {
+
+              return function(pageNum, query, sortColId, sortColDir) {
+
+                var reducedRows = rows;
+
+                if (query) {
+                  query = query.replace(/ /g, '|');
+                  reducedRows = reducedRows.filter( function(row) {
+                    return row.query.match(query);
+                  });
+                }
+
+                if (sortColId) {
+
+                  var sortIdx = config.headers.reduce( function(acc, curr, idx) {
+                    if (curr.id === sortColId) {
+                      acc = idx;
+                    }
+                    return acc;
+                  }, 0);
+
+                  reducedRows = reducedRows
+                    .sort( function(a,b) {
+
+                      var aX = sortColDir === -1 ? b[sortIdx] : a[sortIdx];
+                      var bX = sortColDir === -1 ? a[sortIdx] : b[sortIdx];
+
+                      if (!$.isNumeric(aX)) { aX = aX.toString().toLowerCase(); }
+                      if (!$.isNumeric(bX)) { bX = bX.toString().toLowerCase(); }
+
+                           if ( aX < bX ) { return -1 }
+                      else if ( aX > bX ) { return 1 }
+                      else                { return 0 }
+
+                    })
+                  ;
+                };
+
+                reducedRows = reducedRows.slice(pageNum * config.rowsPerPage, (pageNum + 1) * config.rowsPerPage);
+
+                return Promise.try(function() {
+                  return {
+                    rows  : reducedRows,
+                    start : pageNum * config.rowsPerPage,
+                    query : query,
+                    total : rows.length,
+                  };
+                });
+              }
+
+            },
+
+            // this just takes the rows that come back from the various stats methods and reformats them into the arrays of arrays that dynamicTable likes.
+            restructureRows : function(config, rows) {
+              if (!rows) { return [] }
+              return rows.map( function(row) {
+                var rowArray = [];
+                config.headers.forEach( function (header) {
+                  rowArray.push(row[header.id]);
+                });
+                rowArray.query = rowArray.join(',');
+                return rowArray;
+              });
+            },
+
+            /* takes a timestamp and turns it into a locale string. If no timestamp is present, then it'll put in ...
+               atm, the only place this should happen is the finish_time on an unfinished job. */
+            reformatDateInTD : function($td) {
+              var timestamp = parseInt($td.text(), 10);
+              if (Number.isNaN(timestamp)) {
+                $td.text('...');
+              }
+              else {
+                var date = new Date(timestamp).toLocaleString();
+                $td.text(date);
+              }
+            },
+
+            reformatIntervalInTD : function($td) {
+              var timestamp = parseInt($td.text(), 10);
+              $td.text( this.getNiceDuration(timestamp) );
             },
 
             render: function () {
                 var self = this;
 
-                // Custom data tables sorting function, that takes a number in an html comment
-                // and sorts numerically by that number
-                $.extend($.fn.dataTableExt.oSort, {
-                    "hidden-number-stats-pre": function (a) {
-                        // extract out the first comment if it exists, then parse as number
-                        var t = a.split('-->');
-                        if (t.length > 1) {
-                            var t2 = t[0].split('<!--');
-                            if (t2.length > 1) {
-                                return Number(t2[1]);
-                            }
-                        }
-                        return Number(a);
-                    },
-
-                    "hidden-number-stats-asc": function (a, b) {
-                        return ((a < b) ? -1 : ((a > b) ? 1 : 0));
-                    },
-
-                    "hidden-number-stats-desc": function (a, b) {
-                        return ((a < b) ? 1 : ((a > b) ? -1 : 0));
-                    }
-                });
-
                 if (self.isAdmin) {
 
-                    var $adminUserStatsTable = $('<table>').addClass('table').css('width', '100%');
-                    var $adminRecentRunsTable = $('<table>').addClass('table').css('width', '100%');
+                    /*
+                      the admins have a lot of extra toys. First of all, there's the list of flags across the top of the page.
+                      Each of those flags maps to a filter function, which is used to remove rows from the table. This keeps
+                      track of those filter functions.
+                    */
+                    var filters = {
+                      finished  : function(row) { return row.complete === true },
+                      queued    : function(row) { return row.exec_start_time === undefined },
+                      running   : function(row) { return row.complete === false },
+                      success   : function(row) { return row.complete === true && row.error !== true },
+                      error     : function(row) { return row.complete === true && row.error === true }
+                    };
+
+                    // this one is a list of any filters which are active.
+                    var activeFilters = {};
 
 
+                    // and this function is a wrapper to restructure the rows based on the recent runs config, and strip out anything
+                    // that doesn't meet a filter.
+                    var makeRecentRunsTableRows = function() {
+                      return self.restructureRows(
+                        adminRecentRunsConfig,
+                        self.adminRecentRuns.filter( function (row) {
+                          var result = true;
+                          Object.keys(activeFilters).forEach( function(filter) {
+                            if (activeFilters[filter]) {
+                              result = result && filters[filter](row);
+                            }
+                          })
+                          return result;
+                        } )
+                      )
+                    }
+
+                    /* the checkboxes at the top need functions to filter on them. This creates the div that contains them, plus a custom onClick
+                       tied to the filter.
+                       You give it the string which is the VISIBLE name of the filter, and its bootstrap column width. It'll add it in and create the clicker.
+                       It'll re-style the label with something that looks like the jgi search classes.
+                       Then it'll create a new updateFunction with the reduced rows as per the function up above, and finally call getNewData.
+                       Again, seems convoluted.
+                    */
+                    var createDivForFilter = function(filterLabel, width) {
+
+                      var filter = filterLabel.toLowerCase();
+
+
+                       return $.jqElem('div')
+                        .addClass('col-sm-' + width)
+                        .append(
+                          $('<label>')
+                            .append(
+                              $('<input>')
+                                .attr('type', 'checkbox')
+                                .addClass('form-check-input')
+                            )
+                            .append(' ' + filterLabel + ' ')
+                            .on('click',  function(e) {
+                              var $target = $(e.target);
+                              var $container = $target.prop('tagName') === 'LABEL'
+                                ? $target
+                                : $target.parent()
+                              ;
+
+                              activeFilters[filter] = $target.prop('checked');
+
+                              if (activeFilters[filter]) {
+                                $container.addClass('kbcb-active-filter');
+                              }
+                              else {
+                                $container.removeClass('kbcb-active-filter');
+                              }
+
+                              var rows = makeRecentRunsTableRows();
+                              $adminRecentRunsTable.currentPage = 0;
+                              $adminRecentRunsTable.options.updateFunction = self.createDynamicUpdateFunction( adminRecentRunsConfig, rows);
+                              $adminRecentRunsTable.getNewData();
+                            })
+                        )
+
+                    }
+
+                    /* yet another function, this one is called when the user changes the date range. It updates the thenDate/nowDate fields
+                       and re-calls the get_app_metrics() function. It'll blank out the table and show the loading element and then re-call
+                       the function. Once it's back, it'll update the updateFunction and re-populate the table.
+                    */
+                    var getLatestRunsInCustomRange = function(fromDate, toDate) {
+                      self.thenDate = fromDate;
+                      self.nowDate  = toDate;
+
+                      $adminRecentRunsTable.$tBody.empty();
+                      $adminRecentRunsTable.$loadingElement.show();
+
+                      self.getAdminLatestRuns()
+                        .then( function() {
+                          var rows = makeRecentRunsTableRows();
+                          $adminRecentRunsTable.currentPage = 0;
+                          $adminRecentRunsTable.options.updateFunction = self.createDynamicUpdateFunction( adminRecentRunsConfig, rows);
+                          $adminRecentRunsTable.getNewData();
+                        });
+                    }
+
+                    var $adminRecentRunsFilterContainer = $('<div>')
+                      .addClass('row')
+                      .css('margin-bottom', '10px')
+                      .append( createDivForFilter('Finished', 2) )
+                      .append( createDivForFilter('Queued', 2) )
+                      .append( createDivForFilter('Running', 2) )
+                      .append( createDivForFilter('Success', 2) )
+                      .append( createDivForFilter('Error', 1) )
+                      .append(
+                        /* This final element is a selector to change the range and update the admin table.
+                           If the user chooses "Custom", it'll make two date fields visible. It'd probably be good to re-visit these and
+                           turn them into calendar pop ups. Only so many hours in a day.
+                        */
+                        $.jqElem('div')
+                          .addClass('col-sm-3')
+                          .append(
+                            $.jqElem('select')
+                              .addClass('form-control')
+                              .append( $.jqElem('option').attr('value', 48).append('Last 48 hours') )
+                              .append( $.jqElem('option').attr('value', 24 * 7).append('Last week') )
+                              .append( $.jqElem('option').attr('value', 24 * 30).append('Last month') )
+                              .append( $.jqElem('option').attr('value', 'custom').append('Custom Range') )
+                              .on('change', function(e) {
+
+                                var $customDiv = $(e.target).next();
+                                self.numHoursField.text($(e.target).find('option:selected').text().toLowerCase());
+
+                                if ($(e.target).val() === 'custom') {
+                                  var now = (new Date()).getTime();
+                                  var then = now - self.numHours * 60 * 60 * 1000;
+                                  $customDiv.show();
+                                  var inputs = $customDiv.find('input');
+
+                                  $(inputs[0]).val((new Date(then)).toLocaleString());
+                                  $(inputs[1]).val((new Date(now)).toLocaleString());
+                                }
+                                else {
+                                  self.nowDate = undefined;
+                                  self.thenDate = undefined;
+                                  $customDiv.hide();
+
+                                  self.numHours = $(e.target).val();
+
+                                  getLatestRunsInCustomRange(undefined, undefined);
+                                }
+                              })
+                          )
+                          .append(
+                            /* And this div contains the range input boxes, which are hidden below the selectbox until
+                               custom is chosen.
+                            */
+                            $.jqElem('div')
+                            .css('display', 'none')
+                            .append(
+                              'From: ',
+                              $.jqElem('input')
+                                .attr('type', 'date')
+                                .on('input', function(e) {
+                                  var fromVal = $(e.target).val();
+                                  var fromDate = Date.parse(fromVal);
+
+                                  var toVal = $(e.target).next().val();
+                                  var toDate = Date.parse(toVal);
+
+                                  if (!Number.isNaN(fromDate) && !Number.isNaN(toDate)) {
+                                    getLatestRunsInCustomRange(fromDate, toDate);
+                                  }
+                                })
+                              ,
+                              'To: ',
+                              $.jqElem('input')
+                                .attr('type', 'date')
+                                .on('input', function(e) {
+                                  var fromVal = $(e.target).prev().val();
+                                  var fromDate = Date.parse(fromVal);
+
+                                  var toVal = $(e.target).val();
+                                  var toDate = Date.parse(toVal);
+
+                                  if (!Number.isNaN(fromDate) && !Number.isNaN(toDate)) {
+                                    getLatestRunsInCustomRange(fromDate, toDate);
+                                  }
+                                })
+                            )
+                          )
+                      )
+                    ;
+
+
+                    // prep the container + data for admin recent runs stats
+                    var $adminRecentRunsContainer = $('<div>').css('width', '100%');
+
+                    var adminRecentRunsConfig = {
+                      rowsPerPage : 50,
+                      headers : [
+                        { text : 'User', id : 'user_id', isSortable : true },
+                        { text : 'App ID', id : 'app_id', isSortable : true },
+                        { text : 'Job ID', id : 'job_id', isSortable : true },
+                        { text : 'Module', id : 'app_module_name', isSortable : true },
+                        { text : 'Submission Time', id : 'creation_time', isSortable : true },
+                        { text : 'Start Time', id : 'exec_start_time', isSortable : true },
+                        { text : 'End Time', id : 'finish_time', isSortable : true },
+                        { text : 'Run Time', id : 'run_time', isSortable : true },
+                        { text : 'Status', id : 'result', isSortable : true },
+                      ],
+                    };
+
+                    var adminRecentRunsRestructuredRows = makeRecentRunsTableRows();
+
+                    var $adminRecentRunsTable = new DynamicTable($adminRecentRunsContainer,
+                      {
+                        headers : adminRecentRunsConfig.headers,
+                        rowsPerPage : adminRecentRunsConfig.rowsPerPage,
+                        enableDownload : false,
+                        updateFunction : self.createDynamicUpdateFunction(adminRecentRunsConfig, adminRecentRunsRestructuredRows),
+                        rowFunction : function($row) {
+
+                          self.reformatDateInTD( $row.children().eq(4) );
+                          self.reformatDateInTD( $row.children().eq(5) );
+                          self.reformatDateInTD( $row.children().eq(6) );
+                          self.reformatIntervalInTD( $row.children().eq(7) );
+
+                          var $jobLogButton = $row.children().eq(8).find('button');
+                          var job_id = $jobLogButton.data('job-id');
+
+                          /* The Status field has a button which'll show the job log. This wires it up to do so.
+                             Note that it cheats out the ass - it'll manually append a new row to the table, which is outside
+                             of the purview of dynamicTable. That means that if you sort the table or change the parameters that
+                             the job info row will disappear. This is by design.
+
+                             If you click on the button and already have a job-log row next, it'll remove it instead.
+                          */
+                          $jobLogButton.on('click', function(e) {
+                            if ($row.next().data('job-log')) {
+                              $row.next().remove();
+                            }
+                            else {
+                              var $tr = $.jqElem('tr').data('job-log', 1).append(
+                                $.jqElem('td')
+                                  .attr('colspan', 9)
+                                  .append(self.renderJobLog(job_id))
+                              );
+                              $row.after($tr);
+                            }
+                          });
+
+                          return $row;
+                        }
+                      }
+                    );
+                    // done prep the container + data for admin recent runs stats
+
+
+                    // prep the container + data for admin user stats
+                    var $adminUserStatsContainer = $('<div>').css('width', '100%');
+
+                    var adminUserStatsConfig = {
+                      rowsPerPage : 50,
+                      headers : [
+                        { text : 'User', id : 'u', isSortable : true },
+                        { text : 'App ID', id : 'id', isSortable : true },
+                        { text : 'Module', id : 'module', isSortable : true },
+                        { text : 'Total Runs', id : 'n', isSortable : true },
+                      ],
+                    };
+
+                    var adminUserStatsRestructuredRows = self.restructureRows(adminUserStatsConfig, self.adminStats);
+
+                    var $adminUserStatsTable = new DynamicTable($adminUserStatsContainer,
+                      {
+                        headers : adminUserStatsConfig.headers,
+                        rowsPerPage : adminUserStatsConfig.rowsPerPage,
+                        enableDownload : false,
+                        updateFunction : self.createDynamicUpdateFunction(adminUserStatsConfig, adminUserStatsRestructuredRows)
+                      }
+                    );
+                    // done prep the container + data for admin recent runs stats
+
+                    // we need to update the length of time that displays in the section header. Note that this is
+                    // somewhat manually wired and may deviate from what's in the select box. A more clever solution would be handy.
+                    self.numHoursField = $('<span>').text('last ' + self.numHours + ' hours');
                     var $adminContainer = $('<div>').addClass('container-fluid')
                         .append($('<div>').addClass('row')
                             .append($('<div>').addClass('col-md-12')
-                                .append('<h4>(Admin View) Recent Runs (completed in last 48h):</h4>')
-                                .append($adminRecentRunsTable)
+                                .append(
+                                  $('<h4>')
+                                    .append('(Admin View) Recent Runs (submitted in ')
+                                  .append(self.numHoursField)
+                                  .append('):')
+                                )
+                                .append( $adminRecentRunsFilterContainer )
+                                .append( $adminRecentRunsContainer)
                                 .append('<br><br>')
                                 .append('<h4>(Admin View) User Run Summary:</h4>')
-                                .append($adminUserStatsTable)
+                                .append($adminUserStatsContainer)
                                 .append('<br><br>')
                                 .append('<h4>Public Stats:</h4>')));
-
-                    var adminRecentRunsTblSettings = {
-                        "bFilter": true,
-                        "sPaginationType": "full_numbers",
-                        "iDisplayLength": 50,
-                        "sDom": 'ft<ip>',
-                        "aaSorting": [
-                            [3, "dsc"]
-                        ],
-                        "columns": [
-                            { sTitle: 'User', data: "user_id" },
-                            { sTitle: "App Id", data: "app_id" },
-                            { sTitle: "Job Id", data: "job_id" },
-                            { sTitle: "Module", data: "app_module_name" },
-                            { sTitle: "Submission Time", data: "creation_time", mRender : renderDate },
-                            { sTitle: "Start Time", data: "exec_start_time", mRender : renderDate },
-                            { sTitle: "End Time", data: "finish_time", mRender : renderDate },
-                            { sTitle: "Run Time", data: "run_time" },
-                            { sTitle: "Result", data: "result", className: "job-log" },
-                        ],
-                        "columnDefs": [
-                            { "type": "hidden-number-stats", targets: [7] }
-                        ],
-                        "data": self.adminRecentRuns,
-                        fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-                            $('td:eq(8)', nRow).find('.btn').on('click', function (e) {
-                                var row = renderedTable.row(nRow);
-                                if (row.child.isShown()) {
-                                    row.child.hide();
-                                } else {
-                                    row.child(self.renderJobLog(aData.job_id)).show();
-                                }
-                            })
-                        }
-                    };
-                    var renderedTable = $adminRecentRunsTable.DataTable(adminRecentRunsTblSettings);
-                    $adminRecentRunsTable.find('th').css('cursor', 'pointer');
-
-                    //
-                    // $adminRecentRunsTable.find('tbody').on('click', 'td.job-log', function() {
-                    //     var tr = $(this).closest('tr');
-                    //     var row = renderedTable.row('tr');
-                    //     if (row.child.isShown()) {
-                    //         row.child.hide();
-                    //         tr.removeClass('shown');
-                    //     } else {
-                    //         row.child("i'm a log! job id " + (row.data())['job_id']).show();
-                    //         tr.addClass('shown');
-                    //     }
-                    // })
-
-
-                    var adminUserStatsTblSettings = {
-                        "bFilter": true,
-                        "sPaginationType": "full_numbers",
-                        "iDisplayLength": 50,
-                        "sDom": 'ft<ip>',
-                        "aaSorting": [
-                            [3, "dsc"],
-                            [1, "asc"]
-                        ],
-                        "columns": [
-                            { sTitle: 'User', data: "u" },
-                            { sTitle: "App Id", data: "id" },
-                            { sTitle: "Module", data: "module" },
-                            { sTitle: "Total Runs", data: "n" }
-                        ],
-                        "data": self.adminStats
-                    };
-                    $adminUserStatsTable.DataTable(adminUserStatsTblSettings);
-                    $adminUserStatsTable.find('th').css('cursor', 'pointer');
 
                     self.$basicStatsDiv.append($adminContainer);
 
                 }
 
+                // prep the container + data for basic stats
+                var $basicStatsContainer = $('<div>').css('width', '100%');
 
-                var $table = $('<table>').addClass('table').css('width', '100%');
+                var basicStatsConfig = {
+                  rowsPerPage : 50,
+                  headers : [
+                    { text : 'ID', id : 'id', isSortable : true },
+                    { text : 'Module', id : 'module', isSortable : true },
+                    { text : 'Total Runs', id : 'nCalls', isSortable : true },
+                    { text : 'Errors', id : 'nErrors', isSortable : true },
+                    { text: "Success %", id: "success", isSortable : true },
+                    { text: "Avg Run Time", id: "meanRunTime", isSortable : true },
+                    { text: "Avg Queue Time", id: "meanQueueTime", isSortable : true },
+                    { text: "Total Run Time", id: "totalRunTime", isSortable : true },
+                  ],
+                };
+
+                var basicStatsRestructuredRows = self.restructureRows(basicStatsConfig, self.allStats);
+
+                var $basicStatsTable = new DynamicTable($basicStatsContainer,
+                  {
+                    headers : basicStatsConfig.headers,
+                    rowsPerPage : basicStatsConfig.rowsPerPage,
+                    enableDownload : false,
+                    updateFunction : self.createDynamicUpdateFunction(basicStatsConfig, basicStatsRestructuredRows),
+                    rowFunction : function($row) {
+
+                      self.reformatIntervalInTD( $row.children().eq(5) );
+                      self.reformatIntervalInTD( $row.children().eq(6) );
+                      self.reformatIntervalInTD( $row.children().eq(7) );
+
+                      return $row;
+                    }
+                  }
+                );
+                // done prep the container + id for basic stats
 
                 var $container = $('<div>').addClass('container-fluid')
                     .append($('<div>').addClass('row')
                         .append($('<div>').addClass('col-md-12')
-                            .append($table)));
-
-                var tblSettings = {
-                    "bFilter": true,
-                    "sPaginationType": "full_numbers",
-                    "iDisplayLength": 50,
-                    "sDom": 'ft<ip>',
-                    "aaSorting": [
-                        [2, "dsc"],
-                        [1, "asc"]
-                    ],
-                    "columns": [
-                        { sTitle: 'ID', data: "id" },
-                        { sTitle: "Module", data: "module" },
-                        { sTitle: "Total Runs", data: "nCalls" },
-                        { sTitle: "Errors", data: "nErrors" },
-                        { sTitle: "Success %", data: "success" },
-                        { sTitle: "Avg Run Time", data: "meanRunTime" },
-                        { sTitle: "Avg Queue Time", data: "meanQueueTime" },
-                        { sTitle: "Total Run Time", data: "totalRunTime" }
-                    ],
-                    "columnDefs": [
-                        { "type": "hidden-number-stats", targets: [5, 6, 7] }
-                    ],
-                    "data": self.allStats
-                };
-                $table.DataTable(tblSettings);
-                $table.find('th').css('cursor', 'pointer');
+                            .append($basicStatsContainer)));
 
                 self.$basicStatsDiv.append($container);
             },
@@ -344,9 +643,9 @@ define([
                                 nCalls: s.number_of_calls,
                                 nErrors: s.number_of_errors,
                                 success: successPercent.toPrecision(3),
-                                meanRunTime: '<!--' + meanRunTime + '-->' + self.getNiceDuration(meanRunTime),
-                                meanQueueTime: '<!--' + meanQueueTime + '-->' + self.getNiceDuration(meanQueueTime),
-                                totalRunTime: '<!--' + s.total_exec_time + '-->' + self.getNiceDuration(s.total_exec_time),
+                                meanRunTime: meanRunTime,
+                                meanQueueTime: meanQueueTime,
+                                totalRunTime: s.total_exec_time,
                             }
                             self.allStats.push(stat);
                         }
@@ -426,6 +725,10 @@ define([
                     });
             },
 
+            /* This is the only method that uses the new kb_metrics get_app_metrics method.
+               Call it with a millisecond time range, which is either now - numHours to now
+               or the thenDate to the nowDate, should those be specified.
+            */
             getAdminLatestRuns: function () {
                 var self = this;
                 if (!self.isAdmin) {
@@ -434,50 +737,61 @@ define([
 
                 var seconds = (new Date().getTime() / 1000) - 172800;
 
-                return self.catalog.get_exec_raw_stats({ begin: seconds })
-                    .then(function (data) {
-                        self.adminRecentRuns = [];
-                        for (var k = 0; k < data.length; k++) {
-                            var rt = data[k]['finish_time'] - data[k]['exec_start_time'];
-                            data[k]['user_id'] = '<a href="#people/' + data[k]['user_id'] + '">' + data[k]['user_id'] + '</a>'
-                            data[k]['run_time'] = '<!--' + rt + '-->' + self.getNiceDuration(rt);
+                var now  = self.nowDate  || (new Date()).getTime();
+                var then = self.thenDate || now - self.numHours * 60 * 60 * 1000;
 
-                            if (data[k]['is_error']) {
-                                data[k]['result'] = '<span class="label label-danger">Error</span>';
-                            } else {
-                                data[k]['result'] = '<span class="label label-success">Success</span>';
-                            }
-                            data[k]['result'] += '<span class="btn btn-default btn-xs"><i class="fa fa-file-text"></i></span>';
+                self.adminRecentRuns = [];
 
-                            if (data[k]['app_id']) {
-                                var mod = ''; //data[k]['app_module_name'];
-                                if (data[k]['app_module_name']) {
-                                    mod = data[k]['app_module_name'];
-                                    data[k]['app_module_name'] = '<a href="#catalog/modules/' + mod + '">' +
-                                        mod + '</a>';
-                                }
-                                data[k]['app_id'] = '<a href="#catalog/apps/' + mod + '/' + data[k]['app_id'] + '">' +
-                                    data[k]['app_id'] + '</a>';
-                            } else {
-                                if (data[k]['func_name']) {
-                                    data[k]['app_id'] = '(API):' + data[k]['func_name'];
-                                    if (data[k]['func_module_name']) {
-                                        mod = data[k]['func_module_name'];
-                                        data[k]['app_module_name'] = '<a href="#catalog/modules/' + mod + '">' +
-                                            mod + '</a>';
-                                    } else {
-                                        data[k]['app_module_name'] = 'Unknown'
-                                    }
+                return self.metricsClient.callFunc('get_app_metrics', [{epoch_range : [then, now]}]).then(function(data) {
+                  var jobs = data[0].job_states;
 
-                                } else {
-                                    data[k]['app_id'] = 'Unknown'
-                                    data[k]['app_module_name'] = 'Unknown'
-                                }
-                            }
+                  jobs.forEach( function( job, idx ) {
 
-                        }
-                        self.adminRecentRuns = data;
-                    });
+
+                    // various tidying up and re-formatting of the results which came back from the service.
+                    job.user_id = '<a href="#people/' + job.user + '" target="_blank">' + job.user + '</a>'
+
+                    if (job.app_id) {
+                      var appModule = job.app_id.split('/');
+                      job.app_id           = '<a href="#catalog/apps/'    + appModule[0] + '/' + appModule[1] + '" target="_blank">' + appModule[1] + '</a>';
+                      job.app_module_name  = '<a href="#catalog/modules/' + appModule[0] + '" target="_blank">' + appModule[0] + '</a>';
+                    }
+                    else if (job.method) {
+                      var methodPieces = job.method.split('.');
+                      job.app_id = '(API):' + methodPieces[1];
+                      job.app_module_name  = '<a href="#catalog/modules/' + methodPieces[0] + '" target="_blank">' + methodPieces[0] + '</a>';
+                    }
+                    else {
+                      job.app_id = 'Unknown';
+                      job.app_module_name = 'Unknown';
+                    }
+
+                    job.result = job.error
+                      ? '<span class="label label-danger">Error</span>'
+                      : '<span class="label label-success">Success</span>';
+
+                    job.result += '<button class="btn btn-default btn-xs" data-job-id="' + job.job_id + '"> <i class="fa fa-file-text"></i></button>';
+
+                    self.adminRecentRuns.push(job);
+
+                  });
+
+                  /*
+                    user
+                    app_id (SPLIT ON slashes - has module)
+                    job_id
+                    app_id (SPLIT ON slashes - has app_id)
+                    creation_time
+                    exec_start_time
+                    finish_time
+                    run_time
+                    status
+                  */
+                })
+                .catch(function(xhr) {
+                  console.log("FAILED : ", [xhr.type, xhr.message].join(':') );
+                });//*/
+
             },
 
 

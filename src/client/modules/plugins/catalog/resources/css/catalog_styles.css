@@ -281,3 +281,10 @@
 .kbcb-reg-main-panel {
     margin: 0.2em 2.0em 0.2em 2.0em;
 }
+
+.kbcb-active-filter {
+  border            : 1px solid blue;
+  background-color  : #EEEEFF;
+  border-radius     : 5px;
+  padding           : 6px 12px 12px 6px;
+}
