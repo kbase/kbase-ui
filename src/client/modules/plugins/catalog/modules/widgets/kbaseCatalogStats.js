@@ -14,15 +14,13 @@ define([
         'kb_service/client/narrativeJobService',
         '../catalog_util',
         'kb_common/dynamicTable',
-        //'kb_sdk_clients/genericClient',
-        'kb_common/jsonRpc/genericClient',
         'kb_common/jsonRpc/dynamicServiceClient',
         'datatables',
         'kb_widget/legacy/authenticatedWidget',
         'bootstrap',
         'datatables_bootstrap',
     ],
-    function ($, Promise, NarrativeMethodStore, Catalog, NarrativeJobService, CatalogUtil, DynamicTable, GenericClient, DynamicService) {
+    function ($, Promise, NarrativeMethodStore, Catalog, NarrativeJobService, CatalogUtil, DynamicTable, DynamicService) {
 
         function renderDate ( date, type, full ) {
           if(type == "display"){

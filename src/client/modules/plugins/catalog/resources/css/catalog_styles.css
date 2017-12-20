@@ -283,8 +283,8 @@
 }
 
 .kbcb-active-filter {
-  border : 1px solid blue;
-  background-color : #EEEEFF;
-  border-radius : 5px;
-  padding : 6px 12px 12px 6px;
+  border            : 1px solid blue;
+  background-color  : #EEEEFF;
+  border-radius     : 5px;
+  padding           : 6px 12px 12px 6px;
 }
