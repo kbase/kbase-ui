@@ -811,7 +811,7 @@ define([
 
             checkIsAdmin: function () {
                 var self = this;
-                self.isAdmin = true;
+                self.isAdmin = false;
 
                 var me = self.runtime.service('session').getUsername();
                 return self.catalog.is_admin(me)
