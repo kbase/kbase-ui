@@ -80,14 +80,6 @@ define([
                     self.hideLoading();
                 });
 
-                // set up the metrics client. NOTE that this is only used for the admin view recent run stats ATM.
-                self.metricsClient = new DynamicService({
-                  url: self.runtime.config('services.service_wizard.url'),
-                  token: self.runtime.service('session').getAuthToken(),
-                  version : 'dev',
-                  module : 'kb_Metrics',
-                });
-
                 self.adminRecentRuns = [];
 
                 return this;
@@ -157,7 +149,7 @@ define([
               return rows.map( function(row) {
                 var rowArray = [];
                 config.headers.forEach( function (header) {
-                  rowArray.push(row[header.id]);
+                  rowArray.push(row[header.id] || '');
                 });
                 rowArray.query = rowArray.join(',');
                 return rowArray;
@@ -178,8 +170,13 @@ define([
             },
 
             reformatIntervalInTD : function($td) {
-              var timestamp = parseInt($td.text(), 10);
-              $td.text( this.getNiceDuration(timestamp) );
+              var timestamp = parseInt($td.text(), 10) / 1000;
+              if (Number.isNaN(timestamp)) {
+                $td.text('...');
+              }
+              else {
+                $td.text( this.getNiceDuration(timestamp) );
+              }
             },
 
             render: function () {
@@ -210,13 +207,15 @@ define([
                       return self.restructureRows(
                         adminRecentRunsConfig,
                         self.adminRecentRuns.filter( function (row) {
-                          var result = true;
+                          var result = false;
+                          var filtering = false;
                           Object.keys(activeFilters).forEach( function(filter) {
                             if (activeFilters[filter]) {
-                              result = result && filters[filter](row);
+                              filtering = true;
+                              result = result || filters[filter](row);
                             }
                           })
-                          return result;
+                          return result || ! filtering;
                         } )
                       )
                     }
@@ -306,7 +305,8 @@ define([
                           .append(
                             $.jqElem('select')
                               .addClass('form-control')
-                              .append( $.jqElem('option').attr('value', 48).append('Last 48 hours') )
+                              .append( $.jqElem('option').attr('value', 1).append('Last hour') )
+                              .append( $.jqElem('option').attr('value', 48).prop('selected', true).append('Last 48 hours') )
                               .append( $.jqElem('option').attr('value', 24 * 7).append('Last week') )
                               .append( $.jqElem('option').attr('value', 24 * 30).append('Last month') )
                               .append( $.jqElem('option').attr('value', 'custom').append('Custom Range') )
@@ -564,6 +564,13 @@ define([
                 this.njs = new NarrativeJobService(
                     this.runtime.getConfig('services.narrative_job_service.url'), { token: token }
                 );
+                // set up the metrics client. NOTE that this is only used for the admin view recent run stats ATM.
+                this.metricsClient = new DynamicService({
+                  url: this.runtime.getConfig('services.service_wizard.url'),
+                  token: token,
+                  version : 'dev',
+                  module : 'kb_Metrics',
+                });
             },
 
             initMainPanel: function ($appListPanel, $moduleListPanel) {
@@ -742,6 +749,7 @@ define([
 
                 self.adminRecentRuns = [];
 
+
                 return self.metricsClient.callFunc('get_app_metrics', [{epoch_range : [then, now]}]).then(function(data) {
                   var jobs = data[0].job_states;
 
@@ -766,14 +774,32 @@ define([
                       job.app_module_name = 'Unknown';
                     }
 
-                    job.result = job.error
-                      ? '<span class="label label-danger">Error</span>'
-                      : '<span class="label label-success">Success</span>';
+                    if (job.error) {
+                      job.result = '<span class="label label-danger">Error</span>';
+                    }
+                    else if (!job.finish_time) {
+                      job.result = job.exec_start_time
+                        ? '<span class="label label-warning">Running</span>'
+                        : '<span class="label label-warning">Queued</span>';
+                    }
+                    else {
+                      job.result = '<span class="label label-success">Success</span>';
+                    }
 
-                    job.result += '<button class="btn btn-default btn-xs" data-job-id="' + job.job_id + '"> <i class="fa fa-file-text"></i></button>';
+                    if (job.finish_time) {
+                      job.result += ' <button class="btn btn-default btn-xs" data-job-id="' + job.job_id + '"> <i class="fa fa-file-text"></i></button>';
+                    }
 
                     self.adminRecentRuns.push(job);
 
+                  });
+
+                  self.adminRecentRuns = self.adminRecentRuns.sort( function(a,b) {
+                    var aX = a.creation_time;
+                    var bX = b.creation_time;
+                           if ( aX < bX ) { return 1 }
+                      else if ( aX > bX ) { return -1 }
+                      else                { return 0 }
                   });
 
                   /*
