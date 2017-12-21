@@ -749,7 +749,7 @@ define([
 
                 return self.metricsClient.callFunc('get_app_metrics', [{epoch_range : [then, now]}]).then(function(data) {
                   var jobs = data[0].job_states;
-console.log("GOT JOBS : ", jobs);
+
                   jobs.forEach( function( job, idx ) {
 
 
