@@ -56,6 +56,13 @@ http {
         client_max_body_size 300M;
       }
 
+      # TODO: need to pin the docker container to a host name, 
+      # otherwise you need to inspect the container to find out the ip 
+      # address to use below
+      location /services/jgi_gateway_eap/rpc {
+        proxy_pass http://172.17.0.4:5000;
+      }
+
       # Needed for dynamic service calls
       location /dynserv {
         proxy_pass https://{{ kbase_ui.deploy_hostname }}/dynserv;
