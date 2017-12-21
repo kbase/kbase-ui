@@ -80,14 +80,6 @@ define([
                     self.hideLoading();
                 });
 
-                // set up the metrics client. NOTE that this is only used for the admin view recent run stats ATM.
-                self.metricsClient = new DynamicService({
-                  url: self.runtime.config('services.service_wizard.url'),
-                  token: self.runtime.service('session').getAuthToken(),
-                  version : 'dev',
-                  module : 'kb_Metrics',
-                });
-
                 self.adminRecentRuns = [];
 
                 return this;
@@ -179,7 +171,12 @@ define([
 
             reformatIntervalInTD : function($td) {
               var timestamp = parseInt($td.text(), 10);
-              $td.text( this.getNiceDuration(timestamp) );
+              if (Number.isNaN(timestamp)) {
+                $td.text('...');
+              }
+              else {
+                $td.text( this.getNiceDuration(timestamp) );
+              }
             },
 
             render: function () {
@@ -564,6 +561,13 @@ define([
                 this.njs = new NarrativeJobService(
                     this.runtime.getConfig('services.narrative_job_service.url'), { token: token }
                 );
+                // set up the metrics client. NOTE that this is only used for the admin view recent run stats ATM.
+                this.metricsClient = new DynamicService({
+                  url: this.runtime.getConfig('services.service_wizard.url'),
+                  token: token,
+                  version : 'dev',
+                  module : 'kb_Metrics',
+                });
             },
 
             initMainPanel: function ($appListPanel, $moduleListPanel) {
@@ -680,7 +684,7 @@ define([
 
             getAdminUserStats: function () {
                 var self = this;
-                if (!self.isAdmin) {
+                if (1) {
                     return Promise.try(function () {});
                 }
 
@@ -742,9 +746,10 @@ define([
 
                 self.adminRecentRuns = [];
 
+
                 return self.metricsClient.callFunc('get_app_metrics', [{epoch_range : [then, now]}]).then(function(data) {
                   var jobs = data[0].job_states;
-
+console.log("GOT JOBS : ", jobs);
                   jobs.forEach( function( job, idx ) {
 
 
@@ -766,11 +771,19 @@ define([
                       job.app_module_name = 'Unknown';
                     }
 
-                    job.result = job.error
-                      ? '<span class="label label-danger">Error</span>'
-                      : '<span class="label label-success">Success</span>';
+                    if (job.error) {
+                      job.result = '<span class="label label-danger">Error</span>';
+                    }
+                    else if (!job.finish_time) {
+                      job.result = '<span class="label label-warning">Running</span>';
+                    }
+                    else {
+                      job.result = '<span class="label label-success">Success</span>';
+                    }
 
-                    job.result += '<button class="btn btn-default btn-xs" data-job-id="' + job.job_id + '"> <i class="fa fa-file-text"></i></button>';
+                    if (job.finish_time) {
+                      job.result += ' <button class="btn btn-default btn-xs" data-job-id="' + job.job_id + '"> <i class="fa fa-file-text"></i></button>';
+                    }
 
                     self.adminRecentRuns.push(job);
 
@@ -798,7 +811,7 @@ define([
 
             checkIsAdmin: function () {
                 var self = this;
-                self.isAdmin = false;
+                self.isAdmin = true;
 
                 var me = self.runtime.service('session').getUsername();
                 return self.catalog.is_admin(me)
