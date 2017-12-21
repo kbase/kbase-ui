@@ -684,7 +684,7 @@ define([
 
             getAdminUserStats: function () {
                 var self = this;
-                if (1) {
+                if (self.isAdmin) {
                     return Promise.try(function () {});
                 }
 
