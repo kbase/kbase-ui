@@ -149,7 +149,7 @@ define([
               return rows.map( function(row) {
                 var rowArray = [];
                 config.headers.forEach( function (header) {
-                  rowArray.push(row[header.id]);
+                  rowArray.push(row[header.id] || '');
                 });
                 rowArray.query = rowArray.join(',');
                 return rowArray;
@@ -170,7 +170,7 @@ define([
             },
 
             reformatIntervalInTD : function($td) {
-              var timestamp = parseInt($td.text(), 10);
+              var timestamp = parseInt($td.text(), 10) / 1000;
               if (Number.isNaN(timestamp)) {
                 $td.text('...');
               }
@@ -207,13 +207,15 @@ define([
                       return self.restructureRows(
                         adminRecentRunsConfig,
                         self.adminRecentRuns.filter( function (row) {
-                          var result = true;
+                          var result = false;
+                          var filtering = false;
                           Object.keys(activeFilters).forEach( function(filter) {
                             if (activeFilters[filter]) {
-                              result = result && filters[filter](row);
+                              filtering = true;
+                              result = result || filters[filter](row);
                             }
                           })
-                          return result;
+                          return result || ! filtering;
                         } )
                       )
                     }
@@ -303,7 +305,8 @@ define([
                           .append(
                             $.jqElem('select')
                               .addClass('form-control')
-                              .append( $.jqElem('option').attr('value', 48).append('Last 48 hours') )
+                              .append( $.jqElem('option').attr('value', 1).append('Last hour') )
+                              .append( $.jqElem('option').attr('value', 48).prop('selected', true).append('Last 48 hours') )
                               .append( $.jqElem('option').attr('value', 24 * 7).append('Last week') )
                               .append( $.jqElem('option').attr('value', 24 * 30).append('Last month') )
                               .append( $.jqElem('option').attr('value', 'custom').append('Custom Range') )
@@ -775,7 +778,9 @@ define([
                       job.result = '<span class="label label-danger">Error</span>';
                     }
                     else if (!job.finish_time) {
-                      job.result = '<span class="label label-warning">Running</span>';
+                      job.result = job.exec_start_time
+                        ? '<span class="label label-warning">Running</span>'
+                        : '<span class="label label-warning">Queued</span>';
                     }
                     else {
                       job.result = '<span class="label label-success">Success</span>';
@@ -787,6 +792,14 @@ define([
 
                     self.adminRecentRuns.push(job);
 
+                  });
+
+                  self.adminRecentRuns = self.adminRecentRuns.sort( function(a,b) {
+                    var aX = a.creation_time;
+                    var bX = b.creation_time;
+                           if ( aX < bX ) { return 1 }
+                      else if ( aX > bX ) { return -1 }
+                      else                { return 0 }
                   });
 
                   /*
