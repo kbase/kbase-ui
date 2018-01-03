@@ -227,3 +227,10 @@ plugins:
     #     cwd: src/plugins
     #     source:
     #         directory: {}
+    # -
+    #     name: example-trr
+    #     globalName: kbase-ui-plugin-example-trr
+    #     version: 0.1.0
+    #     cwd: src/plugins
+    #     source:
+    #         directory: {}
