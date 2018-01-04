@@ -199,3 +199,10 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}            
+    -
+        name: staging-browser
+        globalName: kbase-ui-plugin-staging-browser
+        version: 0.1.1
+        cwd: src/plugin
+        source:
+            bower: {}     
