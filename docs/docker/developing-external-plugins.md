@@ -181,4 +181,10 @@ When you have completed a round of changes to the plugin and it is ready for rev
 
 > If the PR is in the early stages, it may still be in your personal github account; if this is so clearly you can skip the PR process for the plugin, and issue the new release version yourself.
 
+---
+
+[Index](../index.md) - [README](../../README.md) - [KBase](http://kbase.us)
+
+---
+
 
