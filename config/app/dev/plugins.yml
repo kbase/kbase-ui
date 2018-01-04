@@ -207,13 +207,26 @@ plugins:
         source:
             bower: {}
     -
-        name: staging-browser
-        globalName: kbase-ui-plugin-staging-browser
-        version: 0.1.0
+        name: simple-sample
+        globalName: kbase-ui-plugin-simple-sample
+        version: 0.1.3
         cwd: src/plugin
         source: 
             bower: {}
-    # -
+    -
+        name: staging-browser
+        globalName: kbase-ui-plugin-staging-browser
+        version: 0.1.1
+        cwd: src/plugin
+        source:
+            bower: {}     
+    -
+        name: myplugin
+        globalName: kbase-ui-plugin-myplugin
+        version: 0.1.0
+        cwd: src/plugin
+        source:
+            directory: {}               
     #     name: profile-admin
     #     globalName: kbase-ui-plugin-profile-admin
     #     version: 0.1.0
