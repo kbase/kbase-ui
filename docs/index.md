@@ -7,7 +7,7 @@
 - [Prerequisites](docker/prerequisites.md)
 - [Getting Started](docker/getting-started.md)
 - [Developing External Plugins](docker/developing-external-plugins.md)
-- [Creating a new External Plugin](docker/developing-new-external-plugin.md)
+- [Creating a New External Plugin](docker/developing-new-external-plugin.md)
 
 
 <!-- - [Prerequisites for Development](development-prerequisites.md) -->
