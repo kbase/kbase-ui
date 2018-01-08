@@ -1,9 +1,10 @@
 # Developing kbase-ui Plugins
 
-This guide covers a developer workflow for developing kbase-ui plugins, and deploying plugin and kbase-ui updates.
+This guide describes a workflow for developing kbase-ui plugins, and deploying plugin and kbase-ui updates.
 
 > Note this is for working on an *existing* plugin -- it does not cover creation of a plugin from scratch. See  [new external plugin](developing-new-external-plugin.md) if you need to create a new plugin.
 
+## Contents 
 - Prerequisites
 - Setting Up
 - Linking into kbase-ui
@@ -15,8 +16,8 @@ This guide covers a developer workflow for developing kbase-ui plugins, and depl
 
 This guide does not cover setting up kbase-ui for development -- if you have not done that yet please see the following documents:
 
-(1) [Prerequisites](prerequisites.md)
-(2) [Getting Started](getting-started.md)
+1. [Prerequisites](prerequisites.md)
+2. [Getting Started](getting-started.md)
 
 ## Setting Up
 
@@ -30,9 +31,9 @@ All kbase plugins have an upstream repo in the kbase github account at ```https:
 
 Where ```THEPLUGIN``` is the name of the plugin.
 
-> Note that sometimes during initial rapid development, a plugin may reside at your personal repo. This saves the extra pull request step which can slow down iterative development. This only works well when you are the sole developer
+> Well,sometimes during initial development, a plugin may reside at your personal repo. This saves the extra pull request step which can slow down iterative development, especially when a plugin is being born. This only works well when you are the sole developer
 
-Note that all plugin repos are prefixed with ```kbase-ui-plugin-```. This is not strictly a requirement, although some kbase-ui build tools will assume this, but it is good practice for a few reasons:
+Note that all plugin repos are prefixed with ```kbase-ui-plugin-```. This is not a hard requirement, in that kbase-ui can use plugins named otherwise. However some kbase-ui build tools assume this naming convention, and it is good practice for a few reasons:
 
 - it creates a uniqe name in the *github* namespace
 - it createsa a unique name in the *bower* namespace (more on that later)
@@ -43,7 +44,6 @@ When we reference the *name* of a plugin, we always refer the the string occurin
 So, your task is to fork the repo you are interested in.
 
 - create a github account if you do not already have one
-    - if you are a kbase staff member and you already have a github account, you may wish to create a kbase account distinct from your other identity on github
 - sign in to github if you are not already and ensure you are using the correct account for kbase work
 - visit the github page for the plugin
     - the root page for all plugins is https://github.com/kbase
@@ -59,16 +59,18 @@ First, open a terminal in the top level ```dev``` directory you set up to contai
 Then we'll clone the canonical plugin repo in the kbase account.
 
 ```bash
+$ cd ~/work/dev
 $ git clone https://github.com/kbase/kbase-ui-plugin-PLUGINNAME
 ```
 
 Then add a remote which is your fork of the repo.
 
 ```bash
+$ cd kbase-ui-plugin-PLUGINNAME
 $ git remote add NICKNAME https://github.com/YOURACCOUNT/kbase-ui-plugin-PLUGINNAME
 ```
 
-This sets up a remote named NICKNAME which points to your fork using the https method.
+This sets up a remote named *NICKNAME* which points to your fork using the https method.
 
 If you want to avoid the need to enter your password every time you push changes back up to your account, you may want to set up an ssh key:
 
@@ -85,41 +87,19 @@ $ git remote add NICKNAME ssh://git@github.com/YOURACCOUNT/kbase-ui-plugin-PLUGI
  ```
  dev
     kbase-ui
-        ...
     kbase-ui-plugin-PLUGINNAME
-        ...
  ```
 
-### An aside: how plugins are built into kbase-ui
+### Build and run the image with the plugin linked
 
-In the kbase-ui build configuration, there exists a configuration file listing all of the plugins to be built into the kbase-ui web app. This configuration file specifies the plugin name, the location and the version. 
+A tool is provided to both run the kbase-ui image (container) and at the same time link the local plugin directly into the image. Once you have done this, changes made to the local plugin will be relfected immediately in kbase-ui (after a browser reload.)
 
-The entry will look like this:
-
-```
-    -
-        name: PLUGINNAME
-        globalName: kbase-ui-plugin-PLUGINNAME
-        version: 1.2.3
-        cwd: src/plugin
-        source:
-            bower: {}
-```
-
-During the kbase-ui build process, the build tool uses the *bower* package manager to locate and download the correct version of the plugin source from github and install it locally. The build tool then copies the src/plugin/modules directory into the kbase-ui modules/plugins directory, and uses the src/plugin/config.yml file to integrate plugin components into the ui.
-
-Now, you may be able to see that one way to develop plugins is to simply update the plugin source, merge it into the repo, update the repo version, and rebuild kbase-ui. That is the short version of the steps necessary to integrate a plugin change! Although these steps are necessary for a well-managed system, it would be a  slow way to incrementally develop a plugin (although you can imagine a set of tools to automate it.)
-
-So, at develop-time, an alternative method is used. Since during the kbase-ui build process the plugin ```src/plugin/module``` directory is simply copied, whole-cloth, into the kbase-ui built source tree, we can simply alter the kbase-ui build to point to our local src/plugin/module rather than the installed one.
-
-In the old development workflows, the installed plugin would be removed and the local development directory linked into the build. In the current docker-based workflow, we use the docker run mount options to perform a similar function. Fortunately this is wrapped within the 'run-image.sh' tool 
-
-### Run the image with the plugin linked
-
-A tool is provided to both run the image (container) and at the same time link the locally cloned plugin directly into the image. This works by mounting the plugin source directory to the corresponding location inside of the kbase-ui container. The docker-mounted directory will temporarily replace the directory which was installed when kbase-ui was built.
+This works by mounting the plugin source directory to the corresponding location inside of the kbase-ui container. The docker-mounted directory will temporarily replace the directory which was installed when kbase-ui was built.
 
 ```bash
 cd ~/work/dev/kbase-ui
+make build
+make dev-image
 bash deployment/dev/tools/run-image.sh dev -p MYPLUGIN
 ```
 
@@ -141,6 +121,33 @@ The first argument to run-image is the ```env``. This value corresponds to the c
 
 We are using the -p argument to specify an external plugin to link into the kbase-ui image. Note that we use the plugin name, not the repo name. The tool knows how to find the plugin directory based on the directory structure (it should be a sister directory to kbase-ui) and uniform naming structure for repos (kbase-ui-plugin-PLUGINNAME).
 
+### Example
+
+```bash
+bash /Users/erikpearson/work/kbase/sprints/2018Q1S1/kbase-ui/deployment/dev/tools/run-image.sh dev
+CONFIG MOUNT: /Users/erikpearson/work/kbase/sprints/2018Q1S1/kbase-ui/deployment/conf
+ENVIRONMENT : dev
+READING OPTIONS
+MOUNTS:
+BusyBox v1.26.2 (2017-11-23 08:40:54 GMT) multi-call binary.
+
+Usage: dirname FILENAME
+
+Strip non-directory suffix from FILENAME
+NGINX CONFIG TEMPLATE /kb/deployment/bin/../conf/deployment_templates/nginx.conf.j2
+DATA SRC /conf/dev.ini
+CONFIG TEMPLATE /kb/deployment/bin/../conf/deployment_templates/config.json.j2
+2018/01/03 23:45:01 [notice] 13#13: using the "epoll" event method
+2018/01/03 23:45:01 [notice] 13#13: nginx/1.12.2
+2018/01/03 23:45:01 [notice] 13#13: OS: Linux 4.9.60-linuxkit-aufs
+2018/01/03 23:45:01 [notice] 13#13: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2018/01/03 23:45:01 [notice] 13#13: start worker processes
+2018/01/03 23:45:01 [notice] 13#13: start worker process 14
+2018/01/03 23:45:01 [notice] 13#13: start worker process 15
+2018/01/03 23:45:01 [notice] 13#13: start worker process 16
+2018/01/03 23:45:01 [notice] 13#13: start worker process 17
+```
+
 > TODO: provide a make task for this
 
 Confirm that this works by pulling up your favorite browser to https://ci.kbase.us.
@@ -158,43 +165,26 @@ You may now make changes to the plugin, and see those changes reflected immediat
 - pr, merge ui changes (just config)
 - redeploy on CI
 
-*** UPDATED ***
-
-
-
-
 ## Deploying updated plugin
 
-[ to be done ]
-[ this section will describe how to get your updated plugin back into the home repo and to increment the version]
+When you have completed a round of changes to the plugin and it is ready for review on CI, you will need to update the plugin repo and issue the changes into the CI environment. Typically this will involve two sets of updates -- first a PR for your plugin changes, which results in a new version; secondly a PR for the new plugin version in kbase-ui, which will result in a new release in CI.
 
-### Updating your repo
+- commit all changes
+- push changes to your fork
+- issue a PR for the kbase plugin
+- after the PR is accepted, a new version will have been issued
+- update the plugin version in your kbase-ui plugins.yml config for both dev and ci (and prod if this is ready for release)
+- rebuild kbase-ui and verify that the build works, and that the changes are present
+- commit and push your kbase-ui changes (which will just be configuration changes to bump up the version for your plugin) to your kbase-ui fork
+- issue a PR for this change
+- the PR will be accepted and kbase-ui will be redeployed into CI
 
-### The pull request
+> If the PR is in the early stages, it may still be in your personal github account; if this is so clearly you can skip the PR process for the plugin, and issue the new release version yourself.
 
-### The version bump
+---
 
-## Integrating into  kbase-ui
+[Index](../index.md) - [README](../../README.md) - [KBase](http://kbase.us)
 
-[ to be done]
-[ with an updated plugin, time to integrate it back into kbase-ui and ensure it works ]
+---
 
-### Updating plugins configurations
-
-### Test each build
-
-## Deploying updated kbase-ui
-
-[ to be done ]
-[ with an updated kbase ui, time to get that back into the home repo and up on ci ]
-
-### Commit changes and push up to your fork
-
-### Pull Request to the main repo
-
-
-
-### Testing your PR
- 
-> TO BE DONE
 
