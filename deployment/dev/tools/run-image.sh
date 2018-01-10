@@ -125,7 +125,7 @@ echo "MOUNTS: $mounts"
 # --mount type=bind,src=${root}/../kbase-ui-plugin-jgi-search/src/plugin,dst=/kb/deployment/services/kbase-ui/modules/plugins/jgi-search \
 
 docker run \
-  -p 80:80 -p 443:443 --dns=8.8.8.8 \
+  -p 80:80 -p 443:443 --dns=8.8.8.8 --rm \
   --mount type=bind,src=${config_mount},dst=/conf \
   $mounts \
   kbase/kbase-ui:dev /conf/${environment}.ini
