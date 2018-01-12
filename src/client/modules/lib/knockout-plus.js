@@ -3,6 +3,7 @@ define([
     'moment',
     'knockout',
     'kb_common/utils',
+    'kb_common/html',
     'knockout-mapping',
     'knockout-arraytransforms',
     'knockout-validation',
@@ -11,7 +12,8 @@ define([
     numeral,
     moment,
     ko,
-    Utils
+    Utils,
+    html
 ) {
     // Knockout Defaults
     ko.options.deferUpdates = true;
@@ -431,6 +433,65 @@ define([
         }, callbackTarget, event); 
         return sourceObservable; 
     };
+
+    // pure functions stuck onto ko
+
+    var t = html.tag,
+        div = t('div');
+
+    function komponent(componentDef) {
+        return '<!-- ko component: {name: "' + componentDef.name +
+            '", params: {' +
+            Object.keys(componentDef.params).map(function (key) {
+                return key + ':' + componentDef.params[key];
+            }).join(',') + '}}--><!-- /ko -->';
+    }
+
+    function createRootComponent(runtime, name) {
+        var vm = {
+            runtime: runtime,
+            running: ko.observable(false)
+        };
+        var temp = document.createElement('div');
+        temp.innerHTML = div({
+            style: {
+                flex: '1 1 0px',
+                display: 'flex',
+                flexDirection: 'column'
+            }
+        }, [
+            '<!-- ko if: running -->',
+            komponent({
+                name: name,
+                params: {
+                    runtime: 'runtime'
+                }
+            }),
+            '<!-- /ko -->'
+        ]);
+        var node = temp.firstChild;
+        ko.applyBindings(vm, node);
+
+        function start() {
+            vm.running(true);
+        }
+
+        function stop() {
+            vm.running(false);
+        }
+       
+        return {
+            vm: vm,
+            node: node,
+            start: start,
+            stop: stop
+        };
+    }
+
+    ko.kb = {};
+
+    ko.kb.komponent = komponent;
+    ko.kb.createRootComponent = createRootComponent;
 
     return ko;
 });
