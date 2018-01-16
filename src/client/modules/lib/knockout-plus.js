@@ -2,6 +2,7 @@ define([
     'numeral',
     'moment',
     'knockout',
+    'uuid',
     'kb_common/utils',
     'kb_common/html',
     'knockout-mapping',
@@ -12,6 +13,7 @@ define([
     numeral,
     moment,
     ko,
+    Uuid,
     Utils,
     html
 ) {
@@ -488,10 +490,26 @@ define([
         };
     }
 
+
+    function registerComponent(component) {
+        var name = new Uuid(4).format();
+        ko.components.register(name, component());
+
+        return {
+            name: function () {
+                return name;
+            },
+            quotedName: function () {
+                return '"' + name + '"';
+            }
+        };
+    }
+
     ko.kb = {};
 
     ko.kb.komponent = komponent;
     ko.kb.createRootComponent = createRootComponent;
+    ko.kb.registerComponent = registerComponent;
 
     return ko;
 });

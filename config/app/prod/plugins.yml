@@ -3,6 +3,8 @@
 plugins:
     # Plugins which come-with kbase-ui
     -
+        components
+    -
         mainwindow
     -
         message

@@ -3,6 +3,8 @@
 plugins:
     # Plugins which come-with kbase-ui
     -
+        components
+    -
         mainwindow
     -
         message
@@ -167,7 +169,7 @@ plugins:
     -
         name: jgi-search
         globalName: kbase-ui-plugin-jgi-search
-        version: 0.29.0
+        version: 0.30.2
         cwd: src/plugin
         source:
             bower: {}
@@ -195,7 +197,7 @@ plugins:
     -
         name: reske-simple-search
         globalName: kbase-ui-plugin-reske-simple-search
-        version: 0.5.1
+        version: 0.6.0
         cwd: src/plugin
         source:
             bower: {}            
