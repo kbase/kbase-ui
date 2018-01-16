@@ -1,0 +1,41 @@
+---
+package:
+    name: Components
+    description: Common Components
+    author: Erik Pearson
+    date: January 13, 2018
+source:
+    modules:
+        # here is one per widget
+    styles:
+install:
+    # Register the welcome widget
+  ko-components:
+    -
+      name: generic/json-viewer
+      module: 'components/jsonViewer'
+      css: true
+    -
+      name: generic/elapsed-clock
+      module: components/elapsedClock
+    -
+      name: generic/relative-clock
+      module: components/relativeClock
+    -
+      name: generic/dialog
+      module: components/dialog
+    -
+      name: generic/table
+      module: components/table
+    -
+      name: generic/overlay-panel
+      module: components/overlayPanel
+    -
+      name: generic/overlay-panel-bootstrappish
+      module: components/overlayPanelBootstrappish
+    -
+      name: generic/help
+      module: components/help
+    -
+      name: generic/error
+      module: components/error 
