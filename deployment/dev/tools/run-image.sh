@@ -106,6 +106,7 @@ case $key in
     # local libModule="${l[0]}"
     # local libName="${l[1]}"
     # local libPath="${l[2]}"
+    # e.g. kb_common:common-js:dist/kb_common
     echo "Using library repo: $lib, $libModule, $libName, $libPath"
      mounts="$mounts --mount type=bind,src=${root}/../kbase-${libName}/${libPath},dst=/kb/deployment/services/kbase-ui/modules/${libModule}"
     shift
