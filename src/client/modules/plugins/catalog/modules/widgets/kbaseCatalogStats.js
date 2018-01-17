@@ -29,17 +29,24 @@ define([
           return date;
         }
 
-        $.KBWidget({
+        return $.KBWidget({
             name: "KBaseCatalogStats",
             parent: "kbaseAuthenticatedWidget", // todo: do we still need th
-            options: {},
+            options: {
+              user_ids : [],
+              numHours : 48,  /* there are two ways to call get_app_metrics - either set a thenDate and nowDate to use as the range, or numHours here which is
+                                 how many hours before whatever the current timestamp is through to current */
+
+              includeRecentRuns     : true,
+              includeUserRunSummary : true,
+              includePublicStats    : true,
+              useUserRecentRuns     : false,
+            },
 
             // clients to the catalog service and the NarrativeMethodStore
             catalog: null,
             util: null,
             njs: null,
-            numHours : 48,  /* there are two ways to call get_app_metrics - either set a thenDate and nowDate to use as the range, or numHours here which is
-                               how many hours before whatever the current timestamp is through to current */
 
             // main panel and elements
             $mainPanel: null,
@@ -317,7 +324,7 @@ define([
 
                                 if ($(e.target).val() === 'custom') {
                                   var now = (new Date()).getTime();
-                                  var then = now - self.numHours * 60 * 60 * 1000;
+                                  var then = now - self.options.numHours * 60 * 60 * 1000;
                                   $customDiv.show();
                                   var inputs = $customDiv.find('input');
 
@@ -329,7 +336,7 @@ define([
                                   self.thenDate = undefined;
                                   $customDiv.hide();
 
-                                  self.numHours = $(e.target).val();
+                                  self.options.numHours = $(e.target).val();
 
                                   getLatestRunsInCustomRange(undefined, undefined);
                                 }
@@ -395,6 +402,23 @@ define([
                       ],
                     };
 
+                    var userRecentRunsConfig = {
+                      rowsPerPage : 100,
+                      headers : [
+                        { text : 'App ID', id : 'app_id', isSortable : true },
+                        { text : 'Module', id : 'app_module_name', isSortable : true },
+                        { text : 'Submission Time', id : 'creation_time', isSortable : true },
+                        { text : 'Start Time', id : 'exec_start_time', isSortable : true },
+                        { text : 'End Time', id : 'finish_time', isSortable : true },
+                        { text : 'Run Time', id : 'run_time', isSortable : true },
+                        { text : 'Status', id : 'result', isSortable : true },
+                      ],
+                    };
+
+                    if (self.options.useUserRecentRuns) {
+                      adminRecentRunsConfig = userRecentRunsConfig;
+                    }
+
                     var adminRecentRunsRestructuredRows = makeRecentRunsTableRows();
 
                     var $adminRecentRunsTable = new DynamicTable($adminRecentRunsContainer,
@@ -405,12 +429,25 @@ define([
                         updateFunction : self.createDynamicUpdateFunction(adminRecentRunsConfig, adminRecentRunsRestructuredRows),
                         rowFunction : function($row) {
 
-                          self.reformatDateInTD( $row.children().eq(4) );
-                          self.reformatDateInTD( $row.children().eq(5) );
-                          self.reformatDateInTD( $row.children().eq(6) );
-                          self.reformatIntervalInTD( $row.children().eq(7) );
+                          var $jobLogButton;
 
-                          var $jobLogButton = $row.children().eq(8).find('button');
+
+                          if (self.options.useUserRecentRuns) {
+                            self.reformatDateInTD( $row.children().eq(2) );
+                            self.reformatDateInTD( $row.children().eq(3) );
+                            self.reformatDateInTD( $row.children().eq(4) );
+                            self.reformatIntervalInTD( $row.children().eq(5) );
+
+                            $jobLogButton = $row.children().eq(6).find('button');
+                          }
+                          else {
+                            self.reformatDateInTD( $row.children().eq(4) );
+                            self.reformatDateInTD( $row.children().eq(5) );
+                            self.reformatDateInTD( $row.children().eq(6) );
+                            self.reformatIntervalInTD( $row.children().eq(7) );
+
+                            $jobLogButton = $row.children().eq(8).find('button');
+                          }
                           var job_id = $jobLogButton.data('job-id');
 
                           /* The Status field has a button which'll show the job log. This wires it up to do so.
@@ -468,23 +505,36 @@ define([
 
                     // we need to update the length of time that displays in the section header. Note that this is
                     // somewhat manually wired and may deviate from what's in the select box. A more clever solution would be handy.
-                    self.numHoursField = $('<span>').text('last ' + self.numHours + ' hours');
-                    var $adminContainer = $('<div>').addClass('container-fluid')
-                        .append($('<div>').addClass('row')
-                            .append($('<div>').addClass('col-md-12')
-                                .append(
-                                  $('<h4>')
-                                    .append('(Admin View) Recent Runs (submitted in ')
-                                  .append(self.numHoursField)
-                                  .append('):')
-                                )
-                                .append( $adminRecentRunsFilterContainer )
-                                .append( $adminRecentRunsContainer)
-                                .append('<br><br>')
-                                .append('<h4>(Admin View) User Run Summary:</h4>')
-                                .append($adminUserStatsContainer)
-                                .append('<br><br>')
-                                .append('<h4>Public Stats:</h4>')));
+                    self.numHoursField = $('<span>').text('last ' + self.options.numHours + ' hours');
+                    var $adminContainer = $('<div>').addClass('container-fluid');
+
+                    if (self.options.includeRecentRuns) {
+                      $adminContainer
+                          .append(
+                            $('<div>').addClass('row')
+                              .append(
+                                $('<div>').addClass('col-md-12')
+                                  .append(
+                                    $('<h4>')
+                                      .append('Recent Runs (submitted in ')
+                                    .append(self.numHoursField)
+                                    .append('):')
+                                  )
+                                  .append( $adminRecentRunsFilterContainer )
+                                  .append( $adminRecentRunsContainer)
+                            )
+                        );
+                    };
+                    if (self.options.includeUserRunSummary) {
+                      $adminContainer.append(
+                        $('<div>').addClass('row')
+                          .append(
+                            $('<div>').addClass('col-md-12')
+                              .append('<h4>User Run Summary:</h4>')
+                              .append($adminUserStatsContainer)
+                          )
+                      );
+                    }
 
                     self.$basicStatsDiv.append($adminContainer);
 
@@ -530,9 +580,12 @@ define([
                 var $container = $('<div>').addClass('container-fluid')
                     .append($('<div>').addClass('row')
                         .append($('<div>').addClass('col-md-12')
+                            .append('<h4>Public Stats:</h4>')
                             .append($basicStatsContainer)));
 
-                self.$basicStatsDiv.append($container);
+                if (self.options.includePublicStats) {
+                  self.$basicStatsDiv.append($container);
+                }
             },
 
             renderJobLog: function (jobId) {
@@ -571,6 +624,7 @@ define([
                   version : 'dev',
                   module : 'kb_Metrics',
                 });
+
             },
 
             initMainPanel: function ($appListPanel, $moduleListPanel) {
@@ -745,12 +799,11 @@ define([
                 var seconds = (new Date().getTime() / 1000) - 172800;
 
                 var now  = self.nowDate  || (new Date()).getTime();
-                var then = self.thenDate || now - self.numHours * 60 * 60 * 1000;
+                var then = self.thenDate || now - self.options.numHours * 60 * 60 * 1000;
 
                 self.adminRecentRuns = [];
 
-
-                return self.metricsClient.callFunc('get_app_metrics', [{epoch_range : [then, now]}]).then(function(data) {
+                return self.metricsClient.callFunc('get_app_metrics', [{epoch_range : [then, now], user_ids : self.options.usernames}]).then(function(data) {
                   var jobs = data[0].job_states;
 
                   jobs.forEach( function( job, idx ) {
@@ -824,7 +877,7 @@ define([
 
             checkIsAdmin: function () {
                 var self = this;
-                self.isAdmin = false;
+                self.isAdmin = true;
 
                 var me = self.runtime.service('session').getUsername();
                 return self.catalog.is_admin(me)
@@ -840,3 +893,4 @@ define([
 
         });
     });
+
