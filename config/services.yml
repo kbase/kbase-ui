@@ -57,6 +57,10 @@ services:
         aliases: ['reske']
         url: '{{ deploy.services.urlBase }}/services/reske'
         name: Search Two
+    KBaseSearchEngine:
+        aliases: ['search']
+        url: '{{ deploy.services.urlBase }}/services/searchapi'
+        name: Search Three        
     ServiceWizard:
         aliases: ['service_wizard']
         url: '{{ deploy.services.urlBase }}/services/service_wizard'
@@ -72,17 +76,17 @@ services:
     narrative:
         url: '{{ deploy.services.urlBase }}'
         name: Narrative User Interface
-    search:
-        url: https://kbase.us/services/search/
-        name: Data Search
+    # search:
+    #     url: https://kbase.us/services/search/
+    #     name: Data Search
     staging:
         aliases: ['staging_service']
         url: '{{ deploy.services.urlBase }}/services/staging_service'
     # Overrides for dynamic services can go here. Use the module name for the
     # key and a config-aware dsclient wrapper can use generic client instead
     # to reach this service.
-    # jgi_gateway_eap:
-    #      url: '{{ deploy.services.urlBase }}/services/jgi_gateway_eap/rpc'
+    # jgi_gateway:
+    #      url: '{{ deploy.services.urlBase }}/services/jgi_gateway/rpc'
 resources:
     docSite:
         base:

@@ -3,6 +3,8 @@
 plugins:
     # Plugins which come-with kbase-ui
     -
+        components
+    -
         mainwindow
     -
         message
@@ -32,7 +34,7 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 3.3.0
+        version: 3.4.0
         cwd: src/plugin
         source:
             bower: {}
@@ -81,7 +83,7 @@ plugins:
     -
         name: auth2-client
         globalName: kbase-ui-plugin-auth2-client
-        version: 1.2.6
+        version: 1.2.7
         cwd: src/plugin
         source:
             bower: {}

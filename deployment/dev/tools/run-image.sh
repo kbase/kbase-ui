@@ -106,6 +106,7 @@ case $key in
     # local libModule="${l[0]}"
     # local libName="${l[1]}"
     # local libPath="${l[2]}"
+    # e.g. kb_common:common-js:dist/kb_common
     echo "Using library repo: $lib, $libModule, $libName, $libPath"
      mounts="$mounts --mount type=bind,src=${root}/../kbase-${libName}/${libPath},dst=/kb/deployment/services/kbase-ui/modules/${libModule}"
     shift
@@ -125,7 +126,7 @@ echo "MOUNTS: $mounts"
 # --mount type=bind,src=${root}/../kbase-ui-plugin-jgi-search/src/plugin,dst=/kb/deployment/services/kbase-ui/modules/plugins/jgi-search \
 
 docker run \
-  -p 80:80 -p 443:443 --dns=8.8.8.8 \
+  -p 80:80 -p 443:443 --dns=8.8.8.8 --rm \
   --mount type=bind,src=${config_mount},dst=/conf \
   $mounts \
   kbase/kbase-ui:dev /conf/${environment}.ini

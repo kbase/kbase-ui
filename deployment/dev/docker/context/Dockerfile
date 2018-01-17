@@ -19,7 +19,7 @@ RUN apk --update upgrade && \
     apk add ca-certificates nginx python py-pip openssl wget bash bash-completion && \
     update-ca-certificates && \
     mkdir -p /kb/deployment && \
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /kb/deployment/test.key -out /kb/deployment/test.crt -subj "/C=US/ST=California/L=Berkeley/O=LBNL/OU=KBase/CN=ci.kbase.com"&& \
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /kb/deployment/test.key -out /kb/deployment/test.crt -subj "/C=US/ST=California/L=Berkeley/O=LBNL/OU=KBase/CN=ci.kbase.us"&& \
     pip install jinja2-cli[yaml]
 
 
