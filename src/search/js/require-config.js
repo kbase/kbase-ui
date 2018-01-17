@@ -91,7 +91,6 @@ require.config({
         'kb.widget.dashboard.data': 'src/widgets/dashboard/DataWidget',
         'kb.widget.dashboard.collaborators': 'src/widgets/dashboard/CollaboratorsWidget',
         'kb.widget.dashboard.metrics': 'src/widgets/dashboard/MetricsWidget',
-        'kb.widget.dashboard.jobs': 'src/widgets/dashboard/JobsWidget',
 
         // Dataview widgets
         'kb.widget.dataview.base': 'src/widgets/dataview/DataviewWidget',
