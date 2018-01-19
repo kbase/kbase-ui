@@ -13,8 +13,6 @@ plugins:
     -
         narrativemanager
     -
-        catalog
-    -
         about
     # external:
     -
