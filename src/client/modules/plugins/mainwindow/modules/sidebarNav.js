@@ -92,9 +92,9 @@ define([
                     return;
                 }
                 return {
-                    icon: 'files-o',
-                    label: 'Narratives',
-                    path: 'reske-search/narrative',
+                    icon: 'search',
+                    label: 'Search',
+                    path: 'search',
                     authRequired: true
                 };
             }()), (function () {
@@ -102,9 +102,9 @@ define([
                     return;
                 }
                 return {
-                    icon: 'search',
-                    label: 'Search',
-                    path: 'search',
+                    icon: 'suitcase',
+                    label: 'Jobs',
+                    path: 'jobbrowser',
                     authRequired: true
                 };
             }()), {
