@@ -94,3 +94,10 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: catalog
+        globalName: kbase-ui-plugin-catalog
+        version: 1.0.0
+        cwd: src/plugin
+        source:
+            bower: {} 

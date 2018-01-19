@@ -13,8 +13,6 @@ plugins:
     -
         narrativemanager
     -
-        catalog
-    -
         about
     # external:
     # These are shared with production
@@ -92,7 +90,7 @@ plugins:
     -
         name: jobbrowser
         globalName: kbase-ui-plugin-jobbrowser
-        version: 0.2.0
+        version: 0.3.2
         cwd: src/plugin
         source:
             bower: {}
@@ -221,7 +219,14 @@ plugins:
         version: 0.1.1
         cwd: src/plugin
         source:
-            bower: {}              
+            bower: {}     
+    -
+        name: catalog
+        globalName: kbase-ui-plugin-catalog
+        version: 1.1.1
+        cwd: src/plugin
+        source:
+            bower: {}                       
     #     name: profile-admin
     #     globalName: kbase-ui-plugin-profile-admin
     #     version: 0.1.0
