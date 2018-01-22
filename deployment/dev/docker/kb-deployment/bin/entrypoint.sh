@@ -39,11 +39,18 @@ NGINX_CONFIG_TEMPLATE=$DIR/../conf/deployment_templates/nginx.conf.j2
 # This is the path to the nginx config created by template above
 NGINX_CONFIG_DEST=/etc/nginx/nginx.conf
 
+# Default config template
+NGINX_CORS_TEMPLATE=$DIR/../conf/deployment_templates/cors.conf.j2
+
+# This is the path to the nginx config created by template above
+NGINX_CORS_DEST=/etc/nginx/cors.conf
+
 # Config.json template, uses the same data source
 CONFIG_JSON_TEMPLATE=$DIR/../conf/deployment_templates/config.json.j2
 
 # Destination for the config.json template above
 CONFIG_JSON_DEST=$DIR/../services/kbase-ui/modules/deploy/config.json
+
 
 # Verify that the directory that the config.json goes into exists, otherwise
 # create it
@@ -105,10 +112,12 @@ if [ "$2" ] ; then
 fi
 
 echo "NGINX CONFIG TEMPLATE ${NGINX_CONFIG_TEMPLATE}"
+echo "NGINX CORS TEMPLATE ${NGINX_CORS_TEMPLATE}"
 echo "DATA SRC ${DATA_SRC}"
 echo "CONFIG TEMPLATE ${CONFIG_JSON_TEMPLATE}"
 
 # Populate the nginx config as well as the config.json
 ${J2} $NGINX_CONFIG_TEMPLATE $DATA_SRC > $NGINX_CONFIG_DEST && \
+${J2} $NGINX_CORS_TEMPLATE $DATA_SRC > $NGINX_CORS_DEST && \
 ${J2} $CONFIG_JSON_TEMPLATE $DATA_SRC > $CONFIG_JSON_DEST && \
 nginx
