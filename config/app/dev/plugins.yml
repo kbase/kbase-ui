@@ -226,7 +226,14 @@ plugins:
         version: 1.1.1
         cwd: src/plugin
         source:
-            bower: {}                       
+            bower: {}      
+    -
+        name: narrative-finder
+        globalName: kbase-ui-plugin-narrative-finder
+        version: 0.1.0
+        cwd: src/plugin
+        source:
+            bower: {}
     #     name: profile-admin
     #     globalName: kbase-ui-plugin-profile-admin
     #     version: 0.1.0
