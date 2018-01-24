@@ -3,18 +3,6 @@
 # Much much longer than the original. Just wanted to get a handle
 # on explicit error capture and handling.
 
-function get_tag() {
-    # local error variable captures subprocess exit code in $?
-    # need this so that other commands don't overwrite it
-    # the variable holding the git command subprocess output must be
-    # declared local previously because local itself will reset $?
-    local tag
-    tag=$(git describe --exact-match --tags $(git rev-parse HEAD) 2>&1)
-    local err=$?
-    echo $tag
-    exit $err
-}
-
 function get_branch() {
     local branch
     branch=$(git symbolic-ref --short HEAD 2>&1)
@@ -60,31 +48,26 @@ function build_image() {
     fi
     echo "COMMIT: $commit"
 
-    if [[ -z "$tag" ]]; then
-        tag=$(get_tag)
-        err=$?
-        if (( $err > 0 )); then
-            echo "Sorry, not on a tag, won't build: ${tag}">&2
-            exit 3
-        fi
-    fi
-    echo "TAG $tag"
+    # Not tagged as in the usual sense, but the dev tag helps us keep the
+    # images separate locally.
+    tag="dev"
 
-    local image_tag="master"
-
-    local here="$(dirname "$(dirname "$(readlink -fm "$0")")")"
     local here=`pwd`
     echo "Running docker build in context ${here}/docker/context"
     # TODO: don't know why can't run this in a subprocess
-    # NOTE: the image is tagged "master" for production builds. In a real
-    # deploy the image would be pushed up to dockerhub with the master image tag.
-    docker build --build-arg BUILD_DATE=$date --build-arg VCS_REF=$commit --build-arg BRANCH=$branch --build-arg TAG=$tag -t kbase/kbase-ui:${image_tag} ${here}/docker/context
+    # NOTE: the dev build does not use the build date -- we don't want to bust the cache
+    docker build --build-arg VCS_REF=$commit \
+        --build-arg BRANCH=$branch \
+        --build-arg TAG=$tag \
+        -t kbase/kbase-ui-proxier:$tag \
+        ${here}/docker/context
+
     err=$?
     if (( $err > 0 )); then
         echo "Error running docker build: $err"
     else
         echo "Successfully build docker image. You may invoke it "
-        echo "with tag \"kbase/kbase-ui:${image_tag}\""
+        echo "with tag \"kbase/kbase-ui-proxier:${tag}\""
     fi
 }
 

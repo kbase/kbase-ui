@@ -1,10 +1,4 @@
-# This dockerfile will create an image useful for development
-# What distinguishes an image as useful for development directly, or as a base
-# for such an image, is that the nginx config expects to run on a hostname
-# of one of our deployment environments, and it also proxies the host to
-# kbase services, narrative, and dynamic service.
 FROM alpine:3.7
-
 # Container designed to serve up static KBase UI contents
 
 # These ARGs values are passed in via the docker build command
@@ -19,12 +13,11 @@ ENV DOCKERIZE_VERSION v0.6.0
 RUN apk --update upgrade && \
     apk add --no-cache ca-certificates nginx openssl wget bash bash-completion && \
     update-ca-certificates && \
+    mkdir -p /kb/deployment && \
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /kb/deployment/test.key -out /kb/deployment/test.crt -subj "/C=US/ST=California/L=Berkeley/O=LBNL/OU=KBase/CN=ci.kbase.us" && \
     wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
     tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
-    rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
-    mkdir -p /kb/deployment
-
-RUN touch /kb/    
+    rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 COPY contents /kb/deployment
 
@@ -37,8 +30,9 @@ LABEL org.label-schema.vcs-url="https://github.com/kbase/kbase-ui.git" \
       us.kbase.vcs-tag=$TAG \
       maintainer="Steve Chan sychan@lbl.gov"
 
+# EXPOSE 80
 ENTRYPOINT [ \
-   "dockerize", \
-    "-template", "/kb/deployment/conf/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
-    "-template", "/kb/deployment/conf/config.json.tmpl:/kb/deployment/services/kbase-ui/modules/deploy/config.json", \
+    "dockerize", \
+    "-template",  "/kb/deployment/conf/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
+    "-template", "/kb/deployment/conf/cors.conf.tmpl:/etc/nginx/cors.conf", \
     "nginx"]

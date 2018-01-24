@@ -16,16 +16,8 @@ That is it.
 
 Before pulling down the image for building, it should have been tagged. In fact, the clone you are building from should have been pulled down by that tag.
 
-Without the
-
 ### build the image
 
 ```bash
 bash tools/build_docker_image.sh
 ```
-
-## Handy Docker tools
-
-docker container prune
-docker image prune
-docker stop $(docker ps -q)

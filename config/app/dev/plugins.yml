@@ -234,6 +234,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: data-search
+        globalName: kbase-ui-plugin-data-search
+        version: 0.1.0
+        cwd: src/plugin
+        source:
+            directory: {}            
     #     name: profile-admin
     #     globalName: kbase-ui-plugin-profile-admin
     #     version: 0.1.0
