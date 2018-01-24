@@ -13,8 +13,6 @@ plugins:
     -
         narrativemanager
     -
-        catalog
-    -
         about
     # external:
     # These are shared with production
@@ -211,7 +209,7 @@ plugins:
     -
         name: catalog
         globalName: kbase-ui-plugin-catalog
-        version: 1.1.1
+        version: 1.1.2
         cwd: src/plugin
         source:
             bower: {}            
