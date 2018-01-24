@@ -44,8 +44,8 @@ if [ -z "$environment" ]; then
     exit 1
 fi
 
-if [ ! -e "deployment/conf/${environment}.ini" ]; then
-    echo "ERROR: environment (arg 1) does not resolve to a config file in deployment/conf/${environment}.ini"
+if [ ! -e "deployment/conf/${environment}.env" ]; then
+    echo "ERROR: environment (arg 1) does not resolve to a config file in deployment/conf/${environment}.env"
     usage
     exit 1
 fi
@@ -122,11 +122,10 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo "MOUNTS: $mounts"
 
-
-# --mount type=bind,src=${root}/../kbase-ui-plugin-jgi-search/src/plugin,dst=/kb/deployment/services/kbase-ui/modules/plugins/jgi-search \
-
 docker run \
-  -p 80:80 -p 443:443 --dns=8.8.8.8 --rm \
-  --mount type=bind,src=${config_mount},dst=/conf \
+  --rm \
+  --env-file ${config_mount}/${environment}.env \
+  --network=kbase-dev \
+  --name=kbase-ui-container \
   $mounts \
-  kbase/kbase-ui:dev /conf/${environment}.ini
+  kbase/kbase-ui:dev

@@ -4,10 +4,10 @@
 
 ## Contents
 
-- [Prerequisites](docker/prerequisites.md)
-- [Getting Started](docker/getting-started.md)
-- [Developing External Plugins](docker/developing-external-plugins.md)
-- [Creating a New External Plugin](docker/developing-new-external-plugin.md)
+- [Prerequisites](dev/prerequisites.md)
+- [Getting Started](dev/getting-started.md)
+- [Developing External Plugins](dev/developing-external-plugins.md)
+- [Creating a New External Plugin](dev/developing-new-external-plugin.md)
 
 
 <!-- - [Prerequisites for Development](development-prerequisites.md) -->
@@ -27,6 +27,6 @@
 
 ---
 
-[Index](index.md) - [README](../README.md) - [KBase](http://kbase.us)
+[Index](index.md) - [README](../README.md) - [Release Notes](../release-notes/index.md) - [KBase](http://kbase.us)
 
 ---

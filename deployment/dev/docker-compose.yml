@@ -1,0 +1,10 @@
+# Docker Compose for Dev Server
+---
+version: '3'
+services:
+  ui:
+    image: kbase/kbase-ui:dev
+    hostname: kbase-ui
+    # domainname: kbase.us
+  proxier:
+    image: kbase/kbase-ui-proxier:dev

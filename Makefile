@@ -28,6 +28,7 @@ directory		= build
 DEV_DOCKER_CONTEXT	= $(TOPDIR)/deployment/dev/docker/context
 CI_DOCKER_CONTEXT	= $(TOPDIR)/deployment/ci/docker/context
 PROD_DOCKER_CONTEXT	= $(TOPDIR)/deployment/prod/docker/context
+PROXIER_DOCKER_CONTEXT     = $(TOPDIR)/deployment/proxier/docker/context
 
 # Standard 'all' target = just do the standard build
 all:
@@ -93,9 +94,8 @@ dev-image:
 	mkdir -p $(DEV_DOCKER_CONTEXT)/contents/services/kbase-ui
 	# Note that we copy the "build" build, not the dist build.
 	cp -pr build/build/client/* $(DEV_DOCKER_CONTEXT)/contents/services/kbase-ui
-	@echo "> Copying kb/deployment entrypoint and config templates..."
+	@echo "> Copying kb/deployment templates..."
 	cp -pr $(DEV_DOCKER_CONTEXT)/../kb-deployment/* $(DEV_DOCKER_CONTEXT)/contents
-	chmod u+x $(DEV_DOCKER_CONTEXT)/contents/bin/entrypoint.sh
 	@echo "> Beginning docker build..."
 	cd $(DEV_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
 
@@ -135,21 +135,42 @@ prod-image:
 	mkdir -p $(PROD_DOCKER_CONTEXT)/contents/services/kbase-ui
 	# And of course we use the dist build for prod.
 	cp -pr build/dist/client/* $(PROD_DOCKER_CONTEXT)/contents/services/kbase-ui
-	@echo "> Copying kb/deployment entrypoint and config templates..."
+	@echo "> Copying kb/deployment config templates..."
 	cp -pr $(PROD_DOCKER_CONTEXT)/../kb-deployment/* $(PROD_DOCKER_CONTEXT)/contents
-	chmod u+x $(PROD_DOCKER_CONTEXT)/contents/bin/entrypoint.sh
 	@echo "> Beginning docker build..."
 	cd $(PROD_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
 
-run-dev-image:
-	@echo "> Running dev image."
-	# @echo "> You will need to inspect the docker container for the ip address "
-	# @echo ">   set your /etc/hosts for ci.kbase.us accordingly."
-	@echo "> To map host directories into the container, you will need to run "
-	@echo ">   deploymnet/dev/tools/run-image.sh with appropriate options."
-	bash $(TOPDIR)/deployment/dev/tools/run-image.sh dev 
+proxier-image:
+	@echo "> Building docker image."
+	@echo "> Cleaning out old contents"
+	rm -rf $(PROXIER_DOCKER_CONTEXT)/contents
+	mkdir -p $(PROXIER_DOCKER_CONTEXT)/contents
+	@echo "> Copying kb/deployment config templates..."
+	cp -pr $(PROXIER_DOCKER_CONTEXT)/../src/* $(PROXIER_DOCKER_CONTEXT)/contents
+	@echo "> Beginning docker build..."
+	cd $(PROXIER_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh	
 
-run-image:
+# run-dev-image:
+# 	@echo "> Running dev image."
+# 	# @echo "> You will need to inspect the docker container for the ip address "
+# 	# @echo ">   set your /etc/hosts for ci.kbase.us accordingly."
+# 	@echo "> To map host directories into the container, you will need to run "
+# 	@echo ">   deploymnet/dev/tools/run-image.sh with appropriate options."
+# 	$(eval cmd = $(TOPDIR)/deployment/dev/tools/run-image.sh $(env))
+# 	@echo "> Issuing: $(cmd)"
+# 	bash $(cmd)
+
+run-prod-image:
+	$(eval cmd = $(TOPDIR)/deployment/prod/tools/run-image.sh $(env))
+	@echo "> Issuing: $(cmd)"
+	bash $(cmd)
+
+run-proxier-image:
+	$(eval cmd = $(TOPDIR)/deployment/proxier/tools/run-image.sh $(env))
+	@echo "> Issuing: $(cmd)"
+	bash $(cmd)	
+
+run-dev-image:
 	@echo "> Running image."
 	# @echo "> You will need to inspect the docker container for the ip address "
 	# @echo ">   set your /etc/hosts for ci.kbase.us accordingly."

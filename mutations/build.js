@@ -56,12 +56,12 @@ function gitinfo(state) {
     }
     // fatal: no tag exactly matches 'bf5efa0810d9f097b7c6ba8390f97c008d98d80e'
     return Promise.all([
-            run('git show --format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d --name-status | head -n 8'),
-            run('git log -1 --pretty=%s'),
-            run('git log -1 --pretty=%N'),
-            run('git config --get remote.origin.url'),
-            run('git rev-parse --abbrev-ref HEAD'),
-            run('git describe --exact-match --tags $(git rev-parse HEAD)')
+        run('git show --format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d --name-status | head -n 8'),
+        run('git log -1 --pretty=%s'),
+        run('git log -1 --pretty=%N'),
+        run('git config --get remote.origin.url'),
+        run('git rev-parse --abbrev-ref HEAD'),
+        run('git describe --exact-match --tags $(git rev-parse HEAD)')
             .catch(function (err) {
                 // For non-prod ui we can be tolerant of a missing version, but not for prod.
                 if (state.buildConfig.target === 'prod') {
@@ -70,7 +70,7 @@ function gitinfo(state) {
                 console.warn('Not on a tag ... version will be unavailable');
                 return '';
             })
-        ])
+    ])
         .spread(function (infoString, subject, notes, url, branch, tag) {
             var info = infoString.split('\n');
             var version;
@@ -105,9 +105,9 @@ function gitinfo(state) {
 
 function copyFiles(from, to, globExpr) {
     return glob(globExpr, {
-            cwd: from.join('/'),
-            nodir: true
-        })
+        cwd: from.join('/'),
+        nodir: true
+    })
         .then(function (matches) {
             return Promise.all(matches.map(function (match) {
                 var fromPath = from.concat([match]).join('/'),
@@ -337,7 +337,7 @@ function injectPluginsIntoConfig(state) {
                         disabled: false
                     };
                 } else {
-                    pluginItem.directory = 'plugins/' + pluginItem.name
+                    pluginItem.directory = 'plugins/' + pluginItem.name;
                     plugins[pluginItem.name] = pluginItem;
                 }
             });
@@ -442,9 +442,9 @@ function copyFromBower(state) {
             // in the above spec.
             return Promise.all(copyJobs.map(function (copySpec) {
                 return glob(copySpec.src, {
-                        cwd: state.environment.path.concat(copySpec.cwd).join('/'),
-                        nodir: true
-                    })
+                    cwd: state.environment.path.concat(copySpec.cwd).join('/'),
+                    nodir: true
+                })
                     .then(function (matches) {
                         // Do the copy!
                         return Promise.all(matches.map(function (match) {
@@ -606,8 +606,10 @@ function configureSearch(state) {
     var configFile = state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/');
     return fs.readJson(configFile,
         function (err, config) {
-            var target = state.buildConfig.target;
-            config.setup = target;
+            // Don't fix up the target any longer -- this needs to be done
+            // at deploy time.
+            // var target = state.config.targets.deploy;
+            // config.setup = target;
             return fs.outputJson(configFile, config);
         }
     );
@@ -658,8 +660,8 @@ function copyUiConfig(state) {
     return mutant.loadYaml(baseUiConfig)
         .then(function (baseConfig) {
             return Promise.all(configFiles.map(function (file) {
-                    return mutant.loadYaml(file);
-                }))
+                return mutant.loadYaml(file);
+            }))
                 .then(function (configs) {
                     return mergeObjects([baseConfig].concat(configs));
                 })
@@ -676,6 +678,8 @@ function copyUiConfig(state) {
 function createBuildInfo(state) {
     return gitinfo(state)
         .then(function (gitInfo) {
+            // +++ 
+            // state.config.targets.deploy = '{{ deploy.environment }}';
             var root = state.environment.path,
                 configDest = root.concat(['build', 'client', 'modules', 'config', 'buildInfo.yml']),
                 buildInfo = {
@@ -707,26 +711,26 @@ function getReleaseNotes(state, version) {
 
 function verifyVersion(state) {
     return Promise.try(function () {
-            console.log('Verifying version...');
-            var releaseVersion = state.mergedConfig.release.version;
-            var gitVersion = state.buildInfo.git.version;
+        console.log('Verifying version...');
+        var releaseVersion = state.mergedConfig.release.version;
+        var gitVersion = state.buildInfo.git.version;
 
-            if (state.buildConfig.target === 'prod') {
-                if (releaseVersion === gitVersion) {
-                    console.log('release and git agree on ' + releaseVersion);
-                } else {
-                    throw new Error('Release and git versions are different; release says "' + releaseVersion + '", git says "' + gitVersion + '"');
-                }
-                return getReleaseNotes(state, releaseVersion)
-                    .then(function (releaseNotesFile) {
-                        console.log('have release notes?', releaseNotesFile);
-                    });
+        if (state.buildConfig.target === 'prod') {
+            if (releaseVersion === gitVersion) {
+                console.log('release and git agree on ' + releaseVersion);
             } else {
-                // we have no assumptions. Well, either there is a release notes file and release.version in agreement,
-                // or a new release notes is being worked on and is a higher version. Could check this...
-                console.warn('In a dev build, release version not checked.');
+                throw new Error('Release and git versions are different; release says "' + releaseVersion + '", git says "' + gitVersion + '"');
             }
-        })
+            return getReleaseNotes(state, releaseVersion)
+                .then(function (releaseNotesFile) {
+                    console.log('have release notes?', releaseNotesFile);
+                });
+        } else {
+            // we have no assumptions. Well, either there is a release notes file and release.version in agreement,
+            // or a new release notes is being worked on and is a higher version. Could check this...
+            console.warn('In a dev build, release version not checked.');
+        }
+    })
         .then(function () {
             return state;
         });
@@ -784,17 +788,17 @@ function mergeObjects(listOfObjects) {
  */
 function makeKbConfig(state) {
     var root = state.environment.path,
-        fileName = state.buildConfig.target + '.yml',
+        // fileName = state.buildConfig.target + '.yml',
         deployModules = root.concat(['build', 'client', 'modules', 'deploy']);
 
     return Promise.all([
-            mutant.loadYaml(root.concat(['config', 'deploy', fileName])),
-            fs.mkdirsAsync(deployModules.join('/'))
-        ])
-        .spread(function (deployConfig) {
-            var dest = deployModules.concat(['config.json']);
-            mutant.saveJson(dest, deployConfig);
-        })
+        // mutant.loadYaml(root.concat(['config', 'deploy', fileName])),
+        fs.mkdirsAsync(deployModules.join('/'))
+    ])
+        // .spread(function (deployConfig) {
+        //     var dest = deployModules.concat(['config.json']);
+        //     mutant.saveJson(dest, deployConfig);
+        // })
         .then(function () {
             return fs.readFileAsync(root.concat(['config', 'deploy', 'templates', 'build-info.js.txt']).join('/'), 'utf8')
                 .then(function (template) {
@@ -840,10 +844,9 @@ function makeKbConfig(state) {
         // Rewrite the main entry point html files to add in cache-busting via the git commit hash
         .then(function () {
             Promise.all(['index.html', 'load-narrative.html'].map(function (fileName) {
-                    return Promise.all([fileName, fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')]);
-                }))
+                return Promise.all([fileName, fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')]);
+            }))
                 .then(function (templates) {
-                    // +++
                     return Promise.all(templates.map(function (template) {
                         var dest = root.concat(['build', 'client', template[0]]).join('/');
                         var out = handlebars.compile(template[1])(state);
@@ -932,8 +935,8 @@ function makeDistBuild(state) {
     return fs.copyAsync(root.concat(['build']).join('/'), root.concat(['dist']).join('/'))
         .then(function () {
             return glob(root.concat(['dist', 'client', 'modules', '**', '*.js']).join('/'), {
-                    nodir: true
-                })
+                nodir: true
+            })
                 .then(function (matches) {
                     // TODO: incorporate a sustainable method for omitting
                     // directories from alteration.
@@ -983,8 +986,11 @@ function makeModuleVFS(state, whichBuild) {
         buildPath = ['..', 'build'];
 
     return glob(root.concat([whichBuild, 'client', 'modules', '**', '*']).join('/'), {
-            nodir: true
-        })
+        nodir: true,
+        exclude: [
+            [whichBuild, 'client', 'modules', 'deploy', 'config.json']
+        ]
+    })
         .then(function (matches) {
 
             // just read in file and build a giant map...
@@ -1019,11 +1025,11 @@ function makeModuleVFS(state, whichBuild) {
 
             function showStats(db) {
                 Object.keys(db).map(function (key) {
-                        return {
-                            key: key,
-                            count: db[key]
-                        };
-                    })
+                    return {
+                        key: key,
+                        count: db[key]
+                    };
+                })
                     .sort(function (a, b) {
                         return b.count - a.count;
                     })
@@ -1047,85 +1053,85 @@ function makeModuleVFS(state, whichBuild) {
             //     /^\/modules\/bower_components\/highlightjs\//
             // ];
             return Promise.all(matches
-                    .map(function (match) {
-                        var relativePath = match.split('/').slice(root.length + 2);
-                        return fs.readFileAsync(match, 'utf8')
-                            .then(function (contents) {
-                                // skip iframe_root directories, which are simply spliced
-                                // into an iframe.
-                                // if (relativePath.some(function (pathComponent) {
-                                //         return (pathComponent === 'iframe_root');
-                                //     })) {
-                                //     // console.warn('skipping iframe_root: ' + relativePath.join('/'));
-                                //     skipped += 1;
-                                //     return;
-                                // }
-                                var path = '/' + relativePath.join('/');
-                                if (exceptions.some(function (re) {
-                                        return (re.test(path));
+                .map(function (match) {
+                    var relativePath = match.split('/').slice(root.length + 2);
+                    return fs.readFileAsync(match, 'utf8')
+                        .then(function (contents) {
+                            // skip iframe_root directories, which are simply spliced
+                            // into an iframe.
+                            // if (relativePath.some(function (pathComponent) {
+                            //         return (pathComponent === 'iframe_root');
+                            //     })) {
+                            //     // console.warn('skipping iframe_root: ' + relativePath.join('/'));
+                            //     skipped += 1;
+                            //     return;
+                            // }
+                            var path = '/' + relativePath.join('/');
+                            if (exceptions.some(function (re) {
+                                return (re.test(path));
+                            })) {
+                                skip('excluded');
+                                return;
+                            }
+                            var m = /^(.*)\.([^.]+)$/.exec(path);
+                            if (m) {
+                                var base = m[1];
+                                var ext = m[2];
+                                // requirejs keeps the root forward slash.
+                                switch (ext) {
+                                case 'js':
+                                    include(ext);
+                                    vfs.scripts[path] = 'function () { ' + contents + ' }';
+                                    break;
+                                case 'yaml':
+                                case 'yml':
+                                    include(ext);
+                                    vfs.resources.json[base] = yaml.safeLoad(contents);
+                                    break;
+                                case 'json':
+                                    if (vfs.resources.json[base]) {
+                                        throw new Error('duplicate entry for json detected: ' + path);
+                                    }
+                                    try {
+                                        include(ext);
+                                        vfs.resources.json[base] = JSON.parse(contents);
+                                    } catch (ex) {
+                                        skip('error');
+                                        console.error('Error parsing json file: ' + path + ':' + ex.message);
+                                        // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
+                                    }
+                                    break;
+                                case 'text':
+                                case 'txt':
+                                    include(ext);
+                                    vfs.resources.text[base] = contents;
+                                    break;
+                                case 'css':
+                                    if (cssExceptions.some(function (re) {
+                                        return re.test(contents);
                                     })) {
-                                    skip('excluded');
-                                    return;
-                                }
-                                var m = /^(.*)\.([^.]+)$/.exec(path);
-                                if (m) {
-                                    var base = m[1];
-                                    var ext = m[2];
-                                    // requirejs keeps the root forward slash.
-                                    switch (ext) {
-                                    case 'js':
+                                        skip('css excluded');
+                                    } else {
+                                        // console.log('css included', base);
                                         include(ext);
-                                        vfs.scripts[path] = 'function () { ' + contents + ' }';
-                                        break;
-                                    case 'yaml':
-                                    case 'yml':
-                                        include(ext);
-                                        vfs.resources.json[base] = yaml.safeLoad(contents);
-                                        break;
-                                    case 'json':
-                                        if (vfs.resources.json[base]) {
-                                            throw new Error('duplicate entry for json detected: ' + path);
-                                        }
-                                        try {
-                                            include(ext);
-                                            vfs.resources.json[base] = JSON.parse(contents);
-                                        } catch (ex) {
-                                            skip('error');
-                                            console.error('Error parsing json file: ' + path + ':' + ex.message);
-                                            // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
-                                        }
-                                        break;
-                                    case 'text':
-                                    case 'txt':
-                                        include(ext);
-                                        vfs.resources.text[base] = contents;
-                                        break;
-                                    case 'css':
-                                        if (cssExceptions.some(function (re) {
-                                                return re.test(contents);
-                                            })) {
-                                            skip('css excluded');
-                                        } else {
-                                            // console.log('css included', base);
-                                            include(ext);
-                                            vfs.resources.css[base] = contents;
-                                        }
-                                        break;
-                                    case 'csv':
-                                        // console.warn('csv not handled yet: ' + path);
-                                        skip(ext);
-                                        break;
-                                    default:
-                                        skip(ext);
+                                        vfs.resources.css[base] = contents;
+                                    }
+                                    break;
+                                case 'csv':
+                                    // console.warn('csv not handled yet: ' + path);
+                                    skip(ext);
+                                    break;
+                                default:
+                                    skip(ext);
                                         // console.warn('File type "' + ext + '" not supported: ' + path);
                                         // break;
-                                    }
-                                } else {
-                                    skip('no extension');
-                                    console.warn('module vfs cannot include file without extension: ' + path);
                                 }
-                            });
-                    }))
+                            } else {
+                                skip('no extension');
+                                console.warn('module vfs cannot include file without extension: ' + path);
+                            }
+                        });
+                }))
                 .then(function () {
                     // var script = 'window.require_modules = ' + JSON.stringify(vfs, null, 4);
                     console.log('vfs created');
@@ -1213,7 +1219,7 @@ function main(type) {
     //     return makeBuildInfo(state);
     // })
 
-    .then(function (state) {
+        .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1221,7 +1227,7 @@ function main(type) {
             return fetchPackagesWithBower(state);
         })
 
-    .then(function (state) {
+        .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1229,7 +1235,7 @@ function main(type) {
             return installBowerPackages(state);
         })
 
-    .then(function (state) {
+        .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1246,7 +1252,7 @@ function main(type) {
     //         return installModules(state);
     //     })
 
-    .then(function (state) {
+        .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1261,7 +1267,7 @@ function main(type) {
     //            return installModulePackagesFromFilesystem(state);
     //        })
 
-    .then(function (state) {
+        .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1269,7 +1275,7 @@ function main(type) {
             return copyUiConfig(state);
         })
 
-    .then(function (state) {
+        .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1282,7 +1288,7 @@ function main(type) {
     // For dev, we need to compare the stamp and release notes, not the tag.
     // At some future time when working solely off of master, we will be able to compare
     // to the most recent tag.
-    .then(function (state) {
+        .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1290,7 +1296,7 @@ function main(type) {
             return verifyVersion(state);
         })
 
-    .then(function (state) {
+        .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1298,7 +1304,7 @@ function main(type) {
             return makeKbConfig(state);
         })
 
-    .then(function (state) {
+        .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1308,7 +1314,7 @@ function main(type) {
 
     // Disable temporarily ... we don't want to wipe out bower.json
     // until we have determined if we will be building a dist.
-    .then(function (state) {
+        .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1320,7 +1326,7 @@ function main(type) {
 
 
     // From here, we can make a dev build, make a release
-    .then(function (state) {
+        .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1328,7 +1334,7 @@ function main(type) {
             return makeBaseBuild(state);
         })
 
-    .then(function (state) {
+        .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1339,7 +1345,7 @@ function main(type) {
             return state;
         })
 
-    .then(function (state) {
+        .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
@@ -1365,7 +1371,7 @@ function main(type) {
     //
     //})
 
-    .then(function (state) {
+        .then(function (state) {
             return mutant.finish(state);
         })
         .catch(function (err) {

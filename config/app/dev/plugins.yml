@@ -223,7 +223,7 @@ plugins:
     -
         name: catalog
         globalName: kbase-ui-plugin-catalog
-        version: 1.1.1
+        version: 1.1.2
         cwd: src/plugin
         source:
             bower: {}      
@@ -234,6 +234,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: data-search
+        globalName: kbase-ui-plugin-data-search
+        version: 0.1.0
+        cwd: src/plugin
+        source:
+            bower: {}            
     #     name: profile-admin
     #     globalName: kbase-ui-plugin-profile-admin
     #     version: 0.1.0

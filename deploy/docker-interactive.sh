@@ -1,1 +1,0 @@
-docker run -i -t --entrypoint /bin/bash  kbase/kbase-ui:develop
