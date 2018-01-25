@@ -1,6 +1,6 @@
 menus:
     authenticated:
-        main: [narrative, bulk-ui]
+        main: [narrative]
         developer: [data-search, reske-admin, jgi-search, staging-browser]
         help: [about, about-services, contact-kbase, help]
     unauthenticated:

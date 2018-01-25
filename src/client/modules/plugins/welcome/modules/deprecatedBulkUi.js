@@ -1,24 +1,38 @@
 define([
-    'bluebird',
-    'kb_common/html'
+    'kb_common/html',
+    'kb_common/bootstrapUtils'
 ], function (
-    Promise,
-    html
+    html,
+    BS
 ) {
     'use strict';
 
     var t = html.tag,
         div = t('div'),
-        p = t('p'),
-        h2 = t('h2');
+        p = t('p');
 
     function factory(config) {
         var hostNode, container, runtime = config.runtime;
 
         function render() {
-            return div([
-                h2('Welcome to KBase'),
-                p('This is KBase')
+            return div({
+                class: 'container-fluid'
+            }, [
+                div({
+                    class: 'row'
+                }, [
+                    div({
+                        class: 'col-sm-8 col-sm-push-2'
+                    }, [
+                        BS.buildPanel({
+                            title: 'Bulk Import - DEPRECATED',
+                            type: 'warning',
+                            body: p([
+                                'Your deprecation message here.'
+                            ])
+                        })
+                    ])
+                ])
             ]);
         }
 
@@ -29,7 +43,7 @@ define([
         }
 
         function start() {
-            runtime.send('ui', 'setTitle', 'Welcome to KBase');
+            runtime.send('ui', 'setTitle', 'Bulk Import - DEPRECATED');
         }
 
         function stop() {
