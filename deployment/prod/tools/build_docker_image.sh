@@ -70,7 +70,7 @@ function build_image() {
     fi
     echo "TAG $tag"
 
-    local image_tag="develop"
+    local image_tag="master"
 
     local here="$(dirname "$(dirname "$(readlink -fm "$0")")")"
     local here=`pwd`
