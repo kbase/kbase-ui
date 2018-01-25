@@ -69,7 +69,7 @@ If you, dear reader, notice anything missing or mistakeng, please file a ticket 
 - auth service added to the about-services panel
 
 ### REMOVED
-- The Bulk Upload and Import plugin is being removed [SCT-XXX](https://kbase-jira.atlassian.net/browse/TASK-XXXX)
+- The Bulk Upload and Import plugin has being removed and the path replaced with a deprecation message [PTV-640](https://kbase-jira.atlassian.net/browse/PTV-640)
 
 ### UNRELEASED
 - RESKE search plugin added for dev and CI builds. This new functionality provides a user tools for accessing the RESKE search service - [TASK-1051](https://kbase-jira.atlassian.net/browse/TASK-1051)
