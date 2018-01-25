@@ -29,6 +29,7 @@ echo "READING OPTIONS"
 docker run \
   --rm \
   --env-file ${config_mount}/${environment}.env \
+  --env deployed=false \
   --network=kbase-dev \
   --name=kbase-ui-container \
   kbase/kbase-ui:master  
