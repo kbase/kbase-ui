@@ -67,7 +67,6 @@ define([
         }
 
         function pluginHandler(serviceConfigs, pluginConfig) {
-            // console.log('handling plugin registration...', serviceConfigs, pluginConfig);
             // iterate through configs
             if (!serviceConfigs) {
                 return;

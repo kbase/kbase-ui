@@ -1,119 +1,88 @@
+/*
+    App, along with main.js, are the heart of the the hub web app.
+    Apps primary responsibilities are:
+    - process plugins
+    - create, start and populate services
+    - create a simple communication bus
+    - provide runtime api for config, services, and comm
+*/
 define([
     '../lib/pluginManager',
-    'kb_common/dom',
+    './runtime',
     'kb_common/messenger',
-    'kb_widget/widgetMount',
     'kb_common/props',
+    'kb_widget/widgetMount',
     'kb_common/asyncQueue',
     'kb_common/appServiceManager',
-    'kb_common_ts/Cookie'
 ], function (
     pluginManagerFactory,
-    dom,
+    Runtime,
     messengerFactory,
+    Props,
     widgetMountFactory,
-    props,
     asyncQueue,
-    AppServiceManager,
-    M_Cookie
+    AppServiceManager
 ) {
     'use strict';
 
-    var moduleVersion = '0.0.1';
+    /*
+    App
+    The app is the primary runtime for the entire system. It provides a
+    core set of features, including communication, plugins, configuration,
+    fallback error handling, and a simple set of predefined root nodes.
+    The rest of the web app is crafted out of the plugins which are loaded
+    from the configuration.
+    Much of what plugin loading involves is interation with services, which is
+    usually literally providing a configuration object to the service and allowing
+    the service to do its thing.
+    This makes for a very small core, in which nearly all of the functionality is
+    provided by plugins and services.
 
-    function factory(config) {
-        var pluginManager,
-            appConfig = config.appConfig,
-            appConfigProps = props.make({
-                data: appConfig
-            }),
-            rootNode;
+    The config object looks like this:
+    TODO: add a json spec for it.
 
-        // quick hack:
+    appConfig -
+    plugins -
+    nodes -
 
-        function getConfig(prop, defaultValue) {
-            return appConfigProps.getItem(prop, defaultValue);
+    appConfig
+    at the heart of the configurability of the app is the appConfig. This is a
+    plain JS object containing
+
+    nodes
+    {
+        root: {
+            selector: <string>
         }
+    }
 
-        function hasConfig(prop) {
-            return appConfigProps.hasItem(prop);
-        }
+    */
+    function factory(_config) {
+        // Import the config.
+        // TODO: validate all incoming config.
+        var plugins = _config.plugins,
+            services = _config.services,
+            nodes = _config.nodes;
 
-        function rawConfig() {
-            return appConfigProps.debug();
-        }
+        // We simply wrap the incoming props in our venerable Props thing.
+        var appConfig = Props.make({
+            data: _config.appConfig
+        });
 
-        function allow(tag) {
-            var allowed = appConfigProps.getItem('ui.allow', []);
-            if (!(allowed instanceof Array)) {
-                allowed = [allowed];
-            }
-            return (allowed.indexOf(tag) >= 0);
+        // The entire ui (from the app's perspective) hinges upon a single
+        // root node, which must already be establibished by the
+        // calling code. If this node is absent, we simply fail here.
+        var rootNode = document.querySelector(nodes.root.selector);
+        if (!rootNode) {
+            throw new Error('Cannot set root node for selector ' + nodes.root.selector);
         }
 
         // Events
 
-        // Our own events
+        // Our own event system.
         var messenger = messengerFactory.make();
 
-        function receive(channel, message, fun) {
-            return rcv({
-                channel: channel,
-                message: message,
-                handler: fun
-            });
-        }
-        // The "short" versions of the message functions just use the raw
-        // messenger api, which expects an object argument.
-        function rcv(spec) {
-            return messenger.receive(spec);
-        }
-
-        function urcv(spec) {
-            return messenger.unreceive(spec);
-        }
-
-        function snd(spec) {
-            return messenger.send(spec);
-        }
-
-        // The friendlier more verbose functions take explicit arguments and
-        // packge them up into the messenger api format.
-        function send(channel, message, data) {
-            return snd({
-                channel: channel,
-                message: message,
-                data: data
-            });
-        }
-
-        function drop(spec) {
-            urcv(spec);
-        }
-
-        function sendp(channel, message, data) {
-            return messenger.sendPromise({
-                channel: channel,
-                message: message,
-                data: data
-            });
-        }
-
-        // Plugins
-        function installPlugins(plugins) {
-            return pluginManager.installPlugins(plugins);
-        }
-
-        // Services for plugins
-
-        function setRootNode(selector) {
-            rootNode = dom.qs(selector);
-            if (!rootNode) {
-                throw new Error('Cannot set root node for selector ' + selector);
-            }
-
-        }
-        setRootNode(config.nodes.root.selector);
+        // DOM
 
         var rootMount;
 
@@ -135,203 +104,114 @@ define([
             return rootMount.mountWidget(widgetId);
         }
 
+        // RENDER QUEUE - GET RID OF THIS
+
         var renderQueue = asyncQueue.make();
 
-        var appServiceManager = AppServiceManager.make();
+        // SERVICES
 
-        function proxyMethod(obj, method, args) {
-            if (!obj[method]) {
-                throw {
-                    name: 'UndefinedMethod',
-                    message: 'The requested method "' + method + '" does not exist on this object',
-                    suggestion: 'This is a developer problem, not your fault'
+        var appServiceManager = AppServiceManager.make({
+            moduleBasePath: 'app/services'
+        });
+
+        var api = Runtime.make({
+            config: appConfig,
+            messenger: messenger,
+            serviceManager: appServiceManager
+        });
+
+        function addServices(services) {
+            Object.keys(services).forEach(function (serviceName) {
+                // A service which is just declared may not have any configuration
+                // at all.
+                var serviceConfig = JSON.parse(JSON.stringify(services[serviceName]));
+                var service = {
+                    name: serviceName
                 };
-            }
-            return obj[method].apply(obj, args);
-        }
-
-        function navigate(path) {
-            send('app', 'navigate', path);
-        }
-
-        function feature(featureSet, path) {
-            var featureFlag = new M_Cookie.CookieManager().getItem('ui.features.auth.selected');
-            if (!featureFlag) {
-                featureFlag = api.config('ui.features.' + featureSet + '.selected');
-                // featureFlag = api.config('ui.features.' + featureSet + '.selected');
-            }
-            var featurePath = 'ui.features.' + featureSet + '.available.' + featureFlag + '.' + path;
-            var result = getConfig(featurePath, null);
-            if (result === null) {
-                throw new Error('Feature is not defined: ' + featurePath);
-            }
-            return result;
-        }
-
-        var api = {
-            getConfig: getConfig,
-            config: getConfig,
-            hasConfig: hasConfig,
-            rawConfig: rawConfig,
-            feature: feature,
-            allow: allow,
-            // Session
-            installPlugins: installPlugins,
-            send: send,
-            sendp: sendp,
-            recv: receive,
-            drop: drop,
-            snd: snd,
-            rcv: rcv,
-            urcv: urcv,
-            // navigation
-            navigate: navigate,
-            // Services
-            addService: function () {
-                return proxyMethod(appServiceManager, 'addService', arguments);
-            },
-            loadService: function () {
-                return proxyMethod(appServiceManager, 'loadService', arguments);
-            },
-            getService: function () {
-                return proxyMethod(appServiceManager, 'getService', arguments);
-            },
-            service: function () {
-                var service = proxyMethod(appServiceManager, 'getService', arguments);
-                return service
-            },
-            hasService: function () {
-                return proxyMethod(appServiceManager, 'hasService', arguments);
-            },
-            dumpServices: function () {
-                return proxyMethod(appServiceManager, 'dumpServices', arguments);
-            }
-        };
-
-        function begin() {
-            // Register service handlers.
-            var sessionConfig = {
-                runtime: api,
-                cookieName: 'kbase_session',
-                cookieMaxAge: appConfig.ui.constants.session_max_age
-            };
-
-            if (api.config('ui.backupCookie.enabled')) {
-                sessionConfig.extraCookies = [{
-                    name: 'kbase_session_backup',
-                    domain: api.config('ui.backupCookie.domain')
-                }];
-            }
-
-            // Add a session service provided by the selected auth feature
-            appServiceManager.addService({
-                name: 'session',
-                module: api.feature('auth', 'services.session.module'),
-            }, sessionConfig);
-
-            // Add plugin(s) provided by the selected auth feature.
-            // By default a plugin which is provided for a feature must be set to 
-            // disabled state, and will be enabled here.
-            api.feature('auth', 'plugins').forEach(function (pluginName) {
-                config.plugins[pluginName].disabled = false;
-            });
-
-            appServiceManager.addService('heartbeat', {
-                runtime: api,
-                interval: 500
-            });
-
-            appServiceManager.addService('route', {
-                runtime: api,
-                // notFoundRoute: {redirect: {path: 'message/notfound'}},
-                defaultRoute: {
-                    redirect: {
-                        path: 'login'
-                    }
+                service.module = serviceName;
+                // if (serviceConfig.module) {
+                //     service.module = serviceConfig.module;
+                // } else {
+                //     service.module = serviceName;
+                // }
+                // var config = appConfig.getItem(['ui', 'services', serviceName], {});
+                // TODO does not support paths, but we don't want to keep this mechamism anyway.
+                if (serviceConfig.configs) {
+                    serviceConfig.configs.forEach(function (configName) {
+                        serviceConfig[configName] = appConfig.getItem(configName);
+                    });
+                    delete serviceConfig.configs;
                 }
+                serviceConfig.runtime = api;
+                appServiceManager.addService(service, serviceConfig);
             });
-            appServiceManager.addService('menu', {
-                runtime: api,
-                menus: config.menus
-            });
-            appServiceManager.addService('widget', {
-                runtime: api
-            });
-            appServiceManager.addService('service', {
-                runtime: api
-            });
-            appServiceManager.addService('data', {
-                runtime: api
-            });
-            appServiceManager.addService('type', {
-                runtime: api
-            });
-            appServiceManager.addService('userprofile', {
-                runtime: api
-            });
-            appServiceManager.addService('analytics', {
-                runtime: api
-            });
-            appServiceManager.addService('connection', {
-                runtime: api
-            });
+        }
 
-            appServiceManager.addService('ko-component', {
-                runtime: api
-            });
+        // PLUGINS
 
-            appServiceManager.addService('notification', {
-                runtime: api
-            });
+        var pluginManager = pluginManagerFactory.make({
+            runtime: api
+        });
 
-            appServiceManager.addService('schema', {
-                runtime: api
-            });
+        addServices(services);
 
-            pluginManager = pluginManagerFactory.make({
-                runtime: api
-            });
-
+        function start() {
             // Behavior
             // There are not too many global behaviors, and perhaps there should
             // even fewer or none. Most behavior is within services or
             // active widgets themselves.
-            // receive('session', 'loggedout', function () {
-            //     send('app', 'navigate', 'goodbye');
-            // });
 
-            receive('app', 'route-not-found', function (info) {
-                // alert('help, the route was not found!: ' + route.path);
-                send('app', 'navigate', {
-                    path: 'message/error/notfound',
-                    params: {
-                        info: JSON.stringify(info)
-                    },
-                    replace: true
-                });
+            // TODO: replace this with call to mount a page not found panel
+            // rather than routing... This will preserve the url and ease the life
+            // of developers around the world.
+            messenger.receive({
+                channel: 'app',
+                message: 'route-not-found',
+                handler: function (info) {
+                    messenger.send({
+                        channel: 'app',
+                        message: 'navigate',
+                        data: {
+                            path: 'message/error/notfound',
+                            params: {
+                                info: JSON.stringify(info)
+                            },
+                            replace: true
+                        }
+                    });
+                }
             });
 
             // UI should be a service...
             // NB this was never developed beyond this stage, and should
             // probably be hunted down and removed.
-            receive('ui', 'render', function (arg) {
-                renderQueue.addItem({
-                    onRun: function () {
-                        if (arg.node) {
-                            arg.node.innerHTML = arg.content;
-                        } else {
-                            console.error('ERROR');
-                            console.error('Invalid node for ui/render');
+            messenger.receive({
+                channel: 'ui',
+                message: 'render',
+                handler: function (arg) {
+                    renderQueue.addItem({
+                        onRun: function () {
+                            if (arg.node) {
+                                arg.node.innerHTML = arg.content;
+                            } else {
+                                console.error('ERROR');
+                                console.error('Invalid node for ui/render');
+                            }
                         }
-                    }
-                });
+                    });
+                }
             });
 
             // ROUTING
 
+
+            // START IT UP
+
+
+
             return appServiceManager.loadServices()
                 .then(function () {
-                    return installPlugins(config.plugins);
+                    return pluginManager.installPlugins(plugins);
                 })
                 .then(function () {
                     return appServiceManager.startServices();
@@ -344,21 +224,24 @@ define([
                     // api.service('analytics').pageView('/index');
                     // remove the loading status.
 
-                    send('app', 'do-route');
+                    messenger.send({
+                        channel: 'app',
+                        message: 'do-route'
+                    });
                     return api;
                 });
         }
+
+        function stop() {}
+
         return {
-            begin: begin
+            config: appConfig,
+            addServices: addServices,
+            start: start,
+            stop: stop
         };
     }
     return {
-        run: function (config) {
-            var runtime = factory(config);
-            return runtime.begin();
-        },
-        version: function () {
-            return moduleVersion;
-        }
+        make: factory
     };
 });

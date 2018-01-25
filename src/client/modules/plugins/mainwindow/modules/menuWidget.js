@@ -1,14 +1,12 @@
 define([
-    'kb_widget/bases/simpleWidget',
     'kb_common/html',
     'bootstrap'
 ], function (
-    SimpleWidget,
     html
 ) {
     'use strict';
 
-    function myWidget(config) {
+    function factory(config) {
         var t = html.tag,
             ul = t('ul'),
             li = t('li'),
@@ -16,7 +14,8 @@ define([
             div = t('div'),
             span = t('span'),
             button = t('button'),
-            runtime = config.runtime;
+            runtime = config.runtime,
+            hostNode, container;
 
         function renderMenuItem(item) {
             var icon, path,
@@ -75,8 +74,8 @@ define([
             return content;
         }
 
-        function renderMenu(w) {
-            var menu = w.getState('menu'),
+        function renderMenu() {
+            var menu = runtime.service('menu').getCurrentMenu(),
                 items = [
                     renderMenuSection(menu.main),
                     renderMenuSection(menu.developer),
@@ -89,40 +88,53 @@ define([
                 }).map(function (items) {
                     return items.join('');
                 }).join(renderMenuItem({ type: 'divider' }));
-
-            return ul({ class: 'dropdown-menu', role: 'menu', 'aria-labeledby': 'kb-nav-menu' }, items);
+            container.querySelector('.dropdown-menu').innerHTML = items;
         }
 
-        return SimpleWidget.make({
-            runtime: runtime,
-            on: {
-                start: function () {
-                    runtime.service('menu').onChange(function (value) {
-                        this.set('menu', value);
-                    }.bind(this));
-                },
-                render: function () {
-                    return div({
-                        class: 'widget-menu'
-                    }, [
-                        button({
-                            id: 'kb-nav-menu',
-                            class: 'btn btn-default navbar-btn kb-nav-btn',
-                            dataToggle: 'dropdown',
-                            ariaHaspopup: 'true'
-                        }, [
-                            span({ class: 'fa fa-navicon' })
-                        ]),
-                        renderMenu(this)
-                    ]);
-                }
+        function attach(node) {
+            hostNode = node;
+            container = hostNode.appendChild(document.createElement('div'));
+            container.classList.add('widget-menu');
+        }
+
+        function start() {
+            container.innerHTML = div({
+                class: 'navbar'
+            }, [
+                button({
+                    id: 'kb-nav-menu',
+                    class: 'btn btn-default navbar-btn kb-nav-btn',
+                    dataToggle: 'dropdown',
+                    ariaHaspopup: 'true'
+                }, [
+                    span({ class: 'fa fa-navicon' })
+                ]),
+                ul({
+                    class: 'dropdown-menu',
+                    role: 'menu',
+                    ariaLabeledby: 'kb-nav-menu'
+                })
+            ]);
+            renderMenu();
+            runtime.service('menu').onChange(function (value) {
+                renderMenu();
+            }.bind(this));
+        }
+
+        function detach() {
+            if (hostNode && container) {
+                container.removeChild(hostNode);
             }
-        });
+        }
+
+        return {
+            attach: attach,
+            start: start,
+            detach: detach
+        };
     }
 
     return {
-        make: function (config) {
-            return myWidget(config);
-        }
+        make: factory
     };
 });

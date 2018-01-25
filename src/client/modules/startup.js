@@ -3,28 +3,27 @@
 (function (root) {
     // First display a loading message in case we have some latency issues...
 
-    function showInitialLoadingView() {
-        var status = root.document.getElementById('root');
-        status.innerHTML =
-            '<div style="padding: 0; border-bottom: 5px solid #E0E0E0;">' +
-            '	<div style="position: relative; height: 65px" >' +
-            '		<div style="display: inline-block;width: 52px;">&nbsp;' +
-            '		</div>' +
-            '		<div style="padding: 4px; display: inline-block; height: 100%; vertical-align: top" id="kb_html_4">' +
-            '                   <a href="http://kbase.us"><img id="logo" src="/modules/plugins/mainwindow/resources/images/kbase_logo.png" width="46"></a>' +
-            '		</div>' +
-            '		<div style="padding: 4px; display: inline-block; height: 100%; vertical-align: top" id="kb_html_5">' +
-            '                   <div style="font-weight: bold; font-size: 150%; margin: 18px 0 0 15px; ">' +
-            '                       ' +
-            '		   </div>' +
-            '		</div>' +
-            '	</div>' +
-            '</div>';
-    }
+    // function showInitialLoadingView() {
+    //     var status = root.document.getElementById('root');
+    //     status.innerHTML =
+    //         '<div style="padding: 0; border-bottom: 5px solid #E0E0E0;">' +
+    //         '	<div style="position: relative; height: 65px" >' +
+    //         '		<div style="display: inline-block;width: 52px;">&nbsp;' +
+    //         '		</div>' +
+    //         '		<div style="padding: 4px; display: inline-block; height: 100%; vertical-align: top" id="kb_html_4">' +
+    //         '                   <a href="http://kbase.us"><img id="logo" src="/modules/plugins/mainwindow/resources/images/kbase_logo.png" width="46"></a>' +
+    //         '		</div>' +
+    //         '		<div style="padding: 4px; display: inline-block; height: 100%; vertical-align: top" id="kb_html_5">' +
+    //         '                   <div style="font-weight: bold; font-size: 150%; margin: 18px 0 0 15px; ">' +
+    //         '                       ' +
+    //         '		   </div>' +
+    //         '		</div>' +
+    //         '	</div>' +
+    //         '</div>';
+    // }
 
     function handleGlobalError(err) {
         'use strict';
-
 
         switch (err.requireType) {
         case 'notloaded':
@@ -178,17 +177,16 @@
             .catch(function (err) {
                 console.error('Startup Error', err);
                 KBaseFallback.showError({
-                    title: 'KBase Application Startup Error',
+                    title: 'KBase Hub Web Application Startup Error',
                     content: [
-                        'An error has occurred while starting the KBase Application.',
+                        'An error has occurred while starting the KBase Hub Web Application.',
                         err.message
                     ],
                     references: [{
-                        title: 'Reporting Application Errors',
+                        title: 'Reporting Errors',
                         url: 'http://kbase.us/contact-us'
                     }]
                 });
-                // document.getElementById('root').innerHTML = 'Error starting KBase UI. Please consult the browser error log.';
             });
     }, function (err) {
         handleStartupError(err);

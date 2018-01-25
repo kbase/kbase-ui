@@ -7,54 +7,100 @@ define([
     'use strict';
 
     var serviceError = {
-        error: {
-            type: 'object',
-            value: {
-                code: {type: 'number'},
-                error: {type: 'string'},
-                message: {type: 'string'},
-                name: {type: 'string'}
+            error: {
+                type: 'object',
+                value: {
+                    code: { type: 'number' },
+                    error: { type: ['string', null] },
+                    message: { type: 'string' },
+                    name: { type: 'string' }
+                }
+            },
+            status: { type: 'number' }
+        },
+        error1 = {
+            error: {
+                type: 'object',
+            },
+            title: {
+                type: 'string'
             }
         },
-        status: {type: 'number'}
-    },
-    uiError = {
-        type: {type: 'string'},
-        reason: {type: 'string'},
-        blame: {type: 'string'},
-        message: {type: 'string'},
-        suggestions: {type: 'string'}
-    },
-    codeError = {
-        message: {type: 'string'},
-        stack: {type: 'string'},
-        sourceURL: {type: 'string'},
-        column: {type: 'number'},
-        line: {type: 'number'}
-    },
-    t = html.tag,
+        uiError = {
+            type: { type: 'string' },
+            reason: { type: 'string' },
+            blame: { type: 'string' },
+            message: { type: 'string' },
+            suggestions: { type: 'string' }
+        },
+        codeError = {
+            message: { type: 'string' },
+            stack: { type: 'string' },
+            sourceURL: { type: 'string' },
+            column: { type: 'number' },
+            line: { type: 'number' }
+        },
+        t = html.tag,
         div = t('div');
 
     function isType(obj, shape) {
+        function matchType(value, def) {
+            if (typeof value !== def.type) {
+                return true;
+            }
+        }
+
+        // walk the def and object, ensuring that the object matches the def.
+        // stop at leaves of def (meaning that it may leave bits of the object
+        // unspecified)
         function compare(obj, def) {
-            return Object.keys(def).some(function (prop) {
-                // simply reject if not define.
-                if (def[prop] === undefined) {
-                    return true;
+            var keys = Object.keys(def);
+            for (var i = 0; i < keys.length; i += 1) {
+                var defKey = keys[i];
+                var defProp = def[defKey];
+                var objProp = obj[defKey];
+
+                if (obj[defProp] === undefined) {
+                    return false;
                 }
                 // simple type comparison, to be improved.
-                if (typeof obj[prop] !== def[prop].type) {
-                    return true;
+                if (!matchType(objProp, defProp)) {
+                    return false;
                 }
 
                 // objects or arrays are inspected recursively.
-                if (typeof obj[prop] === 'object' && obj[prop] !== null) {
-                    return compare(obj[prop], def[prop].value);
+                if (typeof objProp === 'object' && objProp !== null) {
+                    if (defProp.value) {
+                        return compare(objProp, defProp.value);
+                    }
                 }
-                return false;
-            });
+                return true;
+            }
         }
-        return !compare(obj, shape);
+
+        // function xcompare(obj, def) {
+        //     return Object.keys(def).some(function (prop) {
+
+        //         // simply reject if not defined.
+        //         if (def[prop] === undefined) {
+        //             return true;
+        //         }
+        //         // simple type comparison, to be improved.
+        //         if (!matchType(obj[prop], def[prop])) {
+        //             return true;
+        //         }
+
+        //         // objects or arrays are inspected recursively.
+        //         if (typeof obj[prop] === 'object' && obj[prop] !== null) {
+        //             // stop if the object is not further defed.
+        //             if (def[prop].value) {
+        //                 return compare(obj[prop], def[prop].value);
+        //             }
+        //         }
+        //         return false;
+        //     });
+        // }
+        return compare(obj, shape);
     }
 
 
@@ -89,6 +135,10 @@ define([
                         column: params.error.column
                     }
                 };
+            } else if (isType(params.error, error1)) {
+                error = {
+                    message: params.error.error.message
+                };
             } else if (params.error instanceof Error) {
                 error = {
                     message: params.error.message
@@ -105,13 +155,13 @@ define([
             console.error(error);
 
             if (error.extra) {
-                error.extended = html.makeObjTable([error.extra], {rotated: true});
+                error.extended = html.makeObjTable([error.extra], { rotated: true });
             }
 
-            return div({class: 'container-fluid', dataWidget: 'error'}, html.makePanel({
+            return div({ class: 'container-fluid', dataWidget: 'error' }, html.makePanel({
                 title: params.title,
                 class: 'danger',
-                content: html.makeObjTable([error], {rotated: true})
+                content: html.makeObjTable([error], { rotated: true })
             }));
         }
 

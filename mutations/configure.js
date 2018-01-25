@@ -35,14 +35,14 @@ function evaluateSystem(state) {
 // TODO: read dev/config/config.yml
 var runtimeTarget = process.argv[2] || 'dev';
 
-function loadDeployConfig(state) {
-    var root = state.environment.path,
-        fileName = 'deploy-' + state.config.build.targets.deploy + '.cfg';
-    return mutant.loadIni(state.config.root.concat(['deploy', fileName]))
-        .then(function (kbDeployConfig) {
-            return state.config.kbDeployConfig = kbDeployConfig;
-        });
-}
+// function loadDeployConfig(state) {
+//     var root = state.environment.path,
+//         fileName = 'deploy-' + state.config.build.targets.deploy + '.cfg';
+//     return mutant.loadIni(state.config.root.concat(['deploy', fileName]))
+//         .then(function (kbDeployConfig) {
+//             return state.config.kbDeployConfig = kbDeployConfig;
+//         });
+// }
 
 function loadBuildConfig(state) {
     return Promise.resolve(pathExists('../dev/config'))
@@ -66,41 +66,41 @@ function loadBuildConfig(state) {
 
 function main(type) {
     evaluateSystem({
-        config: {
-            type: type
-        },
-        environment: {
-            path: mutant.rtrunc(process.cwd().split('/'), 1)
-        }
-    })
-    .then(function (state) {
-        return loadBuildConfig(state);
-    })
-    .then(function (state) {
-        return [state, loadDeployConfig(state)];
-    })
-    .spread(function (state) {
-        var deployConfig = state.config.kbDeployConfig['kbase-ui'].deploy_target,
-            deployPath = deployConfig.split('/');
+            config: {
+                type: type
+            },
+            environment: {
+                path: mutant.rtrunc(process.cwd().split('/'), 1)
+            }
+        })
+        .then(function (state) {
+            return loadBuildConfig(state);
+        })
+        // .then(function (state) {
+        //     return [state, loadDeployConfig(state)];
+        // })
+        .spread(function (state) {
+            var deployConfig = state.config.kbDeployConfig['kbase-ui'].deploy_target,
+                deployPath = deployConfig.split('/');
 
-        state.deployPath = deployPath;
+            state.deployPath = deployPath;
 
-        // Ensure the directory is there, yet has no files.
-        return [state, mutant.ensureEmptyDir(deployPath)];
-    })
-    .spread(function (state) {
-        var sourceDir = state.environment.path.concat(['build', 'dist', 'client']),
-            destDir = state.deployPath;
+            // Ensure the directory is there, yet has no files.
+            return [state, mutant.ensureEmptyDir(deployPath)];
+        })
+        .spread(function (state) {
+            var sourceDir = state.environment.path.concat(['build', 'dist', 'client']),
+                destDir = state.deployPath;
 
-        return [state, mutant.copyFiles(sourceDir, destDir, '**/*')];
-    })
-    .spread(function (state) {
-        console.log('Successfully deployed to ' + state.deployPath.join('/'));
-    })
-    .catch(function (err) {
-        console.log('ERROR');
-        console.log(err);
-    });
+            return [state, mutant.copyFiles(sourceDir, destDir, '**/*')];
+        })
+        .spread(function (state) {
+            console.log('Successfully deployed to ' + state.deployPath.join('/'));
+        })
+        .catch(function (err) {
+            console.log('ERROR');
+            console.log(err);
+        });
 }
 
 
