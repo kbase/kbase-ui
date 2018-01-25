@@ -184,18 +184,6 @@ run-dev-image:
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
 
-preview-ci: build-ci dev-dist-image run-dev-image	
-
-
-
-
-# prod_image: init build-prod prod-image
-
-# The deploy step will copy the files according to the instructions in the deploy
-# config. See mutations/deploy.js for details.
-#deploy:
-#	cd mutations; node build deploy; node deploy
-
 # Set up a development environment.
 # Installs tools into kbase-ui/dev. These tools are ignored by git,
 # so may safely be modified by the developer. They are important but not

@@ -16,6 +16,22 @@ That is it.
 
 Before pulling down the image for building, it should have been tagged. In fact, the clone you are building from should have been pulled down by that tag.
 
+The tag should be checked into the canonical repo, and the local clone based on that tag.
+
+For local testing of the build, you can tag locally to simulate this.
+
+E.g. 
+
+git tag v1.5.0 -m "1.5.0"
+
+To remove the tag
+
+git tag --delete v1.5.0
+
+### Build kbase-ui
+
+The ui production build will only work if it is checked out on a specific tag.
+
 ### build the image
 
 ```bash

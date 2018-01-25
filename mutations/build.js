@@ -19,8 +19,7 @@
  *
  */
 
-/*global define*/
-/*jslint white:true*/
+/* eslint-env node */
 'use strict';
 
 var Promise = require('bluebird'),

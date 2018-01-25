@@ -20,6 +20,14 @@ Below we have created semver tags which might have been asigned to past releases
 
 ## HIGHLIGHTS
 
+###  JGI Search
+
+JGI Search is being launched in BETA form in this release.
+
+### Jobs Browser
+
+A jobs browser is being launcheed in this release.
+
 ### Integration of RESKE and JGI features into the dev and CI builds
 
 RESKE integration adds limited data search (Genome, Assembly, reads, etc.) and Knowledge engine access. Although in prototype form, the RESKE search features are on their way towards production.
@@ -60,6 +68,9 @@ If you, dear reader, notice anything missing or mistakeng, please file a ticket 
     for all subsequent module invocations (e.g. navigation)
 - auth service added to the about-services panel
 
+### REMOVED
+- The Bulk Upload and Import plugin is being removed [SCT-XXX](https://kbase-jira.atlassian.net/browse/TASK-XXXX)
+
 ### UNRELEASED
 - RESKE search plugin added for dev and CI builds. This new functionality provides a user tools for accessing the RESKE search service - [TASK-1051](https://kbase-jira.atlassian.net/browse/TASK-1051)
   - Resulted in prototype Narrative Browser and Data Search tools for dev and CI builds.
@@ -84,6 +95,9 @@ If you, dear reader, notice anything missing or mistakeng, please file a ticket 
   - now uses the better generic clients from kb common
   - unmounts widget correctly
 - should not rewrite url to messages panel when path not found [TASK-5258](https://kbase-jira.atlassian.net/browse/KBASE-5358)
+- improvements to catalog [SCT-481](https://kbase-jira.atlassian.net/browse/SCT-481)
+- new docker based developer workflow [SCT-148](https://kbase-jira.atlassian.net/browse/SCT-148)
+- Improve titles of App detail pages [PTV-763](https://kbase-jira.atlassian.net/browse/PTV-763)
 
 ### FIXES
 

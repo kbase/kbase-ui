@@ -65,7 +65,7 @@ To do this, you should first attempt a pull request through the github ui. To do
 
 If there are conflicts, it is best to perform the merge locally, resolve the issues, test the ui, and issue a pull request for the merge.
 
-Conflicts may happen if there has been much time has elapsed between releases and there have been hotfixes to the release which were not merged back into the develop branch.
+Conflicts may happen if much time has elapsed between releases and there have been hotfixes to the release which were not merged back into the develop branch.
 
 It may be easiest to attempt a merge locally, identify the conflicts, and commit changes to the develop to prevent the conflicts, if possible.
 
@@ -83,6 +83,14 @@ Resolve the conflicts with your favorite tool. E.g.:
 
 ```bash
 code .
+```
+
+Test for prod:
+
+```bash
+make build-prod
+make prod-image
+make run-prod-image
 ```
 
 ### Test the Presumptive Release
