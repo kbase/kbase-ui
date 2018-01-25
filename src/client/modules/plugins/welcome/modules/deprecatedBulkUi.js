@@ -28,7 +28,11 @@ define([
                             title: 'Bulk Import - DEPRECATED',
                             type: 'warning',
                             body: p([
-                                'Your deprecation message here.'
+                                'This Bulk Import interface is no longer supported.
+                                To import data to your KBase account, please use the new Import tab, which you can find in the Data Slideout
+                                in any Narrative. See http://kbase.us/narrative-guide/add-data-to-your-narrative-2/ for more information.
+                                The new Import tab also has a link to let you transfer data from your Globus account to your Narrative--
+                                see http://kbase.us/transfer-data-from-globus-to-kbase/ for more information.'
                             ])
                         })
                     ])
