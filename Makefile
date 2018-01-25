@@ -121,9 +121,8 @@ ci-image:
 	mkdir -p $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui
 	# Note that we copy the dist build for CI
 	cp -pr build/dist/client/* $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui
-	@echo "> Copying kb/deployment entrypoint and config templates..."
+	@echo "> Copying kb/deployment config templates..."
 	cp -pr $(CI_DOCKER_CONTEXT)/../kb-deployment/* $(CI_DOCKER_CONTEXT)/contents
-	chmod u+x $(CI_DOCKER_CONTEXT)/contents/bin/entrypoint.sh
 	@echo "> Beginning docker build..."
 	cd $(CI_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
 
@@ -159,6 +158,11 @@ proxier-image:
 # 	$(eval cmd = $(TOPDIR)/deployment/dev/tools/run-image.sh $(env))
 # 	@echo "> Issuing: $(cmd)"
 # 	bash $(cmd)
+
+run-ci-image:
+	$(eval cmd = $(TOPDIR)/deployment/ci/tools/run-image.sh $(env))
+	@echo "> Issuing: $(cmd)"
+	bash $(cmd)
 
 run-prod-image:
 	$(eval cmd = $(TOPDIR)/deployment/prod/tools/run-image.sh $(env))

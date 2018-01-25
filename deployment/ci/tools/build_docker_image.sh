@@ -60,17 +60,17 @@ function build_image() {
     fi
     echo "COMMIT: $commit"
 
-    if [[ -z "$tag" ]]; then
-        tag=$(get_tag)
-        err=$?
-        if (( $err > 0 )); then
-            echo "Sorry, not on a tag, won't build: ${tag}">&2
-            exit 3
-        fi
-    fi
-    echo "TAG $tag"
+    # if [[ -z "$tag" ]]; then
+    #     tag=$(get_tag)
+    #     err=$?
+    #     if (( $err > 0 )); then
+    #         echo "Sorry, not on a tag, won't build: ${tag}">&2
+    #         exit 3
+    #     fi
+    # fi
+    # echo "TAG $tag"
 
-    local image_tag="develop"
+    local image_tag="master"
 
     local here="$(dirname "$(dirname "$(readlink -fm "$0")")")"
     local here=`pwd`
@@ -80,12 +80,11 @@ function build_image() {
 
     # NOTE: the image is tagged "master" for production builds. In a real
     # deploy the image would be pushed up to dockerhub with the master image tag.
-
+    
     docker build \
         --build-arg BUILD_DATE=$date \
         --build-arg VCS_REF=$commit \
         --build-arg BRANCH=$branch \
-        --build-arg TAG=$tag \
         -t kbase/kbase-ui:${image_tag} ${here}/docker/context
 
     err=$?
