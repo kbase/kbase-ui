@@ -1,75 +1,86 @@
 ## KBase UI Configuration
 ---
 # TODO: ensure that this list includes all supported services
-# TODO: ensure that all services represented are also defined as amd modules
-# TODO: alpha sort of services
-# TODO: switch to deployment-friendly configuration
+
+# Services represent kbase core services. The key for each service
+# is the module name as defined in the services spec file.
+# Traditionally arbitrary strings were assigned as these keys, typically
+# matching the first path component in the proxy (/services/PATH/) url.
+# When switching over module name as the canonical service key, these
+# old arbitrary keys were moved into the aliases property. Some services
+# do not follow the traditional service definition pattern and therefore
+# lack this pattern.
 services:
-    awe:
-        url: '{{ deploy.services.urlBase }}/services/awe-api'
-        name: AWE
-    data_import_export:
-        url: '{{ deploy.services.urlBase }}/services/data_import_export'
-        name: Data Import Export
-    fba:
-        url: https://kbase.us/services/KBaseFBAModeling
-        name: FBA
-    narrative_method_store:
-        url: '{{ deploy.services.urlBase }}/services/narrative_method_store/rpc'
-        image_url: '{{ deploy.services.urlBase }}/services/narrative_method_store/'
-        name: Narrative Method Store
-    search:
-        url: https://kbase.us/services/search/
-        name: Data Search
-    shock: 
-        url: '{{ deploy.services.urlBase }}/services/shock-api'
-        name: Shock
-    user_profile:
-        url: '{{ deploy.services.urlBase }}/services/user_profile/rpc'
-        name: User Profile
-    user_job_state:
-        url: '{{ deploy.services.urlBase }}/services/userandjobstate'
-        name: User and Job State
-    narrative_job_service:
-        url: '{{ deploy.services.urlBase }}/services/njs_wrapper'
-        name: Narrative Job Service
-    workspace:
-        url: '{{ deploy.services.urlBase }}/services/ws'
-        name: Workspace    
-    narrative:
-        url: '{{ deploy.services.urlBase }}'
-        name: Narrative User Interface    
-    catalog:
-        url: '{{ deploy.services.urlBase }}/services/catalog'
-        name: Catalog
-    service_wizard:
-        url: '{{ deploy.services.urlBase }}/services/service_wizard'
-        name: Service Wizard
-    ftp:
-        url: '{{ deploy.services.urlBase }}/services/kb-ftp-api/v0'
-        root: /data/bulk
-        name: FTP Service
     auth2:
         url: '{{ deploy.services.urlBase }}/services/auth'
         cookieName: kbase_session
         name: Authorization Version 2
+    awe:
+        url: '{{ deploy.services.urlBase }}/services/awe-api'
+        name: AWE
+    Catalog:
+        aliases: ['catalog']
+        url: '{{ deploy.services.urlBase }}/services/catalog'
+        name: Catalog
+    ftp_service:
+        aliases: ['ftp']
+        url: '{{ deploy.services.urlBase }}/services/kb-ftp-api/v0'
+        root: /data/bulk
+        name: Staging Service
+    NarrativeMethodStore:
+        aliases: ['narrative_method_store']
+        url: '{{ deploy.services.urlBase }}/services/narrative_method_store/rpc'
+        image_url: '{{ deploy.services.urlBase }}/services/narrative_method_store/'
+        name: Narrative Method Store
+    shock:
+        url: '{{ deploy.services.urlBase }}/services/shock-api'
+        name: Shock
+    UserProfile:
+        aliases: ['user_profile']
+        url: '{{ deploy.services.urlBase }}/services/user_profile/rpc'
+        name: User Profile
+    UserAndJobState:
+        aliases: ['user_job_state']
+        url: '{{ deploy.services.urlBase }}/services/userandjobstate'
+        name: User and Job State
+    NarrativeJobService:
+        aliases: ['narrative_job_service']
+        url: '{{ deploy.services.urlBase }}/services/njs_wrapper'
+        name: Narrative Job Service
+    KBaseRelationEngine:
+        aliases: ['reske']
+        url: '{{ deploy.services.urlBase }}/services/reske'
+        name: Search Two
+    KBaseSearchEngine:
+        aliases: ['search']
+        url: '{{ deploy.services.urlBase }}/services/searchapi'
+        name: Search Three        
+    ServiceWizard:
+        aliases: ['service_wizard']
+        url: '{{ deploy.services.urlBase }}/services/service_wizard'
+        name: Service Wizard
+    Workspace:
+        aliases: ['workspace']
+        url: '{{ deploy.services.urlBase }}/services/ws'
+        name: Workspace
+    # Not services, but useful endpoints
     doc_site:
         url: http://kbase.us
         name: Documentation and Support Site
-    reske:
-        url: '{{ deploy.services.urlBase }}/services/reske'
-        name: Search Two
-    # Service Entries in the New Style - the key is the module name, not some
-    # arbitrary string.
-    Workspace:
-        url: '{{ deploy.services.urlBase }}/services/ws'
-        name: Workspace    
-
+    narrative:
+        url: '{{ deploy.services.urlBase }}'
+        name: Narrative User Interface
+    # search:
+    #     url: https://kbase.us/services/search/
+    #     name: Data Search
+    staging:
+        aliases: ['staging_service']
+        url: '{{ deploy.services.urlBase }}/services/staging_service'
     # Overrides for dynamic services can go here. Use the module name for the
     # key and a config-aware dsclient wrapper can use generic client instead
     # to reach this service.
-    # jgi_gateway_eap:
-    #     url: '{{ deploy.services.urlBase }}/devservices/jgi_gateway_clj/rpc'        
+    # jgi_gateway:
+    #      url: '{{ deploy.services.urlBase }}/services/jgi_gateway/rpc'
 resources:
     docSite:
         base:
@@ -85,12 +96,14 @@ resources:
             url: http://kbase.us/apps
         troubleshooting:
             signin: http://kbase.us/troubleshooting/sign-in
+        aboutKbase:
+            url: http://kbase.us/what-is-kbase/
     userAccount:
-        resetPassword: 
+        resetPassword:
             url: http://kbase.us/reset-password
-        updateProfile: 
+        updateProfile:
             url: https://www.globusid.org/profile
-        update_profile: 
+        update_profile:
             url: https://www.globusid.org/profile
         access:
             url: https://gologin.kbase.us/globus-app/account
@@ -99,5 +112,8 @@ resources:
     contact:
         url: http://kbase.us/contact-us
         name: Contact KBase
+    help:
+        url: http://kbase.us/using-the-kbase-help-board/
+        name: KBase Help Board
     status_page:  http://kbase.us/internal/status
     submit_jira_ticket: https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%

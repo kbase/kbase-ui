@@ -1,8 +1,6 @@
 define([
-    'bluebird',
     'kb_common/html'
 ], function (
-    Promise,
     html
 ) {
     'use strict';
@@ -19,16 +17,16 @@ define([
             container = node;
         }
 
-        function start(params) {
+        function start() {
             // Do not show the deployment widget for prod
             if (runtime.config('deploy.environment') === 'prod') {
                 return;
             }
             container.innerHTML = div({
                 style: {
-                    height: '100%',
                     border: '1px silver solid',
-                    padding: '3px'
+                    padding: '3px',
+                    margin: '2px'
                 }
             }, [
                 div({
@@ -47,21 +45,10 @@ define([
             ]);
         }
 
-        function stop() {
-
-        }
-
-        function detach() {
-
-        }
-
         return {
             attach: attach,
-            start: start,
-            stop: stop,
-            detach: detach
+            start: start
         };
-
     }
 
     return {

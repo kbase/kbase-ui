@@ -8,17 +8,19 @@ deploy:
   services:
     urlBase: https://kbase.us
 ui:
-  backupCookie:
-    domain: kbase.us
-    enabled: true
+  # backupCookie:
+  #   domain: kbase.us
+  #   enabled: true
   services:
     analytics:
       google:
         hostname: kbase.us
         code: UA-74532966-1
-  features:
-    auth:
-      selected: auth2
+    session:
+      cookie:
+        backup:
+          domain: kbase.us
+          enabled: true
   allow: []
 services:
   narrative:

@@ -1,0 +1,31 @@
+{
+    "deploy": {
+        "environment": "{{ .Env.deploy_environment }}",
+        "hostname": "{{ .Env.deploy_hostname }}",
+        "icon": "{{ .Env.deploy_icon }}",
+        "name": "{{ .Env.deploy_name }}",
+        "services": {
+            "urlBase": "https://{{ .Env.deploy_hostname }}"
+        }
+    },
+    "ui": {
+        "backupCookie": {
+            "domain": "{{ default .Env.ui_backupcookie_domain "null"}}",
+            "enabled": {{ default .Env.ui_backupcookie_enabled "false"}}
+        },
+        "services": {
+            "analytics": {
+                "google": {
+                    "hostname": "{{ .Env.ui_services_analytics_google_hostname }}",
+                    "code": "{{ .Env.ui_services_analytics_google_code }}"
+                }
+            }
+        },
+        "allow": {{ .Env.allow }}
+    },
+    "services": {
+        "narrative": {
+            "url": "{{ .Env.services_narrative_url }}"
+        }
+    }
+}

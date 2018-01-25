@@ -41,8 +41,7 @@ define([
                         })
                         .catch(function (err) {
                             // need a catch-all widget to mount here??
-                            console.error('ERROR mounting widget', data);
-                            console.error(err);
+                            console.error('ERROR mounting widget', err, data);
                             widgetMount.unmount()
                                 .then(function () {
                                     return widgetMount.mountWidget('error', {

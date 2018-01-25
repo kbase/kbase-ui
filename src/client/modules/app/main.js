@@ -1,7 +1,7 @@
 define([
     'bluebird',
-    'app/App',
-    'kb_common/dom',
+    'uuid',
+    './hub',
     'kb_common/props',
     'yaml!config/plugin.yml',
     'json!config/config.json',
@@ -14,24 +14,22 @@ define([
     'css!app/styles/kb-datatables'
 ], function (
     Promise,
-    App,
-    dom,
+    Uuid,
+    Hub,
     Props,
     pluginConfig,
     appConfigBase,
     deployConfig
 ) {
     'use strict';
+
+    // Set up global configuration of bluebird promises library.
+    // This is the first invocation of bluebird.
     Promise.config({
         warnings: true,
         longStackTraces: true,
         cancellation: true
     });
-
-    function setErrorField(name, ex) {
-        var selector = '[data-field="' + name + '"] > span[data-name="value"]';
-        dom.setHtml(selector, ex[name]);
-    }
 
     function isSimpleObject(obj) {
         if (typeof obj !== 'object' || obj === null) {
@@ -135,40 +133,29 @@ define([
         return config;
     }
 
+    // establish a global root namespace upon which we can
+    // hang sine-qua-non structures, which at this time is
+    // just the app.
+    var globalRef = new Uuid(4).format();
+    var global = window[globalRef] = Props.make();
+
     return {
         start: function () {
             // merge the deploy and app config.
             var merged = mergeObjects([appConfigBase, deployConfig]);
             var appConfig = fixConfig(merged);
-            return App.run({
-                    appConfig: appConfig,
-                    nodes: {
-                        root: {
-                            selector: '#root'
-                        },
-                        error: {
-                            selector: '#error'
-                        },
-                        status: {
-                            selector: '#status'
-                        }
-                    },
-                    plugins: pluginConfig.plugins,
-                    menus: appConfig.menus
-                })
-                .then(function (runtime) {
-                    switch (appConfig.deploy.environment) {
-                    case 'prod':
-                        // do nothing
-                        break;
-                    default:
-                        runtime.send('ui', 'alert', {
-                            type: 'info',
-                            message: 'You are operating in the ' + appConfig.deploy.name + ' environment',
-                            icon: appConfig.deploy.icon
-                        });
+            var app = Hub.make({
+                appConfig: appConfig,
+                nodes: {
+                    root: {
+                        selector: '#root'
                     }
-                });
+                },
+                plugins: pluginConfig.plugins,
+                services: appConfig.ui.services
+            });
+            global.setItem('app', app);
+            return app.start();
         }
     };
 });

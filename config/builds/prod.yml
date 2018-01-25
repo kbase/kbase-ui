@@ -1,17 +1,16 @@
 ## Global Build Config
 ---
-targets:
-    ui: prod
-    deploy: prod
-build:
-    dist: true
-    temp: temp
+# which ui config to use in config/ui/<target>/*.yml
+target: prod
+
+# Where to store temporary build files.
+temp: temp
+
+# If true, causes a minified version to be built in build/dist
+dist: true
+
+# If true, casuses the vfs file to be built and loaded in index.html.
 vfs: true
-bower:
-    offline: false
+
+# If true, the build process will not remove the run_ directory post-build.
 debug: false
-server:
-    port: 8080
-features:
-    auth:
-        selected: auth2

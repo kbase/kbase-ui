@@ -1,51 +1,60 @@
-/*global define */
-/*jslint white: true, browser: true */
-define([    
+define([
     'kb_widget/bases/simpleWidget',
     'kb_common/html'
-],
-    function (simpleWidgetFactory, html) {
-        'use strict';
-        function myWidget(config) {
-            function render(title) {
-                var div = html.tag('div');
-                return div({class: 'kb-widget-title'}, [
-                    title
-                ]);
-            }
-            return simpleWidgetFactory.make({
-                runtime: config.runtime,
-                on: {
-                    start: function () {
-                        // Listen for a setTitle message sent to the ui.
-                        // We use the widget convenience function in order to 
-                        // get automatic event listener cleanup. We could almost
-                        // as easily do this ourselves.
-                        this.recv('ui', 'setTitle', function (data) {
-                            if (typeof data !== 'string') {
-                                return;
-                            }
-                            this.set('title', data);
-                            var anonDiv = document.createElement('div'), text;
-                            anonDiv.innerHTML = data;
-                            text = anonDiv.textContent || '';
-                            window.document.title = text + ' | KBase';
-                        }.bind(this));
-                    },
-                    render: function () {
-                        // Render a simple title.
-                        // NB:this is called whenver the widget thinks it needs 
-                        // to re-render the title, which is essentially when the 
-                        // state is dirty (has been changed) and a heartbeat
-                        // event is captured.
-                        return render(this.get('title'));
-                    }
+], function (
+    simpleWidgetFactory,
+    html
+) {
+    'use strict';
+
+    var t = html.tag,
+        h1 = t('h1');
+
+    function factory(config) {
+        var hostNode, container, runtime = config.runtime;
+
+        function attach(node) {
+            hostNode = node;
+            container = hostNode.appendChild(document.createElement('div'));
+            container.classList.add('widget-title');
+        }
+
+        function safeContent(content) {
+            var anonDiv = document.createElement('div');
+            anonDiv.innerHTML = content;
+            return anonDiv.textContent || '';
+        }
+
+        function start() {
+            // Listen for a setTitle message sent to the ui.
+            // We use the widget convenience function in order to 
+            // get automatic event listener cleanup. We could almost
+            // as easily do this ourselves.
+            runtime.recv('ui', 'setTitle', function (newTitle) {
+                if (typeof newTitle !== 'string') {
+                    return;
                 }
+
+                container.innerHTML = h1(newTitle);
+                window.document.title = safeContent(newTitle) + ' | KBase';
             });
         }
-        return {
-            make: function (config) {
-                return myWidget(config);
+
+        function detach() {
+            if (hostNode && container) {
+                hostNode.removeChild(container);
             }
+        }
+
+        return {
+            attach: attach,
+            start: start,
+            detach: detach
         };
-    });
+    }
+    return {
+        make: function (config) {
+            return factory(config);
+        }
+    };
+});

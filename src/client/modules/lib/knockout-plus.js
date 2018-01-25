@@ -1,13 +1,21 @@
 define([
     'numeral',
+    'moment',
     'knockout',
+    'uuid',
+    'kb_common/utils',
+    'kb_common/html',
     'knockout-mapping',
     'knockout-arraytransforms',
     'knockout-validation',
     'knockout-switch-case'
 ], function (
     numeral,
-    ko
+    moment,
+    ko,
+    Uuid,
+    Utils,
+    html
 ) {
     // Knockout Defaults
     ko.options.deferUpdates = true;
@@ -257,19 +265,131 @@ define([
         }
     };
 
+    function niceDuration(value, options) {
+        options = options || {};
+        var minimized = [];
+        var units = [{
+            unit: 'millisecond',
+            short: 'ms',
+            single: 'm',
+            size: 1000
+        }, {
+            unit: 'second',
+            short: 'sec',
+            single: 's',
+            size: 60
+        }, {
+            unit: 'minute',
+            short: 'min',
+            single: 'm',
+            size: 60
+        }, {
+            unit: 'hour',
+            short: 'hr',
+            single: 'h',
+            size: 24
+        }, {
+            unit: 'day',
+            short: 'day',
+            single: 'd',
+            size: 30
+        }];
+        var temp = Math.abs(value);
+        var parts = units
+            .map(function (unit) {
+                // Get the remainder of the current value
+                // sans unit size of it composing the next
+                // measure.
+                var unitValue = temp % unit.size;
+                // Recompute the measure in terms of the next unit size.
+                temp = (temp - unitValue) / unit.size;
+                return {
+                    name: unit.single,
+                    unit: unit.unit,
+                    value: unitValue
+                };
+            }).reverse();
+
+        parts.pop();
+
+        // We skip over large units which have not value until we
+        // hit the first unit with value. This effectively trims off
+        // zeros from the end.
+        // We also can limit the resolution with options.resolution
+        var keep = false;
+        for (var i = 0; i < parts.length; i += 1) {
+            if (!keep) {
+                if (parts[i].value > 0) {
+                    keep = true;
+                    minimized.push(parts[i]);
+                }
+            } else {
+                minimized.push(parts[i]);
+                if (options.resolution &&
+                    options.resolution === parts[i].unit) {
+                    break;
+                }
+            }
+        }
+
+        if (minimized.length === 0) {
+            // This means that there is are no time measurements > 1 second.
+            return '<1s';
+        } else {
+            // Skip seconds if we are into the hours...
+            // if (minimized.length > 2) {
+            //     minimized.pop();
+            // }
+            return minimized.map(function (item) {
+                return String(item.value) + item.name;
+            })
+                .join(' ');
+        }
+    }
+
     ko.bindingHandlers.typedText = {
         update: function (element, valueAccessor) {
             var value = valueAccessor();
             var valueUnwrapped = ko.unwrap(value.value);
             var format = value.format;
             var type = value.type;
+            var missing = value.missing || '';
             // var format = allBindings.get('type') || '';
             // var format = allBindings.get('numberFormat') || '';
             var formatted;
+
             switch (type) {
             case 'number':
-                formatted = numeral(valueUnwrapped).format(format);
+                numeral.nullFormat('');
+                if (valueUnwrapped === undefined || valueUnwrapped === null) {
+                    formatted = missing;
+                } else {                    
+                    formatted = numeral(valueUnwrapped).format(format);
+                }
                 break;
+            case 'date':
+                if (valueUnwrapped === undefined || valueUnwrapped === null) {
+                    formatted = missing;
+                } else {
+                    switch (format) {
+                    case 'elapsed':
+                    case 'nice-elapsed':
+                        formatted = Utils.niceElapsedTime(moment(valueUnwrapped).toDate());
+                        break;
+                    case 'duration':
+                        // formatted = Utils.niceElapsedTime(moment(valueUnwrapped).toDate());
+                        formatted = niceDuration(valueUnwrapped);
+                        break;
+                    default: formatted = moment(valueUnwrapped).format(format);
+                    }
+                }
+                break;
+            case 'bool':
+            case 'boolean':
+                if (valueUnwrapped) {
+                    return 'true';
+                }
+                return 'false';
             case 'text':
             case 'string':
             default:
@@ -279,6 +399,117 @@ define([
             element.innerText = formatted;
         }
     };
+
+    ko.subscribable.fn.subscribeChanged = function (callback, context) {
+        var savedValue = this.peek();
+        return this.subscribe(function (latestValue) {
+            var oldValue = savedValue;
+            savedValue = latestValue;
+            callback.call(context, latestValue, oldValue);
+        });
+    };
+
+    ko.subscribable.fn.syncWith = function (targetObservable, callbackTarget, event) {
+        var sourceObservable = this; 
+        sourceObservable.subscribe(function (v) { 
+            targetObservable(v); 
+        }, callbackTarget, event); 
+        targetObservable.subscribe(function (v) { 
+            sourceObservable(v); 
+        }, callbackTarget, event); 
+        return sourceObservable; 
+    };
+
+    ko.subscribable.fn.syncFrom = function (targetObservable, callbackTarget, event) {
+        var sourceObservable = this; 
+        targetObservable.subscribe(function (v) { 
+            sourceObservable(v); 
+        }, callbackTarget, event); 
+        return sourceObservable; 
+    };
+
+    ko.subscribable.fn.syncTo = function (targetObservable, callbackTarget, event) {
+        var sourceObservable = this; 
+        sourceObservable.subscribe(function (v) { 
+            targetObservable(v); 
+        }, callbackTarget, event); 
+        return sourceObservable; 
+    };
+
+    // pure functions stuck onto ko
+
+    var t = html.tag,
+        div = t('div');
+
+    function komponent(componentDef) {
+        return '<!-- ko component: {name: "' + componentDef.name +
+            '", params: {' +
+            Object.keys(componentDef.params).map(function (key) {
+                return key + ':' + componentDef.params[key];
+            }).join(',') + '}}--><!-- /ko -->';
+    }
+
+    function createRootComponent(runtime, name) {
+        var vm = {
+            runtime: runtime,
+            running: ko.observable(false)
+        };
+        var temp = document.createElement('div');
+        temp.innerHTML = div({
+            style: {
+                flex: '1 1 0px',
+                display: 'flex',
+                flexDirection: 'column'
+            }
+        }, [
+            '<!-- ko if: running -->',
+            komponent({
+                name: name,
+                params: {
+                    runtime: 'runtime'
+                }
+            }),
+            '<!-- /ko -->'
+        ]);
+        var node = temp.firstChild;
+        ko.applyBindings(vm, node);
+
+        function start() {
+            vm.running(true);
+        }
+
+        function stop() {
+            vm.running(false);
+        }
+       
+        return {
+            vm: vm,
+            node: node,
+            start: start,
+            stop: stop
+        };
+    }
+
+
+    function registerComponent(component) {
+        var name = new Uuid(4).format();
+        ko.components.register(name, component());
+
+        return {
+            name: function () {
+                return name;
+            },
+            quotedName: function () {
+                return '"' + name + '"';
+            }
+        };
+    }
+
+    ko.kb = {};
+
+    ko.kb.komponent = komponent;
+    ko.kb.createRootComponent = createRootComponent;
+    ko.kb.registerComponent = registerComponent;
 
     return ko;
 });

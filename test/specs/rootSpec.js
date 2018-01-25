@@ -1,6 +1,6 @@
 /* global describe, it, expect, browser */
 'use strict';
-describe('NewbieSpec', function () {
+describe('Root Spec', function () {
     it('Should navigate to the home page', function () {
         browser.url('/');
         browser.waitForExist('.kb-widget-title', 30000);
