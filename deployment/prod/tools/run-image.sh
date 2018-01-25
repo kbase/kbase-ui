@@ -26,7 +26,7 @@ echo "ENVIRONMENT : ${environment}"
 
 echo "READING OPTIONS"
 
-local image_tag="develop"
+image_tag="master"
 
 docker run \
   --rm \

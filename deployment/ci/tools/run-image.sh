@@ -26,10 +26,12 @@ echo "ENVIRONMENT : ${environment}"
 
 echo "READING OPTIONS"
 
+image_tag="develop"
+
 docker run \
   --rm \
   --env-file ${config_mount}/${environment}.env \
   --env deployed=false \
   --network=kbase-dev \
   --name=kbase-ui-container \
-  kbase/kbase-ui:master  
+  kbase/kbase-ui:${image_tag}  
