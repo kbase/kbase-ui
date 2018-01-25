@@ -1,0 +1,9 @@
+# Version File for KBase Hub
+# This file should always contain the version, in semver 2.0 format, which matches
+# the exact match current tag for this commit, if the hub ui build type is "prod"
+# For dev builds (dev and ci) the version will not be checked because the master
+# version tag is not necessarily available.
+---
+# Note that this file is merged into the master config in the release namespace.
+release:
+  version: 1.5.0

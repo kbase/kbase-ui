@@ -5,12 +5,50 @@ define([
     Promise,
     html
 ) {
+    'use strict'; 
+    
     var t = html.tag,
         div = t('div'),
-        a = t('a');
+        a = t('a'),
+        table = t('table'),
+        tr = t('tr'),
+        td = t('td');
 
     function buildNavStripButton(cfg) {
         var icon = 'fa-' + cfg.icon;
+        var info;
+        if (cfg.info) {
+            info = table({
+                style: {
+                    margin: 0,
+                    padding: 0,
+                    width: '100%'
+                }
+            }, cfg.info.map(function (row) {
+                return tr({}, [
+                    td({
+                        style: {
+                            width: '50%',
+                            textAlign: 'right',
+                            paddingRight: '2px'
+                        }
+                    }, row.value),
+                    td({
+                        style: {
+                            width: '50%',
+                            textAlign: 'left',
+                            paddingLeft: '2px'
+                        }
+                    }, row.label)
+                ]);
+            }));
+        }
+        var status;
+        if (cfg.status) {
+            status = div({
+                class: '-status-indicator',
+            }, String(cfg.status.new));
+        }
         return a({
             href: '#' + cfg.path,
             class: '-nav-button',
@@ -22,13 +60,16 @@ define([
                 margin: '6px 0',
                 display: 'block',
                 color: '#000',
-                textDecoration: 'none'
+                textDecoration: 'none',
+                position: 'relative'
             }
         }, [
             div({
-                class: 'fa fa-3x ' + icon
+                class: 'fa fa-3x ' + icon,
             }),
-            div({}, cfg.label)
+            div({}, cfg.label),
+            info,
+            status
         ]);
     }
 
@@ -37,51 +78,59 @@ define([
 
         // TODO: this really needs to be in configuration!
         var buttons = [{
-                icon: 'dashboard',
-                label: 'Dashboard',
-                path: 'dashboard',
-                authRequired: true
-            }, {
-                icon: 'book',
-                label: 'Catalog',
-                path: 'appcatalog',
-                authRequired: false
-            },
-            // {
-            //     icon: 'search',
-            //     label: 'Search',
-            //     path: 'reske/search',
-            //     authRequired: true
-            // },
-            (function () {
-                if (!runtime.allow('alpha')) {
-                    return;
-                }
-                return {
-                    icon: 'files-o',
-                    label: 'Narratives',
-                    path: 'reske/search/narrative',
-                    authRequired: true
-                };
-            }()),
-            (function () {
+            icon: 'dashboard',
+            label: 'Dashboard',
+            path: 'dashboard',
+            authRequired: true
+        }, {
+            icon: 'book',
+            label: 'Catalog',
+            path: 'appcatalog',
+            authRequired: false
+        }, (function () {
                 if (!runtime.allow('alpha')) {
                     return;
                 }
                 return {
                     icon: 'search',
-                    label: 'Search Data',
-                    path: 'reske/search/data',
+                    label: 'Search',
+                    path: 'search',
+                    authRequired: true
+                };
+            }()), (function () {
+                if (!runtime.allow('alpha')) {
+                    return;
+                }
+                return {
+                    icon: 'suitcase',
+                    label: 'Jobs',
+                    path: 'jobbrowser',
                     authRequired: true
                 };
             }()), {
-                //icon: 'user',
+            //icon: 'user',
                 icon: 'user-circle-o',
                 label: 'Account',
                 path: 'auth2/account',
                 authRequired: true
-            }
-        ].filter(function (item) {
+            }, (function () {
+                if (!runtime.allow('alpha')) {
+                    return;
+                }
+                return {
+                    icon: 'bullhorn',
+                    label: 'Feeds',
+                    path: 'feeds',
+                    authRequired: true,
+                    status: {
+                        new: 6
+                    }
+                // info: [{
+                //     label: 'new',
+                //     value: '3'
+                // }]
+                };
+            }())].filter(function (item) {
             return item;
         });
 
@@ -124,11 +173,6 @@ define([
         }
 
         function selectButton() {
-            // var hash = window.location.hash;
-            // if (!hash || hash.length === 0) {
-            //     return;
-            // }
-            // var path = hash.substr(1);
             var path = currentPath;
             currentButtons.forEach(function (button) {
                 var buttonNode = document.getElementById(button.id);
@@ -156,7 +200,7 @@ define([
             currentPath = path.join('/');
         }
 
-        function start(params) {
+        function start() {
             return Promise.try(function () {
                 render();
                 runtime.recv('route', 'routing', function (route) {
@@ -167,7 +211,7 @@ define([
                     selectButton();
                 });
 
-                runtime.recv('session', 'change', function (message) {
+                runtime.recv('session', 'change', function () {
                     render();
                     selectButton();
                 });

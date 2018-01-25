@@ -1,0 +1,9 @@
+menus:
+    authenticated: 
+        main: [narrative, jgi-search]
+        developer: []
+        help: [about, contact-kbase, help]
+    unauthenticated: 
+        main: []
+        developer: []
+        help: [about, contact-kbase, help]

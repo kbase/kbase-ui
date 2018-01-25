@@ -120,6 +120,14 @@ define([
                 define('kb_plugin_' + pluginDef.package.name, [], function () {
                     return {
                         plugin: {
+                            name: pluginDef.package.name,
+                            resources: {
+                                // to be used for module loading, e.g. yaml, json, 
+                                // css through requirejs
+                                modulePath: '/' + sourcePath + '/resources',
+                                // to be used for document references, e.g. img, css doc
+                                documentPath: moduleBase + '/' + sourcePath + '/resources'
+                            },
                             path: '/' + sourcePath + '/resources',
                             modulePath: '/' + sourcePath + '/resources',
                             fullPath: moduleBase + '/' + sourcePath + '/resources'

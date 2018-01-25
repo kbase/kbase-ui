@@ -16,11 +16,34 @@ define([
             } catch (ex) {
                 console.error(ex);
                 if (ex instanceof Router.NotFoundException) {
-                    runtime.send('app', 'route-not-found', ex);
-                    return;
+                    handler = {
+                        request: ex.request,
+                        original: ex.original,
+                        path: ex.path,
+                        params: {
+                            request: ex.request,
+                            original: ex.original,
+                            path: ex.path
+                        },
+                        route: {
+                            authorization: false,
+                            widget: 'notFound'
+                        }
+                    }
+                    // runtime.send('app', 'route-not-found', ex);
+                    // return;
                 } else {
                     throw ex;
                 }
+
+
+
+                // throw new NotFoundException({
+                //     original: req.original,
+                //     path: req.path,
+                //     params: params
+                // });
+
             }
             runtime.send('route', 'routing', handler);
             if (handler.route.authorization) {
@@ -32,7 +55,8 @@ define([
                         loginParams.nextrequest = JSON.stringify(handler.request);
                     }
                     runtime.send('app', 'navigate', {
-                        path: runtime.feature('auth', 'paths.login'),
+                        path: 'login',
+                        // path: runtime.feature('auth', 'paths.login'),
                         // TODO: path needs to be the path + params
                         params: loginParams
                     });

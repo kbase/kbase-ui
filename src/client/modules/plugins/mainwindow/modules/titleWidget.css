@@ -1,5 +1,10 @@
-.kb-widget-title {
-    font-weight: bold;
-    font-size: 150%;
-    margin: 18px 0 0 15px;    
+.plugin-mainwindow .widget-title {
+    height: 46px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.plugin-mainwindow .widget-title h1 {
+    margin: 0;
+    padding: 0;
 }

@@ -1,0 +1,9 @@
+menus:
+    authenticated:
+        main: [narrative, jgi-search]
+        developer: [reske-admin, staging-browser]
+        help: [about, about-services, contact-kbase, help]
+    unauthenticated:
+        main: []
+        developer: []
+        help: [about, contact-kbase, help]

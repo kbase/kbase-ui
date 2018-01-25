@@ -1,5 +1,3 @@
-/*global define */
-/*jslint white: true */
 define([
     'bluebird',
     'kb_common/observed'
@@ -51,13 +49,11 @@ define([
             state.setItem('menus', menu);
         }
 
-
         state.setItem('menuItems', {
             divider: {
                 type: 'divider'
             }
         });
-
 
         function clearMenu() {
             state.setItem('menu', []);
@@ -113,14 +109,13 @@ define([
         function getCurrentMenu() {
             var menu,
                 menus = state.getItem('menus');
-            if (runtime.getService('session').isLoggedIn()) {
+            if (runtime.service('session').isLoggedIn()) {
                 menu = menus['authenticated'];
             } else {
                 menu = menus['unauthenticated'];
             }
             return menu;
         }
-
 
         // Plugin interface
         function pluginHandler(newMenus) {
@@ -130,12 +125,6 @@ define([
             return Promise.try(function () {
                 newMenus.forEach(function (menu) {
                     addMenuItem(menu.name, menu.definition);
-                    //                    if (menu.menus) {
-                    //                        menu.menus.forEach(function (menuEntry) {
-                    //                            
-                    //                            addToMenu(menuEntry, menu.name);
-                    //                        });
-                    //                    }
                 });
             });
         }
@@ -170,15 +159,11 @@ define([
             });
         }
 
-        function stop() {
-
-        }
+        function stop() {}
 
         // MAIN
-
         state.setItem('menu', []);
         setupMenus();
-
 
         // API
         return {

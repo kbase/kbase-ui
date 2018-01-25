@@ -15,7 +15,6 @@ define([
 
     function factory(config) {
         var runtime = config.runtime;
-        var profile = null;
 
         function fetchProfile() {
             var userProfileService = new UserProfileService(runtime.config('services.user_profile.url'), {

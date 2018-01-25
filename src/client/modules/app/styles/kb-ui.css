@@ -46,28 +46,49 @@
     font-style: normal;
 }
 
+
+/* H1 should only be used on the title area of the UI. The total height is 70px with 5px lower border, so the font size, 
+   padding, and margin are arranged to center it vertically within this height.*/
+
 .kbase-ui h1,
 .kbase-ui .h1 {
     font-family: 'RobotoBlack', Arial, sans-serif;
     letter-spacing: 0;
+    font-size: 29px;
+    padding: 5px 0px;
+    margin: 8px 0px;
 }
+
+
+/* H2 should be used for main panel titles. It may be used for the primary title for the panel, or if there 
+   are multiple sub-panels or areas, for each of them. */
 
 .kbase-ui h2,
 .kbase-ui .h2 {
-    font: 'RobotoBlack', Arial, sans-serif;
+    font-family: 'RobotoBlack', Arial, sans-serif;
     letter-spacing: 0;
+    font-size: 25px;
 }
 
 .kbase-ui h3,
 .kbase-ui .h3 {
     font-family: 'RobotoBlack', Arial, sans-serif;
     letter-spacing: 0;
+    font-size: 21px;
 }
 
 .kbase-ui h4,
 .kbase-ui .h4 {
     font-family: 'RobotoBlack', Arial, sans-serif;
     letter-spacing: 0em;
+    font-size: 19px;
+}
+
+.kbase-ui h5,
+.kbase-ui .h5 {
+    font-family: 'RobotoBlack', Arial, sans-serif;
+    letter-spacing: 0em;
+    font-size: 17px;
 }
 
 

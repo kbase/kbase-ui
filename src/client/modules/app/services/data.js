@@ -47,8 +47,6 @@ define([
                             // throw new Error('Error getting data: ' + arg.file);
                         }
                         //complete: function (jq, status) {
-                        //    console.log('COMPLETE');
-                        //    console.log(status);
                         // }
                 });
                 return returnData;

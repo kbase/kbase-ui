@@ -13,7 +13,4 @@ ui:
       google:
         hostname: next.kbase.us
         code: UA-74530365-1
-  features:
-    auth:
-      selected: auth2
   allow: []
