@@ -37,7 +37,13 @@ git push NICKNAME BRANCHNAME
 
 With this flow, you are operating in the branch *BRANCHNAME*, which started at the top if the *develop* branch in the main *kbase/kbase-ui* repo. You will push it to your fork located at the github account *YOURACCOUNT*, which has been set up at *NICKNAME* in the local git configuration.
 
-(3) Build and run it
+(4) Install custom Docker network
+
+```bash
+docker network create kbase-dev
+```
+
+(5) Build and run it
 
 This will fetch, prepare, build, create the image, and run a container from that image. 
 
@@ -45,30 +51,23 @@ This will fetch, prepare, build, create the image, and run a container from that
 make init
 make build
 make dev-image
-make run-dev-image
+make run-dev-image env=dev
 ```
 
-(4) Point your localhost to the container's nginx
+(6) Prepare and run the Proxier
 
-Add to your host's */etc/hosts* the following line:
+[ TO BE DONE ]
 
+```bash
+make proxier-image
+make run-proxier-image env=dev
 ```
-127.0.0.1 ci.kbase.us
-```
 
-> Note: This is on your _host_ machine, not in the container.
-
-> Note:  This disables access to the publicly available ci.kbase.us, so you'll need to comment it out when you want to get back to the real ci.
-
-The docker container maps ports 80 and 443 to your host interface. If you have something else running on those ports you'll need to stop them first.
-
-> Note: We'll get a host-based setup working (where you can alias ci.kbase.us to a non-localhost address).
-
-(5) Bring up your browser to [https://ci.kbase.us](https://ci.kbase.us)
+(7) Bring up your browser to [https://ci.kbase.us](https://ci.kbase.us)
 
 You'll receive a security warning due to the usage of a self-signed cert inside the container. Just go through the hoops to accept it. Each browser is different; some browsers require a restart if you rebuild the image (which may create a new self-signed cert.)
 
-(6) Stop it
+(8) Stop it
 
 When you are finished you will want to stop the container. An handy way to do this is to open a new terminal window and enter:
 

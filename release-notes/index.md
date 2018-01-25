@@ -6,7 +6,8 @@
 
 | Version                           | Date       | Notes               |
 |-----------------------------------|------------|---------------------|
-| [1.5.1](RELEASE_NOTES_1.5.1.html) | 2018-01-25 |  |
+| [1.5.2](RELEASE_NOTES_1.5.2.html) | 2018-01-25 |  |
+| [1.5.0](RELEASE_NOTES_1.5.0.html) | 2018-01-25 | First release notes || [1.5.1](RELEASE_NOTES_1.5.1.html) | 2018-01-25 |  |
 | [1.5.0](RELEASE_NOTES_1.5.0.html) | 2018-01-25 | First release notes |
 | 1.4.6                             | 2017-06-22 |  |
 | 1.4.5                             | 2017-06-17 |  |
