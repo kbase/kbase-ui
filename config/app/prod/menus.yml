@@ -1,6 +1,6 @@
 menus:
     authenticated: 
-        main: [narrative, jgi-search]
+        main: [narrative]
         developer: []
         help: [about, contact-kbase, help]
     unauthenticated: 
