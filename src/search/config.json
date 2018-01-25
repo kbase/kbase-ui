@@ -122,77 +122,38 @@
         }
     },
     "dev": {
-        "workspace_url": "http://dev04.berkeley.kbase.us:7058",
-        "fba_url": "https://140.221.85.73:4043/",
-        "user_job_state_url": "https://140.221.84.180:7083",
-        "search_url": "https://kbase.us/services/search/",
+        "workspace_url": "https://ci.kbase.us/services/ws/",
+        "fba_url": "https://ci.kbase.us/services/KBaseFBAModeling/",
+        "user_job_state_url": "https://ci.kbase.us/services/userandjobstate",
+        "search_url": "https://ci.kbase.us/services/search/",
         "homology_service_url": "https://ci.kbase.us/services/homology_service/",
-        "user_profile_url": "https://dev19.berkeley.kbase.us/services/user_profile/rpc",
-        "login_url": "https://kbase.us/services/authorization/Sessions/Login",
-        "narrative_method_store_url": "https://kbase.us/services/narrative_method_store/rpc",
-        "awe": "https://kbase.us/services/awe-api",
-        "data_import_export": "https://kbase.us/services/data_import_export",
-        "gene_families": "https://kbase.us/services/gene_families",
-        "genomeCmp": "https://kbase.us/services/genome_comparison/jsonrpc",
-        "shock": "https://kbase.us/services/shock-api",
-        "transform": "https://kbase.us/services/transform",
-        "trees": "https://kbase.us/services/trees",
-        "user_profile": "https://kbase.us/services/user_profile/rpc",
-        "feature_values": "https://kbase.us/services/feature_values/jsonrpc",
-        "auth_service_base_url": "https://kbase.us/services/auth",
+        "user_profile_url": "https://ci.kbase.us/services/user_profile/rpc",
+        "login_url": "https://ci.kbase.us/services/authorization/Sessions/Login",
+        "narrative_method_store_url": "https://ci.kbase.us/services/narrative_method_store/rpc",
+        "awe": "https://ci.kbase.us/services/awe-api",
+        "data_import_export": "https://ci.kbase.us/services/data_import_export",
+        "gene_families": "https://ci.kbase.us/services/gene_families",
+        "genomeCmp": "https://ci.kbase.us/services/genome_comparison/jsonrpc",
+        "shock": "https://ci.kbase.us/services/shock-api",
+        "transform": "https://ci.kbase.us/services/transform",
+        "trees": "https://ci.kbase.us/services/trees",
+        "user_profile": "https://ci.kbase.us/services/user_profile/rpc",
+        "feature_values": "https://ci.kbase.us/services/feature_values/jsonrpc",
+        "auth_service_base_url": "https://ci.kbase.us/services/auth",
         "dashboard_metrics_url": "/userMetrics",
-        "kbase_clients": {
-            "defaults": {
-                "timeout": 900000
-            }
-        },
         "session": {
             "cookie": {
                 "max-age": 5184000
             }
         },
-        "docsite": {
-            "host": "kbase.us",
-            "baseUrl": "http://kbase.us",
-            "paths": {
-                "about": "/what-is-kbase",
-                "contact": "/contact-us",
-                "browserSupport": "/supported-browsers"
-            }
-        }
-    },
-    "wsdev": {
-        "workspace_url": "http://dev04.berkeley.kbase.us:7058",
-        "fba_url": "https://kbase.us/services/KBaseFBAModeling/",
-        "user_job_state_url": "https://140.221.84.180:7083",
-        "search_url": "https://search-dev.kbase.us/search/",
-        "homology_service_url": "https://ci.kbase.us/services/homology_service/",
-        "user_profile_url": "https://dev19.berkeley.kbase.us/services/user_profile/rpc",
-        "login_url": "https://kbase.us/services/authorization/Sessions/Login",
-        "narrative_method_store_url": "https://kbase.us/services/narrative_method_store/rpc",
-        "awe": "https://kbase.us/services/awe-api",
-        "data_import_export": "https://kbase.us/services/data_import_export",
-        "gene_families": "https://kbase.us/services/gene_families",
-        "genomeCmp": "https://kbase.us/services/genome_comparison/jsonrpc",
-        "shock": "https://kbase.us/services/shock-api",
-        "transform": "https://kbase.us/services/transform",
-        "trees": "https://kbase.us/services/trees",
-        "user_profile": "https://kbase.us/services/user_profile/rpc",
-        "auth_service_base_url": "https://kbase.us/services/auth",
-        "dashboard_metrics_url": "/userMetrics",
         "kbase_clients": {
             "defaults": {
                 "timeout": 900000
             }
         },
-        "session": {
-            "cookie": {
-                "max-age": 5184000
-            }
-        },
         "docsite": {
-            "host": "kbase.us",
             "baseUrl": "http://kbase.us",
+            "host": "kbase.us",
             "paths": {
                 "about": "/what-is-kbase",
                 "contact": "/contact-us",

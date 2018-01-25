@@ -174,7 +174,7 @@ function deleteMatchingFiles(path, regex) {
 
 function copyState(oldState) {
     return Promise.try(function () {
-        if (oldState.config.debug) {
+        if (oldState.buildConfig.debug) {
             var newState = JSON.parse(JSON.stringify(oldState)),
                 tempDir = uniq('temp_'),
                 newFs = [tempDir],
@@ -200,7 +200,7 @@ function copyState(oldState) {
 function makeRunDir(state) {
     var runDirName = uniqts('run_'),
         // This is the root of all process files
-        root = (state.config.build.temp && ['..'].concat(state.config.build.temp.split('/'))) || ['mutantfiles'],
+        root = (state.buildConfig.temp && ['..'].concat(state.buildConfig.temp.split('/'))) || ['mutantfiles'],
         runDir = mkdir(root, [runDirName]);
     state.environment.root = runDir;
     return state;
@@ -236,7 +236,7 @@ function createInitialState(initialConfig) {
                 environment: {},
                 data: {},
                 state: {},
-                config: buildConfig,
+                buildConfig: buildConfig,
                 history: []
             };
             return makeRunDir(state);
@@ -275,7 +275,7 @@ function createInitialState(initialConfig) {
 
 function finish(state) {
     return Promise.try(function () {
-            if (!state.config.debug) {
+            if (!state.buildConfig.debug) {
                 return removeRunDir(state);
             }
         })

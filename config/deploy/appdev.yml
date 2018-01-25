@@ -13,8 +13,5 @@ ui:
       google:
         hostname: appdev.kbase.us
         code: UA-74533556-1
-  features:
-    auth:
-      selected: auth2
   allow: []
 

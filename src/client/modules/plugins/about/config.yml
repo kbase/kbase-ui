@@ -1,24 +1,25 @@
-## YAML Template.
+## About the UI, build, services
 ---
 package:
     author: Erik Pearson
     name: about panel
     description: A package containing the about panel
     date: August 5, 2015
-    version: 0.0.1
 source:
-    ## sources are relative to build/plugins/PACKAGE/source/javascript
-    ## NB: need to quote file names, otherwise 
     modules:
 install:
     widgets:
         - 
-            module: panel
+            module: aboutBuild
+            id: about_build
+            type: factory
+        - 
+            module: about
             id: about
             type: factory
         -
-            module: services
-            id: aboutServices
+            module: aboutServices
+            id: about_services
             type: factory
     routes:
         -
@@ -26,29 +27,29 @@ install:
             widget: about
             queryParams: {}
         -
+            path: ['about', 'build']
+            widget: about_build
+            queryParams: {}
+        -
             path: ['about', 'services']
-            widget: aboutServices
+            widget: about_services
             queryParams: {}
     menu:
         -
             name: about
             definition:
                 path: about
-                label: About the User Interface
+                label: About
                 icon: info-circle
+        -
+            name: about-build
+            definition:
+                path: about/build
+                label: About the UI Build
+                icon: building-o
         -
             name: about-services
             definition:
                 path: ['about', 'services']
-                label: Core KBase Services
-                icon: info-circle
-        # -
-        #     name: contact
-        #     definition:
-        #         uri: http://kbase.us/contact
-        #         newWindow: true
-        #         label: Contact KBase
-        #         icon: envelope-o
-               
-                    
-            
+                label: KBase Services Status
+                icon: server

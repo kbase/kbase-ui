@@ -1,69 +1,56 @@
-/*global define, Promise */
-/*jslint
- browser: true,
- white: true
- */
 define([
-    'promise',
-    'kb_common/html',
-    'kb_common/dom'
-],
-    function (Promise, html, dom) {
-        'use strict';
+    'bluebird',
+    'kb_common/html'
+], function (
+    Promise,
+    html
+) {
+    'use strict';
 
-        function widget(config) {
-            var mount, container, runtime = config.runtime;
+    var t = html.tag,
+        div = t('div'),
+        p = t('p'),
+        h2 = t('h2');
 
-            function render() {
-                var h1 = html.tag('h1'),
-                    p = html.tag('p'),
-                    div = html.tag('div');
-                return div([
-                    h1('Hello, Welcome to KBase'),
-                    p('Hi.')
-                ]);
-            }
+    function factory(config) {
+        var hostNode, container, runtime = config.runtime;
 
-            function init() {
-                return Promise.try(function () {
-                });
-            }
+        function render() {
+            return div([
+                h2('Hello from KBase'),
+                p('This is KBase')
+            ]);
+        }
 
-            function attach(node) {
-                return Promise.try(function () {
-                    mount = node;
-                    container = dom.createElement('div');
-                    mount.appendChild(container);
-                    container.innerHTML = render();
-                });
-            }
-            function start() {
-                return Promise.try(function () {
-                    runtime.send('ui', 'setTitle', 'Hello, Welcome to KBase');
-                });
-            }
-            function stop() {
-                return Promise.try(function () {
-                });
-            }
-            function detach() {
-                return Promise.try(function () {
-                    mount.removeChild(container);
-                });
-            }
+        function attach(node) {
+            hostNode = node;
+            container = hostNode.appendChild(document.createElement('div'));
+            container.innerHTML = render();
+        }
 
-            return {
-                init: init,
-                attach: attach,
-                start: start,
-                stop: stop,
-                detach: detach
-            };
+        function start() {
+            runtime.send('ui', 'setTitle', 'Hello');
+        }
+
+        function stop() {
+            return null;
+        }
+
+        function detach() {
+            if (hostNode && container) {
+                hostNode.removeChild(container);
+            }
         }
 
         return {
-            make: function (config) {
-                return widget(config);
-            }
+            attach: attach,
+            start: start,
+            stop: stop,
+            detach: detach
         };
-    });
+    }
+
+    return {
+        make: factory
+    };
+});

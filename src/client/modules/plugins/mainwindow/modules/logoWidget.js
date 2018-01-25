@@ -1,35 +1,89 @@
-/*global define */
-/*jslint white: true, browser: true */
 define([
-    'kb_widget/bases/simpleWidget',
     'kb_common/html',
     'kb_plugin_mainWindow'
-],
-    function (SimpleWidget, html, Plugin) {
-        'use strict';
+], function (
+    html,
+    Plugin
+) {
+    'use strict';
+    var t = html.tag,
+        a = t('a'),
+        img = t('img'),
+        div = t('div');
 
-        function myWidget(config) {
-            return SimpleWidget.make({
-                runtime: config.runtime,
-                on: {
-                    start: function () {
-                        this.setState('test', true);
-                    },
-                    render: function () {
-                        var a = html.tag('a'),
-                            img = html.tag('img'),
-                            div = html.tag('div');
-                        return div({class: 'kb-logo-widget'}, a({href: this.runtime.config('resources.docSite.base.url')}, [
-                            img({id: 'logo', src: Plugin.plugin.fullPath + '/images/kbase_logo.png', width: '46'})
-                        ]));
-                    }
-                }
-            });
+    function factory(config) {
+        var hostNode, container, runtime = config.runtime;
+
+        function attach(node) {
+            hostNode = node;
+            container = hostNode.appendChild(document.createElement('div'));
+            container.classList.add('widget-logo');
+        }
+
+        function start() {
+            var version;
+            var uiTarget = runtime.config('buildInfo.target');
+            if (uiTarget === 'prod') {
+                version = runtime.config('release.version');
+            } else {
+                version = uiTarget;
+            }
+            container.innerHTML = [
+                a({
+                    href: runtime.config('resources.docSite.base.url'),
+                    class: '-logo'
+                }, img({
+                    src: Plugin.plugin.fullPath + '/images/kbase_logo.png',
+                    width: '46px'
+                }))
+                // div({
+                //     class: '-label'
+                // }, [
+                //     div({
+                //         style: {
+                //             display: 'inline-block',
+                //             lineHeight: 'normal',
+                //             verticalAlign: 'bottom'
+                //         }
+                //     }, [
+                //         div({
+                //             style: {
+                //                 marginBottom: '-6px'
+                //             }
+                //         }, 'hub'),
+                //         div({
+                //             style: {
+                //                 textAlign: 'right',
+                //                 fontSize: '10px',
+                //                 fontWeight: 'bold',
+                //                 color: 'gray'
+                //             }
+                //         }, version)
+                //     ]),
+                //     img({
+                //         src: Plugin.plugin.fullPath + '/images/hub32.png',
+                //         width: '32px'
+                //     })
+                // ])
+            ].join('');
+        }
+
+        function detach() {
+            if (hostNode && container) {
+                hostNode.removeChild(container);
+            }
         }
 
         return {
-            make: function (config) {
-                return myWidget(config);
-            }
+            attach: attach,
+            start: start,
+            detach: detach,
         };
-    });
+    }
+
+    return {
+        make: function (config) {
+            return factory(config);
+        }
+    };
+});

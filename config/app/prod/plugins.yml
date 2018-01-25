@@ -1,0 +1,101 @@
+## Build Configuration
+---
+plugins:
+    # Plugins which come-with kbase-ui
+    -
+        components
+    -
+        mainwindow
+    -
+        message
+    -
+        welcome
+    -
+        narrativemanager
+    -
+        about
+    # external:
+    -
+        name: viswidgets
+        globalName: kbase-ui-plugin-vis-widgets
+        cwd: src/plugin
+        version: 1.2.0
+        source:
+            bower: {}
+    -
+        name: typeview
+        globalName: kbase-ui-plugin-typeview
+        cwd: src/plugin
+        version: 1.1.1
+        source:
+            bower: {}
+    -
+        name: dataview
+        globalName: kbase-ui-plugin-dataview
+        version: 3.4.0
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: datawidgets
+        globalName: kbase-ui-plugin-datawidgets
+        version: 0.4.2
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: dashboard
+        globalName: kbase-ui-plugin-dashboard
+        version: 2.5.1
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: data-landing-pages
+        globalName: kbase-ui-plugin-data-landing-pages
+        version: 0.8.0
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: methodview
+        globalName: kbase-ui-plugin-methodview
+        version: 1.1.0
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: ontology-widgets
+        globalName: kbase-ui-plugin-ontology-widgets
+        version: 1.0.4
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: auth2-client
+        globalName: kbase-ui-plugin-auth2-client
+        version: 1.2.7
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: user-profile
+        globalName: kbase-ui-plugin-user-profile
+        version: 1.4.1
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: catalog
+        globalName: kbase-ui-plugin-catalog
+        version: 1.1.2
+        cwd: src/plugin
+        source:
+            bower: {} 
+    -
+        name: jgi-search
+        globalName: kbase-ui-plugin-jgi-search
+        version: 0.31.3
+        cwd: src/plugin
+        source:
+            bower: {}            

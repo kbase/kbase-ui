@@ -1,1 +1,0 @@
-docker run -d -p 80:80 -t kbase/kbase-ui:develop

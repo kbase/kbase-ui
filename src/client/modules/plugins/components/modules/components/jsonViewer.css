@@ -1,0 +1,33 @@
+.mini-button {
+    padding: 2px;
+    /* margin-right: 2px; */
+    /* width: 1em; */
+    border: 2px transparent solid;
+    cursor: pointer;
+    display: inline-block;
+    background-color: transparent;
+    text-align: center;
+}
+
+.mini-button:hover {
+    background-color: rgb(211, 211, 211);
+    border: 2px gray solid;
+}
+
+.mini-button:active {
+    border: 2px gray solid;
+    background-color: rgba(249, 231, 157, 0.3);
+    /* color: #FFF; */
+}
+
+.mini-spacer {
+    padding: 2px;
+    /* margin-right: 2px; */
+    width: 1em;
+    border: 2px transparent solid;
+    cursor: pointer;
+    display: inline-block;
+    background-color: transparent;
+    text-align: center;
+}
+

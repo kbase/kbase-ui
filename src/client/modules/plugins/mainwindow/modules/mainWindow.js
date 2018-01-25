@@ -20,12 +20,10 @@
  */
 define([
     'bluebird',
-    'kb_common/dom',
     'kb_common/html',
     'kb_widget/widgetSet'
 ], function (
     Promise,
-    dom,
     html,
     WidgetSet
 ) {
@@ -40,46 +38,47 @@ define([
                 runtime: runtime
             });
 
-        function init() {
-            return new Promise(function (resolve) {
-                resolve();
-            });
-        }
-
         function buildHeader() {
-            var cellStyle = {
-                    padding: '4px',
-                    display: 'inline-block',
-                    height: '100%',
-                    verticalAlign: 'top'
-                },
-                bareCellStyle = {
-                    display: 'inline-block',
-                    height: '100%',
-                    verticalAlign: 'top'
-                },
-                loginWidget = runtime.feature('auth', 'widgets.login.name');
+            // var loginWidget = runtime.feature('auth', 'widgets.login.name');
+            var loginWidget = runtime.config('ui.services.session.loginWidget');
 
             return div({
-                class: 'navbar navbar-fixed-top -navbar',
+                class: '-navbar',
                 style: 'padding: 0'
-            }, div({ style: { position: 'relative', height: '100%' }, class: 'kb-widget-mainWindow' }, [
-                div({ style: cellStyle, id: widgetSet.addWidget('menu') }),
-                div({ style: cellStyle, id: widgetSet.addWidget('logo') }),
-                div({ style: cellStyle, id: widgetSet.addWidget('title') }),
-                div({ style: { position: 'absolute', right: '0', top: '0', bottom: '0', verticalAlign: 'top' } }, [
-                    div({ style: cellStyle, id: widgetSet.addWidget('buttonbar') }),
-                    div({ style: cellStyle, id: widgetSet.addWidget('notification') }),
-                    div({ style: cellStyle, id: widgetSet.addWidget('deployment') }),
-                    div({ style: cellStyle, class: 'navbar-right', id: widgetSet.addWidget(loginWidget) })
-                ])
-            ]));
+            }, [
+                div({
+                    class: '-cell -menu',
+                    id: widgetSet.addWidget('menu')
+                }),
+                div({
+                    class: '-cell -logo',
+                    id: widgetSet.addWidget('logo')
+                }),
+                div({
+                    class: '-cell -title',
+                    id: widgetSet.addWidget('title')
+                }),
+                div({
+                    class: '-cell -buttons',
+                    id: widgetSet.addWidget('buttonbar')
+                }),
+                div({
+                    class: '-cell -notification',
+                    id: widgetSet.addWidget('notification')
+                }),
+                div({
+                    class: '-cell -deployment',
+                    id: widgetSet.addWidget('deployment')
+                }),
+                div({
+                    class: '-cell -login',
+                    id: widgetSet.addWidget(loginWidget)
+                })
+            ]);
         }
 
         function renderLayout() {
-            return div({
-                class: 'plugin-mainwindow widget-mainwindow -main'
-            }, [
+            return [
                 div({
                     class: '-header'
                 }, buildHeader()),
@@ -95,12 +94,13 @@ define([
                         id: widgetSet.addWidget('body')
                     })
                 ])
-            ]);
+            ].join('');
         }
 
         function attach(node) {
             mount = node;
-            container = dom.createElement('div');
+            container = document.createElement('div');
+            container.classList.add('plugin-mainwindow', 'widget-mainwindow', '-main');
             mount.appendChild(container);
         }
 
@@ -126,8 +126,9 @@ define([
         function detach() {
             return widgetSet.detach()
                 .then(function () {
-                    mount.removeChild(container);
-                    resolve();
+                    if (mount && container) {
+                        mount.removeChild(container);
+                    }
                 });
         }
 
@@ -136,7 +137,6 @@ define([
         }
 
         return {
-            init: init,
             attach: attach,
             start: start,
             run: run,
