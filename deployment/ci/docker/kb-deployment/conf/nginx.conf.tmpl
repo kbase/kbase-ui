@@ -23,11 +23,11 @@ http {
 	##
 
 
-  {{ if eq .Env.deployed "true" }}
+  {{ if .Env.deployed }} {{if isTrue .Env.deployed }}
   # Only log to these locations if deployed. This allows local testing of this image.
   error_log /dev/stdout;
 	access_log syslog:server=10.58.0.54,facility=local2,tag=ci,severity=info combined;
-  {{ else }}
+  {{ end }}{{ else }}
   # But if running locally preserve the logs for debugging
 	access_log /var/log/nginx/access.log;
 	error_log /var/log/nginx/error.log;
@@ -54,7 +54,11 @@ http {
           allow all;
 
           # insert desired path here
+          {{ if .Env.uncompress }}
+          root /kb/deployment/services/kbase-ui-dev/;
+          {{ else }}
           root /kb/deployment/services/kbase-ui/;
+          {{ end }}          
         }
     }
 }
