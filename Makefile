@@ -63,7 +63,7 @@ install_tools:
 	@echo "> Installing build and test tools."
 	npm install
 	cd tools/server; npm install
-	mkdir dev/tools
+	-mkdir dev/tools
 	cp tools/link.sh dev/tools
 	$(GRUNT) init
 
@@ -85,6 +85,22 @@ build-prod:
 	cd mutations; node build prod
 
 # Build the docker image, assumes that make init and make build have been done already
+
+ci-image: build-ci
+	@echo "> Building docker image."
+	@echo "> Cleaning out old contents"
+	rm -rf $(CI_DOCKER_CONTEXT)/contents
+	@echo "> Copying current build of kbase-ui into contents..."
+	# We create 2 directories, one with non-minified js and one with minified js
+	mkdir -p $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui-dev
+	mkdir -p $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui
+	# Note that we copy the "build" build for dev, dist build for normal
+	cp -pr build/build/client/* $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui-dev
+	cp -pr build/dist/client/* $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui
+	@echo "> Copying kb/deployment templates..."
+	cp -pr $(CI_DOCKER_CONTEXT)/../kb-deployment/* $(CI_DOCKER_CONTEXT)/contents
+	@echo "> Beginning docker build..."
+	cd $(CI_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
 
 dev-image:
 	@echo "> Building development docker image."
@@ -113,7 +129,7 @@ dev-dist-image:
 	@echo "> Beginning docker build..."
 	cd $(DEV_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh	
 
-ci-image:
+ci-image-old:
 	@echo "> Building CI docker image."
 	@echo "> Cleaning out old contents"
 	rm -rf $(CI_DOCKER_CONTEXT)/contents

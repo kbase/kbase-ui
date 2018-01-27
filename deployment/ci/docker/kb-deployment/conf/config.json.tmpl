@@ -1,11 +1,11 @@
 {
     "deploy": {
-        "environment": "{{ .Env.deploy_environment }}",
-        "hostname": "{{ .Env.deploy_hostname }}",
+        "environment": "{{ default .Env.deploy_environment "dev" }}",
+        "hostname": "{{ default .Env.deploy_hostname "localhost" }}",
         "icon": "{{ .Env.deploy_icon }}",
         "name": "{{ .Env.deploy_name }}",
         "services": {
-            "urlBase": "https://{{ .Env.deploy_hostname }}"
+            "urlBase": "https://{{ default .Env.deploy_hostname "localhost" }}"
         }
     },
     "ui": {
