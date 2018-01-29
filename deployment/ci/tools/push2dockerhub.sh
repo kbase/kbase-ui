@@ -15,8 +15,6 @@
 # the TRAVIS_COMMIT env var if available, or else get the short commit via git cmd
 
 # Note: do not use now; for one, 
-exit 1
-
 
 TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
 COMMIT=${TRAVIS_COMMIT:-`git rev-parse --short HEAD`}

@@ -80,10 +80,6 @@ build-ci:
 	@echo "> Building for CI."
 	cd mutations; node build ci
 
-build-prod:
-	@echo "> Building for prod."
-	cd mutations; node build prod
-
 # Build the docker image, assumes that make init and make build have been done already
 
 ci-image: build-ci
@@ -102,69 +98,6 @@ ci-image: build-ci
 	@echo "> Beginning docker build..."
 	cd $(CI_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
 
-dev-image:
-	@echo "> Building development docker image."
-	@echo "> Cleaning out old contents"
-	rm -rf $(DEV_DOCKER_CONTEXT)/contents
-	@echo "> Copying current build of kbase-ui into contents..."
-	mkdir -p $(DEV_DOCKER_CONTEXT)/contents/services/kbase-ui
-	# Note that we copy the "build" build, not the dist build.
-	cp -pr build/build/client/* $(DEV_DOCKER_CONTEXT)/contents/services/kbase-ui
-	@echo "> Copying kb/deployment templates..."
-	cp -pr $(DEV_DOCKER_CONTEXT)/../kb-deployment/* $(DEV_DOCKER_CONTEXT)/contents
-	@echo "> Beginning docker build..."
-	cd $(DEV_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
-
-dev-dist-image:
-	@echo "> Building development docker image."
-	@echo "> Cleaning out old contents"
-	rm -rf $(DEV_DOCKER_CONTEXT)/contents
-	@echo "> Copying current build of kbase-ui into contents..."
-	mkdir -p $(DEV_DOCKER_CONTEXT)/contents/services/kbase-ui
-	# Note that we copy the "build" build, not the dist build.
-	cp -pr build/dist/client/* $(DEV_DOCKER_CONTEXT)/contents/services/kbase-ui
-	@echo "> Copying kb/deployment entrypoint and config templates..."
-	cp -pr $(DEV_DOCKER_CONTEXT)/../kb-deployment/* $(DEV_DOCKER_CONTEXT)/contents
-	chmod u+x $(DEV_DOCKER_CONTEXT)/contents/bin/entrypoint.sh
-	@echo "> Beginning docker build..."
-	cd $(DEV_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh	
-
-ci-image-old:
-	@echo "> Building CI docker image."
-	@echo "> Cleaning out old contents"
-	rm -rf $(CI_DOCKER_CONTEXT)/contents
-	@echo "> Copying current dist build of kbase-ui into contents..."
-	mkdir -p $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui
-	# Note that we copy the dist build for CI
-	cp -pr build/dist/client/* $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui
-	@echo "> Copying kb/deployment config templates..."
-	cp -pr $(CI_DOCKER_CONTEXT)/../kb-deployment/* $(CI_DOCKER_CONTEXT)/contents
-	@echo "> Beginning docker build..."
-	cd $(CI_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
-
-prod-image:
-	@echo "> Building docker image."
-	@echo "> Cleaning out old contents"
-	rm -rf $(PROD_DOCKER_CONTEXT)/contents
-	@echo "> Copying current dist build of kbase-ui into contents..."
-	mkdir -p $(PROD_DOCKER_CONTEXT)/contents/services/kbase-ui
-	# And of course we use the dist build for prod.
-	cp -pr build/dist/client/* $(PROD_DOCKER_CONTEXT)/contents/services/kbase-ui
-	@echo "> Copying kb/deployment config templates..."
-	cp -pr $(PROD_DOCKER_CONTEXT)/../kb-deployment/* $(PROD_DOCKER_CONTEXT)/contents
-	@echo "> Beginning docker build..."
-	cd $(PROD_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
-
-proxier-image:
-	@echo "> Building docker image."
-	@echo "> Cleaning out old contents"
-	rm -rf $(PROXIER_DOCKER_CONTEXT)/contents
-	mkdir -p $(PROXIER_DOCKER_CONTEXT)/contents
-	@echo "> Copying kb/deployment config templates..."
-	cp -pr $(PROXIER_DOCKER_CONTEXT)/../src/* $(PROXIER_DOCKER_CONTEXT)/contents
-	@echo "> Beginning docker build..."
-	cd $(PROXIER_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh	
-
 # run-dev-image:
 # 	@echo "> Running dev image."
 # 	# @echo "> You will need to inspect the docker container for the ip address "
@@ -179,16 +112,6 @@ run-ci-image:
 	$(eval cmd = $(TOPDIR)/deployment/ci/tools/run-image.sh $(env))
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
-
-run-prod-image:
-	$(eval cmd = $(TOPDIR)/deployment/prod/tools/run-image.sh $(env))
-	@echo "> Issuing: $(cmd)"
-	bash $(cmd)
-
-run-proxier-image:
-	$(eval cmd = $(TOPDIR)/deployment/proxier/tools/run-image.sh $(env))
-	@echo "> Issuing: $(cmd)"
-	bash $(cmd)	
 
 run-dev-image:
 	@echo "> Running image."
