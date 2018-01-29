@@ -41,7 +41,7 @@
         "knockout-arraytransforms": "2.1.1",
         "knockout-switch-case": "2.1.0",
         "knockout-validation": "2.0.3",
-        "knockout": "3.4.2",
+        "knockout": "3.5.0-beta",
         "marked": "0.3.6",
         "moment": "2.18.1",
         "numeral": "2.0.4",
