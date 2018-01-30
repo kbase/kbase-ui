@@ -100,7 +100,7 @@ http {
         include /etc/nginx/cors.conf;
         {{ end }}
         include /etc/nginx/cors.conf;
-        proxy_pass http://172.17.0.3:5000;
+        proxy_pass http://jgi_gateway:5000;
       }
 
       # Needed for dynamic service calls
