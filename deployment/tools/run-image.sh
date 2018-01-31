@@ -20,18 +20,19 @@ fi
 
 root=$(git rev-parse --show-toplevel)
 config_mount="${root}/deployment/conf"
+branch=$(git symbolic-ref --short HEAD 2>&1)
 
 echo "CONFIG MOUNT: ${config_mount}"
 echo "ENVIRONMENT : ${environment}"
+echo "BRANCH : ${branch}"
 
 echo "READING OPTIONS"
 
-image_tag="develop"
+image_tag="${branch}"
 
 docker run \
   --rm \
   --env-file ${config_mount}/${environment}.env \
-  --env deployed=false \
-  --network=kbase-dev \
+  --env uncompress=true \
   --name=kbase-ui-container \
   kbase/kbase-ui:${image_tag}  

@@ -82,8 +82,8 @@ build-ci:
 
 # Build the docker image, assumes that make init and make build have been done already
 
-ci-image: build-ci
-	@echo "> Building docker image."
+docker_image: build-ci
+	@echo "> Building docker image for this branch."
 	@echo "> Cleaning out old contents"
 	rm -rf $(CI_DOCKER_CONTEXT)/contents
 	@echo "> Copying current build of kbase-ui into contents..."
@@ -96,7 +96,7 @@ ci-image: build-ci
 	@echo "> Copying kb/deployment templates..."
 	cp -pr $(CI_DOCKER_CONTEXT)/../kb-deployment/* $(CI_DOCKER_CONTEXT)/contents
 	@echo "> Beginning docker build..."
-	cd $(CI_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
+	cd $(TOPDIR)/deployment/; bash tools/build_docker_image.sh
 
 # run-dev-image:
 # 	@echo "> Running dev image."
@@ -108,12 +108,7 @@ ci-image: build-ci
 # 	@echo "> Issuing: $(cmd)"
 # 	bash $(cmd)
 
-run-ci-image:
-	$(eval cmd = $(TOPDIR)/deployment/ci/tools/run-image.sh $(env))
-	@echo "> Issuing: $(cmd)"
-	bash $(cmd)
-
-run-dev-image:
+run-image:
 	@echo "> Running image."
 	# @echo "> You will need to inspect the docker container for the ip address "
 	# @echo ">   set your /etc/hosts for ci.kbase.us accordingly."
@@ -123,7 +118,7 @@ run-dev-image:
 	@echo "> libraries $(libraries)"
 	@echo "> To map host directories into the container, you will need to run "
 	@echo ">   deploymnet/dev/tools/run-image.sh with appropriate options."
-	$(eval cmd = $(TOPDIR)/deployment/dev/tools/run-image.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l))
+	$(eval cmd = $(TOPDIR)/deployment/tools/run-image.sh dev $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l))
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
 
