@@ -31,7 +31,6 @@ branches:
     only:
         - master
         - develop
-        - singleimage
 
 install:
     - make init
