@@ -23,7 +23,8 @@ if ( [ "$TRAVIS_SECURE_ENV_VARS" == "true" ] && [ "$TRAVIS_PULL_REQUEST" == "fal
     if  ( [ "$TAG" == "latest" ] || [ "$TAG" == "develop" ] || [ "$TAG" == "singleimage" ]) ; then
         echo "Logging into Dockerhub as $DOCKER_USER"
         docker login -u $DOCKER_USER -p $DOCKER_PASS && \
-        docker tag $IMAGE_NAME:$COMMIT $IMAGE_NAME:$TAG && \
+        # In this repo, the image is already tagged with the branch
+        # docker tag $IMAGE_NAME:$COMMIT $IMAGE_NAME:$TAG && \
         echo "Pushing $IMAGE_NAME:$TAG" && \
         docker push $IMAGE_NAME:$TAG || \
         ( echo "Failed to login and push tagged image" && exit 1 )
