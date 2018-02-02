@@ -95,13 +95,13 @@ http {
       # TODO: need to pin the docker container to a host name, 
       # otherwise you need to inspect the container to find out the ip 
       # address to use below
-      location /services/jgi_gateway/rpc {
-        {{ if .Env.deploy_ui_hostname }}
-        include /etc/nginx/cors.conf;
-        {{ end }}
-        include /etc/nginx/cors.conf;
-        proxy_pass http://jgi_gateway:5000;
-      }
+      # location /services/jgi_gateway/rpc {
+      #   {{ if .Env.deploy_ui_hostname }}
+      #   include /etc/nginx/cors.conf;
+      #   {{ end }}
+      #   include /etc/nginx/cors.conf;
+      #   proxy_pass http://jgi_gateway:5000;
+      # }
 
       # Needed for dynamic service calls
       location /dynserv {
