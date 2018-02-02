@@ -118,7 +118,7 @@ plugins:
     -
         name: auth2-client
         globalName: kbase-ui-plugin-auth2-client
-        version: 1.2.7
+        version: 1.2.8
         cwd: src/plugin
         source:
             bower: {}
@@ -160,7 +160,7 @@ plugins:
     -
         name: jgi-search
         globalName: kbase-ui-plugin-jgi-search
-        version: 0.31.3
+        version: 0.31.5
         cwd: src/plugin
         source:
             bower: {}
@@ -195,14 +195,14 @@ plugins:
     -
         name: staging-browser
         globalName: kbase-ui-plugin-staging-browser
-        version: 0.1.1
+        version: 0.1.2
         cwd: src/plugin
         source:
             bower: {}
     -
         name: catalog
         globalName: kbase-ui-plugin-catalog
-        version: 1.1.2
+        version: 1.2.0
         cwd: src/plugin
         source:
             bower: {}
