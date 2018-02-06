@@ -30,7 +30,7 @@ define([
         // TODO: all of this from config?
         var auth2Session = new M_auth2Session.Auth2Session({
             cookieName: runtime.config('services.auth2.cookieName'),
-            extraCookies: config.extraCookies,
+            extraCookies: extraCookies,
             baseUrl: runtime.config('services.auth2.url'),
             providers: runtime.config('services.auth2.providers')
         });
