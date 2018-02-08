@@ -223,14 +223,14 @@ plugins:
     -
         name: narrative-finder
         globalName: kbase-ui-plugin-narrative-finder
-        version: 0.1.0
+        version: 0.1.1
         cwd: src/plugin
         source:
             bower: {}
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.3.1
+        version: 0.3.2
         cwd: src/plugin
         source:
             bower: {}            
