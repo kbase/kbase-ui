@@ -929,7 +929,7 @@ function makeBaseBuild(state) {
 function makeDistBuild(state) {
     var root = state.environment.path,
         buildPath = ['..', 'build'],
-        uglify = require('uglify-js');
+        uglify = require('uglify-es');
 
     return fs.copyAsync(root.concat(['build']).join('/'), root.concat(['dist']).join('/'))
         .then(function () {

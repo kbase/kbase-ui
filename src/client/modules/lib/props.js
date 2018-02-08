@@ -1,6 +1,3 @@
-/*global define*/
-/*jslint white:true,browser:true */
-
 define([], function () {
     'use strict';
 
@@ -12,7 +9,6 @@ define([], function () {
     function isNumber(testValue) {
         return (typeof testValue === 'number');
     }
-
 
     function setDataItem(data, path, value) {
         if (typeof path === 'string') {

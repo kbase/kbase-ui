@@ -7,6 +7,7 @@ define([
     'kb_common/html',
     'knockout-mapping',
     'knockout-arraytransforms',
+    './lib/knockout-es6-collections',
     'knockout-validation',
     'knockout-switch-case'
 ], function (
