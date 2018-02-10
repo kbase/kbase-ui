@@ -11,26 +11,18 @@
 }
 
 .btn-kbase {
-   xbackground-color: #2196F3;
    border-radius: 1px;
-   xcolor: #fff;
    border: none;
-   xpadding: 10px 20px;
-   xfont-size: 13px;
    box-shadow: 1px 1px 3px #aaa;
 }
 
 .btn-kbase:hover {
-   xbackground-color: #1E88E5;
 }
 
 .btn-group-kbase {
-   xbox-shadow: 1px 1px 3px #aaa;
-   xmargin-bottom: 4px;
 }
 .btn-group .btn-kbase {
    box-shadow: none;
-   xmargin-bottom: 3px;
 }
 
 .btn-kbase[disabled=disabled] {
