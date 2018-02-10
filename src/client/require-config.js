@@ -67,6 +67,9 @@
             nunjucks: 'bower_components/nunjucks/nunjucks',
             plotly: 'bower_components/plotly.js/plotly',
             postal: 'bower_components/postal.js/postal',
+            select2: 'bower_components/select2/js/select2.full',
+            select2_css: 'bower_components/select2/css/select2',
+            select2_bootstrap_theme: 'bower_components/select2-bootstrap-theme/select2-bootstrap',
             text: 'bower_components/requirejs-text/text',
             underscore: 'bower_components/underscore/underscore',
             uuid: 'bower_components/pure-uuid/uuid',
@@ -81,7 +84,7 @@
             },
             d3_sankey: {
                 deps: ['d3', 'css!d3_sankey_css']
-                    // deps: ['d3', 'css!d3_sankey_css', 'css!kb/style/sankey']
+                // deps: ['d3', 'css!d3_sankey_css', 'css!kb/style/sankey']
             },
             highlight: {
                 deps: ['css!highlight_css']
@@ -89,6 +92,9 @@
             'knockout-plus': {
                 deps: ['knockout']
             },
+            select2: {
+                deps: ['css!select2_css', 'css!select2_bootstrap_theme']
+            }
             // Activate this if using js-yaml with a need for these modules.
             // At the moment, requirejs global handler catches errors loading
             // this within js-yaml and allows js-yaml to detect that they are
