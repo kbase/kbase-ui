@@ -41,7 +41,7 @@ menus:
             -
                 id: search
                 auth: true
-                allow: [alpha2]
+                allow: [alpha]
             -
                 id: jobbrowser
                 # The label can ovveride the label from the plugin here
