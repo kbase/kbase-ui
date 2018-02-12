@@ -31,29 +31,6 @@ define([
         });
     };
 
-    function isEmpty(value) {
-        switch (typeof value) {
-        case 'string':
-            return (value.length === 0);
-        case 'undefined':
-            return true;
-        case 'number':
-            return false;
-        case 'boolean':
-            return false;
-        case 'object':
-            if (value instanceof Array) {
-                return (value.length === 0);
-            }
-            if (value === null) {
-                return true;
-            }
-            return false;
-        default:
-            return false;
-        }
-    }
-
     function isEmptyJSON(value) {
         if (value === undefined) {
             return true;
@@ -101,11 +78,6 @@ define([
 
         return target;
     };
-
-    // ko.extenders.mytest = function (target, config) {
-    //     target.test = ko.observable(true);
-    //     return target;
-    // };
 
     ko.extenders.logChange = function (target, label) {
         target.subscribe(function (newValue) {
