@@ -42,29 +42,25 @@ install:
     menu:
         -
             name: welcome
-            definition:
-                path: welcome
-                label: Welcome!
-                icon: smile-o
+            path: welcome
+            label: Welcome!
+            icon: smile-o
         -
             name: about-kbase
-            definition:
-                uri: https://kbase.us/about
-                newWindow: true
-                label: About KBase
-                icon: info-circle
+            uri: https://kbase.us/about
+            newWindow: true
+            label: About KBase
+            icon: info-circle
         -
             name: contact-kbase
-            definition:
-                uri: https://kbase.us/contact-us
-                newWindow: true
-                label: Contact KBase
-                icon: envelope-o
+            uri: https://kbase.us/contact-us
+            newWindow: true
+            label: Contact KBase
+            icon: envelope-o
         -
             name: help
-            definition:
-                uri: https://kbase.us/narrative-guide/
-                newWindow: true
-                label: Help
-                icon: question
+            uri: https://kbase.us/narrative-guide/
+            newWindow: true
+            label: Help
+            icon: question
                    
