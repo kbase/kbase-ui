@@ -1,9 +1,57 @@
 menus:
-    authenticated:
-        main: [narrative, jgi-search]
-        developer: [data-search, reske-admin, staging-browser]
-        help: [about, about-services, contact-kbase, help]
-    unauthenticated:
-        main: []
-        developer: []
-        help: [about, contact-kbase, help]
+    hamburger:
+        main:
+            -
+                id: narrative
+                auth: true
+            -
+                id: jgi-search
+                auth: true
+        developer:
+            -
+                id: simple-search
+                auth: true           
+            -
+                id: reske-admin
+                auth: true
+            -
+                id: staging-browser
+                auth: true
+        help:
+            -
+                id: about
+                auth: false
+            -
+                id: about-services
+                auth: true
+            -
+                id: contact-kbase
+                auth: false
+            -
+                id: help
+                auth: false
+    sidebar:
+        main:
+            -
+                id: dashboard
+                auth: true
+            -
+                id: appcatalog
+                auth: false
+            -
+                id: search
+                auth: true
+                allow: [alpha2]
+            -
+                id: jobbrowser
+                # The label can ovveride the label from the plugin here
+                label: Jobs
+                auth: true
+                allow: [alpha]
+            -
+                id: account
+                auth: true
+            -
+                id: feeds
+                auth: true
+                allow: [alpha]
