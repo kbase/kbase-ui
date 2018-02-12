@@ -61,7 +61,7 @@ function gitinfo(state) {
         run('git config --get remote.origin.url'),
         run('git rev-parse --abbrev-ref HEAD'),
         run('git describe --exact-match --tags $(git rev-parse HEAD)')
-            .catch(function (err) {
+            .catch(function () {
                 // For non-prod ui we can be tolerant of a missing version, but not for prod.
                 if (state.buildConfig.target === 'prod') {
                     throw new Error('Not on a tag, cannot deploy');
@@ -146,7 +146,6 @@ function arrayDiff(a, b) {
  */
 function copyDirFiles(pathFrom, pathTo) {
     var from = pathFrom.join('/'),
-        to = pathTo.join('/'),
         fromPath, toPath = pathTo;
     return fs.realpathAsync(from)
         .then(function (realpath) {
@@ -172,7 +171,7 @@ function copyDirFiles(pathFrom, pathTo) {
                 return fs.ensureDirAsync(targetDir.join('/'))
                     .then(function () {
                         return fs.copyAsync(filePath.join('/'), targetDir.concat([fileName]).join('/'));
-                        // console.log(targetDir.concat([fileName]).join('/'));
+                        // logit(targetDir.concat([fileName]).join('/'));
                     });
             }));
         });
@@ -221,35 +220,6 @@ function installModule(state, source) {
 }
 
 function installModulePackagesFromBower(state) {
-    // iterate through all of the bower packages in root/bower_components
-    var root = state.environment.path;
-
-    return dirList(root.concat(['build', 'bower_components']))
-        .then(function (dirs) {
-            return Promise.all(dirs.map(function (dir) {
-                return Promise.all([dir, pathExists(dir.path.concat('install.yml').join('/'))]);
-            }));
-        })
-        .then(function (dirs) {
-            return dirs
-                .filter(function (dir) {
-                    return dir[1];
-                })
-                .map(function (dir) {
-                    return dir[0];
-                });
-        })
-        .then(function (installDirs) {
-            return Promise.all(installDirs.map(function (installDir) {
-                return installModule(state, installDir.path);
-            }));
-        })
-        .then(function () {
-            return state;
-        });
-}
-
-function installModulePackagesFromFilesystem(state) {
     // iterate through all of the bower packages in root/bower_components
     var root = state.environment.path;
 
@@ -513,12 +483,12 @@ function installExternalPlugins(state) {
                     return plugin.source.link ? true : false;
                 })
                 .map(function (plugin) {
-                    var cwds = plugin.cwd || 'dist/plugin',
-                        cwd = cwds.split('/'),
+                    var //cwds = plugin.cwd || 'dist/plugin',
+                        // cwd = cwds.split('/'),
                         // Our actual cwd is mutations, so we need to escape one up to the
                         // project root.
-                        repoRoot = (plugin.source.link.root && plugin.source.link.root.split('/')) || ['..', '..'],
-                        source = repoRoot.concat([plugin.globalName]).concat(cwd),
+                        // repoRoot = (plugin.source.link.root && plugin.source.link.root.split('/')) || ['..', '..'],
+                        // source = repoRoot.concat([plugin.globalName]).concat(cwd),
                         destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
                     return fs.mkdirAsync(destination.join('/'));
                 }));
@@ -557,15 +527,16 @@ function setupBuild(state) {
                 to = root.concat(['build', 'client']);
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
-        .then(function () {
-            // move search into client.
-            var from = root.concat(['src', 'search']),
-                to = root.concat(['build', 'client', 'search']);
-            return fs.moveAsync(from.join('/'), to.join('/'));
-        })
-        .then(function () {
-            return configureSearch(state);
-        })
+        // NO MORE SEARCH!
+        // .then(function () {
+        //     // move search into client.
+        //     var from = root.concat(['src', 'search']),
+        //         to = root.concat(['build', 'client', 'search']);
+        //     return fs.moveAsync(from.join('/'), to.join('/'));
+        // })
+        // .then(function () {
+        //     return configureSearch(state);
+        // })
         .then(function () {
             return fs.moveAsync(root.concat(['bower.json']).join('/'), root.concat(['build', 'bower.json']).join('/'));
         })
@@ -601,18 +572,18 @@ function setupBuild(state) {
 // For now we keep doing this, which will work for dev and ci builds, but not for others, since the
 // target is prod for next, prod, and appdev.
 
-function configureSearch(state) {
-    var configFile = state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/');
-    return fs.readJson(configFile,
-        function (err, config) {
-            // Don't fix up the target any longer -- this needs to be done
-            // at deploy time.
-            // var target = state.config.targets.deploy;
-            // config.setup = target;
-            return fs.outputJson(configFile, config);
-        }
-    );
-}
+// function configureSearch(state) {
+//     var configFile = state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/');
+//     return fs.readJson(configFile,
+//         function (err, config) {
+//             // Don't fix up the target any longer -- this needs to be done
+//             // at deploy time.
+//             // var target = state.config.targets.deploy;
+//             // config.setup = target;
+//             return fs.outputJson(configFile, config);
+//         }
+//     );
+// }
 
 function fetchPackagesWithBower(state) {
     return bowerInstall(state)
@@ -708,21 +679,25 @@ function getReleaseNotes(state, version) {
         });
 }
 
+function logit(msg) {
+    process.stdout.write(msg + '\n');
+}
+
 function verifyVersion(state) {
     return Promise.try(function () {
-        console.log('Verifying version...');
+        logit('Verifying version...');
         var releaseVersion = state.mergedConfig.release.version;
         var gitVersion = state.buildInfo.git.version;
 
         if (state.buildConfig.target === 'prod') {
             if (releaseVersion === gitVersion) {
-                console.log('release and git agree on ' + releaseVersion);
+                logit('release and git agree on ' + releaseVersion);
             } else {
                 throw new Error('Release and git versions are different; release says "' + releaseVersion + '", git says "' + gitVersion + '"');
             }
             return getReleaseNotes(state, releaseVersion)
                 .then(function (releaseNotesFile) {
-                    console.log('have release notes?', releaseNotesFile);
+                    logit('have release notes?', releaseNotesFile);
                 });
         } else {
             // we have no assumptions. Well, either there is a release notes file and release.version in agreement,
@@ -747,7 +722,7 @@ function mergeObjects(listOfObjects) {
             var obj1Value = obj1[key];
             var obj2Value = obj2[key];
             var obj1Type = typeof obj1Value;
-            var obj2Type = typeof obj2Value;
+            // var obj2Type = typeof obj2Value;
             if (obj1Type === 'undefined') {
                 obj1[key] = obj2[key];
             } else if (isSimpleObject(obj1Value) && isSimpleObject(obj2Value)) {
@@ -860,7 +835,7 @@ function makeKbConfig(state) {
 
 function makeDeployConfig(state) {
     var root = state.environment.path;
-    var deployDir = root.concat(['build', 'deploy']);
+    // var deployDir = root.concat(['build', 'deploy']);
     var cfgDir = root.concat(['build', 'deploy', 'cfg']);
     var sourceDir = root.concat(['config', 'deploy']);
 
@@ -1033,7 +1008,7 @@ function makeModuleVFS(state, whichBuild) {
                         return b.count - a.count;
                     })
                     .forEach(function (item) {
-                        console.log(item.key + ':' + item.count);
+                        logit(item.key + ':' + item.count);
                     });
             }
             var exceptions = [
@@ -1111,7 +1086,7 @@ function makeModuleVFS(state, whichBuild) {
                                     })) {
                                         skip('css excluded');
                                     } else {
-                                        // console.log('css included', base);
+                                        // logit('css included', base);
                                         include(ext);
                                         vfs.resources.css[base] = contents;
                                     }
@@ -1133,10 +1108,10 @@ function makeModuleVFS(state, whichBuild) {
                 }))
                 .then(function () {
                     // var script = 'window.require_modules = ' + JSON.stringify(vfs, null, 4);
-                    console.log('vfs created');
-                    console.log('skipped: ');
+                    logit('vfs created');
+                    logit('skipped: ');
                     showStats(skipped);
-                    console.log('included:');
+                    logit('included:');
                     showStats(included);
                     var modules = '{' + Object.keys(vfs.scripts).map(function (path) {
                         return '"' + path + '": ' + vfs.scripts[path];
@@ -1200,14 +1175,14 @@ function main(type) {
             };
         })
         .then(function (config) {
-            console.log('Creating initial state with config: ');
+            logit('Creating initial state with config: ');
             return mutant.createInitialState(config);
         })
         .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Setting up build...');
+            logit('Setting up build...');
             return setupBuild(state);
         })
 
@@ -1222,7 +1197,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Fetching bower packages...');
+            logit('Fetching bower packages...');
             return fetchPackagesWithBower(state);
         })
 
@@ -1230,7 +1205,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Installing bower packages...');
+            logit('Installing bower packages...');
             return installBowerPackages(state);
         })
 
@@ -1238,7 +1213,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Installing Plugins...');
+            logit('Installing Plugins...');
             return installPlugins(state);
         })
 
@@ -1247,7 +1222,7 @@ function main(type) {
     //         return mutant.copyState(state);
     //     })
     //     .then(function (state) {
-    //         console.log('Installing Modules...');
+    //         logit('Installing Modules...');
     //         return installModules(state);
     //     })
 
@@ -1255,7 +1230,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Installing Module Packages from Bower...');
+            logit('Installing Module Packages from Bower...');
             return installModulePackagesFromBower(state);
         })
 
@@ -1270,7 +1245,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Copying config files...');
+            logit('Copying config files...');
             return copyUiConfig(state);
         })
 
@@ -1278,7 +1253,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Creating build record ...');
+            logit('Creating build record ...');
             return createBuildInfo(state);
         })
 
@@ -1291,7 +1266,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Verifying version...');
+            logit('Verifying version...');
             return verifyVersion(state);
         })
 
@@ -1299,7 +1274,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Making KBase Config...');
+            logit('Making KBase Config...');
             return makeKbConfig(state);
         })
 
@@ -1307,7 +1282,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Making deploy configs');
+            logit('Making deploy configs');
             return makeDeployConfig(state);
         })
 
@@ -1317,7 +1292,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Cleaning up...');
+            logit('Cleaning up...');
             return cleanup(state);
         })
 
@@ -1329,7 +1304,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Making the base build...');
+            logit('Making the base build...');
             return makeBaseBuild(state);
         })
 
@@ -1338,7 +1313,7 @@ function main(type) {
         })
         .then(function (state) {
             if (state.buildConfig.dist) {
-                console.log('Making the dist build...');
+                logit('Making the dist build...');
                 return makeDistBuild(state);
             }
             return state;
