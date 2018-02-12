@@ -187,17 +187,6 @@ bowerFiles:
             - jquery.blockUI.js
         bowerComponent: true
     -
-        name: q
-        src:
-            - q.js
-        bowerComponent: true
-    -
-        name: postal
-        cwd: lib
-        src:
-            - postal.js
-        bowerComponent: true
-    -
         dir: highlightjs
         src:
             - highlight.pack.js
