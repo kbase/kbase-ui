@@ -112,6 +112,13 @@ case $key in
     shift
     shift
     ;;
+    -s|--service)
+    service="$2"
+    echo "Using internal services: ${service}"
+    mounts="$mounts --mount type=bind,src=${root}/src/client/modules/app/services/${service}.js,dst=/kb/deployment/services/kbase-ui/modules/app/services/${service}.js"
+    shift # past argument
+    shift # past value
+    ;;
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later
     shift # past argument

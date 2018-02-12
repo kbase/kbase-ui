@@ -118,7 +118,7 @@ plugins:
     -
         name: auth2-client
         globalName: kbase-ui-plugin-auth2-client
-        version: 1.2.8
+        version: 1.2.9
         cwd: src/plugin
         source:
             bower: {}
@@ -195,7 +195,7 @@ plugins:
     -
         name: reske-simple-search
         globalName: kbase-ui-plugin-reske-simple-search
-        version: 0.8.0
+        version: 0.8.2
         cwd: src/plugin
         source:
             bower: {}
@@ -216,7 +216,7 @@ plugins:
     -
         name: catalog
         globalName: kbase-ui-plugin-catalog
-        version: 1.2.0
+        version: 1.2.1
         cwd: src/plugin
         source:
             bower: {}      
@@ -230,7 +230,7 @@ plugins:
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.3.4
+        version: 0.3.5
         cwd: src/plugin
         source:
             bower: {}            

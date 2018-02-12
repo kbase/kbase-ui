@@ -66,7 +66,6 @@
             numeral: 'bower_components/numeral/numeral',
             nunjucks: 'bower_components/nunjucks/nunjucks',
             plotly: 'bower_components/plotly.js/plotly',
-            postal: 'bower_components/postal.js/postal',
             select2: 'bower_components/select2/js/select2.full',
             select2_css: 'bower_components/select2/css/select2',
             select2_bootstrap_theme: 'bower_components/select2-bootstrap-theme/select2-bootstrap',
