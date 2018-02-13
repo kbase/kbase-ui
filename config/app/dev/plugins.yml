@@ -195,7 +195,7 @@ plugins:
     -
         name: reske-simple-search
         globalName: kbase-ui-plugin-reske-simple-search
-        version: 0.8.2
+        version: 0.9.1
         cwd: src/plugin
         source:
             bower: {}
