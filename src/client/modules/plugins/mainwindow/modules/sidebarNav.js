@@ -48,11 +48,9 @@ define([
             var isLoggedIn = ko.observable(initiallyLoggedIn);
             // var username = ko.ovservable(runtime.service('session').getUsername());
 
-            // TODO: can this just be a more generic change in session state?
-            runtime.recv('session', 'loggedin', function () {
-                isLoggedIn(runtime.service('session').isLoggedIn());
-            });
-            runtime.recv('session', 'loggedout', function () {
+            // A session state change may signal that the session has been logged 
+            // out. 
+            runtime.recv('session', 'change', function () {
                 isLoggedIn(runtime.service('session').isLoggedIn());
             });
 
