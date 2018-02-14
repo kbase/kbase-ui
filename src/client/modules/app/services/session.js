@@ -174,7 +174,7 @@ define([
                             runtime.send('session', 'loggedin');
                         } else {
                             state.setItem('loggedin', false);
-                            // runtime.send('session', 'loggedout');
+                            runtime.send('session', 'loggedout');
                             // TODO: detect if already on signedout page.
                             runtime.send('app', 'navigate', {
                                 path: 'auth2/signedout'
