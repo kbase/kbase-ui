@@ -57,7 +57,7 @@
         "node-dir": "0.1.17",
         "node-ini": "1.0.0",
         "path-exists": "3.0.0",
-        "phantomjs-prebuilt": "2.1.16",
+        "puppeteer": "1.0.0",
         "requirejs": "2.3.5",
         "sauce-connect-launcher": "1.2.3",
         "selenium-standalone": "6.12.0",
