@@ -108,7 +108,7 @@ define([
             var buildInfo = runtime.config('buildInfo');
             var builtAt = moment(new Date(buildInfo.builtAt));
             var buildDate = builtAt.format('dddd MMMM D, YYYY');
-            var buildTime = builtAt.format('h:mm:ss a ');
+            var buildTime = builtAt.format('h:mm:ss a');
             var repoUrl = buildInfo.git.originUrl; // 'https://github.com/kbase/kbase-ui';
             var hash = buildInfo.git.commitHash;
             // https://github.com/eapearson/kbase-ui/blob/bf5efa0810d9f097b7c6ba8390f97c008d98d80e/release-notes/RELEASE_NOTES_1.5.0.md
