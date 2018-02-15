@@ -1,14 +1,10 @@
 define([
-    'bluebird',
     'moment',
     'kb_common/html',
-    'kb_common/bootstrapUtils',
     'bootstrap'
 ], function (
-    Promise,
     moment,
-    html,
-    BS
+    html
 ) {
     'use strict';
     var t = html.tag,
@@ -28,31 +24,6 @@ define([
     function widget(config) {
         var mount, container,
             runtime = config.runtime;
-
-        function buildBuildInfo() {
-            var buildInfo = runtime.config('buildInfo');
-
-            var info = {
-                builtAt: new Date(buildInfo.builtAt).toLocaleString(),
-                git: {
-                    branch: buildInfo.git.branch,
-                    url: buildInfo.git.originUrl,
-                    commit: {
-                        hash: buildInfo.git.commitHash,
-                        shortHash: buildInfo.git.commitAbbreviatedHash,
-                        message: buildInfo.git.subject,
-                        by: buildInfo.git.committerName,
-                        date: new Date(buildInfo.git.committerDate).toLocaleString()
-                    },
-                    author: {
-                        author: buildInfo.git.authorName,
-                        authorDate: new Date(buildInfo.git.authorDate).toLocaleString()
-                    }
-                }
-            };
-
-            return BS.buildPresentableJson(info);
-        }
 
         function buildHub() {
             return span({
@@ -108,7 +79,7 @@ define([
             var buildInfo = runtime.config('buildInfo');
             var builtAt = moment(new Date(buildInfo.builtAt));
             var buildDate = builtAt.format('dddd MMMM D, YYYY');
-            var buildTime = builtAt.format('h:mm:ss a ');
+            var buildTime = builtAt.format('h:mm:ss a');
             var repoUrl = buildInfo.git.originUrl; // 'https://github.com/kbase/kbase-ui';
             var hash = buildInfo.git.commitHash;
             // https://github.com/eapearson/kbase-ui/blob/bf5efa0810d9f097b7c6ba8390f97c008d98d80e/release-notes/RELEASE_NOTES_1.5.0.md
@@ -117,7 +88,6 @@ define([
                 repoUrl = 'https://' + m[1] + '/' + m[2];
             }
 
-            var docSiteUrl = runtime.config('resources.docSite.base.url');
             var contactUrl = runtime.config('resources.contact.url');
             var helpUrl = runtime.config('resources.help.url');
             var aboutKbase = runtime.config('resources.documentation.aboutKbase.url');
@@ -241,30 +211,6 @@ define([
             ]);
         }
 
-        function buildLayoutNoHub() {
-            return div({
-                class: 'container-fluid'
-            }, [
-                div({
-                    class: 'row'
-                }, [
-                    div({
-                        class: 'col-sm-6',
-                        style: {}
-                    }, [
-                        h2('This Version'),
-                        buildVersionInfo()
-                    ]),
-                    div({
-                        class: 'col-sm-6',
-                        style: {}
-                    }, [
-
-                    ])
-                ])
-            ]);
-        }
-
         function render() {
             container.innerHTML = buildLayout();
         }
@@ -303,5 +249,4 @@ define([
             return widget(config);
         }
     };
-
 });
