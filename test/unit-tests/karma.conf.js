@@ -45,7 +45,7 @@ module.exports = function (config) {
         // TODO: We may want to find a way to evaluate dependency test coverage at some point.
         preprocessors: {
             'build/build/client/modules/!(bower_components)/**/*.js': ['coverage']
-                // 'build/build/client/modules/**/*.js': ['coverage']
+            // 'build/build/client/modules/**/*.js': ['coverage']
         },
 
         // TODO: we should put this somewhere else?
