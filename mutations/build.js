@@ -702,7 +702,7 @@ function verifyVersion(state) {
         } else {
             // we have no assumptions. Well, either there is a release notes file and release.version in agreement,
             // or a new release notes is being worked on and is a higher version. Could check this...
-            console.warn('In a dev build, release version not checked.');
+            console.warn('In a non-prod build, release version not checked.');
         }
     })
         .then(function () {
