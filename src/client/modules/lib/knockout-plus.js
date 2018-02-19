@@ -327,6 +327,7 @@ define([
             var format = value.format;
             var type = value.type;
             var missing = value.missing || '';
+            var defaultValue = value.default;
             // var format = allBindings.get('type') || '';
             // var format = allBindings.get('numberFormat') || '';
             var formatted;
@@ -359,10 +360,20 @@ define([
                 break;
             case 'bool':
             case 'boolean':
-                if (valueUnwrapped) {
-                    return 'true';
+                if (valueUnwrapped === undefined || valueUnwrapped === null) {
+                    if (defaultValue === undefined) {
+                        formatted = missing;
+                        break;
+                    }
+                    valueUnwrapped = defaultValue;
                 }
-                return 'false';
+            
+                if (valueUnwrapped) {
+                    formatted = 'true';
+                }
+                formatted = 'false';
+
+                break;
             case 'text':
             case 'string':
             default:
