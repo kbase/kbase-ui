@@ -477,10 +477,33 @@ define([
         };
     }
 
+    var installedStylesheets = {};
+    function installStylesheet(id, stylesheet) {
+        if (installedStylesheets[id]) {
+            return;
+        }
+        var temp = document.createElement('div');
+        temp.innerHTML = stylesheet;
+        var style = temp.querySelector('style');
+        style.id = 'componentStyle_' + id;
+        if (!style) {
+            // This means an invalid stylesheet was passed here.
+            console.warn('Invalid component stylesheet, no style tag: ', stylesheet);
+            return;
+        }
+        document.head.appendChild(style);
+        installedStylesheets[id] = stylesheet;
+    }
 
-    function registerComponent(component) {
+
+    function registerComponent(componentFactory) {
         var name = new Uuid(4).format();
-        ko.components.register(name, component());
+        var component = componentFactory();
+        ko.components.register(name, component);
+
+        if (component.stylesheet) {
+            installStylesheet(name, component.stylesheet);
+        }
 
         return {
             name: function () {
