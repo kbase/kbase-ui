@@ -6,13 +6,15 @@
 
 | Version                           | Date       | Notes               |
 |-----------------------------------|------------|---------------------|
-| [1.6.0](RELEASE_NOTES_1.6.0.html) | 2018-02-20 |  |
-| [1.5.5](RELEASE_NOTES_1.5.5.html) | 2018-02-06 |  |
-| [1.5.4](RELEASE_NOTES_1.5.4.html) | 2018-02-01 |  |
-| [1.5.3](RELEASE_NOTES_1.5.3.html) | 2018-02-01 |  |
-| [1.5.2](RELEASE_NOTES_1.5.2.html) | 2018-01-25 |  |
-| [1.5.0](RELEASE_NOTES_1.5.0.html) | 2018-01-25 | First release notes || [1.5.1](RELEASE_NOTES_1.5.1.html) | 2018-01-25 |  |
-| [1.5.0](RELEASE_NOTES_1.5.0.html) | 2018-01-25 | First release notes |
+| [1.6.1](RELEASE_NOTES_1.6.1.md) | 2018-02-20 |  |
+| [1.6.0](RELEASE_NOTES_1.6.0.md) | 2018-02-20 |  |
+| [1.5.5](RELEASE_NOTES_1.5.5.md) | 2018-02-06 |  |
+| [1.5.4](RELEASE_NOTES_1.5.4.md) | 2018-02-01 |  |
+| [1.5.3](RELEASE_NOTES_1.5.3.md) | 2018-02-01 |  |
+| [1.5.2](RELEASE_NOTES_1.5.2.md) | 2018-01-25 |  |
+| [1.5.0](RELEASE_NOTES_1.5.0.md) | 2018-01-25 | First release notes |
+| [1.5.1](RELEASE_NOTES_1.5.1.md) | 2018-01-25 |  |
+| [1.5.0](RELEASE_NOTES_1.5.0.md) | 2018-01-25 | First release notes |
 | 1.4.6                             | 2017-06-22 |  |
 | 1.4.5                             | 2017-06-17 |  |
 | 1.4.4                             | 2017-06-16 |  |

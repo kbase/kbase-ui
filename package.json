@@ -50,7 +50,6 @@
         "karma-cli": "1.0.1",
         "karma-coverage": "1.1.1",
         "karma-jasmine": "1.1.1",
-        "karma-phantomjs-launcher": "1.0.4",
         "karma-requirejs": "1.1.0",
         "karma-webdriver-launcher": "1.0.5",
         "lodash": "4.17.5",
@@ -66,7 +65,6 @@
         "underscore": "1.8.3",
         "wdio-dot-reporter": "0.0.9",
         "wdio-jasmine-framework": "^0.3.1",
-        "wdio-phantomjs-service": "^0.2.2",
         "wdio-selenium-standalone-service": "0.0.9",
         "wdio-sauce-service": "0.4.8",
         "webdriverio": "4.10.2"
