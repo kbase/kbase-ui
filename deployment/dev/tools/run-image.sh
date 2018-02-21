@@ -101,16 +101,23 @@ case $key in
     -l|--lib)
     lib="$2"
     # local l
-    read libModule libName libPath <<<$(IFS=':';echo $lib)
+    read libName libPath libModule  <<<$(IFS=':';echo $lib)
     # IFS=':';l=($lib);unset IFS
     # local libModule="${l[0]}"
     # local libName="${l[1]}"
     # local libPath="${l[2]}"
     # e.g. kb_common:common-js:dist/kb_common
-    echo "Using library repo: $lib, $libModule, $libName, $libPath"
+    echo "Using library repo: name = $libName, path = $libPath, module = $libModule"
      mounts="$mounts --mount type=bind,src=${root}/../kbase-${libName}/${libPath},dst=/kb/deployment/services/kbase-ui/modules/${libModule}"
     shift
     shift
+    ;;
+    -s|--service)
+    service="$2"
+    echo "Using internal services: ${service}"
+    mounts="$mounts --mount type=bind,src=${root}/src/client/modules/app/services/${service}.js,dst=/kb/deployment/services/kbase-ui/modules/app/services/${service}.js"
+    shift # past argument
+    shift # past value
     ;;
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later

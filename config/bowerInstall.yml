@@ -111,6 +111,19 @@ bowerFiles:
         name: text
         bowerComponent: true
     -
+        name: select2
+        cwd: dist
+        src:
+            - js/select2.full.js
+            - css/select2.css
+        bowerComponent: true
+    -
+        name: select2-bootstrap-theme
+        cwd: dist
+        src:
+            - select2-bootstrap.css
+        bowerComponent: true
+    -
         dir: spark-md5
         name: spark-md5
         bowerComponent: true
@@ -172,17 +185,6 @@ bowerFiles:
         name: blockui
         src:
             - jquery.blockUI.js
-        bowerComponent: true
-    -
-        name: q
-        src:
-            - q.js
-        bowerComponent: true
-    -
-        name: postal
-        cwd: lib
-        src:
-            - postal.js
         bowerComponent: true
     -
         dir: highlightjs

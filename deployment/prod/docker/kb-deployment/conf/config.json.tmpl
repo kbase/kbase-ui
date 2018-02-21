@@ -19,6 +19,14 @@
                     "hostname": "{{ .Env.ui_services_analytics_google_hostname }}",
                     "code": "{{ .Env.ui_services_analytics_google_code }}"
                 }
+            },
+            "session": {
+                "cookie": {
+                    "backup": {
+                        "domain": {{ if .Env.ui_backupCookie_domain }}"{{.Env.ui_backupCookie_domain}}"{{else}}null{{end}},
+                        "enabled": {{ default .Env.ui_backupCookie_enabled "false"}}
+                    }
+                }
             }
         },
         "allow": {{ .Env.allow }}

@@ -1,13 +1,90 @@
 menus:
-    authenticated:
-        main: [narrative, jgi-search]
-        developer: [data-search, simple-sample, narrative-finder, staging-browser,  example-gopherjs, reske-admin, reske-object-search,tester, test_dynamic_table, paveldemo, sdkclientstest, databrowser, typebrowser,  shockbrowser]
-        help: [about, about-services, contact-kbase, help]
-        # TODO: congigurable sidebar menu items
-        #sidebar: [dashboard, catalog, account] 
-    unauthenticated:
-        main: []
-        developer: []
-        help: [about, contact-kbase, help]
-        # TODO: congigurable sidebar menu items
-        #sidebar: [catalog]
+    hamburger:
+        main:
+            -
+                id: narrative
+                auth: true
+            -
+                id: jgi-search
+                auth: true
+        developer:
+            -
+                id: simple-search
+                auth: true
+            -
+                id: simple-sample
+                auth: true
+            -
+                id: narrative-finder
+                auth: true
+            -
+                id: staging-browser
+                auth: true
+            -
+                id: example-gopherjs
+                auth: true
+            -
+                id: reske-admin
+                auth: true
+            -
+                id: reske-object-search
+                auth: true
+            -
+                id: tester
+                auth: true
+            -
+                id: test_dynamic_table
+                auth: true
+            -
+                id: paveldemo
+                auth: true
+            # -
+            #     id: sdkclienttest
+            #     auth: true
+            -
+                id: databrowser
+                auth: true
+            -
+                id: typebrowser
+                auth: true
+            -
+                id: shockbrowser
+                auth: true
+        help:
+            -
+                id: about
+                auth: false
+            -
+                id: about-services
+                auth: true
+            -
+                id: contact-kbase
+                auth: false
+            -
+                id: help
+                auth: false
+    sidebar:
+        main:
+            -
+                id: dashboard
+                auth: true
+            -
+                id: appcatalog
+                auth: false
+            -
+                id: search
+                auth: true
+                allow: [alpha]
+            -
+                id: jobbrowser
+                # The label can ovveride the label from the plugin here
+                label: Jobs
+                auth: true
+                allow: [alpha]
+            -
+                id: account
+                auth: true
+            -
+                id: feeds
+                auth: true
+                allow: [alpha]

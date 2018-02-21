@@ -32,7 +32,7 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 3.4.0
+        version: 3.5.1
         cwd: src/plugin
         source:
             bower: {}
@@ -74,7 +74,7 @@ plugins:
     -
         name: auth2-client
         globalName: kbase-ui-plugin-auth2-client
-        version: 1.2.8
+        version: 1.2.9
         cwd: src/plugin
         source:
             bower: {}
@@ -88,21 +88,35 @@ plugins:
     -
         name: catalog
         globalName: kbase-ui-plugin-catalog
-        version: 1.2.0
+        version: 1.2.1
         cwd: src/plugin
         source:
             bower: {} 
     -
         name: jgi-search
         globalName: kbase-ui-plugin-jgi-search
-        version: 0.31.5
+        version: 0.31.6
         cwd: src/plugin
         source:
             bower: {}
     -
         name: jobbrowser
         globalName: kbase-ui-plugin-jobbrowser
-        version: 0.3.3
+        version: 0.3.4
         cwd: src/plugin
         source:
-            bower: {}            
+            bower: {}
+    -
+        name: data-search
+        globalName: kbase-ui-plugin-data-search
+        version: 0.9.11
+        cwd: src/plugin
+        source:
+            bower: {} 
+    -
+        name: reske-simple-search
+        globalName: kbase-ui-plugin-reske-simple-search
+        version: 0.11.1
+        cwd: src/plugin
+        source:
+            bower: {}
