@@ -138,14 +138,18 @@ define([
                         foreach: 'topics'
                     },
                     class: styles.classes.indexList
-                }, li(a({
-                    dataBind: {
-                        text: 'title',
-                        click: '$component.doSelectTopic',
-                        css: 'id === $component.currentTopicId() ? "' + styles.classes.active + '": ""'
-                    },
-                    class: styles.classes.indexListItem
-                })))
+                }, [
+                    '<!-- ko if: !$data.disabled -->',
+                    li(a({
+                        dataBind: {
+                            text: 'title',
+                            click: '$component.doSelectTopic',
+                            css: 'id === $component.currentTopicId() ? "' + styles.classes.active + '": ""'
+                        },
+                        class: styles.classes.indexListItem
+                    })),
+                    '<!-- /ko -->'
+                ])
             ]),
             div({
                 dataBind: {

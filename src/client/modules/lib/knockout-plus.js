@@ -5,6 +5,8 @@ define([
     'uuid',
     'kb_common/utils',
     'kb_common/html',
+    './lib/subscriptionManager',
+
     'knockout-mapping',
     'knockout-arraytransforms',
     './lib/knockout-es6-collections',
@@ -16,20 +18,11 @@ define([
     ko,
     Uuid,
     Utils,
-    html
+    html,
+    SubscriptionManager
 ) {
     // Knockout Defaults
     ko.options.deferUpdates = true;
-
-    // from: https://github.com/knockout/knockout/issues/914
-    ko.subscribable.fn.subscribeChanged = function (callback, context) {
-        var savedValue = this.peek();
-        return this.subscribe(function (latestValue) {
-            var oldValue = savedValue;
-            savedValue = latestValue;
-            callback.call(context, latestValue, oldValue);
-        });
-    };
 
     function isEmptyJSON(value) {
         if (value === undefined) {
@@ -384,6 +377,7 @@ define([
         }
     };
 
+    // from: https://github.com/knockout/knockout/issues/914
     ko.subscribable.fn.subscribeChanged = function (callback, context) {
         var savedValue = this.peek();
         return this.subscribe(function (latestValue) {
@@ -520,6 +514,9 @@ define([
     ko.kb.komponent = komponent;
     ko.kb.createRootComponent = createRootComponent;
     ko.kb.registerComponent = registerComponent;
+    // the subscription manager is a factory.
+    // TODO: better way of integrating into knockout...
+    ko.kb.SubscriptionManager = SubscriptionManager;
 
     return ko;
 });
