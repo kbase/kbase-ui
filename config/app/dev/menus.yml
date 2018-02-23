@@ -74,13 +74,11 @@ menus:
             -
                 id: search
                 auth: true
-                allow: [alpha]
             -
                 id: jobbrowser
                 # The label can ovveride the label from the plugin here
                 label: Jobs
                 auth: true
-                allow: [alpha]
             -
                 id: account
                 auth: true
