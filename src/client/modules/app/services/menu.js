@@ -65,6 +65,7 @@ define([
                 icon: menuItemDef.icon,
                 uri: menuItemDef.uri,
                 newWindow: menuItemDef.newWindow,
+                beta: menuItemDef.beta || false,
                 // These are from the ui menu item spec
                 allow: menuItemSpec.allow || null,
                 authRequired: menuItemSpec.auth ? true : false
