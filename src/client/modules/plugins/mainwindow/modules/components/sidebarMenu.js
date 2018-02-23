@@ -80,6 +80,20 @@ define([
                     text: 'label'
                 }
             }),
+            '<!-- ko if: $data.beta -->',
+            div({
+                style: {
+                    position: 'absolute',
+                    top: '0',
+                    // left: '0',
+                    right: '0',
+                    color: 'rgb(193, 119, 54)',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontStyle: 'italic'
+                }
+            }, 'beta'),
+            '<!-- /ko -->'
             // info,
             // status
         ]);
