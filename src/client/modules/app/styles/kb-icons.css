@@ -31,7 +31,7 @@
     text-transform: none !important;
     vertical-align: top;
     speak: none;
-    line-height: 0.8;
+    /* line-height: 0.8; */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -43,36 +43,36 @@
 
 .icon-compare:before {
     content: "a";
-    font-size: 16px;
+    /* font-size: 16px; */
 }
 
 .icon-genome:before {
     content: "b";
-    font-size: 16px;
+    /* font-size: 16px; */
 }
 
 .icon-metabolism:before {
     content: "c";
-    font-size: 16px;
+    /* font-size: 16px; */
 }
 
 .icon-metagenome:before {
     content: "d";
-    font-size: 16px;
+    /* font-size: 16px; */
 }
 
 .icon-reads:before {
     content: "e";
-    font-size: 16px;
+    /* font-size: 16px; */
 }
 
 .icon-tree:before {
     content: "f";
-    font-size: 16px;
+    /* font-size: 16px; */
 }
 
 .icon-md:before {
-    font-size: 16pt;
+    /* font-size: 16pt; */
 }
 
 
@@ -91,5 +91,5 @@
 }
 
 .kb-data-icon-dnudge {
-    margin-top: 0.5em;
+    /* margin-top: 0.5em; */
 }

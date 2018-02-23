@@ -58,7 +58,7 @@ http {
        # Needed for running narratives
       location /narrative {
         include /etc/nginx/cors.conf;
-        proxy_pass https://{{ .Env.deploy_hostname }}/narrative;
+        proxy_pass https://{{ .Env.deploy_ui_hostname }}/narrative;
         # Uncomment the following lines for a narrative deployed
         # within the proxy's vm.
         #proxy_pass http://localhost:8888/narrative;
@@ -95,13 +95,13 @@ http {
       # TODO: need to pin the docker container to a host name, 
       # otherwise you need to inspect the container to find out the ip 
       # address to use below
-      location /services/jgi_gateway/rpc {
-        {{ if .Env.deploy_ui_hostname }}
-        include /etc/nginx/cors.conf;
-        {{ end }}
-        include /etc/nginx/cors.conf;
-        proxy_pass http://172.17.0.3:5000;
-      }
+      # location /services/jgi_gateway/rpc {
+      #   {{ if .Env.deploy_ui_hostname }}
+      #   include /etc/nginx/cors.conf;
+      #   {{ end }}
+      #   include /etc/nginx/cors.conf;
+      #   proxy_pass http://jgi_gateway:5000;
+      # }
 
       # Needed for dynamic service calls
       location /dynserv {

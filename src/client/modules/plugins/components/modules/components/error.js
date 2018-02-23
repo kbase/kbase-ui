@@ -12,46 +12,47 @@ define([
     var t = html.tag,
         div = t('div');
 
-    function validateViewModel(params) {
-        var spec = {            
-            source: {
-                type: 'string',
-                observable: true,
-                required: false
-            },
-            code: {
-                type: 'string',
-                observable: true,
-                required: true
-            },
-            message: {
-                type: 'string',
-                observable: true,
-                required: true
-            },
-            detail: {
-                type: 'string',
-                observable: true,
-                required: true
-            },
-            info: {
-                type: 'object',
-                observable: true,
-                required: false
-            },
-            onClose: {
-                type: 'function',
-                required: true
-            }
-        };
-    }
+    // function validateViewModel(params) {
+    //     var spec = {            
+    //         source: {
+    //             type: 'string',
+    //             observable: true,
+    //             required: false
+    //         },
+    //         code: {
+    //             type: 'string',
+    //             observable: true,
+    //             required: true
+    //         },
+    //         message: {
+    //             type: 'string',
+    //             observable: true,
+    //             required: true
+    //         },
+    //         detail: {
+    //             type: 'string',
+    //             observable: true,
+    //             required: true
+    //         },
+    //         info: {
+    //             type: 'object',
+    //             observable: true,
+    //             required: false
+    //         },
+    //         onClose: {
+    //             type: 'function',
+    //             required: true
+    //         }
+    //     };
+    // }
 
     function viewModel(params) {
         var infoHtml;
-        if (params.info() === undefined) {
-            infoHtml = 'none';
+        var info = ko.unwrap(params.info);
+        if (info === undefined) {
+            infoHtml = null;
         } else {
-            infoHtml = BS.buildPresentableJson(params.info());
+            infoHtml = BS.buildPresentableJson(info);
         }
         return {
             source: params.source,
@@ -89,6 +90,7 @@ define([
                 })
             }),
             '<!-- /ko -->',
+            '<!-- ko if: code -->',
             BS.buildPanel({
                 name: 'code',
                 class: 'kb-panel-light',
@@ -100,6 +102,7 @@ define([
                     }
                 })
             }), 
+            '<!-- /ko -->',
             '<!-- ko if: $data.detail -->',     
             BS.buildCollapsiblePanel({
                 name: 'detail',

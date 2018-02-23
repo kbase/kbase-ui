@@ -30,7 +30,7 @@ define([
         // TODO: all of this from config?
         var auth2Session = new M_auth2Session.Auth2Session({
             cookieName: runtime.config('services.auth2.cookieName'),
-            extraCookies: config.extraCookies,
+            extraCookies: extraCookies,
             baseUrl: runtime.config('services.auth2.url'),
             providers: runtime.config('services.auth2.providers')
         });
@@ -174,7 +174,7 @@ define([
                             runtime.send('session', 'loggedin');
                         } else {
                             state.setItem('loggedin', false);
-                            // runtime.send('session', 'loggedout');
+                            runtime.send('session', 'loggedout');
                             // TODO: detect if already on signedout page.
                             runtime.send('app', 'navigate', {
                                 path: 'auth2/signedout'
