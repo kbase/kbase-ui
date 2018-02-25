@@ -1,16 +1,10 @@
 ## Global Build Config
+## see README.md
 ---
-# which ui config to use in config/ui/<target>/*.yml
 target: ci
-
-# Where to store temporary build files.
-temp: ../temp
-
-# If true, causes a minified version to be built in build/dist
+tempDir: temp
+mutate: true
+keepBuildDir: false
 dist: true
-
-# If true, casuses the vfs file to be built and loaded in  index.html.
 vfs: true
 
-# If true, the build process will not remove the run_ directory post-build.
-debug: false
