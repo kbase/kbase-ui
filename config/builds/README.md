@@ -30,9 +30,13 @@ The target configuration files provide menu, ui services, and pugin configuratio
 
 Defines where to store temporary files during the build process
 
-### debug
+### keepBuildDir
 
 If set to true, the build directory will not be removed after the build completes. This is useful for tracing problems constructing the build. It is rarely used.
+
+### mutate
+
+If set to true, the build process will use a single build working directory and alter the contents at each build step. If set to false, the build process will make a copy of the working directory at each build step, thus ensuring that the working state of the previous build step is preserved. Most useful for debugging build internals, e.g. dependency configuration which goes awry. Rarely turned off, and only in development.
 
 ### dist
 
@@ -58,7 +62,10 @@ target: ci
 temp: ../temp
 
 # If true, the build process will not remove the run_ directory post-build.
-debug: false
+keepBuildDir: false
+
+# If true, make changes to the original build working directory; otherwise make copies at each step.
+mutate: true
 
 # If true, causes a minified version to be built in build/dist
 dist: true
