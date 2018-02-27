@@ -1,6 +1,6 @@
 # KBase kbase-ui 1.6.4 Release Notes
 
-Fixes and improvements to the new data search tool and exposing the job browser and search (with a beta tag) in the sibebar nav
+Build improvement works around bug in code inlining. The inlining bug in uglify-es results in incorrectly rewritten javascript during the "compilation" stage of the build. It was manifested in an error in the provenance widget. Reducing the inline level to 1 retains some of the benefits of inlining while avoiding the incorrect code construtions.
 
 ## CHANGES
 
