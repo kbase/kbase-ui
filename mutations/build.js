@@ -33,7 +33,8 @@ var Promise = require('bluebird'),
     exec = require('child_process').exec,
     dir = Promise.promisifyAll(require('node-dir')),
     util = require('util'),
-    handlebars = require('handlebars');
+    handlebars = require('handlebars'),
+    numeral = require('numeral');
 
 // UTILS
 
@@ -843,6 +844,35 @@ function makeBaseBuild(state) {
         });
 }
 
+function fixupBaseBuild(state) {
+    var root = state.environment.path,
+        mapRe = /\/\*#\s*sourceMappingURL.*\*\//m;
+
+    // remove mapping from css files.
+    return glob(root.concat(['build', 'client', 'modules', '**', '*.css']).join('/'), {
+        nodir: true
+    })
+        .then(function (matches) {
+            return Promise.all(matches.map(function (match) {
+                return fs.readFileAsync(match, 'utf8')
+                    .then(function (contents) {
+                        // replace the map line with an empty string
+                        if (!mapRe.test(contents)) {
+                            return;
+                        }
+                        mutant.warn('Fixing up css file to remove mapping');
+                        mutant.warn(match);
+
+                        var fixed = contents.replace(mapRe, '');
+                        return fs.writeFileAsync(match, fixed);
+                    });
+            }));
+        })
+        .then(function () {
+            return state;
+        });
+}
+
 function makeDistBuild(state) {
     var root = state.environment.path,
         buildPath = ['..', 'build'],
@@ -859,19 +889,30 @@ function makeDistBuild(state) {
                     // FORNOW: we need to protect iframe-based plugins from having
                     // their plugin code altered.
                     var reProtected = /\/modules\/plugins\/.*?\/iframe_root\//;
-                    return Promise.all(matches
+                    var files = matches
                         .filter(function (match) {
                             return !reProtected.test(match);
-                        })
-                        .map(function (match) {
+                        });
+                    return Promise.all(files)
+                        .mapSeries(function (match) {
                             return fs.readFileAsync(match, 'utf8')
                                 .then(function (contents) {
+                                    // see https://github.com/mishoo/UglifyJS2 for options
+                                    // just overriding defaults here
                                     var result = uglify.minify(contents, {
                                         output: {
                                             beautify: false,
-                                            quote_style: 1
+                                            max_line_len: 80,
+                                            quote_style: 0
+                                        },
+                                        compress: {
+                                            // required in uglify-es 3.3.10 in order to work
+                                            // around a bug in the inline implementation.
+                                            // it should be fixed in an upcoming release.
+                                            inline: 1
                                         }
                                     });
+
                                     if (result.error) {
                                         console.error('Error minifying file: ' + match, result);
                                         throw new Error('Error minifying file ' + match) + ':' + result.error;
@@ -881,7 +922,7 @@ function makeDistBuild(state) {
                                         return fs.writeFileAsync(match, result.code);
                                     }
                                 });
-                        }));
+                        });
                 });
         })
         .then(function () {
@@ -960,74 +1001,95 @@ function makeModuleVFS(state, whichBuild) {
                 /@import/,
                 /@font-face/
             ];
-            return Promise.all(matches
-                .map(function (match) {
+            var supportedExtensions = ['js', 'yaml', 'yml', 'json', 'text', 'txt', 'css'];
+            return Promise.all(matches)
+                .mapSeries(function (match) {
                     var relativePath = match.split('/').slice(root.length + 2);
-                    return fs.readFileAsync(match, 'utf8')
-                        .then(function (contents) {
-                            var path = '/' + relativePath.join('/');
-                            if (exceptions.some(function (re) {
-                                return (re.test(path));
-                            })) {
-                                skip('excluded');
+                    var path = '/' + relativePath.join('/');
+
+                    // exclusion based on path pattern
+                    if (exceptions.some(function (re) {
+                        return (re.test(path));
+                    })) {
+                        skip('excluded');
+                        return;
+
+                    }
+
+                    var m = /^(.*)\.([^.]+)$/.exec(path);
+
+                    // bare files we don't support
+                    if (!m) {
+                        skip('no extension');
+                        mutant.warn('module vfs cannot include file without extension: ' + path);
+                    }
+                    var base = m[1];
+                    var ext = m[2];
+
+                    // skip if in unsupported extensions
+                    if (supportedExtensions.indexOf(ext) === -1) {
+                        skip(ext);
+                        return;
+                    }
+
+                    return fs.statAsync(match)
+                        .then(function (stat) {
+                            if (stat.size > 200000) {
+                                mutant.warn('skipping because too big: ' + numeral(stat.size).format('0.0b'));
+                                mutant.warn(match);
+                                skip('toobig');
                                 return;
                             }
-                            var m = /^(.*)\.([^.]+)$/.exec(path);
-                            if (m) {
-                                var base = m[1];
-                                var ext = m[2];
-                                // requirejs keeps the root forward slash.
-                                switch (ext) {
-                                case 'js':
-                                    include(ext);
-                                    vfs.scripts[path] = 'function () { ' + contents + ' }';
-                                    break;
-                                case 'yaml':
-                                case 'yml':
-                                    include(ext);
-                                    vfs.resources.json[base] = yaml.safeLoad(contents);
-                                    break;
-                                case 'json':
-                                    if (vfs.resources.json[base]) {
-                                        throw new Error('duplicate entry for json detected: ' + path);
-                                    }
-                                    try {
+                            return fs.readFileAsync(match, 'utf8')
+                                .then(function (contents) {
+                                    
+                                    switch (ext) {
+                                    case 'js':
                                         include(ext);
-                                        vfs.resources.json[base] = JSON.parse(contents);
-                                    } catch (ex) {
-                                        skip('error');
-                                        console.error('Error parsing json file: ' + path + ':' + ex.message);
-                                        // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
-                                    }
-                                    break;
-                                case 'text':
-                                case 'txt':
-                                    include(ext);
-                                    vfs.resources.text[base] = contents;
-                                    break;
-                                case 'css':
-                                    if (cssExceptions.some(function (re) {
-                                        return re.test(contents);
-                                    })) {
-                                        skip('css excluded');
-                                    } else {
-                                        // mutant.log('css included', base);
+                                        vfs.scripts[path] = 'function () { ' + contents + ' }';
+                                        break;
+                                    case 'yaml':
+                                    case 'yml':
                                         include(ext);
-                                        vfs.resources.css[base] = contents;
+                                        vfs.resources.json[base] = yaml.safeLoad(contents);
+                                        break;
+                                    case 'json':
+                                        if (vfs.resources.json[base]) {
+                                            throw new Error('duplicate entry for json detected: ' + path);
+                                        }
+                                        try {
+                                            include(ext);
+                                            vfs.resources.json[base] = JSON.parse(contents);
+                                        } catch (ex) {
+                                            skip('error');
+                                            console.error('Error parsing json file: ' + path + ':' + ex.message);
+                                            // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
+                                        }
+                                        break;
+                                    case 'text':
+                                    case 'txt':
+                                        include(ext);
+                                        vfs.resources.text[base] = contents;
+                                        break;
+                                    case 'css':
+                                        if (cssExceptions.some(function (re) {
+                                            return re.test(contents);
+                                        })) {
+                                            skip('css excluded');
+                                        } else {
+                                            include(ext);
+                                            vfs.resources.css[base] = contents;
+                                        }
+                                        break;
+                                    case 'csv':
+                                        skip(ext);
+                                        break;
+                                    default:
+                                        skip(ext);
                                     }
-                                    break;
-                                case 'csv':
-                                    skip(ext);
-                                    break;
-                                default:
-                                    skip(ext);
-                                }
-                            } else {
-                                skip('no extension');
-                                mutant.warn('module vfs cannot include file without extension: ' + path);
-                            }
+                                });
                         });
-                }))
+                })
                 .then(function () {
                     mutant.log('vfs created');
                     mutant.log('skipped: ');
@@ -1192,6 +1254,16 @@ function main(type) {
             return cleanup(state);
         })
 
+        // Fix up weird stuff
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            mutant.log('Fixing up the base build...');
+            return fixupBaseBuild(state);
+        })
+
+
         // From here, we can make a dev build, make a release
         .then(function (state) {
             return mutant.copyState(state);
@@ -1201,6 +1273,7 @@ function main(type) {
             return makeBaseBuild(state);
         })
 
+        
         .then(function (state) {
             return mutant.copyState(state);
         })
