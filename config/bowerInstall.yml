@@ -51,7 +51,10 @@ bowerFiles:
     -
         name: bootstrap
         cwd: dist
-        src: "**/*"
+        src: 
+            - js/bootstrap.js
+            - css/bootstrap.css
+            - fonts/*
         bowerComponent: true
     -
         name: d3
@@ -192,17 +195,6 @@ bowerFiles:
             - highlight.pack.js
             - styles/*
         bowerComponent: true
-    # -
-    #     # This one is an installable package, kbase style, so we just
-    #     # copy the whole thing in, and the install.yml says what to do
-    #     name: kbase-data-client-js
-    #     src: "**/*"
-    #     bowerComponent: true   
-
-    # "kbase-common-ts": "0.8.0",
-    #     "kbase-common-js": "2.5.0",
-    #     "kbase-service-clients-js": "3.2.2",
-    #     "kbase-ui-widget": "k1.1.0-beta2",
     -
         name: plotly
         dir: plotly.js

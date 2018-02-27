@@ -66,8 +66,8 @@ http {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_http_version 1.1;
-        proxy_set_header Origin http://localhost;
-        proxy_set_header Host localhost;
+        proxy_set_header Origin https://{{ .Env.deploy_ui_hostname }};
+        proxy_set_header Host {{ .Env.deploy_ui_hostname }};
       }
     }
 
@@ -132,6 +132,7 @@ http {
         proxy_set_header Origin http://localhost;
         proxy_set_header Host localhost;
       }
+      
 
       {{ end }}
     }

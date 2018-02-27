@@ -30,6 +30,7 @@ _attic
 # package caches wherever they may be installed
 bower_components
 node_modules
+package-lock.json
 
 # General purpose temp directory
 /temp
