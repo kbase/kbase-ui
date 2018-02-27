@@ -2,6 +2,8 @@
 
 Build improvement works around bug in code inlining. The inlining bug in uglify-es results in incorrectly rewritten javascript during the "compilation" stage of the build. It was manifested in an error in the provenance widget. Reducing the inline level to 1 retains some of the benefits of inlining while avoiding the incorrect code construtions.
 
+Other build improvements were made, primarily resulting in the reduction in size of the main bundle (moduleVfs.js), as well as removing some of the unused components of third party libraries, and speedup in the build process.
+
 ## CHANGES
 
 ### NEW
