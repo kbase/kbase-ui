@@ -62,10 +62,6 @@ preconditions:
 install_tools:
 	@echo "> Installing build and test tools."
 	npm install
-	cd tools/server; npm install
-	mkdir dev/tools
-	cp tools/link.sh dev/tools
-	$(GRUNT) init
 
 init: preconditions install_tools
 
@@ -187,14 +183,6 @@ run-dev-image:
 	$(eval cmd = $(TOPDIR)/deployment/dev/tools/run-image.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l) $(foreach s,$(services),-s $s))
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
-
-# Set up a development environment.
-# Installs tools into kbase-ui/dev. These tools are ignored by git,
-# so may safely be modified by the developer. They are important but not
-# required by the dev process. More in the docs.
-devinit:
-	cd mutations; node setup-dev
-
 
 start:
 	@echo "> Starting preview server."

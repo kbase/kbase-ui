@@ -6,18 +6,16 @@
     // semver
     var build = global.__kbase__build__;
     var buildKey;
-    switch (build.deployType) {
+    switch (build.target) {
     case 'dev':
         buildKey = new Date().getTime();
         break;
     case 'ci':
-        buildKey = build.gitCommitHash;
-        break;
     case 'prod':
         buildKey = build.gitCommitHash;
         break;
     default:
-        throw new Error('Unsupported deploy type: ' + build.deployType);
+        throw new Error('Unsupported build target: ' + build.target);
     }
     global.require = {
         baseUrl: '/modules',

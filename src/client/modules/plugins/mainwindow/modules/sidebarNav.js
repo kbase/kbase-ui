@@ -68,7 +68,8 @@ define([
                     path: button.path.join('/'),
                     authRequired: button.authRequired ? true : false,
                     active: ko.observable(false),
-                    allow: button.allow
+                    allow: button.allow,
+                    beta: button.beta
                 };
                 buttons.push(viewButton);
                 buttonsMap[viewButton.id] = viewButton;

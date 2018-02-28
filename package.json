@@ -18,10 +18,10 @@
         "eapearson",
         "briehl"
     ],
-    "dependencies": {},
     "devDependencies": {
         "bluebird": "3.5.1",
         "bower": "1.8.2",
+        "chalk": "2.3.1",
         "findit2": "2.2.3",
         "fs-extra": "3.0.1",
         "glob": "7.1.2",
@@ -55,6 +55,7 @@
         "lodash": "4.17.5",
         "node-dir": "0.1.17",
         "node-ini": "1.0.0",
+        "numeral": "2.0.6",
         "path-exists": "3.0.0",
         "puppeteer": "1.0.0",
         "requirejs": "2.3.5",
