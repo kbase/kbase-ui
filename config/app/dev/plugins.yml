@@ -212,7 +212,7 @@ plugins:
         version: 0.1.2
         cwd: src/plugin
         source:
-            bower: {}     
+            bower: {}
     -
         name: catalog
         globalName: kbase-ui-plugin-catalog
@@ -237,6 +237,13 @@ plugins:
     -
         name: ui-diagnostics
         globalName: kbase-ui-plugin-ui-diagnostics
+        version: 0.1.0
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: dagre-example
+        globalName: kbase-ui-plugin-dagre-example
         version: 0.1.0
         cwd: src/plugin
         source:

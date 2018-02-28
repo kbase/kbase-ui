@@ -29,6 +29,9 @@ ui:
             developer:
               items: 
                 -
+                  id: dagre-example
+                  auth: true
+                -
                   id: simple-search
                   auth: true
                 -
