@@ -65,7 +65,7 @@ define([
                     id: button.id,
                     label: button.label,
                     icon: button.icon,
-                    path: button.path.join('/'),
+                    path: button.path,
                     authRequired: button.authRequired ? true : false,
                     active: ko.observable(false),
                     allow: button.allow,
@@ -111,9 +111,6 @@ define([
 
             // TODO: rethink this!!!
             runtime.recv('session', 'change', function () {
-                // console.log('need to adjust the menu according to the new session state...');
-                // render();
-                // selectButton();
                 isAuthorized(runtime.service('session').isLoggedIn());
             });
 

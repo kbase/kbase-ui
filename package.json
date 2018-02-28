@@ -1,10 +1,9 @@
 {
     "name": "kbase-ui",
-    "version": "0.0.1",
+    "version": "1.6.4",
     "keywords": [
         "util",
         "functional",
-        "server",
         "client",
         "browser"
     ],
@@ -12,7 +11,7 @@
     "license": "SEE LICENSE IN LICENSE.md",
     "repository": {
         "type": "git",
-        "url": "https://github.com/eapearson/kbase-ui.git"
+        "url": "https://github.com/kbase/kbase-ui.git"
     },
     "contributors": [
         "eapearson",

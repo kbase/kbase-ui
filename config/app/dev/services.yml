@@ -15,4 +15,95 @@ ui:
     session: {}
     # dynamic-service: {}
     menu:
-      configs: [menus]
+      menus:
+        hamburger:
+          sections: 
+            main:
+              items:
+                -
+                  id: narrative
+                  auth: true
+                -
+                  id: jgi-search
+                  auth: true
+            developer:
+              items: 
+                -
+                  id: simple-search
+                  auth: true
+                -
+                  id: simple-sample
+                  auth: true
+                -
+                  id: narrative-finder
+                  auth: true
+                -
+                  id: staging-browser
+                  auth: true
+                -
+                  id: example-gopherjs
+                  auth: true
+                -
+                  id: reske-admin
+                  auth: true
+                -
+                  id: reske-object-search
+                  auth: true
+                -
+                  id: tester
+                  auth: true
+                -
+                  id: test_dynamic_table
+                  auth: true
+                -
+                  id: paveldemo
+                  auth: true
+                -
+                  id: databrowser
+                  auth: true
+                -
+                  id: typebrowser
+                  auth: true
+                -
+                  id: shockbrowser
+                  auth: true
+            help:
+              items:
+                -
+                  id: about
+                  auth: false
+                -
+                  id: about-services
+                  auth: true
+                -
+                  id: contact-kbase
+                  auth: false
+                -
+                  id: help
+                  auth: false
+        sidebar:
+          sections:
+            main:
+              items:
+                -
+                  id: dashboard
+                  auth: true
+                -
+                  id: appcatalog
+                  auth: false
+                -
+                  id: search
+                  auth: true
+                -
+                  id: jobbrowser
+                  # The label can ovveride the label from the plugin here
+                  label: Jobs
+                  auth: true
+                -
+                  id: account
+                  auth: true
+                -
+                  id: feeds
+                  auth: true
+                  allow: [alpha]
+
