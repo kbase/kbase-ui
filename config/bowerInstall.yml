@@ -8,17 +8,12 @@
 # need to list the packages here and create config for exceptions
 # TODO: document the format
 bowerFiles:
-    -
-        name: bluebird
-        cwd: js/browser
-        src:
-            - bluebird.js
-        bowerComponent: true
-    -
-        name: buffer
-        src:
-            - buffer.js
-        bowerComponent: true
+   
+    # -
+    #     name: buffer
+    #     src:
+    #         - buffer.js
+    #     bowerComponent: true
     # -
     #     name: esprima
     #     src: 
@@ -59,6 +54,12 @@ bowerFiles:
     -
         name: d3
         bowerComponent: true
+    -
+        dir: d3-plugins-sankey
+        src:
+            - sankey.js
+            - sankey.css
+        bowerComponent: true        
     -
         name: file-saver
         src: 
@@ -156,12 +157,7 @@ bowerFiles:
             - prettify.js
             - prettify.css
         bowerComponent: true
-    -
-        dir: d3-plugins-sankey
-        src:
-            - sankey.js
-            - sankey.css
-        bowerComponent: true
+   
     -
         name: handlebars
         bowerComponent: true

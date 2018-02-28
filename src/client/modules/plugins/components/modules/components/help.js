@@ -115,8 +115,6 @@ define([
         update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
             var markdown = marked(valueAccessor());
             element.innerHTML = markdown;
-            // console.log(valueAccessor, bindingContext);
-            // element.innerHTML = 'hi!';
         }
     };
 

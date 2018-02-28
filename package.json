@@ -1,10 +1,9 @@
 {
     "name": "kbase-ui",
-    "version": "0.0.1",
+    "version": "1.6.4",
     "keywords": [
         "util",
         "functional",
-        "server",
         "client",
         "browser"
     ],
@@ -12,7 +11,7 @@
     "license": "SEE LICENSE IN LICENSE.md",
     "repository": {
         "type": "git",
-        "url": "https://github.com/eapearson/kbase-ui.git"
+        "url": "https://github.com/kbase/kbase-ui.git"
     },
     "contributors": [
         "eapearson",
@@ -55,6 +54,7 @@
         "lodash": "4.17.5",
         "node-dir": "0.1.17",
         "node-ini": "1.0.0",
+        "npm": "5.6.0",
         "numeral": "2.0.6",
         "path-exists": "3.0.0",
         "puppeteer": "1.0.0",
@@ -69,5 +69,20 @@
         "wdio-selenium-standalone-service": "0.0.9",
         "wdio-sauce-service": "0.4.8",
         "webdriverio": "4.10.2"
+    },
+    "dependencies": {
+        "ajv": "6.2.0",
+        "bluebird": "3.5.1",
+        "dagre": "0.8.2",
+        "graphlib": "2.1.5",
+        "lodash": "4.17.5"
+    },
+    "nextDependencies": {
+        "d3": "4.13.0",
+        "d3-sankey": "0.7.1",
+        "d3-array": "1.2.1",
+        "d3-collection": "1.0.4",
+        "d3-shape": "1.2.0",
+        "d3-path": "1.0.5"
     }
 }

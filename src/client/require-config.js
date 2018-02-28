@@ -23,7 +23,8 @@
         catchError: true,
         waitSeconds: 60,
         paths: {
-            bluebird: 'bower_components/bluebird/bluebird',
+            ajv: 'node_modules/ajv/ajv.bundle',
+            bluebird: 'node_modules/bluebird/bluebird',
             bootstrap_css: 'bower_components/bootstrap/css/bootstrap',
             bootstrap: 'bower_components/bootstrap/js/bootstrap',
             css: 'bower_components/require-css/css',
@@ -31,6 +32,13 @@
             d3_sankey_css: 'bower_components/d3-plugins-sankey/sankey',
             d3_sankey: 'bower_components/d3-plugins-sankey/sankey',
             d3: 'bower_components/d3/d3',
+            //  d3: 'node_modules/d3/d3',
+            // 'd3-sankey': 'node_modules/d3-sankey/d3-sankey',
+            // 'd3-collection': 'node_modules/d3-collection/d3-collection',
+            // 'd3-shape': 'node_modules/d3-shape/d3-shape',
+            // 'd3-array': 'node_modules/d3-array/d3-array',
+            // 'd3-path': 'node_modules/d3-path/d3-path',
+
             domReady: 'bower_components/requirejs-domready/domReady',
             datatables_bootstrap_css: 'bower_components/datatables-bootstrap3-plugin/css/datatables-bootstrap3',
             datatables_bootstrap: 'bower_components/datatables-bootstrap3-plugin/js/datatables-bootstrap3',
@@ -70,7 +78,11 @@
             text: 'bower_components/requirejs-text/text',
             underscore: 'bower_components/underscore/underscore',
             uuid: 'bower_components/pure-uuid/uuid',
-            yaml: 'bower_components/requirejs-yaml/yaml'
+            yaml: 'bower_components/requirejs-yaml/yaml',
+            // NEW - sort them later
+            dagre: 'node_modules/dagre/dagre',
+            graphlib:'node_modules/grapphlib/graphlib',
+            lodash: 'node_modules/lodash/lodash'
         },
         shim: {
             bootstrap: {

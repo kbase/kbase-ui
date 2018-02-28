@@ -1,6 +1,6 @@
 define([
     'bluebird',
-    'lib/ajv',
+    'ajv',
     'kb_common_ts/HttpClient'
 ], function (
     Promise,
@@ -19,9 +19,9 @@ define([
             }
             var httpClient = new HttpClient.HttpClient();
             return httpClient.request({
-                    method: 'GET',
-                    url: def.url
-                })
+                method: 'GET',
+                url: def.url
+            })
                 .then(function (result) {
                     var schemaJson;
                     var schemaCompiled;

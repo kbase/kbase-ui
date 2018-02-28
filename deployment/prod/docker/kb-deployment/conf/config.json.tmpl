@@ -27,6 +27,16 @@
                         "enabled": {{ default .Env.ui_backupCookie_enabled "false"}}
                     }
                 }
+            },
+            "menu": {
+                "menus": {
+                    "hamburger": {
+                        "disabled": {{ default .Env.ui_services_menu_hamburger_disabled "null" }}
+                    },
+                    "sidebar": {
+                        "disabled": {{ default .Env.ui_services_menu_sidebar_disabled "null" }}
+                    }
+                }
             }
         },
         "allow": {{ .Env.allow }}

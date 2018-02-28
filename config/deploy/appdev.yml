@@ -14,4 +14,7 @@ ui:
         hostname: appdev.kbase.us
         code: UA-74533556-1
   allow: []
+patches:
+  removePlugins: [data-search, reske-simple-search]
+  removeSidebarMenuItems: [data-search]
 
