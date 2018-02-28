@@ -307,7 +307,6 @@ define([
         });
 
         function openLink(url) {
-            // console.log('open link?', cell, row);
             if (url) {
                 window.open(url, '_blank');
             }

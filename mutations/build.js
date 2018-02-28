@@ -580,7 +580,7 @@ function copyUiConfig(state) {
     var root = state.environment.path,
         configSource = root.concat(['config', 'app', state.buildConfig.target]),
         releaseVersionConfig = root.concat(['config', 'release.yml']),
-        configFiles = ['menus.yml', 'services.yml'].map(function (file) {
+        configFiles = ['services.yml'].map(function (file) {
             return configSource.concat(file);
         }).concat([releaseVersionConfig]),
         configDest = root.concat(['build', 'client', 'modules', 'config']),
@@ -639,7 +639,6 @@ function getReleaseNotes(state, version) {
 
 function verifyVersion(state) {
     return Promise.try(function () {
-        mutant.log('Verifying version...');
         var releaseVersion = state.mergedConfig.release.version;
         var gitVersion = state.buildInfo.git.version;
 

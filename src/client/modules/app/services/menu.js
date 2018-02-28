@@ -1,7 +1,10 @@
 define([
     'bluebird',
     'kb_common/observed'
-], function (Promise, observed) {
+], function (
+    Promise, 
+    observed
+) {
     'use strict';
 
     function factory(config) {
@@ -53,10 +56,14 @@ define([
             }
 
             var path;
-            if (typeof menuItemDef.path === 'string') {
-                path = [menuItemDef.path];
-            } else {
-                path = menuItemDef.path;
+            if (menuItemDef.path) {
+                if (typeof menuItemDef.path === 'string') {
+                    path = menuItemDef.path;
+                } else if (menuItemDef.path instanceof Array) {
+                    path = menuItemDef.path.join('/');
+                } else {
+                    throw new Error('Invalid path for menu item', menuItemDef);
+                }
             }
             var menuItem = {
                 // These are from the plugin's menu item definition
@@ -122,12 +129,27 @@ define([
             // The hamburger menu.
             Object.keys(config.menus).forEach(function (menu) {
                 var menuDef = config.menus[menu];
-                Object.keys(menuDef).forEach(function (section) {
+                // Skip a menu with no sections
+                if (!menuDef.sections) {
+                    return;
+                }
+                Object.keys(menuDef.sections).forEach(function (section) {
                     // Skip sections with no items.
-                    if (!menuDef[section]) {
+                    if (!menuDef.sections[section]) {
                         return;
                     }
-                    menuDef[section].forEach(function (menuItem) {
+                    if (!menuDef.sections[section].items) {
+                        return;
+                    }
+                    var items = menuDef.sections[section].items;
+                    var disabled = menuDef.disabled || [];
+                    items.forEach(function (menuItem) {
+                        if (menuItem.disabled) {
+                            return;
+                        }
+                        if (disabled.indexOf(menuItem.id) >= 0) {
+                            return;
+                        }
                         addToMenu({
                             menu: menu,
                             section: section,
@@ -137,7 +159,6 @@ define([
                     });
                 });
             });
-
         }
 
         function stop() {}

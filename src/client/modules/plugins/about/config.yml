@@ -37,19 +37,16 @@ install:
     menu:
         -
             name: about
-            definition:
-                path: about
-                label: About
-                icon: info-circle
+            path: about
+            label: About
+            icon: info-circle
         -
             name: about-build
-            definition:
-                path: about/build
-                label: About the UI Build
-                icon: building-o
+            path: ['about', 'build']
+            label: About the UI Build
+            icon: building-o
         -
             name: about-services
-            definition:
-                path: ['about', 'services']
-                label: KBase Services Status
-                icon: server
+            path: ['about', 'services']
+            label: KBase Services Status
+            icon: server
