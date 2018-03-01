@@ -35,11 +35,12 @@ requirejs.config({
         // 'd3-array': 'node_modules/d3-array/d3-array',
         // 'd3-path': 'node_modules/d3-path/d3-path',
 
-        domReady: 'bower_components/requirejs-domready/domReady',
+        dagre: 'node_modules/dagre/dagre',
         datatables_bootstrap_css: 'bower_components/datatables-bootstrap3-plugin/css/datatables-bootstrap3',
         datatables_bootstrap: 'bower_components/datatables-bootstrap3-plugin/js/datatables-bootstrap3',
         datatables_css: 'bower_components/datatables/css/jquery.dataTables',
         datatables: 'bower_components/datatables/js/jquery.dataTables',
+        domReady: 'bower_components/requirejs-domready/domReady',
         fileSaver: 'bower_components/file-saver/FileSaver',
         font_awesome: 'bower_components/font-awesome/css/font-awesome',
         'google-code-prettify-style': 'bower_components/google-code-prettify/prettify',
@@ -62,6 +63,7 @@ requirejs.config({
         'knockout-mapping': 'bower_components/bower-knockout-mapping/knockout.mapping',
         'knockout-plus': 'lib/knockout-plus',
         'knockout-validation': 'bower_components/knockout-validation/knockout.validation',
+        lodash: 'node_modules/lodash/lodash',
         marked: 'bower_components/marked/marked',
         md5: 'bower_components/spark-md5/spark-md5',
         moment: 'bower_components/moment/moment',
@@ -74,11 +76,7 @@ requirejs.config({
         text: 'bower_components/requirejs-text/text',
         underscore: 'bower_components/underscore/underscore',
         uuid: 'bower_components/pure-uuid/uuid',
-        yaml: 'bower_components/requirejs-yaml/yaml',
-        // NEW - sort them later
-        dagre: 'node_modules/dagre/dagre',
-        graphlib:'node_modules/grapphlib/graphlib',
-        lodash: 'node_modules/lodash/lodash'
+        yaml: 'bower_components/requirejs-yaml/yaml' 
     },
     shim: {
         bootstrap: {

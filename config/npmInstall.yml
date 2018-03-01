@@ -23,9 +23,6 @@ npmFiles:
         cwd: dist
     -
         name: lodash
-    -
-        name: graphlib
-        cwd: dist
     # -
     #     name: d3
     #     cwd: build
