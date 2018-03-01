@@ -329,3 +329,29 @@
 .bs-callout a.alert-link {
     font-weight: bold;
 }
+
+/* sematic borders ...*/
+
+.bs-border-invisible {
+    border: 1px solid transparent;
+}
+
+.bs-border-default {
+    border: 1px solid #000;
+}
+
+.bs-border-success {
+    border: 1px solid #3c763d;
+}
+
+.bs-border-info {
+    border: 1px solid #3A87AD;
+}
+
+.bs-border-warning {
+    border: 1px solid #8a6d3b;
+}
+
+.bs-border-danger {
+    border: 1px solid #a94442;
+}
