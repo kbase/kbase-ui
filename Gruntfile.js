@@ -103,8 +103,11 @@ module.exports = function (grunt) {
 
     // Does a single, local, unit test run.
     // TODO: more work on the webdriver tests, don't work now.
-    grunt.registerTask('test', [
-        'karma:unit',
+    grunt.registerTask('unit-test', [
+        'karma:unit'
+    ]);
+
+    grunt.registerTask('integration-test', [
         'webdriver:local'
     ]);
 
