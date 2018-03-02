@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM kbase/nginx
 # Container designed to serve up static KBase UI contents
 
 # These ARGs values are passed in via the docker build command
@@ -7,14 +7,7 @@ ARG VCS_REF
 ARG BRANCH=develop
 ARG TAG
 
-ENV DOCKERIZE_VERSION v0.6.0
-RUN apk --update upgrade && \
-    apk --no-cache add ca-certificates nginx openssl wget bash bash-completion && \
-    update-ca-certificates && \
-    wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
-    tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
-    rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
-    mkdir -p /kb/deployment
+RUN mkdir -p /kb/deployment/services/kbase-ui
 
 COPY contents /kb/deployment
 
@@ -28,8 +21,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       us.kbase.vcs-tag=$TAG \
       maintainer="Steve Chan sychan@lbl.gov"
 
-ENTRYPOINT [ \
-   "dockerize", \
-    "-template", "/kb/deployment/conf/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
-    "-template", "/kb/deployment/conf/config.json.tmpl:/kb/deployment/services/kbase-ui/modules/deploy/config.json", \
-    "nginx"]
+ENTRYPOINT [ "/kb/deployment/bin/dockerize" ]
+CMD [ "-template", "/kb/deployment/conf/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
+      "-template", "/kb/deployment/conf/config.json.tmpl:/kb/deployment/services/kbase-ui/modules/deploy/config.json", \
+      "nginx"]

@@ -23,14 +23,14 @@ http {
 	##
 
 
-  {{ if eq .Env.deployed "true" }}
+  {{ if .Env.nginx_syslog }}
   # Only log to these locations if deployed. This allows local testing of this image.
-  error_log /dev/stdout;
-	access_log syslog:server=10.58.0.54,facility=local2,tag=ci,severity=info combined;
+  error_log /dev/stdout {{ default .Env.nginx_loglevel "error" }};
+  access_log syslog:server=10.58.0.54,facility=local2,tag=ci,severity=info combined;
   {{ else }}
   # But if running locally preserve the logs for debugging
 	access_log /var/log/nginx/access.log;
-	error_log /var/log/nginx/error.log;
+	error_log /var/log/nginx/error.log  {{ default .Env.nginx_loglevel "error" }};
   {{ end }}
 
     ##
@@ -45,7 +45,7 @@ http {
 
     server {
         # no need for root privileges
-        listen      80;
+        listen      {{ default .Env.nginx_listen "80"}};
         server_name {{ default .Env.nginx_server_name "localhost" }};
 
         location / {
@@ -54,7 +54,11 @@ http {
           allow all;
 
           # insert desired path here
+          {{ if .Env.nginx_uncompress }}
+          root /kb/deployment/services/kbase-ui-dev/;
+          {{ else }}
           root /kb/deployment/services/kbase-ui/;
+          {{ end }}          
         }
     }
 }
