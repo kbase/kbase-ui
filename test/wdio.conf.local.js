@@ -10,7 +10,7 @@ exports.config = {
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
     specs: [
-        './test/specs/**/*.js'
+        './test/integration-tests/specs/**/*.js'
     ],
     // Patterns to exclude.
     exclude: [
@@ -45,25 +45,31 @@ exports.config = {
         //     'phantomjs.binary.path': '/Volumes/KBaseWork/Work/sprints/auth2-2017/auth2/kbase-ui/node_modules/.bin/phantomjs',
         //     'phantomjs.cli.args': ['--web-security=false', '--ssl-protocol=any', '--ignore-ssl-errors=true']
         // },
-        // {
-        //     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
-        //     // grid with only 5 firefox instances available you can make sure that not more than
-        //     // 5 instances get started at a time.
-        //     maxInstances: 5,
-        //     //
-        //     browserName: 'firefox',
-        //     //platform: 'macOS 10.12',
-        //     //version: 'latest',
-        //     acceptInsecureCerts: true
-        // },
-        // Chrome
         {
+            // maxInstances can get overwritten per capability. So if you have an in-house Selenium
+            // grid with only 5 firefox instances available you can make sure that not more than
+            // 5 instances get started at a time.
             maxInstances: 5,
-            browserName: 'chrome',
+            //
+            browserName: 'firefox',
             //platform: 'macOS 10.12',
             //version: 'latest',
+            'moz:firefoxOptions': {
+                args: ['-headless']
+            },
             acceptInsecureCerts: true
-        }
+        },
+        // Chrome
+        // {
+        //     maxInstances: 5,
+        //     browserName: 'chrome',
+        //     //platform: 'macOS 10.12',
+        //     //version: 'latest',
+        //     // chromeOptions: {
+        //     //     args: ['--headless']
+        //     // },
+        //     acceptInsecureCerts: true
+        // }
     ],
     //
     // ===================
@@ -265,4 +271,4 @@ exports.config = {
      */
     // onComplete: function(exitCode) {
     // }
-}
+};
