@@ -3,6 +3,7 @@
 ---
 target: dev
 tempDir: temp
+release: false
 mutate: true
 keepBuildDir: false
 dist: false

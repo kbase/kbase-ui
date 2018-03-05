@@ -18,15 +18,19 @@ fi
 
 root=$(git rev-parse --show-toplevel)
 config_mount="${root}/deployment/proxier/conf"
+image="kbase/kbase-ui-proxier:dev"
 
 echo "CONFIG MOUNT: ${config_mount}"
 echo "ENVIRONMENT : ${environment}"
 
-echo "READING OPTIONS"
+echo "stdout sent to proxier.stdout, stderr sent to proxier.stderr"
+echo "Running proxier image ${image}"
+echo ":)"
 
 docker run \
   -p 80:80 -p 443:443 --dns=8.8.8.8 --rm \
   --env-file=${config_mount}/${environment}.env \
   --network=kbase-dev \
   --name=proxier \
-  kbase/kbase-ui-proxier:dev
+  ${image} \
+  > proxier.stdout 2> proxier.stderr

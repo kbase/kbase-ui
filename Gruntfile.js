@@ -3,7 +3,6 @@
 /**
  * Gruntfile for kbase-ui
  */
-var require = 
 
 module.exports = function (grunt) {
     'use strict';
@@ -86,7 +85,8 @@ module.exports = function (grunt) {
                 configFile: './test/wdio.conf.js'
             },
             local: {
-                configFile: './test/wdio.conf.local.js'
+                configFile: './test/wdio.conf.local.js',
+                baseUrl: 'https://' + grunt.option('host') + '.kbase.us'
             },
             sauce: {
                 configFile: './test/wdio.conf.sauce.js'
@@ -107,7 +107,7 @@ module.exports = function (grunt) {
         'karma:unit'
     ]);
 
-    grunt.registerTask('integration-test', [
+    grunt.registerTask('integration-tests', [
         'webdriver:local'
     ]);
 

@@ -1,39 +1,13 @@
 
-# runs the given docker
-# docker run --mount type=bind,src=`pwd`/conf,dst=/conf 4ed624b88a0a  /conf/sample-ci.ini
-
-# For local development, we expose both 80 and 443 -- we always run on https against the ui and services.
+#!/bin/bash
 #
-# DNS is set to google for now; leaving it alone causes it to use the host for DNS resolution, which
-# has the unfortunate side effect of propagating the /etc/hosts entries as well, which messes
-# up the proxying of kbase services.
+# Runs the kbase-ui image which has already been built for the current branch.
 #
-# We mount the configuration directory in, but we could copy it. For modeling the flexibility of deployment
-# reconfig, though, it should be mounted from the host environment. The configuration directory
-# location is provided as arg1. This directory is mounted as /conf in the docker container.
+# This is a develop-time tool.
 #
-# The second argument is the deployment environment - dev, ci, next, appdev, prod - which corresponds
-# to the config file within that location.
-#
-# Then we mount whichever directories we want to be working on.
-#
-# TODO: this should be driven either by command line options or simply add a config section in here to
-# allow declaring which plugins or bits of the ui source to mount inside.
-# we use the :dev image
-# we specify the configuration target as the first environment (dev, ci, next, appdev, prod). This lets
-# lets us easily swap out the targeted environment without rebuilding or anything.
-# NOTE: Just because the config is swapped to a different environment doesn't mean the build reflects it.
-# There is a separate build for dev, ci and prod, which expose different bits of the ui. Because this
-# impacts the dependencies loaded and integrated, it is not something that can be configured here.
-# Well, it COULD be, I supose...
-#
-
-# e.g. bash ./deployment/dev/tools/run-docker.sh `pwd`/deployment/conf dev
-
-# export config_mount=$1
 
 function usage() {
-    echo 'Usage: run-image.sh env [-p external-plugin] [-i internal-plugin] [-l lib-module-dir:lib-name:source-path]'
+    echo 'Usage: run-image.sh env [-p external-plugin] [-i internal-plugin] [-s kbase-ui-service] [-l lib-module-dir:lib-name:source-path]'
 }
 
 environment=$1
@@ -52,12 +26,13 @@ fi
 
 root=$(git rev-parse --show-toplevel)
 config_mount="${root}/deployment/conf"
+branch=$(git symbolic-ref --short HEAD 2>&1)
 
 echo "CONFIG MOUNT: ${config_mount}"
 echo "ENVIRONMENT : ${environment}"
+echo "BRANCH : ${branch}"
 
 echo "READING OPTIONS"
-
 
 # Initialize our own variables:
 mounts=""
@@ -129,10 +104,17 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo "MOUNTS: $mounts"
 
+image_tag="${branch}"
+
+echo "stdout sent to image.stoud, stderr sent to image.stderr"
+echo "Running kbase-ui image kbase/kbase-ui:${image_tag}"
+echo ":)"
+
 docker run \
   --rm \
   --env-file ${config_mount}/${environment}.env \
-  --network=kbase-dev \
   --name=kbase-ui-container \
+  --network=kbase-dev \
   $mounts \
-  kbase/kbase-ui:dev
+  kbase/kbase-ui:${image_tag} \
+  > kbase-ui.stdout 2> kbase-ui.stderr

@@ -67,11 +67,11 @@ function gitinfo(state) {
         run('git describe --exact-match --tags $(git rev-parse HEAD)')
             .catch(function () {
                 // For non-prod ui we can be tolerant of a missing version, but not for prod.
-                if (state.buildConfig.target === 'prod') {
-                    throw new Error('Not on a tag, cannot deploy');
+                if (state.buildConfig.release) {
+                    throw new Error('This is a release build, a semver tag is required');
                 }
-                mutant.log('Not on a tag, but that is ok since this is not a prod build');
-                mutant.log('version will be unavailable');
+                mutant.log('Not on a tag, but that is ok since this is not a release build');
+                mutant.log('version will be unavailable in the ui');
                 return '';
             })
     ])
@@ -791,15 +791,14 @@ function getReleaseNotes(state, version) {
         });
 }
 
-
 function verifyVersion(state) {
     return Promise.try(function () {
         var releaseVersion = state.mergedConfig.release.version;
         var gitVersion = state.buildInfo.git.version;
 
-        if (state.buildConfig.target === 'prod') {
+        if (state.buildConfig.release) {
             if (releaseVersion === gitVersion) {
-                mutant.log('release and git agree on ' + releaseVersion);
+                mutant.log('release and git agree on version ' + releaseVersion);
             } else {
                 throw new Error('Release and git versions are different; release says "' + releaseVersion + '", git says "' + gitVersion + '"');
             }
@@ -1189,8 +1188,9 @@ function makeModuleVFS(state, whichBuild) {
                     return fs.statAsync(match)
                         .then(function (stat) {
                             if (stat.size > 200000) {
-                                mutant.warn('skipping because too big: ' + numeral(stat.size).format('0.0b'));
-                                mutant.warn(match);
+                                mutant.warn('omitting file from bundle because too big: ' + numeral(stat.size).format('0.0b'));
+                                mutant.warn('  ' + match);
+                                mutant.warn('   don\'t worry, it is stil included in the build!');
                                 skip('toobig');
                                 return;
                             }

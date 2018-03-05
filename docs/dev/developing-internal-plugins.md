@@ -344,8 +344,9 @@ Working with the plugin is similar, except your branch starts at the tip of the 
 Of course, your workflow may be completely different, this is just an example.
 
 
+
 ---
 
-[Index](index.md) - [README](../README.md) - [Release Notes](../release-notes/index.md) - [KBase](http://kbase.us)
+[Index](../index.md) - [README](../README.md) - [Release Notes](../../release-notes/index.md) - [KBase](http://kbase.us)
 
 ---
