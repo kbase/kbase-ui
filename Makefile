@@ -100,14 +100,13 @@ build-ci:
 
 image: build-docker-image
 
-docker_image: build-ci build-docker-image
+docker_image: build-docker-image
 
 build-docker-image:
 	@echo "> Building docker image for this branch."
 	@echo "> Cleaning out old contents"
 	rm -rf $(CI_DOCKER_CONTEXT)/contents
 	@echo "> Copying dist build of kbase-ui into contents..."
-	# Note that the standard docker image contains just the dist build, not build build.
 	mkdir -p $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui
 	cp -pr build/$(build)/client/* $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui
 	@echo "> Copying kb/deployment templates..."
