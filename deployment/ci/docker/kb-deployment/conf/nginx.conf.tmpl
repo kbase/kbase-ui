@@ -54,11 +54,7 @@ http {
           allow all;
 
           # insert desired path here
-          {{ if .Env.nginx_uncompress }}
-          root /kb/deployment/services/kbase-ui-dev/;
-          {{ else }}
           root /kb/deployment/services/kbase-ui/;
-          {{ end }}          
         }
     }
 }
