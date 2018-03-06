@@ -117,4 +117,4 @@ docker run \
   --network=kbase-dev \
   $mounts \
   kbase/kbase-ui:${image_tag} \
-  > kbase-ui.stdout 2> kbase-ui.stderr
+  > kbase-ui.stdout

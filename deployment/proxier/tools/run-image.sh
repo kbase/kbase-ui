@@ -33,4 +33,4 @@ docker run \
   --network=kbase-dev \
   --name=proxier \
   ${image} \
-  > proxier.stdout 2> proxier.stderr
+  > proxier.stdout
