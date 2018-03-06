@@ -29,9 +29,9 @@ module.exports = function (config) {
             // Our test specs
             { pattern: 'test/unit-tests/specs/**/*.js', included: false },
             // Spot pickup the config files
-            { pattern: 'build/build/client/modules/config/*.yml', included: false },
-            { pattern: 'build/build/client/modules/config/*.json', included: false },
-            { pattern: 'build/build/client/modules/deploy/*.json', included: false },
+            // { pattern: 'build/build/client/modules/config/*.yml', included: false },
+            // { pattern: 'build/build/client/modules/config/*.json', included: false },
+            // { pattern: 'build/build/client/modules/deploy/*.json', included: false },
 
             'test/unit-tests/setup.js',
         ],

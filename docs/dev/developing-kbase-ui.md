@@ -61,8 +61,9 @@ which will stop all running containers.
 - testing changes for all environments
 - pull request for changes
 
+
 ---
 
-[Index](index.md) - [README](../README.md) - [Release Notes](../release-notes/index.md) - [KBase](http://kbase.us)
+[Index](../index.md) - [README](../README.md) - [Release Notes](../../release-notes/index.md) - [KBase](http://kbase.us)
 
 ---

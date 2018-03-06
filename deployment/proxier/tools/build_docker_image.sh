@@ -1,8 +1,5 @@
 #!/bin/bash -x
 
-# Much much longer than the original. Just wanted to get a handle
-# on explicit error capture and handling.
-
 function get_branch() {
     local branch
     branch=$(git symbolic-ref --short HEAD 2>&1)
@@ -54,8 +51,6 @@ function build_image() {
 
     local here=`pwd`
     echo "Running docker build in context ${here}/docker/context"
-    # TODO: don't know why can't run this in a subprocess
-    # NOTE: the dev build does not use the build date -- we don't want to bust the cache
     docker build --build-arg VCS_REF=$commit \
         --build-arg BRANCH=$branch \
         --build-arg TAG=$tag \

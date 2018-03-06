@@ -60,21 +60,9 @@ function build_image() {
     fi
     echo "COMMIT: $commit"
 
-    # if [[ -z "$tag" ]]; then
-    #     tag=$(get_tag)
-    #     err=$?
-    #     if (( $err > 0 )); then
-    #         echo "Sorry, not on a tag, won't build: ${tag}">&2
-    #         exit 3
-    #     fi
-    # fi
-    # echo "TAG $tag"
-
-    local image_tag="develop"
-
-    local here="$(dirname "$(dirname "$(readlink -fm "$0")")")"
     local here=`pwd`
-    echo "Running docker build in context ${here}/docker/context" 
+    local context="${here}/ci/docker/context"
+    echo "Running docker build in context $context" 
 
     # TODO: don't know why can't run this in a subprocess
 
@@ -85,14 +73,14 @@ function build_image() {
         --build-arg BUILD_DATE=$date \
         --build-arg VCS_REF=$commit \
         --build-arg BRANCH=$branch \
-        -t kbase/kbase-ui:${image_tag} ${here}/docker/context
+        -t kbase/kbase-ui:${branch} ${context}
 
     err=$?
     if (( $err > 0 )); then
         echo "Error running docker build: $err"
     else
         echo "Successfully build docker image. You may invoke it "
-        echo "with tag \"kbase/kbase-ui:${image_tag}\""
+        echo "with tag \"kbase/kbase-ui:${branch}\""
     fi
 }
 
