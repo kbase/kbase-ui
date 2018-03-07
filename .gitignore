@@ -13,6 +13,7 @@ nbproject
 /build/dist
 /build/build
 /build/build-test-coverage
+/build/test
 /mutations/mutantfiles
 
 # Developer artifacts
