@@ -1,5 +1,5 @@
 exports.config = {
-    
+
     //
     // ==================
     // Specify Test Files
@@ -10,7 +10,7 @@ exports.config = {
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
     specs: [
-        './test/specs/**/*.js'
+        './integration-tests/specs/**/*.js'
     ],
     // Patterns to exclude.
     exclude: [
@@ -38,14 +38,39 @@ exports.config = {
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://docs.saucelabs.com/reference/platforms-configurator
     //
-    capabilities: [{
-        // maxInstances can get overwritten per capability. So if you have an in-house Selenium
-        // grid with only 5 firefox instances available you can make sure that not more than
-        // 5 instances get started at a time.
-        maxInstances: 5,
-        //
-        browserName: 'firefox'
-    }],
+    capabilities: [
+        //     {
+        //     browserName: 'phantomjs',
+        //     ignoreSslErrors: true,
+        //     'phantomjs.binary.path': '/Volumes/KBaseWork/Work/sprints/auth2-2017/auth2/kbase-ui/node_modules/.bin/phantomjs',
+        //     'phantomjs.cli.args': ['--web-security=false', '--ssl-protocol=any', '--ignore-ssl-errors=true']
+        // },
+        {
+            // maxInstances can get overwritten per capability. So if you have an in-house Selenium
+            // grid with only 5 firefox instances available you can make sure that not more than
+            // 5 instances get started at a time.
+            maxInstances: 5,
+            //
+            browserName: 'firefox',
+            //platform: 'macOS 10.12',
+            //version: 'latest',
+            'moz:firefoxOptions': {
+                args: ['-headless']
+            },
+            acceptInsecureCerts: true
+        },
+        // Chrome
+        // {
+        //     maxInstances: 5,
+        //     browserName: 'chrome',
+        //     //platform: 'macOS 10.12',
+        //     //version: 'latest',
+        //     // chromeOptions: {
+        //     //     args: ['--headless']
+        //     // },
+        //     acceptInsecureCerts: true
+        // }
+    ],
     //
     // ===================
     // Test Configurations
@@ -68,7 +93,7 @@ exports.config = {
     bail: 0,
     //
     // Saves a screenshot to a given path if a command fails.
-    screenshotPath: './errorShots/',
+    screenshotPath: './integration-tests/errorShots/',
     //
     // Set a base URL in order to shorten url command calls. If your url parameter starts
     // with "/", then the base url gets prepended.
@@ -106,7 +131,8 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['selenium-standalone','phantomjs'],
+    services: ['selenium-standalone'],
+    // services: ['selenium-standalone'],
     //
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -120,22 +146,22 @@ exports.config = {
     // The only one supported by default is 'dot'
     // see also: http://webdriver.io/guide/testrunner/reporters.html
     reporters: ['dot'],
-    
+
     //
     // Options to be passed to Jasmine.
     jasmineNodeOpts: {
         //
         // Jasmine default timeout
-        defaultTimeoutInterval: 10000,
+        defaultTimeoutInterval: 30000,
         //
         // The Jasmine framework allows interception of each assertion in order to log the state of the application
         // or website depending on the result. For example, it is pretty handy to take a screenshot every time
         // an assertion fails.
-        expectationResultHandler: function(passed, assertion) {
+        expectationResultHandler: function (passed, assertion) {
             // do something
         }
     },
-    
+
     //
     // =====
     // Hooks
@@ -245,4 +271,4 @@ exports.config = {
      */
     // onComplete: function(exitCode) {
     // }
-}
+};

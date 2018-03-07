@@ -125,6 +125,7 @@ define([
 
             // new component.
             container.innerHTML = div({
+                dataKbaseWidget: 'sidebarNav',
                 dataBind: {
                     component: {
                         name: SidebarMenuComponent.quotedName(),

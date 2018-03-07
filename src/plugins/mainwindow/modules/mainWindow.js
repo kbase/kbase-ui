@@ -101,6 +101,7 @@ define([
             mount = node;
             container = document.createElement('div');
             container.classList.add('plugin-mainwindow', 'widget-mainwindow', '-main');
+            container.setAttribute('data-kbase-plugin', 'mainwindow');
             mount.appendChild(container);
         }
 

@@ -8,8 +8,7 @@ define([
     'use strict';
     var t = html.tag,
         a = t('a'),
-        img = t('img'),
-        div = t('div');
+        img = t('img');
 
     function factory(config) {
         var hostNode, container, runtime = config.runtime;
@@ -21,17 +20,18 @@ define([
         }
 
         function start() {
-            var version;
-            var uiTarget = runtime.config('buildInfo.target');
-            if (uiTarget === 'prod') {
-                version = runtime.config('release.version');
-            } else {
-                version = uiTarget;
-            }
+            // var uiTarget = runtime.config('buildInfo.target');
+            // var version; 
+            // if (uiTarget === 'prod') {
+            //     version = runtime.config('release.version');
+            // } else {
+            //     version = uiTarget;
+            // }
             container.innerHTML = [
                 a({
                     href: runtime.config('resources.docSite.base.url'),
-                    class: '-logo'
+                    class: '-logo',
+                    dataKbaseWidget: 'logo'
                 }, img({
                     src: Plugin.plugin.fullPath + '/images/kbase_logo.png',
                     width: '46px'

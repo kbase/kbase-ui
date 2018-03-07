@@ -2,9 +2,6 @@
 bower_components
 node_modules
 
-# General purpose temp directory
-/temp
-
 # Any trash directories
 _trash
 
@@ -21,11 +18,8 @@ nbproject
 # Developer artifacts
 /dev/*
 !/dev/README.md
-_attic
 
-/install/temp
-/errorShots
-/target
+_attic
 
 # package caches wherever they may be installed
 bower_components
@@ -33,7 +27,7 @@ node_modules
 package-lock.json
 
 # General purpose temp directory
-/temp
+/temp/files
 
 # Any trash directories
 _trash

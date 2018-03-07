@@ -79,16 +79,20 @@ preconditions:
 # bower install is not part of the build process, since the bower
 # config is not known until the parts are assembled...
 
-install_tools:
+setup-dirs:
+	@echo "> Setting up directories."
+	mkdir -p temp/files
+
+install-tools:
 	@echo "> Installing build and test tools."
 	npm install
 
-init: preconditions install_tools
+init: preconditions setup-dirs install-tools
 
 
 # Perform the build. Build scnearios are supported through the config option
 # which is passed in like "make build config=ci"
-build:
+build: clean-build
 	@echo "> Building."
 	cd mutations; node build $(config)
 
@@ -171,6 +175,9 @@ clean:
 
 clean-temp:
 	$(GRUNT) clean:temp
+
+clean-build:
+	$(GRUNT) clean-build
 
 # If you need more clean refinement, please see Gruntfile.js, in which you will
 # find clean tasks for each major build artifact.

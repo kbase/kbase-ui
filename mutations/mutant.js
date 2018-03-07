@@ -233,6 +233,13 @@ function warn(msg) {
     process.stdout.write('\n');
 }
 
+function success(msg) {
+    var line = '✔   : '+ timestamp() + ': ' + msg;
+    var chalked = chalk.green(line);
+    process.stdout.write(chalked);
+    process.stdout.write('\n');
+}
+
 function createInitialState(initialConfig) {
     var initialFilesystem = initialConfig.initialFilesystem,
         buildControlConfigPath = initialConfig.buildControlConfigPath;
@@ -316,5 +323,6 @@ module.exports = {
     saveJson: saveJson,
     rtrunc: rtrunc,
     log: log,
-    warn: warn
+    warn: warn,
+    success: success
 };
