@@ -65,19 +65,20 @@ module.exports = function (grunt) {
             },
             test: {
                 src: [
-                    'build/build-test-coverage'
+                    'build/build-test-coverage',
+                    'build/test'
                 ]
             },
             temp: {
                 src: [
-                    'build/temp'
+                    'temp/files'
                 ]
             },
             deps: {
                 src: [
                     'node_modules', 'bower_components'
                 ]
-            }
+            },
         },
 
         webdriver: {
@@ -86,6 +87,11 @@ module.exports = function (grunt) {
             },
             local: {
                 configFile: './test/wdio.conf.local.js',
+                baseUrl: 'https://' + grunt.option('host') + '.kbase.us'
+            },
+            // note should be called with a base of build/tests/integration-tests
+            integration: {
+                configFile: './test/wdio.conf.integration.js',
                 baseUrl: 'https://' + grunt.option('host') + '.kbase.us'
             },
             sauce: {
@@ -101,6 +107,10 @@ module.exports = function (grunt) {
         'clean:build', 'clean:dist', 'clean:test', 'clean:deps', 'clean:temp'
     ]);
 
+    grunt.registerTask('clean-build', [
+        'clean:build', 'clean:dist', 'clean:test', 'clean:temp'
+    ]);
+
     // Does a single, local, unit test run.
     // TODO: more work on the webdriver tests, don't work now.
     grunt.registerTask('unit-test', [
@@ -108,7 +118,7 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask('integration-tests', [
-        'webdriver:local'
+        'webdriver:integration'
     ]);
 
     // Does a single unit test run, then sends 

@@ -2,7 +2,7 @@
 ## see README.md 
 ---
 target: prod
-tempDir: temp
+tempDir: temp/files
 release: false
 mutate: true
 keepBuildDir: false

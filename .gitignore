@@ -21,11 +21,12 @@ nbproject
 # Developer artifacts
 /dev/*
 !/dev/README.md
+
 _attic
 
-/install/temp
-/errorShots
-/target
+# Testing output
+/test/output/*
+!/test/output/integration-tests/errorShots/README.md
 
 # package caches wherever they may be installed
 bower_components
@@ -34,6 +35,7 @@ package-lock.json
 
 # General purpose temp directory
 /temp
+!/temp/README.md
 
 # Any trash directories
 _trash

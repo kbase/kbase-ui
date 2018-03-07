@@ -61,7 +61,7 @@ function build_image() {
     if (( $err > 0 )); then
         echo "Error running docker build: $err"
     else
-        echo "Successfully build docker image. You may invoke it "
+        echo "Successfully built docker image. You may invoke it "
         echo "with tag \"kbase/kbase-ui-proxier:${tag}\""
     fi
 }
