@@ -81,7 +81,7 @@ preconditions:
 
 setup-dirs:
 	@echo "> Setting up directories."
-	mkdir temp/files
+	mkdir -p temp/files
 
 install-tools:
 	@echo "> Installing build and test tools."

@@ -2,9 +2,6 @@
 bower_components
 node_modules
 
-# General purpose temp directory
-/temp
-
 # Any trash directories
 _trash
 
@@ -24,18 +21,13 @@ nbproject
 
 _attic
 
-# Testing output
-/test/output/*
-!/test/output/integration-tests/errorShots/README.md
-
 # package caches wherever they may be installed
 bower_components
 node_modules
 package-lock.json
 
 # General purpose temp directory
-/temp
-!/temp/README.md
+/temp/files
 
 # Any trash directories
 _trash
