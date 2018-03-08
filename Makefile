@@ -48,7 +48,7 @@ env             = dev
 DEV_DOCKER_CONTEXT	= $(TOPDIR)/deployment/dev/docker/context
 CI_DOCKER_CONTEXT	= $(TOPDIR)/deployment/ci/docker/context
 PROD_DOCKER_CONTEXT	= $(TOPDIR)/deployment/prod/docker/context
-PROXIER_DOCKER_CONTEXT     = $(TOPDIR)/deployment/proxier/docker/context
+PROXIER_DOCKER_CONTEXT     = $(TOPDIR)/tools/proxier/docker/context
 
 # Standard 'all' target = just do the standard build
 all:
@@ -141,13 +141,13 @@ proxier-image:
 	@echo "> Cleaning out old contents"
 	rm -rf $(PROXIER_DOCKER_CONTEXT)/contents
 	mkdir -p $(PROXIER_DOCKER_CONTEXT)/contents
-	@echo "> Copying kb/deployment config templates..."
+	@echo "> Copying proxier config templates..."
 	cp -pr $(PROXIER_DOCKER_CONTEXT)/../src/* $(PROXIER_DOCKER_CONTEXT)/contents
 	@echo "> Beginning docker build..."
 	cd $(PROXIER_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
 
 run-proxier-image:
-	$(eval cmd = $(TOPDIR)/deployment/proxier/tools/run-image.sh $(env))
+	$(eval cmd = $(TOPDIR)/tools/proxier/tools/run-image.sh $(env))
 	@echo "> Running proxier image"
 	@echo "> with env $(env)"
 	@echo "> Issuing: $(cmd)"
