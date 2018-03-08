@@ -10,14 +10,14 @@ if [ -z "$environment" ]; then
     exit 1
 fi
 
-if [ ! -e "deployment/proxier/conf/${environment}.env" ]; then
-    echo "ERROR: environment (arg 1) does not resolve to a config file in deployment/proxier/conf/${environment}.env"
+if [ ! -e "tools/proxier/conf/${environment}.env" ]; then
+    echo "ERROR: environment (arg 1) does not resolve to a config file in tools/proxier/conf/${environment}.env"
     usage
     exit 1
 fi
 
 root=$(git rev-parse --show-toplevel)
-config_mount="${root}/deployment/proxier/conf"
+config_mount="${root}/tools/proxier/conf"
 image="kbase/kbase-ui-proxier:dev"
 
 echo "CONFIG MOUNT: ${config_mount}"
