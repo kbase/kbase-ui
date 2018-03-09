@@ -8,11 +8,7 @@
             "urlBase": "https://{{ default .Env.deploy_hostname "localhost" }}"
         }
     },
-    "ui": {
-        "backupCookie": {
-            "domain": {{ if .Env.ui_backupcookie_domain }}"{{.Env.ui_backupcookie_domain}}"{{else}}null{{end}},
-            "enabled": {{ default .Env.ui_backupcookie_enabled "false"}}
-        },
+    "ui": {       
         "services": {
             "analytics": {
                 "google": {
