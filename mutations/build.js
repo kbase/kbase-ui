@@ -821,24 +821,45 @@ function getReleaseNotes(state, version) {
 
 function verifyVersion(state) {
     return Promise.try(function () {
+        if (!state.buildConfig.release) {
+            mutant.log('In a non-prod build, release version not checked.');
+            return;
+        }
+
         var releaseVersion = state.mergedConfig.release.version;
         var gitVersion = state.buildInfo.git.version;
 
-        if (state.buildConfig.release) {
-            if (releaseVersion === gitVersion) {
-                mutant.log('release and git agree on version ' + releaseVersion);
-            } else {
-                throw new Error('Release and git versions are different; release says "' + releaseVersion + '", git says "' + gitVersion + '"');
-            }
-            return getReleaseNotes(state, releaseVersion)
-                .then(function (releaseNotesFile) {
-                    mutant.log('have release notes?', releaseNotesFile);
-                });
-        } else {
-            // we have no assumptions. Well, either there is a release notes file and release.version in agreement,
-            // or a new release notes is being worked on and is a higher version. Could check this...
-            mutant.log('In a non-prod build, release version not checked.');
+        if (!releaseVersion) {
+            throw new Error('this is a release build, and the release version is missing.');
         }
+
+        var semverRe = /\d+\.\d+\.\d+$/;
+        var gitSemverRe = /^v\d+\.\d+\.\d+$/;
+
+        if (!semverRe.test(releaseVersion)) {
+            throw new Error('on a release build, and the release version doesn\'t look like a semver tag: ' + releaseVersion);
+        }
+        mutant.success('good release version');
+
+        if (!gitSemverRe.test(state.buildInfo.git.tag)) {
+            throw new Error('on a release build, and the git tag doesn\'t look like a semver tag: ' + state.buildInfo.git.tag);
+        }
+        mutant.success('good git tag version');
+
+        if (releaseVersion === gitVersion) {
+            mutant.success('release and git agree on version ' + releaseVersion);
+        } else {
+            throw new Error('Release and git versions are different; release says "' + releaseVersion + '", git says "' + gitVersion + '"');
+        }
+        return getReleaseNotes(state, releaseVersion)
+            .then(function (releaseNotesFile) {
+                if (releaseNotesFile) {
+                    mutant.success('have release notes');
+                } else {
+                    throw new Error('Release notes not found for this version ' + releaseVersion + ', but required for a release');
+                }
+            });
+            
     })
         .then(function () {
             return state;
