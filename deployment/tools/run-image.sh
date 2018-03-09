@@ -69,7 +69,7 @@ case $key in
     -i|--internal)
     plugin="$2"
     echo "Using internal plugin: ${plugin}"
-    mounts="$mounts --mount type=bind,src=${root}/src/client/modules/plugins/${plugin},dst=/kb/deployment/services/kbase-ui/modules/plugins/${plugin}"
+    mounts="$mounts --mount type=bind,src=${root}/src/plugins/${plugin},dst=/kb/deployment/services/kbase-ui/modules/plugins/${plugin}"
     shift # past argument
     shift # past value
     ;;
