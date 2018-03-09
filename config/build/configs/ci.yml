@@ -2,9 +2,6 @@
 ## see README.md 
 ---
 target: prod
-tempDir: temp/files
-release: true
-mutate: true
-keepBuildDir: false
+release: false
 dist: true
 vfs: true

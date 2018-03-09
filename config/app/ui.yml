@@ -11,7 +11,7 @@ ui:
         spinner:
             url: /images/ajax-loader.gif
     constants:
-        client_timeout: 900000,
+        client_timeout: 900000
         # session_max_age: 5184000
      # TODO: simply paths?
     paths:

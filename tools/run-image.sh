@@ -18,15 +18,15 @@ if [ -z "$environment" ]; then
     exit 1
 fi
 
-if [ ! -e "deployment/conf/${environment}.env" ]; then
-    echo "ERROR: environment (arg 1) does not resolve to a config file in deployment/conf/${environment}.env"
+root=$(git rev-parse --show-toplevel)
+config_mount="${root}/config/deploy"
+branch=$(git symbolic-ref --short HEAD 2>&1)
+
+if [ ! -e "${config_mount}/${environment}.env" ]; then
+    echo "ERROR: environment (arg 1) does not resolve to a config file in ${config_mount}/${environment}.env"
     usage
     exit 1
 fi
-
-root=$(git rev-parse --show-toplevel)
-config_mount="${root}/deployment/conf"
-branch=$(git symbolic-ref --short HEAD 2>&1)
 
 echo "CONFIG MOUNT: ${config_mount}"
 echo "ENVIRONMENT : ${environment}"
@@ -43,22 +43,10 @@ POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
 key="$1"
-#
-function linkSrcFile() {
-    # from is relative to the dev dir, the container for all repos
-   local from=$1
-   # to is relative to this directory, but could be DEVDIR/kbase-ui
-   local to=$2
 
-   local source=$DEVDIR/kbase-ui/src/client/$from
-   local dest=../../build/build/client/$to
 
-   echo "Linking source file $from"
-
-    rm -rf $dest
-    ln -s $source $dest
-}
 case $key in
+    ### External plugins, located at the same directory level as the kbase-ui repo
     -p|--plugin)
     plugin="$2"
     echo "Using external plugin: ${plugin}"
@@ -66,6 +54,7 @@ case $key in
     shift # past argument
     shift # past value
     ;;
+    ### Internal plugins, located within the repo in src/plugins
     -i|--internal)
     plugin="$2"
     echo "Using internal plugin: ${plugin}"
@@ -73,6 +62,7 @@ case $key in
     shift # past argument
     shift # past value
     ;;
+    ### External kbase libraries, located in a sister directory to kbase-ui
     -l|--lib)
     lib="$2"
     # local l
@@ -87,6 +77,7 @@ case $key in
     shift
     shift
     ;;
+    ### Internal ui services, located within modules/app/services
     -s|--service)
     service="$2"
     echo "Using internal services: ${service}"
