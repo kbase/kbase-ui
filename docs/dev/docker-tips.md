@@ -1,5 +1,9 @@
 # Docker Tips
 
+### Use Kitematic
+
+On macOS, Docker includes a menu item for starting Kitematic. Kitematic is a gui for managing images and containers. It will simplify your life. It is especially useful for running a shell in an running container, accessing the configuration for a container, and finding images to install.
+
 ### Stop running containers
 
 ```bash
@@ -47,6 +51,6 @@ docker run -it --entrypoint /bin/bash kbase/kbase-ui:dev
 
 ---
 
-[Index](index.md) - [README](../README.md) - [Release Notes](../release-notes/index.md) - [KBase](http://kbase.us)
+[Index](../index.md) - [README](../README.md) - [Release Notes](../../release-notes/index.md) - [KBase](http://kbase.us)
 
 ---

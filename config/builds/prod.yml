@@ -1,9 +1,0 @@
-## prod Build Config
-## see README.md 
----
-target: prod
-tempDir: temp
-mutate: true
-keepBuildDir: false
-dist: true
-vfs: true

@@ -1,0 +1,45 @@
+{
+    "deploy": {
+        "environment": "appdev",
+        "hostname": "appdev.kbase.us",
+        "icon": "wrench",
+        "name": "App Dev",
+        "services": {
+            "urlBase": "https://appdev.kbase.us"
+        }
+    },
+    "ui": {       
+        "services": {
+            "analytics": {
+                "google": {
+                    "hostname": "appdev.kbase.us",
+                    "code": "UA-74533556-1"
+                }
+            },
+             "session": {
+                "cookie": {
+                    "backup": {
+                        "domain": null,
+                        "enabled": false
+                    }
+                }
+            },
+            "menu": {
+                "menus": {
+                    "hamburger": {
+                        "disabled": ["simple-search", "reske-admin", "staging-browser"]
+                    },
+                    "sidebar": {
+                        "disabled": ["search", "feeds"]
+                    }
+                }
+            }
+        },
+        "allow": []
+    },
+    "services": {
+        "narrative": {
+            "url": "https://appdev.kbase.us"
+        }
+    }
+}

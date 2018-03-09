@@ -1,0 +1,52 @@
+## About the UI, build, services
+---
+package:
+    author: Erik Pearson
+    name: about panel
+    description: A package containing the about panel
+    date: August 5, 2015
+source:
+    modules:
+install:
+    widgets:
+        - 
+            module: aboutBuild
+            id: about_build
+            type: factory
+        - 
+            module: about
+            id: about
+            type: factory
+        -
+            module: aboutServices
+            id: about_services
+            type: factory
+    routes:
+        -
+            path: ['about']
+            widget: about
+            queryParams: {}
+        -
+            path: ['about', 'build']
+            widget: about_build
+            queryParams: {}
+        -
+            path: ['about', 'services']
+            widget: about_services
+            queryParams: {}
+    menu:
+        -
+            name: about
+            path: about
+            label: About
+            icon: info-circle
+        -
+            name: about-build
+            path: ['about', 'build']
+            label: About the UI Build
+            icon: building-o
+        -
+            name: about-services
+            path: ['about', 'services']
+            label: KBase Services Status
+            icon: server

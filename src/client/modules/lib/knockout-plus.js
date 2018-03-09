@@ -509,6 +509,18 @@ define([
         };
     }
 
+
+    function pluralize(expression, singular, plural) {
+        return [
+            '<!-- ko if: ' + expression + ' === 1 -->',
+            singular,
+            '<!-- /ko -->',
+            '<!-- ko ifnot: ' + expression + ' === 1 -->',
+            plural,
+            '<!-- /ko -->'
+        ];
+    }
+
     ko.kb = {};
 
     ko.kb.komponent = komponent;
@@ -517,6 +529,7 @@ define([
     // the subscription manager is a factory.
     // TODO: better way of integrating into knockout...
     ko.kb.SubscriptionManager = SubscriptionManager;
+    ko.kb.pluralize = pluralize;
 
     return ko;
 });

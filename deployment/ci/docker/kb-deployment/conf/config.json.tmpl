@@ -1,18 +1,14 @@
 {
     "deploy": {
-        "environment": "{{ .Env.deploy_environment }}",
-        "hostname": "{{ .Env.deploy_hostname }}",
+        "environment": "{{ default .Env.deploy_environment "dev" }}",
+        "hostname": "{{ default .Env.deploy_hostname "localhost" }}",
         "icon": "{{ .Env.deploy_icon }}",
         "name": "{{ .Env.deploy_name }}",
         "services": {
-            "urlBase": "https://{{ .Env.deploy_hostname }}"
+            "urlBase": "https://{{ default .Env.deploy_hostname "localhost" }}"
         }
     },
-    "ui": {
-        "backupCookie": {
-            "domain": {{ if .Env.ui_backupcookie_domain }}"{{.Env.ui_backupcookie_domain}}"{{else}}null{{end}},
-            "enabled": {{ default .Env.ui_backupcookie_enabled "false"}}
-        },
+    "ui": {       
         "services": {
             "analytics": {
                 "google": {
@@ -25,6 +21,16 @@
                     "backup": {
                         "domain": {{ if .Env.ui_backupCookie_domain }}"{{.Env.ui_backupCookie_domain}}"{{else}}null{{end}},
                         "enabled": {{ default .Env.ui_backupCookie_enabled "false"}}
+                    }
+                }
+            },
+            "menu": {
+                "menus": {
+                    "hamburger": {
+                        "disabled": {{ default .Env.ui_services_menu_hamburger_disabled "null" }}
+                    },
+                    "sidebar": {
+                        "disabled": {{ default .Env.ui_services_menu_sidebar_disabled "null" }}
                     }
                 }
             }

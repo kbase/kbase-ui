@@ -1,0 +1,54 @@
+# This is used to copy specific files from bower_components to the build.
+# It is yucky that we have to do this, but there is no universal bower package
+# format, and some bower repos are complete source hairballs. We reduce the code
+# side significantly, and eliminate the possibility of serving up hairball files
+# from the kbase-ui service.
+# TODO: I've learned more about bower conventions since this time -- the main
+# property is pretty well supported. Not universally, but better. We only really
+# need to list the packages here and create config for exceptions
+# TODO: document the format
+npmFiles:
+    -
+        name: ajv
+        cwd: dist
+        src:
+            - ajv.bundle.js
+    -
+        name: bluebird
+        cwd: js/browser
+        src:
+            - bluebird.js
+    -
+        name: dagre
+        cwd: dist
+    -
+        name: lodash
+    # -
+    #     name: d3
+    #     cwd: build
+    # -
+    #     dir: d3-sankey
+    #     cwd: build
+    #     src:
+    #         - d3-sankey.js
+    # -
+    #     dir: d3-shape
+    #     cwd: build
+    #     src:
+    #         - d3-shape.js
+    # -
+    #     dir: d3-collection
+    #     cwd: build
+    #     src:
+    #         - d3-collection.js
+    # -
+    #     dir: d3-array
+    #     cwd: build
+    #     src:
+    #         - d3-array.js   
+    # -
+    #     dir: d3-path
+    #     cwd: build
+    #     src:
+    #         - d3-path.js                      
+            

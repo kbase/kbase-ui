@@ -129,19 +129,7 @@ define([
                     name: serviceName
                 };
                 service.module = serviceName;
-                // if (serviceConfig.module) {
-                //     service.module = serviceConfig.module;
-                // } else {
-                //     service.module = serviceName;
-                // }
-                // var config = appConfig.getItem(['ui', 'services', serviceName], {});
-                // TODO does not support paths, but we don't want to keep this mechamism anyway.
-                if (serviceConfig.configs) {
-                    serviceConfig.configs.forEach(function (configName) {
-                        serviceConfig[configName] = appConfig.getItem(configName);
-                    });
-                    delete serviceConfig.configs;
-                }
+
                 serviceConfig.runtime = api;
                 appServiceManager.addService(service, serviceConfig);
             });

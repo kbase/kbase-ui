@@ -2,9 +2,6 @@
 bower_components
 node_modules
 
-# General purpose temp directory
-/temp
-
 # Any trash directories
 _trash
 
@@ -16,16 +13,14 @@ nbproject
 /build/dist
 /build/build
 /build/build-test-coverage
+/build/test
 /mutations/mutantfiles
 
 # Developer artifacts
 /dev/*
 !/dev/README.md
-_attic
 
-/install/temp
-/errorShots
-/target
+_attic
 
 # package caches wherever they may be installed
 bower_components
@@ -33,7 +28,7 @@ node_modules
 package-lock.json
 
 # General purpose temp directory
-/temp
+/temp/files
 
 # Any trash directories
 _trash
@@ -60,3 +55,10 @@ nbproject
 .DS_Store
 .vscode
 .idea
+
+# Docker run artifacts
+# todo divert files elsewhere
+kbase-ui.stdout
+kbase-ui.stderr
+proxier.stdout
+proxier.stderr

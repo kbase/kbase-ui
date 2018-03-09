@@ -233,22 +233,66 @@ function warn(msg) {
     process.stdout.write('\n');
 }
 
+function success(msg) {
+    var line = '✔   : '+ timestamp() + ': ' + msg;
+    var chalked = chalk.green(line);
+    process.stdout.write(chalked);
+    process.stdout.write('\n');
+}
+
+function mergeObjects(listOfObjects) {
+    var simpleObjectPrototype = Object.getPrototypeOf({});
+
+    function isSimpleObject(obj) {
+        return Object.getPrototypeOf(obj) === simpleObjectPrototype;
+    }
+
+    function merge(obj1, obj2, keyStack) {
+        Object.keys(obj2).forEach(function (key) {
+            var obj1Value = obj1[key];
+            var obj2Value = obj2[key];
+            var obj1Type = typeof obj1Value;
+            // var obj2Type = typeof obj2Value;
+            if (obj1Type === 'undefined') {
+                obj1[key] = obj2[key];
+            } else if (isSimpleObject(obj1Value) && isSimpleObject(obj2Value)) {
+                keyStack.push(key);
+                merge(obj1Value, obj2Value, keyStack);
+                keyStack.pop();
+            } else {
+                console.error('UNMERGABLE', obj1Type, obj1Value);
+                throw new Error('Unmergable at ' + keyStack.join('.') + ':' + key);
+            }
+        });
+    }
+
+    var base = JSON.parse(JSON.stringify(listOfObjects[0]));
+    for (var i = 1; i < listOfObjects.length; i += 1) {
+        merge(base, listOfObjects[i], []);
+    }
+    return base;
+}
+
 function createInitialState(initialConfig) {
     var initialFilesystem = initialConfig.initialFilesystem,
-        buildControlConfigPath = initialConfig.buildControlConfigPath;
+        buildControlConfigPath = initialConfig.buildControlConfigPath,
+        buildControlDefaultsPath = initialConfig.buildControlDefaultsPath;
+
     // TODO: do this better...
-    var app, appName;
-    if (process.argv[0].match(/node$/)) {
-        app = process.argv[1];
-    } else {
-        app = process.argv[0];
-    }
-    appName = app.split('/').pop();
+    // var app, appName;
+    // if (process.argv[0].match(/node$/)) {
+    //     app = process.argv[1];
+    // } else {
+    //     app = process.argv[0];
+    // }
+    // appName = app.split('/').pop();
 
-    log('Creating initial state for app: ' + appName);
+    // log('Creating initial state for app: ' + appName);
+    log('Creating initial state');
 
-    return loadYaml(buildControlConfigPath)
-        .then(function (buildConfig) {
+    return Promise.all([loadYaml(buildControlConfigPath), loadYaml(buildControlDefaultsPath)])
+        .then(function (configs) {
+            var buildConfig = mergeObjects(configs);
             var state = {
                 environment: {},
                 data: {},
@@ -316,5 +360,7 @@ module.exports = {
     saveJson: saveJson,
     rtrunc: rtrunc,
     log: log,
-    warn: warn
+    warn: warn,
+    success: success,
+    mergeObjects: mergeObjects
 };

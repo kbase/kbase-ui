@@ -1,9 +1,0 @@
-## dev Build Config
-## see README.md
----
-target: dev
-tempDir: temp
-mutate: true
-keepBuildDir: false
-dist: false
-vfs: false

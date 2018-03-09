@@ -3,7 +3,6 @@
 /**
  * Gruntfile for kbase-ui
  */
-var require = 
 
 module.exports = function (grunt) {
     'use strict';
@@ -66,19 +65,20 @@ module.exports = function (grunt) {
             },
             test: {
                 src: [
-                    'build/build-test-coverage'
+                    'build/build-test-coverage',
+                    'build/test'
                 ]
             },
             temp: {
                 src: [
-                    'build/temp'
+                    'temp/files'
                 ]
             },
             deps: {
                 src: [
                     'node_modules', 'bower_components'
                 ]
-            }
+            },
         },
 
         webdriver: {
@@ -86,7 +86,13 @@ module.exports = function (grunt) {
                 configFile: './test/wdio.conf.js'
             },
             local: {
-                configFile: './test/wdio.conf.local.js'
+                configFile: './test/wdio.conf.local.js',
+                baseUrl: 'https://' + grunt.option('host') + '.kbase.us'
+            },
+            // note should be called with a base of build/tests/integration-tests
+            integration: {
+                configFile: './test/wdio.conf.integration.js',
+                baseUrl: 'https://' + grunt.option('host') + '.kbase.us'
             },
             sauce: {
                 configFile: './test/wdio.conf.sauce.js'
@@ -101,11 +107,18 @@ module.exports = function (grunt) {
         'clean:build', 'clean:dist', 'clean:test', 'clean:deps', 'clean:temp'
     ]);
 
+    grunt.registerTask('clean-build', [
+        'clean:build', 'clean:dist', 'clean:test', 'clean:temp'
+    ]);
+
     // Does a single, local, unit test run.
     // TODO: more work on the webdriver tests, don't work now.
-    grunt.registerTask('test', [
-        'karma:unit',
-        'webdriver:local'
+    grunt.registerTask('unit-test', [
+        'karma:unit'
+    ]);
+
+    grunt.registerTask('integration-tests', [
+        'webdriver:integration'
     ]);
 
     // Does a single unit test run, then sends 
