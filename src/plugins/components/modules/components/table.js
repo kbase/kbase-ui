@@ -172,6 +172,8 @@ define([
     });
 
     function viewModel(params, componentInfo) {
+        var subscriptions = ko.kb.SubscriptionManager.make();
+
         var slowLoadingThreshold = 300;
         
         var table = params.table;
@@ -236,7 +238,7 @@ define([
         // TODO: bind this to the table styles
         var rowHeight = 35;
 
-        height.subscribe(function (newValue) {
+        subscriptions.add(height.subscribe(function (newValue) {
             if (!newValue) {
                 table.pageSize(null);
             }            
@@ -245,7 +247,7 @@ define([
             var rowCount = Math.floor(newValue / rowHeight);
 
             table.pageSize(rowCount);
-        });        
+        }));
 
         // Calculate the height immediately upon component load
         height(calcHeight());
@@ -271,13 +273,7 @@ define([
             doRowAction = null;
         }
 
-        // LIFECYCLE
-
-        function dispose() {
-            if (resizeListener) {
-                window.removeEventListener('resize', resizer, false);
-            }
-        }
+     
 
         var isLoadingSlowly = ko.observable(false);
 
@@ -298,18 +294,28 @@ define([
             isLoadingSlowly(false);
         }
         
-        table.isLoading.subscribe(function (loading) {
+        subscriptions.add(table.isLoading.subscribe(function (loading) {
             if (loading) {
                 timeLoading();
             } else {
                 cancelTimeLoading();
             }
-        });
+        }));
 
         function openLink(url) {
             if (url) {
                 window.open(url, '_blank');
             }
+        }
+
+
+        // LIFECYCLE
+
+        function dispose() {
+            if (resizeListener) {
+                window.removeEventListener('resize', resizer, false);
+            }
+            subscriptions.dispose();
         }
 
         return {
@@ -323,12 +329,12 @@ define([
             state: table.state,
             doOpenUrl: doOpenUrl,
             doRowAction: doRowAction,
-            // lifecycle hooks
-            dispose: dispose,
             openLink: openLink,
             // thread env for useful plugin-level hooks.
             env: table.env,
-            actions: table.actions
+            actions: table.actions,
+            // lifecycle hooks
+            dispose: dispose
         };
     }
 
