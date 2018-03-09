@@ -9,10 +9,6 @@
         }
     },
     "ui": {
-        "backupCookie": {
-            "domain": null,
-            "enabled": false
-        },
         "services": {
             "analytics": {
                 "google": {
