@@ -8,11 +8,7 @@
             "urlBase": "https://kbase.us"
         }
     },
-    "ui": {
-        "backupCookie": {
-            "domain": null,
-            "enabled": false
-        },
+    "ui": {       
         "services": {
             "analytics": {
                 "google": {
