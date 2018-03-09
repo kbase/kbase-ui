@@ -637,7 +637,7 @@ function installPlugins(state) {
                                 if (!exists) {
                                     mutant.warn('plugin without tests: ' + justDir);
                                 } else {
-                                    mutant.success('plugin with tests!  :' + justDir);
+                                    mutant.success('plugin with tests!  : ' + justDir);
                                     var dest = root.concat(['test', 'integration-tests', 'specs', 'plugins', justDir]);
                                     return fs.moveAsync(testDir.join('/'), dest.join('/'));
                                 }
@@ -775,7 +775,7 @@ function copyUiConfig(state) {
                 return mutant.loadYaml(file);
             }))
                 .then(function (configs) {
-                    return mergeObjects([baseConfig].concat(configs));
+                    return mutant.mergeObjects([baseConfig].concat(configs));
                 })
                 .then(function (mergedConfigs) {
                     state.mergedConfig = mergedConfigs;
@@ -845,39 +845,6 @@ function verifyVersion(state) {
         });
 }
 
-function mergeObjects(listOfObjects) {
-    var simpleObjectPrototype = Object.getPrototypeOf({});
-
-    function isSimpleObject(obj) {
-        return Object.getPrototypeOf(obj) === simpleObjectPrototype;
-    }
-
-    function merge(obj1, obj2, keyStack) {
-        Object.keys(obj2).forEach(function (key) {
-            var obj1Value = obj1[key];
-            var obj2Value = obj2[key];
-            var obj1Type = typeof obj1Value;
-            // var obj2Type = typeof obj2Value;
-            if (obj1Type === 'undefined') {
-                obj1[key] = obj2[key];
-            } else if (isSimpleObject(obj1Value) && isSimpleObject(obj2Value)) {
-                keyStack.push(key);
-                merge(obj1Value, obj2Value, keyStack);
-                keyStack.pop();
-            } else {
-                console.error('UNMERGABLE', obj1Type, obj1Value);
-                throw new Error('Unmergable at ' + keyStack.join('.') + ':' + key);
-            }
-        });
-    }
-
-    var base = JSON.parse(JSON.stringify(listOfObjects[0]));
-    for (var i = 1; i < listOfObjects.length; i += 1) {
-        merge(base, listOfObjects[i], []);
-    }
-    return base;
-}
-
 // TODO: the deploy will be completely replaced with a deploy script.
 // For now, the deploy is still required for dev and ci builds to work
 // without the deploy script being integrated into the ci, next, appdev, and prod
@@ -904,11 +871,15 @@ function makeKbConfig(state) {
         fs.mkdirsAsync(deployModules.join('/'))
     ])
         .then(function () {
-            return fs.readFileAsync(root.concat(['config', 'deploy', 'templates', 'build-info.js.txt']).join('/'), 'utf8')
+            // A bit weird to do this here...
+            return fs.readFileAsync(root.concat(['build', 'client', 'build-info.js.txt']).join('/'), 'utf8')
                 .then(function (template) {
                     var dest = root.concat(['build', 'client', 'build-info.js']).join('/');
                     var out = handlebars.compile(template)(state.buildInfo);
                     return fs.writeFileAsync(dest, out);
+                })
+                .then(function () {
+                    fs.removeAsync(root.concat(['build', 'client', 'build-info.js.txt']).join('/'));
                 });
         })
         // Now merge the configs.
@@ -920,7 +891,7 @@ function makeKbConfig(state) {
             ];
             return Promise.all(configs.map(loadYaml))
                 .then(function (yamls) {
-                    var merged = mergeObjects(yamls);
+                    var merged = mutant.mergeObjects(yamls);
                     // expand aliases for services
                     Object.keys(merged.services).forEach(function (serviceKey) {
                         var serviceConfig = merged.services[serviceKey];
@@ -1301,46 +1272,30 @@ function makeModuleVFS(state, whichBuild) {
  */
 
 function main(type) {
-    // INPUT
-    var initialFilesystem = [{
-        cwd: ['..'],
-        path: ['src']
-    }, {
-        cwd: ['..'],
-        files: ['bower.json', 'package.json']
-    }, {
-        cwd: ['..'],
-        path: ['release-notes']
-    }];
-    // Use a copy of the configs in the dev directory; this supports local hacking without worry
-    // of accidentally checking in temporary config changes.
-    return pathExists('../dev/config')
-        .then(function (exists) {
-            // ugly work around for now
-            var buildControlConfigPath;
-            if (exists) {
-                initialFilesystem.push({
-                    cwd: ['..', 'dev'],
-                    path: ['config']
-                });
-                buildControlConfigPath = ['..', 'dev', 'config', 'builds', type + '.yml'];
-            } else {
-                initialFilesystem.push({
-                    cwd: ['..'],
-                    path: ['config']
-                });
-                buildControlConfigPath = ['..', 'config', 'builds', type + '.yml'];
-            }
-            return {
-                initialFilesystem: initialFilesystem,
-                buildControlConfigPath: buildControlConfigPath
-            };
-        })
-    
-        .then(function (config) {
-            mutant.log('Creating initial state with config: ');
-            return mutant.createInitialState(config);
-        })
+    return Promise.try(function () {
+        mutant.log('Creating initial state with for build: ' + type);
+        var initialFilesystem = [{
+            cwd: ['..'],
+            path: ['src']
+        }, {
+            cwd: ['..'],
+            files: ['bower.json', 'package.json']
+        }, {
+            cwd: ['..'],
+            path: ['release-notes']
+        }, {
+            cwd: ['..'],
+            path: ['config']
+        }];
+        var buildControlConfigPath = ['..', 'config', 'build', 'configs', type + '.yml'];
+        var buildControlDefaultsPath = ['..', 'config', 'build',  'defaults.yml'];
+        var config = {
+            initialFilesystem: initialFilesystem,
+            buildControlConfigPath: buildControlConfigPath,
+            buildControlDefaultsPath: buildControlDefaultsPath
+        };
+        return mutant.createInitialState(config);
+    })
 
         .then(function (state) {
             return mutant.copyState(state);

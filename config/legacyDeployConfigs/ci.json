@@ -1,0 +1,49 @@
+{
+    "deploy": {
+        "environment": "ci",
+        "hostname": "ci.kbase.us",
+        "icon": "flask",
+        "name": "Continuous Integration",
+        "services": {
+            "urlBase": "https://ci.kbase.us"
+        }
+    },
+    "ui": {
+        "backupCookie": {
+            "domain": null,
+            "enabled": false
+        },
+        "services": {
+            "analytics": {
+                "google": {
+                    "hostname": "ci.kbase.us",
+                    "code": "UA-74532036-1"
+                }
+            },
+             "session": {
+                "cookie": {
+                    "backup": {
+                        "domain": null,
+                        "enabled": false
+                    }
+                }
+            },
+            "menu": {
+                "menus": {
+                    "hamburger": {
+                        "disabled": []
+                    },
+                    "sidebar": {
+                        "disabled": []
+                    }
+                }
+            }
+        },
+        "allow": ["alpha", "beta"]
+    },
+    "services": {
+        "narrative": {
+            "url": "https://ci.kbase.us"
+        }
+    }
+}

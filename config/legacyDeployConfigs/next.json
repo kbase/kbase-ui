@@ -1,0 +1,49 @@
+{
+    "deploy": {
+        "environment": "next",
+        "hostname": "next.kbase.us",
+        "icon": "bullseye",
+        "name": "Next",
+        "services": {
+            "urlBase": "https://next.kbase.us"
+        }
+    },
+    "ui": {
+        "backupCookie": {
+            "domain": null,
+            "enabled": false
+        },
+        "services": {
+            "analytics": {
+                "google": {
+                    "hostname": "next.kbase.us",
+                    "code": "UA-74530365-1"
+                }
+            },
+             "session": {
+                "cookie": {
+                    "backup": {
+                        "domain": null,
+                        "enabled": false
+                    }
+                }
+            },
+            "menu": {
+                "menus": {
+                    "hamburger": {
+                        "disabled": ["simple-search", "reske-admin", "staging-browser"]
+                    },
+                    "sidebar": {
+                        "disabled": ["feeds"]
+                    }
+                }
+            }
+        },
+        "allow": []
+    },
+    "services": {
+        "narrative": {
+            "url": "https://next.kbase.us"
+        }
+    }
+}

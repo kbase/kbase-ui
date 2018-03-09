@@ -2,9 +2,6 @@
 ## see README.md
 ---
 target: dev
-tempDir: temp/files
 release: false
-mutate: true
-keepBuildDir: false
 dist: false
 vfs: false

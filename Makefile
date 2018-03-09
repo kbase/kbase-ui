@@ -129,8 +129,8 @@ run-image:
 	@echo "> internal $(internal)"
 	@echo "> libraries $(libraries)"
 	@echo "> To map host directories into the container, you will need to run "
-	@echo ">   deploymnet/tools/run-image.sh with appropriate options."
-	$(eval cmd = $(TOPDIR)/deployment/tools/run-image.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l) $(foreach s,$(services),-s $s))
+	@echo ">   tools/run-image.sh with appropriate options."
+	$(eval cmd = $(TOPDIR)/tools/run-image.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l) $(foreach s,$(services),-s $s))
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
 
