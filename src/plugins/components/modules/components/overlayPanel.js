@@ -1,10 +1,10 @@
 /*
 overlayPanel
-A generic full-height translucent panel which overlays the entire page to about 75% of the width.
+A generic full-height translucent panel which overlays the entire page.
 It is a container component, and expects to be passed a component to render and a viewmodel
 to pass along.
 it offers a close function for the sub-component to use, in addition to invoking close
-from a built-in close button (?)
+from a built-in close button.
 */
 define([
     'knockout-plus',
@@ -23,6 +23,8 @@ define([
 
     function viewModel(params) {
         var showPanel = ko.observable();
+
+        var subscriptions = ko.kb.SubscriptionManager.make();
 
         var bus = NanoBus.make();
 
@@ -101,19 +103,15 @@ define([
 
         // The viewmodel for the embedded component
 
-        params.component.subscribe(function (newValue) {
+        subscriptions.add(params.component.subscribe(function (newValue) {
             if (newValue) {
                 bus.send('open', newValue);                
             } else {
                 if (showPanel()) {
                     bus.send('close');
-                    // showPanel(false);
-                    // embeddedComponentName(null);
-                    // embeddedParams(null);
-                    // embeddedViewModel(null);
                 }
             }
-        });
+        }));
 
         function onPanelAnimationEnd(data, ev) {
             if (ev.target.classList.contains(styles.classes.panelout)) {
@@ -129,6 +127,10 @@ define([
             }
         }
 
+        function dispose() {
+            subscriptions.dispose();
+        }
+
         return {
             showPanel: showPanel,
             panelStyle: panelStyle,
@@ -140,7 +142,9 @@ define([
             embeddedParams: embeddedParams,
             embeddedViewModel: embeddedViewModel,
 
-            onPanelAnimationEnd: onPanelAnimationEnd
+            onPanelAnimationEnd: onPanelAnimationEnd,
+
+            dispose: dispose
         };
     }
 
