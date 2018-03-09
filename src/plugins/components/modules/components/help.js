@@ -17,6 +17,8 @@ define([
     function viewModel(params) {
         var helpDb = params.helpDb;
 
+        var subscriptions = ko.kb.SubscriptionManager.make();
+
         var topicsIndex = {};
         helpDb.topics.forEach(function (topic) {
             topicsIndex[topic.id] = topic;
@@ -26,9 +28,9 @@ define([
 
         var currentTopic = ko.observable();
 
-        currentTopicId.subscribe(function () {
+        subscriptions.add(currentTopicId.subscribe(function () {
             currentTopic(topicsIndex[currentTopicId()]);
-        });
+        }));
 
         // ACTIONS
         function doSelectTopic(topic) {
@@ -37,12 +39,18 @@ define([
 
         currentTopicId(params.topic || 'overview');
 
+        function dispose() {
+            subscriptions.dispose();
+        }
+
         return {
             topics: helpDb.topics,
             references: helpDb.references,
             currentTopicId: currentTopicId,
             doSelectTopic: doSelectTopic,
-            currentTopic: currentTopic
+            currentTopic: currentTopic,
+
+            dispose: dispose
         };
     }
 
@@ -107,6 +115,53 @@ define([
                 css: {
                     marginTop: '12px'
                 }
+            },
+            markdown: {
+                css: {
+    
+                },
+                inner: {
+                    blockquote: {
+                        fontSize: 'inherit',
+                        marginLeft: '1em',
+                        paddingLeft: '1em',
+                        borderLeft: '3px silver solid'
+                    },
+                    p: {
+                        maxWidth: '50em'
+                    },
+                    h1: {
+                        marginTop: '0',
+                        marginBottom: '0',
+                        fontWeight: 'bold',
+                        fontSize: '150%'
+                    },
+                    h2: {
+                        marginTop: '1em',
+                        marginBottom: '0',
+                        fontWeight: 'bold',
+                        fontSize: '133%'
+                    },
+                    h3: {
+                        marginTop: '1em',
+                        marginBottom: '0',
+                        fontWeight: 'bold',
+                        fontSize: '120%'
+                    },
+                    h4: {
+                        marginTop: '1em',
+                        marginBottom: '0',
+                        fontWeight: 'bold',
+                        textDecoration: 'underline',
+                        fontSize: '100%'
+                    },
+                    h5: {
+                        marginTop: '1em',
+                        marginBottom: '0',
+                        fontWeight: 'bold',
+                        fontSize: '100%'
+                    }
+                }
             }
         }
     });
@@ -165,7 +220,8 @@ define([
                     dataBind: {
                         htmlMarkdown: 'content'
                     },
-                    class: 'kb-help-markdown'
+                    class: styles.classes.markdown
+                    // class: 'kb-help-markdown '
                 })
                 // div({
                 //     dataBind: {
