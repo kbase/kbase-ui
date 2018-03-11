@@ -453,7 +453,9 @@ define([
             '<!-- /ko -->'
         ]);
         var node = temp.firstChild;
-        ko.applyBindings(vm, node);
+        ko.applyBindings(vm, node, function (context) {
+            context.runtime = runtime;
+        });
 
         function start() {
             vm.running(true);
