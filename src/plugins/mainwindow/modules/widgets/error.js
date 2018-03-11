@@ -158,7 +158,10 @@ define([
                 error.extended = html.makeObjTable([error.extra], { rotated: true });
             }
 
-            return div({ class: 'container-fluid', dataWidget: 'error' }, html.makePanel({
+            return div({ 
+                class: 'container-fluid', 
+                dataWidget: 'error' 
+            }, html.makePanel({
                 title: params.title,
                 class: 'danger',
                 content: html.makeObjTable([error], { rotated: true })
