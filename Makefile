@@ -50,6 +50,16 @@ CI_DOCKER_CONTEXT	= $(TOPDIR)/deployment/ci/docker/context
 PROD_DOCKER_CONTEXT	= $(TOPDIR)/deployment/prod/docker/context
 PROXIER_DOCKER_CONTEXT     = $(TOPDIR)/tools/proxier/docker/context
 
+# functions
+# thanks https://stackoverflow.com/questions/10858261/abort-makefile-if-variable-not-set
+check_defined = \
+    $(strip $(foreach 1,$1, \
+        $(call __check_defined,$1,$(strip $(value 2)))))
+__check_defined = \
+    $(if $(value $1),, \
+        $(error Undefined $1$(if $2, ($2))$(if $(value @), \
+                required by target `$@')))
+
 # Standard 'all' target = just do the standard build
 all:
 	@echo Use "make init && make config=TARGET build"
@@ -159,6 +169,7 @@ unit-tests:
 	$(KARMA) start test/unit-tests/karma.conf.js
 
 integration-tests:
+	@:$(call check_defined, host, first component of hostname)
 	$(GRUNT) integration-tests --host=$(host)
 
 travis-tests:
