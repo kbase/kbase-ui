@@ -16,9 +16,6 @@ define([
     function factory(config) {
         var runtime = config.runtime;
 
-        var cookieName = config.cookie.name;
-        var cookieMaxAge = config.cookie.maxAge;
-
         var extraCookies = [];
         if (config.cookie.backup.enabled) {
             extraCookies.push({
@@ -52,6 +49,10 @@ define([
 
         function getRealname() {
             return auth2Session.getRealname();
+        }
+
+        function getRoles() {
+            return auth2Session.getRoles();
         }
 
         function getTokenInfo() {
@@ -187,7 +188,7 @@ define([
         function stop() {
             auth2Session.stop()
                 .then(function () {
-                    session = null;
+                    // session = null;
                 });
         }
 
@@ -211,6 +212,7 @@ define([
             getEmail: getEmail,
             getUsername: getUsername,
             getRealname: getRealname,
+            getRoles: getRoles,
             isLoggedIn: isLoggedIn,
             isAuthorized: isAuthorized,
             getKbaseSession: getKbaseSession,

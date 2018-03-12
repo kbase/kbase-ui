@@ -44,6 +44,7 @@ define([
                             console.error('ERROR mounting widget', err, data);
                             widgetMount.unmount()
                                 .then(function () {
+                                    // Note that 'error' is a globally defined widget dependency.
                                     return widgetMount.mountWidget('error', {
                                         title: 'ERROR',
                                         error: err

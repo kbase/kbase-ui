@@ -1,4 +1,4 @@
-/*global describe, it, browser, exports */
+/*global describe, it, browser, expect, exports */
 
 var fs = require('fs');
 
@@ -33,24 +33,41 @@ function extend(path, elements) {
 
 function runTest(test) {
     describe(test.description, function () {
+        if (test.disabled) {
+            return;
+        }
+        var defaultUrl = test.defaultUrl || '/';
         test.specs.forEach(function (spec) {
+            if (spec.disabled) {
+                return;
+            }
             it(spec.description, function () {
-                browser.url('/');
+                var url = spec.url || defaultUrl;
+                browser.url(url);
                 spec.tasks.forEach(function (task) {
                     if (task.selector) {
                         var selector = buildSelector(extend(spec.baseSelector, task.selector));
+                        var result;
                         if (task.wait) {
-                            browser.waitForExist(selector, task.wait);
+                            result = browser.waitForExist(selector, task.wait);
                         } else if (task.exists) {
-                            browser.isExisting(selector);
+                            result = browser.isExisting(selector);
                         }
-                        if (task.action) {
-                            switch (task.action) {
-                            case 'click':
-                                browser.click(selector);
-                                break;
-                            default:
-                                throw new Error('Unknown task action ' + task.action);
+
+                        // only proceed with a further action if succeeded so far.
+                        if (result) {
+                            if (task.text) {
+                                var text = browser.getText(selector);
+                                expect(text).toMatch(new RegExp(task.text));
+                            }
+                            if (task.action) {
+                                switch (task.action) {
+                                case 'click':
+                                    browser.click(selector);
+                                    break;
+                                default:
+                                    throw new Error('Unknown task action ' + task.action);
+                                }
                             }
                         }
                     } else if (task.navigate) {
