@@ -267,3 +267,91 @@
     padding-left: 0;
     padding-right: 0;
 }
+
+
+/* Bootstrap callout style, not really part of bootstrap but in the docs. People have extracted them... */
+
+
+/* Base styles (regardless of theme) */
+
+.bs-callout {
+    margin: 20px 0;
+    padding: 15px 30px 15px 15px;
+    border-left: 5px solid #eee;
+}
+
+.bs-callout h4 {
+    margin-top: 0;
+}
+
+.bs-callout p:last-child {
+    margin-bottom: 0;
+}
+
+.bs-callout code,
+.bs-callout .highlight {
+    background-color: #fff;
+}
+
+
+/* Themes for different contexts */
+
+.bs-callout-danger {
+    background-color: #fcf2f2;
+    border-color: #dFb5b4;
+}
+
+.bs-callout-warning {
+    background-color: #fefbed;
+    border-color: #f1e7bc;
+}
+
+.bs-callout-info {
+    background-color: #f0f7fd;
+    border-color: #d0e3f0;
+}
+
+.bs-callout-danger h4,
+.bs-callout-danger a.alert-link {
+    color: #B94A48;
+}
+
+.bs-callout-warning h4,
+.bs-callout-warning a.alert-link {
+    color: #C09853;
+}
+
+.bs-callout-info h4,
+.bs-callout-info a.alert-link {
+    color: #3A87AD;
+}
+
+.bs-callout a.alert-link {
+    font-weight: bold;
+}
+
+/* sematic borders ...*/
+
+.bs-border-invisible {
+    border: 1px solid transparent;
+}
+
+.bs-border-default {
+    border: 1px solid #000;
+}
+
+.bs-border-success {
+    border: 1px solid #3c763d;
+}
+
+.bs-border-info {
+    border: 1px solid #3A87AD;
+}
+
+.bs-border-warning {
+    border: 1px solid #8a6d3b;
+}
+
+.bs-border-danger {
+    border: 1px solid #a94442;
+}

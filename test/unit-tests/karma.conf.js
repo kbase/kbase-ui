@@ -1,6 +1,8 @@
 // Karma configuration
 // Generated on Thu Jul 30 2015 17:38:26 GMT-0700 (PDT)
 
+process.env.CHROME_BIN = require('puppeteer').executablePath();
+
 module.exports = function (config) {
     config.set({
         // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -14,7 +16,6 @@ module.exports = function (config) {
         plugins: [
             'karma-jasmine',
             'karma-chrome-launcher',
-            'karma-phantomjs-launcher',
             'karma-coverage',
             'karma-requirejs'
         ],
@@ -28,9 +29,9 @@ module.exports = function (config) {
             // Our test specs
             { pattern: 'test/unit-tests/specs/**/*.js', included: false },
             // Spot pickup the config files
-            { pattern: 'build/build/client/modules/config/*.yml', included: false },
-            { pattern: 'build/build/client/modules/config/*.json', included: false },
-            { pattern: 'build/build/client/modules/deploy/*.json', included: false },
+            // { pattern: 'build/build/client/modules/config/*.yml', included: false },
+            // { pattern: 'build/build/client/modules/config/*.json', included: false },
+            // { pattern: 'build/build/client/modules/deploy/*.json', included: false },
 
             'test/unit-tests/setup.js',
         ],
@@ -44,7 +45,7 @@ module.exports = function (config) {
         // TODO: We may want to find a way to evaluate dependency test coverage at some point.
         preprocessors: {
             'build/build/client/modules/!(bower_components)/**/*.js': ['coverage']
-                // 'build/build/client/modules/**/*.js': ['coverage']
+            // 'build/build/client/modules/**/*.js': ['coverage']
         },
 
         // TODO: we should put this somewhere else?
@@ -71,7 +72,8 @@ module.exports = function (config) {
         autoWatch: false,
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['PhantomJS'],
+        // browsers: ['PhantomJS'],
+        browsers: ['ChromeHeadless'],
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
         singleRun: true

@@ -1,9 +1,0 @@
-(function (global) {
-    global.__kbase__build__ = {
-        // git rev-parse HEAD
-        // dev or prod
-        deployType: '{{ target }}',
-        gitCommitHash: '{{ git.commitAbbreviatedHash }}',
-        builtAt: {{ stats.start }},
-    };
-}(window));

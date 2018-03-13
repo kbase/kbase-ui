@@ -1,0 +1,45 @@
+{
+    "deploy": {
+        "environment": "prod",
+        "hostname": "kbase.us",
+        "icon": "thumbs-up",
+        "name": "Production",
+        "services": {
+            "urlBase": "https://kbase.us"
+        }
+    },
+    "ui": {       
+        "services": {
+            "analytics": {
+                "google": {
+                    "hostname": "kbase.us",
+                    "code": "UA-74532966-1"
+                }
+            },
+             "session": {
+                "cookie": {
+                    "backup": {
+                        "domain": "kbase.us",
+                        "enabled": true
+                    }
+                }
+            },
+            "menu": {
+                "menus": {
+                    "hamburger": {
+                        "disabled": ["simple-search", "reske-admin", "staging-browser"]
+                    },
+                    "sidebar": {
+                        "disabled": ["feeds"]
+                    }
+                }
+            }
+        },
+        "allow": []
+    },
+    "services": {
+        "narrative": {
+            "url": "https://narrative.kbase.us"
+        }
+    }
+}

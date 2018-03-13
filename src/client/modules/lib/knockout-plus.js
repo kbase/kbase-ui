@@ -5,8 +5,11 @@ define([
     'uuid',
     'kb_common/utils',
     'kb_common/html',
+    './lib/subscriptionManager',
+
     'knockout-mapping',
     'knockout-arraytransforms',
+    './lib/knockout-es6-collections',
     'knockout-validation',
     'knockout-switch-case'
 ], function (
@@ -15,43 +18,11 @@ define([
     ko,
     Uuid,
     Utils,
-    html
+    html,
+    SubscriptionManager
 ) {
     // Knockout Defaults
     ko.options.deferUpdates = true;
-
-    // from: https://github.com/knockout/knockout/issues/914
-    ko.subscribable.fn.subscribeChanged = function (callback, context) {
-        var savedValue = this.peek();
-        return this.subscribe(function (latestValue) {
-            var oldValue = savedValue;
-            savedValue = latestValue;
-            callback.call(context, latestValue, oldValue);
-        });
-    };
-
-    function isEmpty(value) {
-        switch (typeof value) {
-        case 'string':
-            return (value.length === 0);
-        case 'undefined':
-            return true;
-        case 'number':
-            return false;
-        case 'boolean':
-            return false;
-        case 'object':
-            if (value instanceof Array) {
-                return (value.length === 0);
-            }
-            if (value === null) {
-                return true;
-            }
-            return false;
-        default:
-            return false;
-        }
-    }
 
     function isEmptyJSON(value) {
         if (value === undefined) {
@@ -100,11 +71,6 @@ define([
 
         return target;
     };
-
-    // ko.extenders.mytest = function (target, config) {
-    //     target.test = ko.observable(true);
-    //     return target;
-    // };
 
     ko.extenders.logChange = function (target, label) {
         target.subscribe(function (newValue) {
@@ -354,6 +320,7 @@ define([
             var format = value.format;
             var type = value.type;
             var missing = value.missing || '';
+            var defaultValue = value.default;
             // var format = allBindings.get('type') || '';
             // var format = allBindings.get('numberFormat') || '';
             var formatted;
@@ -386,10 +353,20 @@ define([
                 break;
             case 'bool':
             case 'boolean':
-                if (valueUnwrapped) {
-                    return 'true';
+                if (valueUnwrapped === undefined || valueUnwrapped === null) {
+                    if (defaultValue === undefined) {
+                        formatted = missing;
+                        break;
+                    }
+                    valueUnwrapped = defaultValue;
                 }
-                return 'false';
+            
+                if (valueUnwrapped) {
+                    formatted = 'true';
+                }
+                formatted = 'false';
+
+                break;
             case 'text':
             case 'string':
             default:
@@ -400,6 +377,7 @@ define([
         }
     };
 
+    // from: https://github.com/knockout/knockout/issues/914
     ko.subscribable.fn.subscribeChanged = function (callback, context) {
         var savedValue = this.peek();
         return this.subscribe(function (latestValue) {
@@ -411,17 +389,19 @@ define([
 
     ko.subscribable.fn.syncWith = function (targetObservable, callbackTarget, event) {
         var sourceObservable = this; 
-        sourceObservable.subscribe(function (v) { 
-            targetObservable(v); 
+        sourceObservable(targetObservable());
+        sourceObservable.subscribe(function (newValue) { 
+            targetObservable(newValue); 
         }, callbackTarget, event); 
-        targetObservable.subscribe(function (v) { 
-            sourceObservable(v); 
+        targetObservable.subscribe(function (newValue) { 
+            sourceObservable(newValue); 
         }, callbackTarget, event); 
         return sourceObservable; 
     };
 
     ko.subscribable.fn.syncFrom = function (targetObservable, callbackTarget, event) {
         var sourceObservable = this; 
+        sourceObservable(targetObservable());
         targetObservable.subscribe(function (v) { 
             sourceObservable(v); 
         }, callbackTarget, event); 
@@ -430,6 +410,7 @@ define([
 
     ko.subscribable.fn.syncTo = function (targetObservable, callbackTarget, event) {
         var sourceObservable = this; 
+        targetObservable(sourceObservable());
         sourceObservable.subscribe(function (v) { 
             targetObservable(v); 
         }, callbackTarget, event); 
@@ -472,7 +453,9 @@ define([
             '<!-- /ko -->'
         ]);
         var node = temp.firstChild;
-        ko.applyBindings(vm, node);
+        ko.applyBindings(vm, node, function (context) {
+            context.runtime = runtime;
+        });
 
         function start() {
             vm.running(true);
@@ -490,10 +473,33 @@ define([
         };
     }
 
+    var installedStylesheets = {};
+    function installStylesheet(id, stylesheet) {
+        if (installedStylesheets[id]) {
+            return;
+        }
+        var temp = document.createElement('div');
+        temp.innerHTML = stylesheet;
+        var style = temp.querySelector('style');
+        style.id = 'componentStyle_' + id;
+        if (!style) {
+            // This means an invalid stylesheet was passed here.
+            console.warn('Invalid component stylesheet, no style tag: ', stylesheet);
+            return;
+        }
+        document.head.appendChild(style);
+        installedStylesheets[id] = stylesheet;
+    }
 
-    function registerComponent(component) {
+
+    function registerComponent(componentFactory) {
         var name = new Uuid(4).format();
-        ko.components.register(name, component());
+        var component = componentFactory();
+        ko.components.register(name, component);
+
+        if (component.stylesheet) {
+            installStylesheet(name, component.stylesheet);
+        }
 
         return {
             name: function () {
@@ -505,11 +511,27 @@ define([
         };
     }
 
+
+    function pluralize(expression, singular, plural) {
+        return [
+            '<!-- ko if: ' + expression + ' === 1 -->',
+            singular,
+            '<!-- /ko -->',
+            '<!-- ko ifnot: ' + expression + ' === 1 -->',
+            plural,
+            '<!-- /ko -->'
+        ];
+    }
+
     ko.kb = {};
 
     ko.kb.komponent = komponent;
     ko.kb.createRootComponent = createRootComponent;
     ko.kb.registerComponent = registerComponent;
+    // the subscription manager is a factory.
+    // TODO: better way of integrating into knockout...
+    ko.kb.SubscriptionManager = SubscriptionManager;
+    ko.kb.pluralize = pluralize;
 
     return ko;
 });

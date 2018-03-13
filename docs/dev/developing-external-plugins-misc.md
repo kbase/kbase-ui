@@ -40,8 +40,9 @@ make init
 make build config=ci
 ```
 
+
 ---
 
-[Index](index.md) - [README](../README.md) - [Release Notes](../release-notes/index.md) - [KBase](http://kbase.us)
+[Index](../index.md) - [README](../README.md) - [Release Notes](../../release-notes/index.md) - [KBase](http://kbase.us)
 
 ---

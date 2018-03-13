@@ -16,9 +16,6 @@ define([
     function factory(config) {
         var runtime = config.runtime;
 
-        var cookieName = config.cookie.name;
-        var cookieMaxAge = config.cookie.maxAge;
-
         var extraCookies = [];
         if (config.cookie.backup.enabled) {
             extraCookies.push({
@@ -30,7 +27,7 @@ define([
         // TODO: all of this from config?
         var auth2Session = new M_auth2Session.Auth2Session({
             cookieName: runtime.config('services.auth2.cookieName'),
-            extraCookies: config.extraCookies,
+            extraCookies: extraCookies,
             baseUrl: runtime.config('services.auth2.url'),
             providers: runtime.config('services.auth2.providers')
         });
@@ -52,6 +49,10 @@ define([
 
         function getRealname() {
             return auth2Session.getRealname();
+        }
+
+        function getRoles() {
+            return auth2Session.getRoles();
         }
 
         function getTokenInfo() {
@@ -174,7 +175,7 @@ define([
                             runtime.send('session', 'loggedin');
                         } else {
                             state.setItem('loggedin', false);
-                            // runtime.send('session', 'loggedout');
+                            runtime.send('session', 'loggedout');
                             // TODO: detect if already on signedout page.
                             runtime.send('app', 'navigate', {
                                 path: 'auth2/signedout'
@@ -187,7 +188,7 @@ define([
         function stop() {
             auth2Session.stop()
                 .then(function () {
-                    session = null;
+                    // session = null;
                 });
         }
 
@@ -211,6 +212,7 @@ define([
             getEmail: getEmail,
             getUsername: getUsername,
             getRealname: getRealname,
+            getRoles: getRoles,
             isLoggedIn: isLoggedIn,
             isAuthorized: isAuthorized,
             getKbaseSession: getKbaseSession,

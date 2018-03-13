@@ -33,9 +33,13 @@ var Promise = require('bluebird'),
     exec = require('child_process').exec,
     dir = Promise.promisifyAll(require('node-dir')),
     util = require('util'),
-    // disabled - uname package fails to install
-    // uname = require('uname'),
-    handlebars = require('handlebars');
+    handlebars = require('handlebars'),
+    numeral = require('numeral');
+
+
+// running from kbase-ui/mutations/build.js
+// some binaries in kbase-ui/node-modules/.bin
+const NODE_BIN = __dirname + '/../node_modules/.bin/';
 
 // UTILS
 
@@ -61,12 +65,13 @@ function gitinfo(state) {
         run('git config --get remote.origin.url'),
         run('git rev-parse --abbrev-ref HEAD'),
         run('git describe --exact-match --tags $(git rev-parse HEAD)')
-            .catch(function (err) {
+            .catch(function () {
                 // For non-prod ui we can be tolerant of a missing version, but not for prod.
-                if (state.buildConfig.target === 'prod') {
-                    throw new Error('Not on a tag, cannot deploy');
+                if (state.buildConfig.release) {
+                    throw new Error('This is a release build, a semver tag is required');
                 }
-                console.warn('Not on a tag ... version will be unavailable');
+                mutant.log('Not on a tag, but that is ok since this is not a release build');
+                mutant.log('version will be unavailable in the ui');
                 return '';
             })
     ])
@@ -146,7 +151,6 @@ function arrayDiff(a, b) {
  */
 function copyDirFiles(pathFrom, pathTo) {
     var from = pathFrom.join('/'),
-        to = pathTo.join('/'),
         fromPath, toPath = pathTo;
     return fs.realpathAsync(from)
         .then(function (realpath) {
@@ -172,7 +176,7 @@ function copyDirFiles(pathFrom, pathTo) {
                 return fs.ensureDirAsync(targetDir.join('/'))
                     .then(function () {
                         return fs.copyAsync(filePath.join('/'), targetDir.concat([fileName]).join('/'));
-                        // console.log(targetDir.concat([fileName]).join('/'));
+                        // mutant.log(targetDir.concat([fileName]).join('/'));
                     });
             }));
         });
@@ -221,35 +225,6 @@ function installModule(state, source) {
 }
 
 function installModulePackagesFromBower(state) {
-    // iterate through all of the bower packages in root/bower_components
-    var root = state.environment.path;
-
-    return dirList(root.concat(['build', 'bower_components']))
-        .then(function (dirs) {
-            return Promise.all(dirs.map(function (dir) {
-                return Promise.all([dir, pathExists(dir.path.concat('install.yml').join('/'))]);
-            }));
-        })
-        .then(function (dirs) {
-            return dirs
-                .filter(function (dir) {
-                    return dir[1];
-                })
-                .map(function (dir) {
-                    return dir[0];
-                });
-        })
-        .then(function (installDirs) {
-            return Promise.all(installDirs.map(function (installDir) {
-                return installModule(state, installDir.path);
-            }));
-        })
-        .then(function () {
-            return state;
-        });
-}
-
-function installModulePackagesFromFilesystem(state) {
     // iterate through all of the bower packages in root/bower_components
     var root = state.environment.path;
 
@@ -364,6 +339,42 @@ function bowerInstall(state) {
     });
 }
 
+function npm(cmd, argv, options) {
+    return new Promise(function (resolve, reject) {
+        exec(NODE_BIN + 'npm ' + cmd + argv.join(' '), options, function (err, stdout, stderr) {
+            if (err) {
+                reject(err);
+            }
+            if (stderr) {
+                // reject(new Error(stderr));
+                resolve({
+                    warnings: stderr
+                });
+            }
+            resolve({
+                result: stdout
+            });
+        });
+    });
+}
+
+
+function npmInstall(state) {
+    var base = state.environment.path.concat(['build']);
+    var packagePath = base.concat(['package.json']);
+    return mutant.loadJson(packagePath)
+        .then(function (packageConfig) {
+            delete packageConfig.devDependencies;
+            return mutant.saveJson(packagePath, packageConfig);
+        })
+        .then(function () {
+            return npm('install', [], {
+                cwd: base.join('/'),
+                timeout: 300000
+            });
+        });
+}
+
 function copyFromBower(state) {
     var root = state.environment.path;
 
@@ -459,6 +470,101 @@ function copyFromBower(state) {
         });
 }
 
+function copyFromNpm(state) {
+    var root = state.environment.path;
+
+    return mutant.loadYaml(root.concat(['config', 'npmInstall.yml']))
+        .then(function (config) {
+            var copyJobs = [];
+
+            config.npmFiles.forEach(function (cfg) {
+                /*
+                 The top level bower directory name is usually the name of the
+                 package (which also is often also base of the sole json file name)
+                 but since this is not always the case, we allow the dir setting
+                 to override this.
+                 */
+                var dir = cfg.dir || cfg.name,
+                    sources, cwd, dest;
+                if (!dir) {
+                    throw new Error('Either the name or dir property must be provided to establish the top level directory');
+                }
+
+                /*
+                 The source defaults to the package name with .js, unless the
+                 src property is provided, in which case it must be either a single
+                 or set of glob-compatible strings.*/
+                if (cfg.src) {
+                    if (typeof cfg.src === 'string') {
+                        sources = [cfg.src];
+                    } else {
+                        sources = cfg.src;
+                    }
+                } else if (cfg.name) {
+                    sources = [cfg.name + '.js'];
+                } else {
+                    throw new Error('Either the src or name must be provided in order to have something to copy');
+                }
+
+                /*
+                 Finally, the cwd serves as a way to dig into a subdirectory and use it as the
+                 basis for copying. This allows us to "bring up" files to the top level of
+                 the destination. Since we are relative to the root of this process, we
+                 need to jigger that here.
+                 */
+                if (cfg.cwd) {
+                    if (typeof cfg.cwd === 'string') {
+                        cfg.cwd = cfg.cwd.split(/,/);
+                    }
+                    cwd = ['build', 'node_modules', dir].concat(cfg.cwd);
+                } else {
+                    cwd = ['build', 'node_modules', dir];
+                }
+
+                /*
+                 The destination will be composed of 'node_modules' at the top
+                 level, then the package name or dir (as specified above).
+                 This is the core of our "thinning and flattening", which is part of the
+                 point of this bower copy process.
+                 In addition, if the spec includes a dest property, we will use that
+                 */
+                if (cfg.standalone) {
+                    dest = ['build', 'client', 'modules'].concat([cfg.name]);
+                } else {
+                    dest = ['build', 'client', 'modules', 'node_modules'].concat([cfg.dir || cfg.name]);
+                }
+
+                sources.forEach(function (source) {
+                    copyJobs.push({
+                        cwd: cwd,
+                        src: source,
+                        dest: dest
+                    });
+                });
+            });
+
+            // Create and execute a set of promises to fetch and operate on the files found
+            // in the above spec.
+            return Promise.all(copyJobs.map(function (copySpec) {
+                return glob(copySpec.src, {
+                    cwd: state.environment.path.concat(copySpec.cwd).join('/'),
+                    nodir: true
+                })
+                    .then(function (matches) {
+                        // Do the copy!
+                        return Promise.all(matches.map(function (match) {
+                            var fromPath = state.environment.path.concat(copySpec.cwd).concat([match]).join('/'),
+                                toPath = state.environment.path.concat(copySpec.dest).concat([match]).join('/');
+                            return fs.copy(fromPath, toPath, {});
+                        }));
+                    })
+                    .then(function () {
+                        return state;
+                    });
+            }));
+        });
+}
+
 /*
  * Copy plugins from the bower module installation directory into the plugins
  * directory. We _could_ reference plugins directly from the bower directory,
@@ -468,60 +574,83 @@ function copyFromBower(state) {
  *
  * @returns {undefined}
  */
-function installExternalPlugins(state) {
+function installPlugins(state) {
     // Load plugin config
     var root = state.environment.path,
         pluginConfig,
         pluginConfigFile = root.concat(['config', 'app', state.buildConfig.target, '/plugins.yml']).join('/');
-    return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8')])
-        .spread(function (pluginFile) {
+    return fs.readFileAsync(pluginConfigFile, 'utf8')
+        .then(function (pluginFile) {
             pluginConfig = yaml.safeLoad(pluginFile);
-            return pluginConfig.plugins.filter(function (plugin) {
-                return (typeof plugin === 'object' && plugin.internal !== true);
-            });
-        })
-        .then(function (externalPlugins) {
-            return [externalPlugins, Promise.all(externalPlugins.map(function (plugin) {
-                if (plugin.source.bower) {
+            var plugins = pluginConfig.plugins;
+            return Promise.all(plugins
+                .filter(function (plugin) {
+                    return (typeof plugin === 'object' && plugin.source.bower);
+                })
+                .map(function (plugin) {
                     var cwds = plugin.cwd || 'dist/plugin',
                         cwd = cwds.split('/'),
                         srcDir = root.concat(['build', 'bower_components', plugin.globalName]).concat(cwd),
                         destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
                     return copyFiles(srcDir, destDir, '**/*');
-                }
-            }))];
-        })
-        .spread(function (externalPlugins) {
-            return [externalPlugins, Promise.all(externalPlugins
-                .filter(function (plugin) {
-                    return plugin.source.directory ? true : false;
+                }))
+                .then(function () {
+                    return  Promise.all(plugins
+                        .filter(function (plugin) {
+                            return (typeof plugin === 'object' && plugin.source.directory);
+                        })
+                        .map(function (plugin) {
+                            var cwds = plugin.cwd || 'dist/plugin',
+                                cwd = cwds.split('/'),
+                                // Our actual cwd is mutations, so we need to escape one up to the
+                                // project root.
+                                repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..'],
+                                source = repoRoot.concat([plugin.globalName]).concat(cwd),
+                                destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+                            return copyFiles(source, destination, '**/*');
+                        }));
                 })
-                .map(function (plugin) {
-                    var cwds = plugin.cwd || 'dist/plugin',
-                        cwd = cwds.split('/'),
-                        // Our actual cwd is mutations, so we need to escape one up to the
-                        // project root.
-                        repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..'],
-                        source = repoRoot.concat([plugin.globalName]).concat(cwd),
-                        destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
-                    return copyFiles(source, destination, '**/*');
-                }))];
+                .then(function () {
+                    return  Promise.all(plugins
+                        .filter(function (plugin) {
+                            return (typeof plugin === 'string');
+                        })
+                        .map(function (plugin) {
+                            var source = root.concat(['plugins', plugin]),
+                                destination = root.concat(['build', 'client', 'modules', 'plugins', plugin]);
+                            // console.log('internal plugin?', plugin, root, source.join('/'), destination.join('/'));
+                            return copyFiles(source, destination, '**/*');
+                        }));
+                });                
         })
-        .spread(function (externalPlugins) {
-            return Promise.all(externalPlugins
-                .filter(function (plugin) {
-                    return plugin.source.link ? true : false;
-                })
-                .map(function (plugin) {
-                    var cwds = plugin.cwd || 'dist/plugin',
-                        cwd = cwds.split('/'),
-                        // Our actual cwd is mutations, so we need to escape one up to the
-                        // project root.
-                        repoRoot = (plugin.source.link.root && plugin.source.link.root.split('/')) || ['..', '..'],
-                        source = repoRoot.concat([plugin.globalName]).concat(cwd),
-                        destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
-                    return fs.mkdirAsync(destination.join('/'));
-                }));
+        // now move the test files into the test dir
+        .then(function () {
+            // dir list of all plugins
+            var pluginsPath = root.concat(['build', 'client', 'modules', 'plugins']);
+            return dirList(pluginsPath)
+                .then(function (pluginDirs) {
+                    return Promise.each(pluginDirs, function (pluginDir) {
+                        var testDir = pluginDir.path.concat(['test']);
+                        return pathExists(testDir.join('/'))
+                            .then(function (exists) {
+                                var justDir = pluginDir.path[pluginDir.path.length - 1];
+                                if (!exists) {
+                                    mutant.warn('plugin without tests: ' + justDir);
+                                } else {
+                                    mutant.success('plugin with tests!  : ' + justDir);
+                                    var dest = root.concat(['test', 'integration-tests', 'specs', 'plugins', justDir]);
+                                    return fs.moveAsync(testDir.join('/'), dest.join('/'));
+                                }
+                            });
+                    });
+                });
+            // warning for those without tests
+            // filter for those with a test directory
+            // ensure test/plugins exists
+            // move test directory there
+        })
+        .then(function () {
+            return state;
         });
 }
 
@@ -550,7 +679,7 @@ function installExternalPlugins(state) {
 function setupBuild(state) {
     var root = state.environment.path;
     state.steps = [];
-    return mutant.deleteMatchingFiles(state.environment.path.join('/'), /.*\.DS_Store$/)
+    return mutant.deleteMatchingFiles(root.join('/'), /.*\.DS_Store$/)
         .then(function () {
             // the client really now becomes the build!
             var from = root.concat(['src', 'client']),
@@ -558,16 +687,22 @@ function setupBuild(state) {
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
         .then(function () {
-            // move search into client.
-            var from = root.concat(['src', 'search']),
-                to = root.concat(['build', 'client', 'search']);
+            // the client really now becomes the build!
+            var from = root.concat(['src', 'test']),
+                to = root.concat(['test']);
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
         .then(function () {
-            return configureSearch(state);
+            // the client really now becomes the build!
+            var from = root.concat(['src', 'plugins']),
+                to = root.concat(['plugins']);
+            return fs.moveAsync(from.join('/'), to.join('/'));
         })
         .then(function () {
             return fs.moveAsync(root.concat(['bower.json']).join('/'), root.concat(['build', 'bower.json']).join('/'));
+        })
+        .then(function () {
+            return fs.moveAsync(root.concat(['package.json']).join('/'), root.concat(['build', 'package.json']).join('/'));
         })
         .then(function () {
             return fs.rmdirAsync(root.concat(['src']).join('/'));
@@ -578,46 +713,28 @@ function setupBuild(state) {
         .then(function () {
             return injectPluginsIntoConfig(state);
         })
-        // .then(function () {
-        //     return copyLocalModules(state);
-        // })
-        // .then(function () {
-        //     return injectModulesIntoBower(state);
-        // })
         .then(function () {
             return state;
         });
 }
 
-/**
- * Returns a Promise that sets the search config 'setup' to use the right target based on this build config.
- * Any errors are expected to be caught by the caller's catch().
- */
-// TODO: refactor into deploy scripts
-// we can no longer rely upon replacing the search config's "setup" property with the
-// deployment id in order to invoke the right branch of the config.
-// In reality, in prod and appdev devops must be replacing it by hand anyway, since it is the
-// build phase which sets this.
-// For now we keep doing this, which will work for dev and ci builds, but not for others, since the
-// target is prod for next, prod, and appdev.
+// function fetchPackagesWithBower(state) {
+//     return bowerInstall(state)
+//         .then(function () {
+//             return fs.remove(state.environment.root.concat(['build', 'bower.json']).join('/'));
+//         })
+//         .then(function () {
+//             return state;
+//         });
+// }
 
-function configureSearch(state) {
-    var configFile = state.environment.path.concat(['build', 'client', 'search', 'config.json']).join('/');
-    return fs.readJson(configFile,
-        function (err, config) {
-            // Don't fix up the target any longer -- this needs to be done
-            // at deploy time.
-            // var target = state.config.targets.deploy;
-            // config.setup = target;
-            return fs.outputJson(configFile, config);
-        }
-    );
-}
-
-function fetchPackagesWithBower(state) {
-    return bowerInstall(state)
+function installNpmPackages(state) {
+    return npmInstall(state)
         .then(function () {
-            return fs.remove(state.environment.root.concat(['build', 'bower.json']).join('/'));
+            return fs.remove(state.environment.path.concat(['build', 'package.json']).join('/'));
+        })
+        .then(function () {
+            return copyFromNpm(state);
         })
         .then(function () {
             return state;
@@ -627,15 +744,11 @@ function fetchPackagesWithBower(state) {
 function installBowerPackages(state) {
     return bowerInstall(state)
         .then(function () {
-            return copyFromBower(state);
+            return fs.remove(state.environment.path.concat(['build', 'bower.json']).join('/'));
         })
         .then(function () {
-            return state;
-        });
-}
-
-function installPlugins(state) {
-    return installExternalPlugins(state)
+            return copyFromBower(state);
+        })
         .then(function () {
             return state;
         });
@@ -650,7 +763,7 @@ function copyUiConfig(state) {
     var root = state.environment.path,
         configSource = root.concat(['config', 'app', state.buildConfig.target]),
         releaseVersionConfig = root.concat(['config', 'release.yml']),
-        configFiles = ['menus.yml', 'services.yml'].map(function (file) {
+        configFiles = ['services.yml'].map(function (file) {
             return configSource.concat(file);
         }).concat([releaseVersionConfig]),
         configDest = root.concat(['build', 'client', 'modules', 'config']),
@@ -662,7 +775,7 @@ function copyUiConfig(state) {
                 return mutant.loadYaml(file);
             }))
                 .then(function (configs) {
-                    return mergeObjects([baseConfig].concat(configs));
+                    return mutant.mergeObjects([baseConfig].concat(configs));
                 })
                 .then(function (mergedConfigs) {
                     state.mergedConfig = mergedConfigs;
@@ -677,8 +790,6 @@ function copyUiConfig(state) {
 function createBuildInfo(state) {
     return gitinfo(state)
         .then(function (gitInfo) {
-            // +++ 
-            // state.config.targets.deploy = '{{ deploy.environment }}';
             var root = state.environment.path,
                 configDest = root.concat(['build', 'client', 'modules', 'config', 'buildInfo.yml']),
                 buildInfo = {
@@ -703,69 +814,56 @@ function getReleaseNotes(state, version) {
     var releaseNotesPath = root.concat(['release-notes', 'RELEASE_NOTES_' + version + '.md']);
     return fs.readFileAsync(releaseNotesPath.join('/'), 'utf8')
         .catch(function (err) {
-            console.warn('release notes file not found: ' + releaseNotesPath.join('/'), err);
+            mutant.warn('release notes file not found: ' + releaseNotesPath.join('/'), err);
             return null;
         });
 }
 
 function verifyVersion(state) {
     return Promise.try(function () {
-        console.log('Verifying version...');
+        if (!state.buildConfig.release) {
+            mutant.log('In a non-prod build, release version not checked.');
+            return;
+        }
+
         var releaseVersion = state.mergedConfig.release.version;
         var gitVersion = state.buildInfo.git.version;
 
-        if (state.buildConfig.target === 'prod') {
-            if (releaseVersion === gitVersion) {
-                console.log('release and git agree on ' + releaseVersion);
-            } else {
-                throw new Error('Release and git versions are different; release says "' + releaseVersion + '", git says "' + gitVersion + '"');
-            }
-            return getReleaseNotes(state, releaseVersion)
-                .then(function (releaseNotesFile) {
-                    console.log('have release notes?', releaseNotesFile);
-                });
-        } else {
-            // we have no assumptions. Well, either there is a release notes file and release.version in agreement,
-            // or a new release notes is being worked on and is a higher version. Could check this...
-            console.warn('In a dev build, release version not checked.');
+        if (!releaseVersion) {
+            throw new Error('this is a release build, and the release version is missing.');
         }
+
+        var semverRe = /\d+\.\d+\.\d+$/;
+        var gitSemverRe = /^v\d+\.\d+\.\d+$/;
+
+        if (!semverRe.test(releaseVersion)) {
+            throw new Error('on a release build, and the release version doesn\'t look like a semver tag: ' + releaseVersion);
+        }
+        mutant.success('good release version');
+
+        if (!gitSemverRe.test(state.buildInfo.git.tag)) {
+            throw new Error('on a release build, and the git tag doesn\'t look like a semver tag: ' + state.buildInfo.git.tag);
+        }
+        mutant.success('good git tag version');
+
+        if (releaseVersion === gitVersion) {
+            mutant.success('release and git agree on version ' + releaseVersion);
+        } else {
+            throw new Error('Release and git versions are different; release says "' + releaseVersion + '", git says "' + gitVersion + '"');
+        }
+        return getReleaseNotes(state, releaseVersion)
+            .then(function (releaseNotesFile) {
+                if (releaseNotesFile) {
+                    mutant.success('have release notes');
+                } else {
+                    throw new Error('Release notes not found for this version ' + releaseVersion + ', but required for a release');
+                }
+            });
+            
     })
         .then(function () {
             return state;
         });
-}
-
-function mergeObjects(listOfObjects) {
-    var simpleObjectPrototype = Object.getPrototypeOf({});
-
-    function isSimpleObject(obj) {
-        return Object.getPrototypeOf(obj) === simpleObjectPrototype;
-    }
-
-    function merge(obj1, obj2, keyStack) {
-        Object.keys(obj2).forEach(function (key) {
-            var obj1Value = obj1[key];
-            var obj2Value = obj2[key];
-            var obj1Type = typeof obj1Value;
-            var obj2Type = typeof obj2Value;
-            if (obj1Type === 'undefined') {
-                obj1[key] = obj2[key];
-            } else if (isSimpleObject(obj1Value) && isSimpleObject(obj2Value)) {
-                keyStack.push(key);
-                merge(obj1Value, obj2Value, keyStack);
-                keyStack.pop();
-            } else {
-                console.error('UNMERGABLE', obj1Type, obj1Value);
-                throw new Error('Unmergable at ' + keyStack.join('.') + ':' + key);
-            }
-        });
-    }
-
-    var base = JSON.parse(JSON.stringify(listOfObjects[0]));
-    for (var i = 1; i < listOfObjects.length; i += 1) {
-        merge(base, listOfObjects[i], []);
-    }
-    return base;
 }
 
 // TODO: the deploy will be completely replaced with a deploy script.
@@ -791,32 +889,30 @@ function makeKbConfig(state) {
         deployModules = root.concat(['build', 'client', 'modules', 'deploy']);
 
     return Promise.all([
-        // mutant.loadYaml(root.concat(['config', 'deploy', fileName])),
         fs.mkdirsAsync(deployModules.join('/'))
     ])
-        // .spread(function (deployConfig) {
-        //     var dest = deployModules.concat(['config.json']);
-        //     mutant.saveJson(dest, deployConfig);
-        // })
         .then(function () {
-            return fs.readFileAsync(root.concat(['config', 'deploy', 'templates', 'build-info.js.txt']).join('/'), 'utf8')
+            // A bit weird to do this here...
+            return fs.readFileAsync(root.concat(['build', 'client', 'build-info.js.txt']).join('/'), 'utf8')
                 .then(function (template) {
                     var dest = root.concat(['build', 'client', 'build-info.js']).join('/');
                     var out = handlebars.compile(template)(state.buildInfo);
                     return fs.writeFileAsync(dest, out);
+                })
+                .then(function () {
+                    fs.removeAsync(root.concat(['build', 'client', 'build-info.js.txt']).join('/'));
                 });
         })
         // Now merge the configs.
         .then(function () {
             var configs = [
-                // root.concat('tmp', 'services.yml');
                 root.concat(['config', 'services.yml']),
                 root.concat(['build', 'client', 'modules', 'config', 'ui.yml']),
                 root.concat(['build', 'client', 'modules', 'config', 'buildInfo.yml'])
             ];
             return Promise.all(configs.map(loadYaml))
                 .then(function (yamls) {
-                    var merged = mergeObjects(yamls);
+                    var merged = mutant.mergeObjects(yamls);
                     // expand aliases for services
                     Object.keys(merged.services).forEach(function (serviceKey) {
                         var serviceConfig = merged.services[serviceKey];
@@ -860,7 +956,6 @@ function makeKbConfig(state) {
 
 function makeDeployConfig(state) {
     var root = state.environment.path;
-    var deployDir = root.concat(['build', 'deploy']);
     var cfgDir = root.concat(['build', 'deploy', 'cfg']);
     var sourceDir = root.concat(['config', 'deploy']);
 
@@ -892,14 +987,11 @@ function makeDeployConfig(state) {
 function cleanup(state) {
     var root = state.environment.path;
     return fs.removeAsync(root.concat(['build', 'bower_components']).join('/'))
-        //.then(function () {
-        //    return fs.removeAsync(root.concat(['build', 'bower.json']).join('/'));
-        //})
         .then(function () {
-            return fs.removeAsync(root.concat(['bower.json']).join('/'));
+            fs.removeAsync(root.concat(['build', 'node_modules']).join('/'));
         })
         .then(function () {
-            return fs.removeAsync(root.concat(['build', 'install', 'package.json']).join('/'));
+            return fs.removeAsync(root.concat(['bower.json']).join('/'));
         })
         .then(function () {
             return state;
@@ -915,21 +1007,49 @@ function makeBaseBuild(state) {
             return fs.moveAsync(root.concat(['config']).join('/'), root.concat(['build', 'config']).join('/'));
         })
         .then(function () {
-            return fs.moveAsync(root.concat(['install']).join('/'), root.concat(['build', 'install']).join('/'));
+            return fs.copyAsync(root.concat(['build']).join('/'), buildPath.concat(['build']).join('/'));
         })
         .then(function () {
-            return fs.copyAsync(root.concat(['build']).join('/'), buildPath.concat(['build']).join('/'));
+            return fs.copyAsync(root.concat(['test']).join('/'), buildPath.concat(['test']).join('/'));
         })
         .then(function () {
             return state;
         });
 }
 
+function fixupBaseBuild(state) {
+    var root = state.environment.path,
+        mapRe = /\/\*#\s*sourceMappingURL.*\*\//m;
+
+    // remove mapping from css files.
+    return glob(root.concat(['build', 'client', 'modules', '**', '*.css']).join('/'), {
+        nodir: true
+    })
+        .then(function (matches) {
+            return Promise.all(matches.map(function (match) {
+                return fs.readFileAsync(match, 'utf8')
+                    .then(function (contents) {
+                        // replace the map line with an empty string
+                        if (!mapRe.test(contents)) {
+                            return;
+                        }
+                        mutant.warn('Fixing up css file to remove mapping');
+                        mutant.warn(match);
+
+                        var fixed = contents.replace(mapRe, '');
+                        return fs.writeFileAsync(match, fixed);
+                    });
+            }));
+        })
+        .then(function () {
+            return state;
+        });
+}
 
 function makeDistBuild(state) {
     var root = state.environment.path,
         buildPath = ['..', 'build'],
-        uglify = require('uglify-js');
+        uglify = require('uglify-es');
 
     return fs.copyAsync(root.concat(['build']).join('/'), root.concat(['dist']).join('/'))
         .then(function () {
@@ -942,29 +1062,40 @@ function makeDistBuild(state) {
                     // FORNOW: we need to protect iframe-based plugins from having
                     // their plugin code altered.
                     var reProtected = /\/modules\/plugins\/.*?\/iframe_root\//;
-                    return Promise.all(matches
+                    var files = matches
                         .filter(function (match) {
                             return !reProtected.test(match);
-                        })
-                        .map(function (match) {
+                        });
+                    return Promise.all(files)
+                        .mapSeries(function (match) {
                             return fs.readFileAsync(match, 'utf8')
                                 .then(function (contents) {
+                                    // see https://github.com/mishoo/UglifyJS2 for options
+                                    // just overriding defaults here
                                     var result = uglify.minify(contents, {
                                         output: {
                                             beautify: false,
-                                            quote_style: 1
+                                            max_line_len: 80,
+                                            quote_style: 0
+                                        },
+                                        compress: {
+                                            // required in uglify-es 3.3.10 in order to work
+                                            // around a bug in the inline implementation.
+                                            // it should be fixed in an upcoming release.
+                                            inline: 1
                                         }
                                     });
+
                                     if (result.error) {
                                         console.error('Error minifying file: ' + match, result);
                                         throw new Error('Error minifying file ' + match) + ':' + result.error;
                                     } else if (result.code.length === 0) {
-                                        console.warn('Skipping empty file: ' + match);
+                                        mutant.warn('Skipping empty file: ' + match);
                                     } else {
                                         return fs.writeFileAsync(match, result.code);
                                     }
                                 });
-                        }));
+                        });
                 });
         })
         .then(function () {
@@ -1033,7 +1164,7 @@ function makeModuleVFS(state, whichBuild) {
                         return b.count - a.count;
                     })
                     .forEach(function (item) {
-                        console.log(item.key + ':' + item.count);
+                        mutant.log(item.key + ':' + item.count);
                     });
             }
             var exceptions = [
@@ -1043,100 +1174,101 @@ function makeModuleVFS(state, whichBuild) {
                 /@import/,
                 /@font-face/
             ];
-            // css in these libraries uses import. We _could_
-            // var cssExceptions = [
-            //     /main\.css$/,
-            //     /^\/modules\/bower_components\/bootstrap\//,
-            //     /^\/modules\/bower_components\/font-awesome\//,
-            //     /^\/modules\/bower_components\/datatables\//,
-            //     /^\/modules\/bower_components\/highlightjs\//
-            // ];
-            return Promise.all(matches
-                .map(function (match) {
+            var supportedExtensions = ['js', 'yaml', 'yml', 'json', 'text', 'txt', 'css'];
+            return Promise.all(matches)
+                .mapSeries(function (match) {
                     var relativePath = match.split('/').slice(root.length + 2);
-                    return fs.readFileAsync(match, 'utf8')
-                        .then(function (contents) {
-                            // skip iframe_root directories, which are simply spliced
-                            // into an iframe.
-                            // if (relativePath.some(function (pathComponent) {
-                            //         return (pathComponent === 'iframe_root');
-                            //     })) {
-                            //     // console.warn('skipping iframe_root: ' + relativePath.join('/'));
-                            //     skipped += 1;
-                            //     return;
-                            // }
-                            var path = '/' + relativePath.join('/');
-                            if (exceptions.some(function (re) {
-                                return (re.test(path));
-                            })) {
-                                skip('excluded');
+                    var path = '/' + relativePath.join('/');
+
+                    // exclusion based on path pattern
+                    if (exceptions.some(function (re) {
+                        return (re.test(path));
+                    })) {
+                        skip('excluded');
+                        return;
+
+                    }
+
+                    var m = /^(.*)\.([^.]+)$/.exec(path);
+
+                    // bare files we don't support
+                    if (!m) {
+                        skip('no extension');
+                        mutant.warn('module vfs cannot include file without extension: ' + path);
+                    }
+                    var base = m[1];
+                    var ext = m[2];
+
+                    // skip if in unsupported extensions
+                    if (supportedExtensions.indexOf(ext) === -1) {
+                        skip(ext);
+                        return;
+                    }
+
+                    return fs.statAsync(match)
+                        .then(function (stat) {
+                            if (stat.size > 200000) {
+                                mutant.warn('omitting file from bundle because too big: ' + numeral(stat.size).format('0.0b'));
+                                mutant.warn('  ' + match);
+                                mutant.warn('   don\'t worry, it is stil included in the build!');
+                                skip('toobig');
                                 return;
                             }
-                            var m = /^(.*)\.([^.]+)$/.exec(path);
-                            if (m) {
-                                var base = m[1];
-                                var ext = m[2];
-                                // requirejs keeps the root forward slash.
-                                switch (ext) {
-                                case 'js':
-                                    include(ext);
-                                    vfs.scripts[path] = 'function () { ' + contents + ' }';
-                                    break;
-                                case 'yaml':
-                                case 'yml':
-                                    include(ext);
-                                    vfs.resources.json[base] = yaml.safeLoad(contents);
-                                    break;
-                                case 'json':
-                                    if (vfs.resources.json[base]) {
-                                        throw new Error('duplicate entry for json detected: ' + path);
-                                    }
-                                    try {
+                            return fs.readFileAsync(match, 'utf8')
+                                .then(function (contents) {
+                                    
+                                    switch (ext) {
+                                    case 'js':
                                         include(ext);
-                                        vfs.resources.json[base] = JSON.parse(contents);
-                                    } catch (ex) {
-                                        skip('error');
-                                        console.error('Error parsing json file: ' + path + ':' + ex.message);
-                                        // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
-                                    }
-                                    break;
-                                case 'text':
-                                case 'txt':
-                                    include(ext);
-                                    vfs.resources.text[base] = contents;
-                                    break;
-                                case 'css':
-                                    if (cssExceptions.some(function (re) {
-                                        return re.test(contents);
-                                    })) {
-                                        skip('css excluded');
-                                    } else {
-                                        // console.log('css included', base);
+                                        vfs.scripts[path] = 'function () { ' + contents + ' }';
+                                        break;
+                                    case 'yaml':
+                                    case 'yml':
                                         include(ext);
-                                        vfs.resources.css[base] = contents;
+                                        vfs.resources.json[base] = yaml.safeLoad(contents);
+                                        break;
+                                    case 'json':
+                                        if (vfs.resources.json[base]) {
+                                            throw new Error('duplicate entry for json detected: ' + path);
+                                        }
+                                        try {
+                                            include(ext);
+                                            vfs.resources.json[base] = JSON.parse(contents);
+                                        } catch (ex) {
+                                            skip('error');
+                                            console.error('Error parsing json file: ' + path + ':' + ex.message);
+                                            // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
+                                        }
+                                        break;
+                                    case 'text':
+                                    case 'txt':
+                                        include(ext);
+                                        vfs.resources.text[base] = contents;
+                                        break;
+                                    case 'css':
+                                        if (cssExceptions.some(function (re) {
+                                            return re.test(contents);
+                                        })) {
+                                            skip('css excluded');
+                                        } else {
+                                            include(ext);
+                                            vfs.resources.css[base] = contents;
+                                        }
+                                        break;
+                                    case 'csv':
+                                        skip(ext);
+                                        break;
+                                    default:
+                                        skip(ext);
                                     }
-                                    break;
-                                case 'csv':
-                                    // console.warn('csv not handled yet: ' + path);
-                                    skip(ext);
-                                    break;
-                                default:
-                                    skip(ext);
-                                        // console.warn('File type "' + ext + '" not supported: ' + path);
-                                        // break;
-                                }
-                            } else {
-                                skip('no extension');
-                                console.warn('module vfs cannot include file without extension: ' + path);
-                            }
+                                });
                         });
-                }))
+                })
                 .then(function () {
-                    // var script = 'window.require_modules = ' + JSON.stringify(vfs, null, 4);
-                    console.log('vfs created');
-                    console.log('skipped: ');
+                    mutant.log('vfs created');
+                    mutant.log('skipped: ');
                     showStats(skipped);
-                    console.log('included:');
+                    mutant.log('included:');
                     showStats(included);
                     var modules = '{' + Object.keys(vfs.scripts).map(function (path) {
                         return '"' + path + '": ' + vfs.scripts[path];
@@ -1161,76 +1293,52 @@ function makeModuleVFS(state, whichBuild) {
  */
 
 function main(type) {
-    // INPUT
-    var initialFilesystem = [{
-        cwd: ['..'],
-        path: ['src']
-    }, {
-        cwd: ['..'],
-        files: ['bower.json']
-    }, {
-        cwd: ['..'],
-        path: ['install']
-    }, {
-        cwd: ['..'],
-        path: ['release-notes']
-    }];
-    // Use a copy of the configs in the dev directory; this supports local hacking without worry
-    // of accidentally checking in temporary config changes.
-    return pathExists('../dev/config')
-        .then(function (exists) {
-            // ugly work around for now
-            var buildControlConfigPath;
-            if (exists) {
-                initialFilesystem.push({
-                    cwd: ['..', 'dev'],
-                    path: ['config']
-                });
-                buildControlConfigPath = ['..', 'dev', 'config', 'builds', type + '.yml'];
-            } else {
-                initialFilesystem.push({
-                    cwd: ['..'],
-                    path: ['config']
-                });
-                buildControlConfigPath = ['..', 'config', 'builds', type + '.yml'];
-            }
-            return {
-                initialFilesystem: initialFilesystem,
-                buildControlConfigPath: buildControlConfigPath
-            };
-        })
-        .then(function (config) {
-            console.log('Creating initial state with config: ');
-            return mutant.createInitialState(config);
-        })
+    return Promise.try(function () {
+        mutant.log('Creating initial state with for build: ' + type);
+        var initialFilesystem = [{
+            cwd: ['..'],
+            path: ['src']
+        }, {
+            cwd: ['..'],
+            files: ['bower.json', 'package.json']
+        }, {
+            cwd: ['..'],
+            path: ['release-notes']
+        }, {
+            cwd: ['..'],
+            path: ['config']
+        }];
+        var buildControlConfigPath = ['..', 'config', 'build', 'configs', type + '.yml'];
+        var buildControlDefaultsPath = ['..', 'config', 'build',  'defaults.yml'];
+        var config = {
+            initialFilesystem: initialFilesystem,
+            buildControlConfigPath: buildControlConfigPath,
+            buildControlDefaultsPath: buildControlDefaultsPath
+        };
+        return mutant.createInitialState(config);
+    })
+
         .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Setting up build...');
+            mutant.log('Setting up build...');
             return setupBuild(state);
         })
 
-    // .then(function (state) {
-    //     return mutant.copyState(state);
-    // })
-    // .then(function (state) {
-    //     return makeBuildInfo(state);
-    // })
+        // .then(function (state) {
+        //     return mutant.copyState(state);
+        // })
+        // .then(function (state) {
+        //     mutant.log('Fetching bower packages...');
+        //     return fetchPackagesWithBower(state);
+        // })
 
         .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Fetching bower packages...');
-            return fetchPackagesWithBower(state);
-        })
-
-        .then(function (state) {
-            return mutant.copyState(state);
-        })
-        .then(function (state) {
-            console.log('Installing bower packages...');
+            mutant.log('Installing bower packages...');
             return installBowerPackages(state);
         })
 
@@ -1238,39 +1346,32 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Installing Plugins...');
+            mutant.log('Installing npm packages...');
+            return installNpmPackages(state);
+        })
+
+
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            mutant.log('Installing Plugins...');
             return installPlugins(state);
         })
 
-
-    // .then(function (state) {
-    //         return mutant.copyState(state);
-    //     })
-    //     .then(function (state) {
-    //         console.log('Installing Modules...');
-    //         return installModules(state);
-    //     })
-
         .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Installing Module Packages from Bower...');
+            mutant.log('Installing Module Packages from Bower...');
             return installModulePackagesFromBower(state);
         })
 
-    //        .then(function (state) {
-    //            return mutant.copyState(state);
-    //        })
-    //        .then(function (state) {
-    //            return installModulePackagesFromFilesystem(state);
-    //        })
-
         .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Copying config files...');
+            mutant.log('Copying config files...');
             return copyUiConfig(state);
         })
 
@@ -1278,20 +1379,20 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Creating build record ...');
+            mutant.log('Creating build record ...');
             return createBuildInfo(state);
         })
 
-    // Here we verify that the verion stamp, release notes, and tag are consistent.
-    // For prod we need to compare all three and fail the build if there is not a match.
-    // For dev, we need to compare the stamp and release notes, not the tag.
-    // At some future time when working solely off of master, we will be able to compare
-    // to the most recent tag.
+        // Here we verify that the verion stamp, release notes, and tag are consistent.
+        // For prod we need to compare all three and fail the build if there is not a match.
+        // For dev, we need to compare the stamp and release notes, not the tag.
+        // At some future time when working solely off of master, we will be able to compare
+        // to the most recent tag.
         .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Verifying version...');
+            mutant.log('Verifying version...');
             return verifyVersion(state);
         })
 
@@ -1299,7 +1400,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Making KBase Config...');
+            mutant.log('Making KBase Config...');
             return makeKbConfig(state);
         })
 
@@ -1307,38 +1408,44 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Making deploy configs');
+            mutant.log('Making deploy configs');
             return makeDeployConfig(state);
         })
 
-    // Disable temporarily ... we don't want to wipe out bower.json
-    // until we have determined if we will be building a dist.
         .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Cleaning up...');
+            mutant.log('Cleaning up...');
             return cleanup(state);
         })
 
-
-
-
-    // From here, we can make a dev build, make a release
+        // Fix up weird stuff
         .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            console.log('Making the base build...');
+            mutant.log('Fixing up the base build...');
+            return fixupBaseBuild(state);
+        })
+
+
+        // From here, we can make a dev build, make a release
+        .then(function (state) {
+            return mutant.copyState(state);
+        })
+        .then(function (state) {
+            mutant.log('Making the base build...');
             return makeBaseBuild(state);
         })
 
+        
         .then(function (state) {
             return mutant.copyState(state);
         })
         .then(function (state) {
             if (state.buildConfig.dist) {
-                console.log('Making the dist build...');
+                mutant.log('Making the dist build...');
                 return makeDistBuild(state);
             }
             return state;
@@ -1348,11 +1455,7 @@ function main(type) {
             return mutant.copyState(state);
         })
         .then(function (state) {
-            // var vfs = [makeModuleVFS(state, 'build')];
-            // TODO: a build flag for the vfs.
-            // FORNOW: no vfs build for dev
             var vfs = [];
-            // vfs.push(makeModuleVFS(state, 'build'));
             if (state.buildConfig.vfs && state.buildConfig.dist) {
                 vfs.push(makeModuleVFS(state, 'dist'));
             }
@@ -1361,14 +1464,6 @@ function main(type) {
                     return state;
                 });
         })
-
-    // Here we handle any developer links.
-    //.then(function (state) {
-    //    return mutant.copyState(state);
-    //})
-    //.then(function (state) {
-    //
-    //})
 
         .then(function (state) {
             return mutant.finish(state);

@@ -8,17 +8,12 @@
 # need to list the packages here and create config for exceptions
 # TODO: document the format
 bowerFiles:
-    -
-        name: bluebird
-        cwd: js/browser
-        src:
-            - bluebird.js
-        bowerComponent: true
-    -
-        name: buffer
-        src:
-            - buffer.js
-        bowerComponent: true
+   
+    # -
+    #     name: buffer
+    #     src:
+    #         - buffer.js
+    #     bowerComponent: true
     # -
     #     name: esprima
     #     src: 
@@ -51,11 +46,20 @@ bowerFiles:
     -
         name: bootstrap
         cwd: dist
-        src: "**/*"
+        src: 
+            - js/bootstrap.js
+            - css/bootstrap.css
+            - fonts/*
         bowerComponent: true
     -
         name: d3
         bowerComponent: true
+    -
+        dir: d3-plugins-sankey
+        src:
+            - sankey.js
+            - sankey.css
+        bowerComponent: true        
     -
         name: file-saver
         src: 
@@ -111,6 +115,19 @@ bowerFiles:
         name: text
         bowerComponent: true
     -
+        name: select2
+        cwd: dist
+        src:
+            - js/select2.full.js
+            - css/select2.css
+        bowerComponent: true
+    -
+        name: select2-bootstrap-theme
+        cwd: dist
+        src:
+            - select2-bootstrap.css
+        bowerComponent: true
+    -
         dir: spark-md5
         name: spark-md5
         bowerComponent: true
@@ -140,12 +157,7 @@ bowerFiles:
             - prettify.js
             - prettify.css
         bowerComponent: true
-    -
-        dir: d3-plugins-sankey
-        src:
-            - sankey.js
-            - sankey.css
-        bowerComponent: true
+   
     -
         name: handlebars
         bowerComponent: true
@@ -174,33 +186,11 @@ bowerFiles:
             - jquery.blockUI.js
         bowerComponent: true
     -
-        name: q
-        src:
-            - q.js
-        bowerComponent: true
-    -
-        name: postal
-        cwd: lib
-        src:
-            - postal.js
-        bowerComponent: true
-    -
         dir: highlightjs
         src:
             - highlight.pack.js
             - styles/*
         bowerComponent: true
-    # -
-    #     # This one is an installable package, kbase style, so we just
-    #     # copy the whole thing in, and the install.yml says what to do
-    #     name: kbase-data-client-js
-    #     src: "**/*"
-    #     bowerComponent: true   
-
-    # "kbase-common-ts": "0.8.0",
-    #     "kbase-common-js": "2.5.0",
-    #     "kbase-service-clients-js": "3.2.2",
-    #     "kbase-ui-widget": "k1.1.0-beta2",
     -
         name: plotly
         dir: plotly.js

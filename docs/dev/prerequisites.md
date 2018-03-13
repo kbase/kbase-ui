@@ -1,12 +1,18 @@
 # Prerequisites
 
-The developer setup provides a workflow and small set of tools to help develop kbase-ui, plugins, and associated libraries. These tools provide for javascript development on your host (main desktop) environment, and a docker image for running kbase-ui behind a local proxy.
+The developer setup provides a workflow and set of tools to help develop kbase-ui, plugins, and associated libraries. The basic workflow consists of javascript development on your host (main desktop) environment, a Docker image for running kbase-ui behind nginx, and a separate Docker image for running a proxy for the  kbase-ui container as well as KBase services.
 
-The requirements are:
+[TOC]
 
-- nodejs - The V8 javascript system, required for building kbase-ui and running tests
-- git - the source revision management tool with integration into github
-- docker - the linux container manager you will use to run kbase-ui
+## Basic Development Requirements
+
+| app | version | notes |
+|-----|---------|------ |
+| nodejs | 8 (LTS) | The V8 javascript system, required for building kbase-ui and running tests; we are currently on version 8. |
+| git    | ?? | the source revision management tool with integration into github |
+| docker | ?? | the linux container manager you will use to run kbase-ui |
+| make  | ?? | all build tasks go through make |
+
 
 ## Basic Development Requirements
 
@@ -16,9 +22,16 @@ The KBase UI should build and run on any modern system: Mac OS X, Linux, Windows
 
 Procecedures for installation of system level packages depends on ... the system you use! Even within a platform there may be multiple ways to install a given package. In this document we provide instructions for installation on platforms in use at KBase using methods that we have employed and work.
 
-# Installation
+| app    | version | notes                                                        |
+| ------ | ------- | ------------------------------------------------------------ |
+| nodejs | 8 (LTS) | The V8 javascript system, required for building kbase-ui and running tests; we are currently on version 8. |
+| git    | ??      | the source revision management tool with integration into github |
+| docker | ??      | the linux container manager you will use to run kbase-ui     |
+| make   | ??      | all build tasks go through make                              |
 
-## All environments
+## Installation
+
+### All environments
 
 The following tools are available on all supported platforms (Mac, Windows, Linux). Please consult the installation instructions at the respective web sites:
 
@@ -28,8 +41,9 @@ That leaves us with nodejs and git to install through other means.
 
 ### Macintosh
 
-There are three main ways to install these tools natively on a Mac:
+There are three common sources for these tools natively on a Mac:
 
+- Apple xCode
 - Native Mac installation packages
 - Macports
 - Homebrew
@@ -37,6 +51,14 @@ There are three main ways to install these tools natively on a Mac:
 (see the Linux section for Vagrant on Mac instructions.)
 
 The requisite development tools are available as regualar Mac packages. This is may be the easiest way to get started. However, if you are going to be installing other Unixy tools, or have one of the following package managers installed, either Macports or Homebrew may be preferable, and are not much more difficult. Package managers also make updating your tools easy, whereas the downloadable packages will need to be periodically updated manually.
+
+#### Apple xCode
+
+xCode may be installed from the Apple App Store for free, and is highly recommeded for any developer workstation. Not only does it provide some of the required tools, but some macOS developer tools require xCode be installed.
+
+xCode includes both git and make, which are required for building kbase-ui, as well as a compilers which may be required to install other developer tools via installers from macports, npm, and the like.
+
+Although xCode includes git, make and other developer tools, you may also opt to install these or similar (e.g. gmake) tools separately.
 
 #### Native Packages
 
@@ -58,31 +80,27 @@ nodejs may be installed from the canonical home:
 
 [https://nodejs.org](https://nodejs.org)
 
-As of this time, please use the version 6 (e.g. 6.11.2) branch of NodeJS.
+As of this time, please use version 8 of NodeJS. We try to stay on the most recent LTS release, but the most important constraint is that we are using the same major version across all environments - local dev, travis, CI and next/appdev/prod.
 
 ##### 3) npm global packages
 
-you may optionall install the global version of npm-based development tools.
+It is no longer recommended to install the global version of npm-based development tools. Rather, they run out of the local kbase-ui repo. The local repo always installs these tools, since they are used by the build and testing tools.
 
-After nodejs is installed, from the Mac Terminal enter these commands:
+For convenience, you may run 
 
-```
-sudo npm install -g bower
-sudo npm install -g grunt-cli
-sudo npm install -g karma-cli
+```bash
+. tools/devtools.sh
 ```
 
-The globally installed tools are not used by the build process. The build process installs tools locally in the kbase-ui repo directory during the build process. In addition to making deployment simpler, the internally installed tools are pinned to a specific version, making builds more deterministic.
+from a terminal window located at the kbase-ui repo directory to put the node executable directory into the current path.
 
-However, having these tools available globally on your host can ease certain development tasks, such as running grunt tasks, karma tests, or bower things like registration of a plugin.
+> Note: yarn? Yes, we may be switching to yarn in the near future.
 
 #### Macports
 
 ##### 1) Install Apple xCode
 
-xCode may be installed from the Apple App Store for free.
-
-Let's face it, you should really have xCode installed, even if you use a Mac package manager.
+As mentioned above, you should have already installed xCode — xCode is required by macports.
 
 ##### 2) Install macports
 
@@ -95,25 +113,16 @@ Download and follow the instructions at [https://www.macports.org/install.php](h
 open Terminal and issue the following commands:
 
 ```
-sudo port install nodejs git
+sudo port install nodejs6 npm5 git
 ```
 
-> Although xCode installs git, the one available through macports is probably more up-to-date.
+Note that the version of nodejs is important. We try very hard to use the same version of nodejs in local development as KBase uses in build/deployment environments and as the Travis configuration uses. There are major changes between nodejs releases. Although a newer nodejs will be probably be able to run code written for an older version, the converse is not necessarily true, and it is certainly easy to start using features enabled by a newer node version if it is available. There may also be subtle differences in the building of dependncies through npm.
+
+In general we try to stay on the most recent Long Term Support (LTS) of any dependency, but sometimes it takes us a while to have time to coordinate the concurrent update of all of the places they are used.
+
+> Note: Although xCode installs git, the one available through macports is probably more up-to-date.
 
 
-##### optional
-
-You may optionally install the following tools globally.
-
-```
-sudo npm install -g bower
-sudo npm install -g grunt-cli
-sudo npm install -g karma-cli
-```
-
- These tools are installed globally on your host machine, in a the /opt/local/ filesystem.
-
- > The build process does not use these tools, but they can come in handy for manually performing tasks.
 
 #### Homebrew
 
@@ -121,15 +130,9 @@ sudo npm install -g karma-cli
 
 ### Windows
 
-> We have not worked out a set of best-practice windows setup instructions yet, below is just an anecdote from one successful session.
+> to be done
 
-We have performed an install, from scratch (starting with no dev tools whatsoever) on Windows 10, in about 15 minutes, which includes looking for and finding the appropriate windows installers.
-
-You need to install the Windows packages for Git and Nodejs, and use the Git bash shell for command line stuff. Also, phantomjs is distributed as a simple binary, though we elected to install it via npm (```npm install -g phantomjs```). Experience shows that sometimes phantomjs does not play well when installed via npm, but I may be mistaken because it works fine on Windows -- although it is a little behind the official latest version (2.0.0), which actually may be a good thing since issues have been reported. On the other hand, there are js compatability issues reported for < 2.0.0 which will not be fixed.)
-
-Occasionally you may be prompted for an admin account authorization if you are using a standard account. Other than that, the process was surprisingly smooth.
-
-## Linux
+### Linux
 
 #### Ubuntu
 
@@ -137,6 +140,6 @@ Occasionally you may be prompted for an admin account authorization if you are u
 
 ---
 
-[Index](index.md) - [README](../README.md) - [Release Notes](../release-notes/index.md) - [KBase](http://kbase.us)
+[Index](../index.md) - [README](../README.md) - [Release Notes](../../release-notes/index.md) - [KBase](http://kbase.us)
 
 ---

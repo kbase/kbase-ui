@@ -8,16 +8,30 @@
             "urlBase": "https://{{ default .Env.deploy_hostname "localhost" }}"
         }
     },
-    "ui": {
-        "backupCookie": {
-            "domain": {{ if .Env.ui_backupcookie_domain }}"{{.Env.ui_backupcookie_domain}}"{{else}}null{{end}},
-            "enabled": {{ default .Env.ui_backupcookie_enabled "false"}}
-        },
+    "ui": {       
         "services": {
             "analytics": {
                 "google": {
                     "hostname": "{{ .Env.ui_services_analytics_google_hostname }}",
                     "code": "{{ .Env.ui_services_analytics_google_code }}"
+                }
+            },
+             "session": {
+                "cookie": {
+                    "backup": {
+                        "domain": {{ if .Env.ui_backupCookie_domain }}"{{.Env.ui_backupCookie_domain}}"{{else}}null{{end}},
+                        "enabled": {{ default .Env.ui_backupCookie_enabled "false"}}
+                    }
+                }
+            },
+            "menu": {
+                "menus": {
+                    "hamburger": {
+                        "disabled": {{ default .Env.ui_services_menu_hamburger_disabled "null" }}
+                    },
+                    "sidebar": {
+                        "disabled": {{ default .Env.ui_services_menu_sidebar_disabled "null" }}
+                    }
                 }
             }
         },

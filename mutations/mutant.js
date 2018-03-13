@@ -19,8 +19,7 @@
  *   
  */
 
-/*global require, module*/
-/*jslint white:true*/
+/*eslint-env node*/
 'use strict';
 
 var findit = require('findit2'),
@@ -29,6 +28,7 @@ var findit = require('findit2'),
     glob = Promise.promisify(require('glob').Glob),
     yaml = require('js-yaml'),
     ini = require('ini'),
+    chalk = require('chalk'),
     uniqState = {};
 
 // UTILS
@@ -147,7 +147,7 @@ function deleteMatchingFiles(path, regex) {
         var finder = findit(path),
             loadingFiles = true,
             processingFiles = {};
-        finder.on('file', function (file, stat, linkPath) {
+        finder.on('file', function (file) {
             if (file.match(regex)) {
                 processingFiles[file] = true;
                 fs.unlink(file, function (err) {
@@ -174,11 +174,10 @@ function deleteMatchingFiles(path, regex) {
 
 function copyState(oldState) {
     return Promise.try(function () {
-        if (oldState.buildConfig.debug) {
+        if (!oldState.buildConfig.mutate) {
             var newState = JSON.parse(JSON.stringify(oldState)),
                 tempDir = uniq('temp_'),
                 newFs = [tempDir],
-                oldFs = oldState.environment.filesystem,
                 start = (new Date()).getTime();
 
             // Give the next process a fresh copy of all the files.
@@ -200,7 +199,7 @@ function copyState(oldState) {
 function makeRunDir(state) {
     var runDirName = uniqts('run_'),
         // This is the root of all process files
-        root = (state.buildConfig.temp && ['..'].concat(state.buildConfig.temp.split('/'))) || ['mutantfiles'],
+        root = (state.buildConfig.tempDir && ['..'].concat(state.buildConfig.tempDir.split('/'))) || ['mutantfiles'],
         runDir = mkdir(root, [runDirName]);
     state.environment.root = runDir;
     return state;
@@ -216,22 +215,84 @@ function removeRunDir(state) {
     return state;
 }
 
+function timestamp() {
+    return new Date().toISOString();
+}
+
+function log(msg) {
+    var line = 'INFO: '+ timestamp() + ': ' + msg;
+    var chalked = chalk.blue(line);
+    process.stdout.write(chalked);
+    process.stdout.write('\n');
+}
+
+function warn(msg) {
+    var line = 'WARN: '+ timestamp() + ': ' + msg;
+    var chalked = chalk.yellow(line);
+    process.stdout.write(chalked);
+    process.stdout.write('\n');
+}
+
+function success(msg) {
+    var line = '✔   : '+ timestamp() + ': ' + msg;
+    var chalked = chalk.green(line);
+    process.stdout.write(chalked);
+    process.stdout.write('\n');
+}
+
+function mergeObjects(listOfObjects) {
+    var simpleObjectPrototype = Object.getPrototypeOf({});
+
+    function isSimpleObject(obj) {
+        return Object.getPrototypeOf(obj) === simpleObjectPrototype;
+    }
+
+    function merge(obj1, obj2, keyStack) {
+        Object.keys(obj2).forEach(function (key) {
+            var obj1Value = obj1[key];
+            var obj2Value = obj2[key];
+            var obj1Type = typeof obj1Value;
+            // var obj2Type = typeof obj2Value;
+            if (obj1Type === 'undefined') {
+                obj1[key] = obj2[key];
+            } else if (isSimpleObject(obj1Value) && isSimpleObject(obj2Value)) {
+                keyStack.push(key);
+                merge(obj1Value, obj2Value, keyStack);
+                keyStack.pop();
+            } else {
+                console.error('UNMERGABLE', obj1Type, obj1Value);
+                throw new Error('Unmergable at ' + keyStack.join('.') + ':' + key);
+            }
+        });
+    }
+
+    var base = JSON.parse(JSON.stringify(listOfObjects[0]));
+    for (var i = 1; i < listOfObjects.length; i += 1) {
+        merge(base, listOfObjects[i], []);
+    }
+    return base;
+}
+
 function createInitialState(initialConfig) {
     var initialFilesystem = initialConfig.initialFilesystem,
-        buildControlConfigPath = initialConfig.buildControlConfigPath;
+        buildControlConfigPath = initialConfig.buildControlConfigPath,
+        buildControlDefaultsPath = initialConfig.buildControlDefaultsPath;
+
     // TODO: do this better...
-    var app, appName;
-    if (process.argv[0].match(/node$/)) {
-        app = process.argv[1];
-    } else {
-        app = process.argv[0];
-    }
-    appName = app.split('/').pop();
+    // var app, appName;
+    // if (process.argv[0].match(/node$/)) {
+    //     app = process.argv[1];
+    // } else {
+    //     app = process.argv[0];
+    // }
+    // appName = app.split('/').pop();
 
-    console.log('Creating initial state for app: ' + appName);
+    // log('Creating initial state for app: ' + appName);
+    log('Creating initial state');
 
-    return loadYaml(buildControlConfigPath)
-        .then(function (buildConfig) {
+    return Promise.all([loadYaml(buildControlConfigPath), loadYaml(buildControlDefaultsPath)])
+        .then(function (configs) {
+            var buildConfig = mergeObjects(configs);
             var state = {
                 environment: {},
                 data: {},
@@ -258,7 +319,7 @@ function createInitialState(initialConfig) {
 
             // And also create a temp staging dir for build processes to 
             // place files
-            mkdir(state.environment.root.concat(['inputfiles']), 'tmp')
+            mkdir(state.environment.root.concat(['inputfiles']), 'tmp');
 
             inputFs = ['inputfiles'];
 
@@ -267,7 +328,7 @@ function createInitialState(initialConfig) {
 
             state.stats = {
                 start: new Date().getTime()
-            }
+            };
 
             return state;
         });
@@ -275,12 +336,12 @@ function createInitialState(initialConfig) {
 
 function finish(state) {
     return Promise.try(function () {
-            if (!state.buildConfig.debug) {
-                return removeRunDir(state);
-            }
-        })
+        if (!state.buildConfig.keepBuildDir) {
+            return removeRunDir(state);
+        }
+    })
         .then(function () {
-            console.log('Finished with mutations');
+            log('Finished with mutations');
         });
 }
 
@@ -297,5 +358,9 @@ module.exports = {
     saveIni: saveIni,
     loadJson: loadJson,
     saveJson: saveJson,
-    rtrunc: rtrunc
+    rtrunc: rtrunc,
+    log: log,
+    warn: warn,
+    success: success,
+    mergeObjects: mergeObjects
 };
