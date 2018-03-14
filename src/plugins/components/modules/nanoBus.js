@@ -1,5 +1,5 @@
 define([], function () {
-
+    'use strict';
     function factory() {
         var queue = [];
         var runInterval = 0;
@@ -8,7 +8,7 @@ define([], function () {
         function processQueue() {
             var processing = queue;
             queue = [];
-            processing.forEach(function (message, index) {
+            processing.forEach(function (message) {
                 var receivers = messageReceivers[message.id];
                 if (!receivers) {
                     return;

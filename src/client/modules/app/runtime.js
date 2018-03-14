@@ -1,7 +1,5 @@
 define([
-    'kb_common_ts/Cookie'
 ], function (
-    Cookie
 ) {
     'use strict';
 

@@ -30,9 +30,9 @@ define([
         node.innerHTML = content;
     }
 
-    function getElement(element) {
-        return document.querySelector('[data-element="' + element + '"]');
-    }
+    // function getElement(element) {
+    //     return document.querySelector('[data-element="' + element + '"]');
+    // }
 
     function showElement(element) {
         var node = document.querySelector('[data-element="' + element + '"]');
@@ -258,14 +258,13 @@ define([
                                     'I could not successfully start it after ' + String(tries) + ' attempts'
                                 ],
                                 suggestions: [{
-                                        label: 'Try again later',
-                                        url: '/load-narrative.html?n=' + narrativeId + '&check=true'
-                                    },
-                                    {
-                                        label: 'Report this to KBase',
-                                        url: '//kbase.us/user-support/report-issue/'
-                                    }
-                                ]
+                                    label: 'Try again later',
+                                    url: '/load-narrative.html?n=' + narrativeId + '&check=true'
+                                },
+                                {
+                                    label: 'Report this to KBase',
+                                    url: '//kbase.us/user-support/report-issue/'
+                                }]
                             }));
                         }
                         return Promise.delay(options.retryPause).then(function () {
@@ -290,22 +289,21 @@ define([
                                     'This may indicate that the Narrative service or a related KBase service is very busy, or the network is saturated.'
                                 ],
                                 suggestions: [{
-                                        label: 'Try again later',
-                                        url: '/load-narrative.html?n=' + narrativeId + '&check=true',
-                                        description: [
-                                            'This type of error is not permanent, so you should just try again later'
-                                        ]
-                                    },
-                                    {
-                                        label: 'Monitor KBase service status',
-                                        url: '',
-                                        description: [
-                                            'Since this indicates a problem with KBase services, ',
-                                            'you may wish to open our service monitoring page, ',
-                                            'which shoudl show any ongoing issues'
-                                        ]
-                                    }
-                                ]
+                                    label: 'Try again later',
+                                    url: '/load-narrative.html?n=' + narrativeId + '&check=true',
+                                    description: [
+                                        'This type of error is not permanent, so you should just try again later'
+                                    ]
+                                },
+                                {
+                                    label: 'Monitor KBase service status',
+                                    url: '',
+                                    description: [
+                                        'Since this indicates a problem with KBase services, ',
+                                        'you may wish to open our service monitoring page, ',
+                                        'which shoudl show any ongoing issues'
+                                    ]
+                                }]
                             }));
                         }
                         return Promise.delay(options.retryPause).then(function () {
@@ -320,6 +318,7 @@ define([
                         }));
                     })
                     .catch(LoadingHttpError, function (err) {
+                        var nextRequest;
                         switch (err.status) {
                         case 500:
                             // TODO: Fix this, very dicey.
@@ -344,19 +343,18 @@ define([
                                     grokkedError
                                 ],
                                 suggestions: [{
-                                        label: 'Try again later',
-                                        url: ''
-                                    },
-                                    {
-                                        label: 'Report issue to KBase',
-                                        url: '//kbase.us/user-support/report-issue/'
-                                    }
-                                ]
+                                    label: 'Try again later',
+                                    url: ''
+                                },
+                                {
+                                    label: 'Report issue to KBase',
+                                    url: '//kbase.us/user-support/report-issue/'
+                                }]
                             }));
                             break;
                         case 401:
                             // Do not have permission to open narrative.
-                            var nextRequest = {
+                            nextRequest = {
                                 path: currentPath(),
                                 external: true
                             };
@@ -367,19 +365,18 @@ define([
                                     'Narrative access requires that you be logged in to KBase'
                                 ],
                                 suggestions: [{
-                                        label: 'Log in',
-                                        url: document.location.origin + '#login?nextrequest=' + encodeURIComponent(JSON.stringify(nextRequest))
-                                    },
-                                    {
-                                        label: 'Sign up for KBase',
-                                        url: '//kbase.us/sign-up'
-                                    }
-                                ]
+                                    label: 'Log in',
+                                    url: document.location.origin + '#login?nextrequest=' + encodeURIComponent(JSON.stringify(nextRequest))
+                                },
+                                {
+                                    label: 'Sign up for KBase',
+                                    url: '//kbase.us/sign-up'
+                                }]
                             }));
                             break;
                         case 403:
                             // Do not have permission to open narrative.
-                            var nextRequest = {
+                            nextRequest = {
                                 path: currentPath(),
                                 external: true
                             };
@@ -390,12 +387,12 @@ define([
                                     'You do not have read or write permission for this Narrative.'
                                 ],
                                 suggestions: [{
-                                        label: 'Contact the owner of this Narrative and request they share it with you'
-                                    },
-                                    {
-                                        label: 'Contact KBase, referencing narrative ' + narrativeId,
-                                        url: '//kbase.us/user-support/report-issue/'
-                                    }
+                                    label: 'Contact the owner of this Narrative and request they share it with you'
+                                },
+                                {
+                                    label: 'Contact KBase, referencing narrative ' + narrativeId,
+                                    url: '//kbase.us/user-support/report-issue/'
+                                }
                                 ]
                             }));
                             break;
@@ -424,13 +421,13 @@ define([
                                     'It is probably a network connection problem between your browser and the KBase services'
                                 ],
                                 suggestions: [{
-                                        label: 'KBase Service Status',
-                                        url: ''
-                                    },
-                                    {
-                                        label: 'Try again later',
-                                        url: ''
-                                    }
+                                    label: 'KBase Service Status',
+                                    url: ''
+                                },
+                                {
+                                    label: 'Try again later',
+                                    url: ''
+                                }
                                 ]
                             }));
                             break;

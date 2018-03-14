@@ -4,8 +4,7 @@ define([
     'use strict';
 
     function factory(config) {
-        var plugins = {},
-            runtime = config.runtime,
+        var runtime = config.runtime,
             moduleBase = config.moduleBase || '/modules',
             services = {};
 
@@ -20,9 +19,9 @@ define([
             });
         }
 
-        function getService(name) {
-            return services[name];
-        }
+        // function getService(name) {
+        //     return services[name];
+        // }
 
         function arrayExtend(to, from) {
             if (from) {
@@ -156,7 +155,7 @@ define([
                         });
                         // Do all of the install steps.
                         Promise.all(installSteps)
-                            .then(function (doneSteps) {
+                            .then(function () {
                                 resolve();
                             })
                             .catch(function (err) {
@@ -225,7 +224,7 @@ define([
         // strictly in sequential order.
         function installPluginSets(pluginDefs) {
             var loadSets = pluginDefs.map(function (set) {
-                return function (resolve, reject, notify) {
+                return function (resolve, reject) {
                     installPlugins(set)
                         .then(function () {
                             resolve();

@@ -167,7 +167,7 @@ define([
     });
 
     ko.bindingHandlers.htmlMarkdown = {
-        update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        update: function (element, valueAccessor) {
             var markdown = marked(valueAccessor());
             element.innerHTML = markdown;
         }

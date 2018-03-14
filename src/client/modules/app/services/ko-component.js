@@ -9,8 +9,7 @@ define([
 ) {
     'use strict';
 
-    function factory(config) {
-        var runtime = config.runtime;
+    function factory() {
         var components = {};
 
         function start() {

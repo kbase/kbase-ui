@@ -3,6 +3,7 @@ define([
     'kb_common/router',
     'kb_common/lang'
 ], function (Promise, Router, lang) {
+    'use strict';
     function factory(config) {
         var runtime = config.runtime,
             router = Router.make(config),
@@ -159,7 +160,7 @@ define([
             eventListeners.push({
                 target: window,
                 type: 'hashchange',
-                listener: function (e) {
+                listener: function () {
                     // $(window).on('hashchange', function () {
                     // NB this is called AFTER it has changed. The browser will do nothing by
                     // default
