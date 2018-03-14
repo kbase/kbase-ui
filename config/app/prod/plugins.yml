@@ -181,7 +181,7 @@ plugins:
     -
         name: feeds
         globalName: kbase-ui-plugin-feeds
-        version: 0.2.0
+        version: 0.3.0
         cwd: src/plugin
         source:
             bower: {}
@@ -209,7 +209,14 @@ plugins:
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.10.6
+        version: 0.11.0
         cwd: src/plugin
         source:
-            bower: {}                           
+            bower: {}     
+    -
+        name: narrative-finder
+        globalName: kbase-ui-plugin-narrative-finder
+        version: 0.1.2
+        cwd: src/plugin
+        source:
+            bower: {}
