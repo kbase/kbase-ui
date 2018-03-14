@@ -9,7 +9,7 @@ define([
 ) {
     'use strict';
 
-    function factory(config) {
+    function factory() {
         var schemas = {};
         var ajv = new Ajv();
 
@@ -78,7 +78,7 @@ define([
             }));
         }
 
-        function start(params) {}
+        function start() {}
 
         function stop() {}
 

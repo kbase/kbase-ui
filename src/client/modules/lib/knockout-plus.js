@@ -21,6 +21,7 @@ define([
     html,
     SubscriptionManager
 ) {
+    'use strict';
     // Knockout Defaults
     ko.options.deferUpdates = true;
 
@@ -74,7 +75,7 @@ define([
 
     ko.extenders.logChange = function (target, label) {
         target.subscribe(function (newValue) {
-            console.log(label, newValue);
+            console.warn(label, newValue);
         });
         return target;
     };

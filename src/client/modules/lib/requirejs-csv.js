@@ -1,6 +1,6 @@
 define([
     'text'
-], function (text) {
+], function () {
     'use strict';
 
     function parseCsv(s) {

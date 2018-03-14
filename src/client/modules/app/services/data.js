@@ -7,9 +7,7 @@ define([
 ) {
     'use strict';
 
-    function factory(config) {
-        var runtime = config.runtime;
-
+    function factory() {
         function start() {
             // nothing to do?
             return Promise.try(function () {
@@ -35,19 +33,19 @@ define([
                         returnData = data;
                     },
                     error: function (err) {
-                            throw {
-                                type: 'AjaxError',
-                                reason: 'Unknown',
-                                message: 'There was an error fetching this data object',
-                                data: {
-                                    arg: arg,
-                                    error: err
-                                }
-                            };
-                            // throw new Error('Error getting data: ' + arg.file);
-                        }
-                        //complete: function (jq, status) {
-                        // }
+                        throw {
+                            type: 'AjaxError',
+                            reason: 'Unknown',
+                            message: 'There was an error fetching this data object',
+                            data: {
+                                arg: arg,
+                                error: err
+                            }
+                        };
+                        // throw new Error('Error getting data: ' + arg.file);
+                    }
+                    //complete: function (jq, status) {
+                    // }
                 });
                 return returnData;
             }

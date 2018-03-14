@@ -60,8 +60,8 @@ define([
                         }
                     };
                     return userProfileClient.set_user_profile({
-                            profile: newProfile
-                        })
+                        profile: newProfile
+                    })
                         .then(function () {
                             return userProfileClient.get_user_profile([accountInfo.user]);
                         })
@@ -79,38 +79,38 @@ define([
             var fixed = false;
             return Promise.try(function () {
 
-                    // ensure structure.
-                    if (profile.profile.account) {
-                        delete profile.profile.account;
-                        fixed = true;
-                    }
-                    if (!profile.profile.synced) {
-                        profile.profile.synced = {};
-                        fixed = true;
-                    }
-                    if (!profile.profile.userdata) {
-                        profile.profile.userdata = {};
-                        fixed = true;
-                    }
-                    if (!profile.profile.preferences) {
-                        profile.profile.preferences = {};
-                        fixed = true;
-                    }
-                    if (!profile.profile.metadata) {
-                        profile.profile.metadata = {};
-                        fixed = true;
-                    }
+                // ensure structure.
+                if (profile.profile.account) {
+                    delete profile.profile.account;
+                    fixed = true;
+                }
+                if (!profile.profile.synced) {
+                    profile.profile.synced = {};
+                    fixed = true;
+                }
+                if (!profile.profile.userdata) {
+                    profile.profile.userdata = {};
+                    fixed = true;
+                }
+                if (!profile.profile.preferences) {
+                    profile.profile.preferences = {};
+                    fixed = true;
+                }
+                if (!profile.profile.metadata) {
+                    profile.profile.metadata = {};
+                    fixed = true;
+                }
 
-                    // ensure that the realname is correctly copied and consistent with the auth account
+                // ensure that the realname is correctly copied and consistent with the auth account
 
-                    // ensure that the gravatar hash is consistent.
-                    if (!Props.getDataItem(profile, 'profile.synced.gravatarHash')) {
-                        var email = runtime.service('session').getEmail();
-                        var hash = gravatarHash(email);
-                        profile.profile.synced.gravatarHash = hash;
-                        fixed = true;
-                    }
-                })
+                // ensure that the gravatar hash is consistent.
+                if (!Props.getDataItem(profile, 'profile.synced.gravatarHash')) {
+                    var email = runtime.service('session').getEmail();
+                    var hash = gravatarHash(email);
+                    profile.profile.synced.gravatarHash = hash;
+                    fixed = true;
+                }
+            })
                 .then(function () {
                     if (fixed) {
                         var client = new UserProfileService(runtime.config('services.user_profile.url'), {

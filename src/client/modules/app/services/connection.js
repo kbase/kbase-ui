@@ -93,8 +93,8 @@ define([
             //     minimized.pop();
             // }
             return minimized.map(function (item) {
-                    return String(item.value) + item.name;
-                })
+                return String(item.value) + item.name;
+            })
                 .join(' ');
         }
     }
@@ -114,13 +114,13 @@ define([
                 disconnect3: 15000
             };
 
-        function checkConnection() {
+        // function checkConnection() {
 
-        }
+        // }
 
-        function showDisconnected() {
-            // alert('disconnected');
-        }
+        // function showDisconnected() {
+        //     // alert('disconnected');
+        // }
 
         function notifyError(message) {
             runtime.send('notification', 'notify', {
@@ -169,11 +169,11 @@ define([
                     checking = true;
                     var httpClient = new HttpClient.HttpClient();
                     httpClient.request({
-                            method: 'GET',
-                            url: document.location.origin + '/ping.txt',
-                            timeout: 10000
-                        })
-                        .then(function (pong) {
+                        method: 'GET',
+                        url: document.location.origin + '/ping.txt',
+                        timeout: 10000
+                    })
+                        .then(function () {
                             lastConnectionAt = new Date().getTime();
                             if (lastStatus === 'error') {
                                 notifyOk({
@@ -184,7 +184,7 @@ define([
                             }
                             lastStatus = 'ok';
                         })
-                        .catch(HttpClient.GeneralError, function (err) {
+                        .catch(HttpClient.GeneralError, function () {
                             lastStatus = 'error';
                             var currentTime = new Date().getTime();
                             var elapsed = currentTime - lastConnectionAt;
@@ -220,7 +220,7 @@ define([
                                 ])
                             });
                         })
-                        .catch(HttpClient.TimeoutError, function (err) {
+                        .catch(HttpClient.TimeoutError, function () {
                             lastStatus = 'error';
                             notifyError({
                                 message: 'Timeout connecting to KBase',
@@ -263,7 +263,8 @@ define([
         }
 
         // Send out notifications when there is a change in connection state.
-        function onChange(fun, errFun) {
+        // function onChange(fun, errFun) {
+        function onChange() {
             // state.listen('userprofile', {
             //     onSet: function(value) {
             //         fun(value);

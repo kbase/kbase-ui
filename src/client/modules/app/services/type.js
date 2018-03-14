@@ -34,7 +34,7 @@ define([
                         }
                     });
                     if (errors.length > 0) {
-                        throw new Error('Error starting Type Manager. Check the log for details. ' + errors.join('; '))
+                        throw new Error('Error starting Type Manager. Check the log for details. ' + errors.join('; '));
                     }
                 }
                 return true;
