@@ -4,6 +4,9 @@ env:
   es6: true
 extends: 'eslint:recommended'
 rules:
+  strict:
+    - error
+    - function
   indent:
     - error
     - 4
