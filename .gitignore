@@ -45,10 +45,10 @@ nbproject
 
 
 # Deployment artifacts
-/deployment/dev/docker/context/contents
 /deployment/ci/docker/context/contents
-/deployment/prod/docker/context/contents
-/deployment/proxier/docker/context/contents
+
+# other artifacts
+/tools/proxier/docker/context/contents
 
 
 # Editor and OS artifacts
