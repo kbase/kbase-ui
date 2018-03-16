@@ -21,8 +21,14 @@
 - [Creating a New Plugin](dev/developing-new-plugin.md)
 
 ### Deployment
+- [Overview](deployment/overview.md)
 - [Configuration](design/configuration.md)
 - [Disabling Menus](deployment/disabling-menus.md)
+
+### Testing
+- [Overview](testing/overview.md)
+- [Integration](testing/integration-testing.md)
+
 ### Development Scenarios
 - [Developing Plugins](dev/developing-plugins.md)
 - [Developing alongside the Narrative](dev/developing-alongside-narrative.md)

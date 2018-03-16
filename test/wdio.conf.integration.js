@@ -1,3 +1,4 @@
+/*eslint-env node*/
 exports.config = {
 
     //
@@ -45,31 +46,31 @@ exports.config = {
         //     'phantomjs.binary.path': '/Volumes/KBaseWork/Work/sprints/auth2-2017/auth2/kbase-ui/node_modules/.bin/phantomjs',
         //     'phantomjs.cli.args': ['--web-security=false', '--ssl-protocol=any', '--ignore-ssl-errors=true']
         // },
-        {
-            // maxInstances can get overwritten per capability. So if you have an in-house Selenium
-            // grid with only 5 firefox instances available you can make sure that not more than
-            // 5 instances get started at a time.
-            maxInstances: 5,
-            //
-            browserName: 'firefox',
-            //platform: 'macOS 10.12',
-            //version: 'latest',
-            'moz:firefoxOptions': {
-                args: ['-headless']
-            },
-            acceptInsecureCerts: true
-        },
-        // Chrome
         // {
+        //     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
+        //     // grid with only 5 firefox instances available you can make sure that not more than
+        //     // 5 instances get started at a time.
         //     maxInstances: 5,
-        //     browserName: 'chrome',
+        //     //
+        //     browserName: 'firefox',
         //     //platform: 'macOS 10.12',
         //     //version: 'latest',
-        //     // chromeOptions: {
-        //     //     args: ['--headless']
-        //     // },
+        //     'moz:firefoxOptions': {
+        //         args: ['-headless']
+        //     },
         //     acceptInsecureCerts: true
-        // }
+        // },
+        // Chrome
+        {
+            maxInstances: 5,
+            browserName: 'chrome',
+            //platform: 'macOS 10.12',
+            //version: 'latest',
+            chromeOptions: {
+                args: ['--headless']
+            },
+            acceptInsecureCerts: true
+        }
     ],
     //
     // ===================
@@ -83,7 +84,7 @@ exports.config = {
     sync: true,
     //
     // Level of logging verbosity: silent | verbose | command | data | result | error
-    logLevel: 'verbose',
+    logLevel: 'silent',
     //
     // Enables colors for log output.
     coloredLogs: true,
@@ -145,7 +146,7 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: http://webdriver.io/guide/testrunner/reporters.html
-    reporters: ['dot'],
+    reporters: ['spec'],
 
     //
     // Options to be passed to Jasmine.
@@ -157,9 +158,9 @@ exports.config = {
         // The Jasmine framework allows interception of each assertion in order to log the state of the application
         // or website depending on the result. For example, it is pretty handy to take a screenshot every time
         // an assertion fails.
-        expectationResultHandler: function (passed, assertion) {
-            // do something
-        }
+        // expectationResultHandler: function (passed, assertion) {
+        //     // do something
+        // }
     },
 
     //

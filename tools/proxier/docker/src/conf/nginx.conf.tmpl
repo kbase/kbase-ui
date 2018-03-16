@@ -61,7 +61,7 @@ http {
         proxy_pass https://{{ .Env.deploy_ui_hostname }}/narrative;
         # Uncomment the following lines for a narrative deployed
         # within the proxy's vm.
-        #proxy_pass http://localhost:8888/narrative;
+        #proxy_pass http://narrative:8888/narrative;
 
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
