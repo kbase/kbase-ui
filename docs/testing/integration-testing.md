@@ -68,6 +68,8 @@ Each plugin should have a directory `src/plugin/test` which contains one or JSON
 
 [ describe the test runner scripts ]
 
+Adding Testhooks 
+
 ## Testing Scenarios
 
 ### As you develop
@@ -75,3 +77,30 @@ Each plugin should have a directory `src/plugin/test` which contains one or JSON
 ### Before a release
 
 ### In Travis
+
+## Browsers
+
+### Firefox
+
+some tests curently fail in FF; probably due to webdriver compat
+
+### Chrome
+
+chrome currently works in normal and headless
+
+### Safari
+
+Safari currently works. Don't know how to run headless yet. A bit finicky though; tends to leave a process behind, sometimes under fail conditions sometimes it just does it, and will refuse to start until the Safari process is killed.
+
+First:
+
+- Open Safari:
+
+  - enable developer menu (Preferences > Advanced > Show Developer menu in menu bar)
+  - enable automation (Developer > Allow Remote Automation )
+
+- From Terminal:
+
+  - /usr/bin/safaridriver --enable
+
+  ​

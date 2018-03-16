@@ -70,7 +70,16 @@ exports.config = {
                 args: ['--headless']
             },
             acceptInsecureCerts: true
-        }
+        },
+        // Safari
+        // {
+        //     maxInstances: 5,
+        //     browserName: 'safari',
+        //     acceptInsecureCerts: true,
+        //     // safariOptions: {
+        //     //     args: ['--headless']
+        //     // }
+        // }
     ],
     //
     // ===================
@@ -146,7 +155,7 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: http://webdriver.io/guide/testrunner/reporters.html
-    reporters: ['spec'],
+    reporters: ['dot', 'spec'],
 
     //
     // Options to be passed to Jasmine.
