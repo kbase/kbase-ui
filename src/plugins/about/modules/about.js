@@ -188,7 +188,7 @@ define([
         function buildLayout() {
             return div({
                 class: 'container-fluid',
-                dataKbasePlugin: 'about'
+                dataKBTesthookPlugin: 'about'
             }, [
                 div({
                     class: 'row'
@@ -196,14 +196,14 @@ define([
 
                     div({
                         class: 'col-sm-6',
-                        dataKbasePanel: 'welcome'
+                        dataKBTesthookPanel: 'welcome'
                     }, [
                         h2('The KBase Hub'),
                         buildWelcome()
                     ]),
                     div({
                         class: 'col-sm-6',
-                        dataKbasePanel: 'build-info'
+                        dataKBTesthookPanel: 'build-info'
                     }, [
                         h2('This Version'),
                         buildVersionInfo()

@@ -31,7 +31,7 @@ define([
                 a({
                     href: runtime.config('resources.docSite.base.url'),
                     class: '-logo',
-                    dataKbaseWidget: 'logo'
+                    dataKBTesthookWidget: 'logo'
                 }, img({
                     src: Plugin.plugin.fullPath + '/images/kbase_logo.png',
                     width: '46px'

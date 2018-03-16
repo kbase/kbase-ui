@@ -3,10 +3,17 @@
 /*eslint strict: ["error", "global"] */
 'use strict';
 var fs = require('fs');
+var path = require('path');
 
 function load(file) {
     var contents = fs.readFileSync(__dirname + '/' + file);
-    return JSON.parse(contents);
+    var testScript = JSON.parse(contents);
+    var pluginId = path.dirname(file);
+    return {
+        plugin: pluginId,
+        file: file,
+        scripts: testScript
+    };
 }
 
 function buildAttribute(element) {
@@ -123,6 +130,7 @@ function doTask(spec, task, testData) {
             }
         }
     } else if (task.navigate) {
+        console.warn('navigating to', task.navigate.path);
         browser.url('#' + task.navigate.path);
     }
 }
@@ -141,9 +149,11 @@ function doTasks(spec, tasks, testData, common) {
     });
 }
 
-function runTest(test, common) {
+function runTest(script, test, common) {
     var testData = load('../config.json');
-    describe(test.description, function () {
+    var description = 'test => plugin: [' + script.plugin + '], description: ' + test.description;
+    info(description);
+    describe(description, function () {
         if (test.disabled) {
             return;
         }
@@ -166,9 +176,10 @@ function runTest(test, common) {
     });
 }
 
-function runTests(tests, common) {
-    tests.forEach(function (test) {
-        runTest(test, common);
+function runTests(testScript, common) {
+    testScript.scripts.forEach(function (test) {
+        info('\nRunning ' + testScript.scripts.length + ' tests scripts for plugin: ' + testScript.plugin);
+        runTest(testScript, test, common);
     });
 }
 

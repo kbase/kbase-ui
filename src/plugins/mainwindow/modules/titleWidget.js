@@ -17,6 +17,7 @@ define([
             hostNode = node;
             container = hostNode.appendChild(document.createElement('div'));
             container.classList.add('widget-title');
+            container.setAttribute('data-k-b-testhook-widget', 'title');
         }
 
         function safeContent(content) {
@@ -35,7 +36,9 @@ define([
                     return;
                 }
 
-                container.innerHTML = h1(newTitle);
+                container.innerHTML = h1({
+                    dataKBTesthookLabel: 'title'
+                }, newTitle);
                 window.document.title = safeContent(newTitle) + ' | KBase';
             });
         }
