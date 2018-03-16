@@ -88,7 +88,32 @@ function doTask(spec, task, testData) {
         } else if (task.match) {
             let toMatch = browser.getText(selector);
             expect(toMatch).toMatch(new RegExp(task.text));
-        } 
+        } else if (task.number) {
+            let toCompare = browser.getText(selector);
+            expect(toCompare).toBeDefined();
+            let theNumber = Number(toCompare.replace(/,/g, ''));
+           
+            Object.keys(task.number).forEach(function (comparison) {
+                var comparisonValue = task.number[comparison];
+                switch (comparison) {
+                case 'greaterThan':
+                    expect(theNumber).toBeGreaterThan(comparisonValue);
+                    break;
+                case 'greaterThanOrEqual':
+                    expect(theNumber).toBeGreaterThanOrEqual(comparisonValue);
+                    break;                    
+                case 'lessThan':
+                    expect(theNumber).toBeLessThan(comparisonValue);
+                    break;
+                case 'lessThanOrEqual':
+                    expect(theNumber).toBeLessThanOrEqual(comparisonValue);
+                    break;                    
+                case 'equal':
+                    expect(theNumber).toEqual(comparisonValue);
+                    break;                
+                }
+            });
+        }
 
         // Actions
         if (task.action) {
