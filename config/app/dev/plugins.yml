@@ -230,7 +230,7 @@ plugins:
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.11.2
+        version: 0.12.0
         cwd: src/plugin
         source:
             bower: {}
@@ -247,13 +247,7 @@ plugins:
         version: 0.1.0
         cwd: src/plugin
         source:
-            bower: {}
-    #     name: profile-admin
-    #     globalName: kbase-ui-plugin-profile-admin
-    #     version: 0.1.0
-    #     cwd: src/plugin
-    #     source:
-    #         directory: {}
+            bower: {}    
     # -
     #     name: example-clojurescript
     #     globalName: kbase-ui-plugin-example-clojurescript
@@ -262,6 +256,12 @@ plugins:
     #     source:
     #         directory: {}
     # -
+    #     name: profile-admin
+    #     globalName: kbase-ui-plugin-profile-admin
+    #     version: 0.1.0
+    #     cwd: src/plugin
+    #     source:
+    #         directory: {}
     #     name: example-trr
     #     globalName: kbase-ui-plugin-example-trr
     #     version: 0.1.2
