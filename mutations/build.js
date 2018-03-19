@@ -19,7 +19,8 @@
  *
  */
 
-/* eslint-env node */
+/*eslint-env node */
+/*eslint strict: ["error", "global"] */
 'use strict';
 
 var Promise = require('bluebird'),
