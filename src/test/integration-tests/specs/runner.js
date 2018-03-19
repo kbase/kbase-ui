@@ -113,6 +113,31 @@ function doTask(spec, task, testData) {
                     break;                
                 }
             });
+        } else if (task.count) {
+            // count the elements which matched this selector
+            let toCompare = browser.elements(selector).value.length;
+            expect(toCompare).toBeDefined();
+           
+            Object.keys(task.count).forEach(function (comparison) {
+                var comparisonValue = task.count[comparison];
+                switch (comparison) {
+                case 'greaterThan':
+                    expect(toCompare).toBeGreaterThan(comparisonValue);
+                    break;
+                case 'greaterThanOrEqual':
+                    expect(toCompare).toBeGreaterThanOrEqual(comparisonValue);
+                    break;                    
+                case 'lessThan':
+                    expect(toCompare).toBeLessThan(comparisonValue);
+                    break;
+                case 'lessThanOrEqual':
+                    expect(toCompare).toBeLessThanOrEqual(comparisonValue);
+                    break;                    
+                case 'equal':
+                    expect(toCompare).toEqual(comparisonValue);
+                    break;                
+                }
+            });
         }
 
         // Actions
