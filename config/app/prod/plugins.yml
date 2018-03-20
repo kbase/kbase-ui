@@ -40,7 +40,7 @@ plugins:
     -
         name: dashboard
         globalName: kbase-ui-plugin-dashboard
-        version: 2.5.1
+        version: 2.5.2
         cwd: src/plugin
         source:
             bower: {}
@@ -209,7 +209,7 @@ plugins:
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.12.4
+        version: 0.12.6
         cwd: src/plugin
         source:
             bower: {}     
