@@ -1,5 +1,3 @@
-/*global define */
-/*jslint white: true, browser: true */
 define([
     'kb_widget/bases/simpleWidget',
     'kb_common/html'
@@ -9,9 +7,10 @@ define([
 ) {
     'use strict';
 
-    var t = html.tag,
+    let t = html.tag,
         div = t('div'),
         span = t('span'),
+        button = t('button'),
         a = t('a');
 
     function myWidget(config) {
@@ -25,7 +24,7 @@ define([
             return this;
         }
         function addButton(w, buttonDef) {
-            var buttons = w.get('buttons');
+            let buttons = w.get('buttons');
             buttonDef.type = 'button';
             if (buttonDef.external) {
                 buttonDef.target = '_blank';
@@ -44,8 +43,8 @@ define([
             w.set('buttons', buttons);
         }
         function renderButton(w, buttonDef) {
-            var label,
-                button, buttonAttribs = {}, labelStyle = {},
+            let label,
+                labelStyle = {},
                 events = [];
 
             if (buttonDef.label) {
@@ -55,7 +54,7 @@ define([
                 labelStyle.fontSize = '150%';
             }
                 
-            buttonAttribs = {
+            let buttonAttribs = {
                 dataButton: buttonDef.name,
                 disabled: buttonDef.disabled,
                 class: ['btn', 'btn-' + (buttonDef.style || 'default'), 'navbar-btn', 'kb-nav-btn'].join(' ')
@@ -70,35 +69,39 @@ define([
                 if (buttonDef.target) {
                     buttonAttribs.target = buttonDef.target;
                 }
-                button = a(buttonAttribs, [
-                    div({class: 'fa fa-' + buttonDef.icon, style: labelStyle}),
-                    label
-                ]);
+                return {
+                    content: a(buttonAttribs, [
+                        div({class: 'fa fa-' + buttonDef.icon, style: labelStyle}),
+                        label
+                    ]),
+                    events: events
+                };
 
-            } else {
-                buttonAttribs.id = w.addDomEvent('click', function (e) {
-                    e.preventDefault();
-                    try {
-                        buttonDef.callback();
-                    } catch (ex) {
-                        console.error('Error running button callback');
-                        console.error(ex);
-                        console.error(buttonDef);
-                    }
-                });
-                button = button(buttonAttribs, [
-                    div({class: 'fa fa-' + buttonDef.icon, style: labelStyle}),
-                    label
-                ]);
             }
+            buttonAttribs.id = w.addDomEvent('click', function (e) {
+                e.preventDefault();
+                try {
+                    buttonDef.callback();
+                } catch (ex) {
+                    console.error('Error running button callback');
+                    console.error(ex);
+                    console.error(buttonDef);
+                }
+            });
             return {
-                content: button,
+                content: button(buttonAttribs, [
+                    div({
+                        class: 'fa fa-' + buttonDef.icon, 
+                        style: labelStyle
+                    }),
+                    label
+                ]),
                 events: events
             };
         }
 
         function renderButtonBar(w) {
-            var content = span({class: 'navbar-buttons kb-widget-buttonbar'}, [
+            let content = span({class: 'navbar-buttons kb-widget-buttonbar'}, [
                 w.get('buttons').list.map(function (buttonDef) {
                     switch (buttonDef.type) {
                     case 'button':
@@ -113,7 +116,7 @@ define([
         }
 
         function enableButton(w, id) {
-            var buttons = w.get('buttons');
+            let buttons = w.get('buttons');
             if (buttons.map[id]) {
                 buttons.map[id].disabled = false;
             }
@@ -121,7 +124,7 @@ define([
         }
 
         function disableButton(w, id) {
-            var buttons = w.get('buttons');
+            let buttons = w.get('buttons');
             if (buttons.map[id]) {
                 buttons.map[id].disabled = true;
             }
@@ -261,7 +264,7 @@ define([
                     });
                 },
                 start: function () {
-                    var widget = this;
+                    let widget = this;
                     this.recv('ui', 'addButton', function (data) {
                         addButton(widget, data);
                     });
