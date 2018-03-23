@@ -16,26 +16,26 @@
         return parseQuery(window.location.search.slice(1));
     }
 
-    function cancelAMD() {
-        var req = root.requirejs;
-        if (req && req.s) {
-            var waiting = req.s.contexts._.registry;
-            Object.keys(waiting).forEach(function (id) {
-                delete waiting[id];
-            });
-        }
-    }
+    // function cancelAMD() {
+    //     var req = root.requirejs;
+    //     if (req && req.s) {
+    //         var waiting = req.s.contexts._.registry;
+    //         Object.keys(waiting).forEach(function (id) {
+    //             delete waiting[id];
+    //         });
+    //     }
+    // }
 
-    function clearStylesheets() {
-        var children = root.document.head.children,
-            i, child;
-        for (i = 0; i < children.length; i += 1) {
-            child = children[i];
-            if (child.tagName === 'LINK' && child.rel === 'stylesheet') {
-                root.document.head.removeChild(child);
-            }
-        }
-    }
+    // function clearStylesheets() {
+    //     var children = root.document.head.children,
+    //         i, child;
+    //     for (i = 0; i < children.length; i += 1) {
+    //         child = children[i];
+    //         if (child.tagName === 'LINK' && child.rel === 'stylesheet') {
+    //             root.document.head.removeChild(child);
+    //         }
+    //     }
+    // }
 
     function cleanBrowser() {
         root.document.body.className = '';
@@ -114,17 +114,17 @@
             renderLayout();
         }
         errorCount += 1;
-        var title = arg.title,
-            content = arg.content
-            .filter(function (paragraph) {
-                if (paragraph) {
-                    return true;
-                }
-                return false;
-            })
-            .map(function (paragraph) {
-                return '<p>' + paragraph + '</p>';
-            }).join('\n'),
+        var title = arg.title;
+        var content = arg.content
+                .filter(function (paragraph) {
+                    if (paragraph) {
+                        return true;
+                    }
+                    return false;
+                })
+                .map(function (paragraph) {
+                    return '<p>' + paragraph + '</p>';
+                }).join('\n'),
             references = (function () {
                 if (arg.references) {
                     return '<ul>' + arg.references.map(function (reference) {

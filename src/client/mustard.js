@@ -1,6 +1,6 @@
 (function () {
+    'use strict';
     function supportsStrictMode() {
-        'use strict';
         if (typeof this === 'undefined') {
             return true;
         }

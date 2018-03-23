@@ -1,7 +1,7 @@
 define([], function () {
     'use strict';
 
-    function factory(config) {
+    function factory() {
         var intervalAlarms = {};
         var listeners = {};
         var currentId = 0;

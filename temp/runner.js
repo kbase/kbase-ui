@@ -3,10 +3,17 @@
 /*eslint strict: ["error", "global"] */
 'use strict';
 var fs = require('fs');
+var path = require('path');
 
 function load(file) {
     var contents = fs.readFileSync(__dirname + '/' + file);
-    return JSON.parse(contents);
+    var testScript = JSON.parse(contents);
+    var pluginId = path.dirname(file);
+    return {
+        plugin: pluginId,
+        file: file,
+        scripts: testScript
+    };
 }
 
 function buildAttribute(element) {
@@ -88,57 +95,7 @@ function doTask(spec, task, testData) {
         } else if (task.match) {
             let toMatch = browser.getText(selector);
             expect(toMatch).toMatch(new RegExp(task.text));
-        } else if (task.number) {
-            let toCompare = browser.getText(selector);
-            expect(toCompare).toBeDefined();
-            let theNumber = Number(toCompare.replace(/,/g, ''));
-           
-            Object.keys(task.number).forEach(function (comparison) {
-                var comparisonValue = task.number[comparison];
-                switch (comparison) {
-                case 'greaterThan':
-                    expect(theNumber).toBeGreaterThan(comparisonValue);
-                    break;
-                case 'greaterThanOrEqual':
-                    expect(theNumber).toBeGreaterThanOrEqual(comparisonValue);
-                    break;                    
-                case 'lessThan':
-                    expect(theNumber).toBeLessThan(comparisonValue);
-                    break;
-                case 'lessThanOrEqual':
-                    expect(theNumber).toBeLessThanOrEqual(comparisonValue);
-                    break;                    
-                case 'equal':
-                    expect(theNumber).toEqual(comparisonValue);
-                    break;                
-                }
-            });
-        } else if (task.count) {
-            // count the elements which matched this selector
-            let toCompare = browser.elements(selector).value.length;
-            expect(toCompare).toBeDefined();
-           
-            Object.keys(task.count).forEach(function (comparison) {
-                var comparisonValue = task.count[comparison];
-                switch (comparison) {
-                case 'greaterThan':
-                    expect(toCompare).toBeGreaterThan(comparisonValue);
-                    break;
-                case 'greaterThanOrEqual':
-                    expect(toCompare).toBeGreaterThanOrEqual(comparisonValue);
-                    break;                    
-                case 'lessThan':
-                    expect(toCompare).toBeLessThan(comparisonValue);
-                    break;
-                case 'lessThanOrEqual':
-                    expect(toCompare).toBeLessThanOrEqual(comparisonValue);
-                    break;                    
-                case 'equal':
-                    expect(toCompare).toEqual(comparisonValue);
-                    break;                
-                }
-            });
-        }
+        } 
 
         // Actions
         if (task.action) {
@@ -173,6 +130,7 @@ function doTask(spec, task, testData) {
             }
         }
     } else if (task.navigate) {
+        console.warn('navigating to', task.navigate.path);
         browser.url('#' + task.navigate.path);
     }
 }
@@ -191,9 +149,11 @@ function doTasks(spec, tasks, testData, common) {
     });
 }
 
-function runTest(test, common) {
+function runTest(script, test, common) {
     var testData = load('../config.json');
-    describe(test.description, function () {
+    var description = 'test => plugin: [' + script.plugin + '], description: ' + test.description;
+    info(description);
+    describe(description, function () {
         if (test.disabled) {
             return;
         }
@@ -216,9 +176,10 @@ function runTest(test, common) {
     });
 }
 
-function runTests(tests, common) {
-    tests.forEach(function (test) {
-        runTest(test, common);
+function runTests(testScript, common) {
+    testScript.scripts.forEach(function (test) {
+        info('\nRunning ' + testScript.scripts.length + ' tests scripts for plugin: ' + testScript.plugin);
+        runTest(testScript, test, common);
     });
 }
 

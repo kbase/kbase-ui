@@ -33,6 +33,6 @@ var pluginTests = files.map(function (file) {
     return runner.load(file);
 });
 
-pluginTests.forEach(function (tests) {
-    return runner.runTests(tests, common);
+pluginTests.forEach(function (script) {
+    return runner.runTests(script, common);
 });

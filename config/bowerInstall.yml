@@ -196,11 +196,17 @@ bowerFiles:
         dir: plotly.js
         cwd: dist
         src: plotly.js
-        bowerComponent: true
+        bowerComponent: true    
     -
         name: kb_common
         dir: kbase-common-js
         cwd: dist/kb_common
+        src: "**/*"
+        bowerComponent: false
+    -
+        name: kb_ko
+        dir: kbase-ko-components-js
+        cwd: src
         src: "**/*"
         bowerComponent: false
     -

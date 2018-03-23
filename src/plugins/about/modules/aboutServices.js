@@ -239,10 +239,10 @@ define([
                 var header = new HttpClient.HttpHeader();
                 header.setHeader('accept', 'application/json');
                 return http.request({
-                        method: 'GET',
-                        url: runtime.config('services.auth2.url'),
-                        header: header
-                    })
+                    method: 'GET',
+                    url: runtime.config('services.auth2.url'),
+                    header: header
+                })
                     .then(function (result) {
                         try {
                             var data = JSON.parse(result.response);
@@ -448,9 +448,9 @@ define([
             });
             vm.dynamicServices.node.innerHTML = html.loading();
             return client.callFunc('list_service_status', [{
-                    is_up: 0,
-                    module_names: ['NarrativeService']
-                }])
+                is_up: 0,
+                module_names: ['NarrativeService']
+            }])
                 .then(function (result) {
                     vm.dynamicServices.node.innerHTML = div({}, [
                         h3('Dynamic Services'),

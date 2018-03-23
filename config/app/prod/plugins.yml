@@ -33,14 +33,14 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 3.7.1
+        version: 3.7.2
         cwd: src/plugin
         source:
             bower: {}
     -
         name: dashboard
         globalName: kbase-ui-plugin-dashboard
-        version: 2.5.1
+        version: 2.5.2
         cwd: src/plugin
         source:
             bower: {}
@@ -118,14 +118,14 @@ plugins:
     -
         name: auth2-client
         globalName: kbase-ui-plugin-auth2-client
-        version: 1.2.18
+        version: 1.2.19
         cwd: src/plugin
         source:
             bower: {}
     -
         name: user-profile
         globalName: kbase-ui-plugin-user-profile
-        version: 1.4.2
+        version: 1.4.4
         cwd: src/plugin
         source:
             bower: {}
@@ -160,7 +160,7 @@ plugins:
     -
         name: jgi-search
         globalName: kbase-ui-plugin-jgi-search
-        version: 0.32.0
+        version: 0.33.1
         cwd: src/plugin
         source:
             bower: {}
@@ -181,7 +181,7 @@ plugins:
     -
         name: feeds
         globalName: kbase-ui-plugin-feeds
-        version: 0.2.0
+        version: 0.3.1
         cwd: src/plugin
         source:
             bower: {}
@@ -209,7 +209,14 @@ plugins:
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.10.6
+        version: 0.13.3
         cwd: src/plugin
         source:
-            bower: {}                           
+            bower: {}     
+    -
+        name: narrative-finder
+        globalName: kbase-ui-plugin-narrative-finder
+        version: 0.1.2
+        cwd: src/plugin
+        source:
+            bower: {}
