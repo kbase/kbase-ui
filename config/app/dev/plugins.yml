@@ -33,7 +33,7 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 3.7.1
+        version: 3.7.2
         cwd: src/plugin
         source:
             bower: {}
@@ -44,6 +44,7 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+            
     # These are just developer
     # -
     #     name: viswidgetdemo
@@ -230,7 +231,7 @@ plugins:
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.13.2
+        version: 0.13.3
         cwd: src/plugin
         source:
             bower: {}
