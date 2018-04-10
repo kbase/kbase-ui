@@ -27,20 +27,20 @@ plugins:
         name: typeview
         globalName: kbase-ui-plugin-typeview
         cwd: src/plugin
-        version: 1.1.1
+        version: 1.2.2
         source:
             bower: {}
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 3.6.1
+        version: 3.7.2
         cwd: src/plugin
         source:
             bower: {}
     -
         name: dashboard
         globalName: kbase-ui-plugin-dashboard
-        version: 2.5.1
+        version: 2.5.2
         cwd: src/plugin
         source:
             bower: {}
@@ -118,14 +118,14 @@ plugins:
     -
         name: auth2-client
         globalName: kbase-ui-plugin-auth2-client
-        version: 1.2.16
+        version: 1.2.21
         cwd: src/plugin
         source:
             bower: {}
     -
         name: user-profile
         globalName: kbase-ui-plugin-user-profile
-        version: 1.4.1
+        version: 1.4.4
         cwd: src/plugin
         source:
             bower: {}
@@ -160,7 +160,7 @@ plugins:
     -
         name: jgi-search
         globalName: kbase-ui-plugin-jgi-search
-        version: 0.31.6
+        version: 0.33.1
         cwd: src/plugin
         source:
             bower: {}
@@ -181,7 +181,7 @@ plugins:
     -
         name: feeds
         globalName: kbase-ui-plugin-feeds
-        version: 0.2.0
+        version: 0.3.1
         cwd: src/plugin
         source:
             bower: {}
@@ -202,14 +202,21 @@ plugins:
     -
         name: catalog
         globalName: kbase-ui-plugin-catalog
-        version: 1.2.1
+        version: 1.2.3
         cwd: src/plugin
         source:
             bower: {}
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.10.0
+        version: 0.13.3
         cwd: src/plugin
         source:
-            bower: {}                           
+            bower: {}     
+    -
+        name: narrative-finder
+        globalName: kbase-ui-plugin-narrative-finder
+        version: 0.1.2
+        cwd: src/plugin
+        source:
+            bower: {}

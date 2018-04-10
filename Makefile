@@ -48,7 +48,17 @@ env             = dev
 DEV_DOCKER_CONTEXT	= $(TOPDIR)/deployment/dev/docker/context
 CI_DOCKER_CONTEXT	= $(TOPDIR)/deployment/ci/docker/context
 PROD_DOCKER_CONTEXT	= $(TOPDIR)/deployment/prod/docker/context
-PROXIER_DOCKER_CONTEXT     = $(TOPDIR)/deployment/proxier/docker/context
+PROXIER_DOCKER_CONTEXT     = $(TOPDIR)/tools/proxier/docker/context
+
+# functions
+# thanks https://stackoverflow.com/questions/10858261/abort-makefile-if-variable-not-set
+check_defined = \
+    $(strip $(foreach 1,$1, \
+        $(call __check_defined,$1,$(strip $(value 2)))))
+__check_defined = \
+    $(if $(value $1),, \
+        $(error Undefined $1$(if $2, ($2))$(if $(value @), \
+                required by target `$@')))
 
 # Standard 'all' target = just do the standard build
 all:
@@ -79,16 +89,20 @@ preconditions:
 # bower install is not part of the build process, since the bower
 # config is not known until the parts are assembled...
 
-install_tools:
+setup-dirs:
+	@echo "> Setting up directories."
+	mkdir -p temp/files
+
+install-tools:
 	@echo "> Installing build and test tools."
 	npm install
 
-init: preconditions install_tools
+init: preconditions setup-dirs install-tools
 
 
 # Perform the build. Build scnearios are supported through the config option
 # which is passed in like "make build config=ci"
-build:
+build: clean-build
 	@echo "> Building."
 	cd mutations; node build $(config)
 
@@ -125,8 +139,8 @@ run-image:
 	@echo "> internal $(internal)"
 	@echo "> libraries $(libraries)"
 	@echo "> To map host directories into the container, you will need to run "
-	@echo ">   deploymnet/tools/run-image.sh with appropriate options."
-	$(eval cmd = $(TOPDIR)/deployment/tools/run-image.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l) $(foreach s,$(services),-s $s))
+	@echo ">   tools/run-image.sh with appropriate options."
+	$(eval cmd = $(TOPDIR)/tools/run-image.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l) $(foreach s,$(services),-s $s))
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
 
@@ -137,13 +151,13 @@ proxier-image:
 	@echo "> Cleaning out old contents"
 	rm -rf $(PROXIER_DOCKER_CONTEXT)/contents
 	mkdir -p $(PROXIER_DOCKER_CONTEXT)/contents
-	@echo "> Copying kb/deployment config templates..."
+	@echo "> Copying proxier config templates..."
 	cp -pr $(PROXIER_DOCKER_CONTEXT)/../src/* $(PROXIER_DOCKER_CONTEXT)/contents
 	@echo "> Beginning docker build..."
 	cd $(PROXIER_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
 
 run-proxier-image:
-	$(eval cmd = $(TOPDIR)/deployment/proxier/tools/run-image.sh $(env))
+	$(eval cmd = $(TOPDIR)/tools/proxier/tools/run-image.sh $(env))
 	@echo "> Running proxier image"
 	@echo "> with env $(env)"
 	@echo "> Issuing: $(cmd)"
@@ -155,6 +169,7 @@ unit-tests:
 	$(KARMA) start test/unit-tests/karma.conf.js
 
 integration-tests:
+	@:$(call check_defined, host, first component of hostname)
 	$(GRUNT) integration-tests --host=$(host)
 
 travis-tests:
@@ -171,6 +186,9 @@ clean:
 
 clean-temp:
 	$(GRUNT) clean:temp
+
+clean-build:
+	$(GRUNT) clean-build
 
 # If you need more clean refinement, please see Gruntfile.js, in which you will
 # find clean tasks for each major build artifact.

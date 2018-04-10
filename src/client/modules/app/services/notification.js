@@ -45,7 +45,7 @@ define([], function () {
 
         // Called whenever a plugin is loaded and the config includes an install
         // property named "notification".
-        function pluginHandler(pluginConfig) {
+        function pluginHandler() {
             // There is no plugin config for this yet.
         }
 

@@ -3,7 +3,7 @@ define([
 ) {
     'use strict';
 
-    function factory(params) {
+    function factory() {
         var subscriptions = [];
 
         function add(subscription) {

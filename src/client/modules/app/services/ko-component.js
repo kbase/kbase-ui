@@ -9,8 +9,7 @@ define([
 ) {
     'use strict';
 
-    function factory(config) {
-        var runtime = config.runtime;
+    function factory() {
         var components = {};
 
         function start() {
@@ -42,7 +41,7 @@ define([
                         require(modulePaths, function (result) {
                             // The result is a component factory which takes no arguments.
                             if (typeof result !== 'function') {
-                                reject(new Error('The component module is not a factory function; perhaps it shouldn\'t be mapped in config.yml'));
+                                reject(new Error('The component module is not a factory function; perhaps it shouldn\'t be mapped in config.yml: ' + modulePaths.join(',')));
                             }
                             try {
                                 ko.components.register(componentConfig.name, result());

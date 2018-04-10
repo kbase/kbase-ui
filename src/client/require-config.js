@@ -1,4 +1,5 @@
 (function (global) {
+    'use strict';
     // For dev this should be set at app load time or manually set
     // if the cache seems to be sticky (it may not be nessary to ALWAYS
     // bust the cache.)
@@ -67,6 +68,7 @@
             'knockout-mapping': 'bower_components/bower-knockout-mapping/knockout.mapping',
             'knockout-plus': 'lib/knockout-plus',
             'knockout-validation': 'bower_components/knockout-validation/knockout.validation',
+            knack: 'kb_kb/lib/knockout-base',
             lodash: 'node_modules/lodash/lodash',
             marked: 'bower_components/marked/marked',
             md5: 'bower_components/spark-md5/spark-md5',

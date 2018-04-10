@@ -12,8 +12,8 @@ define([
     function factory(config) {
         var code = config.code,
             host = config.hostname,
-            clientId = config.clientId,
-            uuid = new Uuid(4).format();
+            clientId = config.clientId;
+            // uuid = new Uuid(4).format();
 
         function encodeQuery(params) {
             return Object.keys(params).map(function (key) {
@@ -25,14 +25,14 @@ define([
             var data = encodeQuery(query);
             var http = new HttpClient.HttpClient();
             return http.request({
-                    method: 'POST',
-                    url: 'https://www.google-analytics.com/collect',
-                    header: new HttpClient.HttpHeader({
-                        'content-type': 'application/x-www-form-urlencoded'
-                    }),
-                    withCredentials: true,
-                    data: data
-                })
+                method: 'POST',
+                url: 'https://www.google-analytics.com/collect',
+                header: new HttpClient.HttpHeader({
+                    'content-type': 'application/x-www-form-urlencoded'
+                }),
+                withCredentials: true,
+                data: data
+            })
                 .catch(function (err) {
                     //alert('boo, it failed. check the log');
                     console.error('ERROR sending to GA', err);

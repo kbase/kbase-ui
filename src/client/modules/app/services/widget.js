@@ -18,8 +18,7 @@ define([
     }
 
     function factory(config) {
-        var widgetManager = widgetManagerFactory.make({runtime: config.runtime}),
-            runtime = config.runtime;
+        var widgetManager = widgetManagerFactory.make({runtime: config.runtime});
 
         function start() {
             return true;

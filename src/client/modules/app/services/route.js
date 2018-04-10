@@ -3,6 +3,7 @@ define([
     'kb_common/router',
     'kb_common/lang'
 ], function (Promise, Router, lang) {
+    'use strict';
     function factory(config) {
         var runtime = config.runtime,
             router = Router.make(config),
@@ -29,21 +30,10 @@ define([
                             authorization: false,
                             widget: 'notFound'
                         }
-                    }
-                    // runtime.send('app', 'route-not-found', ex);
-                    // return;
+                    };
                 } else {
                     throw ex;
                 }
-
-
-
-                // throw new NotFoundException({
-                //     original: req.original,
-                //     path: req.path,
-                //     params: params
-                // });
-
             }
             runtime.send('route', 'routing', handler);
             if (handler.route.authorization) {
@@ -61,6 +51,34 @@ define([
                         params: loginParams
                     });
                     return;
+                }
+            }
+            if (handler.route.rolesRequired) {
+                var roles = runtime.service('session').getRoles();
+                if (!roles.some(function (role) {
+                    return handler.route.rolesRequired.some(function (requiredRole) {
+                        return requiredRole === role.id;
+                    });
+                })) {
+                    handler = {
+                        params: {
+                            title: 'Access Error',
+                            error: 'One or more required roles not available in your account: ' + handler.route.rolesRequired.join(', ')                           
+                        },
+                        route: {
+                            authorization: false,
+                            widget: 'error'
+                        }
+                    };
+                    // throw new Error('One or more required roles not available in your account: ' + handler.route.requiredRoles.join(', '));
+                    // throw new lang.UIError({
+                    //     type: 'ConfiguratonError',
+                    //     name: 'RouterConfigurationError',
+                    //     source: 'installRoute',
+                    //     message: 'invalid route',
+                    //     suggestion: 'Fix the plugin which specified this route.',
+                    //     data: route
+                    // });
                 }
             }
             var route = {
@@ -142,7 +160,7 @@ define([
             eventListeners.push({
                 target: window,
                 type: 'hashchange',
-                listener: function (e) {
+                listener: function () {
                     // $(window).on('hashchange', function () {
                     // NB this is called AFTER it has changed. The browser will do nothing by
                     // default
