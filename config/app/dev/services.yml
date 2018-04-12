@@ -29,6 +29,9 @@ ui:
             developer:
               items: 
                 -
+                  id: narrative-info
+                  auth: true  
+                -
                   id: dagre-example
                   auth: true
                 -
@@ -61,9 +64,6 @@ ui:
                 -
                   id: paveldemo
                   auth: true
-                -
-                  id: narrative-info
-                  auth: true  
                 -             
                   id: databrowser
                   auth: true
