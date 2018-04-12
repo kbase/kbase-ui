@@ -46,6 +46,9 @@ ui:
                 -
                   id: example-gopherjs
                   auth: true
+                # -
+                #   id: example-clojurescript
+                # auth: true
                 -
                   id: reske-admin
                   auth: true
