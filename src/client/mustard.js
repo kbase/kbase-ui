@@ -32,6 +32,14 @@
         // false on Edge and other IEs/browsers.
         failed += 'm';
     }
+
+    // ES6!
+    try {
+        eval('(function() {"use strict"; const x;}())');
+    } catch (ex) {
+        failed += '6';
+    }
+
     if (failed.length > 0) {
         redirect(failed);
     }
