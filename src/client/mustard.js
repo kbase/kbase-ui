@@ -8,7 +8,7 @@
     }
     // ES6!
     // Prior to ES6, const is not a keyword, and in strict mode,
-    // 
+    // using it throws an execption.
     function isES6() {
         try {
             eval('(function() {"use strict"; const x=true;}())');
