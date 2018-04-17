@@ -217,7 +217,7 @@ plugins:
     -
         name: catalog
         globalName: kbase-ui-plugin-catalog
-        version: 1.2.5
+        version: 1.2.6
         cwd: src/plugin
         source:
             bower: {}      
