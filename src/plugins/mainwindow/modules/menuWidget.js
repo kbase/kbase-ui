@@ -27,14 +27,17 @@ define([
             var menu = runtime.service('menu').getCurrentMenu('hamburger');
             var initiallyLoggedIn = runtime.service('session').isLoggedIn();
             var isLoggedIn = ko.observable(initiallyLoggedIn);
-            var roles = runtime.service('session').getRoles().map((role) => {
+            var roles = ko.observableArray(runtime.service('session').getRoles().map((role) => {
                 return role.id;
-            });
+            }));
             // var username = ko.ovservable(runtime.service('session').getUsername());
 
             // TODO: can this just be a more generic change in session state?
             runtime.recv('session', 'change', function () {
                 isLoggedIn(runtime.service('session').isLoggedIn());
+                roles(runtime.service('session').getRoles().map((role) => {
+                    return role.id;
+                }));
             });
 
             var menus = {
