@@ -28,6 +28,9 @@ ui:
                   auth: true
             developer:
               items: 
+                # -
+                #   id: test-lookup
+                #   auth: true
                 -
                   id: dagre-example
                   auth: true
@@ -81,6 +84,7 @@ ui:
                 -
                   id: about-services
                   auth: true
+                  allowRoles: [DevToken]
                 -
                   id: contact-kbase
                   auth: false

@@ -45,6 +45,7 @@ ui:
                 -
                   id: about-services
                   auth: true
+                  allowRoles: [DevToken]
                 -
                   id: contact-kbase
                   auth: false
