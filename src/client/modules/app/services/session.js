@@ -52,7 +52,7 @@ define([
         }
 
         function getRoles() {
-            return auth2Session.getRoles();
+            return auth2Session.getRoles() || [];
         }
 
         function getTokenInfo() {
