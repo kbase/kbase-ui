@@ -29,6 +29,10 @@ ui:
             developer:
               items:
                 -
+                  id: about-services
+                  auth: true
+                  allowRoles: [DevToken]
+                -
                   id: simple-search
                   auth: true           
                 -
@@ -42,10 +46,6 @@ ui:
                 -
                   id: about
                   auth: false
-                -
-                  id: about-services
-                  auth: true
-                  allowRoles: [DevToken]
                 -
                   id: contact-kbase
                   auth: false
