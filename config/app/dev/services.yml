@@ -76,15 +76,15 @@ ui:
                 -
                   id: shockbrowser
                   auth: true
+                -
+                  id: about-services
+                  auth: true
+                  allowRoles: [DevToken]
             help:
               items:
                 -
                   id: about
                   auth: false
-                -
-                  id: about-services
-                  auth: true
-                  allowRoles: [DevToken]
                 -
                   id: contact-kbase
                   auth: false
