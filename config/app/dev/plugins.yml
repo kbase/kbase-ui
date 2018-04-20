@@ -252,7 +252,7 @@ plugins:
     -
         name: test-lookup
         globalName: kbase-ui-plugin-test-lookup
-        version: 0.1.0
+        version: 0.1.1
         cwd: src/plugin
         source: 
             bower: {}
