@@ -231,7 +231,7 @@ plugins:
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.15.0
+        version: 0.15.1
         cwd: src/plugin
         source:
             bower: {}
@@ -260,7 +260,7 @@ plugins:
     -
         name: test-lookup
         globalName: kbase-ui-plugin-test-lookup
-        version: 0.1.0
+        version: 0.1.1
         cwd: src/plugin
         source: 
             bower: {}
