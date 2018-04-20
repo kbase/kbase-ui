@@ -55,6 +55,17 @@ function info() {
     let args = Array.prototype.slice.call(arguments);
     process.stdout.write(args.join(' ') + '\n');
 }
+function interpValue(value, testData) {
+    if (!value) {
+        return value;
+    }
+    if (typeof value !== 'string') {
+        return value;
+    }
+    return value.replace(/^[$](.*)$/, (m, key) => {
+        return testData[key];
+    });
+}
 function doTask(spec, task, testData) {
     if (task.selector) {
         var selector = makeSelector(spec.baseSelector, task.selector);
@@ -62,12 +73,12 @@ function doTask(spec, task, testData) {
         if (task.wait) {
             result = browser.waitForExist(selector, task.wait);
         } if (task.waitForText) {
-            result = browser.waitForText(selector, task.waitForText);
+            result = browser.waitForText(selector, interpValue(task.waitForText, testData));
         } else if (task.waitUntilText) {
             result = browser.waitUntil(function () {
                 try {
                     var text = browser.getText(selector);
-                    return (text === task.waitUntilText.value);
+                    return (text === interpValue(task.waitUntilText.value, testData));
                 } catch (ex) {
                     return false;
                 }
@@ -84,7 +95,7 @@ function doTask(spec, task, testData) {
         // only proceed with a further action if succeeded so far.
         if (task.text) {
             let text = browser.getText(selector);
-            expect(text).toEqual(task.text);
+            expect(text).toEqual(interpValue(task.text, testData));
         } else if (task.match) {
             let toMatch = browser.getText(selector);
             expect(toMatch).toMatch(new RegExp(task.text));
