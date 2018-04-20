@@ -17,13 +17,6 @@ plugins:
     # external:
     # These are shared with production
     -
-        name: narrative-info
-        globalName: kbase-ui-plugin-narrative-info
-        version: 0.1.0
-        cwd: src/plugin
-        source:
-            directory: {}
-    -
         name: viswidgets
         globalName: kbase-ui-plugin-vis-widgets
         cwd: src/plugin
@@ -256,6 +249,14 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}    
+
+    -
+        name: narrative-info
+        globalName: kbase-ui-plugin-narrative-info
+        version: 0.1.0
+        cwd: src/plugin
+        source:
+            bower: {}
     # -
     #     name: example-clojurescript
     #     globalName: kbase-ui-plugin-example-clojurescript
