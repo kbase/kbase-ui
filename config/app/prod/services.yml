@@ -44,6 +44,10 @@ ui:
                   id: about-services
                   auth: true
                   allowRoles: [DevToken]
+                -
+                  id: narrative-info
+                  auth: true  
+                  allow: [alpha]
             help:
               items:
                 -
