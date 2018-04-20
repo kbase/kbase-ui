@@ -32,6 +32,9 @@ ui:
                 #   id: test-lookup
                 #   auth: true
                 -
+                  id: narrative-info
+                  auth: true  
+                -
                   id: dagre-example
                   auth: true
                 -
@@ -67,7 +70,7 @@ ui:
                 -
                   id: paveldemo
                   auth: true
-                -
+                -             
                   id: databrowser
                   auth: true
                 -

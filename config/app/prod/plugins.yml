@@ -220,3 +220,10 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: narrative-info
+        globalName: kbase-ui-plugin-narrative-info
+        version: 0.1.0
+        cwd: src/plugin
+        source:
+            bower: {}
