@@ -82,7 +82,6 @@ ui:
                 -
                   id: about-services
                   auth: true
-                  allowRoles: [DevToken]
             help:
               items:
                 -
