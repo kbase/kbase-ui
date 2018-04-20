@@ -29,24 +29,20 @@ ui:
             developer:
               items:
                 -
-                  id: simple-search
-                  auth: true           
-                  allowRoles: [DevToken]
-                -
-                  id: reske-admin
-                  auth: true
-                  allowRoles: [DevToken]
-                -
-                  id: staging-browser
-                  auth: true
-                  allowRoles: [DevToken]
-                -
                   id: about-services
                   auth: true
                   allowRoles: [DevToken]
                 -
+                  id: simple-search
+                  auth: true           
+                  allowRoles: [DevToken]
+                -
                   id: narrative-info
-                  auth: true  
+                  auth: true
+                  allow: [alpha]
+                -
+                  id: reske-admin
+                  auth: true
                   allow: [alpha]
             help:
               items:
