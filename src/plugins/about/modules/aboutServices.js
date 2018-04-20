@@ -494,7 +494,7 @@ define([
         }
 
         function start() {
-            runtime.send('ui', 'setTitle', 'About the <strike>FUNctional Site</strike> UI');
+            runtime.send('ui', 'setTitle', 'KBase Services Runtime Status');
             return render();
         }
 

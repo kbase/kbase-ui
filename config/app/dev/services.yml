@@ -28,6 +28,9 @@ ui:
                   auth: true
             developer:
               items: 
+                # -
+                #   id: test-lookup
+                #   auth: true
                 -
                   id: narrative-info
                   auth: true  
@@ -49,6 +52,9 @@ ui:
                 -
                   id: example-gopherjs
                   auth: true
+                # -
+                #   id: example-clojurescript
+                # auth: true
                 -
                   id: reske-admin
                   auth: true
@@ -73,15 +79,15 @@ ui:
                 -
                   id: shockbrowser
                   auth: true
-   
+                -
+                  id: about-services
+                  auth: true
+                  allowRoles: [DevToken]
             help:
               items:
                 -
                   id: about
                   auth: false
-                -
-                  id: about-services
-                  auth: true
                 -
                   id: contact-kbase
                   auth: false

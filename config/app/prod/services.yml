@@ -31,20 +31,24 @@ ui:
                 -
                   id: simple-search
                   auth: true           
+                  allowRoles: [DevToken]
                 -
                   id: reske-admin
                   auth: true
+                  allowRoles: [DevToken]
                 -
                   id: staging-browser
                   auth: true
+                  allowRoles: [DevToken]
+                -
+                  id: about-services
+                  auth: true
+                  allowRoles: [DevToken]
             help:
               items:
                 -
                   id: about
                   auth: false
-                -
-                  id: about-services
-                  auth: true
                 -
                   id: contact-kbase
                   auth: false
