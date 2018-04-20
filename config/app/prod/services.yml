@@ -43,12 +43,7 @@ ui:
                 -
                   id: reske-admin
                   auth: true
-                  allow: [alpha]     
-                -
-                  id: staging-browser
-                  auth: true
                   allow: [alpha]
-
             help:
               items:
                 -
