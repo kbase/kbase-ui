@@ -16,6 +16,12 @@ define([
             runtime = config.runtime,
             hostNode, container;
 
+        function intersect(a1, a2) {
+            return a1.some(function (a) {
+                return a2.indexOf(a) >= 0;
+            });
+        }
+    
 
         function attach(node) {
             hostNode = node;
@@ -27,7 +33,7 @@ define([
             var menu = runtime.service('menu').getCurrentMenu('hamburger');
             var initiallyLoggedIn = runtime.service('session').isLoggedIn();
             var isLoggedIn = ko.observable(initiallyLoggedIn);
-            var roles = ko.observableArray(runtime.service('session').getRoles().map((role) => {
+            var userRoles = ko.observableArray(runtime.service('session').getRoles().map((role) => {
                 return role.id;
             }));
             // var username = ko.ovservable(runtime.service('session').getUsername());
@@ -35,54 +41,52 @@ define([
             // TODO: can this just be a more generic change in session state?
             runtime.recv('session', 'change', function () {
                 isLoggedIn(runtime.service('session').isLoggedIn());
-                roles(runtime.service('session').getRoles().map((role) => {
+                userRoles(runtime.service('session').getRoles().map((role) => {
                     return role.id;
                 }));
             });
+
+            var allowedTags = runtime.config('ui.allow', []);
 
             var menus = {
                 main: ko.observableArray(menu.main).filter(function (item) {
                     if (!isLoggedIn() && item.authRequired) {
                         return false;
                     }
-                    if (item.allowRoles) {
-                        if (!item.allowRoles.some((allowedRole) => {
-                            return roles.indexOf(allowedRole) >= 0;
-                        })) {
-                            return false;
-                        }
+                    if (item.allow) {
+                        return intersect(item.allow, allowedTags);
                     }
-                        
+                    if (item.allowRoles) {
+                        return intersect(item.allowRoles, userRoles);
+                    }
                     return true;
                 }),
                 developer: ko.observableArray(menu.developer).filter(function (item) {
                     if (!isLoggedIn() && item.authRequired) {
                         return false;
                     }
-                    if (item.allowRoles) {
-                        if (!item.allowRoles.some((allowedRole) => {
-                            return roles.indexOf(allowedRole) >= 0;
-                        })) {
-                            return false;
-                        }
+                    if (item.allow) {
+                        return intersect(item.allow, allowedTags);
                     }
+                    if (item.allowRoles) {
+                        return intersect(item.allowRoles, userRoles);
+                    }                        
                     return true;
                 }),
                 help: ko.observableArray(menu.help).filter(function (item) {
                     if (!isLoggedIn() && item.authRequired) {
                         return false;
                     }
-                    if (item.allowRoles) {
-                        if (!item.allowRoles.some((allowedRole) => {
-                            return roles.indexOf(allowedRole) >= 0;
-                        })) {
-                            return false;
-                        }
+                    if (item.allow) {
+                        return intersect(item.allow, allowedTags);
                     }
+                    if (item.allowRoles) {
+                        return intersect(item.allowRoles, userRoles);
+                    }                        
                     return true;
                 })
             };
-           
+
             return {
                 menu: menus,
                 isLoggedIn: isLoggedIn
