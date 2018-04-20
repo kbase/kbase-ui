@@ -28,9 +28,9 @@ ui:
                   auth: true
             developer:
               items: 
-                # -
-                #   id: test-lookup
-                #   auth: true
+                -
+                  id: test-lookup
+                  auth: true
                 -
                   id: dagre-example
                   auth: true
