@@ -6,12 +6,16 @@
         }
         return false;
     }
+
+   
     // ES6!
     // Prior to ES6, const is not a keyword, and in strict mode,
-    // using it throws an execption.
+    // using it throws an execption. (works for Safari < 10)
+    // In FF class is a reserved word but not implemented (FF < 45)
+
     function isES6() {
         try {
-            eval('(function() {"use strict"; const x=true;}())');
+            eval('(function() {"use strict"; const x=true; class X{};}())');
             return true;
         } catch (ex) {
             return false;
