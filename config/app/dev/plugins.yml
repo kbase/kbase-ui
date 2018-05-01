@@ -253,7 +253,7 @@ plugins:
     -
         name: narrative-info
         globalName: kbase-ui-plugin-narrative-info
-        version: 0.1.4
+        version: 0.1.5
         cwd: src/plugin
         source:
             bower: {}
