@@ -51,7 +51,7 @@
             ]
         },
         "waitForText": 10000,
-        "text": "eapearson"
+        "text": "$username"
     },
     {
         "title": "close menu",

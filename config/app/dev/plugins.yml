@@ -27,13 +27,13 @@ plugins:
         name: typeview
         globalName: kbase-ui-plugin-typeview
         cwd: src/plugin
-        version: 1.1.1
+        version: 1.2.2
         source:
             bower: {}
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 3.7.2
+        version: 3.7.3
         cwd: src/plugin
         source:
             bower: {}
@@ -44,6 +44,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    # -
+    #     name: dashboard2
+    #     globalName: kbase-ui-plugin-dashboard2
+    #     version: 0.1.0
+    #     cwd: src/plugin
+    #     source:
+    #         bower: {}            
             
     # These are just developer
     # -
@@ -119,7 +126,7 @@ plugins:
     -
         name: auth2-client
         globalName: kbase-ui-plugin-auth2-client
-        version: 1.2.19
+        version: 1.2.22
         cwd: src/plugin
         source:
             bower: {}
@@ -161,7 +168,7 @@ plugins:
     -
         name: jgi-search
         globalName: kbase-ui-plugin-jgi-search
-        version: 0.33.1
+        version: 0.33.3
         cwd: src/plugin
         source:
             bower: {}
@@ -217,7 +224,7 @@ plugins:
     -
         name: catalog
         globalName: kbase-ui-plugin-catalog
-        version: 1.2.3
+        version: 1.2.7
         cwd: src/plugin
         source:
             bower: {}      
@@ -231,7 +238,7 @@ plugins:
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.13.3
+        version: 0.15.2
         cwd: src/plugin
         source:
             bower: {}
@@ -249,6 +256,21 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}    
+
+    -
+        name: narrative-info
+        globalName: kbase-ui-plugin-narrative-info
+        version: 0.1.5
+        cwd: src/plugin
+        source:
+            bower: {}
+    -
+        name: test-lookup
+        globalName: kbase-ui-plugin-test-lookup
+        version: 0.1.1
+        cwd: src/plugin
+        source: 
+            bower: {}
     # -
     #     name: example-clojurescript
     #     globalName: kbase-ui-plugin-example-clojurescript

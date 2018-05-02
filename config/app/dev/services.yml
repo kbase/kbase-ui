@@ -29,6 +29,12 @@ ui:
             developer:
               items: 
                 -
+                  id: test-lookup
+                  auth: true
+                -
+                  id: narrative-info
+                  auth: true  
+                -
                   id: dagre-example
                   auth: true
                 -
@@ -46,6 +52,9 @@ ui:
                 -
                   id: example-gopherjs
                   auth: true
+                # -
+                #   id: example-clojurescript
+                # auth: true
                 -
                   id: reske-admin
                   auth: true
@@ -61,7 +70,7 @@ ui:
                 -
                   id: paveldemo
                   auth: true
-                -
+                -             
                   id: databrowser
                   auth: true
                 -
@@ -70,14 +79,14 @@ ui:
                 -
                   id: shockbrowser
                   auth: true
+                -
+                  id: about-services
+                  auth: true
             help:
               items:
                 -
                   id: about
                   auth: false
-                -
-                  id: about-services
-                  auth: true
                 -
                   id: contact-kbase
                   auth: false

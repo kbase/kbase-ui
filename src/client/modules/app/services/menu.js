@@ -75,6 +75,7 @@ define([
                 beta: menuItemDef.beta || false,
                 // These are from the ui menu item spec
                 allow: menuItemSpec.allow || null,
+                allowRoles: menuItemSpec.allowRoles || null,
                 authRequired: menuItemSpec.auth ? true : false
             };
             

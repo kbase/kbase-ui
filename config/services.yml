@@ -81,6 +81,9 @@ services:
     # to reach this service.
     # jgi_gateway:
     #      url: '{{ deploy.services.urlBase }}/services/jgi_gateway/rpc'
+    # KBaseSearchEngine:
+    #     url: '{{deploy.services.urlBase}}/services/searchapi2'
+    #     name: Local Search
 resources:
     docSite:
         base:

@@ -29,22 +29,26 @@ ui:
             developer:
               items:
                 -
+                  id: about-services
+                  auth: true
+                  allowRoles: [DevToken]
+                -
                   id: simple-search
                   auth: true           
+                  allowRoles: [DevToken]
+                -
+                  id: narrative-info
+                  auth: true
+                  allow: [alpha]
                 -
                   id: reske-admin
                   auth: true
-                -
-                  id: staging-browser
-                  auth: true
+                  allow: [alpha]
             help:
               items:
                 -
                   id: about
                   auth: false
-                -
-                  id: about-services
-                  auth: true
                 -
                   id: contact-kbase
                   auth: false

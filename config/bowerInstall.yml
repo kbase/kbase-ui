@@ -204,8 +204,20 @@ bowerFiles:
         src: "**/*"
         bowerComponent: false
     -
+        name: kb_lib
+        dir: kbase-common-es6
+        cwd: src
+        src: '**/*'
+        bowerComponent: false
+    -
         name: kb_ko
         dir: kbase-ko-components-js
+        cwd: src
+        src: "**/*"
+        bowerComponent: false
+    -
+        name: kb_knockout
+        dir: kbase-knockout-extensions-es6
         cwd: src
         src: "**/*"
         bowerComponent: false

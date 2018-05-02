@@ -38,6 +38,10 @@ define([
                     color: '#000',
                     backgroundColor: 'rgba(200, 200, 200, 0.5)'
                 },
+                focus: {
+                    color: '#000',
+                    backgroundColor: 'rgba(200, 200, 200, 0.5)'
+                },
                 active: {
                     color: '#000',
                     backgroundColor: 'rgba(200, 200, 200, 0.5)'

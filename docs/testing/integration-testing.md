@@ -42,7 +42,9 @@ Before running the tests, you must:
 
 Okay, that last step is a new one. The integration tests consult a single configuration file for information which cannot be included in the codebase itself. The following values must be set:
 
-- Token - copy a valid login or dev token into this property
+- token - copy a valid login or dev token into this property
+- username - copy the username associated with this token
+- relname - copy the "realname" (as set in the auth2 record) for this token
 
 Then, in a separate terminal in the kbase-ui root directory, enter the following command:
 
