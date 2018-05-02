@@ -29,6 +29,7 @@ none
 - [SCT-744] module link didn't support link without version
 - [SCT-820] add browser capability test to catch FF < 45
 - [PTV-1053] remove service status from production menu
+- add missing read object icon
 
 ## Dependency Changes
 
@@ -39,7 +40,18 @@ kbase-ui-plugin-auth2-client: 1.2.19 -> 1.2.22
 kbase-ui-plugin-jgi-search: 0.33.1 -> 0.33.3
 kbase-ui-plugin-catalog: 1.2.3 -> 1.2.7
 data-search: 0.13.3 -> 0.15.1
+kbase-ui-widget: 1.2.1 -> 1.3.0
+kbase-common-es6: -> 0.1.0
+kbase-knockout-extensions-es6: -> 0.1.1
 
 prototyping:
 kbase-ui-plugin-narrative-info: 0.1.1
 kbase-ui-plugin-test-lookup: 0.1.1
+
+external sources:
+highlightjs: 9.10.0 -> 9.12.0
+js-yaml: 3.10.0 -> 3.11.0
+numeral: 2.0.4 -> 2.0.6
+momentjs: 2.20.1 -> 2.22.1
+marked: 0.3.12 -> 0.3.19
+knockout: 3.5.0-beta -> 3.5.0-rc
