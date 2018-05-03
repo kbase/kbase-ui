@@ -277,7 +277,7 @@ plugins:
         version: 0.1.0
         cwd: src/plugin
         source:
-            directory: {}
+            bower: {}
     # -
     #     name: example-clojurescript
     #     globalName: kbase-ui-plugin-example-clojurescript
