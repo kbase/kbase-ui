@@ -47,6 +47,10 @@ services:
         aliases: ['narrative_job_service']
         url: '{{ deploy.services.urlBase }}/services/njs_wrapper'
         name: Narrative Job Service
+    KBaseDataImport:
+        aliases: ['data_import_export']
+        url: '{{ deploy.services.urlBase }}/services/data_import_export'
+        name: Data Import Export
     KBaseRelationEngine:
         aliases: ['reske']
         url: '{{ deploy.services.urlBase }}/services/reske'
