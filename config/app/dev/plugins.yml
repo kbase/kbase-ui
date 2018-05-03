@@ -260,7 +260,7 @@ plugins:
     -
         name: narrative-info
         globalName: kbase-ui-plugin-narrative-info
-        version: 0.1.5
+        version: 1.1.1
         cwd: src/plugin
         source:
             bower: {}
@@ -270,6 +270,13 @@ plugins:
         version: 0.1.1
         cwd: src/plugin
         source: 
+            bower: {}
+    -
+        name: report-viewer
+        globalName: kbase-ui-plugin-report-viewer
+        version: 0.1.0
+        cwd: src/plugin
+        source:
             bower: {}
     # -
     #     name: example-clojurescript
