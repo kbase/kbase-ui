@@ -15,6 +15,7 @@ none
 ### UNRELEASED
 
 - [SCT-805] narrative info ui improvements
+- [SCT-871] new report viewer landing page plugin, only in local dev build
 
 ### IMPROVEMENTS
 
