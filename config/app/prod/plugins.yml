@@ -227,3 +227,11 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: report-viewer
+        globalName: kbase-ui-plugin-report-viewer
+        version: 0.1.2
+        cwd: src/plugin
+        source:
+            bower: {}
+            
