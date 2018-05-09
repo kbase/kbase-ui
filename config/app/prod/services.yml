@@ -44,6 +44,10 @@ ui:
                   id: reske-admin
                   auth: true
                   allow: [alpha]
+                -
+                  id: dashboard2
+                  auth: true
+                  allowRoles: [DevToken]                  
             help:
               items:
                 -

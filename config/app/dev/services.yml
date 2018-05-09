@@ -28,6 +28,9 @@ ui:
                   auth: true
             developer:
               items: 
+                - 
+                  id: dashboard2
+                  auth: true
                 -
                   id: test-lookup
                   auth: true

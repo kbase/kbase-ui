@@ -88,6 +88,12 @@ services:
     # KBaseSearchEngine:
     #     url: '{{deploy.services.urlBase}}/services/searchapi2'
     #     name: Local Search
+    # NarrativeService:
+    #     url: '{{deploy.services.urlBase}}/services/NarrativeService'
+    #     name: 'Narrative Service'
+    # DashboardService:
+    #     url: '{{deploy.services.urlBase}}/services/DashboardService'
+    #     name: 'Dashboard Service'
 resources:
     docSite:
         base:
