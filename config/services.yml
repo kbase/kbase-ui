@@ -94,6 +94,9 @@ services:
     # DashboardService:
     #     url: '{{deploy.services.urlBase}}/services/DashboardService'
     #     name: 'Dashboard Service'
+    # UIService:
+    #     url: '{{deploy.services.urlBase}}/services/UIService'
+    #     name: 'UI Service'
 resources:
     docSite:
         base:

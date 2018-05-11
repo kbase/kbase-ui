@@ -41,6 +41,25 @@
     padding-top: 1em;
 }
 
+.plugin-mainwindow.widget-mainwindow.-main>.-body>.-content-area {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    /* padding-top: 1em; */
+}
+
+.plugin-mainwindow.widget-mainwindow.-main>.-body>.-content-area>.-notification-banner {
+    flex: 0 0 0px;
+}
+
+.plugin-mainwindow.widget-mainwindow.-main>.-body>.-content-area>.-plugin-content {
+    flex: 1 1 0px;
+    overflow: auto;
+    display:flex;
+    flex-direction: column;
+    padding-top: 1em;
+}
 
 /* Own */
 

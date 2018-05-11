@@ -90,9 +90,21 @@ define([
                         id: widgetSet.addWidget('kb_mainWindow_sidebarNav')
                     }),
                     div({
-                        class: '-content',
-                        id: widgetSet.addWidget('body')
-                    })
+                        class: '-content-area'
+                    }, [
+                        div({
+                            class: '-notification-banner',
+                            id: widgetSet.addWidget('kb_mainWindow_notificationBanner')
+                        }),
+                        div({
+                            class: '-plugin-content',
+                            id: widgetSet.addWidget('body')
+                        })
+                    ])
+                    // div({
+                    //     class: '-content',
+                    //     id: widgetSet.addWidget('body')
+                    // })
                 ])
             ].join('');
         }

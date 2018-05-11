@@ -85,6 +85,14 @@ case $key in
     shift # past argument
     shift # past value
     ;;
+    ### Internal ui services, located within modules/app/services
+    -d|--data)
+    data="$2"
+    echo "Using internal data: ${data}"
+    mounts="$mounts --mount type=bind,src=${root}/src/client/data/${data},dst=/kb/deployment/services/kbase-ui/data/${data}"
+    shift # past argument
+    shift # past value
+    ;;
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later
     shift # past argument

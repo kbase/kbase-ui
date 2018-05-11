@@ -3,9 +3,13 @@ define([
     'uuid',
     './hub',
     'kb_common/props',
+    'kb_knockout/load',
+
     'yaml!config/plugin.yml',
     'json!config/config.json',
     'json!deploy/config.json',
+
+    // For effect
     'bootstrap',
     'css!font_awesome',
     'css!app/styles/kb-bootstrap',
@@ -17,6 +21,7 @@ define([
     Uuid,
     Hub,
     Props,
+    knockoutLoader,
     pluginConfig,
     appConfigBase,
     deployConfig
@@ -155,7 +160,13 @@ define([
                 services: appConfig.ui.services
             });
             global.setItem('app', app);
-            return app.start();
+            return knockoutLoader.load()
+                .then((ko) => {
+                    // Knockout Defaults
+                    ko.options.deferUpdates = true;
+
+                    return app.start();
+                });
         }
     };
 });
