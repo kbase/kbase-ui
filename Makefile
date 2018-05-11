@@ -140,7 +140,7 @@ run-image:
 	@echo "> libraries $(libraries)"
 	@echo "> To map host directories into the container, you will need to run "
 	@echo ">   tools/run-image.sh with appropriate options."
-	$(eval cmd = $(TOPDIR)/tools/run-image.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l) $(foreach s,$(services),-s $s))
+	$(eval cmd = $(TOPDIR)/tools/run-image.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l) $(foreach s,$(services),-s $s)  $(foreach d,$(data),-d $d))
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
 
