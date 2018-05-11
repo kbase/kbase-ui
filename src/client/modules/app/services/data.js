@@ -1,9 +1,11 @@
 define([
     'jquery',
-    'bluebird'
+    'bluebird',
+    'kb_common_ts/HttpClient'
 ], function (
     $,
-    Promise
+    Promise,
+    HttpClient
 ) {
     'use strict';
 
@@ -23,33 +25,24 @@ define([
         }
 
         function getJson(arg) {
-            if (arg.sync) {
-                var returnData;
-                $.get({
-                    url: '/data/' + arg.path + '/' + arg.file + '.json', // should not be hardcoded!! but figure that out later
-                    async: false,
-                    dataType: 'json',
-                    success: function (data) {
-                        returnData = data;
-                    },
-                    error: function (err) {
-                        throw {
-                            type: 'AjaxError',
-                            reason: 'Unknown',
-                            message: 'There was an error fetching this data object',
-                            data: {
-                                arg: arg,
-                                error: err
-                            }
-                        };
-                        // throw new Error('Error getting data: ' + arg.file);
+            let url = '/data/' + arg.path + '/' + arg.file + '.json';
+            let http = new HttpClient.HttpClient();
+            return http.request({
+                method: 'GET',
+                url: url
+            })
+                .then((result) => {
+                    if (result.status === 200) {
+                        try {
+                            return JSON.parse(result.response);
+                        } catch (ex) {
+                            throw new Error('Error parsing response as JSON: ' + ex.message);
+                        }
+                    } else {
+                        throw new Error('Error fetching file: ' + result.status);
                     }
-                    //complete: function (jq, status) {
-                    // }
                 });
-                return returnData;
-            }
-            return new Promise.resolve($.get('/data/' + arg.path + '/' + arg.file + '.json'));
+               
         }
         return {
             start: start,

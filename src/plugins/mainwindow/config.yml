@@ -80,3 +80,7 @@ install:
             module: widgets/notFound
             id: notFound
             type: factory
+        -
+            module: notificationBanner
+            id: kb_mainWindow_notificationBanner
+            type: factory

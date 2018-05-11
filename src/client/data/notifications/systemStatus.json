@@ -1,0 +1,32 @@
+{
+    "upcomingMaintenanceWindows": [
+        {
+            "startAt": "2018-05-11T10:00-07:00",
+            "endAt": "2018-05-11T11:00-07:00",
+            "title": "Demo Day!",
+            "message": [
+                "Here is to a successful KBase Demo Day 🙏", 
+                "BTW this is a demo of the system status and alert widget 😂 ",
+                "Feel free to close an alert. It will not reappear (unless modified) during this ui session.",
+                "It gets a little ridiculous when the message is long."
+            ]
+        },
+        {
+            "startAt": "2018-05-10T18:43:00-07:00",
+            "endAt": "2018-05-10T18:44:00-07:00",
+            "title": "short one",
+            "message": [
+                "this is a short one..."
+            ]
+        },
+        {
+            "startAt": "2018-05-11T03:00:00+00:00",
+            "endAt": "2018-05-11T04:00:00+00:00",
+            "message": [
+                "We will be performing system maintenance on Thursday, May 10, 2018, from approximately 8pm to 9pm Pacific time (10pm-11pm CDT).",
+                "All production services will be unavailable for portions of this window."
+            ]
+        }
+    ],
+    "currentOutages": []
+}
