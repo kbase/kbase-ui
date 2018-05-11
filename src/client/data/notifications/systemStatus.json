@@ -1,8 +1,8 @@
 {
     "upcomingMaintenanceWindows": [
         {
-            "startAt": "2018-05-11T10:00-07:00",
-            "endAt": "2018-05-11T11:00-07:00",
+            "startAt": "2018-05-10T11:00-07:00",
+            "endAt": "2018-05-10T12:00-07:00",
             "title": "Demo Day!",
             "message": [
                 "Here is to a successful KBase Demo Day 🙏", 
@@ -12,11 +12,19 @@
             ]
         },
         {
-            "startAt": "2018-05-10T18:43:00-07:00",
-            "endAt": "2018-05-10T18:44:00-07:00",
+            "startAt": "2018-05-11T12:00-07:00",
+            "endAt": "2018-05-11T13:00-07:00",
+            "title": "Lunch!",
+            "message": [
+                "Enjoy: 🌮, 🍜, 🍔, 🍏 , 🍼, 🍛, 🍣, 🥕"
+            ]
+        },
+        {
+            "startAt": "2018-05-10T12:37:00-07:00",
+            "endAt": "2018-05-10T12:37:00-07:00",
             "title": "short one",
             "message": [
-                "this is a short one..."
+                "testing..."
             ]
         },
         {

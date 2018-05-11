@@ -26,6 +26,10 @@ define([
     let styles = html.makeStyles({
         component: {
             css: {
+            }
+        },
+        wrapper: {
+            css: {
                 margin: '0 10px 10px 10px',                
             }
         }
@@ -299,13 +303,17 @@ define([
             class: styles.classes.component
         }, [
             gen.if('error()', 
-                buildError(),
+                div({
+                    class: styles.classes.wrapper
+                }, buildError()),
                 gen.if('maintenanceNotifications().length > 0',
-                    [
+                    div({
+                        class: styles.classes.wrapper
+                    }, [
                         buildHeader(),
                         gen.foreach('maintenanceNotifications()', 
                             gen.ifnot('read', buildMaintenanceNotification()))
-                    ]))
+                    ])))
         ]);
     }
 
