@@ -1,11 +1,13 @@
 define([
     'knockout',
     'kb_common/html',
+    'lib/rpc',
     './components/systemAlertBanner',
     'bootstrap'
 ], function (
     ko,
     html,
+    RPC,
     SystemAlertBannerComponent
 ) {
     'use strict';
@@ -17,6 +19,17 @@ define([
             hostNode, container;
 
         var timer;
+
+        function getActiveAlerts() {
+            let rpc = new RPC({
+                runtime: runtime
+            });
+
+            return rpc.call('UIService', 'get_active_alerts', [])
+                .spread((result) => {
+                    return result;
+                });
+        }
 
         function attach(node) {
             hostNode = node;
@@ -33,12 +46,16 @@ define([
 
             // load any notifications
             function loadNotifications() {
-                return runtime.service('data').getJson({
-                    path:'notifications',
-                    file: 'systemStatus'
-                })
+                // return runtime.service('data').getJson({
+                //     path:'notifications',
+                //     file: 'systemStatus'
+                // })
+                getActiveAlerts()
                     .then((data) => {
-                        vm.systemStatus(data);
+                        let systemStatus = {
+                            upcomingMaintenanceWindows: data
+                        };
+                        vm.systemStatus(systemStatus);
                         vm.error(null);
                     })
                     .catch((err) => {
