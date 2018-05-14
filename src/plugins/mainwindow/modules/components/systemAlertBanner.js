@@ -30,7 +30,7 @@ define([
         },
         wrapper: {
             css: {
-                margin: '0 10px 10px 10px',                
+                margin: '0 0px 10px 0px',                
             }
         }
     });
@@ -256,7 +256,7 @@ define([
                 }
             }, [
                 'System',
-                gen.plural('maintenanceNotifications().length === 1', ' Alert', ' Alerts')
+                gen.plural('maintenanceNotifications().length', ' Alert', ' Alerts')
             ])),
             div({
                 style: {
