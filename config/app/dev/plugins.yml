@@ -238,7 +238,7 @@ plugins:
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.16.2
+        version: 0.17.0
         cwd: src/plugin
         source:
             bower: {}
@@ -278,6 +278,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    # -
+    #     name: ui-service
+    #     globalName: kbase-ui-plugin-ui-service
+    #     version: 0.1.0
+    #     cwd: src/plugins
+    #     source:
+    #         directory: {}
     # -
     #     name: example-clojurescript
     #     globalName: kbase-ui-plugin-example-clojurescript
