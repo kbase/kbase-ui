@@ -81,6 +81,6 @@ install:
             id: notFound
             type: factory
         -
-            module: notificationBanner
-            id: kb_mainWindow_notificationBanner
+            module: systemAlertBanner
+            id: kb_mainWindow_systemAlertBanner
             type: factory
