@@ -94,7 +94,7 @@ define([
                     }, [
                         div({
                             class: '-notification-banner',
-                            id: widgetSet.addWidget('kb_mainWindow_notificationBanner')
+                            id: widgetSet.addWidget('kb_mainWindow_systemAlertBanner')
                         }),
                         div({
                             class: '-plugin-content',
