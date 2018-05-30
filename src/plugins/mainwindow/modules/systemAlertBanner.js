@@ -1,14 +1,12 @@
 define([
     'knockout',
     'kb_common/html',
-    'lib/rpc',
     'kb_lib/poller',
     './components/systemAlertBanner',
     'bootstrap'
 ], function (
     ko,
     html,
-    RPC,
     poller,
     SystemAlertBannerComponent
 ) {
@@ -23,11 +21,11 @@ define([
         let newAlertsPoller;
 
         function getActiveAlerts() {
-            let rpc = new RPC({
-                runtime: runtime
+            let client = new runtime.service('rpc').makeClient({
+                module: 'UIService'
             });
 
-            return rpc.call('UIService', 'get_active_alerts', [])
+            return client.callFunc('get_active_alerts', [])
                 .spread((result) => {
                     return result;
                 });

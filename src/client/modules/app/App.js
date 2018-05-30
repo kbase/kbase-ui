@@ -7,21 +7,21 @@
     - provide runtime api for config, services, and comm
 */
 define([
-    '../lib/pluginManager',
+    'lib/pluginManager',
+    'lib/appServiceManager',
     './runtime',
     'kb_common/messenger',
     'kb_common/props',
     'kb_widget/widgetMount',
-    'kb_common/asyncQueue',
-    'kb_common/appServiceManager',
+    'kb_common/asyncQueue'
 ], function (
     pluginManagerFactory,
+    AppServiceManager,
     Runtime,
     messengerFactory,
     Props,
     widgetMountFactory,
-    asyncQueue,
-    AppServiceManager
+    asyncQueue
 ) {
     'use strict';
 

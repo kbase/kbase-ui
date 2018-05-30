@@ -1,5 +1,3 @@
-/*global define*/
-/*jslint white:true*/
 define([
     'bluebird',
     'kb_common/html',
@@ -12,6 +10,11 @@ define([
     NarrativeManagerService
 ) {
     'use strict';
+
+    var t = html.tag,
+        div = t('div'),
+        a = t('a'),
+        p = t('p');
 
     function factory(config) {
         var mount, container, runtime = config.runtime,
@@ -58,10 +61,10 @@ define([
                 }
 
                 return narrativeManager.createTempNarrative({
-                        cells: cells,
-                        parameters: appData,
-                        importData: importData
-                    })
+                    cells: cells,
+                    parameters: appData,
+                    importData: importData
+                })
                     .then(function (info) {
                         var wsId = info.narrativeInfo.wsid,
                             objId = info.narrativeInfo.id,
@@ -77,7 +80,6 @@ define([
         }
 
         function wrapPanel(content) {
-            var div = html.tag('div');
             return div({ class: 'container-fluid' }, [
                 div({ class: 'row' }, [
                     div({ class: 'col-md-12' }, [
@@ -86,8 +88,6 @@ define([
                 ])
             ]);
         }
-
-
 
         // API
 
@@ -98,9 +98,6 @@ define([
         }
 
         function start(params) {
-            var div = html.tag('div'),
-                a = html.tag('a'),
-                p = html.tag('p');
             container.innerHTML = wrapPanel(html.loading('Creating a new Narrative for you...'));
             return new Promise(function (resolve, reject) {
                 createNewNarrative(params)
