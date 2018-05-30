@@ -13,6 +13,7 @@ ui:
     schema: {}
     route: {}
     session: {}
+    rpc: {}
     # dynamic-service: {}
     menu:
       menus:
@@ -28,6 +29,9 @@ ui:
                   auth: true
             developer:
               items: 
+                # -
+                #   id: ui-service
+                #   auth: true
                 - 
                   id: dashboard2
                   auth: true

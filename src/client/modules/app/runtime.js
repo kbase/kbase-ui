@@ -136,17 +136,6 @@ define([
             getService: function () {
                 return proxyMethod(serviceManager, 'getService', arguments);
             }
-
-            // pretty sure all this is defunct.
-            // addService: function () {
-            //     return proxyMethod(appServiceManager, 'addService', arguments);
-            // },
-            // loadService: function () {
-            //     return proxyMethod(appServiceManager, 'loadService', arguments);
-            // },
-            // dumpServices: function () {
-            //     return proxyMethod(appServiceManager, 'dumpServices', arguments);
-            // }
         });
     }
 

@@ -13,6 +13,7 @@ ui:
     schema: {}
     route: {}
     session: {}
+    rpc: {}
     # dynamic-service: {}
     menu:
       menus:
