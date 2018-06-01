@@ -47,7 +47,7 @@ plugins:
     -
         name: dashboard2
         globalName: kbase-ui-plugin-dashboard2
-        version: 0.1.5
+        version: 0.1.6
         cwd: src/plugin
         source:
             bower: {}            
