@@ -47,7 +47,7 @@ plugins:
     -
         name: dashboard2
         globalName: kbase-ui-plugin-dashboard2
-        version: 0.1.4
+        version: 0.1.5
         cwd: src/plugin
         source:
             bower: {}            
@@ -278,13 +278,13 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
-    # -
-    #     name: ui-service
-    #     globalName: kbase-ui-plugin-ui-service
-    #     version: 0.1.0
-    #     cwd: src/plugins
-    #     source:
-    #         directory: {}
+    -
+        name: ui-service
+        globalName: kbase-ui-plugin-ui-service
+        version: 0.1.0
+        cwd: src/plugin
+        source:
+            bower: {}
     # -
     #     name: example-clojurescript
     #     globalName: kbase-ui-plugin-example-clojurescript
