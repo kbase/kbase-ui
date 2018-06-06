@@ -344,6 +344,62 @@ define([
                 });
         }
 
+        function renderSearchAPI() {
+
+            var client = new GenericClient({
+                url: runtime.config('services.KBaseSearchEngine.url'),
+                token: runtime.service('session').getAuthToken(),
+                module: 'KBaseSearchEngine'
+            });
+
+            vm.userProfile.node.innerHTML = html.loading();
+
+            function theCall() {
+                return client.callFunc('status', [])
+                    .spread((result) => {
+                        return result;
+                    });
+            }
+
+            return Promise.all([theCall(), perf(theCall)])
+                .spread(function (result, perf) {
+                    var info = [];
+                    // Version info
+                    info.push({
+                        label: 'Version',
+                        value: result.version
+                    });
+                    info.push({
+                        label: 'Perf avg (ms/call)',
+                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
+                    });
+                    info.push({
+                        label: 'Perf calls (ms/call)',
+                        value: perf.measures.join(', ')
+                    });
+
+
+                    return info;
+                })
+                .then(function (info) {
+                    vm.userProfile.node.innerHTML = div({}, [
+                        h3('Search API'),
+                        table({
+                            class: 'table table-striped'
+                        }, info.map(function (item) {
+                            return tr([
+                                th({
+                                    style: {
+                                        width: '10%'
+                                    }
+                                }, item.label),
+                                td(item.value)
+                            ]);
+                        }))
+                    ]);
+                });
+        }
+
         function renderCatalog() {
             var catalog = new Catalog(runtime.config('services.catalog.url', {
                 token: runtime.service('session').getAuthToken()
@@ -468,6 +524,7 @@ define([
                 renderNMS(),
                 renderWorkspace(),
                 renderUserProfile(),
+                renderSearchAPI(),
                 renderCatalog(),
                 renderServiceWizard(),
                 renderDynamicServices()
