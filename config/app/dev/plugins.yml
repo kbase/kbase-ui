@@ -238,7 +238,7 @@ plugins:
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.18.0
+        version: 0.18.1
         cwd: src/plugin
         source:
             bower: {}
