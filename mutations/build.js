@@ -957,7 +957,7 @@ function makeKbConfig(state) {
         })
         // Rewrite the main entry point html files to add in cache-busting via the git commit hash
         .then(function () {
-            Promise.all(['index.html', 'load-narrative.html', 'googledd93a6c35c235da6.html'].map(function (fileName) {
+            Promise.all(['index.html', 'load-narrative.html'].map(function (fileName) {
                 return Promise.all([fileName, fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')]);
             }))
                 .then(function (templates) {
