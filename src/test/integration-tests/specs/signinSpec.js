@@ -7,31 +7,34 @@
 var runner = require('./runner');
 var glob = require('glob');
 var path = require('path');
-var fs = require('fs');
 
-var files = glob.sync('plugins/*/*.json', {
+var jsonFiles = glob.sync('plugins/*/*.json', {
     nodir: true,
+    absolute: true,
     cwd: __dirname
 });
 
-function loadFile(path) {
-    var content = fs.readFileSync(path);
-    return JSON.parse(content);
-}
+var yamlFiles = glob.sync('plugins/*/*.yaml', {
+    nodir: true,
+    absolute: true,
+    cwd: __dirname
+});
 
 var common = glob.sync('common/*.json', {
     nodir: true,
     absolute: true,
     cwd: __dirname
 }).reduce(function (common, match) {
-    common[path.basename(match, '.json')] = loadFile(match);
+    common[path.basename(match, '.json')] = runner.loadJSONFile(match);
     return common;
 }, {});
 
 
-var pluginTests = files.map(function (file) {
-    return runner.load(file);
-});
+var pluginTests = jsonFiles.map(function (file) {
+    return runner.loadJSONFile(file);
+}).concat(yamlFiles.map(function (file) {
+    return runner.loadYAMLFile(file);
+}));
 
 pluginTests.forEach(function (tests) {
     return runner.runTests(tests, common);
