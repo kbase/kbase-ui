@@ -3,10 +3,16 @@
 /*eslint strict: ["error", "global"] */
 'use strict';
 var fs = require('fs');
+var yaml = require('js-yaml');
 
-function load(file) {
-    var contents = fs.readFileSync(__dirname + '/' + file);
+function loadJSONFile(file) {
+    var contents = fs.readFileSync(file, 'utf8');
     return JSON.parse(contents);
+}
+
+function loadYAMLFile(file) {
+    var contents = fs.readFileSync(file, 'utf8');
+    return yaml.safeLoad(contents);
 }
 
 function buildAttribute(element) {
@@ -203,7 +209,7 @@ function doTasks(spec, tasks, testData, common) {
 }
 
 function runTest(test, common) {
-    var testData = load('../config.json');
+    var testData = loadJSONFile(__dirname + '/../config.json');
     describe(test.description, function () {
         if (test.disabled) {
             return;
@@ -234,4 +240,5 @@ function runTests(tests, common) {
 }
 
 exports.runTests = runTests;
-exports.load = load;
+exports.loadJSONFile = loadJSONFile;
+exports.loadYAMLFile = loadYAMLFile;

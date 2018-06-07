@@ -92,10 +92,14 @@ define([
                     div({
                         class: '-content-area'
                     }, [
-                        div({
-                            class: '-notification-banner',
-                            id: widgetSet.addWidget('kb_mainWindow_systemAlertBanner')
-                        }),
+                        (function () {
+                            if (runtime.allow('alpha')) {
+                                return div({
+                                    class: '-notification-banner',
+                                    id: widgetSet.addWidget('kb_mainWindow_systemAlertBanner')
+                                });
+                            }
+                        }()),
                         div({
                             class: '-plugin-content',
                             id: widgetSet.addWidget('body')
