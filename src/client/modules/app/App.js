@@ -203,11 +203,11 @@ define([
                 .then(function () {
                     return pluginManager.installPlugins(plugins);
                 })
-                .then(function () {
-                    return appServiceManager.startServices();
-                })
                 .then(() => {
                     return checkServices();
+                })
+                .then(function () {
+                    return appServiceManager.startServices();
                 })
                 .then(function () {
                     return mountRootWidget('root', api);

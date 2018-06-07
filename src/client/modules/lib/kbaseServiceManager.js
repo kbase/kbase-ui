@@ -22,8 +22,7 @@ define([
                 .map((serviceConfig) => {
                     let client = new GenericClient({
                         module: serviceConfig.module,
-                        url: serviceConfig.url,
-                        token: this.runtime.service('session').getAuthToken()
+                        url: serviceConfig.url
                     });
                     return client.callFunc(serviceConfig.version.method, [])
                         .spread((result) => {
