@@ -15,6 +15,8 @@ services:
         url: '{{ deploy.services.urlBase }}/services/auth'
         cookieName: kbase_session
         name: Authorization Version 2
+        version: 
+            minimum: 0.2.5
     awe:
         url: '{{ deploy.services.urlBase }}/services/awe-api'
         name: AWE
@@ -22,6 +24,10 @@ services:
         aliases: ['catalog']
         url: '{{ deploy.services.urlBase }}/services/catalog'
         name: Catalog
+        type: jsonrpc
+        version:
+            method: version
+            minimum: 2.1.0
     ftp_service:
         aliases: ['ftp']
         url: '{{ deploy.services.urlBase }}/services/kb-ftp-api/v0'
@@ -32,6 +38,10 @@ services:
         url: '{{ deploy.services.urlBase }}/services/narrative_method_store/rpc'
         image_url: '{{ deploy.services.urlBase }}/services/narrative_method_store/'
         name: Narrative Method Store
+        type: jsonrpc
+        version: 
+            method: ver
+            minimum: 0.3.6
     shock:
         url: '{{ deploy.services.urlBase }}/services/shock-api'
         name: Shock
@@ -39,6 +49,10 @@ services:
         aliases: ['user_profile']
         url: '{{ deploy.services.urlBase }}/services/user_profile/rpc'
         name: User Profile
+        type: jsonrpc
+        version:
+            method: ver
+            minimum: 0.2.0
     UserAndJobState:
         aliases: ['user_job_state']
         url: '{{ deploy.services.urlBase }}/services/userandjobstate'
@@ -58,15 +72,29 @@ services:
     KBaseSearchEngine:
         aliases: ['search']
         url: '{{ deploy.services.urlBase }}/services/searchapi'
-        name: Search Three        
+        name: KBase Search Engine
+        type: jsonrpc
+        version: 
+            method: status
+            propertyPath: version
+            minimum: 0.1.1
     ServiceWizard:
         aliases: ['service_wizard']
         url: '{{ deploy.services.urlBase }}/services/service_wizard'
         name: Service Wizard
+        type: jsonrpc
+        version: 
+            method: version
+            minimum: 0.4.0
     Workspace:
         aliases: ['workspace']
         url: '{{ deploy.services.urlBase }}/services/ws'
         name: Workspace
+        type: jsonrpc
+        version: 
+            method: ver
+            minimum: 0.8.1
+
     # Not services, but useful endpoints
     doc_site:
         url: http://kbase.us

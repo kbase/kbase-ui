@@ -131,6 +131,13 @@ define([
                     branch[key] = fix(value);
                 } else if (isSimpleObject(value)) {
                     fixit(value);
+                } else if (value instanceof Array) {
+                    // console.log('fix array',value);
+                    value.forEach((v) => {
+                        if (isSimpleObject(v)) {
+                            fixit(v);
+                        }
+                    });
                 }
             });
         }

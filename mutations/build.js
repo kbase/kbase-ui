@@ -914,6 +914,24 @@ function makeKbConfig(state) {
             return Promise.all(configs.map(loadYaml))
                 .then(function (yamls) {
                     var merged = mutant.mergeObjects(yamls);
+                    // Siphon off jsonrpc services.
+                    var coreServices = Object.keys(merged.services)
+                        .map((key) => {
+                            return [key, merged.services[key]];
+                        })
+                        .filter(([, serviceConfig]) => {
+                            return (serviceConfig.type === 'jsonrpc');
+                        })
+                        .map(([module, serviceConfig]) => {
+                            return {
+                                url: serviceConfig.url,
+                                module:  module,
+                                type: 'jsonrpc',
+                                version: serviceConfig.version
+                            };
+                        });
+                    merged.coreServices = coreServices;
+
                     // expand aliases for services
                     Object.keys(merged.services).forEach(function (serviceKey) {
                         var serviceConfig = merged.services[serviceKey];
@@ -939,7 +957,7 @@ function makeKbConfig(state) {
         })
         // Rewrite the main entry point html files to add in cache-busting via the git commit hash
         .then(function () {
-            Promise.all(['index.html', 'load-narrative.html', 'googledd93a6c35c235da6.html'].map(function (fileName) {
+            Promise.all(['index.html', 'load-narrative.html'].map(function (fileName) {
                 return Promise.all([fileName, fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')]);
             }))
                 .then(function (templates) {
