@@ -85,11 +85,19 @@ case $key in
     shift # past argument
     shift # past value
     ;;
-    ### Internal ui services, located within modules/app/services
+    ### data
     -d|--data)
     data="$2"
     echo "Using internal data: ${data}"
     mounts="$mounts --mount type=bind,src=${root}/src/client/data/${data},dst=/kb/deployment/services/kbase-ui/data/${data}"
+    shift # past argument
+    shift # past value
+    ;;
+    ### arbitrary internal path
+    -f|--folderh)
+    folder="$2"
+    echo "Using internal folder: ${folder}"
+    mounts="$mounts --mount type=bind,src=${root}/src/client/modules/${folder},dst=/kb/deployment/services/kbase-ui/modules/${folder}"
     shift # past argument
     shift # past value
     ;;
