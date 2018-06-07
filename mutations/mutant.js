@@ -20,6 +20,7 @@
  */
 
 /*eslint-env node*/
+/*eslint {strict: ['error', 'global']}*/
 'use strict';
 
 var findit = require('findit2'),

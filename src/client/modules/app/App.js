@@ -9,6 +9,7 @@
 define([
     'lib/pluginManager',
     'lib/appServiceManager',
+    'lib/kbaseServiceManager',
     './runtime',
     'kb_common/messenger',
     'kb_common/props',
@@ -17,6 +18,7 @@ define([
 ], function (
     pluginManagerFactory,
     AppServiceManager,
+    kbaseServiceManager,
     Runtime,
     messengerFactory,
     Props,
@@ -135,6 +137,13 @@ define([
             });
         }
 
+        function checkServices() {
+            let manager = new kbaseServiceManager.KBaseServiceManager({
+                runtime: api
+            });
+            return manager.check();
+        }
+
         // PLUGINS
 
         var pluginManager = pluginManagerFactory.make({
@@ -190,19 +199,15 @@ define([
                 }
             });
 
-            // ROUTING
-
-
-            // START IT UP
-
-
-
             return appServiceManager.loadServices()
                 .then(function () {
                     return pluginManager.installPlugins(plugins);
                 })
                 .then(function () {
                     return appServiceManager.startServices();
+                })
+                .then(() => {
+                    return checkServices();
                 })
                 .then(function () {
                     return mountRootWidget('root', api);

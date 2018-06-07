@@ -150,9 +150,9 @@
             .catch(function (err) {
                 console.error('Startup Error', err);
                 root.KBaseFallback.showError({
-                    title: 'KBase Hub Web Application Startup Error',
+                    title: 'KBase UI Startup Error',
                     content: [
-                        'An error has occurred while starting the KBase Hub Web Application.',
+                        'An error has occurred while starting the KBase UI.',
                         err.message
                     ],
                     references: [{

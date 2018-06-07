@@ -1,26 +1,16 @@
 define([
     'bluebird',
     'kb_common/html',
-    'kb_common/dom',
     'kb_common/bootstrapUtils',
-    'kb_service/client/narrativeMethodStore',
-    'kb_service/client/workspace',
-    'kb_service/client/catalog',
     'kb_common/jsonRpc/genericClient',
-    'kb_common/jsonRpc/dynamicServiceClient',
     'kb_common_ts/HttpClient',
 
     'bootstrap'
 ], function (
     Promise,
     html,
-    dom,
     BS,
-    NMS,
-    Workspace,
-    Catalog,
     GenericClient,
-    DynamicServiceClient,
     HttpClient
 ) {
     'use strict';
@@ -126,13 +116,27 @@ define([
         }
 
         function renderNMS() {
-            var nms = new NMS(runtime.config('services.narrative_method_store.url', {
+            var client = new GenericClient({
+                module: 'NarrativeMethodStore',
+                url: runtime.config('services.narrative_method_store.url'),
                 token: runtime.service('session').getAuthToken()
-            }));
+            });
+
+            function status() {
+                return client.callFunc('status', []).spread((result) => {return result;});
+            }
+
+            function ver() {
+                return client.callFunc('ver', []).spread((result) => {return result;});
+            }
 
             vm.nms.node.innerHTML = html.loading();
 
-            return Promise.all([nms.status(), nms.ver(), perf(nms.ver)])
+            return Promise.all([
+                status(),
+                ver(),
+                perf(ver)
+            ])
                 .spread(function (status, version, perf) {
                     var info = [];
                     // Version info
@@ -143,7 +147,7 @@ define([
 
                     info.push({
                         label: 'Perf avg (ms/call)',
-                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
+                        value: perf.average
                     });
                     info.push({
                         label: 'Perf calls (ms))',
@@ -182,16 +186,23 @@ define([
                         }))
                     ]);
                 });
-
         }
 
         function renderWorkspace() {
-            var workspace = new Workspace(runtime.config('services.workspace.url', {
+            var client = new GenericClient({
+                module: 'Workspace',
+                url: runtime.config('services.Workspace.url'),
                 token: runtime.service('session').getAuthToken()
-            }));
+            });
+            function ver() {
+                return client.callFunc('ver', []);
+            }
             vm.workspace.node.innerHTML = html.loading();
 
-            return Promise.all([workspace.ver(), perf(workspace.ver)])
+            return Promise.all([
+                client.callFunc('ver', []).spread((result) => {return result;}),
+                perf(ver)
+            ])
                 .spread(function (version, perf) {
                     var info = [];
                     // Version info
@@ -201,7 +212,7 @@ define([
                     });
                     info.push({
                         label: 'Perf avg (ms/call)',
-                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
+                        value: perf.average 
                     });
                     info.push({
                         label: 'Perf calls (ms/call)',
@@ -263,7 +274,7 @@ define([
                     });
                     info.push({
                         label: 'Perf avg (ms/call)',
-                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
+                        value: perf.average
                     });
                     info.push({
                         label: 'Perf calls (ms/call)',
@@ -292,7 +303,6 @@ define([
         }
 
         function renderUserProfile() {
-
             var client = new GenericClient({
                 url: runtime.config('services.user_profile.url'),
                 token: runtime.service('session').getAuthToken(),
@@ -301,11 +311,14 @@ define([
 
             vm.userProfile.node.innerHTML = html.loading();
 
-            function theCall() {
+            function ver() {
                 return client.callFunc('ver', []);
             }
 
-            return Promise.all([theCall(), perf(theCall)])
+            return Promise.all([
+                ver(), 
+                perf(ver)
+            ])
                 .spread(function (version, perf) {
                     var info = [];
                     // Version info
@@ -315,13 +328,12 @@ define([
                     });
                     info.push({
                         label: 'Perf avg (ms/call)',
-                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
+                        value: perf.average 
                     });
                     info.push({
                         label: 'Perf calls (ms/call)',
                         value: perf.measures.join(', ')
                     });
-
 
                     return info;
                 })
@@ -345,7 +357,6 @@ define([
         }
 
         function renderSearchAPI() {
-
             var client = new GenericClient({
                 url: runtime.config('services.KBaseSearchEngine.url'),
                 token: runtime.service('session').getAuthToken(),
@@ -371,7 +382,7 @@ define([
                     });
                     info.push({
                         label: 'Perf avg (ms/call)',
-                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
+                        value: perf.average 
                     });
                     info.push({
                         label: 'Perf calls (ms/call)',
@@ -401,12 +412,21 @@ define([
         }
 
         function renderCatalog() {
-            var catalog = new Catalog(runtime.config('services.catalog.url', {
+            var client = new GenericClient({
+                module: 'Catalog',
+                url: runtime.config('services.Catalog.url'),
                 token: runtime.service('session').getAuthToken()
-            }));
+            });
+            function version() {
+                return client.callFunc('version', []).spread((result) => {return result;});
+            }
+            
             vm.catalog.node.innerHTML = html.loading();
 
-            return Promise.all([catalog.version(), perf(catalog.version)])
+            return Promise.all([
+                version(),
+                perf(version)
+            ])
                 .spread(function (version, perf) {
                     var info = [];
                     // Version info
@@ -416,7 +436,7 @@ define([
                     });
                     info.push({
                         label: 'Perf avg (ms/call)',
-                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
+                        value: perf.average 
                     });
                     info.push({
                         label: 'Perf calls (ms/call)',
@@ -468,7 +488,7 @@ define([
                     });
                     info.push({
                         label: 'Perf avg (ms/call)',
-                        value: perf.average + ' (' + perf.total + ' / ' + perf.measures.length + ')'
+                        value: perf.average 
                     });
                     info.push({
                         label: 'Perf calls (ms/call)',
