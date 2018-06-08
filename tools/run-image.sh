@@ -94,7 +94,7 @@ case $key in
     shift # past value
     ;;
     ### arbitrary internal path
-    -f|--folderh)
+    -f|--folder)
     folder="$2"
     echo "Using internal folder: ${folder}"
     mounts="$mounts --mount type=bind,src=${root}/src/client/modules/${folder},dst=/kb/deployment/services/kbase-ui/modules/${folder}"
