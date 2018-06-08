@@ -914,19 +914,19 @@ function makeKbConfig(state) {
             return Promise.all(configs.map(loadYaml))
                 .then(function (yamls) {
                     var merged = mutant.mergeObjects(yamls);
-                    // Siphon off jsonrpc services.
+                    // Siphon off core services services.
                     var coreServices = Object.keys(merged.services)
                         .map((key) => {
                             return [key, merged.services[key]];
                         })
                         .filter(([, serviceConfig]) => {
-                            return (serviceConfig.type === 'jsonrpc');
+                            return (serviceConfig.coreService);
                         })
                         .map(([module, serviceConfig]) => {
                             return {
                                 url: serviceConfig.url,
                                 module:  module,
-                                type: 'jsonrpc',
+                                type: serviceConfig.type,
                                 version: serviceConfig.version
                             };
                         });

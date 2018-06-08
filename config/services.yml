@@ -15,7 +15,11 @@ services:
         url: '{{ deploy.services.urlBase }}/services/auth'
         cookieName: kbase_session
         name: Authorization Version 2
+        coreService: true
+        type: rest
         version: 
+            path: /
+            propertyPath: version
             minimum: 0.2.5
     awe:
         url: '{{ deploy.services.urlBase }}/services/awe-api'
@@ -24,6 +28,7 @@ services:
         aliases: ['catalog']
         url: '{{ deploy.services.urlBase }}/services/catalog'
         name: Catalog
+        coreService: true
         type: jsonrpc
         version:
             method: version
@@ -38,6 +43,7 @@ services:
         url: '{{ deploy.services.urlBase }}/services/narrative_method_store/rpc'
         image_url: '{{ deploy.services.urlBase }}/services/narrative_method_store/'
         name: Narrative Method Store
+        coreService: true
         type: jsonrpc
         version: 
             method: ver
@@ -49,6 +55,7 @@ services:
         aliases: ['user_profile']
         url: '{{ deploy.services.urlBase }}/services/user_profile/rpc'
         name: User Profile
+        coreService: true
         type: jsonrpc
         version:
             method: ver
@@ -73,6 +80,7 @@ services:
         aliases: ['search']
         url: '{{ deploy.services.urlBase }}/services/searchapi'
         name: KBase Search Engine
+        coreService: true
         type: jsonrpc
         version: 
             method: status
@@ -82,6 +90,7 @@ services:
         aliases: ['service_wizard']
         url: '{{ deploy.services.urlBase }}/services/service_wizard'
         name: Service Wizard
+        coreService: true
         type: jsonrpc
         version: 
             method: version
@@ -90,6 +99,7 @@ services:
         aliases: ['workspace']
         url: '{{ deploy.services.urlBase }}/services/ws'
         name: Workspace
+        coreService: true
         type: jsonrpc
         version: 
             method: ver
