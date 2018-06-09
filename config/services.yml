@@ -20,7 +20,9 @@ services:
         version: 
             path: /
             propertyPath: version
-            minimum: 0.2.5
+            minimum: 0.2.0
+        # configure per deploy environment
+        providers: []
     awe:
         url: '{{ deploy.services.urlBase }}/services/awe-api'
         name: AWE
