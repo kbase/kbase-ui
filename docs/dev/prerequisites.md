@@ -8,7 +8,7 @@ The developer setup provides a workflow and set of tools to help develop kbase-u
 
 | app | version | notes |
 |-----|---------|------ |
-| nodejs | 8 (LTS) | The V8 javascript system, required for building kbase-ui and running tests; we are currently on version 8. |
+| nodejs | 6 (LTS) | The V8 javascript system, required for building kbase-ui and running tests; we are currently on version 8. |
 | git    | ?? | the source revision management tool with integration into github |
 | docker | ?? | the linux container manager you will use to run kbase-ui |
 | make  | ?? | all build tasks go through make |
@@ -20,11 +20,11 @@ The developer setup provides a workflow and set of tools to help develop kbase-u
 
 The KBase UI should build and run on any modern system: Mac OS X, Linux, Windows.
 
-Procecedures for installation of system level packages depends on ... the system you use! Even within a platform there may be multiple ways to install a given package. In this document we provide instructions for installation on platforms in use at KBase using methods that we have employed and work.
+Procedures for installation of system level packages depends on ... the system you use! Even within a platform there may be multiple ways to install a given package. In this document we provide instructions for installation on platforms in use at KBase using methods that we have employed and work.
 
 | app    | version | notes                                                        |
 | ------ | ------- | ------------------------------------------------------------ |
-| nodejs | 8 (LTS) | The V8 javascript system, required for building kbase-ui and running tests; we are currently on version 8. |
+| nodejs | 6 (LTS) | The V8 javascript system, required for building kbase-ui and running tests; we are currently on version 8. |
 | git    | ??      | the source revision management tool with integration into github |
 | docker | ??      | the linux container manager you will use to run kbase-ui     |
 | make   | ??      | all build tasks go through make                              |
@@ -50,11 +50,11 @@ There are three common sources for these tools natively on a Mac:
 
 (see the Linux section for Vagrant on Mac instructions.)
 
-The requisite development tools are available as regualar Mac packages. This is may be the easiest way to get started. However, if you are going to be installing other Unixy tools, or have one of the following package managers installed, either Macports or Homebrew may be preferable, and are not much more difficult. Package managers also make updating your tools easy, whereas the downloadable packages will need to be periodically updated manually.
+The requisite development tools are available as regular Mac packages. This is may be the easiest way to get started. However, if you are going to be installing other Unixy tools, or have one of the following package managers installed, either Macports or Homebrew may be preferable, and are not much more difficult. Package managers also make updating your tools easy, whereas the downloadable packages will need to be periodically updated manually.
 
 #### Apple xCode
 
-xCode may be installed from the Apple App Store for free, and is highly recommeded for any developer workstation. Not only does it provide some of the required tools, but some macOS developer tools require xCode be installed.
+xCode may be installed from the Apple App Store for free, and is highly recommended for any developer workstation. Not only does it provide some of the required tools, but some macOS developer tools require xCode be installed.
 
 xCode includes both git and make, which are required for building kbase-ui, as well as a compilers which may be required to install other developer tools via installers from macports, npm, and the like.
 
@@ -116,7 +116,7 @@ open Terminal and issue the following commands:
 sudo port install nodejs6 npm5 git
 ```
 
-Note that the version of nodejs is important. We try very hard to use the same version of nodejs in local development as KBase uses in build/deployment environments and as the Travis configuration uses. There are major changes between nodejs releases. Although a newer nodejs will be probably be able to run code written for an older version, the converse is not necessarily true, and it is certainly easy to start using features enabled by a newer node version if it is available. There may also be subtle differences in the building of dependncies through npm.
+Note that the version of nodejs is important. We try very hard to use the same version of nodejs in local development as KBase uses in build/deployment environments and as the Travis configuration uses. There are major changes between nodejs releases. Although a newer nodejs will be probably be able to run code written for an older version, the converse is not necessarily true, and it is certainly easy to start using features enabled by a newer node version if it is available. There may also be subtle differences in the building of dependencies through npm.
 
 In general we try to stay on the most recent Long Term Support (LTS) of any dependency, but sometimes it takes us a while to have time to coordinate the concurrent update of all of the places they are used.
 

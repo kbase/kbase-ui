@@ -113,7 +113,7 @@ echo "MOUNTS: $mounts"
 
 image_tag="${branch}"
 
-echo "stdout sent to kbase-ui.stoud, stderr sent to kbase-ui.stderr"
+echo "stdout sent to kbase-ui.stdout, stderr sent to kbase-ui.stderr"
 echo "Running kbase-ui image kbase/kbase-ui:${image_tag}"
 echo ":)"
 
