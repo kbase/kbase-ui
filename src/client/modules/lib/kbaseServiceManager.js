@@ -36,6 +36,9 @@ define([
                         throw new Error('Unexpected content type; expected "application/json", received "' + contentType + '"');
                     }
                     return JSON.parse(result.response);
+                })
+                .catch((err) => {
+                    throw new Error('An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message);
                 });
         }
 
@@ -48,6 +51,9 @@ define([
             return client.callFunc(serviceConfig.version.method, [])
                 .spread((result) => {
                     return result;
+                })
+                .catch((err) => {
+                    throw new Error('An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message);
                 });
         }
 
@@ -102,10 +108,8 @@ define([
                         throw new Error(prefix + ': ' + message);
                     }
                 });
-               
         }
     }
 
     return {KBaseServiceManager};
-
 });
