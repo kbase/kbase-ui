@@ -14,10 +14,11 @@ define([
     'use strict';
 
     class KBaseServiceManager {
-        constructor({runtime}) {
+        constructor({runtime, throwErrors}) {
             this.runtime = runtime;
             this.servicesToCheck = this.runtime.config('coreServices');
             this.timeout = runtime.config('ui.constants.service_check_timeouts.hard');
+            this.throwErrors = throwErrors || false;
         }
 
         checkREST(serviceConfig) {
@@ -33,12 +34,23 @@ define([
                 .then((result) => {
                     let contentType = result.header.getHeader('content-type');
                     if (contentType !== 'application/json') {
-                        throw new Error('Unexpected content type; expected "application/json", received "' + contentType + '"');
+                        let errorMessage = 'Unexpected content type; expected "application/json", received "' + contentType + '"';
+                        if (this.throwErrors) {
+                            throw new Error(errorMessage);
+                        } else {
+                            console.error(errorMessage);
+                        }
                     }
                     return JSON.parse(result.response);
                 })
                 .catch((err) => {
-                    throw new Error('An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message);
+                    let errorMessage = 'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
+                    if (this.throwErrors) {
+                        throw new Error(errorMessage);
+                    } else {
+                        console.error(errorMessage);
+                    }
+
                 });
         }
 
@@ -53,7 +65,12 @@ define([
                     return result;
                 })
                 .catch((err) => {
-                    throw new Error('An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message);
+                    let errorMessage = 'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
+                    if (this.throwErrors) {
+                        throw new Error(errorMessage);
+                    } else {
+                        console.error(errorMessage);
+                    }
                 });
         }
 
@@ -67,7 +84,12 @@ define([
                         case 'rest':
                             return this.checkREST(serviceConfig);
                         default: 
-                            throw new Error('Unsupported core service type: ' + serviceConfig.type);
+                            var errorMessage = 'Unsupported core service type: ' + serviceConfig.type;
+                            if (this.throwErrors) {
+                                throw new Error(errorMessage);
+                            } else {
+                                console.error(errorMessage);
+                            }
                         }
                     }).then((result) => {
                         let version;
@@ -105,7 +127,13 @@ define([
                         } else {
                             prefix = 'Incompatible services';
                         }
-                        throw new Error(prefix + ': ' + message);
+                        let errorMessage = prefix + ': ' + message;
+                        if (this.throwErrors) {
+                            throw new Error(errorMessage);
+                        } else {
+                            console.error(errorMessage);
+                        }
+
                     }
                 });
         }

@@ -42,7 +42,10 @@
             "url": "{{ .Env.services_narrative_url }}"
         },
         "auth2": {
-            "providers": {{ default .Env.services_auth2_providers "null" }}
+            "providers": {{ default .Env.services_auth2_providers "null" }},
+            "version": {
+                "minimum": {{ .Env.services_auth2_version_minimum }}
+            }
         }
     }
 }

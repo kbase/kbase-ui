@@ -1,33 +1,54 @@
 # Prerequisites
 
-The developer setup provides a workflow and set of tools to help develop kbase-ui, plugins, and associated libraries. The basic workflow consists of javascript development on your host (main desktop) environment, a Docker image for running kbase-ui behind nginx, and a separate Docker image for running a proxy for the  kbase-ui container as well as KBase services.
+The developer setup provides a workflow and set of tools to help develop _kbase-ui_, kbase-ui plugins, and libraries. The basic workflow consists of javascript development on your host (main desktop) environment, a Docker image for running kbase-ui behind nginx, and a separate Docker image for running a proxy for the  kbase-ui container as well as KBase services.
 
 [TOC]
 
 ## Basic Development Requirements
 
+You will need to ensure that you have a basic set of development tools on your host desktop machine. These tools are available on Mac, Linux, and Windows.
+
 | app | version | notes |
 |-----|---------|------ |
 | nodejs | 6 (LTS) | The V8 javascript system, required for building kbase-ui and running tests; we are currently on version 8. |
-| git    | ?? | the source revision management tool with integration into github |
-| docker | ?? | the linux container manager you will use to run kbase-ui |
-| make  | ?? | all build tasks go through make |
+| npm | 6 | |
+| git    | * | the source revision management tool with integration into github |
+| docker | * | the linux container manager you will use to run kbase-ui |
+| make  | * | all build tasks go through make |
 
+> \* we haven't documented any substantial differences between these tools regarding the kbase-ui development process. However, it is best to keep them always at the most recent version by updating your tool stack periodically
+
+_kbase-ui_ is built not just on your local development workstation, but int the following places:
+
+- in Travis CI, as part of the github workflow
+- in the KBase Jenkins instance, as part of the CI deployment
+- in a KBase VM (??) as part of the next/appdev/production deployment process
+
+As such, we need to ensure that each part of the build toolchain is consistent in each environment. Thus, even though a different version of the above tools may work for you (and of course no-one is watching you to make sure you aren't!) please be advised that it is possible that you can introduce dependencies upon a version of a tool which will break in one of the other KBase build environments.
+
+### nodejs
+
+Node and npm are used together to build _kbase-ui_ and to run tests. Node and npm change _very_ frequently, and the number of transitive dependencies involved in the build and test toolchain number in the _thousands_. Therefore, we must always be cautious when making changes to both the toolchain and dependencies. On the other hand, they are only used for building and testing _kbase-ui_, and not the runtime operation.
+
+### git
+
+[ to be done ]
+
+### docker 
+
+[ to be done ]
+
+### make
+
+[ to be done]
 
 ## Basic Development Requirements
 
 ### Overview
 
-The KBase UI should build and run on any modern system: Mac OS X, Linux, Windows.
+_kbase-ui_ should build and run on any modern system: Mac OS X, Linux, Windows.
 
-Procedures for installation of system level packages depends on ... the system you use! Even within a platform there may be multiple ways to install a given package. In this document we provide instructions for installation on platforms in use at KBase using methods that we have employed and work.
-
-| app    | version | notes                                                        |
-| ------ | ------- | ------------------------------------------------------------ |
-| nodejs | 6 (LTS) | The V8 javascript system, required for building kbase-ui and running tests; we are currently on version 8. |
-| git    | ??      | the source revision management tool with integration into github |
-| docker | ??      | the linux container manager you will use to run kbase-ui     |
-| make   | ??      | all build tasks go through make                              |
+Procedures for installation of system level packages depends on the system you use, and your toolchain preferences. In this document we provide instructions for installation on platforms in use at KBase using methods that we have employed and work.
 
 ## Installation
 
