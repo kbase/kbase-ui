@@ -137,7 +137,7 @@ define([
             });
         }
 
-        function checkServices() {
+        function checkCoreServices() {
             let manager = new kbaseServiceManager.KBaseServiceManager({
                 runtime: api
             });
@@ -204,7 +204,7 @@ define([
                     return pluginManager.installPlugins(plugins);
                 })
                 .then(() => {
-                    return checkServices();
+                    return checkCoreServices();
                 })
                 .then(function () {
                     return appServiceManager.startServices();
