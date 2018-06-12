@@ -35,8 +35,15 @@ define([
                 var service = services[name],
                     moduleName = [moduleBasePath, service.module].join('/');
                 require([moduleName], function (serviceFactory) {
-                    var serviceInstance = serviceFactory.make(services[name].config);
-                    services[name].instance = serviceInstance;
+                    var serviceInstance;
+                    if (serviceFactory.make) {
+                        serviceInstance = serviceFactory.make(services[name].config);
+                    } else {
+                        serviceInstance = new serviceFactory.ServiceClass({
+                            config: services[name].config
+                        });
+                    }
+                    service.instance = serviceInstance;
                     resolve();
                 }, function (err) {
                     reject(err);
