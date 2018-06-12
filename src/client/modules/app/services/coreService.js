@@ -31,7 +31,7 @@ define([
         }
 
         pluginHandler(config) {
-            console.log('plugin handler', config);
+            // console.log('plugin handler', config);
         }
 
         addCoreServiceDepenency(dep) {
