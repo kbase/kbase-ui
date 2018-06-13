@@ -90,7 +90,7 @@ plugins:
     -
         name: jobbrowser
         globalName: kbase-ui-plugin-jobbrowser
-        version: 0.3.4
+        version: 0.3.5
         cwd: src/plugin
         source:
             bower: {}
@@ -202,7 +202,7 @@ plugins:
     -
         name: catalog
         globalName: kbase-ui-plugin-catalog
-        version: 1.2.10
+        version: 1.2.11
         cwd: src/plugin
         source:
             bower: {}
