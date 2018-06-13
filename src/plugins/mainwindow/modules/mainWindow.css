@@ -111,6 +111,10 @@
     align-items: center;
     justify-content: left;
     display: flex;
+    width: 0px;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .plugin-mainwindow.widget-mainwindow .-navbar .-cell.-menu {}
