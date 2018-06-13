@@ -49,8 +49,8 @@ define([
                         throw new Error(errorMessage);
                     } else {
                         console.error(errorMessage);
+                        return null;
                     }
-
                 });
         }
 
@@ -70,6 +70,7 @@ define([
                         throw new Error(errorMessage);
                     } else {
                         console.error(errorMessage);
+                        return null;
                     }
                 });
         }
@@ -89,11 +90,18 @@ define([
                                 throw new Error(errorMessage);
                             } else {
                                 console.error(errorMessage);
+                                return null;
                             }
                         }
                     }).then((result) => {
                         let version;
-                        if (serviceConfig.version.propertyPath) {
+                        if (result === null) {
+                            if (!this.throwErrors) {
+                                return null;
+                            } else {
+                                throw new Error('Invalid semver check result: ' + result);
+                            }
+                        } else if (serviceConfig.version.propertyPath) {
                             version = props.getProp(result, serviceConfig.version.propertyPath);
                         } else {
                             version = result;
