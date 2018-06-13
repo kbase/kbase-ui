@@ -45,7 +45,7 @@ kbase-common-es6: -> 0.1.0
 kbase-knockout-extensions-es6: -> 0.1.1
 
 prototyping:
-kbase-ui-plugin-narrative-info: 0.1.1
+kbase-ui-plugin-narrative-info: 1.1.3
 kbase-ui-plugin-test-lookup: 0.1.1
 
 external sources:
