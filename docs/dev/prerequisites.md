@@ -14,6 +14,7 @@ You will need to ensure that you have a basic set of development tools on your h
 | npm | 6 | |
 | git    | * | the source revision management tool with integration into github |
 | docker | * | the linux container manager you will use to run kbase-ui |
+| dockerize | * | a utility to make running docker containers more sane |
 | make  | * | all build tasks go through make |
 
 > \* we haven't documented any substantial differences between these tools regarding the kbase-ui development process. However, it is best to keep them always at the most recent version by updating your tool stack periodically
@@ -37,6 +38,65 @@ Node and npm are used together to build _kbase-ui_ and to run tests. Node and np
 ### docker 
 
 [ to be done ]
+
+### dockerize
+
+dockerize may be installed via go or via a specific binary for linux or macOS:
+
+#### download binary
+
+Dockerize is available prebuilt for linux and macOS from the dockerize github repo:
+
+```bash
+export DOCKERIZE_VERSION=6.1
+wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+tar xvfz dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+sudo mv dockerize /usr/local/bin
+```
+
+#### install via go
+
+You may also install it via go. This is especially handy if you are already set up for go, or need to use other go-based programs which are not available through a package manager.
+
+install go 
+
+```bash
+sudo port install golang
+```
+
+update your macOS account profile. E.g.
+
+edit ~/.profile
+
+```bash
+vi ~/.profile
+```
+
+add the following two lines to the end of the file:
+
+```
+export GOPATH="${HOME}/go"
+export PATH=$PATH:$(go env GOPATH)/bin
+```
+
+and ensure that the go working directory exists
+
+```bash
+mkdir ~/go
+```
+
+You will need to spin up a new terminal window to pick up the go settings.
+
+Install dockerize:
+
+```
+go get github.com/jwilder/dockerize
+go install github.com/jwilder/dockerize
+```
+
+now the dockerize command will be available.
+
+
 
 ### make
 

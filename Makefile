@@ -106,6 +106,12 @@ build: clean-build
 	@echo "> Building."
 	cd mutations; node build $(config)
 
+build-deploy-configs:
+	@echo "> Building Deploy Configs..."
+	@mkdir -p $(TOPDIR)/build/deploy/configs
+	@cd mutations; node build-deploy-configs $(TOPDIR)/deployment/ci/docker/kb-deployment/conf/config.json.tmpl $(TOPDIR)/config/deploy $(TOPDIR)/build/deploy/configs
+	@echo "> ... deploy configs built in $(TOPDIR)/build/deploy/configs"
+
 build-ci:
 	@echo "> Building for CI."
 	cd mutations; node build ci
