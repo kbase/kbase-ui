@@ -9,7 +9,7 @@ ARG TAG
 
 # Python and friends installed to get jinja2-cli, a jinja2 template cmd line tool
 # used for processing the config file templates
-ENV DOCKERIZE_VERSION v0.6.0
+ENV DOCKERIZE_VERSION v0.6.1
 RUN apk --update upgrade && \
     apk add --no-cache ca-certificates nginx openssl wget bash bash-completion && \
     update-ca-certificates && \
