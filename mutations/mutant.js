@@ -65,6 +65,36 @@ function ensureEmptyDir(path) {
         });
 }
 
+function loadDockerEnvFile(path) {
+    var filePath;
+    if (typeof path === 'string') {
+        filePath = path;
+    } else {
+        filePath = path.join('/');
+    }
+    return fs.readFileAsync(filePath, 'utf8')
+        .then(function (contents) {
+            return contents.split('\n')
+                .reduce(function (lines, line) {
+                    line = line.trimLeft();
+                    if (line.trim().length === 0) {
+                        return lines;
+                    } else if (line[0] === '#') {
+                        return lines;
+                    }
+                    var pos = line.indexOf('=');
+                    if (pos === -1) {
+                        lines[key] = null;
+                        return lines;
+                    } 
+                    var key = line.slice(0, pos);
+                    var value = line.slice(pos+1);
+                    lines[key] = value;
+                    return lines;
+                }, {});
+        });
+}
+
 function loadYaml(path) {
     var yamlPath = path.join('/');
     return fs.readFileAsync(yamlPath, 'utf8')
@@ -363,5 +393,6 @@ module.exports = {
     log: log,
     warn: warn,
     success: success,
-    mergeObjects: mergeObjects
+    mergeObjects: mergeObjects,
+    loadDockerEnvFile: loadDockerEnvFile
 };
