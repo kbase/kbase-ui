@@ -35,7 +35,11 @@
                 }
             }
         },
-        "allow": {{ .Env.allow }}
+        "allow": {{ .Env.allow }},
+        "featureSwitches": {
+            "enabled":  {{ .Env.ui_featureSwitches_enabled }},
+            "disabled": {{ .Env.ui_featureSwitches_disabled }}
+        }
     },
     "services": {
         "narrative": {

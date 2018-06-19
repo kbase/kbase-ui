@@ -93,12 +93,18 @@ define([
                         class: '-content-area'
                     }, [
                         (function () {
-                            if (runtime.allow('alpha')) {
+                            if (runtime.featureEnabled('system_alert_notification')) {
                                 return div({
                                     class: '-notification-banner',
                                     id: widgetSet.addWidget('kb_mainWindow_systemAlertBanner')
                                 });
                             }
+                            // if (runtime.allow('alpha')) {
+                            //     return div({
+                            //         class: '-notification-banner',
+                            //         id: widgetSet.addWidget('kb_mainWindow_systemAlertBanner')
+                            //     });
+                            // }
                         }()),
                         div({
                             class: '-plugin-content',
