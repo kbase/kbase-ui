@@ -441,11 +441,27 @@ function copyFromBower(state) {
                 }
 
                 sources.forEach(function (source) {
-                    copyJobs.push({
-                        cwd: cwd,
-                        src: source,
-                        dest: dest
-                    });
+                    if (typeof source === 'string') {
+                        copyJobs.push({
+                            cwd: cwd,
+                            src: source,
+                            dest: dest
+                        });
+                    } else {
+                        let cwd2;
+                        if (source.cwd) {
+                            cwd2 = ['build', 'bower_components', dir].concat(source.cwd);
+                        } else {
+                            cwd2 = cwd;
+                        }
+                        let copyJob = {
+                            cwd: cwd2,
+                            src: source.path,
+                            dest: dest,
+                            debug: true
+                        };
+                        copyJobs.push(copyJob);
+                    }
                 });
             });
 
@@ -458,7 +474,7 @@ function copyFromBower(state) {
                 })
                     .then(function (matches) {
                         // Do the copy!
-                        return Promise.all(matches.map(function (match) {
+                        return Promise.all(matches.map(function (match) {                    
                             var fromPath = state.environment.path.concat(copySpec.cwd).concat([match]).join('/'),
                                 toPath = state.environment.path.concat(copySpec.dest).concat([match]).join('/');
                             return fs.copy(fromPath, toPath, {});
