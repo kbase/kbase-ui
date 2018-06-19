@@ -187,13 +187,9 @@ define([
                                   
                     div({
                         dataBind: {
-                            foreach: 'message'
+                            text: 'message'
                         }
-                    }, p({
-                        dataBind: {
-                            text: '$data'
-                        }
-                    }))
+                    })
                 ]),
                 div({
                     style: {
