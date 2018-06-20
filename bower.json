@@ -35,7 +35,7 @@
       "jquery-ui": "1.12.1",
       "js-yaml": "3.11.0",
       "kbase-ko-components-js": "0.6.0",
-      "kbase-knockout-extensions-es6": "0.1.4",
+      "kbase-knockout-extensions-es6": "0.2.0",
       "kbase-common-ts": "0.18.0",
       "kbase-common-js": "2.16.1",
       "kbase-common-es6": "0.5.3",
