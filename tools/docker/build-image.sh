@@ -1,8 +1,5 @@
 #!/bin/bash -x
 
-# Much much longer than the original. Just wanted to get a handle
-# on explicit error capture and handling.
-
 function get_tag() {
     # local error variable captures subprocess exit code in $?
     # need this so that other commands don't overwrite it
@@ -32,13 +29,25 @@ function get_commit() {
 }
 
 function build_image() {
+    local build=$1
+
+    # Since we are building from a git repo, we can rely upon git
+    # for finding the  project root cross-platform.
+    local root=$(git rev-parse --show-toplevel)
+
+    # SETUP FOR BUILD IMAGE
+    local here=`pwd`
+
+    echo "Running docker build in context ${root} for build ${build}"
+
+    # SETUP FOR FINAL IMAGE
     local branch=$TRAVIS_BRANCH
     local commit=$TRAVIS_COMMIT
     local tag=$TRAVIS_TAG
     local date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     local err
 
-    echo "DATE $date"
+    echo "DATE: $date"
 
     if [[ -z "$branch" ]]; then
         branch=$(get_branch)
@@ -48,7 +57,7 @@ function build_image() {
             exit 1
         fi
     fi
-    echo "BRANCH ${branch}"
+    echo "BRANCH: ${branch}"
 
     if [[ -z "$commit" ]]; then
         commit=$(get_commit)
@@ -60,28 +69,32 @@ function build_image() {
     fi
     echo "COMMIT: $commit"
 
-    local here=`pwd`
-    local context="${here}/ci/docker/context"
-    echo "Running docker build in context $context" 
+    local image_tag=kbase/kbase-ui:${branch}
 
-    # TODO: don't know why can't run this in a subprocess
-
-    # NOTE: the image is tagged "master" for production builds. In a real
-    # deploy the image would be pushed up to dockerhub with the master image tag.
-    
     docker build \
         --build-arg BUILD_DATE=$date \
         --build-arg VCS_REF=$commit \
         --build-arg BRANCH=$branch \
-        -t kbase/kbase-ui:${branch} ${context}
-
+        --build-arg BUILD=$build \
+        -f ./Dockerfile \
+        -t $image_tag \
+        $root
+        
     err=$?
     if (( $err > 0 )); then
-        echo "Error running docker build: $err"
+        echo "Error running docker build: ${err}"
     else
         echo "Successfully built docker image. You may invoke it "
-        echo "with tag \"kbase/kbase-ui:${branch}\""
+        echo "with tag \"${image_tag}\""
     fi
 }
 
-build_image
+build=$1
+
+if [ -z "$build" ]; then 
+    echo "ERROR: argument 1, the build (dev, ci, or prod), not provided"
+    usage
+    exit 1
+fi
+
+build_image $build

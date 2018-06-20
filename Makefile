@@ -76,7 +76,7 @@ default:
 run: init build start pause preview
 
 NODE=$(shell node --version 2> /dev/null)
-NODE_REQUIRED="v6"
+NODE_REQUIRED="v8"
 majorver=$(word 1, $(subst ., ,$1))
 
 preconditions:
@@ -97,7 +97,9 @@ install-tools:
 	@echo "> Installing build and test tools."
 	npm install
 
-init: preconditions setup-dirs install-tools
+setup: preconditions setup-dirs
+
+init: setup install-tools
 
 
 # Perform the build. Build scnearios are supported through the config option
@@ -122,21 +124,13 @@ image: build-docker-image
 
 docker_image: build-docker-image
 
-build-docker-image:
+build-image:
 	@echo "> Building docker image for this branch."
-	@echo "> Cleaning out old contents"
-	rm -rf $(CI_DOCKER_CONTEXT)/contents
-	@echo "> Copying dist build of kbase-ui into contents..."
-	mkdir -p $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui
-	cp -pr build/$(build)/client/* $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui
-	@echo "> Copying kb/deployment templates..."
-	cp -pr $(CI_DOCKER_CONTEXT)/../kb-deployment/* $(CI_DOCKER_CONTEXT)/contents
-	@echo "> Beginning docker build..."
-	cd $(TOPDIR)/deployment/; bash tools/build_docker_image.sh
+	cd $(TOPDIR)/tools/docker/; bash build-image.sh $(build)
 
 # The dev version of run-image also supports cli options for mapping plugins, libraries, 
 # and parts of ui into the image for (more) rapdi development workflow
-run-image:
+run-image-dev:
 	@echo "> Running kbase-ui image."
 	# @echo "> You will need to inspect the docker container for the ip address "
 	# @echo ">   set your /etc/hosts for ci.kbase.us accordingly."
@@ -146,7 +140,7 @@ run-image:
 	@echo "> libraries $(libraries)"
 	@echo "> To map host directories into the container, you will need to run "
 	@echo ">   tools/run-image.sh with appropriate options."
-	$(eval cmd = $(TOPDIR)/tools/run-image.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l) $(foreach s,$(services),-s $s)  $(foreach d,$(data),-d $d) $(foreach f,$(folders),-f $f))
+	$(eval cmd = $(TOPDIR)/tools/docker/run-image-dev.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l) $(foreach s,$(services),-s $s)  $(foreach d,$(data),-d $d) $(foreach f,$(folders),-f $f))
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
 
