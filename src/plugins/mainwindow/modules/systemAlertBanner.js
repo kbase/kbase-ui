@@ -13,10 +13,11 @@ define([
     'use strict';
 
     function factory(config) {
-        let t = html.tag,
+        const t = html.tag,
             div = t('div'),
-            runtime = config.runtime,
-            hostNode, container;
+            runtime = config.runtime;
+
+        let hostNode, container;
 
         let newAlertsPoller;
 

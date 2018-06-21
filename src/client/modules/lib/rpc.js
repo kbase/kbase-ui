@@ -28,8 +28,8 @@ define([
         }
 
         call(moduleName, functionName, params) {
-            let serviceUrl = this.runtime.config(['services', moduleName, 'url'].join('.'));
-            let token = this.runtime.service('session').getAuthToken();
+            const serviceUrl = this.runtime.config(['services', moduleName, 'url'].join('.'));
+            const token = this.runtime.service('session').getAuthToken();
             let client;
             if (serviceUrl) {
                 client = new GenericClient({
@@ -44,7 +44,7 @@ define([
                     module: moduleName
                 });
             }
-            let funcParams = params || [];
+            const funcParams = params || [];
             return client.callFunc(functionName, funcParams)
                 .catch((err) => {
                     if (err instanceof exceptions.AjaxError) {
@@ -54,8 +54,8 @@ define([
                         });
                     } else if (err instanceof RPCError) {
                         console.error('RPC Error', err);
-                        let message = 'An error was encountered running an rpc method';
-                        let detail = 'The module is "' + err.module + '", the method "' + err.func + '", ' +
+                        const message = 'An error was encountered running an rpc method';
+                        const detail = 'The module is "' + err.module + '", the method "' + err.func + '", ' +
                                     'the error returned from the service is "' + (err.message || 'unknown') + '"';
                         throw new RPCError('service-call-error', err.name, message, detail , {
                             originalError: err
@@ -79,8 +79,8 @@ define([
         }
 
         setup() {
-            let serviceUrl = this.runtime.config(['services', this.moduleName, 'url'].join('.'));
-            let token = this.runtime.service('session').getAuthToken();
+            const serviceUrl = this.runtime.config(['services', this.moduleName, 'url'].join('.'));
+            const token = this.runtime.service('session').getAuthToken();
             let client;
             if (serviceUrl) {
                 client = new GenericClient({
@@ -99,7 +99,7 @@ define([
         }
 
         callFunc(functionName, params) {
-            let funcParams = params || [];
+            const funcParams = params || [];
             return this.client.callFunc(functionName, funcParams)
                 .catch((err) => {
                     if (err instanceof exceptions.AjaxError) {
@@ -109,8 +109,8 @@ define([
                         });
                     } else if (err instanceof RPCError) {
                         console.error('RPC Error', err);
-                        let message = 'An error was encountered running an rpc method';
-                        let detail = 'The module is "' + err.module + '", the method "' + err.func + '", ' +
+                        const message = 'An error was encountered running an rpc method';
+                        const detail = 'The module is "' + err.module + '", the method "' + err.func + '", ' +
                                     'the error returned from the service is "' + (err.message || 'unknown') + '"';
                         throw new RPCError('service-call-error', err.name, message, detail , {
                             originalError: err

@@ -33,7 +33,7 @@ define([
         }
 
         function makeClient(arg) {
-            let client = new rpc.RPCClient({
+            const client = new rpc.RPCClient({
                 runtime: runtime,
                 module: arg.module
             });

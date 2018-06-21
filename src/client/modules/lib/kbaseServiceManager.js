@@ -22,8 +22,8 @@ define([
         }
 
         checkREST(serviceConfig) {
-            let http = new httpClient.HttpClient();
-            let header = new httpClient.HttpHeader();
+            const http = new httpClient.HttpClient();
+            const header = new httpClient.HttpHeader();
             header.setHeader('accept', 'application/json');
             return http.request({
                 method: 'GET',
@@ -32,9 +32,9 @@ define([
                 timeout: this.timeout
             })
                 .then((result) => {
-                    let contentType = result.header.getHeader('content-type');
+                    const contentType = result.header.getHeader('content-type');
                     if (contentType !== 'application/json') {
-                        let errorMessage = 'Unexpected content type; expected "application/json", received "' + contentType + '"';
+                        const errorMessage = 'Unexpected content type; expected "application/json", received "' + contentType + '"';
                         if (this.throwErrors) {
                             throw new Error(errorMessage);
                         } else {
@@ -44,7 +44,7 @@ define([
                     return JSON.parse(result.response);
                 })
                 .catch((err) => {
-                    let errorMessage = 'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
+                    const errorMessage = 'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
                     if (this.throwErrors) {
                         throw new Error(errorMessage);
                     } else {
@@ -55,7 +55,7 @@ define([
         }
 
         checkJSONRPC(serviceConfig) {
-            let client = new GenericClient({
+            const client = new GenericClient({
                 module: serviceConfig.module,
                 url: serviceConfig.url,
                 timeout: this.timeout
@@ -65,7 +65,7 @@ define([
                     return result;
                 })
                 .catch((err) => {
-                    let errorMessage = 'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
+                    const errorMessage = 'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
                     if (this.throwErrors) {
                         throw new Error(errorMessage);
                     } else {
@@ -106,7 +106,7 @@ define([
                         } else {
                             version = result;
                         }
-                        let semverResult = semver.semverIsAtLeast(version, serviceConfig.version.minimum);
+                        const semverResult = semver.semverIsAtLeast(version, serviceConfig.version.minimum);
                         if (semverResult === true) {
                             return null;
                         } else {
@@ -120,11 +120,11 @@ define([
                     });
                 }))
                 .then((result) => {
-                    let mismatches = result .filter((result) => {
+                    const mismatches = result .filter((result) => {
                         return result === null ? false : true;
                     });
                     if (mismatches.length > 0) {
-                        let message = mismatches.map((mismatch) => {
+                        const message = mismatches.map((mismatch) => {
                             return '(' + mismatch.code + ') ' +
                               mismatch.module + ' needs to be at least ' +
                               mismatch.minimumVersion + ' but is ' + mismatch.serviceVersion;
@@ -135,7 +135,7 @@ define([
                         } else {
                             prefix = 'Incompatible services';
                         }
-                        let errorMessage = prefix + ': ' + message;
+                        const errorMessage = prefix + ': ' + message;
                         if (this.throwErrors) {
                             throw new Error(errorMessage);
                         } else {

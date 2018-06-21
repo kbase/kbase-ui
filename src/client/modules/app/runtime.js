@@ -40,13 +40,13 @@ define([
         });
 
         function featureEnabled(id) {
-            let featureSwitch = featureSwitches[id];
+            const featureSwitch = featureSwitches[id];
             if (!featureSwitch) {
                 throw new Error('Feature switch "' + id + '" not defined');
             }
 
             // look for the feature switch in the.
-            let enabledFeatureSwitches = configProps.getItem('ui.featureSwitches.enabled');
+            const enabledFeatureSwitches = configProps.getItem('ui.featureSwitches.enabled');
             // let disabledFeatureSwitches = configProps.getItem('ui.featureSwitches.disabled');
 
             if (enabledFeatureSwitches.includes(id)) {
@@ -56,13 +56,13 @@ define([
         }
 
         function featureDisabled(id) {
-            let featureSwitch = featureSwitches[id];
+            const featureSwitch = featureSwitches[id];
             if (!featureSwitch) {
                 throw new Error('Feature switch "' + id + '" not defined');
             }
 
             // look for the feature switch in the.
-            let disabledFeatureSwitches = configProps.getItem('ui.featureSwitches.disabled');
+            const disabledFeatureSwitches = configProps.getItem('ui.featureSwitches.disabled');
 
             if (disabledFeatureSwitches.includes(id)) {
                 return true;

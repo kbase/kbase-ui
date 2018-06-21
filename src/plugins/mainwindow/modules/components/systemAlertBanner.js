@@ -17,8 +17,7 @@ define([
 ) {
     'use strict';
 
-    let t = html.tag,
-        p = t('p'),
+    const t = html.tag,
         button = t('button'),
         span = t('span'),
         div = t('div');

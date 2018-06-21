@@ -7,7 +7,7 @@ define([
 ) {
     'use strict';
 
-    let t = html.tag,
+    const t = html.tag,
         div = t('div'),
         span = t('span'),
         button = t('button'),
@@ -43,9 +43,10 @@ define([
             w.set('buttons', buttons);
         }
         function renderButton(w, buttonDef) {
-            let label,
-                labelStyle = {},
+            const labelStyle = {},
                 events = [];
+
+            let label;
 
             if (buttonDef.label) {
                 label = div({class: 'kb-nav-btn-txt'}, buttonDef.label);
