@@ -1,6 +1,6 @@
 /*global define */
 /*jslint white: true, browser: true */
-define([], function() {
+define([], function () {
     'use strict';
 
     function factory(config) {
@@ -12,7 +12,7 @@ define([], function() {
 
         function start() {
             heartbeat = 0;
-            heartbeatTimer = window.setInterval(function() {
+            heartbeatTimer = window.setInterval(function () {
                 heartbeat += 1;
                 runtime.send('app', 'heartbeat', { heartbeat: heartbeat });
             }, interval);
@@ -30,7 +30,7 @@ define([], function() {
     }
 
     return {
-        make: function(config) {
+        make: function (config) {
             return factory(config);
         }
     };

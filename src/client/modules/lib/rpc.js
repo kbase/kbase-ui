@@ -98,7 +98,7 @@ define([
             this.client = client;
         }
 
-        callFunc(functionName, params) {            
+        callFunc(functionName, params) {
             let funcParams = params || [];
             return this.client.callFunc(functionName, funcParams)
                 .catch((err) => {

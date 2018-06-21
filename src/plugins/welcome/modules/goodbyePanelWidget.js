@@ -14,7 +14,7 @@ function (
 
             // VIEW
 
-        function render(params) {
+        function render() {
             return div({class: 'container-fluid'}, html.makePanel({
                 title: 'Signed Out',
                 content: [

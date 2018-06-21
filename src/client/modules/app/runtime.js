@@ -8,7 +8,7 @@ define([
         var messenger = config.messenger;
         var serviceManager = config.serviceManager;
 
-        // Access to ui config. 
+        // Access to ui config.
         // This is simply a wrapping around the venerable Props module.
         function getConfig(prop, defaultValue) {
             return configProps.getItem(prop, defaultValue);
@@ -23,8 +23,8 @@ define([
         }
 
         // allow tag
-        // Returns true if the provided string 'tag' is found in 
-        // the array of allowed tags, as defined in the config 
+        // Returns true if the provided string 'tag' is found in
+        // the array of allowed tags, as defined in the config
         // property 'ui.allow'.
         function allow(tag) {
             var allowed = configProps.getItem('ui.allow', []);

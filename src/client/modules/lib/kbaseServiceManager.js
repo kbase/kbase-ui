@@ -84,7 +84,7 @@ define([
                             return this.checkJSONRPC(serviceConfig);
                         case 'rest':
                             return this.checkREST(serviceConfig);
-                        default: 
+                        default:
                             var errorMessage = 'Unsupported core service type: ' + serviceConfig.type;
                             if (this.throwErrors) {
                                 throw new Error(errorMessage);
@@ -115,7 +115,7 @@ define([
                                 minimumVersion: serviceConfig.version.minimum,
                                 serviceVersion: version,
                                 code: semverResult
-                            };                                
+                            };
                         }
                     });
                 }))
@@ -125,8 +125,8 @@ define([
                     });
                     if (mismatches.length > 0) {
                         let message = mismatches.map((mismatch) => {
-                            return '(' + mismatch.code + ') ' + 
-                              mismatch.module + ' needs to be at least ' + 
+                            return '(' + mismatch.code + ') ' +
+                              mismatch.module + ' needs to be at least ' +
                               mismatch.minimumVersion + ' but is ' + mismatch.serviceVersion;
                         }).join('; ');
                         let prefix;

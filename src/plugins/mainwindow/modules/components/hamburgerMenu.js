@@ -27,7 +27,7 @@ define([
 
             // TODO: swtich on type
 
-            li([                
+            li([
                 a({
                     dataBind: {
                         attr: {
@@ -61,9 +61,9 @@ define([
     }
 
     function buildDivider() {
-        return li({ 
-            role: 'presentation', 
-            class: 'divider' 
+        return li({
+            role: 'presentation',
+            class: 'divider'
         });
     }
 
@@ -77,8 +77,8 @@ define([
                 dataToggle: 'dropdown',
                 ariaHaspopup: 'true'
             }, [
-                span({ 
-                    class: 'fa fa-navicon' 
+                span({
+                    class: 'fa fa-navicon'
                 })
             ]),
             ul({
@@ -87,7 +87,7 @@ define([
                 ariaLabeledby: 'kb-nav-menu',
                 dataBind: {
                     with: 'menu'
-                }          
+                }
             }, [
                 buildMenuItems('main'),
                 '<!-- ko if: $data.developer && $data.developer().length > 0 -->',

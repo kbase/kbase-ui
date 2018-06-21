@@ -63,7 +63,7 @@ define([
                     handler = {
                         params: {
                             title: 'Access Error',
-                            error: 'One or more required roles not available in your account: ' + handler.route.rolesRequired.join(', ')                           
+                            error: 'One or more required roles not available in your account: ' + handler.route.rolesRequired.join(', ')
                         },
                         route: {
                             authorization: false,

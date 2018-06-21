@@ -2,7 +2,7 @@ define([
     'kb_widget/bases/simpleWidget',
     'kb_common/html'
 ], function (
-    SimpleWidgetFactory, 
+    SimpleWidgetFactory,
     html
 ) {
     'use strict';
@@ -24,7 +24,7 @@ define([
             return this;
         }
         function addButton(w, buttonDef) {
-            let buttons = w.get('buttons');
+            const buttons = w.get('buttons');
             buttonDef.type = 'button';
             if (buttonDef.external) {
                 buttonDef.target = '_blank';
@@ -53,8 +53,8 @@ define([
                 label = '';
                 labelStyle.fontSize = '150%';
             }
-                
-            let buttonAttribs = {
+
+            const buttonAttribs = {
                 dataButton: buttonDef.name,
                 disabled: buttonDef.disabled,
                 class: ['btn', 'btn-' + (buttonDef.style || 'default'), 'navbar-btn', 'kb-nav-btn'].join(' ')
@@ -91,7 +91,7 @@ define([
             return {
                 content: button(buttonAttribs, [
                     div({
-                        class: 'fa fa-' + buttonDef.icon, 
+                        class: 'fa fa-' + buttonDef.icon,
                         style: labelStyle
                     }),
                     label
@@ -101,7 +101,7 @@ define([
         }
 
         function renderButtonBar(w) {
-            let content = span({class: 'navbar-buttons kb-widget-buttonbar'}, [
+            const content = span({class: 'navbar-buttons kb-widget-buttonbar'}, [
                 w.get('buttons').list.map(function (buttonDef) {
                     switch (buttonDef.type) {
                     case 'button':
@@ -116,7 +116,7 @@ define([
         }
 
         function enableButton(w, id) {
-            let buttons = w.get('buttons');
+            const buttons = w.get('buttons');
             if (buttons.map[id]) {
                 buttons.map[id].disabled = false;
             }
@@ -124,7 +124,7 @@ define([
         }
 
         function disableButton(w, id) {
-            let buttons = w.get('buttons');
+            const buttons = w.get('buttons');
             if (buttons.map[id]) {
                 buttons.map[id].disabled = true;
             }
@@ -156,7 +156,7 @@ define([
         //         li = html.tag('li'),
         //         a = html.tag('a'),
         //         itemButton;
-                
+
         //     if (itemDef.icon) {
         //         itemButton = li([
         //             div({class: 'navbar-icon'}, [
@@ -171,7 +171,7 @@ define([
         //             ])
         //         ]);
         //     }
-                
+
         //     if (itemDef.url) {
         //         // a link style button
         //         return a({
@@ -180,7 +180,7 @@ define([
         //             href: itemDef.url,
         //             target: itemDef.target
         //         }, itemButton);
-        //     } 
+        //     }
         //     return a({
         //         href: '#',
         //         dataMenuItem: itemDef.name,
@@ -239,7 +239,7 @@ define([
         //             }
         //         })
         //     ]);
-                
+
         //     var dropdown = div({class: 'dropdown', stlyle: {display: 'inline-block'}}, [
         //         button,
         //         menu
@@ -264,7 +264,7 @@ define([
                     });
                 },
                 start: function () {
-                    let widget = this;
+                    const widget = this;
                     this.recv('ui', 'addButton', function (data) {
                         addButton(widget, data);
                     });

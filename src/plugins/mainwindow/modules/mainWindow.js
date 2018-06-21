@@ -3,7 +3,7 @@
  * The Main Window implements the widget interface, of course. It is controlled
  * by the main entry point program, probably main.js
  * The main window is the controller, manager, coordinator, whatever you want to
- * call it, for the primary user interface widgets. These widget include, at 
+ * call it, for the primary user interface widgets. These widget include, at
  * present:
  * - main (hamburger) menu
  * - logo
@@ -13,9 +13,9 @@
  * - user account
  * - console
  * - main content
- * 
- * Each of these areas is implemented as a widget. As much as possible, the 
- * Main Window tries to keep out of the way, and just manage the widgets. 
+ *
+ * Each of these areas is implemented as a widget. As much as possible, the
+ * Main Window tries to keep out of the way, and just manage the widgets.
  * Each of them may listen for messages from other parts of the user interface.
  */
 define([

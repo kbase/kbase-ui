@@ -105,7 +105,7 @@ define([
 
     function ContactViewModel() {
         // NB by using the event handler first argument, we can avoid usage of
-        // the 'this', which would also work (being bound to the object the 
+        // the 'this', which would also work (being bound to the object the
         // event handler is accessed.)
         function submitIt(contact) {
             var name = contact.name();

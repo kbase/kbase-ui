@@ -28,7 +28,7 @@ define([
 
         function start() {
             // Listen for a setTitle message sent to the ui.
-            // We use the widget convenience function in order to 
+            // We use the widget convenience function in order to
             // get automatic event listener cleanup. We could almost
             // as easily do this ourselves.
             runtime.recv('ui', 'setTitle', function (newTitle) {

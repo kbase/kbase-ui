@@ -45,7 +45,7 @@ define([
                                 created: new Date().toISOString()
                             },
                             // was globus info, no longer used
-                            //account: {},                            
+                            //account: {},
                             preferences: {},
                             // This is where all user-visible and user-controlled information goes.
                             // when auto-creating a profile, there is nothing to put here yet.

@@ -42,7 +42,6 @@ define([
                         throw new Error('Error fetching file: ' + result.status);
                     }
                 });
-               
         }
         return {
             start: start,
