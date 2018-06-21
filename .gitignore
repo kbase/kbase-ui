@@ -17,6 +17,9 @@ nbproject
 /build/deploy
 /mutations/mutantfiles
 
+# Doc artifacts
+_book
+
 # Developer artifacts
 /dev/*
 !/dev/README.md
