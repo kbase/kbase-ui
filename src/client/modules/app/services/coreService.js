@@ -5,15 +5,15 @@ define([
 ) {
     'use strict';
 
-    class CoreService {
-        constructor({moduleName, minimumVersion, url, versionMethod, versionPath}) {
-            this.moduleName = moduleName;
-            this.minimumVersion = minimumVersion;
-            this.url = url;
-            this.versionMethod = versionMethod;
-            this.versionPath = versionPath;
-        }
-    }
+    // class CoreService {
+    //     constructor({moduleName, minimumVersion, url, versionMethod, versionPath}) {
+    //         this.moduleName = moduleName;
+    //         this.minimumVersion = minimumVersion;
+    //         this.url = url;
+    //         this.versionMethod = versionMethod;
+    //         this.versionPath = versionPath;
+    //     }
+    // }
 
     class CoreServicesMonitor {
         constructor({runtime}) {
@@ -22,22 +22,22 @@ define([
             this.services = {};
         }
 
-        start () {
+        start() {
 
         }
 
-        stop () {
+        stop() {
 
         }
 
-        pluginHandler(config) {
+        pluginHandler() {
             // console.log('plugin handler', config);
         }
 
-        addCoreServiceDepenency(dep) {
-            
+        addCoreServiceDepenency() {
+
         }
-    }    
+    }
 
 
     return {ServiceClass: CoreServicesMonitor};

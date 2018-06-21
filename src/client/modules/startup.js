@@ -4,7 +4,7 @@
         switch (err.requireType) {
         case 'notloaded':
             if (/esprima/.test(err.message)) {
-                // ignore esprima for now. The loading is attempted within the 
+                // ignore esprima for now. The loading is attempted within the
                 // yaml library ...
                 console.warn('esprima require test detected');
                 return;
@@ -95,7 +95,7 @@
         switch (err.requireType) {
         case 'notloaded':
             if (/xesprima/.test(err.message)) {
-                // ignore esprima for now. The loading is attempted within the 
+                // ignore esprima for now. The loading is attempted within the
                 // yaml library ...
                 console.warn('esprima require test detected');
                 return;

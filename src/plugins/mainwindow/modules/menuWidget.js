@@ -21,7 +21,6 @@ define([
                 return a2.indexOf(a) >= 0;
             });
         }
-    
 
         function attach(node) {
             hostNode = node;
@@ -70,7 +69,7 @@ define([
                     }
                     if (item.allowRoles) {
                         return intersect(item.allowRoles, userRoles);
-                    }                        
+                    }
                     return true;
                 }),
                 help: ko.observableArray(menu.help).filter(function (item) {
@@ -82,7 +81,7 @@ define([
                     }
                     if (item.allowRoles) {
                         return intersect(item.allowRoles, userRoles);
-                    }                        
+                    }
                     return true;
                 })
             };
@@ -94,7 +93,7 @@ define([
         }
 
         var viewModel = ViewModel();
-        
+
         function start() {
             container.innerHTML = div({
                 dataBind: {

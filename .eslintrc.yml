@@ -24,3 +24,29 @@ rules:
     - allow:
       - warn
       - error
+  # stylistic
+  no-trailing-spaces:
+    - error
+  space-before-function-paren:
+    - error
+    -
+      anonymous: always
+      named: never
+      asyncArrow: always
+  space-in-parens:
+    - error
+    - never
+  func-call-spacing:
+    - error
+    - never
+  keyword-spacing:
+    - error
+    - 
+      before: true
+      after: true
+  no-fallthrough:
+    - error
+    - 
+      commentPattern: fallthrough
+  prefer-const:
+    - error

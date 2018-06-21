@@ -17,7 +17,7 @@ define([
         td = t('td');
 
 
-    function factory(config) {
+    function factory() {
         var hostNode, container;
 
         // IMPL
@@ -35,11 +35,11 @@ define([
                         th({style: {fontWeight: 'normal'}}, 'Key'),
                         th({style: {fontWeight: 'normal'}}, 'Value')
                     ]),
-                    Object.keys(params.request.query).map(function(key) {
+                    Object.keys(params.request.query).map(function (key) {
                         return tr([
                             td({style: {fontWeight: 'bold'}}, html.embeddableString(key)),
                             td({style: {fontWeight: 'bold'}}, html.embeddableString(params.request.query[key]))
-                        ])
+                        ]);
                     }).join('\n')
                 ]);
             }

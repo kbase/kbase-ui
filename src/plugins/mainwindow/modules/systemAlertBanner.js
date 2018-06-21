@@ -13,15 +13,16 @@ define([
     'use strict';
 
     function factory(config) {
-        let t = html.tag,
+        const t = html.tag,
             div = t('div'),
-            runtime = config.runtime,
-            hostNode, container;
+            runtime = config.runtime;
+
+        let hostNode, container;
 
         let newAlertsPoller;
 
         function getActiveAlerts() {
-            let client = new runtime.service('rpc').makeClient({
+            const client = new runtime.service('rpc').makeClient({
                 module: 'UIService'
             });
 
@@ -34,11 +35,11 @@ define([
         function attach(node) {
             hostNode = node;
             container = hostNode.appendChild(document.createElement('div'));
-            container.classList.add('widget-menu');         
+            container.classList.add('widget-menu');
         }
 
         function start() {
-            let vm = {
+            const vm = {
                 runtime: runtime,
                 systemStatus: ko.observable(),
                 error: ko.observable()
@@ -52,7 +53,7 @@ define([
                 // })
                 return getActiveAlerts()
                     .then((data) => {
-                        let systemStatus = {
+                        const systemStatus = {
                             upcomingMaintenanceWindows: data
                         };
                         vm.systemStatus(systemStatus);
@@ -75,7 +76,7 @@ define([
             //     description: 'Load notifications',
             //     interval: 10000
             // });
-            
+
             // newAlertsPoller.start();
             class LoadNotificationsJob extends poller.Job {
                 constructor() {
@@ -87,16 +88,16 @@ define([
                     return loadNotifications();
                 }
             }
-            let job = new LoadNotificationsJob();
+            const job = new LoadNotificationsJob();
             // let job = new poller.Job({
             //     run: () => {
             //         return loadNotifications();
             //     },
             //     description: 'Load notifications'
             // });
-            let task = new poller.Task({
+            const task = new poller.Task({
                 interval: 10000,
-                runInitially: true 
+                runInitially: true
             });
             task.addJob(job);
 

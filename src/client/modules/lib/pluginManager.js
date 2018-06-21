@@ -5,7 +5,7 @@ define([
 ) {
     'use strict';
 
-    // Note that we use the global require here because we need to 
+    // Note that we use the global require here because we need to
     // update the global confirmation.
     var prequire = Promise.promisify(window.require);
 
@@ -15,7 +15,7 @@ define([
             services = {};
 
         /*
-         * All of these installXXX installers return an array of 
+         * All of these installXXX installers return an array of
          * promises.
          */
 
@@ -119,8 +119,8 @@ define([
                 // Create a dynamic module for the plugin to use. The current use
                 // case is for code within the plugin to have access to the path
                 // to the plugin for loading other files.
-                // 
-                // NB: this implies that the plugin package name is unique in 
+                //
+                // NB: this implies that the plugin package name is unique in
                 // the system. To enforce or at least help developers with this
                 // we should have a plugin registry.
                 define('kb_plugin_' + pluginDef.package.name, [], function () {
@@ -128,7 +128,7 @@ define([
                         plugin: {
                             name: pluginDef.package.name,
                             resources: {
-                                // to be used for module loading, e.g. yaml, json, 
+                                // to be used for module loading, e.g. yaml, json,
                                 // css through requirejs
                                 modulePath: '/' + sourcePath + '/resources',
                                 // to be used for document references, e.g. img, css doc
@@ -193,7 +193,7 @@ define([
         }
 
         /**
-         * 
+         *
          * @param {type} pluginDef
          * @returns {Promise}
          */
