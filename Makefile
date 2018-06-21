@@ -27,14 +27,14 @@ KARMA			= ./node_modules/.bin/karma
 # The config used to control the build (build task)
 # dev, prod
 # Defaults to prod
-config			= prod
+config			= undef
 
 # The kbase-ui build folder to use for the docker image.
 # values: build, dist
 # Defaults to dist 
 # For local development, one would use the build, since is much faster 
 # to create. A debug build may be available in the future.
-build           = dist
+build           = 
 
 # The deploy environment; used by dev-time image runners
 # dev, ci, next, appdev, prod
@@ -42,13 +42,12 @@ build           = dist
 # Causes run-image.sh to use the file in deployment/conf/$(env).env for
 # "filling out" the nginx and ui config templates.
 # TODO: hook into the real configs out of KBase's gitlab
-env             = dev
+env             = undef
 
 
 DEV_DOCKER_CONTEXT	= $(TOPDIR)/deployment/dev/docker/context
 CI_DOCKER_CONTEXT	= $(TOPDIR)/deployment/ci/docker/context
 PROD_DOCKER_CONTEXT	= $(TOPDIR)/deployment/prod/docker/context
-PROXIER_DOCKER_CONTEXT     = $(TOPDIR)/tools/proxier/docker/context
 
 # functions
 # thanks https://stackoverflow.com/questions/10858261/abort-makefile-if-variable-not-set
@@ -125,6 +124,7 @@ image: build-docker-image
 docker_image: build-docker-image
 
 build-image:
+	@:$(call check_defined, build, "the build configuration: dev ci prod")
 	@echo "> Building docker image for this branch."
 	cd $(TOPDIR)/tools/docker/; bash build-image.sh $(build)
 
@@ -143,25 +143,6 @@ run-image-dev:
 	$(eval cmd = $(TOPDIR)/tools/docker/run-image-dev.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l) $(foreach s,$(services),-s $s)  $(foreach d,$(data),-d $d) $(foreach f,$(folders),-f $f))
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
-
-# The proxier, for local dev support
-
-proxier-image:
-	@echo "> Building docker image."
-	@echo "> Cleaning out old contents"
-	rm -rf $(PROXIER_DOCKER_CONTEXT)/contents
-	mkdir -p $(PROXIER_DOCKER_CONTEXT)/contents
-	@echo "> Copying proxier config templates..."
-	cp -pr $(PROXIER_DOCKER_CONTEXT)/../src/* $(PROXIER_DOCKER_CONTEXT)/contents
-	@echo "> Beginning docker build..."
-	cd $(PROXIER_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
-
-run-proxier-image:
-	$(eval cmd = $(TOPDIR)/tools/proxier/tools/run-image.sh $(env))
-	@echo "> Running proxier image"
-	@echo "> with env $(env)"
-	@echo "> Issuing: $(cmd)"
-	bash $(cmd)	
 
 uuid:
 	@node ./tools/gen-uuid.js
@@ -196,8 +177,13 @@ clean-build:
 # If you need more clean refinement, please see Gruntfile.js, in which you will
 # find clean tasks for each major build artifact.
 
-# Eventually, if docs need to be built, the process will go here.
-docs: init
-	@echo docs!
+node_modules: init
+
+build-docs: node_modules
+	./node_modules/.bin/gitbook build ./docs/book
+
+view-docs: node_modules
+	./node_modules/.bin/wait-on -t 10000 http://localhost:4000 && ./node_modules/.bin/opn http://localhost:4000 &
+	./node_modules/.bin/gitbook serve ./docs/book
 
 .PHONY: all test build

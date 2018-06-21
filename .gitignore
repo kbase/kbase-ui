@@ -32,7 +32,8 @@ node_modules
 package-lock.json
 
 # General purpose temp directory
-/temp/files
+# /temp/*
+# !/temp/README.md
 
 # Any trash directories
 _trash
@@ -51,10 +52,6 @@ nbproject
 # Deployment artifacts
 /deployment/ci/docker/context/contents
 
-# other artifacts
-/tools/proxier/docker/context/contents
-
-
 # Editor and OS artifacts
 .DS_Store
 .vscode
@@ -64,5 +61,3 @@ nbproject
 # todo divert files elsewhere
 kbase-ui.stdout
 kbase-ui.stderr
-proxier.stdout
-proxier.stderr

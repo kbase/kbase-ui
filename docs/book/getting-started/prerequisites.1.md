@@ -1,8 +1,8 @@
 # Prerequisites
 
-The developer setup provides a workflow and set of tools to help develop _kbase-ui_, kbase-ui plugins, and libraries. The basic workflow consists of javascript development on your host (main desktop) environment, a Docker image for running kbase-ui behind nginx, and a separate Docker image for running a proxy for the  kbase-ui container as well as KBase services.
+The kbase-ui web app is used as a Docker image. For basic usage, including building and running the Docker image, just two applications are required: docker and git.
 
-[TOC]
+For full-blown development of kbase-ui, these same two dependencies would suffice, but in practice you will need a java development stack. Please see the [Development](../development/README.md) for all the gory details.
 
 ## Basic Development Requirements
 

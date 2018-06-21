@@ -1,102 +1,94 @@
 # Prerequisites
 
-The developer setup provides a workflow and set of tools to help develop _kbase-ui_, kbase-ui plugins, and libraries. The basic workflow consists of javascript development on your host (main desktop) environment, a Docker image for running kbase-ui behind nginx, and a separate Docker image for running a proxy for the  kbase-ui container as well as KBase services.
+The kbase-ui web app is used as a Docker image. For basic usage, including building and running the Docker image, just two applications are required: docker and git.
 
-[TOC]
+For full-blown development of kbase-ui, these same two dependencies would suffice, but in practice you will need a javascript development stack. Please see the [Development](../development/README.md) for all the gory details.
 
-## Basic Development Requirements
+## Basic Requirements
 
-You will need to ensure that you have a basic set of development tools on your host desktop machine. These tools are available on Mac, Linux, and Windows.
+You will need to ensure that you have a basic set of the following tools on your host desktop machine. These tools are available on Mac, Linux, and Windows.
 
 | app | version | notes |
 |-----|---------|------ |
-| nodejs | 6 (LTS) | The V8 javascript system, required for building kbase-ui and running tests; we are currently on version 8. |
-| npm | 6 | |
 | git    | * | the source revision management tool with integration into github |
 | docker | * | the linux container manager you will use to run kbase-ui |
-| dockerize | * | a utility to make running docker containers more sane |
-| make  | * | all build tasks go through make |
 
-> \* we haven't documented any substantial differences between these tools regarding the kbase-ui development process. However, it is best to keep them always at the most recent version by updating your tool stack periodically
+> \* we haven't documented any substantial differences between these tools regarding the kbase-ui development process. However, it is best to keep them always at the most recent version by updating your tool stack periodically.
 
-_kbase-ui_ is built not just on your local development workstation, but int the following places:
+You may have noticed that there are no Javascript tools above, such as nodejs or npm, or development tools such as make. This is because kbase-ui is built inside of a Docker build process, using build tools installed into a Docker image.
 
-- in Travis CI, as part of the github workflow
-- in the KBase Jenkins instance, as part of the CI deployment
-- in a KBase VM (??) as part of the next/appdev/production deployment process
+It is certainly possible to build kbase-ui locally on your host machine, and this is described in the [Development](../development/README.md) documentation. However, for normal deployment and development, this should not be necessary.
 
-As such, we need to ensure that each part of the build toolchain is consistent in each environment. Thus, even though a different version of the above tools may work for you (and of course no-one is watching you to make sure you aren't!) please be advised that it is possible that you can introduce dependencies upon a version of a tool which will break in one of the other KBase build environments.
-
-### nodejs
-
-Node and npm are used together to build _kbase-ui_ and to run tests. Node and npm change _very_ frequently, and the number of transitive dependencies involved in the build and test toolchain number in the _thousands_. Therefore, we must always be cautious when making changes to both the toolchain and dependencies. On the other hand, they are only used for building and testing _kbase-ui_, and not the runtime operation.
 
 ### git
+
+git is simply used to fetch kbase-ui and any other repos that may be involved in a given development effort.
+
+#### MacOS
+
+On MacOS, git is available through xCode, macports, brew, and an installer from git.
+
+##### Apple xCode
+
+xCode may be installed from the Apple App Store for free, and is highly recommended for any developer workstation. Not only does it provide some of the required tools, but some macOS developer tools require xCode be installed.
+
+xCode includes both git and make, which are required for building kbase-ui, as well as a compilers which may be required to install other developer tools via installers from macports, npm, and the like.
+
+Although xCode includes git, make and other developer tools, you may also opt to install these or similar (e.g. gmake) tools separately.
+
+
+#### Native Package from git
+
+Installation of native Mac packages should put you in good stead. Just follow the links below and instructions therein.
+
+[http://git-scm.com/download/mac](http://git-scm.com/download/mac)
+
+#### Macports
+
+##### 1) Install Apple xCode
+
+xCode may be required by Macports to install certain packages (some are distributed as binary, some need to be compiled.)
+
+xCode is available for free from the App Store.
+
+##### 2) Install Macports
+
+Download and follow the instructions at [https://www.macports.org/install.php](https://www.macports.org/install.php).
+
+> Macports will install its own binary path (/opt/local/bin:/opt/local/sbin/) ahead of the path used by xCode (/usr/bin). You can change that in ~/.profile if you wish.
+
+##### 2) Use the terminal to install the dependencies using Macports
+
+open Terminal and issue the following commands:
+
+```
+sudo port install nodejs6 npm5 git
+```
+
+Note that the version of nodejs is important. We try very hard to use the same version of nodejs in local development as KBase uses in build/deployment environments and as the Travis configuration uses. There are major changes between nodejs releases. Although a newer nodejs will be probably be able to run code written for an older version, the converse is not necessarily true, and it is certainly easy to start using features enabled by a newer node version if it is available. There may also be subtle differences in the building of dependencies through npm.
+
+In general we try to stay on the most recent Long Term Support (LTS) of any dependency, but sometimes it takes us a while to have time to coordinate the concurrent update of all of the places they are used.
+
+> Note: Although xCode installs git, the one available through macports is probably more up-to-date.
+
+
+#### Linux
+
+As a Linux user, you should be familiar with the package management tools for the distribution you use. Without a version constraint, you should just install the most recent version available.
+
+E.g. for Ubuntu
+
+```bash
+sudo apt-get install git
+```
+
+#### Windows
 
 [ to be done ]
 
 ### docker 
 
 [ to be done ]
-
-### dockerize
-
-dockerize may be installed via go or via a specific binary for linux or macOS:
-
-#### download binary
-
-Dockerize is available prebuilt for linux and macOS from the dockerize github repo:
-
-```bash
-export DOCKERIZE_VERSION=6.1
-wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-tar xvfz dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-sudo mv dockerize /usr/local/bin
-```
-
-#### install via go
-
-You may also install it via go. This is especially handy if you are already set up for go, or need to use other go-based programs which are not available through a package manager.
-
-install go 
-
-```bash
-sudo port install golang
-```
-
-update your macOS account profile. E.g.
-
-edit ~/.profile
-
-```bash
-vi ~/.profile
-```
-
-add the following two lines to the end of the file:
-
-```
-export GOPATH="${HOME}/go"
-export PATH=$PATH:$(go env GOPATH)/bin
-```
-
-and ensure that the go working directory exists
-
-```bash
-mkdir ~/go
-```
-
-You will need to spin up a new terminal window to pick up the go settings.
-
-Install dockerize:
-
-```
-go get github.com/jwilder/dockerize
-go install github.com/jwilder/dockerize
-```
-
-now the dockerize command will be available.
-
-
 
 ### make
 
@@ -120,7 +112,7 @@ The following tools are available on all supported platforms (Mac, Windows, Linu
 
 That leaves us with nodejs and git to install through other means.
 
-### Macintosh
+### MacOS
 
 There are three common sources for these tools natively on a Mac:
 

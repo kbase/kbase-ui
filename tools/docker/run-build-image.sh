@@ -7,7 +7,6 @@ function run_image () {
     root=$(git rev-parse --show-toplevel)
     image="kbase/uitool:dev"
 
-    # echo "stdout sent to uitool.stdout, stderr sent to proxier.stderr"
     echo "Running uitool image ${image} for build ${build}."
 
     mount="--mount type=bind,source=${root}/tools/build/shared,target=/kb/shared"
