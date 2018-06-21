@@ -46,6 +46,8 @@
             datatables_css: 'bower_components/datatables/css/jquery.dataTables',
             datatables: 'bower_components/datatables/js/jquery.dataTables',
             domReady: 'bower_components/requirejs-domready/domReady',
+            'bootstrap-datetimepicker'    : 'bower_components/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker',
+            'bootstrap-datetimepicker-css': 'bower_components/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker',
             fileSaver: 'bower_components/file-saver/FileSaver',
             font_awesome: 'bower_components/font-awesome/css/font-awesome',
             'google-code-prettify-style': 'bower_components/google-code-prettify/prettify',
@@ -87,6 +89,9 @@
         shim: {
             bootstrap: {
                 deps: ['jquery', 'css!bootstrap_css']
+            },
+            'bootstrap-datetimepicker': {
+                deps: ['bootstrap', 'css!bootstrap-datetimepicker-css']
             },
             'google-code-prettify': {
                 deps: ['css!google-code-prettify-style']

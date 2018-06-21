@@ -34,6 +34,42 @@ define([
             return (allowed.indexOf(tag) >= 0);
         }
 
+        var featureSwitches = {};
+        configProps.getItem('ui.featureSwitches.available').reduce((features, featureSwitch) => {
+            featureSwitches[featureSwitch.id] = featureSwitch;
+        });
+
+        function featureEnabled(id) {
+            let featureSwitch = featureSwitches[id];
+            if (!featureSwitch) {
+                throw new Error('Feature switch "' + id + '" not defined');
+            }
+
+            // look for the feature switch in the.
+            let enabledFeatureSwitches = configProps.getItem('ui.featureSwitches.enabled');
+            // let disabledFeatureSwitches = configProps.getItem('ui.featureSwitches.disabled');
+
+            if (enabledFeatureSwitches.includes(id)) {
+                return true;
+            }
+            return false;
+        }
+
+        function featureDisabled(id) {
+            let featureSwitch = featureSwitches[id];
+            if (!featureSwitch) {
+                throw new Error('Feature switch "' + id + '" not defined');
+            }
+
+            // look for the feature switch in the.
+            let disabledFeatureSwitches = configProps.getItem('ui.featureSwitches.disabled');
+
+            if (disabledFeatureSwitches.includes(id)) {
+                return true;
+            }
+            return false;
+        }
+
         // The receive and send functions are the primary message methods
 
         // Receive a message on a channel, and have function fun handle
@@ -112,6 +148,8 @@ define([
             rawConfig: rawConfig,
 
             allow: allow,
+            featureDisabled,
+            featureEnabled,
 
             // Messaging
             send: send,

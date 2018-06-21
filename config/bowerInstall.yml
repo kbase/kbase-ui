@@ -59,7 +59,19 @@ bowerFiles:
         src:
             - sankey.js
             - sankey.css
-        bowerComponent: true        
+        bowerComponent: true   
+    -
+        name: eonasdan-bootstrap-datetimepicker
+        # dir: eonasdan-bootstrap-datetimepicker
+        normalizeDirectory: true
+        src:
+            - 
+                cwd: src/js
+                path: bootstrap-datetimepicker.js
+            - 
+                cwd: build/css
+                path: bootstrap-datetimepicker.css
+        bowerComponent: true
     -
         name: file-saver
         src: 

@@ -167,7 +167,10 @@ run-proxier-image:
 	@echo "> Running proxier image"
 	@echo "> with env $(env)"
 	@echo "> Issuing: $(cmd)"
-	bash $(cmd)		
+	bash $(cmd)	
+
+uuid:
+	@node ./tools/gen-uuid.js
 
 # Tests are managed by grunt, but this also mimics the workflow.
 #init build
