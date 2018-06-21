@@ -1,15 +1,12 @@
 define([
     'knockout',
-    'kb_common/html',
-    'kb_plugin_mainWindow'
+    'kb_common/html'
 ], function (
     ko,
-    html,
-    Plugin
+    html
 ) {
     'use strict';
     var t = html.tag,
-        a = t('a'),
         span = t('span'),
         div = t('div'),
         button = t('button'),
@@ -23,8 +20,6 @@ define([
                 width: '100%',
                 padding: '0',
                 margin: '0'
-                    // border: '1px silver solid',
-                    // borderCollapse: 'inherit'
             }
         }, [
             // Title
@@ -270,11 +265,11 @@ define([
             viewModel: viewModel,
             // Required in order to make the alert component available within
             // the service api start semantics.
-            // Component loading is asynchronous, and there is no hook for 
+            // Component loading is asynchronous, and there is no hook for
             // getting component loading completion, which we could use to build a
             // promise.
             // TODO: see if there are changes in progress, or otherwise research what
-            // would be required for this. At the least, the viewmodel building would 
+            // would be required for this. At the least, the viewmodel building would
             // need async hooks, as well as applyBindings.
             synchronous: true
         };
@@ -285,8 +280,7 @@ define([
     function factory(config) {
         var hostNode, container,
             runtime = config.runtime,
-            listeners = [],
-            timeouts = [];
+            listeners = [];
 
         // function updateAlert(node, alert) {
         //     node.classList.forEach(function (klass) {
@@ -391,7 +385,7 @@ define([
             container = hostNode.appendChild(document.createElement('div'));
         }
 
-        function start(params) {
+        function start() {
             render();
             // listeners.push(runtime.recv('ui', 'alert', function (alert) {
             //     setAlert(alert);

@@ -72,7 +72,7 @@ define([
         function stop() {
             vm.running(false);
         }
-       
+
         return {
             vm: vm,
             node: node,

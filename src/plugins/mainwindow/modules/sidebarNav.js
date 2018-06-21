@@ -9,8 +9,8 @@ define([
     html,
     SidebarMenuComponent
 ) {
-    'use strict'; 
-    
+    'use strict';
+
     var t = html.tag,
         div = t('div');
 
@@ -48,8 +48,8 @@ define([
             var isLoggedIn = ko.observable(initiallyLoggedIn);
             // var username = ko.ovservable(runtime.service('session').getUsername());
 
-            // A session state change may signal that the session has been logged 
-            // out. 
+            // A session state change may signal that the session has been logged
+            // out.
             runtime.recv('session', 'change', function () {
                 isLoggedIn(runtime.service('session').isLoggedIn());
             });
@@ -76,7 +76,7 @@ define([
                 buttonsPathMap[viewButton.path] = viewButton;
             });
 
-            // weird, the filter doesn't work with elements added via push if the push is 
+            // weird, the filter doesn't work with elements added via push if the push is
             // invoked after the filter is attached.
             // TODO: look for a fix, or switch to the Sanderson projections.
             var filteredButtons = buttons.filter(function (item) {
@@ -98,7 +98,7 @@ define([
                 var path = routeToPath(route);
                 var button = buttonsPathMap[path];
                 if (!button) {
-                    return; 
+                    return;
                 }
                 button.active(true);
             }
@@ -117,7 +117,7 @@ define([
             return {
                 buttons: filteredButtons,
                 selecteButton: selectButton,
-                isAuthorized: isAuthorized            
+                isAuthorized: isAuthorized
             };
         }
 

@@ -7,7 +7,6 @@
         return false;
     }
 
-   
     // ES6!
     // Prior to ES6, const is not a keyword, and in strict mode,
     // using it throws an execption. (works for Safari < 10)
@@ -31,7 +30,7 @@
     } else if (typeof window['addEventListener'] === 'undefined') {
         failed = 'a';
     } else if (!supportsStrictMode()) {
-        // IE9 < 
+        // IE9 <
         failed = 's';
     } else if (typeof window['location']['origin'] === 'undefined') {
         // IE11 <

@@ -17,7 +17,7 @@ define([
 ) {
     'use strict';
 
-    var t = html.tag,        
+    var t = html.tag,
         span = t('span'),
         div = t('div');
 
@@ -34,7 +34,7 @@ define([
                 openMessage = message.open;
                 showPanel(false);
             } else {
-                showPanel(false);                
+                showPanel(false);
             }
         });
         bus.on('clear', function () {
@@ -42,15 +42,15 @@ define([
             embeddedComponentName(null);
         });
 
-        bus.on('open', function(message) {
+        bus.on('open', function (message) {
             if (showPanel()) {
                 bus.send('close', {open: message});
                 return;
-            } 
+            }
 
             showPanel(true);
             embeddedComponentName(message.name);
-            
+
             embeddedParams('{' + Object.keys(message.params || {}).map(function (key) {
                 return key + ':' + message.params[key];
             }).join(', ') + '}');
@@ -60,14 +60,14 @@ define([
                 return accum;
             }, {});
             newVm.onClose = doClose;
-            embeddedViewModel(newVm);        
+            embeddedViewModel(newVm);
         });
 
         function doClose() {
             bus.send('close');
         }
 
-        var panelStyle = ko.pureComputed(function() {
+        var panelStyle = ko.pureComputed(function () {
             if (showPanel() === undefined) {
                 // the initial state;
                 return;
@@ -81,31 +81,31 @@ define([
 
         // var type = ko.observable(params.type || 'info');
 
-        var typeBackgroundColor = ko.pureComputed(function() {
+        var typeBackgroundColor = ko.pureComputed(function () {
             if (!params.component()) {
                 return;
             }
-            switch (params.component().type) {                     
+            switch (params.component().type) {
             case 'error':
                 return 'rgba(145, 91, 91, 0.8)';
             case 'info':
             default:
                 // return 'rgba(0, 0, 0, 0.8)';
-                return 'rgba(64, 89, 140, 0.8)';       
-            }            
+                return 'rgba(64, 89, 140, 0.8)';
+            }
         });
 
         var embeddedComponentName = ko.observable();
         var embeddedParams = ko.observable();
         var embeddedViewModel = ko.observable({});
-        
+
         embeddedParams.onClose = 'doClose';
 
         // The viewmodel for the embedded component
 
         subscriptions.add(params.component.subscribe(function (newValue) {
             if (newValue) {
-                bus.send('open', newValue);                
+                bus.send('open', newValue);
             } else {
                 if (showPanel()) {
                     bus.send('close');
@@ -116,7 +116,7 @@ define([
         function onPanelAnimationEnd(data, ev) {
             if (ev.target.classList.contains(styles.classes.panelout)) {
                 bus.send('clear');
-                // HACK ALERT: since we are using knockout event listener, set 
+                // HACK ALERT: since we are using knockout event listener, set
                 // persistently on the node, we don't have any context for this
                 // animation end ... so if this was a close with open, the
                 // open message will have been set ...
@@ -242,7 +242,7 @@ define([
                     }
                 }
             }
-        }, 
+        },
         rules: {
             keyframes: {
                 slidein: {
@@ -293,7 +293,7 @@ define([
                 class: styles.classes.panelBody
             }, [
                 '<!-- ko if: embeddedComponentName() -->',
-                '<!-- ko with: embeddedViewModel() -->',                
+                '<!-- ko with: embeddedViewModel() -->',
                 div({
                     dataBind: {
                         component: {

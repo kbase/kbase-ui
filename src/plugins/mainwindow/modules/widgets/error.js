@@ -103,9 +103,8 @@ define([
         return compare(obj, shape);
     }
 
-
-    function factory(config) {
-        var mount, container, runtime = config.runtime;
+    function factory() {
+        var mount, container;
 
         // IMPL
 
@@ -151,16 +150,16 @@ define([
             }
 
             // We need to always emit an error to the console. The original
-            // error catch may also emit the error to console.error.            
+            // error catch may also emit the error to console.error.
             console.error(error);
 
             if (error.extra) {
                 error.extended = html.makeObjTable([error.extra], { rotated: true });
             }
 
-            return div({ 
-                class: 'container-fluid', 
-                dataWidget: 'error' 
+            return div({
+                class: 'container-fluid',
+                dataWidget: 'error'
             }, html.makePanel({
                 title: params.title,
                 class: 'danger',

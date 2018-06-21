@@ -67,14 +67,14 @@ define([
         function renderLogin(events) {
             return Promise.try(function () {
                 if (runtime.service('session').isLoggedIn()) {
-                    /* TODO: fix dependencies like this -- realname is not available until, and unless, the                     
-                    profile is loaded, which happens asynchronously.            
+                    /* TODO: fix dependencies like this -- realname is not available until, and unless, the
+                    profile is loaded, which happens asynchronously.
                     */
                     /// ar profile = widget.get('userProfile'), realname;
                     return runtime.service('session').getAccount()
                         .then(function (account) {
                             if (!account) {
-                                // Don't bother rendering yet if the profile is not ready 
+                                // Don't bother rendering yet if the profile is not ready
                                 // yet.
                                 return;
                             }
@@ -147,7 +147,7 @@ define([
                 });
         }
 
-        function start(params) {
+        function start() {
             return Promise.try(function () {
                 // this.set('loggedin', runtime.service('session').isLoggedIn());
                 // runtime.service('userprofile').onChange(function (data) {

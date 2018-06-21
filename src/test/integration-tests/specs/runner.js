@@ -55,10 +55,10 @@ function makeSelector(base, selector) {
         break;
     }
     return buildSelector(fullPath);
-   
+
 }
 function info() {
-    let args = Array.prototype.slice.call(arguments);
+    const args = Array.prototype.slice.call(arguments);
     process.stdout.write(args.join(' ') + '\n');
 }
 function interpValue(value, testData) {
@@ -100,16 +100,16 @@ function doTask(spec, task, testData) {
 
         // only proceed with a further action if succeeded so far.
         if (task.text) {
-            let text = browser.getText(selector);
+            const text = browser.getText(selector);
             expect(text).toEqual(interpValue(task.text, testData));
         } else if (task.match) {
-            let toMatch = browser.getText(selector);
+            const toMatch = browser.getText(selector);
             expect(toMatch).toMatch(new RegExp(task.text));
         } else if (task.number) {
-            let toCompare = browser.getText(selector);
+            const toCompare = browser.getText(selector);
             expect(toCompare).toBeDefined();
-            let theNumber = Number(toCompare.replace(/,/g, ''));
-           
+            const theNumber = Number(toCompare.replace(/,/g, ''));
+
             Object.keys(task.number).forEach(function (comparison) {
                 var comparisonValue = task.number[comparison];
                 switch (comparison) {
@@ -118,23 +118,23 @@ function doTask(spec, task, testData) {
                     break;
                 case 'greaterThanOrEqual':
                     expect(theNumber).toBeGreaterThanOrEqual(comparisonValue);
-                    break;                    
+                    break;
                 case 'lessThan':
                     expect(theNumber).toBeLessThan(comparisonValue);
                     break;
                 case 'lessThanOrEqual':
                     expect(theNumber).toBeLessThanOrEqual(comparisonValue);
-                    break;                    
+                    break;
                 case 'equal':
                     expect(theNumber).toEqual(comparisonValue);
-                    break;                
+                    break;
                 }
             });
         } else if (task.count) {
             // count the elements which matched this selector
-            let toCompare = browser.elements(selector).value.length;
+            const toCompare = browser.elements(selector).value.length;
             expect(toCompare).toBeDefined();
-           
+
             Object.keys(task.count).forEach(function (comparison) {
                 var comparisonValue = task.count[comparison];
                 switch (comparison) {
@@ -143,16 +143,16 @@ function doTask(spec, task, testData) {
                     break;
                 case 'greaterThanOrEqual':
                     expect(toCompare).toBeGreaterThanOrEqual(comparisonValue);
-                    break;                    
+                    break;
                 case 'lessThan':
                     expect(toCompare).toBeLessThan(comparisonValue);
                     break;
                 case 'lessThanOrEqual':
                     expect(toCompare).toBeLessThanOrEqual(comparisonValue);
-                    break;                    
+                    break;
                 case 'equal':
                     expect(toCompare).toEqual(comparisonValue);
-                    break;                
+                    break;
                 }
             });
         }
@@ -175,7 +175,7 @@ function doTask(spec, task, testData) {
             case 'delete-cookie':
                 browser.deleteCookie();
                 expect(browser.getCookie('kbase_session')).toBeNull();
-                break;                
+                break;
             case 'navigate':
                 browser.url(task.params.url);
                 break;

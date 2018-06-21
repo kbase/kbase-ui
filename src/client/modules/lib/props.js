@@ -59,7 +59,7 @@ define([], function () {
             temp[propKey] = [];
         }
         temp = temp[propKey];
-        // Finally set the property.        
+        // Finally set the property.
 
         if (typeof temp === 'object' && temp.push) {
             temp.push(value);
@@ -126,7 +126,7 @@ define([], function () {
             timer, api;
 
         /*
-         * In enabled by setting an update handler via the onUpdate factory 
+         * In enabled by setting an update handler via the onUpdate factory
          * configuration property, this function should be run whenever the
          * property is updated. It will then run the update handler callback.
          * This is a way to enable essentially synchronization of the props

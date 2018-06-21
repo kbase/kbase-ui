@@ -8,7 +8,7 @@ define([
         var messenger = config.messenger;
         var serviceManager = config.serviceManager;
 
-        // Access to ui config. 
+        // Access to ui config.
         // This is simply a wrapping around the venerable Props module.
         function getConfig(prop, defaultValue) {
             return configProps.getItem(prop, defaultValue);
@@ -23,8 +23,8 @@ define([
         }
 
         // allow tag
-        // Returns true if the provided string 'tag' is found in 
-        // the array of allowed tags, as defined in the config 
+        // Returns true if the provided string 'tag' is found in
+        // the array of allowed tags, as defined in the config
         // property 'ui.allow'.
         function allow(tag) {
             var allowed = configProps.getItem('ui.allow', []);
@@ -35,18 +35,18 @@ define([
         }
 
         var featureSwitches = {};
-        configProps.getItem('ui.featureSwitches.available').reduce((features, featureSwitch) => {
+        configProps.getItem('ui.featureSwitches.available', []).reduce((features, featureSwitch) => {
             featureSwitches[featureSwitch.id] = featureSwitch;
-        });
+        }, {});
 
         function featureEnabled(id) {
-            let featureSwitch = featureSwitches[id];
+            const featureSwitch = featureSwitches[id];
             if (!featureSwitch) {
                 throw new Error('Feature switch "' + id + '" not defined');
             }
 
             // look for the feature switch in the.
-            let enabledFeatureSwitches = configProps.getItem('ui.featureSwitches.enabled');
+            const enabledFeatureSwitches = configProps.getItem('ui.featureSwitches.enabled');
             // let disabledFeatureSwitches = configProps.getItem('ui.featureSwitches.disabled');
 
             if (enabledFeatureSwitches.includes(id)) {
@@ -56,13 +56,13 @@ define([
         }
 
         function featureDisabled(id) {
-            let featureSwitch = featureSwitches[id];
+            const featureSwitch = featureSwitches[id];
             if (!featureSwitch) {
                 throw new Error('Feature switch "' + id + '" not defined');
             }
 
             // look for the feature switch in the.
-            let disabledFeatureSwitches = configProps.getItem('ui.featureSwitches.disabled');
+            const disabledFeatureSwitches = configProps.getItem('ui.featureSwitches.disabled');
 
             if (disabledFeatureSwitches.includes(id)) {
                 return true;

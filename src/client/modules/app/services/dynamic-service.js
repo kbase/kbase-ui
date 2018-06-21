@@ -1,15 +1,15 @@
 define([
-    'kb_common/hotCache',
-    'kb_common/jsonRpc/genericClient',
-    'kb_common/jsonRpc/dynamicServiceClient'
+    'kb_common/hotCache'
+    // 'kb_common/jsonRpc/genericClient',
+    // 'kb_common/jsonRpc/dynamicServiceClient'
 ], function (
-    HotCache,
-    GenericClient,
-    DynamicServiceClient
+    HotCache
+    // GenericClient,
+    // DynamicServiceClient
 ) {
     'use strict';
 
-    function factory(config) {
+    function factory() {
         var cache = HotCache.make({
             hardTtl: 3600000, // 1 min
             hotTtl:  18000000, // 5 min

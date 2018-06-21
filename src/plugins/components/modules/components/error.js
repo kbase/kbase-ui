@@ -13,7 +13,7 @@ define([
         div = t('div');
 
     // function validateViewModel(params) {
-    //     var spec = {            
+    //     var spec = {
     //         source: {
     //             type: 'string',
     //             observable: true,
@@ -80,7 +80,7 @@ define([
             '<!-- ko if: source -->',
             BS.buildPanel({
                 name: 'source',
-                class: 'kb-panel-light',                
+                class: 'kb-panel-light',
                 title: 'Source',
                 type: 'danger',
                 body: div({
@@ -101,9 +101,9 @@ define([
                         text: 'code'
                     }
                 })
-            }), 
+            }),
             '<!-- /ko -->',
-            '<!-- ko if: $data.detail -->',     
+            '<!-- ko if: $data.detail -->',
             BS.buildCollapsiblePanel({
                 name: 'detail',
                 title: 'Detail',
@@ -159,7 +159,6 @@ define([
         ]);
     }
 
-    
     function component() {
         return {
             viewModel: viewModel,

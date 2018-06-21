@@ -133,7 +133,7 @@ define([
             };
         }
 
-        function viewModel(params) {
+        function viewModel() {
             var notifications = {
                 info: notification({
                     label: 'info'
@@ -309,7 +309,7 @@ define([
             container = node;
         }
 
-        function start(params) {
+        function start() {
             container.innerHTML = div({
                 dataBind: {
                     component: {

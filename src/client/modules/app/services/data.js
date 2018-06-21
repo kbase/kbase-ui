@@ -25,8 +25,8 @@ define([
         }
 
         function getJson(arg) {
-            let url = '/data/' + arg.path + '/' + arg.file + '.json';
-            let http = new HttpClient.HttpClient();
+            const url = '/data/' + arg.path + '/' + arg.file + '.json';
+            const http = new HttpClient.HttpClient();
             return http.request({
                 method: 'GET',
                 url: url
@@ -42,7 +42,6 @@ define([
                         throw new Error('Error fetching file: ' + result.status);
                     }
                 });
-               
         }
         return {
             start: start,

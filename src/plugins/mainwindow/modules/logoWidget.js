@@ -21,7 +21,7 @@ define([
 
         function start() {
             // var uiTarget = runtime.config('buildInfo.target');
-            // var version; 
+            // var version;
             // if (uiTarget === 'prod') {
             //     version = runtime.config('release.version');
             // } else {

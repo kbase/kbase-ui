@@ -138,7 +138,7 @@ define([
         }
 
         function checkCoreServices() {
-            let manager = new kbaseServiceManager.KBaseServiceManager({
+            const manager = new kbaseServiceManager.KBaseServiceManager({
                 runtime: api
             });
             return manager.check();

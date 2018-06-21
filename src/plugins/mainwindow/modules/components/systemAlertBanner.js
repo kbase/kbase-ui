@@ -17,20 +17,19 @@ define([
 ) {
     'use strict';
 
-    let t = html.tag,
-        p = t('p'),
+    const t = html.tag,
         button = t('button'),
         span = t('span'),
         div = t('div');
 
-    let styles = html.makeStyles({
+    const styles = html.makeStyles({
         component: {
             css: {
             }
         },
         wrapper: {
             css: {
-                margin: '0 0px 10px 10px',                
+                margin: '0 0px 10px 10px',
             }
         }
     });
@@ -49,9 +48,9 @@ define([
             this.maintenanceNotifications = ko.pureComputed(() => {
                 return this._maintenanceNotifications()
                     .filter((notification) => {
-                        let endTime = notification.endAt.getTime();
-                        let now = this.now();
-                        if ( (now - endTime) > 60000) {
+                        const endTime = notification.endAt.getTime();
+                        const now = this.now();
+                        if ((now - endTime) > 60000) {
                             return false;
                         }
                         return true;
@@ -72,13 +71,13 @@ define([
                 if (!newValue) {
                     return [];
                 }
-                
-                let hashes = [];
+
+                const hashes = [];
                 newValue.upcomingMaintenanceWindows
                     .forEach((notification) => {
-                        let hash = md5.hash(JSON.stringify(notification));
+                        const hash = md5.hash(JSON.stringify(notification));
                         hashes.push(hash);
-                        let existing = this._maintenanceNotifications().some((item) => {
+                        const existing = this._maintenanceNotifications().some((item) => {
                             return item.hash === hash;
                         });
                         if (existing) {
@@ -87,7 +86,7 @@ define([
                         }
 
                         // add new ones.
-                        let newNotification = {
+                        const newNotification = {
                             startAt: new Date(notification.startAt),
                             endAt: new Date(notification.endAt),
                             title: notification.title,
@@ -97,7 +96,7 @@ define([
                         };
                         this._maintenanceNotifications.push(newNotification);
                     });
-                
+
                 this._maintenanceNotifications().forEach((item) => {
                     if (hashes.indexOf(item.hash) === -1) {
                         this._maintenanceNotifications.remove(item);
@@ -155,7 +154,7 @@ define([
                     style: {
                         fontWeight: 'bold'
                     }
-                }),  
+                }),
                 button({
                     type: 'button',
                     class: 'close',
@@ -184,7 +183,7 @@ define([
                         width: '50%'
                     }
                 }, [
-                                  
+
                     div({
                         dataBind: {
                             text: 'message'
@@ -266,7 +265,7 @@ define([
                         text: 'maintenanceNotifications().length'
                     }
                 }),
-                gen.plural('maintenanceNotifications().length', ' alert', ' alerts'), 
+                gen.plural('maintenanceNotifications().length', ' alert', ' alerts'),
                 gen.if('hiddenMaintenanceNotificationCount() > 0',
                     [
                         ' (',
@@ -286,7 +285,7 @@ define([
                             'show',
                             gen.plural('hiddenMaintenanceNotificationCount()', ' it', ' them')
                         ])),
-                        
+
                         ')'
                     ])
             ])
@@ -298,7 +297,7 @@ define([
         return div({
             class: styles.classes.component
         }, [
-            gen.if('error()', 
+            gen.if('error()',
                 div({
                     class: styles.classes.wrapper
                 }, buildError()),
@@ -307,7 +306,7 @@ define([
                         class: styles.classes.wrapper
                     }, [
                         buildHeader(),
-                        gen.foreach('maintenanceNotifications()', 
+                        gen.foreach('maintenanceNotifications()',
                             gen.ifnot('read', buildMaintenanceNotification()))
                     ])))
         ]);

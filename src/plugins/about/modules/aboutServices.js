@@ -212,7 +212,7 @@ define([
                     });
                     info.push({
                         label: 'Perf avg (ms/call)',
-                        value: perf.average 
+                        value: perf.average
                     });
                     info.push({
                         label: 'Perf calls (ms/call)',
@@ -242,7 +242,6 @@ define([
 
 
         function renderAuth() {
-            // +++ 
             var http = new HttpClient.HttpClient();
             vm.auth.node.innerHTML = html.loading();
 
@@ -316,7 +315,7 @@ define([
             }
 
             return Promise.all([
-                ver(), 
+                ver(),
                 perf(ver)
             ])
                 .spread(function (version, perf) {
@@ -328,7 +327,7 @@ define([
                     });
                     info.push({
                         label: 'Perf avg (ms/call)',
-                        value: perf.average 
+                        value: perf.average
                     });
                     info.push({
                         label: 'Perf calls (ms/call)',
@@ -382,7 +381,7 @@ define([
                     });
                     info.push({
                         label: 'Perf avg (ms/call)',
-                        value: perf.average 
+                        value: perf.average
                     });
                     info.push({
                         label: 'Perf calls (ms/call)',
@@ -420,7 +419,7 @@ define([
             function version() {
                 return client.callFunc('version', []).spread((result) => {return result;});
             }
-            
+
             vm.catalog.node.innerHTML = html.loading();
 
             return Promise.all([
@@ -436,7 +435,7 @@ define([
                     });
                     info.push({
                         label: 'Perf avg (ms/call)',
-                        value: perf.average 
+                        value: perf.average
                     });
                     info.push({
                         label: 'Perf calls (ms/call)',
@@ -488,7 +487,7 @@ define([
                     });
                     info.push({
                         label: 'Perf avg (ms/call)',
-                        value: perf.average 
+                        value: perf.average
                     });
                     info.push({
                         label: 'Perf calls (ms/call)',

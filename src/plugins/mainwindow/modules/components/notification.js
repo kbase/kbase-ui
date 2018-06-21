@@ -21,8 +21,8 @@ define([
 
     function viewModel(params) {
 
-        let runtime = params.runtime;
-        let sendingChannel = new Uuid(4).format();
+        const runtime = params.runtime;
+        const sendingChannel = new Uuid(4).format();
 
         var notificationQueue = ko.observableArray();
         var notificationMap = {};
@@ -167,7 +167,7 @@ define([
 
             autodismiss.subscribe(function (newVal) {
                 if (newVal) {
-                    // TODO: this 
+                    // TODO: this
                     autodismiss.startedAt = new Date().getTime();
                     startAutoDismisser();
                 }

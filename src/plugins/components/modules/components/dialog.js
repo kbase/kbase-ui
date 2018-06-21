@@ -1,7 +1,7 @@
 define([
     'knockout-plus',
     'kb_common/html'
-], function(
+], function (
     ko,
     html
 ) {

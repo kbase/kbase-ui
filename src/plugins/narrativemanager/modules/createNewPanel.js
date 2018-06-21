@@ -51,7 +51,7 @@ define([
                     }
                 }
 
-                // Note that these are exclusive cell creation options. 
+                // Note that these are exclusive cell creation options.
                 if (params.app) {
                     cells = [{ app: params.app }];
                 } else if (params.method) {

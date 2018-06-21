@@ -47,7 +47,7 @@ define([
             stop: stop,
             // plugin interface
             pluginHandler: pluginHandler,
-            makeWidget: function () {                
+            makeWidget: function () {
                 return proxyMethod(widgetManager, 'makeWidget', arguments);
             },
             getWidget: function () {
