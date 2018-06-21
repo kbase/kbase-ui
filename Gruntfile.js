@@ -125,7 +125,7 @@ module.exports = function (grunt) {
     // the lcov results to coveralls. Intended for running
     // from travis-ci.
     grunt.registerTask('test-travis', [
-        'karma:unit',
+        // 'karma:unit',
         // upcoming
         // 'webdriver:travis',
         'coveralls'
