@@ -35,9 +35,9 @@ define([
         }
 
         var featureSwitches = {};
-        configProps.getItem('ui.featureSwitches.available').reduce((features, featureSwitch) => {
+        configProps.getItem('ui.featureSwitches.available', []).reduce((features, featureSwitch) => {
             featureSwitches[featureSwitch.id] = featureSwitch;
-        });
+        }, {});
 
         function featureEnabled(id) {
             const featureSwitch = featureSwitches[id];
