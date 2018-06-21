@@ -179,11 +179,14 @@ clean-build:
 
 node_modules: init
 
-build-docs: node_modules
-	./node_modules/.bin/gitbook build ./docs/book
+build-docs:
+	cd docs; \
+	npm install; \
+	./node_modules/.bin/gitbook build ./book
 
-view-docs: node_modules
-	./node_modules/.bin/wait-on -t 10000 http://localhost:4000 && ./node_modules/.bin/opn http://localhost:4000 &
-	./node_modules/.bin/gitbook serve ./docs/book
+view-docs: build-docs
+	cd docs; \
+	(./node_modules/.bin/wait-on -t 10000 http://localhost:4000 && ./node_modules/.bin/opn http://localhost:4000 &); \
+	./node_modules/.bin/gitbook serve ./book
 
 .PHONY: all test build
