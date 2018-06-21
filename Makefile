@@ -44,6 +44,9 @@ build           =
 # TODO: hook into the real configs out of KBase's gitlab
 env             = undef
 
+# The custom docker network
+net 			= kbase-dev
+
 
 DEV_DOCKER_CONTEXT	= $(TOPDIR)/deployment/dev/docker/context
 CI_DOCKER_CONTEXT	= $(TOPDIR)/deployment/ci/docker/context
@@ -141,6 +144,16 @@ run-image-dev:
 	@echo "> To map host directories into the container, you will need to run "
 	@echo ">   tools/run-image.sh with appropriate options."
 	$(eval cmd = $(TOPDIR)/tools/docker/run-image-dev.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l) $(foreach s,$(services),-s $s)  $(foreach d,$(data),-d $d) $(foreach f,$(folders),-f $f))
+	@echo "> Issuing: $(cmd)"
+	bash $(cmd)
+
+run-image:
+	@:$(call check_defined, env, "the deployment environmeng: dev ci next appdev prod)
+	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
+	@echo "> Running kbase-ui image."
+	# @echo "> You will need to inspect the docker container for the ip address "
+	# @echo ">   set your /etc/hosts for ci.kbase.us accordingly."
+	$(eval cmd = $(TOPDIR)/tools/docker/run-image-dev.sh $(env) $(net))
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
 

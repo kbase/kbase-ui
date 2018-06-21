@@ -3,6 +3,7 @@
 * [Introduction](README.md)
 * [Getting Started](getting-started/README.md)
     * [Prerequisites](getting-started/prerequisites.md)
+    * [Quick Start](getting-started/quick-start.md)
 * [Devops](devops/README.md)
     * [Configuration]()
     * [Deployment](devops/deployment.md)

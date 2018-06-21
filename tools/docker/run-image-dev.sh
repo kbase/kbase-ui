@@ -7,7 +7,7 @@
 #
 
 function usage() {
-    echo 'Usage: run-image.sh env [-p external-plugin] [-i internal-plugin] [-s kbase-ui-service] [-l lib-module-dir:lib-name:source-path]'
+    echo 'Usage: run-image-dev.sh env [-p external-plugin] [-i internal-plugin] [-s kbase-ui-service] [-l lib-module-dir:lib-name:source-path]'
 }
 
 environment=$1
