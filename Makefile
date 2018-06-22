@@ -62,6 +62,8 @@ __check_defined = \
         $(error Undefined $1$(if $2, ($2))$(if $(value @), \
                 required by target `$@')))
 
+.PHONY: all test build docs
+
 # Standard 'all' target = just do the standard build
 all:
 	@echo Use "make init && make config=TARGET build"
@@ -120,18 +122,22 @@ build-ci:
 	@echo "> Building for CI."
 	cd mutations; node build ci
 
+docker-network:
+	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
+	bash tools/docker/create-docker-network.sh $(net)
+
+# $(if $(value network_exists),$(echo "exists"),$(echo "nope"))
+
+
 # Build the docker image, assumes that make init and make build have been done already
-build-image: docker-image
-image: docker-image
 docker-image: 
 	@:$(call check_defined, build, "the build configuration: dev ci prod")
 	@echo "> Building docker image for this branch."
 	bash $(TOPDIR)/tools/docker/build-image.sh $(build)
-	# cd $(TOPDIR)/tools/docker/; bash build-image.sh $(build)
 
 # The dev version of run-image also supports cli options for mapping plugins, libraries, 
 # and parts of ui into the image for (more) rapdi development workflow
-run-image-dev:
+run-docker-image-dev: docker-network
 	@echo "> Running kbase-ui image."
 	# @echo "> You will need to inspect the docker container for the ip address "
 	# @echo ">   set your /etc/hosts for ci.kbase.us accordingly."
@@ -145,7 +151,7 @@ run-image-dev:
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
 
-run-image:
+run-docker-image: docker-network
 	@:$(call check_defined, env, "the deployment environmeng: dev ci next appdev prod)
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
 	@echo "> Running kbase-ui image."
@@ -154,6 +160,11 @@ run-image:
 	$(eval cmd = $(TOPDIR)/tools/docker/run-image-dev.sh $(env) $(net))
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
+
+docker-clean:
+	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
+	bash tools/docker/clean-docker.sh
+
 
 uuid:
 	@node ./tools/gen-uuid.js
@@ -190,7 +201,7 @@ clean-build:
 
 node_modules: init
 
-build-docs:
+docs:
 	cd docs; \
 	npm install; \
 	./node_modules/.bin/gitbook build ./book
@@ -200,4 +211,3 @@ view-docs: build-docs
 	(./node_modules/.bin/wait-on -t 10000 http://localhost:4000 && ./node_modules/.bin/opn http://localhost:4000 &); \
 	./node_modules/.bin/gitbook serve ./book
 
-.PHONY: all test build

@@ -28,6 +28,8 @@ RUN make setup && make build config=$BUILD
 # Run unit tests.
 RUN make unit-tests
 
+LABEL stage=intermediate
+
 
 # For more transparent (modulo the "edge") image, use the base
 # alpine image and add our dependencies

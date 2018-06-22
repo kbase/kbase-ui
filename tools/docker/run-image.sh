@@ -23,7 +23,7 @@ fi
 
 network=$2
 if [ -z "$network" ]; then 
-    echo "ERROR: argument 1, 'network', not provided"
+    echo "ERROR: argument 2, 'network', not provided"
     usage
     exit 1
 fi
@@ -40,7 +40,8 @@ fi
 
 echo "CONFIG MOUNT: ${config_mount}"
 echo "ENVIRONMENT : ${environment}"
-echo "BRANCH : ${branch}"
+echo "NETWORK     : ${network}"
+echo "BRANCH      : ${branch}"
 
 image_tag="${branch}"
 
@@ -51,5 +52,5 @@ docker run \
   --rm \
   --env-file ${config_mount}/${environment}.env \
   --name=kbase-ui-container \
-  --network=kbase-dev \
+  --network=${network} \
   kbase/kbase-ui:${image_tag} 

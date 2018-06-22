@@ -129,7 +129,20 @@
             
         </li>
     
-        <li class="chapter " data-level="1.2.2" data-path="../getting-started/quick-start.html">
+        <li class="chapter " data-level="1.2.2" data-path="../getting-started/local-dev-prerequisites.html">
+            
+                <a href="../getting-started/local-dev-prerequisites.html">
+            
+                    
+                    Local Development Prerequisites
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../getting-started/quick-start.html">
             
                 <a href="../getting-started/quick-start.html">
             
@@ -401,10 +414,10 @@
                                 
                                 <h1 id="getting-started">Getting Started</h1>
 <p>This doc describes how to get set up for kbase-ui development.</p>
-<p>[TOC]</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
-<li><a href="prerequisites.md">Prerequisites</a></li>
+<li><a href="../getting-started/prerequisites.html">Prerequisites</a></li>
+<li><a href="../getting-started/local-dev-prerequisites.html">Local Development Prerequisites</a></li>
 </ul>
 <h2 id="basic-usage">Basic usage</h2>
 <p>The first step for any kbase-ui effort is to set up a project directory, prepare a copy of kbase-ui, and ensure that it works.</p>
@@ -415,7 +428,7 @@
 <span class="hljs-built_in">cd</span> ~/work/project
 </code></pre>
 <h3 id="install-a-local-copy-of-kbase-ui">Install a local copy of kbase-ui</h3>
-<p>All development workflows for kbase-ui involve starting from the tip of the develop branch of the kbase-ui repo in kbase github account. You will therefore be pushing changes to your fork of kbase/kbase-ui.</p>
+<p>Development workflows for kbase-ui typically starting from the tip of the develop branch of the kbase-ui repo in kbase github account. You will therefore be pushing changes to your fork of kbase/kbase-ui.</p>
 <p>If you have your own preferred method of setting up a repo for this type of workflow, please use it. Here is one setup that I use:</p>
 <pre><code class="lang-bash">git <span class="hljs-built_in">clone</span> -b develop https://github.com/kbase/kbase-ui
 <span class="hljs-built_in">cd</span> kbase-ui
@@ -538,7 +551,7 @@ make run-proxier-image env=dev
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Getting Started","level":"1.4.1","depth":2,"next":{"title":"Developing a New Plugin","level":"1.4.2","depth":2,"path":"development/developing-a-new-plugin.md","ref":"development/developing-a-new-plugin.md","articles":[]},"previous":{"title":"Development","level":"1.4","depth":1,"path":"development/README.md","ref":"development/README.md","articles":[{"title":"Getting Started","level":"1.4.1","depth":2,"path":"development/getting-started.md","ref":"development/getting-started.md","articles":[]},{"title":"Developing a New Plugin","level":"1.4.2","depth":2,"path":"development/developing-a-new-plugin.md","ref":"development/developing-a-new-plugin.md","articles":[]},{"title":"Updating an Exiting Plugin","level":"1.4.3","depth":2,"path":"development/developing-a-plugin.md","ref":"development/developing-a-plugin.md","articles":[]},{"title":"Working on an Internal Plugin","level":"1.4.4","depth":2,"path":"development/developing-internal-plugins.md","ref":"development/developing-internal-plugins.md","articles":[]},{"title":"Working on UI Core","level":"1.4.5","depth":2,"path":"development/developing-kbase-ui","ref":"development/developing-kbase-ui","articles":[]},{"title":"Misc. Plugin Topics","level":"1.4.6","depth":2,"path":"development/developing-external-plugins-misc.md","ref":"development/developing-external-plugins-misc.md","articles":[]},{"title":"Docker Tips","level":"1.4.7","depth":2,"path":"development/docker-tips.md","ref":"development/docker-tips.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":[],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"development/getting-started.md","mtime":"2018-06-19T16:03:58.112Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-06-22T00:06:51.573Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Getting Started","level":"1.4.1","depth":2,"next":{"title":"Developing a New Plugin","level":"1.4.2","depth":2,"path":"development/developing-a-new-plugin.md","ref":"development/developing-a-new-plugin.md","articles":[]},"previous":{"title":"Development","level":"1.4","depth":1,"path":"development/README.md","ref":"development/README.md","articles":[{"title":"Getting Started","level":"1.4.1","depth":2,"path":"development/getting-started.md","ref":"development/getting-started.md","articles":[]},{"title":"Developing a New Plugin","level":"1.4.2","depth":2,"path":"development/developing-a-new-plugin.md","ref":"development/developing-a-new-plugin.md","articles":[]},{"title":"Updating an Exiting Plugin","level":"1.4.3","depth":2,"path":"development/developing-a-plugin.md","ref":"development/developing-a-plugin.md","articles":[]},{"title":"Working on an Internal Plugin","level":"1.4.4","depth":2,"path":"development/developing-internal-plugins.md","ref":"development/developing-internal-plugins.md","articles":[]},{"title":"Working on UI Core","level":"1.4.5","depth":2,"path":"development/developing-kbase-ui","ref":"development/developing-kbase-ui","articles":[]},{"title":"Misc. Plugin Topics","level":"1.4.6","depth":2,"path":"development/developing-external-plugins-misc.md","ref":"development/developing-external-plugins-misc.md","articles":[]},{"title":"Docker Tips","level":"1.4.7","depth":2,"path":"development/docker-tips.md","ref":"development/docker-tips.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":[],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"development/getting-started.md","mtime":"2018-06-22T21:33:17.651Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-06-22T22:49:41.777Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
