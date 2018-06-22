@@ -2,14 +2,17 @@
 // Generated on Thu Jul 30 2015 17:38:26 GMT-0700 (PDT)
 
 // we try our best...
+let browsers;
 switch (process.platform) {
 case 'darwin':
     // ensured by the npm module ... but may not work on non-consumer
     // oses.
     process.env.CHROME_BIN = require('puppeteer').executablePath();
+    browsers = ['ChromeHeadless'];
     break;
 case 'linux':
     // better have it installed there!
+    browsers = ['ChromiumNoSandbox'];
     process.env.CHROME_BIN='/usr/bin/chromium-browser';
     break;
 default:
@@ -86,7 +89,7 @@ module.exports = function (config) {
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
         // browsers: ['PhantomJS'],
-        browsers: ['ChromiumNoSandbox'],
+        browsers: browsers,
         customLaunchers: {
             ChromiumNoSandbox: {
                 base: 'ChromiumHeadless',
