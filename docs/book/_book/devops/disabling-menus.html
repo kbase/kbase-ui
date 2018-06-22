@@ -1,0 +1,518 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Disabling Menus · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="disabling-plugins.md" />
+    
+    
+    <link rel="prev" href="deployment.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../getting-started/">
+            
+                <a href="../getting-started/">
+            
+                    
+                    Getting Started
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../getting-started/prerequisites.html">
+            
+                <a href="../getting-started/prerequisites.html">
+            
+                    
+                    Prerequisites
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../getting-started/quick-start.html">
+            
+                <a href="../getting-started/quick-start.html">
+            
+                    
+                    Quick Start
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Devops
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" >
+            
+                <span>
+            
+                    
+                    Configuration
+            
+                </span>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="deployment.html">
+            
+                <a href="deployment.html">
+            
+                    
+                    Deployment
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3.3" data-path="disabling-menus.html">
+            
+                <a href="disabling-menus.html">
+            
+                    
+                    Disabling Menus
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="disabling-plugins.md">
+            
+                <span>
+            
+                    
+                    Disabling Plugins
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="feature-switches.md">
+            
+                <span>
+            
+                    
+                    Feature Switches
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6" data-path="service-config.md">
+            
+                <span>
+            
+                    
+                    Service Config
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../development/">
+            
+                <a href="../development/">
+            
+                    
+                    Development
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../development/getting-started.html">
+            
+                <a href="../development/getting-started.html">
+            
+                    
+                    Getting Started
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../development/developing-a-new-plugin.md">
+            
+                <span>
+            
+                    
+                    Developing a New Plugin
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../development/developing-a-plugin.html">
+            
+                <a href="../development/developing-a-plugin.html">
+            
+                    
+                    Updating an Exiting Plugin
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="../development/developing-internal-plugins.html">
+            
+                <a href="../development/developing-internal-plugins.html">
+            
+                    
+                    Working on an Internal Plugin
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="../development/developing-kbase-ui">
+            
+                <span>
+            
+                    
+                    Working on UI Core
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="../development/developing-external-plugins-misc.html">
+            
+                <a href="../development/developing-external-plugins-misc.html">
+            
+                    
+                    Misc. Plugin Topics
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="../development/docker-tips.html">
+            
+                <a href="../development/docker-tips.html">
+            
+                    
+                    Docker Tips
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Disabling Menus</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="disabling-menus-in-a-deployment">Disabling Menus in a Deployment</h1>
+<p>The UI menus consist of the hamburger and the sidebar.</p>
+<p>The menus are defined by individual plugins. The definition includes an id, label, icon, a flag indicating whether it appears only when the session is logged in, and a flag indicating if the menu item is disabled.</p>
+<p>A menu item does not appear just because it is defined. The ui itself possesses a set of configuration files defining the items appearing on a menu. These files are located at</p>
+<ul>
+<li>config/app/dev/services</li>
+<li>config/app/ci/services</li>
+<li>config/app/prod/services</li>
+</ul>
+<p>The menu settings are set on the ui/services/menu config branch, as they menu is managed by the &quot;menu&quot; ui service.</p>
+<p>The menu settings are determined at build time during the config merge phase, at which time the various config files are merged and written to ROOT/modules/config/config.json</p>
+<p>The deployment config resides in ROOT/modules/deploy/config.json.</p>
+<p>It contains a property <code>ui.services.menu</code> which contains a structure like this:</p>
+<pre><code class="lang-json">            <span class="hljs-string">&quot;menu&quot;</span>: {
+                <span class="hljs-string">&quot;menus&quot;</span>: {
+                    <span class="hljs-string">&quot;hamburger&quot;</span>: {
+                        <span class="hljs-string">&quot;disabled&quot;</span>: []
+                    },
+                    <span class="hljs-string">&quot;sidebar&quot;</span>: {
+                        <span class="hljs-string">&quot;disabled&quot;</span>: [<span class="hljs-string">&quot;search&quot;</span>]
+                    }
+                }
+            }
+</code></pre>
+<p>The menus.sidebar.disabled and menus.hamburger.disabled properties each contain an array of menu ids to disable. The menu ids are applied as a filter to each menu section of the respective menus.</p>
+<h2 id="setting-the-disabled-menu-items">Setting the disabled menu items</h2>
+<h3 id="environment-file">Environment File</h3>
+<p>If a menu item is to be disabled in a semi-permanent or permanent mode, it should be set in the deploy config environment file. </p>
+<p>In the kbase-ui repo, the development config files live in deployment/conf/DEPLOY.env, where DEPLOY is one of dev, ci, next, appdev or prod.</p>
+<p>Two environment variables may be used to pass to the deploy config template:</p>
+<pre><code>ui_services_menu_sidebar_disabled=[&quot;search&quot;]
+ui_services_menu_hamburger_disabled=[]
+</code></pre><p>By replacing the underscores (_) with dots, you can see that the variable name forms a path into the kbase-ui config structure.</p>
+<p>The value for each one is a json array containing menu ids to be disabled.</p>
+<p>Note that the variable values have the form of JSON arrays, but are in actuality transported into the template purely as strings. So be careful.</p>
+<h3 id="template-file">Template File</h3>
+<p>The deploy template</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="deployment.html" class="navigation navigation-prev " aria-label="Previous page: Deployment">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="disabling-plugins.md" class="navigation navigation-next " aria-label="Next page: Disabling Plugins">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Disabling Menus","level":"1.3.3","depth":2,"next":{"title":"Disabling Plugins","level":"1.3.4","depth":2,"path":"devops/disabling-plugins.md","ref":"devops/disabling-plugins.md","articles":[]},"previous":{"title":"Deployment","level":"1.3.2","depth":2,"path":"devops/deployment.md","ref":"devops/deployment.md","articles":[]},"dir":"ltr"},"config":{"plugins":[],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"devops/disabling-menus.md","mtime":"2018-06-19T16:04:56.644Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-06-22T00:06:51.573Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

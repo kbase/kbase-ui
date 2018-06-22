@@ -10,10 +10,10 @@ Read the [prerequisites](prerequisites.md) guide to ensure your host machine is 
 
 1. A kbase-ui project requires a dedicated directory, into which you will clone the repos you are working with.
 2. open a terminal into this folder, either the built-in *Terminal* program, *iTerm*, or your terminal app of choice.
-3. Clone the following repos into this folder: *kbase/kbase-ui*, *eapearson/kbase-ui-proxy*
+3. Clone the following repos into this folder: *eapearson/kbase-ui*, *eapearson/kbase-ui-proxy*
     ```bash
-    git clone https://github.com/kbase/kbase-ui
-    git clone https://github.com/eapearson/kbase-ui-proxy
+    git clone -b docker-multi-stage https://github.com/eapearson/kbase-ui
+    git clone https://github.com/eapearson/kbase-ui-proxier
     ```
 4. Create and launch the kbase-ui image:
     ```bash
@@ -26,6 +26,7 @@ Read the [prerequisites](prerequisites.md) guide to ensure your host machine is 
     ```bash
     cd ../kbase-ui-proxier
     make 
+    make run
     ```
 7. Since that container is now running in the terminal, you'll need to open a new terminal window.
 8. Point ci.kbase.us to your local computer:
