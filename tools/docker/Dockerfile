@@ -20,7 +20,12 @@ COPY . /kb
 
 ARG BUILD
 
-RUN build=$BUILD /bin/bash /kb/tools/docker/run-build.sh
+# This actually builds the ui codebase. Note that the build-arg BUILD is passed along
+# as an environment variabl 'build'.
+RUN make setup && make build config=$BUILD
+
+# Run unit tests.
+
 
 # For more transparent (modulo the "edge") image, use the base
 # alpine image and add our dependencies

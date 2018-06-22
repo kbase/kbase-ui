@@ -27,7 +27,7 @@ KARMA			= ./node_modules/.bin/karma
 # The config used to control the build (build task)
 # dev, prod
 # Defaults to prod
-config			= undef
+config			= 
 
 # The kbase-ui build folder to use for the docker image.
 # values: build, dist
@@ -42,7 +42,7 @@ build           =
 # Causes run-image.sh to use the file in deployment/conf/$(env).env for
 # "filling out" the nginx and ui config templates.
 # TODO: hook into the real configs out of KBase's gitlab
-env             = undef
+env             = 
 
 # The custom docker network
 net 			= kbase-dev
@@ -122,14 +122,11 @@ build-ci:
 
 # Build the docker image, assumes that make init and make build have been done already
 
-image: build-docker-image
-
-docker_image: build-docker-image
-
-build-image:
+docker-image: 
 	@:$(call check_defined, build, "the build configuration: dev ci prod")
 	@echo "> Building docker image for this branch."
-	cd $(TOPDIR)/tools/docker/; bash build-image.sh $(build)
+	bash $(TOPDIR)/tools/docker/build-image.sh $(build)
+	# cd $(TOPDIR)/tools/docker/; bash build-image.sh $(build)
 
 # The dev version of run-image also supports cli options for mapping plugins, libraries, 
 # and parts of ui into the image for (more) rapdi development workflow
