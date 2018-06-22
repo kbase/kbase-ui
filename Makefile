@@ -121,7 +121,8 @@ build-ci:
 	cd mutations; node build ci
 
 # Build the docker image, assumes that make init and make build have been done already
-
+build-image: docker-image
+image: docker-image
 docker-image: 
 	@:$(call check_defined, build, "the build configuration: dev ci prod")
 	@echo "> Building docker image for this branch."

@@ -1,7 +1,20 @@
 // Karma configuration
 // Generated on Thu Jul 30 2015 17:38:26 GMT-0700 (PDT)
 
-process.env.CHROME_BIN = require('puppeteer').executablePath();
+// we try our best...
+switch (process.platform) {
+case 'darwin':
+    // ensured by the npm module ... but may not work on non-consumer
+    // oses.
+    process.env.CHROME_BIN = require('puppeteer').executablePath();
+    break;
+case 'linux':
+    // better have it installed there!
+    process.env.CHROME_BIN='/usr/bin/chromium-browser';
+    break;
+default:
+    throw new Error('Unsupported platform: ' + process.platform);
+}
 
 module.exports = function (config) {
     config.set({
@@ -73,7 +86,14 @@ module.exports = function (config) {
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
         // browsers: ['PhantomJS'],
-        browsers: ['ChromeHeadless'],
+        browsers: ['ChromiumNoSandbox'],
+        customLaunchers: {
+            ChromiumNoSandbox: {
+                base: 'ChromiumHeadless',
+                flags: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-translate', '--disable-extensions']
+            }
+        },
+        // browsers: ['ChromeHeadless'],
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
         singleRun: true

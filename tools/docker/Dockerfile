@@ -10,6 +10,7 @@ RUN apk upgrade --update-cache --available \
         bash=4.4.19-r1 \
         python=2.7.14-r2 \
         g++=6.4.0-r5 \
+        chromium=61.0.3163.100-r0 \
     && mkdir -p /kb
 
 COPY ./package.json /kb
@@ -25,6 +26,7 @@ ARG BUILD
 RUN make setup && make build config=$BUILD
 
 # Run unit tests.
+RUN make unit-tests
 
 
 # For more transparent (modulo the "edge") image, use the base
