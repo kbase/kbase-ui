@@ -1,6 +1,9 @@
 dist: trusty
 sudo: required
 language: node_js
+# Just to keep things sane; the default nodejs for trusty is 0.10.x
+node_js:
+  - "8"
 services:
   - docker
 
