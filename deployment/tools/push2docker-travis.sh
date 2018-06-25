@@ -39,7 +39,7 @@ fi
 
 # $TAG was set from TRAVIS_BRANCH, which is a little wonky on pull requests,
 # but it should be okay since we should never get here on a PR
-if  ! ( [ "${TRAVIS_BRANCH}" == "master" ] || [ "${TRAVIS_BRANCH}" == "develop" ] )
+if  ! ( [ "${TRAVIS_BRANCH}" == "master" ] || [ "${TRAVIS_BRANCH}" == "develop" ]  || [ "${TRAVIS_BRANCH}" == "docker-multi-stage" ])
 then
     echo "Error: Will only push images for the master or develop branches; Will not push image for branch ${TRAVIS_BRANCH}"
     exit 1
