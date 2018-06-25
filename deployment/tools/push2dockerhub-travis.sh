@@ -59,7 +59,7 @@ fi
 
 if [ "${TRAVIS_SECURE_ENV_VARS}" != "true" ]
 then
-    echo "Error: Travis secure environment variables (TRAVIS_SECURE_ENV_VARS) not found"
+    echo "Error: Travis secure environment variables (TRAVIS_SECURE_ENV_VARS) not found (${TRAVIS_SECURE_ENV_VARS})"
     exit 1
 fi
 
