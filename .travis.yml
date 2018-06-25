@@ -35,10 +35,11 @@ branches:
     only:
         - master
         - develop
+        # just temporarily
+        - docker-multi-stage
 
 install:
-    - make init
-    - make build config=ci
+    - make build-ci
 
 # upcoming
 # Sets up the nginx server for proxying
@@ -52,5 +53,5 @@ script: make test-travis
 # after_script:
 #     - tools/travis/stop-nginx.sh
 after_success:
-  - make docker_image
-  - IMAGE_NAME=kbase/kbase-ui ./deployment/tools/push2dockerhub.sh
+  # - make docker_image
+  - IMAGE_NAME=kbase/kbase-ui ./deployment/tools/push2docker-travis.sh
