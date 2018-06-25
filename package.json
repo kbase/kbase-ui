@@ -87,5 +87,8 @@
         "d3-collection": "1.0.4",
         "d3-shape": "1.2.0",
         "d3-path": "1.0.5"
+    },
+    "scripts": {
+        "test": "node test/node/test.js"
     }
 }
