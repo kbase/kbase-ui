@@ -118,10 +118,6 @@ build-deploy-configs:
 	@cd mutations; node build-deploy-configs $(TOPDIR)/deployment/ci/docker/kb-deployment/conf/config.json.tmpl $(TOPDIR)/config/deploy $(TOPDIR)/build/deploy/configs
 	@echo "> ... deploy configs built in $(TOPDIR)/build/deploy/configs"
 
-build-ci:
-	@echo "> Building CI docker image for this branch."
-	bash $(TOPDIR)/tools/docker/build-image.sh ci
-
 docker-network:
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
 	bash tools/docker/create-docker-network.sh $(net)

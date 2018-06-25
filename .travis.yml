@@ -39,7 +39,7 @@ branches:
         - docker-multi-stage
 
 install:
-    - make build-ci
+    - make docker-image build=ci
 
 # upcoming
 # Sets up the nginx server for proxying
@@ -47,7 +47,7 @@ install:
 #     - tools/travis/deploy-travis.sh
 #     - tools/travis/start-nginx.sh
 
-script: make test-travis
+# script: make test-travis
 
 # upcoming
 # after_script:
