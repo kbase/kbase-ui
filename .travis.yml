@@ -4,7 +4,7 @@ services:
   - docker
 
 # These are travis encrypted var for the DOCKER_USER and DOCKER_PASS creds
-# used in the build/push2dockerhub.sh script
+# used in the deployment/tools/push2dockerhub-travis.sh script
 env:
   global:
     - secure: "rEkz6iLJq6W9Cp9EgWkmxE4eL7vUsBgG1bmSN42yy8SDjgot1VUYLrO0ZVonxCqdgGvXgfZaDVu/ohtG1D03smzpIvA+yCj/81UnewzBtzqejrAbCB05qGhWd+2VUIF7b0VpMtqmpT4TK6uuTswhYTrXoivduCI8GtqI8s7Yd4WTGUUEa8y6MaEP9qa3/NfPaXTo9OgG+1Obys5fLCdcWgtM58P9H4wFNeHeUBAzLFd96BKzTnctt4shqaUA7Kbh5xriAAC/5Zplna37FqY+wBOfXo7gesQmJs2GBBMinNvq1JDoyPF6Q0iX8UEbNys2/3RxnAwnfOgVw2GEcRF+68mhVApAz/PQK3K6vhKcRG7SnSYg4Gu6gsK0VB5UlNGnQWc0wb/qOGjvbDAZ0SHViCIjSo1m+TC4taOloTHR6iKX/L0lUxaJAxOaLO6dJkdiK2AK9FsukiRPBPjGIQowk+PhIwG88C1mUeBdO68bH0kU46PCbbW9hBT11pRkPHZnEkufOPNEKqE0rfvcuGij88+qzceO878+iYNhpu/MtuyiVX3nZEL6e4DmXRQApWaqf/TAqW1HDlupGCjPKf6jTS6NAJ9m84rKJfOsFbT2Ce0K8MxsXvjmXKnilOFl93SADwKP1PwalskjmTqRVOBxLYOLelP+by9ziwpw1d++LDA="
