@@ -19,21 +19,94 @@ define([
         span = t('span'),
         a = t('a');
 
-    function viewModel(params) {
+    class Notification {
+        constructor(params) {
+            const newNotification = params.notification;
+            this.id = newNotification.id || new Uuid(4).format();
+            this.message = ko.observable(newNotification.message);
+            this.autodismiss = ko.observable(newNotification.autodismiss);
+            this.autodismissStartedAt = newNotification.autodismiss ? new Date().getTime() : null;
+            this.type = ko.observable(newNotification.type);
 
-        const runtime = params.runtime;
-        const sendingChannel = new Uuid(4).format();
+            this.type.subscribeChanged((newVal, oldVal) => {
+                this.summary[oldVal].count(this.summary[oldVal].count() - 1);
+                this.summary[newVal].count(this.summary[newVal].count() + 1);
+            });
 
-        var notificationQueue = ko.observableArray();
-        var notificationMap = {};
-        var over = ko.observable(false);
-        var show = ko.observable(false);
-        var autoDismisser;
+            this.autodismiss.subscribe((newVal) => {
+                if (newVal) {
+                    // TODO: this
+                    this.autodismissStartedAt = new Date().getTime();
+                    this.startAutoDismisser();
+                }
+            });
+        }
+    }
 
-        function runAutoDismisser() {
+    class ViewModel {
+        constructor(params) {
+            this.runtime = params.runtime;
+            this.sendingChannel = new Uuid(4).format();
+
+            this.notificationQueue = ko.observableArray();
+            this.notificationMap = {};
+            this.show = ko.observable(false);
+            this.autoDismisser;
+
+            this.notificationQueue.subscribe((newQueue) => {
+                // start or stop the autodismiss listener
+                let autoDismissable = false;
+                let newItems = false;
+                newQueue.forEach((item) => {
+                    if (!item.addedAt) {
+                        newItems = true;
+                        item.addedAt = new Date().getTime();
+                    }
+                    if (item.autodismiss()) {
+                        if (!item.autodismiss.startedAt) {
+                            item.autodismiss.startedAt = new Date().getTime();
+                        }
+                        autoDismissable = true;
+                    }
+                });
+                if (newItems) {
+                    this.show(true);
+                }
+                if (this.notificationQueue().length === 0) {
+                    this.show(false);
+                }
+                if (autoDismissable) {
+                    this.startAutoDismisser();
+                }
+            });
+
+            this.summary = {
+                success: this.summaryItem('success'),
+                info: this.summaryItem('info'),
+                warning: this.summaryItem('warning'),
+                error: this.summaryItem('error'),
+            };
+
+            this.hasNotifications = ko.pureComputed(() => {
+                if (this.notificationQueue().length === 0) {
+                    return false;
+                }
+                return true;
+            });
+
+            this.runtime.send('notification', 'ready', {
+                channel: this.sendingChannel
+            });
+
+            this.runtime.recv(this.sendingChannel, 'new', (message) => {
+                this.processMessage(message);
+            });
+        }
+
+        runAutoDismisser() {
             var toRemove = [];
             var now = new Date().getTime();
-            notificationQueue().forEach(function (item) {
+            this.notificationQueue().forEach((item) => {
                 if (item.autodismiss()) {
                     var elapsed = now - item.autodismiss.startedAt;
                     if (item.autodismiss() < elapsed) {
@@ -42,89 +115,52 @@ define([
                 }
             });
 
-            toRemove.forEach(function (item) {
-                removeNotification(item);
+            toRemove.forEach((item) => {
+                this.removeNotification(item);
             });
-            if (notificationQueue().length > 0) {
-                startAutoDismisser(true);
+            if (this.notificationQueue().length > 0) {
+                this.startAutoDismisser(true);
             } else {
-                autoDismisser = null;
+                this.autoDismisser = null;
             }
         }
 
-        function startAutoDismisser(force) {
-            if (autoDismisser && !force) {
+        startAutoDismisser(force) {
+            if (this.autoDismisser && !force) {
                 return;
             }
-            autoDismisser = window.setTimeout(function () {
-                runAutoDismisser();
+            this.autoDismisser = window.setTimeout(() => {
+                this.runAutoDismisser();
             }, 1000);
         }
 
-        notificationQueue.subscribe(function (newQueue) {
-            // start or stop the autodismiss listener
-            var autoDismissable = false;
-            var newItems = false;
-            newQueue.forEach(function (item) {
-                if (!item.addedAt) {
-                    newItems = true;
-                    item.addedAt = new Date().getTime();
-                }
-                if (item.autodismiss()) {
-                    if (!item.autodismiss.startedAt) {
-                        item.autodismiss.startedAt = new Date().getTime();
-                    }
-                    autoDismissable = true;
-                }
-            });
-            if (newItems) {
-                show(true);
-            }
-            if (notificationQueue().length === 0) {
-                show(false);
-            }
-            if (autoDismissable) {
-                startAutoDismisser();
-            }
-        });
-
-        // EVENT HANDLERS
-
-        function doMouseOver() {
-            over(true);
-        }
-
-        function doMouseOut() {
-            over(false);
-        }
-
-        function doToggleNotification() {
+        doToggleNotification() {
             // only allow toggling if have items...
             // if (queue().length === 0) {
             //     return;
             // }
-            if (show()) {
-                show(false);
+            if (this.show()) {
+                this.show(false);
             } else {
-                show(true);
+                this.show(true);
             }
         }
 
-        function doCloseNotifications() {
-            show(false);
+        doCloseNotifications() {
+            this.show(false);
         }
 
-        function doClearNotification(data, event) {
+        doClearNotification(data, event) {
             event.stopPropagation();
-            removeNotification(data);
+            this.removeNotification(data);
         }
 
-        function summaryItem(name) {
+        summaryItem(name) {
             var count = ko.observable(0);
             return {
                 label: name,
                 count: count,
-                myClass: ko.pureComputed(function () {
+                myClass: ko.pureComputed(() => {
                     if (count() > 0) {
                         return '-' + name + ' -hasitems';
                     } else {
@@ -134,77 +170,18 @@ define([
             };
         }
 
-        var summary = {
-            success: summaryItem('success'),
-            info: summaryItem('info'),
-            warning: summaryItem('warning'),
-            error: summaryItem('error'),
-        };
-
-
-
-            // function makeMessage(newMessage) {
-            //     return {
-            //         type: newMessage.type,
-            //         id: newMessage.id | new Uuid(4).format(),
-            //         message: ko.observable(newMessage.message),
-            //         autodismiss: ko.observable(newMessage.autodismiss)
-            //     };
-            // }
-            // individual notification item
-        function makeNotification(newNotification) {
-            var id = newNotification.id || new Uuid(4).format();
-            var message = ko.observable(newNotification.message);
-            var autodismiss = ko.observable(newNotification.autodismiss);
-            autodismiss.startedAt = newNotification.autodismiss ? new Date().getTime() : null;
-            var type = ko.observable(newNotification.type);
-            var over = ko.observable(false);
-
-            type.subscribeChanged(function (newVal, oldVal) {
-                summary[oldVal].count(summary[oldVal].count() - 1);
-                summary[newVal].count(summary[newVal].count() + 1);
-            });
-
-            autodismiss.subscribe(function (newVal) {
-                if (newVal) {
-                    // TODO: this
-                    autodismiss.startedAt = new Date().getTime();
-                    startAutoDismisser();
-                }
-            });
-
-            function doMouseOver() {
-                over(true);
-            }
-
-            function doMouseOut() {
-                over(false);
-            }
-
-            return {
-                id: id,
-                message: message,
-                autodismiss: autodismiss,
-                type: type,
-
-                over: over,
-                doMouseOver: doMouseOver,
-                doMouseOut: doMouseOut
-            };
-        }
-
-        function addNotification(newMessage) {
-            var notification = makeNotification(newMessage);
-            var summaryItem = summary[notification.type()];
+        addNotification(newMessage) {
+            const notification = new Notification({notification: newMessage});
+            const summaryItem = this.summary[notification.type()];
             if (summaryItem) {
                 summaryItem.count(summaryItem.count() + 1);
             }
-            notificationQueue.unshift(notification);
-            notificationMap[notification.id] = notification;
+            this.notificationQueue.unshift(notification);
+            this.notificationMap[notification.id] = notification;
         }
 
-        function updateNotification(newMessage) {
-            var notification = notificationMap[newMessage.id];
+        updateNotification(newMessage) {
+            const notification = this.notificationMap[newMessage.id];
             if (!notification) {
                 console.error('Cannot update message, not found: ' + newMessage.id, newMessage);
                 return;
@@ -214,18 +191,17 @@ define([
             notification.autodismiss(newMessage.autodismiss);
         }
 
-        function removeNotification(notification) {
-            var summaryItem = summary[notification.type()];
+        removeNotification(notification) {
+            const summaryItem = this.summary[notification.type()];
             if (summaryItem) {
                 summaryItem.count(summaryItem.count() - 1);
             }
 
-            notificationQueue.remove(notification);
-            delete notificationMap[notification.id];
+            this.notificationQueue.remove(notification);
+            delete this.notificationMap[notification.id];
         }
 
-        function processMessage(message) {
-            // start simple, man.
+        processMessage(message) {
             if (!message.type) {
                 console.error('Message not processed - no type', message);
                 return;
@@ -235,44 +211,14 @@ define([
                 return;
             }
             if (message.id) {
-                if (notificationMap[message.id]) {
+                if (this.notificationMap[message.id]) {
                     // just update it.
-                    updateNotification(message);
+                    this.updateNotification(message);
                     return;
                 }
             }
-            addNotification(message);
+            this.addNotification(message);
         }
-
-        var hasNotifications = ko.pureComputed(function () {
-            if (notificationQueue().length === 0) {
-                return false;
-            }
-            return true;
-        });
-
-        runtime.send('notification', 'ready', {
-            channel: sendingChannel
-        });
-
-        runtime.recv(sendingChannel, 'new', function (message) {
-            processMessage(message);
-        });
-
-        return {
-            label: params.label,
-            notificationQueue: notificationQueue,
-            summary: summary,
-            over: over,
-            show: show,
-            hasNotifications: hasNotifications,
-            // backgroundColor: backgroundColor,
-            doMouseOver: doMouseOver,
-            doMouseOut: doMouseOut,
-            doToggleNotification: doToggleNotification,
-            doClearNotification: doClearNotification,
-            doCloseNotifications: doCloseNotifications
-        };
     }
 
     function buildSummaryItem(name) {
@@ -433,7 +379,7 @@ define([
 
     function component() {
         return {
-            viewModel: viewModel,
+            viewModel: ViewModel,
             template: template()
         };
     }

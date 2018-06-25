@@ -17,10 +17,7 @@
         case 'timeout':
             if (err.requireModules) {
                 if (err.requireModules.some(function (module) {
-                    if (module === '//www.google-analytics.com/analytics.js') {
-                        return true;
-                    }
-                    return false;
+                    return (module === '//www.google-analytics.com/analytics.js');
                 })) {
                     root.KBaseFallback.showError({
                         title: 'Analytics Blocked (timeout)',

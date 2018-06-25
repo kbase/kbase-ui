@@ -1,6 +1,6 @@
 define([
     'bluebird',
-    'knockout-plus',
+    'knockout',
     'kb_common/html',
     './components/sidebarMenu'
 ], function (
@@ -14,53 +14,45 @@ define([
     var t = html.tag,
         div = t('div');
 
-    function factory(config) {
-        var hostNode, container, runtime = config.runtime;
-
-        function attach(node) {
-            hostNode = node;
-            container = hostNode;
-        }
-
-        function routeToPath(route) {
-            var path = [];
-            var i;
-            if (route.route.path) {
-                for (i = 0; i < route.route.path.length; i += 1) {
-                    var pathElement = route.route.path[i];
-                    if (pathElement.type !== 'literal') {
-                        break;
-                    }
-                    path.push(pathElement.value);
+    function routeToPath(route) {
+        var path = [];
+        var i;
+        if (route.route.path) {
+            for (i = 0; i < route.route.path.length; i += 1) {
+                var pathElement = route.route.path[i];
+                if (pathElement.type !== 'literal') {
+                    break;
                 }
+                path.push(pathElement.value);
             }
-            return path.join('/');
         }
+        return path.join('/');
+    }
 
-        function intersect(a1, a2) {
-            return a1.some(function (a) {
-                return a2.indexOf(a) >= 0;
-            });
-        }
+    function intersect(a1, a2) {
+        return a1.some(function (a) {
+            return a2.indexOf(a) >= 0;
+        });
+    }
 
-        function viewModel(params) {
-            var initiallyLoggedIn = runtime.service('session').isLoggedIn();
-            var isLoggedIn = ko.observable(initiallyLoggedIn);
-            // var username = ko.ovservable(runtime.service('session').getUsername());
+    class ViewModel {
+        constructor(params) {
+            this.runtime = params.runtime;
+            this.isLoggedIn = ko.observable(this.runtime.service('session').isLoggedIn());
 
             // A session state change may signal that the session has been logged
             // out.
-            runtime.recv('session', 'change', function () {
-                isLoggedIn(runtime.service('session').isLoggedIn());
+            this.runtime.recv('session', 'change', () => {
+                this.isLoggedIn(this.runtime.service('session').isLoggedIn());
             });
 
-            var allowedTags = runtime.config('ui.allow', []);
+            const allowedTags = this.runtime.config('ui.allow', []);
 
-            var buttons = ko.observableArray();
-            var buttonsMap = {};
-            var buttonsPathMap = {};
+            this.buttonsList = ko.observableArray();
+            this.buttonsMap = {};
+            this.buttonsPathMap = {};
 
-            params.buttons.forEach(function (button) {
+            params.buttons.forEach((button) => {
                 var viewButton = {
                     id: button.id,
                     label: button.label,
@@ -71,16 +63,16 @@ define([
                     allow: button.allow,
                     beta: button.beta
                 };
-                buttons.push(viewButton);
-                buttonsMap[viewButton.id] = viewButton;
-                buttonsPathMap[viewButton.path] = viewButton;
+                this.buttonsList.push(viewButton);
+                this.buttonsMap[viewButton.id] = viewButton;
+                this.buttonsPathMap[viewButton.path] = viewButton;
             });
 
             // weird, the filter doesn't work with elements added via push if the push is
             // invoked after the filter is attached.
             // TODO: look for a fix, or switch to the Sanderson projections.
-            var filteredButtons = buttons.filter(function (item) {
-                if (!isLoggedIn() && item.authRequired) {
+            this.buttons = this.buttonsList.filter((item) => {
+                if (!this.isLoggedIn() && item.authRequired) {
                     return false;
                 }
                 if (item.allow) {
@@ -91,40 +83,47 @@ define([
                 return true;
             });
 
-            function selectButton(route) {
-                buttons().forEach(function (button) {
-                    button.active(false);
-                });
-                var path = routeToPath(route);
-                var button = buttonsPathMap[path];
-                if (!button) {
-                    return;
-                }
-                button.active(true);
-            }
-
-            runtime.recv('route', 'routing', function (route) {
-                selectButton(route);
-            });
-
-            var isAuthorized = ko.observable(runtime.service('session').isLoggedIn());
+            this.isAuthorized = ko.observable(this.runtime.service('session').isLoggedIn());
 
             // TODO: rethink this!!!
-            runtime.recv('session', 'change', function () {
-                isAuthorized(runtime.service('session').isLoggedIn());
+            this.runtime.recv('session', 'change', () => {
+                this.isAuthorized(this.runtime.service('session').isLoggedIn());
             });
 
-            return {
-                buttons: filteredButtons,
-                selecteButton: selectButton,
-                isAuthorized: isAuthorized
-            };
+            this.runtime.recv('route', 'routing', (route) => {
+                this.selectButton(route);
+            });
         }
 
-        function start() {
+        selectButton(route) {
+            this.buttons().forEach((button) => {
+                button.active(false);
+            });
+            const path = routeToPath(route);
+            const button = this.buttonsPathMap[path];
+            if (!button) {
+                return;
+            }
+            button.active(true);
+        }
+    }
 
-            // new component.
-            container.innerHTML = div({
+
+    class SidebarNav {
+        constructor(config) {
+            this.runtime = config.runtime;
+
+            this.hostNode = null;
+            this.container = null;
+        }
+
+        attach(node) {
+            this.hostNode = node;
+            this.container = node;
+        }
+
+        start() {
+            this.container.innerHTML = div({
                 dataKBTesthookWidget: 'sidebarNav',
                 dataBind: {
                     component: {
@@ -136,37 +135,20 @@ define([
                     }
                 }
             });
-            var sidebarMenu = runtime.service('menu').getCurrentMenu('sidebar');
-            var vm = viewModel({
+            const sidebarMenu = this.runtime.service('menu').getCurrentMenu('sidebar');
+            const vm = new ViewModel({
                 buttons: sidebarMenu.main,
+                runtime: this.runtime
             });
-            ko.applyBindings(vm, container);
+            ko.applyBindings(vm, this.container);
         }
 
-        function stop() {
-            return null;
-        }
-
-        function detach() {
-            // if (hostNode && container) {
-            //     hostNode.removeChild(container);
-            // }
-            if (hostNode) {
-                hostNode.innerHTML = '';
+        detach() {
+            if (this.container) {
+                this.container.innerHTML = '';
             }
         }
-
-        return {
-            attach: attach,
-            start: start,
-            stop: stop,
-            detach: detach
-        };
     }
 
-    return {
-        make: function (config) {
-            return factory(config);
-        }
-    };
+    return {Widget: SidebarNav};
 });

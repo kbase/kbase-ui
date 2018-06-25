@@ -119,8 +119,8 @@ build-deploy-configs:
 	@echo "> ... deploy configs built in $(TOPDIR)/build/deploy/configs"
 
 build-ci:
-	@echo "> Building for CI."
-	cd mutations; node build ci
+	@echo "> Building CI docker image for this branch."
+	bash $(TOPDIR)/tools/docker/build-image.sh ci
 
 docker-network:
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")

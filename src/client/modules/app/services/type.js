@@ -7,8 +7,8 @@ define([
 ) {
     'use strict';
 
-    function factory(config) {
-        var runtime = config.runtime,
+    function factory(config, params) {
+        var runtime = params.runtime,
             typeManager = TypeManager.make({
                 runtime: runtime,
                 typeDefs: {}
@@ -114,8 +114,6 @@ define([
         };
     }
     return {
-        make: function (config) {
-            return factory(config);
-        }
+        make: factory
     };
 });

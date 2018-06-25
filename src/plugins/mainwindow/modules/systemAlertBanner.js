@@ -12,17 +12,39 @@ define([
 ) {
     'use strict';
 
-    function factory(config) {
-        const t = html.tag,
-            div = t('div'),
-            runtime = config.runtime;
+    const t = html.tag,
+        div = t('div');
 
-        let hostNode, container;
+    class LoadNotificationsJob extends poller.Job {
+        constructor({callback}) {
+            super({
+                description: 'Load notifications'
+            });
+            this.callback = callback;
+        }
+        run() {
+            return this.callback();
+        }
+    }
 
-        let newAlertsPoller;
+    class SystemAlertBanner {
+        constructor(params) {
+            this.runtime = params.runtime;
 
-        function getActiveAlerts() {
-            const client = new runtime.service('rpc').makeClient({
+            this.hostNode = null;
+            this.container = null;
+            this.newAlertsPoller = null;
+            this.newAlertsPoller = new poller.Poller();
+
+            this.vm = {
+                runtime: this.runtime,
+                systemStatus: ko.observable(),
+                error: ko.observable()
+            };
+        }
+
+        getActiveAlerts() {
+            const client = new this.runtime.service('rpc').makeClient({
                 module: 'UIService'
             });
 
@@ -32,89 +54,31 @@ define([
                 });
         }
 
-        function attach(node) {
-            hostNode = node;
-            container = hostNode.appendChild(document.createElement('div'));
-            container.classList.add('widget-menu');
+        loadNotifications() {
+            return this.getActiveAlerts()
+                .then((data) => {
+                    const systemStatus = {
+                        upcomingMaintenanceWindows: data
+                    };
+                    this.vm.systemStatus(systemStatus);
+                    this.vm.error(null);
+                })
+                .catch((err) => {
+                    console.error('ERROR', err);
+                    this.vm.systemStatus(null);
+                    this.vm.error(err.message);
+                    throw err;
+                });
         }
 
-        function start() {
-            const vm = {
-                runtime: runtime,
-                systemStatus: ko.observable(),
-                error: ko.observable()
-            };
+        attach(node) {
+            this.hostNode = node;
+            this.container = this.hostNode.appendChild(document.createElement('div'));
+            this.container.classList.add('widget-menu');
+        }
 
-            // load any notifications
-            function loadNotifications() {
-                // return runtime.service('data').getJson({
-                //     path:'notifications',
-                //     file: 'systemStatus'
-                // })
-                return getActiveAlerts()
-                    .then((data) => {
-                        const systemStatus = {
-                            upcomingMaintenanceWindows: data
-                        };
-                        vm.systemStatus(systemStatus);
-                        vm.error(null);
-                    })
-                    .catch((err) => {
-                        console.error('ERROR', err);
-                        vm.systemStatus(null);
-                        vm.error(err.message);
-                        throw err;
-                    });
-            }
-            // loadNotifications();
-
-            // poll for changes
-            // newAlertsPoller = new poller.makePoller({
-            //     fun: () => {
-            //         loadNotifications();
-            //     },
-            //     description: 'Load notifications',
-            //     interval: 10000
-            // });
-
-            // newAlertsPoller.start();
-            class LoadNotificationsJob extends poller.Job {
-                constructor() {
-                    super({
-                        description: 'Load notifications'
-                    });
-                }
-                run() {
-                    return loadNotifications();
-                }
-            }
-            const job = new LoadNotificationsJob();
-            // let job = new poller.Job({
-            //     run: () => {
-            //         return loadNotifications();
-            //     },
-            //     description: 'Load notifications'
-            // });
-            const task = new poller.Task({
-                interval: 10000,
-                runInitially: true
-            });
-            task.addJob(job);
-
-            newAlertsPoller = new poller.Poller();
-            newAlertsPoller.addTask(task);
-            newAlertsPoller.start();
-
-            // function scheduleLoadNotifications() {
-            //     timer = window.setTimeout(function () {
-            //         loadNotifications();
-            //         scheduleLoadNotifications();
-            //     }, 10000);
-            // }
-            // scheduleLoadNotifications();
-
-
-            container.innerHTML = div({
+        start() {
+            this.container.innerHTML = div({
                 dataBind: {
                     component: {
                         name: SystemAlertBannerComponent.quotedName(),
@@ -126,30 +90,37 @@ define([
                 }
             });
 
-            ko.applyBindings(vm, container);
+            ko.applyBindings(this.vm, this.container);
+
+            const job = new LoadNotificationsJob({
+                callback: () => {
+                    this.loadNotifications();
+                }
+            });
+
+            const task = new poller.Task({
+                interval: 10000,
+                runInitially: true
+            });
+            task.addJob(job);
+
+            this.newAlertsPoller.addTask(task);
+            this.newAlertsPoller.start();
+
         }
 
-        function stop() {
-            if (newAlertsPoller) {
-                return newAlertsPoller.stop();
+        stop() {
+            if (this.newAlertsPoller) {
+                return this.newAlertsPoller.stop();
             }
         }
 
-        function detach() {
-            if (hostNode && container) {
-                container.removeChild(hostNode);
+        detach() {
+            if (this.hostNode && this.container) {
+                this.container.removeChild(this.hostNode);
             }
         }
-
-        return {
-            attach: attach,
-            start: start,
-            stop: stop,
-            detach: detach
-        };
     }
 
-    return {
-        make: factory
-    };
+    return {Widget: SystemAlertBanner};
 });
