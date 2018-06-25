@@ -3,7 +3,7 @@ sudo: required
 services:
   - docker
 
-# These are travis encrypted var for the DOCKER_USER and DOCKER_PASS creds
+# These are travis encrypted var for the DOCKER_USER and DOCKER_PASS credentials
 # used in the deployment/tools/push2dockerhub-travis.sh script
 env:
   global:

@@ -13,8 +13,8 @@
 
 # Required environment variables
 # TRAVIS_* implied by the Travis environment
-# IMAGE_NAME - the name of the image which has been built previous to running this script
-# DOCKER_USER - secure travis parameters (?) required for interation with dockerhub
+# IMAGE_NAME - the name of the image which has been built previous to running this script; see .travis.yml
+# DOCKER_USER - secure travis parameters required for interation with dockerhub; see .travis.yml
 # DOCKER_PASS 
 
 set -o errexit
