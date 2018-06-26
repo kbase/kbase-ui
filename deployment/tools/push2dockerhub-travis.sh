@@ -57,15 +57,27 @@ then
     TAG="latest"
 fi
 
-if [ "${TRAVIS_SECURE_ENV_VARS}" != "true" ]
-then
-    echo "Error: Travis secure environment variables (TRAVIS_SECURE_ENV_VARS) not found (${TRAVIS_SECURE_ENV_VARS})"
-    exit 1
-fi
+# if [ "${TRAVIS_SECURE_ENV_VARS}" != "true" ]
+# then
+#     echo "Error: Travis secure environment variables (TRAVIS_SECURE_ENV_VARS) not found (${TRAVIS_SECURE_ENV_VARS})"
+#     exit 1
+# fi
 
 if [ "${TRAVIS_PULL_REQUEST}" == "true" ]
 then
     echo "Error: Will not push image for Pull Request"
+    exit 1
+fi
+
+if [ -z "${DOCKER_USER:-}" ] 
+then
+    echo "Error: required (secure) environment variable DOCKER_USER not found"
+    exit 1
+fi
+
+if [ -z "${DOCKER_PASS:-}"] 
+then
+    echo "Error: required (secure) environment variable DOCKER_PASS not found"
     exit 1
 fi
 
