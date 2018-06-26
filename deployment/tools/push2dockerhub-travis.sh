@@ -76,7 +76,7 @@ then
     exit 1
 fi
 
-if [ -z "${DOCKER_PASS:-}"] 
+if [ -z "${DOCKER_PASS:-}" ] 
 then
     echo "Error: required (secure) environment variable DOCKER_PASS not found"
     exit 1
