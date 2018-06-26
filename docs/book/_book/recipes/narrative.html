@@ -461,7 +461,7 @@
 cd ~/work/project
 </code></pre><h2 id="2-clone-repos">[2] Clone repos:</h2>
 <pre><code>git clone -b docker-multi-stage https://github.com/kbase/kbase-ui
-git clone https://github.com/eapearson/kbase-ui-proxier
+git clone https://github.com/eapearson/kbase-ui-proxy
 git clone -b develop https://github.com/kbase/narrative
 </code></pre><h2 id="3-build-and-run-kbase-ui">[3] Build and run kbase-ui:</h2>
 <pre><code>cd kbase-ui
@@ -482,13 +482,13 @@ Ignore Error
 </blockquote>
 <p>run the script</p>
 <pre><code>env=ci bash scripts/local-dev-run.sh
-</code></pre><h2 id="5-build-and-run-the-proxier">[5] Build and run the proxier</h2>
+</code></pre><h2 id="5-build-and-run-the-proxy">[5] Build and run the proxy</h2>
 <p>open a new terminal tab or window</p>
-<pre><code>cd ../kbase-ui-proxier
+<pre><code>cd ../kbase-ui-proxy
 make docker-image
 local_narrative=true make run-docker-image env=dev
 </code></pre><h2 id="6-local-proxy">[6] Local proxy</h2>
-<p>Edit your local /etc/hosts file to point ci to the running kbase-ui-proxier.</p>
+<p>Edit your local /etc/hosts file to point ci to the running kbase-ui-proxy.</p>
 <pre><code>vi /etc/hosts
 </code></pre><p>insert this line at the end if not already there.</p>
 <pre><code>127.0.0.1    ci.kbase.us
@@ -499,6 +499,11 @@ local_narrative=true make run-docker-image env=dev
 #127.0.0.1    kbase.us narrative.kbase.us
 </code></pre><h2 id="8-run-with-it">[8] Run with it</h2>
 <p>You should now be able to pull up kbase-ui on <code>https://ci.kbase.us</code> and navigate to the Narrative.</p>
+<p>Since the proxy is using a dynamically-generated self-signed certificate to provide https, you will find that the non-private mode for most browsers is troublesome. Less troublesome is private mode for Safari and Chrome; Firefox does not work well at all even in private mode.</p>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>build times are longer than purely host-based, due to the cold caches for npm, bower, and probably pip package installers.</li>
+</ul>
 
                                 
                                 </section>
@@ -538,7 +543,7 @@ local_narrative=true make run-docker-image env=dev
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Narrative","level":"1.5.1","depth":2,"previous":{"title":"Recipes","level":"1.5","depth":1,"path":"recipes/README.md","ref":"recipes/README.md","articles":[{"title":"Narrative","level":"1.5.1","depth":2,"path":"recipes/narrative.md","ref":"recipes/narrative.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":[],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"recipes/narrative.md","mtime":"2018-06-26T21:27:11.324Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-06-26T21:27:23.294Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Narrative","level":"1.5.1","depth":2,"previous":{"title":"Recipes","level":"1.5","depth":1,"path":"recipes/README.md","ref":"recipes/README.md","articles":[{"title":"Narrative","level":"1.5.1","depth":2,"path":"recipes/narrative.md","ref":"recipes/narrative.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["livereload"],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"recipes/narrative.md","mtime":"2018-06-26T22:02:03.760Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-06-26T12:34:45.790Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
@@ -546,6 +551,10 @@ local_narrative=true make run-docker-image env=dev
         
     <script src="../gitbook/gitbook.js"></script>
     <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-livereload/plugin.js"></script>
+        
     
         
         <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>

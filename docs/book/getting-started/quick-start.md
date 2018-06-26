@@ -13,7 +13,7 @@ Read the [prerequisites](prerequisites.md) guide to ensure your host machine is 
 3. Clone the following repos into this folder: *eapearson/kbase-ui*, *eapearson/kbase-ui-proxy*
     ```bash
     git clone -b docker-multi-stage https://github.com/eapearson/kbase-ui
-    git clone https://github.com/eapearson/kbase-ui-proxier
+    git clone https://github.com/eapearson/kbase-ui-proxy
     ```
 4. Create and launch the kbase-ui image:
     ```bash
@@ -22,9 +22,9 @@ Read the [prerequisites](prerequisites.md) guide to ensure your host machine is 
     make run-docker-image env=dev
     ```
 5. Since that container is now running in the terminal, you'll need to open a new terminal window.[^1]
-6. Create and launch the *kbase-ui-proxier* image:
+6. Create and launch the *kbase-ui-proxy* image:
     ```bash
-    cd ../kbase-ui-proxier
+    cd ../kbase-ui-proxy
     make docker-image
     make run-docker-image env=dev
     ```

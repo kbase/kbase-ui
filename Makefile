@@ -97,13 +97,13 @@ setup-dirs:
 	@echo "> Setting up directories."
 	mkdir -p temp/files
 
-install-tools:
+node_modules:
 	@echo "> Installing build and test tools."
 	npm install
 
 setup: preconditions setup-dirs
 
-init: setup install-tools
+init: setup node_modules
 
 
 # Perform the build. Build scnearios are supported through the config option
@@ -202,7 +202,7 @@ docs:
 	npm install; \
 	./node_modules/.bin/gitbook build ./book
 
-view-docs: build-docs
+docs-viewer: docs
 	cd docs; \
 	(./node_modules/.bin/wait-on -t 10000 http://localhost:4000 && ./node_modules/.bin/opn http://localhost:4000 &); \
 	./node_modules/.bin/gitbook serve ./book
