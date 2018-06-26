@@ -31,48 +31,23 @@ open a new terminal tab or window (recent versions of Terminal or iTerm should o
 
 ```
 cd ../narrative
-```
-
-ok, a quick fix to the Dockerfile.
-
-in ./Dockerfile, replace this line
-
-```
-RUN npm install && bower install --allow-root --config.interactive=false
-```
-
-with this
-
-```
-RUN npm install && ./node_modules/.bin/bower install --allow-root --config.interactive=false
-```
-
-(this causes the correct version of bower to be used, from the package.json file)
-
-then run:
-
-```
 make dev_image
 ```
 
-Now edit the container run script, scripts/local-dev-run.sh
-
-remove the line :
+If successful, this will finish with an error, which as the following line states, you may ignore:
 
 ```
-    --mount type=bind,src=${root}/${ext_components_dir},dst=${container_root}/${ext_components_dir} \
+curl: (7) Failed to connect to localhost port 443: Connection refused
+Ignore Error
 ```
 
-(this removes the mapping of external components into the container -- the external components local directory does not exist yet if you haven't built the narrative locally, and the docker build would fail)
-
+> "Ignore Error" prints if the "curl" error printed above occurs; if there are errors above the "curl" line, they should **not** be ignored!
 
 run the script
 
 ```
 env=ci bash scripts/local-dev-run.sh
 ```
-
-> Note: Both of the manual patches above are fixed in PR https://github.com/kbase/narrative/pull/1345
 
 ## [5] Build and run the proxier
 
