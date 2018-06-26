@@ -31,6 +31,13 @@ then
     exit 1
 fi
 
+if [ "${TRAVIS_PULL_REQUEST}" != "false" ]
+then
+    echo "Error: Will not push image for Pull Request"
+    exit 1
+fi
+
+
 if [ -z "${TRAVIS_BRANCH}" ]
 then
     echo "Error: A git branch was not found in TRAVIS_BRANCH"
@@ -57,15 +64,9 @@ then
     TAG="latest"
 fi
 
-# if [ "${TRAVIS_SECURE_ENV_VARS}" != "true" ]
-# then
-#     echo "Error: Travis secure environment variables (TRAVIS_SECURE_ENV_VARS) not found (${TRAVIS_SECURE_ENV_VARS})"
-#     exit 1
-# fi
-
-if [ "${TRAVIS_PULL_REQUEST}" == "true" ]
+if [ "${TRAVIS_SECURE_ENV_VARS}" != "true" ]
 then
-    echo "Error: Will not push image for Pull Request"
+    echo "Error: Travis secure environment variables (TRAVIS_SECURE_ENV_VARS) not found (${TRAVIS_SECURE_ENV_VARS})"
     exit 1
 fi
 
