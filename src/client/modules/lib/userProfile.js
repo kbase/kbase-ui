@@ -3,7 +3,7 @@ define([
     'md5',
     'kb_service/client/userProfile',
     'kb_common_ts/Auth2',
-    './props'
+    'kb_lib/props'
 ], function (
     Promise,
     md5,
@@ -104,7 +104,7 @@ define([
                 // ensure that the realname is correctly copied and consistent with the auth account
 
                 // ensure that the gravatar hash is consistent.
-                if (!Props.getDataItem(profile, 'profile.synced.gravatarHash')) {
+                if (!Props.getProp(profile, 'profile.synced.gravatarHash')) {
                     var email = runtime.service('session').getEmail();
                     var hash = gravatarHash(email);
                     profile.profile.synced.gravatarHash = hash;
