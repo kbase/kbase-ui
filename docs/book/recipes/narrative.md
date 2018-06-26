@@ -72,7 +72,9 @@ run the script
 env=ci bash scripts/local-dev-run.sh
 ```
 
-## [6] Build and run the proxier
+> Note: Both of the manual patches above are fixed in PR https://github.com/kbase/narrative/pull/1345
+
+## [5] Build and run the proxier
 
 open a new terminal tab or window
 
@@ -82,7 +84,7 @@ make docker-image
 local_narrative=true make run-docker-image env=dev
 ```
 
-## [7] Local proxy
+## [6] Local proxy
 
 Edit your local /etc/hosts file to point ci to the running kbase-ui-proxier.
 
