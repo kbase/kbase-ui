@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>Misc. Plugin Topics · GitBook</title>
+        <title>Narrative · GitBook</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -57,10 +57,8 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="docker-tips.html" />
     
-    
-    <link rel="prev" href="developing-alongside-narrative.html" />
+    <link rel="prev" href="./" />
     
 
     </head>
@@ -257,9 +255,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4" data-path="./">
+        <li class="chapter " data-level="1.4" data-path="../development/">
             
-                <a href="./">
+                <a href="../development/">
             
                     
                     Development
@@ -271,9 +269,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.4.1" data-path="getting-started.html">
+        <li class="chapter " data-level="1.4.1" data-path="../development/getting-started.html">
             
-                <a href="getting-started.html">
+                <a href="../development/getting-started.html">
             
                     
                     Getting Started
@@ -284,7 +282,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4.2" data-path="developing-a-new-plugin.md">
+        <li class="chapter " data-level="1.4.2" data-path="../development/developing-a-new-plugin.md">
             
                 <span>
             
@@ -297,9 +295,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4.3" data-path="developing-a-plugin.html">
+        <li class="chapter " data-level="1.4.3" data-path="../development/developing-a-plugin.html">
             
-                <a href="developing-a-plugin.html">
+                <a href="../development/developing-a-plugin.html">
             
                     
                     Updating an Exiting Plugin
@@ -310,9 +308,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4.4" data-path="developing-internal-plugins.html">
+        <li class="chapter " data-level="1.4.4" data-path="../development/developing-internal-plugins.html">
             
-                <a href="developing-internal-plugins.html">
+                <a href="../development/developing-internal-plugins.html">
             
                     
                     Working on an Internal Plugin
@@ -323,7 +321,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4.5" data-path="developing-kbase-ui">
+        <li class="chapter " data-level="1.4.5" data-path="../development/developing-kbase-ui">
             
                 <span>
             
@@ -336,9 +334,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4.6" data-path="developing-alongside-narrative.html">
+        <li class="chapter " data-level="1.4.6" data-path="../development/developing-alongside-narrative.html">
             
-                <a href="developing-alongside-narrative.html">
+                <a href="../development/developing-alongside-narrative.html">
             
                     
                     Working with the Narrative
@@ -349,9 +347,9 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.4.7" data-path="developing-external-plugins-misc.html">
+        <li class="chapter " data-level="1.4.7" data-path="../development/developing-external-plugins-misc.html">
             
-                <a href="developing-external-plugins-misc.html">
+                <a href="../development/developing-external-plugins-misc.html">
             
                     
                     Misc. Plugin Topics
@@ -362,9 +360,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4.8" data-path="docker-tips.html">
+        <li class="chapter " data-level="1.4.8" data-path="../development/docker-tips.html">
             
-                <a href="docker-tips.html">
+                <a href="../development/docker-tips.html">
             
                     
                     Docker Tips
@@ -380,9 +378,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5" data-path="../recipes/">
+        <li class="chapter " data-level="1.5" data-path="./">
             
-                <a href="../recipes/">
+                <a href="./">
             
                     
                     Recipes
@@ -394,9 +392,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.5.1" data-path="../recipes/narrative.html">
+        <li class="chapter active" data-level="1.5.1" data-path="narrative.html">
             
-                <a href="../recipes/narrative.html">
+                <a href="narrative.html">
             
                     
                     Narrative
@@ -442,7 +440,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >Misc. Plugin Topics</a>
+        <a href=".." >Narrative</a>
     </h1>
 </div>
 
@@ -457,35 +455,55 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h4 id="set-up-kbase-ui-to-use-a-local-plugin-directory">Set up kbase-ui to use a local plugin directory</h4>
-<p>Configure the build to use the local plugin for the build</p>
+                                <h1 id="super-quick-start-for-narrative">Super Quick Start for Narrative</h1>
+<h2 id="1-make-project-directory-anywhere">[1] make project directory anywhere</h2>
+<pre><code>mkdir -p ~/work/project
+cd ~/work/project
+</code></pre><h2 id="2-clone-repos">[2] Clone repos:</h2>
+<pre><code>git clone -b docker-multi-stage https://github.com/kbase/kbase-ui
+git clone https://github.com/eapearson/kbase-ui-proxier
+git clone -b develop https://github.com/kbase/narrative
+</code></pre><h2 id="3-build-and-run-kbase-ui">[3] Build and run kbase-ui:</h2>
 <pre><code>cd kbase-ui
-vi config/ui/ci/build.yml
-</code></pre><p>in the section for the plugin change the source:</p>
-<pre><code>    -
-        name: dataview
-        globalName: kbase-ui-plugin-dataview
-        version: 3.1.6
-        cwd: src/plugin
-        source:
-            bower: {}
-</code></pre><p>to this</p>
-<pre><code>    -
-        name: dataview
-        globalName: kbase-ui-plugin-dataview
-        version: 3.1.6
-        cwd: src/plugin
-        source:
-            directory: {}
+make docker-image build=dev
+make run-docker-image env=dev
 </code></pre><blockquote>
-<p>Note: be sure to preserve spaces and not use tabs; otherwise you will get a yaml error during the build</p>
+<p>Note: keep the docker container running in this window; each app will get it&apos;s own window.</p>
 </blockquote>
-<p>Build kbase-ui</p>
-<pre><code>make init
-make build config=ci
-</code></pre><hr>
-<p><a href="../index.md">Index</a> - <a href="../">README</a> - <a href="../../release-notes/index.md">Release Notes</a> - <a href="http://kbase.us" target="_blank">KBase</a></p>
-<hr>
+<h2 id="4-build-and-run-narrative">[4] Build and run narrative:</h2>
+<p>open a new terminal tab or window (recent versions of Terminal or iTerm should open new windows within the same directory)</p>
+<pre><code>cd ../narrative
+</code></pre><p>ok, a quick fix to the Dockerfile.</p>
+<p>in ./Dockerfile, replace this line</p>
+<pre><code>RUN npm install &amp;&amp; bower install --allow-root --config.interactive=false
+</code></pre><p>with this</p>
+<pre><code>RUN npm install &amp;&amp; ./node_modules/.bin/bower install --allow-root --config.interactive=false
+</code></pre><p>(this causes the correct version of bower to be used, from the package.json file)</p>
+<p>then run:</p>
+<pre><code>make dev_image
+</code></pre><p>Now edit the container run script, scripts/local-dev-run.sh</p>
+<p>remove the line :</p>
+<pre><code>    --mount type=bind,src=${root}/${ext_components_dir},dst=${container_root}/${ext_components_dir} \
+</code></pre><p>(this removes the mapping of external components into the container -- the external components local directory does not exist yet if you haven&apos;t built the narrative locally, and the docker build would fail)</p>
+<p>run the script</p>
+<pre><code>env=ci bash scripts/local-dev-run.sh
+</code></pre><h2 id="6-build-and-run-the-proxier">[6] Build and run the proxier</h2>
+<p>open a new terminal tab or window</p>
+<pre><code>cd ../kbase-ui-proxier
+make docker-image
+local_narrative=true make run-docker-image env=dev
+</code></pre><h2 id="7-local-proxy">[7] Local proxy</h2>
+<p>Edit your local /etc/hosts file to point ci to the running kbase-ui-proxier.</p>
+<pre><code>vi /etc/hosts
+</code></pre><p>insert this line at the end if not already there.</p>
+<pre><code>127.0.0.1    ci.kbase.us
+</code></pre><p>I find it handy to have this in my /etc/hosts and uncomment as needed:</p>
+<pre><code>127.0.0.1    ci.kbase.us
+#127.0.0.1    appdev.kbase.us
+#127.0.0.1    next.kbase.us
+#127.0.0.1    kbase.us narrative.kbase.us
+</code></pre><h2 id="8-run-with-it">[8] Run with it</h2>
+<p>You should now be able to pull up kbase-ui on <code>https://ci.kbase.us</code> and navigate to the Narrative.</p>
 
                                 
                                 </section>
@@ -513,14 +531,10 @@ make build config=ci
 
             
                 
-                <a href="developing-alongside-narrative.html" class="navigation navigation-prev " aria-label="Previous page: Working with the Narrative">
+                <a href="./" class="navigation navigation-prev navigation-unique" aria-label="Previous page: Recipes">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
-                
-                <a href="docker-tips.html" class="navigation navigation-next " aria-label="Next page: Docker Tips">
-                    <i class="fa fa-angle-right"></i>
-                </a>
                 
             
         
@@ -529,7 +543,7 @@ make build config=ci
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Misc. Plugin Topics","level":"1.4.7","depth":2,"next":{"title":"Docker Tips","level":"1.4.8","depth":2,"path":"development/docker-tips.md","ref":"development/docker-tips.md","articles":[]},"previous":{"title":"Working with the Narrative","level":"1.4.6","depth":2,"path":"development/developing-alongside-narrative.md","ref":"development/developing-alongside-narrative.md","articles":[]},"dir":"ltr"},"config":{"plugins":[],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"development/developing-external-plugins-misc.md","mtime":"2018-06-22T22:53:27.515Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-06-26T17:38:49.889Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Narrative","level":"1.5.1","depth":2,"previous":{"title":"Recipes","level":"1.5","depth":1,"path":"recipes/README.md","ref":"recipes/README.md","articles":[{"title":"Narrative","level":"1.5.1","depth":2,"path":"recipes/narrative.md","ref":"recipes/narrative.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":[],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"recipes/narrative.md","mtime":"2018-06-26T17:38:39.808Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-06-26T17:38:49.889Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
