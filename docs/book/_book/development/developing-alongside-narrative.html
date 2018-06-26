@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>Misc. Plugin Topics · GitBook</title>
+        <title>Working with the Narrative · GitBook</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -57,10 +57,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="docker-tips.html" />
+    <link rel="next" href="developing-external-plugins-misc.html" />
     
     
-    <link rel="prev" href="developing-alongside-narrative.html" />
+    <link rel="prev" href="developing-kbase-ui" />
     
 
     </head>
@@ -336,7 +336,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4.6" data-path="developing-alongside-narrative.html">
+        <li class="chapter active" data-level="1.4.6" data-path="developing-alongside-narrative.html">
             
                 <a href="developing-alongside-narrative.html">
             
@@ -349,7 +349,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.4.7" data-path="developing-external-plugins-misc.html">
+        <li class="chapter " data-level="1.4.7" data-path="developing-external-plugins-misc.html">
             
                 <a href="developing-external-plugins-misc.html">
             
@@ -442,7 +442,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >Misc. Plugin Topics</a>
+        <a href=".." >Working with the Narrative</a>
     </h1>
 </div>
 
@@ -457,35 +457,37 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h4 id="set-up-kbase-ui-to-use-a-local-plugin-directory">Set up kbase-ui to use a local plugin directory</h4>
-<p>Configure the build to use the local plugin for the build</p>
-<pre><code>cd kbase-ui
-vi config/ui/ci/build.yml
-</code></pre><p>in the section for the plugin change the source:</p>
-<pre><code>    -
-        name: dataview
-        globalName: kbase-ui-plugin-dataview
-        version: 3.1.6
-        cwd: src/plugin
-        source:
-            bower: {}
-</code></pre><p>to this</p>
-<pre><code>    -
-        name: dataview
-        globalName: kbase-ui-plugin-dataview
-        version: 3.1.6
-        cwd: src/plugin
-        source:
-            directory: {}
-</code></pre><blockquote>
-<p>Note: be sure to preserve spaces and not use tabs; otherwise you will get a yaml error during the build</p>
-</blockquote>
-<p>Build kbase-ui</p>
-<pre><code>make init
-make build config=ci
-</code></pre><hr>
-<p><a href="../index.md">Index</a> - <a href="../">README</a> - <a href="../../release-notes/index.md">Release Notes</a> - <a href="http://kbase.us" target="_blank">KBase</a></p>
-<hr>
+                                <h1 id="developing-alongside-the-narrative">Developing Alongside the Narrative</h1>
+<p>Just as it is easy to develop ui plugins, libraries, and internal components with a running kbase-ui instance, against any kbase deployment environment, it is also easy to use this same setup to work on certain aspects of the Narrative, particularly the UI.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li><a href="../getting-started/prerequisites.html">Prerequisites</a></li>
+<li><a href="getting-started.html">Developer Setup</a></li>
+</ul>
+<h2 id="installation">Installation</h2>
+<p>You should already have set up a working directory, in to which is installed kbase-ui and kbase-ui-proxier. From here, we will be accomplishing the following tasks:</p>
+<ul>
+<li>install Narrative repo</li>
+<li>build Narrative image</li>
+<li>configure proxier for the Narrative.</li>
+</ul>
+<h3 id="install-narrative-repo">Install Narrative Repo</h3>
+<p>This is simply placing the Narrative repo into the working directory.</p>
+<pre><code>cd ~/work/project
+git clone -b develop https://github.com/kbase/narrative
+</code></pre><h3 id="build-and-run-narrative-image">Build and Run Narrative Image</h3>
+<p>The Narrative build is completely contained within a docker container. The container is run with a script which maps local directories into the container, so that local changes are reflected in the running Narrative.</p>
+<pre><code>cd narrative
+make dev_image
+make run_dev_image
+</code></pre><h4 id="diff">Diff</h4>
+<p>A few small changes to the Narrative have not yet been integrated into the codebase to enable the above commands to work perfectly. Specifically <code>run_dev_image</code> is not yet integrated. It just runs this:</p>
+<pre><code>bash scripts/local-dev-run.sh
+</code></pre><p>And the <code>local-dev-run.sh</code> script needs a little love too. Just remove the line:</p>
+<pre><code>    --mount type=bind,src=${root}/${ext_components_dir},dst=${container_root}/${ext_components_dir} \
+</code></pre><p>That line is for mapping locally build external components into the container; however with the new dockerized build the external components are no longer installed into the local files. It is still possible to experiment with external component changes with this mount, but not often used and will be removed from the script.</p>
+<h3 id="configure-kbase-ui-proxier-for-the-narrative">Configure kbase-ui-proxier for the Narrative</h3>
+<p>[ to be done ]</p>
 
                                 
                                 </section>
@@ -513,12 +515,12 @@ make build config=ci
 
             
                 
-                <a href="developing-alongside-narrative.html" class="navigation navigation-prev " aria-label="Previous page: Working with the Narrative">
+                <a href="developing-kbase-ui" class="navigation navigation-prev " aria-label="Previous page: Working on UI Core">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="docker-tips.html" class="navigation navigation-next " aria-label="Next page: Docker Tips">
+                <a href="developing-external-plugins-misc.html" class="navigation navigation-next " aria-label="Next page: Misc. Plugin Topics">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -529,7 +531,7 @@ make build config=ci
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Misc. Plugin Topics","level":"1.4.7","depth":2,"next":{"title":"Docker Tips","level":"1.4.8","depth":2,"path":"development/docker-tips.md","ref":"development/docker-tips.md","articles":[]},"previous":{"title":"Working with the Narrative","level":"1.4.6","depth":2,"path":"development/developing-alongside-narrative.md","ref":"development/developing-alongside-narrative.md","articles":[]},"dir":"ltr"},"config":{"plugins":[],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"development/developing-external-plugins-misc.md","mtime":"2018-06-22T22:53:27.515Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-06-26T17:38:49.889Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Working with the Narrative","level":"1.4.6","depth":2,"next":{"title":"Misc. Plugin Topics","level":"1.4.7","depth":2,"path":"development/developing-external-plugins-misc.md","ref":"development/developing-external-plugins-misc.md","articles":[]},"previous":{"title":"Working on UI Core","level":"1.4.5","depth":2,"path":"development/developing-kbase-ui","ref":"development/developing-kbase-ui","articles":[]},"dir":"ltr"},"config":{"plugins":[],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"development/developing-alongside-narrative.md","mtime":"2018-06-26T17:30:21.181Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-06-26T17:38:49.889Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
