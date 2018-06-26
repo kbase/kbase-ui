@@ -24,7 +24,6 @@
         "eslint": "4.18.2",
         "findit2": "2.2.3",
         "fs-extra": "3.0.1",
-        "gitbook-cli": "2.3.2",
         "glob": "7.1.2",
         "grunt": "1.0.3",
         "grunt-bower-task": "0.5.0",
@@ -59,7 +58,7 @@
         "npm": "5.7.1",
         "numeral": "2.0.6",
         "path-exists": "3.0.0",
-        "puppeteer": "1.1.1",
+        "puppeteer": "1.5.0",
         "requirejs": "2.3.5",
         "sauce-connect-launcher": "1.2.4",
         "selenium-standalone": "6.15.0",
@@ -88,5 +87,8 @@
         "d3-collection": "1.0.4",
         "d3-shape": "1.2.0",
         "d3-path": "1.0.5"
+    },
+    "scripts": {
+        "test": "node test/node/test.js"
     }
 }

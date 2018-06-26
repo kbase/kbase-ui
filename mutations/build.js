@@ -1081,6 +1081,23 @@ function fixupBaseBuild(state) {
         });
 }
 
+/*
+    copyToDistBuild
+    Simply copies the build directory to the dist directory.
+    This allows us to just rely upon whatever the current build target is to be in
+    dist. The old way was to _use_ build for dev builds, and dist for others. Now 
+    dev uses dist as well.
+*/
+function copyToDistBuild(state) {
+    var root = state.environment.path,
+        buildPath = ['..', 'build'];
+
+    return fs.copyAsync(root.concat(['build']).join('/'), buildPath.concat(['dist']).join('/'))
+        .then(function () {
+            return state;
+        });
+}
+
 function makeDistBuild(state) {
     var root = state.environment.path,
         buildPath = ['..', 'build'],
@@ -1329,7 +1346,7 @@ function makeModuleVFS(state, whichBuild) {
 
 function main(type) {
     return Promise.try(function () {
-        mutant.log('Creating initial state with for build: ' + type);
+        mutant.log('Creating initial state for build: ' + type);
         var initialFilesystem = [{
             cwd: ['..'],
             path: ['src']
@@ -1482,6 +1499,8 @@ function main(type) {
             if (state.buildConfig.dist) {
                 mutant.log('Making the dist build...');
                 return makeDistBuild(state);
+            } else {
+                return copyToDistBuild(state);
             }
             return state;
         })

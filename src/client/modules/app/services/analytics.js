@@ -11,8 +11,8 @@ define([
 ) {
     'use strict';
 
-    function factory(config) {
-        var runtime = config.runtime,
+    function factory(config, params) {
+        var runtime = params.runtime,
             analytics;
 
         function pageView(path) {
@@ -77,8 +77,6 @@ define([
     }
 
     return {
-        make: function (config) {
-            return factory(config);
-        }
+        make: factory
     };
 });

@@ -13,8 +13,8 @@ define([
         p = t('p'),
         a = t('a');
 
-    function factory(config) {
-        var runtime = config.runtime;
+    function factory(config, params) {
+        var runtime = params.runtime;
 
         var extraCookies = [];
         if (config.cookie.backup.enabled) {
@@ -226,8 +226,6 @@ define([
         };
     }
     return {
-        make: function (config) {
-            return factory(config);
-        }
+        make: factory
     };
 });

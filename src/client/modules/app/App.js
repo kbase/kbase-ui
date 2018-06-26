@@ -13,7 +13,7 @@ define([
     './runtime',
     'kb_common/messenger',
     'kb_common/props',
-    'kb_widget/widgetMount',
+    'kb_lib/widget/mount',
     'kb_common/asyncQueue'
 ], function (
     pluginManagerFactory,
@@ -22,7 +22,7 @@ define([
     Runtime,
     messengerFactory,
     Props,
-    widgetMountFactory,
+    widgetMount,
     asyncQueue
 ) {
     'use strict';
@@ -62,9 +62,9 @@ define([
     function factory(_config) {
         // Import the config.
         // TODO: validate all incoming config.
-        var plugins = _config.plugins,
-            services = _config.services,
-            nodes = _config.nodes;
+        const plugins = _config.plugins;
+        const services = _config.services;
+        const nodes = _config.nodes;
 
         // We simply wrap the incoming props in our venerable Props thing.
         var appConfig = Props.make({
@@ -74,7 +74,7 @@ define([
         // The entire ui (from the app's perspective) hinges upon a single
         // root node, which must already be establibished by the
         // calling code. If this node is absent, we simply fail here.
-        var rootNode = document.querySelector(nodes.root.selector);
+        const rootNode = document.querySelector(nodes.root.selector);
         if (!rootNode) {
             throw new Error('Cannot set root node for selector ' + nodes.root.selector);
         }
@@ -82,11 +82,11 @@ define([
         // Events
 
         // Our own event system.
-        var messenger = messengerFactory.make();
+        const messenger = messengerFactory.make();
 
         // DOM
 
-        var rootMount;
+        let rootMount;
 
         function mountRootWidget(widgetId, runtime) {
             if (!rootNode) {
@@ -96,9 +96,10 @@ define([
             rootNode.innerHTML = '';
             if (!rootMount) {
                 // create the root mount.
-                rootMount = widgetMountFactory.make({
+                rootMount = new widgetMount.WidgetMount({
                     node: rootNode,
-                    runtime: runtime
+                    // runtime: runtime,
+                    widgetManager: runtime.service('widget').widgetManager
                 });
 
             }
@@ -132,7 +133,7 @@ define([
                 };
                 service.module = serviceName;
 
-                serviceConfig.runtime = api;
+                // serviceConfig.runtime = api;
                 appServiceManager.addService(service, serviceConfig);
             });
         }
@@ -199,7 +200,9 @@ define([
                 }
             });
 
-            return appServiceManager.loadServices()
+            return appServiceManager.loadServices({
+                runtime: api
+            })
                 .then(function () {
                     return pluginManager.installPlugins(plugins);
                 })

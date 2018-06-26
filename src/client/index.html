@@ -34,13 +34,13 @@
     </noscript>
     <script src="/fallback.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
     <script src="/mustard.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
-    <!--<script src="/modules/bower_components/bluebird/bluebird.js?cb={{git.commitAbbreviatedHash}}"></script>-->
     <script src="/build-info.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
     {{#if buildConfig.vfs}}
     <script src="/moduleVfs.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
     {{/if}}
     <script src="/require-config.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
-    <script src="/modules/bower_components/requirejs/require.js?cb={{buildInfo.git.commitAbbreviatedHash}}" data-main="startup"></script>
+    <script src="/modules/bower_components/requirejs/require.js?cb={{buildInfo.git.commitAbbreviatedHash}}" 
+            data-main="startup"></script>
 </body>
 
 </html>

@@ -1,8 +1,10 @@
 define([
-    'knockout-plus',
+    'kb_knockout/registry',
+    'kb_knockout/lib/generators',
     'kb_common/html'
 ], function (
-    ko,
+    reg,
+    gen,
     html
 ) {
     'use strict';
@@ -15,48 +17,42 @@ define([
         li = t('li'),
         a = t('a');
 
-    function viewModel(params) {
-        return {
-            menu: params.menu
-        };
+    class ViewModel {
+        constructor(params) {
+            this.menu = params.menu;
+        }
     }
 
     function buildMenuItems(section) {
         return [
-            '<!-- ko foreach: ' + section + '-->',
-
-            // TODO: swtich on type
-
-            li([
-                a({
-                    dataBind: {
-                        attr: {
-                            href: '$data.uri ? $data.uri : "#" + $data.path',
-                            target: '$data.newWindow ? "_blank" : null'
+            gen.foreach(section,
+                li([
+                    a({
+                        dataBind: {
+                            attr: {
+                                href: '$data.uri ? $data.uri : "#" + $data.path',
+                                target: '$data.newWindow ? "_blank" : null'
+                            }
                         }
-                    }
-                }, [
-                    '<!-- ko if: icon -->',
-                    div({
-                        class: 'navbar-icon'
                     }, [
+                        gen.if('icon',
+                            div({
+                                class: 'navbar-icon'
+                            }, [
+                                span({
+                                    class: 'fa',
+                                    dataBind: {
+                                        class: '"fa-" + icon'
+                                    }
+                                })
+                            ])),
                         span({
-                            class: 'fa',
                             dataBind: {
-                                class: '"fa-" + icon'
+                                text: 'label'
                             }
                         })
-                    ]),
-                    '<!-- /ko -->',
-                    span({
-                        dataBind: {
-                            text: 'label'
-                        }
-                    })
-                ])
-            ]),
-
-            '<!-- /ko -->'
+                    ])
+                ]))
         ];
     }
 
@@ -90,14 +86,14 @@ define([
                 }
             }, [
                 buildMenuItems('main'),
-                '<!-- ko if: $data.developer && $data.developer().length > 0 -->',
-                buildDivider(),
-                buildMenuItems('developer'),
-                '<!-- /ko -->',
-                '<!-- ko if: $data.help && $data.help().length > 0 -->',
-                buildDivider(),
-                buildMenuItems('help'),
-                '<!-- /ko -->'
+                gen.if('$data.developer && $data.developer().length > 0', [
+                    buildDivider(),
+                    buildMenuItems('developer')
+                ]),
+                gen.if('$data.help && $data.help().length > 0', [
+                    buildDivider(),
+                    buildMenuItems('help')
+                ])
             ])
         ]);
     }
@@ -108,10 +104,10 @@ define([
 
     function component() {
         return {
-            viewModel: viewModel,
+            viewModel: ViewModel,
             template: template()
         };
     }
 
-    return ko.kb.registerComponent(component);
+    return reg.registerComponent(component);
 });

@@ -1,8 +1,6 @@
 define([
-    'kb_widget/bases/simpleWidget',
     'kb_common/html'
 ], function (
-    simpleWidgetFactory,
     html
 ) {
     'use strict';
@@ -10,54 +8,50 @@ define([
     var t = html.tag,
         h1 = t('h1');
 
-    function factory(config) {
-        var hostNode, container, runtime = config.runtime;
+    function safeContent(content) {
+        var anonDiv = document.createElement('div');
+        anonDiv.innerHTML = content;
+        return anonDiv.textContent || '';
+    }
 
-        function attach(node) {
-            hostNode = node;
-            container = hostNode.appendChild(document.createElement('div'));
-            container.classList.add('widget-title');
-            container.setAttribute('data-k-b-testhook-widget', 'title');
+    class TitleWidget {
+        constructor(params) {
+            this.runtime = params.runtime;
+
+            this.hostNode = null;
+            this.container = null;
         }
 
-        function safeContent(content) {
-            var anonDiv = document.createElement('div');
-            anonDiv.innerHTML = content;
-            return anonDiv.textContent || '';
+        attach(node) {
+            this.hostNode = node;
+            this.container = this.hostNode.appendChild(document.createElement('div'));
+            this.container.classList.add('widget-title');
+            this.container.setAttribute('data-k-b-testhook-widget', 'title');
         }
 
-        function start() {
+        start() {
             // Listen for a setTitle message sent to the ui.
             // We use the widget convenience function in order to
             // get automatic event listener cleanup. We could almost
             // as easily do this ourselves.
-            runtime.recv('ui', 'setTitle', function (newTitle) {
+            this.runtime.recv('ui', 'setTitle', (newTitle) => {
                 if (typeof newTitle !== 'string') {
                     return;
                 }
 
-                container.innerHTML = h1({
+                this.container.innerHTML = h1({
                     dataKBTesthookLabel: 'title'
                 }, newTitle);
                 window.document.title = safeContent(newTitle) + ' | KBase';
             });
         }
 
-        function detach() {
-            if (hostNode && container) {
-                hostNode.removeChild(container);
+        detach() {
+            if (this.hostNode && this.container) {
+                this.hostNode.removeChild(this.container);
             }
         }
-
-        return {
-            attach: attach,
-            start: start,
-            detach: detach
-        };
     }
-    return {
-        make: function (config) {
-            return factory(config);
-        }
-    };
+
+    return {Widget: TitleWidget};
 });

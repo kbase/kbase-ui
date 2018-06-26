@@ -183,8 +183,6 @@ define([
     }
 
     return {
-        make: function (config) {
-            return factory(config);
-        }
+        make: factory
     };
 });

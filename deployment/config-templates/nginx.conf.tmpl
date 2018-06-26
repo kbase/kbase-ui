@@ -1,0 +1,60 @@
+daemon off;
+error_log /dev/stdout info;
+worker_processes auto;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 256;
+    # multi_accept on;
+}
+
+http {
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    ##
+    # Logging Settings
+    ##
+
+    ## NB, TODO: this is not boolean coercion of nginx_syslog, but rather the go template
+    ## language version (see https://golang.org/pkg/text/template/)
+    ## consider using dockerize's ifTrue (which is however unhappy with missing values)
+    {{ if .Env.nginx_syslog }}
+        # Only log to these locations if deployed. This allows local testing of this image.
+        error_log /dev/stdout {{ default .Env.nginx_loglevel "error" }};
+        access_log syslog:server=10.58.0.54,facility=local2,tag=ci,severity=info combined;
+    {{ else }}
+        # But if running locally preserve the logs for debugging
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log  {{ default .Env.nginx_loglevel "error" }};
+    {{ end }}
+
+    ##
+    # Gzip settings
+    ##
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 10240;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types text/plain text/css text/xml text/javascript application/json application/x-javascript application/xml;
+    gzip_disable "MSIE [1-6]\.";
+
+    server {
+        listen      {{ default .Env.nginx_listen "80"}};
+        server_name {{ default .Env.nginx_server_name "localhost" }};
+
+        location / {
+          index index.html;
+          ssi_silent_errors off;
+          allow all;
+
+          root /kb/deployment/services/kbase-ui/dist;
+        }
+    }
+}

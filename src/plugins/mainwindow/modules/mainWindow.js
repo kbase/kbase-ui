@@ -19,28 +19,30 @@
  * Each of them may listen for messages from other parts of the user interface.
  */
 define([
-    'bluebird',
     'kb_common/html',
-    'kb_widget/widgetSet'
+    'kb_lib/widget/widgetSet'
 ], function (
-    Promise,
     html,
-    WidgetSet
+    widgetSet
 ) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div');
 
-    function factory(config) {
-        var mount, container, runtime = config.runtime,
-            widgetSet = WidgetSet.make({
-                runtime: runtime
+    class MainWindow {
+        constructor(config) {
+            this.runtime = config.runtime;
+            this.widgets = new widgetSet.WidgetSet({
+                widgetManager: this.runtime.service('widget').widgetManager
             });
 
-        function buildHeader() {
-            // var loginWidget = runtime.feature('auth', 'widgets.login.name');
-            var loginWidget = runtime.config('ui.services.session.loginWidget');
+            this.hostNode = null;
+            this.container = null;
+        }
+
+        buildHeader() {
+            const loginWidget = this.runtime.config('ui.services.session.loginWidget');
 
             return div({
                 class: '-navbar',
@@ -48,130 +50,106 @@ define([
             }, [
                 div({
                     class: '-cell -menu',
-                    id: widgetSet.addWidget('menu')
+                    id: this.widgets.addWidget('menu')
                 }),
                 div({
                     class: '-cell -logo',
-                    id: widgetSet.addWidget('logo')
+                    id: this.widgets.addWidget('logo')
                 }),
                 div({
                     class: '-cell -title',
-                    id: widgetSet.addWidget('title')
+                    id: this.widgets.addWidget('title')
                 }),
                 div({
                     class: '-cell -buttons',
-                    id: widgetSet.addWidget('buttonbar')
+                    id: this.widgets.addWidget('buttonbar')
                 }),
                 div({
                     class: '-cell -notification',
-                    id: widgetSet.addWidget('notification')
+                    id: this.widgets.addWidget('notification')
                 }),
                 div({
                     class: '-cell -deployment',
-                    id: widgetSet.addWidget('deployment')
+                    id: this.widgets.addWidget('deployment')
                 }),
                 div({
                     class: '-cell -login',
-                    id: widgetSet.addWidget(loginWidget)
+                    id: this.widgets.addWidget(loginWidget)
                 })
             ]);
         }
 
-        function renderLayout() {
+        renderLayout() {
             return [
                 div({
                     class: '-header'
-                }, buildHeader()),
+                }, this.buildHeader()),
                 div({
                     class: '-body'
                 }, [
                     div({
                         class: '-nav',
-                        id: widgetSet.addWidget('kb_mainWindow_sidebarNav')
+                        id: this.widgets.addWidget('kb_mainWindow_sidebarNav')
                     }),
                     div({
                         class: '-content-area'
                     }, [
-                        (function () {
-                            if (runtime.featureEnabled('system_alert_notification')) {
+                        (() => {
+                            if (this.runtime.featureEnabled('system_alert_notification')) {
                                 return div({
                                     class: '-notification-banner',
-                                    id: widgetSet.addWidget('kb_mainWindow_systemAlertBanner')
+                                    id: this.widgets.addWidget('kb_mainWindow_systemAlertBanner')
                                 });
                             }
-                            // if (runtime.allow('alpha')) {
-                            //     return div({
-                            //         class: '-notification-banner',
-                            //         id: widgetSet.addWidget('kb_mainWindow_systemAlertBanner')
-                            //     });
-                            // }
-                        }()),
+                        })(),
                         div({
                             class: '-plugin-content',
-                            id: widgetSet.addWidget('body')
+                            id: this.widgets.addWidget('body')
                         })
                     ])
-                    // div({
-                    //     class: '-content',
-                    //     id: widgetSet.addWidget('body')
-                    // })
                 ])
             ].join('');
         }
 
-        function attach(node) {
-            mount = node;
-            container = document.createElement('div');
-            container.classList.add('plugin-mainwindow', 'widget-mainwindow', '-main');
-            container.setAttribute('data-k-b-testhook-plugin', 'mainwindow');
-            mount.appendChild(container);
+        attach(node) {
+            this.hostNode = node;
+            this.container = this.hostNode.appendChild(document.createElement('div'));
+            this.container.classList.add('plugin-mainwindow', 'widget-mainwindow', '-main');
+            this.container.setAttribute('data-k-b-testhook-plugin', 'mainwindow');
         }
 
-        function start(params) {
-            container.innerHTML = renderLayout();
-            return widgetSet.init()
-                .then(function () {
-                    return widgetSet.attach(container);
+        start(params) {
+            this.container.innerHTML = this.renderLayout();
+            return this.widgets.init()
+                .then(() => {
+                    return this.widgets.attach(this.container);
                 })
-                .then(function () {
-                    return widgetSet.start(params);
+                .then(() => {
+                    return this.widgets.start(params);
                 });
         }
 
-        function run(params) {
-            return widgetSet.run(params);
+        run(params) {
+            return this.widgets.run(params);
         }
 
-        function stop() {
-            return widgetSet.stop();
+        stop() {
+            return this.widgets.stop();
         }
 
-        function detach() {
-            return widgetSet.detach()
-                .then(function () {
-                    if (mount && container) {
-                        mount.removeChild(container);
+        detach() {
+            return this.widgets.detach()
+                .then(() => {
+                    if (this.hostNode && this.container) {
+                        this.hostNode.removeChild(this.container);
                     }
                 });
         }
 
-        function destroy() {
-            return widgetSet.destroy();
+        destroy() {
+            return this.widgets.destroy();
         }
-
-        return {
-            attach: attach,
-            start: start,
-            run: run,
-            stop: stop,
-            detach: detach,
-            destroy: destroy
-        };
     }
 
-    return {
-        make: function (config) {
-            return factory(config);
-        }
-    };
+    return {Widget: MainWindow};
 });

@@ -19,54 +19,49 @@ install:
             module: mainWindow
             css: true
             id: root
-            type: factory
-        -
-            module: hamburgerMenu
-            id: hamburgerMenu
-            type: factory
+            type: es6
+        # -
+        #     module: hamburgerMenu
+        #     id: hamburgerMenu
+        #     type: factory
         -
             module: titleWidget
             css: true
             id: title
-            type: factory
+            type: es6
         -
             module: buttonbarWidget
             css: true
             id: buttonbar
-            type: factory
+            type: es6
         -
             module: logoWidget
             css: true
             id: logo
-            type: factory
+            type: es6
         -
             module: menuWidget
             css: true
             id: menu
-            type: factory
+            type: es6
         -
             module: deploymentWidget
             css: false
             id: deployment
-            type: factory
-        -
-            module: loginWidget
-            css: true
-            id: loginx
-            type: factory
+            type: es6
         -
             module: bodyWidget
             id: body
-            type: factory
+            type: es6
         -
             module: notificationWidget
             css: true
             id: notification
-            type: factory
+            type: es6
         -
             module: widgets/error
             id: error
-            type: factory
+            type: es6
         -
             module: widgets/alert
             id: kb_mainWindow_alert
@@ -74,13 +69,13 @@ install:
         -
             module: sidebarNav
             id: kb_mainWindow_sidebarNav
-            type: factory
+            type: es6
             css: true
         -
             module: widgets/notFound
             id: notFound
-            type: factory
+            type: es6
         -
             module: systemAlertBanner
             id: kb_mainWindow_systemAlertBanner
-            type: factory
+            type: es6
