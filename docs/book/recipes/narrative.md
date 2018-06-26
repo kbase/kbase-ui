@@ -11,7 +11,7 @@ cd ~/work/project
 
 ```
 git clone -b docker-multi-stage https://github.com/kbase/kbase-ui
-git clone https://github.com/eapearson/kbase-ui-proxier
+git clone https://github.com/eapearson/kbase-ui-proxy
 git clone -b develop https://github.com/kbase/narrative
 ```
 
@@ -49,19 +49,19 @@ run the script
 env=ci bash scripts/local-dev-run.sh
 ```
 
-## [5] Build and run the proxier
+## [5] Build and run the proxy
 
 open a new terminal tab or window
 
 ```
-cd ../kbase-ui-proxier
+cd ../kbase-ui-proxy
 make docker-image
 local_narrative=true make run-docker-image env=dev
 ```
 
 ## [6] Local proxy
 
-Edit your local /etc/hosts file to point ci to the running kbase-ui-proxier.
+Edit your local /etc/hosts file to point ci to the running kbase-ui-proxy.
 
 ```
 vi /etc/hosts
@@ -86,4 +86,9 @@ I find it handy to have this in my /etc/hosts and uncomment as needed:
 
 You should now be able to pull up kbase-ui on `https://ci.kbase.us` and navigate to the Narrative.
 
+Since the proxy is using a dynamically-generated self-signed certificate to provide https, you will find that the non-private mode for most browsers is troublesome. Less troublesome is private mode for Safari and Chrome; Firefox does not work well at all even in private mode.
 
+
+## Notes
+
+- build times are longer than purely host-based, due to the cold caches for npm, bower, and probably pip package installers.
