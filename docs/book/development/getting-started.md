@@ -2,11 +2,10 @@
 
 This doc describes how to get set up for kbase-ui development.
 
-[TOC]
-
 ## Prerequisites
 
-- [Prerequisites](prerequisites.md)
+- [Prerequisites](../getting-started/prerequisites.md)
+- [Local Development Prerequisites](../getting-started/local-dev-prerequisites.md)
 
 ## Basic usage
 
@@ -25,10 +24,9 @@ cd ~/work/project
 
 ### Install a local copy of kbase-ui
 
-All development workflows for kbase-ui involve starting from the tip of the develop branch of the kbase-ui repo in kbase github account. You will therefore be pushing changes to your fork of kbase/kbase-ui.
+Development workflows for kbase-ui typically starting from the tip of the develop branch of the kbase-ui repo in kbase github account. You will therefore be pushing changes to your fork of kbase/kbase-ui.
 
 If you have your own preferred method of setting up a repo for this type of workflow, please use it. Here is one setup that I use:
-
 
 ```bash
 git clone -b develop https://github.com/kbase/kbase-ui

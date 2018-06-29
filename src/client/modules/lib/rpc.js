@@ -81,21 +81,29 @@ define([
         setup() {
             const serviceUrl = this.runtime.config(['services', this.moduleName, 'url'].join('.'));
             const token = this.runtime.service('session').getAuthToken();
-            let client;
             if (serviceUrl) {
-                client = new GenericClient({
+                this.client = new GenericClient({
                     module: this.moduleName,
                     url: serviceUrl,
                     token: token
                 });
             } else {
-                client = new DynamicService({
-                    url: this.runtime.config('services.service_wizard.url'),
-                    token: token,
-                    module: this.moduleName
-                });
+                const dynamicServiceProxies = this.runtime.config('deploy.services.dynamicServiceProxies');
+                const urlBase = this.runtime.config('deploy.services.urlBase');
+                if (dynamicServiceProxies.includes(this.moduleName)) {
+                    this.client = new GenericClient({
+                        module: this.moduleName,
+                        url: urlBase + '/dynamic_service_proxies/' + this.moduleName,
+                        token: token
+                    });
+                } else {
+                    this.client = new DynamicService({
+                        url: this.runtime.config('services.service_wizard.url'),
+                        token: token,
+                        module: this.moduleName
+                    });
+                }
             }
-            this.client = client;
         }
 
         callFunc(functionName, params) {

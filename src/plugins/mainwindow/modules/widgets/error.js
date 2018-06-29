@@ -1,12 +1,11 @@
-/*global define */
-/*jslint white:true,browser:true */
 define([
-    'kb_common/html',
-    'kb_common/dom'
-], function (html, dom) {
+    'kb_common/html'
+], function (
+    html
+) {
     'use strict';
 
-    var serviceError = {
+    const serviceError = {
             error: {
                 type: 'object',
                 value: {
@@ -39,8 +38,9 @@ define([
             sourceURL: { type: 'string' },
             column: { type: 'number' },
             line: { type: 'number' }
-        },
-        t = html.tag,
+        };
+        
+    const t = html.tag,
         div = t('div');
 
     function isType(obj, shape) {
@@ -78,38 +78,17 @@ define([
             }
         }
 
-        // function xcompare(obj, def) {
-        //     return Object.keys(def).some(function (prop) {
-
-        //         // simply reject if not defined.
-        //         if (def[prop] === undefined) {
-        //             return true;
-        //         }
-        //         // simple type comparison, to be improved.
-        //         if (!matchType(obj[prop], def[prop])) {
-        //             return true;
-        //         }
-
-        //         // objects or arrays are inspected recursively.
-        //         if (typeof obj[prop] === 'object' && obj[prop] !== null) {
-        //             // stop if the object is not further defed.
-        //             if (def[prop].value) {
-        //                 return compare(obj[prop], def[prop].value);
-        //             }
-        //         }
-        //         return false;
-        //     });
-        // }
         return compare(obj, shape);
     }
 
-    function factory() {
-        var mount, container;
+    class ErrorWidget {
+        constructor() {
+            this.hostNode = null;
+            this.container = null;
+        }
 
-        // IMPL
-
-        function render(params) {
-            var error;
+        render(params) {
+            let error;
             if (typeof params.error === 'string') {
                 error = {
                     message: params.error
@@ -167,39 +146,21 @@ define([
             }));
         }
 
-        // API
-
-        function attach(node) {
-            mount = node;
-            container = dom.createElement('div');
-            mount.appendChild(container);
+        attach(node) {
+            this.hostNode = node;
+            this.container = this.hostNode.appendChild(document.createElement('div'));
         }
 
-        function start(params) {
-            container.innerHTML = render(params);
+        start(params) {
+            this.container.innerHTML = this.render(params);
         }
 
-        function stop() {
-            // nothing to do?
-        }
-
-        function detach() {
-            if (mount && container) {
-                mount.removeChild(container);
+        detach() {
+            if (this.hostNode && this.container) {
+                this.hostNode.removeChild(this.container);
             }
         }
-
-        return {
-            attach: attach,
-            start: start,
-            stop: stop,
-            detach: detach
-        };
     }
 
-    return {
-        make: function (config) {
-            return factory(config);
-        }
-    };
+    return {Widget: ErrorWidget};
 });

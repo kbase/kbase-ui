@@ -99,8 +99,8 @@ define([
         }
     }
 
-    function factory(config) {
-        var runtime = config.runtime,
+    function factory(config, params) {
+        var runtime = params.runtime,
             state = observed.make(),
             lastCheckAt = 0,
             lastConnectionAt = 0,
@@ -293,8 +293,6 @@ define([
         };
     }
     return {
-        make: function (config) {
-            return factory(config);
-        }
+        make: factory
     };
 });

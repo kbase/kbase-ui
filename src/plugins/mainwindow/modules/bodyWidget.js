@@ -1,56 +1,58 @@
-/*global define*/
-/*jslint white:true,browser: true*/
 define([
     'bluebird',
-    'kb_widget/widgetMount'
+    'kb_lib/widget/mount'
 ], function (
     Promise,
-    WidgetMount
+    mount
 ) {
     'use strict';
 
-    function factory(config) {
-        var widgetMount, runtime = config.runtime,
-            routeListener;
-        var container;
+    class BodyWidget {
+        constructor(config) {
+            this.runtime = config.runtime;
 
-        function attach(node) {
-            container = node.appendChild(document.createElement('div'));
-            container.style.display = 'flex';
-            container.style.flex = '1 1 0px';
-            container.style['flex-direction'] = 'column';
-            container.style['overflow-y'] = 'auto';
+            this.widgetMount = null;
+            this.hostNode = null;
+            this.container = null;
+            this.routeListener = null;
+        }
 
-            return Promise.try(function () {
-                widgetMount = WidgetMount.make({
-                    runtime: config.runtime,
-                    node: container
-                });
+        attach(node) {
+            this.hostNode = node;
+            this.container = this.hostNode.appendChild(document.createElement('div'));
+            this.container.style.display = 'flex';
+            this.container.style.flex = '1 1 0px';
+            this.container.style['flex-direction'] = 'column';
+            this.container.style['overflow-y'] = 'auto';
+
+            this.widgetMount = new mount.WidgetMount({
+                widgetManager: this.runtime.service('widget').widgetManager,
+                node: this.container
             });
         }
 
-        function start() {
-            routeListener = runtime.recv('app', 'route-widget', function (data) {
+        start() {
+            this.routeListener = this.runtime.recv('app', 'route-widget', (data) => {
                 if (data.routeHandler.route.widget) {
-                    widgetMount.unmount()
-                        .then(function () {
-                            return runtime.sendp('ui', 'clearButtons');
+                    this.widgetMount.unmount()
+                        .then(() => {
+                            return this.runtime.sendp('ui', 'clearButtons');
                         })
-                        .then(function () {
-                            return widgetMount.mount(data.routeHandler.route.widget, data.routeHandler.params);
+                        .then(() => {
+                            return this.widgetMount.mount(data.routeHandler.route.widget, data.routeHandler.params);
                         })
-                        .catch(function (err) {
+                        .catch((err) => {
                             // need a catch-all widget to mount here??
                             console.error('ERROR mounting widget', err, data);
-                            widgetMount.unmount()
-                                .then(function () {
+                            this.widgetMount.unmount()
+                                .then(() => {
                                     // Note that 'error' is a globally defined widget dependency.
-                                    return widgetMount.mountWidget('error', {
-                                        title: 'ERROR',
+                                    return this.widgetMount.mountWidget('error', {
+                                        title: 'ERROR 😞',
                                         error: err
                                     });
                                 })
-                                .catch(function (err2) {
+                                .catch((err2) => {
                                     console.error('ERROR mounting error widget!');
                                     console.error(err2);
                                     console.error(err);
@@ -62,22 +64,15 @@ define([
             });
         }
 
-        function stop() {
-            if (routeListener) {
-                runtime.drop(routeListener);
+        stop() {
+            if (this.routeListener) {
+                this.runtime.drop(this.routeListener);
+            }
+            if (this.hostNode && this.container) {
+                this.hostNode.removeChild(this.container);
             }
         }
-
-        return {
-            attach: attach,
-            start: start,
-            stop: stop
-        };
     }
 
-    return {
-        make: function (config) {
-            return factory(config);
-        }
-    };
+    return {Widget: BodyWidget};
 });

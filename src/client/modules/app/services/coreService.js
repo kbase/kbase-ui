@@ -16,8 +16,8 @@ define([
     // }
 
     class CoreServicesMonitor {
-        constructor({runtime}) {
-            this.runtime = runtime;
+        constructor({params}) {
+            this.runtime = params.runtime;
 
             this.services = {};
         }

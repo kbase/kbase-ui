@@ -17,8 +17,8 @@ define([
 ) {
     'use strict';
 
-    function factory(config) {
-        var runtime = config.runtime,
+    function factory(config, params) {
+        var runtime = params.runtime,
             state = observed.make();
 
         // function loadProfile() {
@@ -185,8 +185,6 @@ define([
         };
     }
     return {
-        make: function (config) {
-            return factory(config);
-        }
+        make: factory
     };
 });

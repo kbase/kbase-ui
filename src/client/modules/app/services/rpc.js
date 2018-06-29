@@ -18,8 +18,8 @@ define([
     //     return obj[method].apply(obj, args);
     // }
 
-    function factory(config) {
-        var runtime = config.runtime;
+    function factory(config, params) {
+        var runtime = params.runtime;
 
         function start() {
             return true;
@@ -43,8 +43,6 @@ define([
         return {start, stop, pluginHandler, makeClient};
     }
     return {
-        make: function (config) {
-            return factory(config);
-        }
+        make: factory
     };
 });

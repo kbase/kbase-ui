@@ -12,18 +12,19 @@ define([
     var t = html.tag,
         div = t('div');
 
-    function factory(config) {
-        var container;
-        var runtime = config.runtime;
-
-        // SERVICE API
-
-        function attach(node) {
-            container = node;
+    class NotificationWidget {
+        constructor(params) {
+            this.runtime = params.runtime;
+            this.hostNode = null;
+            this.container = null;
         }
 
-        function start() {
-            container.innerHTML = div({
+        attach(node) {
+            this.container = node;
+        }
+
+        start() {
+            this.container.innerHTML = div({
                 dataBind: {
                     component: {
                         name: NotificationComponent.quotedName(),
@@ -33,32 +34,17 @@ define([
                     }
                 }
             });
-            var vm = {
-                runtime: runtime
+            const vm = {
+                runtime: this.runtime
             };
             try {
-                ko.applyBindings(vm, container);
+                ko.applyBindings(vm, this.container);
             } catch (err) {
                 console.error('Error binding', err);
             }
 
         }
-
-        function stop() {}
-
-        function detach() {}
-
-        return {
-            attach: attach,
-            start: start,
-            stop: stop,
-            detach: detach
-        };
     }
 
-    return {
-        make: function (config) {
-            return factory(config);
-        }
-    };
+    return {Widget: NotificationWidget};
 });

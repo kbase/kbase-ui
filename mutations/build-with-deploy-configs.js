@@ -1345,7 +1345,7 @@ function makeModuleVFS(state, whichBuild) {
 
 function main(type) {
     return Promise.try(function () {
-        mutant.log('Creating initial state with for build: ' + type);
+        mutant.log('Creating initial state for build: ' + type);
         var initialFilesystem = [{
             cwd: ['..'],
             path: ['src']

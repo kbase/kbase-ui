@@ -1,5 +1,5 @@
 define([
-    'knockout-plus',
+    'knockout',
     'kb_common/html',
     './components/hamburgerMenu',
     'bootstrap'
@@ -10,92 +10,96 @@ define([
 ) {
     'use strict';
 
-    function factory(config) {
-        var t = html.tag,
-            div = t('div'),
-            runtime = config.runtime,
-            hostNode, container;
+    const t = html.tag,
+        div = t('div');
 
-        function intersect(a1, a2) {
-            return a1.some(function (a) {
-                return a2.indexOf(a) >= 0;
-            });
-        }
+    function intersect(a1, a2) {
+        return a1.some(function (a) {
+            return a2.indexOf(a) >= 0;
+        });
+    }
 
-        function attach(node) {
-            hostNode = node;
-            container = hostNode.appendChild(document.createElement('div'));
-            container.classList.add('widget-menu');
-        }
-
-        function ViewModel() {
-            var menu = runtime.service('menu').getCurrentMenu('hamburger');
-            var initiallyLoggedIn = runtime.service('session').isLoggedIn();
-            var isLoggedIn = ko.observable(initiallyLoggedIn);
-            var userRoles = ko.observableArray(runtime.service('session').getRoles().map((role) => {
-                return role.id;
-            }));
-            // var username = ko.ovservable(runtime.service('session').getUsername());
+    class ViewModel {
+        constructor(params) {
+            this.runtime = params.runtime;
+            this.menuDefinition = this.runtime.service('menu').getCurrentMenu('hamburger');
+            this.isLoggedIn = ko.observable();
+            this.userRoles = ko.observableArray();
 
             // TODO: can this just be a more generic change in session state?
-            runtime.recv('session', 'change', function () {
-                isLoggedIn(runtime.service('session').isLoggedIn());
-                userRoles(runtime.service('session').getRoles().map((role) => {
-                    return role.id;
-                }));
+            this.runtime.recv('session', 'change', () => {
+                this.syncMenu();
             });
 
-            var allowedTags = runtime.config('ui.allow', []);
+            var allowedTags = this.runtime.config('ui.allow', []);
 
-            var menus = {
-                main: ko.observableArray(menu.main).filter(function (item) {
-                    if (!isLoggedIn() && item.authRequired) {
+            this.menu = {
+                main: ko.observableArray(this.menuDefinition.main).filter((item) => {
+                    if (!this.isLoggedIn() && item.authRequired) {
                         return false;
                     }
                     if (item.allow) {
                         return intersect(item.allow, allowedTags);
                     }
                     if (item.allowRoles) {
-                        return intersect(item.allowRoles, userRoles);
+                        return intersect(item.allowRoles, this.userRoles);
                     }
                     return true;
                 }),
-                developer: ko.observableArray(menu.developer).filter(function (item) {
-                    if (!isLoggedIn() && item.authRequired) {
+                developer: ko.observableArray(this.menuDefinition.developer).filter((item) => {
+                    if (!this.isLoggedIn() && item.authRequired) {
                         return false;
                     }
                     if (item.allow) {
                         return intersect(item.allow, allowedTags);
                     }
                     if (item.allowRoles) {
-                        return intersect(item.allowRoles, userRoles);
+                        return intersect(item.allowRoles, this.userRoles);
                     }
                     return true;
                 }),
-                help: ko.observableArray(menu.help).filter(function (item) {
-                    if (!isLoggedIn() && item.authRequired) {
+                help: ko.observableArray(this.menuDefinition.help).filter((item) => {
+                    if (!this.isLoggedIn() && item.authRequired) {
                         return false;
                     }
                     if (item.allow) {
                         return intersect(item.allow, allowedTags);
                     }
                     if (item.allowRoles) {
-                        return intersect(item.allowRoles, userRoles);
+                        return intersect(item.allowRoles, this.userRoles);
                     }
                     return true;
                 })
             };
 
-            return {
-                menu: menus,
-                isLoggedIn: isLoggedIn
-            };
+            this.syncMenu();
         }
 
-        var viewModel = ViewModel();
+        syncMenu() {
+            this.isLoggedIn(this.runtime.service('session').isLoggedIn());
+            this.userRoles(this.runtime.service('session').getRoles().map((role) => {
+                return role.id;
+            }));
+        }
+    }
 
-        function start() {
-            container.innerHTML = div({
+    class MenuWidget {
+        constructor(config) {
+            this.runtime = config.runtime;
+
+            this.hostNode = null;
+            this.container = null;
+            this.viewModel = new ViewModel({runtime: this.runtime});
+        }
+
+        attach(node) {
+            this.hostNode = node;
+            this.container = this.hostNode.appendChild(document.createElement('div'));
+            this.container.classList.add('widget-menu');
+        }
+
+        start() {
+            this.container.innerHTML = div({
                 dataBind: {
                     component: {
                         name: HamburgerMenuComponent.quotedName(),
@@ -106,23 +110,19 @@ define([
                 }
             });
 
-            ko.applyBindings(viewModel, container);
+            ko.applyBindings(this.viewModel, this.container);
         }
 
-        function detach() {
-            if (hostNode && container) {
-                container.removeChild(hostNode);
+        detach() {
+            if (this.hostNode && this.container) {
+                this.container.removeChild(this.hostNode);
             }
         }
-
-        return {
-            attach: attach,
-            start: start,
-            detach: detach
-        };
     }
 
-    return {
-        make: factory
-    };
+    return {Widget: MenuWidget};
 });
+
+
+
+

@@ -30,17 +30,18 @@ define([
             };
         }
 
-        function loadService(name) {
+        function loadService(name, params) {
             return new Promise(function (resolve, reject) {
                 var service = services[name],
                     moduleName = [moduleBasePath, service.module].join('/');
                 require([moduleName], function (serviceFactory) {
                     var serviceInstance;
                     if (serviceFactory.make) {
-                        serviceInstance = serviceFactory.make(services[name].config);
+                        serviceInstance = serviceFactory.make(services[name].config, params);
                     } else {
                         serviceInstance = new serviceFactory.ServiceClass({
-                            config: services[name].config
+                            config: services[name].config,
+                            params: params
                         });
                     }
                     service.instance = serviceInstance;
@@ -51,9 +52,9 @@ define([
             });
         }
 
-        function loadServices() {
+        function loadServices(params) {
             var all = Object.keys(services).map(function (name) {
-                return loadService(name);
+                return loadService(name, params);
             });
             return Promise.all(all);
         }
