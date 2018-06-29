@@ -38,7 +38,8 @@ function copyFiles(tryFrom, tryTo, globExpr) {
     return Promise.all([fs.realpathAsync(tryFrom.join('/')), fs.realpathAsync(tryTo.join('/'))])
         .spread(function (from, to) {
             return [from.split('/'), to.split('/'), glob(globExpr, {
-                cwd: from
+                cwd: from,
+                nodir: true
             })];
         })
         .spread(function (from, to, matches) {
@@ -49,6 +50,20 @@ function copyFiles(tryFrom, tryTo, globExpr) {
             }));
         });
 }
+
+// function copyFiles(from, to, globExpr) {
+//     return glob(globExpr, {
+//         cwd: from.join('/'),
+//         nodir: true
+//     })
+//         .then(function (matches) {
+//             return Promise.all(matches.map(function (match) {
+//                 var fromPath = from.concat([match]).join('/'),
+//                     toPath = to.concat([match]).join('/');
+//                 return fs.copy(fromPath, toPath, {});
+//             }));
+//         });
+// }
 
 function ensureEmptyDir(path) {
     var dir = path.join('/');
@@ -99,7 +114,13 @@ function loadYaml(path) {
     var yamlPath = path.join('/');
     return fs.readFileAsync(yamlPath, 'utf8')
         .then(function (contents) {
-            return yaml.safeLoad(contents);
+            try {
+                return yaml.safeLoad(contents);
+            } catch (ex) {
+                console.log('Error loading yaml', ex);
+                console.log(contents);
+                throw new Error('Error loading yaml: ' + ex.message);
+            }
         });
 }
 
@@ -159,6 +180,10 @@ function mkdir(inPath, dirPath) {
     }
     fs.ensureDirSync(pathString);
     return path;
+}
+
+function ensureDir(path) {
+    return fs.ensureDirSync(path.join('/'));
 }
 
 function copydir(fromRoot, fromDir, toRoot, toDir) {
@@ -394,5 +419,6 @@ module.exports = {
     warn: warn,
     success: success,
     mergeObjects: mergeObjects,
-    loadDockerEnvFile: loadDockerEnvFile
+    loadDockerEnvFile: loadDockerEnvFile,
+    ensureDir: ensureDir
 };

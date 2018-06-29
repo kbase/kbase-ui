@@ -5,7 +5,8 @@
         "icon": "{{ .Env.deploy_icon }}",
         "name": "{{ .Env.deploy_name }}",
         "services": {
-            "urlBase": "https://{{ default .Env.deploy_hostname "localhost" }}"
+            "urlBase": "https://{{ default .Env.deploy_hostname "localhost" }}",
+            "dynamicServiceProxies": [{{ range $i, $v := split .Env.dynamic_service_proxies " " }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
         }
     },
     "ui": {       

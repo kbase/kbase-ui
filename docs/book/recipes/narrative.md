@@ -59,7 +59,7 @@ make docker-image
 local_narrative=true make run-docker-image env=dev
 ```
 
-## [6] Local proxy
+## [6] Local host settings
 
 Edit your local /etc/hosts file to point ci to the running kbase-ui-proxy.
 

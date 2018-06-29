@@ -36,6 +36,7 @@ echo "READING OPTIONS"
 
 # Initialize our own variables:
 mounts=""
+envs=""
 
 
 # from: https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
@@ -44,6 +45,9 @@ while [[ $# -gt 0 ]]
 do
 key="$1"
 
+# echo "key ${key}"
+# echo "value ${2}"
+# echo ""
 
 case $key in
     ### External plugins, located at the same directory level as the kbase-ui repo
@@ -97,6 +101,15 @@ case $key in
     shift # past argument
     shift # past value
     ;;
+     -y|--dynamic_service_proxies)
+    dynamic_service_proxies="$2"
+    echo "Using dynamic service proxy: ${dynamic_service_proxies}"
+    # mounts="$mounts --mount type=bind,src=${root}/../kbase-ui-plugin-${plugin}/src/plugin,dst=/kb/deployment/services/kbase-ui/dist/modules/plugins/${plugin}"
+    # envs="$envs --env "'"'"dynamic_service_proxies=${dynamic_service_proxies}"'"'
+    envs="$envs -e dynamic_service_proxies="'"'"${dynamic_service_proxies}"'"'
+    shift # past argument
+    shift # past value
+    ;;
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later
     shift # past argument
@@ -106,6 +119,7 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo "MOUNTS: $mounts"
+echo "ENVS:   $envs"
 
 image_tag="${branch}"
 
@@ -113,13 +127,16 @@ echo "stdout sent to kbase-ui.stdout, stderr sent to kbase-ui.stderr"
 echo "Running kbase-ui image kbase/kbase-ui:${image_tag}"
 echo ":)"
 
-docker run \
+cmd="docker run \
   --rm \
   --env-file ${config_mount}/${environment}.env \
+  $envs \
   --name=kbase-ui-container \
   --network=kbase-dev \
   $mounts \
-  kbase/kbase-ui:${image_tag} \
-  > kbase-ui.stdout
+  kbase/kbase-ui:${image_tag}"
+echo "RUNNING: $cmd"
+eval $cmd
+
 
 #   > temp/files/kbase-ui.stdout
