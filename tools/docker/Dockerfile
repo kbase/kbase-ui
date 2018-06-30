@@ -41,17 +41,6 @@ RUN apk upgrade --update-cache --available \
         nginx=1.12.2-r3 \
     && mkdir -p /kb
 
-
-# add deps for building kbase-ui
-# FROM alpine:edge
-# RUN echo "http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-#     && apk upgrade --update-cache --available \
-#     && apk add --update --no-cache \
-#         bash=4.4.19-r1 \
-#         tar=1.29-r1 \
-#         nginx=1.14.0-r0 \
-#     && mkdir -p /kb
-
 # this pulls down steve's PR95 for dockerize, which includes url fetching.
 RUN archive=dockerize-alpine-linux-amd64-v0.6.1.tar.gz \
     commit=1c2a8d81f8b0793fab2d1dd80420f0c382a5fe1f \
@@ -86,11 +75,12 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.schema-version="1.0.0-rc1" \
       us.kbase.vcs-branch=$BRANCH  \
-      us.kbase.vcs-tag=$TAG \
+      us.kbase.vcs-tag=$TAG \ 
       maintainer="Steve Chan sychan@lbl.gov"
 
-ENTRYPOINT [ "/usr/local/bin/dockerize" ]
-CMD [ "-template", "/kb/deployment/config-templates/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
-      "-template", "/kb/deployment/config-templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json", \
-      "bash", "/kb/deployment/scripts/start-server.bash"]
+ENTRYPOINT [ "/usr/local/bin/dockerize", \
+             "-template", "/kb/deployment/config-templates/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
+             "-template", "/kb/deployment/config-templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json" ]
+
+CMD [  "bash", "/kb/deployment/scripts/start-server.bash" ]
       
