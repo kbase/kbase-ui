@@ -33,15 +33,31 @@ LABEL stage=intermediate
 
 # For more transparent (modulo the "edge") image, use the base
 # alpine image and add our dependencies
-FROM alpine:edge
+FROM alpine:3.7
+
+RUN apk upgrade --update-cache --available \
+    && apk add --update --no-cache \
+        bash=4.4.19-r1 \
+        nginx=1.12.2-r3 \
+    && mkdir -p /kb
+
 
 # add deps for building kbase-ui
-RUN echo "http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-    && apk upgrade --update-cache --available \
-    && apk add --update --no-cache \
-        nginx=1.14.0-r0 \
-        dockerize=0.6.1-r2 \
-    && mkdir -p /kb
+# FROM alpine:edge
+# RUN echo "http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+#     && apk upgrade --update-cache --available \
+#     && apk add --update --no-cache \
+#         bash=4.4.19-r1 \
+#         tar=1.29-r1 \
+#         nginx=1.14.0-r0 \
+#     && mkdir -p /kb
+
+# this pulls down steve's PR95 for dockerize, which includes url fetching.
+RUN archive=dockerize-alpine-linux-amd64-v0.6.1.tar.gz \
+    commit=1c2a8d81f8b0793fab2d1dd80420f0c382a5fe1f \
+    && wget https://raw.github.com/kbase/dockerize/$commit/$archive \
+    && tar -C /usr/local/bin -xzvf $archive \
+    && rm $archive
 
 # Or, image designed to serve up static KBase UI contents
 # FROM kbase/nginx
@@ -54,11 +70,14 @@ ARG TAG
 
 RUN mkdir -p /kb/deployment/services/kbase-ui
 
-# Copy built code.
-COPY  --from=builder /kb/build/dist/client /kb/deployment/services/kbase-ui/dist/
+# The main thing -- the kbase-ui built code.
+COPY --from=builder /kb/build/dist/client /kb/deployment/services/kbase-ui/dist/
 
-# Copy config templates
-COPY  --from=builder /kb/deployment/config-templates /kb/deployment/conf/deployment_templates/
+# Config templates
+COPY --from=builder /kb/deployment/config-templates /kb/deployment/config-templates
+
+# Deployment-time scripts
+COPY --from=builder /kb/deployment/scripts /kb/deployment/scripts
 
 # The BUILD_DATE value seem to bust the docker cache when the timestamp changes, move to
 # the end
@@ -70,7 +89,8 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       us.kbase.vcs-tag=$TAG \
       maintainer="Steve Chan sychan@lbl.gov"
 
-ENTRYPOINT [ "/usr/bin/dockerize" ]
-CMD [ "-template", "/kb/deployment/conf/deployment_templates/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
-      "-template", "/kb/deployment/conf/deployment_templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json", \
-      "nginx"]
+ENTRYPOINT [ "/usr/local/bin/dockerize" ]
+CMD [ "-template", "/kb/deployment/config-templates/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
+      "-template", "/kb/deployment/config-templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json", \
+      "bash", "/kb/deployment/scripts/start-server.bash"]
+      
