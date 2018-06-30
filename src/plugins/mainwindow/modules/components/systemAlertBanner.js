@@ -5,7 +5,8 @@ define([
     'kb_knockout/registry',
     'kb_knockout/lib/generators',
     'kb_knockout/lib/viewModelBase',
-    './countdownClock'
+    './countdownClock',
+    '../models/systemAlerts'
 ], function (
     ko,
     md5,
@@ -13,7 +14,8 @@ define([
     reg,
     gen,
     ViewModelBase,
-    CountdownClockComponent
+    CountdownClockComponent,
+    systemAlerts
 ) {
     'use strict';
 
@@ -30,16 +32,26 @@ define([
         wrapper: {
             css: {
                 margin: '0 0px 10px 10px',
+                // borderTop: '2px #f2dede solid'
+            }
+        },
+        itemsWrapper: {
+            css: {
+                border: '2px #f2dede solid',
+                // padding: '10px'
             }
         }
     });
 
-    class ViewModel extends ViewModelBase {
+    class AlertsViewModel extends ViewModelBase {
         constructor(params) {
             super(params);
+            this.runtime = params.runtime;
+            this.hideAlerts = params.hideAlerts;
+            this.alertCount = params.alertCount;
 
-            this.systemStatus = params.systemStatus;
-            this.error = params.error;
+            this.systemStatus = ko.observable();
+            this.error = ko.observable(false);
 
             this._maintenanceNotifications = ko.observableArray();
 
@@ -72,6 +84,7 @@ define([
                     return [];
                 }
 
+                this.alertCount(newValue.upcomingMaintenanceWindows.length);
                 const hashes = [];
                 newValue.upcomingMaintenanceWindows
                     .forEach((notification) => {
@@ -85,10 +98,29 @@ define([
                             return;
                         }
 
+                        const startAt = new Date(notification.startAt);
+                        const endAt = new Date(notification.endAt);
+
+                        const countdownToStart = ko.pureComputed(() => {
+                            if (!this.now()) {
+                                return null;
+                            }
+                            return startAt - this.now();
+                        });
+
+                        const countdownToEnd = ko.pureComputed(() => {
+                            if (!this.now()) {
+                                return null;
+                            }
+                            return endAt - this.now();
+                        });
+
                         // add new ones.
                         const newNotification = {
-                            startAt: new Date(notification.startAt),
-                            endAt: new Date(notification.endAt),
+                            startAt: startAt,
+                            endAt: endAt,
+                            countdownToStart: countdownToStart,
+                            countdownToEnd: countdownToEnd,
                             title: notification.title,
                             message: notification.message,
                             read: ko.observable(false),
@@ -104,10 +136,37 @@ define([
                 });
             });
 
-            // monitor for expired ones and remove them
+            // A simple clock.
             this.timer = window.setInterval(() => {
                 this.now(Date.now());
-            }, 10000);
+            }, 1000);
+            this.model = new systemAlerts.AlertsModel({
+                runtime: this.runtime,
+                updateInterval: 10000
+            });
+
+            this.model.onUpdate((result, error) => {
+                if (result) {
+                    if (error) {
+                        this.systemStatus(null);
+                        this.error(error.message);
+                    } else {
+                        this.systemStatus(result);
+                        this.error(null);
+                    }
+                } else {
+                    this.systemStatus(null);
+                    if (error) {
+                        this.systemStatus(null);
+                        this.error(error.message);
+                    } else {
+                        this.systemStatus(null);
+                        this.error('No error or result');
+                    }
+                }
+            });
+
+            this.model.start();
         }
 
         doShowHidden() {
@@ -121,6 +180,10 @@ define([
                 window.clearInterval(this.timer);
             }
         }
+
+        hide() {
+            this.hideAlerts(this.hideAlerts() ? false : true);
+        }
     }
 
     function buildError() {
@@ -132,87 +195,69 @@ define([
         });
     }
 
+    function buildAlertIcon() {
+        return span({
+            style: {
+                width: '32px',
+                fontSize: '120%',
+                textAlign: 'center',
+                marginRight: '4px'
+            }
+        }, [
+            span({
+                class: 'fa',
+                dataBind: {
+                    css: {
+                        'fa-clock-o': 'countdownToStart() > 0',
+                        'fa-exclamation-triangle': 'countdownToStart() <= 0 && countdownToEnd() > 0',
+                        'fa-color-warning': 'countdownToStart() > 0',
+                        'fa-color-danger': 'countdownToStart() <= 0 && countdownToEnd() > 0'
+                    }
+                }
+            })
+        ]);
+    }
+
     function buildMaintenanceNotification() {
         return div({
-            class: 'panel panel-danger',
             style: {
                 borderRadius: '0px',
-                marginBottom: '0px'
-                // position: 'relative'
+                marginBottom: '0px',
+                padding: '4px',
+                // paddingTop: '4px',
+                borderTop: '2px #f2dede solid'
             }
         }, [
             div({
-                class: 'panel-heading',
                 style: {
                     position: 'relative'
                 }
             }, [
-                span({
-                    dataBind: {
-                        text: '$data.title || "Upcoming System Maintenance"'
-                    },
-                    style: {
-                        fontWeight: 'bold'
-                    }
-                }),
-                button({
-                    type: 'button',
-                    class: 'close',
-                    ariaLabel: 'Close',
-                    dataBind: {
-                        click: 'function(d,e){d.read(true);}'
-                    },
-                    style: {
-                        fontSize: '80%',
-                        position: 'absolute',
-                        right: '8px',
-                        top: '8px'
-                    },
-                    title: 'Use this button close the alert; when you reload the browser it will reappear; it will be permanently removed when it expires.'
-                }, span({
-                    class: 'fa fa-times'
-                })),
-            ]),
-            div({
-                class: 'panel-body'
-            }, [
                 div({
                     style: {
-                        display: 'inline-block',
-                        verticalAlign: 'top',
-                        width: '50%'
+                        display: 'flex',
+                        flexDirection: 'row'
                     }
                 }, [
 
                     div({
-                        dataBind: {
-                            text: 'message'
+                        style: {
+                            flex: '1 1 0px'
                         }
-                    })
-                ]),
-                div({
-                    style: {
-                        display: 'inline-block',
-                        verticalAlign: 'top',
-                        width: '50%',
-                        textAlign: 'right'
-                    }
-                }, [
-                    div([
-                        span({
-                            dataBind: {
-                                typedText: {
-                                    type: '"date-range"',
-                                    format: '"nice-range"',
-                                    value: {
-                                        startDate: 'startAt',
-                                        endDate: 'endAt'
-                                    }
-                                }
-                            }
-                        })
-                    ]),
-                    div([
+                    }, span({
+                        dataBind: {
+                            text: '$data.title || "Upcoming System Maintenance"'
+                        },
+                        style: {
+                            fontWeight: 'bold'
+                        }
+                    })),
+                    div({
+                        style: {
+                            flex: '1 1 0px'
+                        }
+                    }, [
+                        buildAlertIcon(),
                         span({
                             dataBind: {
                                 component: {
@@ -224,9 +269,75 @@ define([
                                 }
                             }
                         })
+                    ]),
+                    span({
+                        style: {
+                            // flex: '0'
+                        }
+                    }, [
+                        button({
+                            type: 'button',
+                            class: 'close',
+                            ariaLabel: 'Close',
+                            dataBind: {
+                                click: 'function(d,e){d.read(true);}'
+                            },
+                            style: {
+                                fontSize: '80%'
+                            },
+                            title: 'Use this button close the alert; when you reload the browser it will reappear; it will be permanently removed when it expires.'
+                        }, span({
+                            class: 'fa fa-times'
+                        }))
                     ])
                 ])
-            ])
+            ]),
+            div({
+                // class: 'panel-body'
+            }, div({
+                style: {
+                    display: 'flex',
+                    flexDirection: 'row'
+                }
+            }, [
+                div({
+                    style: {
+                        verticalAlign: 'top',
+                        flex: '1 1 0px'
+                    }
+                }, [
+
+                    div({
+                        dataBind: {
+                            htmlMarkdown: 'message'
+                        }
+                    })
+                ]),
+                div({
+                    style: {
+                        verticalAlign: 'top',
+                        textAlign: 'right',
+                        flex: '1 1 0px'
+                    }
+                }, [
+                    // div([
+                    //     span({
+                    //         dataBind: {
+                    //             typedText: {
+                    //                 type: '"date-range"',
+                    //                 format: '"nice-range"',
+                    //                 value: {
+                    //                     startDate: 'startAt',
+                    //                     endDate: 'endAt'
+                    //                 }
+                    //             }
+                    //         }
+                    //     })
+                    // ]),
+
+                ]),
+
+            ]))
         ]);
     }
 
@@ -234,16 +345,15 @@ define([
         return div({
             class: 'bg-danger text-danger',
             style: {
-                // border: '1px red solid',
-                // backgroundColor: 'red',
-                // color: '#FFF',
-                padding: '10px 15px'
+                padding: '10px 15px',
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'row'
             }
         }, [
             div({
                 style: {
-                    display: 'inline-block',
-                    width: '50%'
+                    flex: '1 1 0px'
                 }
             }, span({
                 style: {
@@ -255,9 +365,9 @@ define([
             ])),
             div({
                 style: {
-                    display: 'inline-block',
-                    width: '50%',
-                    textAlign: 'right'
+                    textAlign: 'right',
+                    // paddingRight: '12px',
+                    flex: '1 1 0px'
                 }
             }, [
                 span({
@@ -277,7 +387,7 @@ define([
                         ' hidden ',
                         button({
                             type: 'button',
-                            class: 'btn btn-default btn-xs',
+                            class: 'btn btn-default btn-kbase-subtle btn-kbase-compact',
                             dataBind: {
                                 click: 'function(...args){$component.doShowHidden.apply($component, args);}'
                             }
@@ -287,12 +397,43 @@ define([
                         ])),
 
                         ')'
-                    ])
+                    ]),
+                button({
+                    class: 'btn btn-default btn-kbase-subtle btn-kbase-compact',
+                    style: {
+                        marginLeft: '8px'
+                    },
+                    type: 'button',
+                    dataBind: {
+                        click: 'function(d,e){$component.hide.call($component);}'
+                    }
+                }, span({
+                    class: 'fa fa-minus-square-o'
+                }))
             ])
+            //     button({
+            //         type: 'button',
+            //         class: 'close',
+            //         ariaLabel: 'Close',
+            //         dataBind: {
+            //             click: 'function(d,e){$component.hide.call($component);}'
+            //         },
+            //         style: {
+            //             fontSize: '80%',
+            //             position: 'absolute',
+            //             right: '8px',
+            //             top: '8px'
+            //         },
+            //         title: 'Use this button close the alerts strip; when you reload the browser it will reappear; it will be permanently removed when all alerts expire.'
+            //     }, span({
+            //         class: 'fa fa-times'
+            //     }))
+            // ])
+
         ]);
     }
 
-    function template() {
+    function buildNotifications() {
         // return div('hi from the notification banner');
         return div({
             class: styles.classes.component
@@ -306,15 +447,24 @@ define([
                         class: styles.classes.wrapper
                     }, [
                         buildHeader(),
-                        gen.foreach('maintenanceNotifications()',
-                            gen.ifnot('read', buildMaintenanceNotification()))
+                        gen.if('maintenanceNotifications().some((alert) => {return !alert.read();})',
+                            div({
+                                class: styles.classes.itemsWrapper
+                            },
+                            gen.foreach('maintenanceNotifications()',
+                                gen.ifnot('read', buildMaintenanceNotification()))))
                     ])))
+
         ]);
+    }
+
+    function template() {
+        return div(gen.if('hideAlerts()', '', buildNotifications()));
     }
 
     function component() {
         return {
-            viewModel: ViewModel,
+            viewModel: AlertsViewModel,
             template: template(),
             stylesheet: styles.sheet
         };

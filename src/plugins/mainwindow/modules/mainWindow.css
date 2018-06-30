@@ -129,6 +129,13 @@
     display: flex;
 }
 
+.plugin-mainwindow.widget-mainwindow .-navbar .-cell.-alerts {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    margin-right: 4px;
+}
+
 .plugin-mainwindow.widget-mainwindow .-navbar .-cell.-deployment {
     align-items: center;
     justify-content: center;
@@ -224,6 +231,18 @@
     color: #2196F3;
 }
 
+.plugin-mainwindow.widget-mainwindow .-navbar .fa.fa-color-warning::before {
+    color: orange;
+}
+
+.plugin-mainwindow.widget-mainwindow .-navbar .fa.fa-color-danger::before {
+    color: red;
+}
+
+.plugin-mainwindow.widget-mainwindow .-navbar .fa.fa-color-success::before {
+    color: green;
+}
+
 
 /* Enable background hover for navbar buttons. It is disabled for other buttons */
 
@@ -292,3 +311,15 @@ The content area is normal flow and just needs to have a matching top margin.
 .xbtn-xs .glyphicon-user {
     padding: 14px 5px 14px 5px;
 }*/
+
+.fa-color-warning::before {
+    /* color: rgb(143, 127, 97); */
+    color: orange;
+}
+
+.fa-color-danger::before {
+    color: red;
+}
+
+.fa-color-success::before {
+    color: green;
