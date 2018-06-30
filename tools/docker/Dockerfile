@@ -40,8 +40,13 @@ RUN echo "http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositor
     && apk upgrade --update-cache --available \
     && apk add --update --no-cache \
         nginx=1.14.0-r0 \
-        dockerize=0.6.1-r2 \
     && mkdir -p /kb
+
+RUN cd /tmp && \
+	wget https://github.com/kbase/dockerize/raw/master/dockerize-alpine-linux-amd64-v0.6.1.tar.gz && \
+	tar xvzf dockerize-alpine-linux-amd64-v0.6.1.tar.gz && \
+    rm dockerize-alpine-linux-amd64-v0.6.1.tar.gz && \
+	mv dockerize /usr/bin
 
 # Or, image designed to serve up static KBase UI contents
 # FROM kbase/nginx

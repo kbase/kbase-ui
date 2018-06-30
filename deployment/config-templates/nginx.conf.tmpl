@@ -27,8 +27,9 @@ http {
     ## consider using dockerize's ifTrue (which is however unhappy with missing values)
     {{ if .Env.nginx_syslog }}
         # Only log to these locations if deployed. This allows local testing of this image.
-        error_log /dev/stdout {{ default .Env.nginx_loglevel "error" }};
+        error_log /dev/stderr {{ default .Env.nginx_loglevel "error" }};
         access_log syslog:server=10.58.0.54,facility=local2,tag=ci,severity=info combined;
+        access_log /dev/stdout combined;
     {{ else }}
         # But if running locally preserve the logs for debugging
         access_log /var/log/nginx/access.log;
