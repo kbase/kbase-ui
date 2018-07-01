@@ -6,7 +6,7 @@
         "name": "{{ .Env.deploy_name }}",
         "services": {
             "urlBase": "https://{{ default .Env.deploy_hostname "localhost" }}",
-            "dynamicServiceProxies": [{{ range $i, $v := split .Env.dynamic_service_proxies " " }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+            "dynamicServiceProxies": [{{ range $i, $v := split .Env.dynamic_service_proxies "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
         }
     },
     "ui": {       
@@ -28,18 +28,18 @@
             "menu": {
                 "menus": {
                     "hamburger": {
-                        "disabled": [{{ range $i, $v := split .Env.ui_services_menu_hamburger_disabled " " }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+                        "disabled": [{{ range $i, $v := split .Env.ui_services_menu_hamburger_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
                     },
                     "sidebar": {
-                        "disabled": [{{ range $i, $v := split .Env.ui_services_menu_sidebar_disabled " " }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+                        "disabled": [{{ range $i, $v := split .Env.ui_services_menu_sidebar_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
                     }
                 }
             }
         },
-        "allow": [{{ range $i, $v := split .Env.allow " " }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+        "allow": [{{ range $i, $v := split .Env.allow "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
         "featureSwitches": {
-            "enabled": [{{ range $i, $v := split .Env.ui_featureSwitches_enabled " " }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
-            "disabled": [{{ range $i, $v := split .Env.ui_featureSwitches_disabled " " }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+            "enabled": [{{ range $i, $v := split .Env.ui_featureSwitches_enabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+            "disabled": [{{ range $i, $v := split .Env.ui_featureSwitches_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
         }
     },
     "services": {
@@ -47,7 +47,7 @@
             "url": "{{ .Env.services_narrative_url }}"
         },
         "auth2": {
-            "providers": [{{ range $i, $v := split .Env.services_auth2_providers " " }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+            "providers": [{{ range $i, $v := split .Env.services_auth2_providers "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
             "version": {
                 "minimum": "{{ .Env.services_auth2_version_minimum }}"
             }

@@ -22,17 +22,25 @@ http {
     # Logging Settings
     ##
 
-    ## NB, TODO: this is not boolean coercion of nginx_syslog, but rather the go template
-    ## language version (see https://golang.org/pkg/text/template/)
-    ## consider using dockerize's ifTrue (which is however unhappy with missing values)
-    {{ if .Env.nginx_syslog }}
+    {{ if isTrue .Env.nginx_syslog }}
         # Only log to these locations if deployed. This allows local testing of this image.
-        error_log /dev/stdout {{ default .Env.nginx_loglevel "error" }};
+        error_log /dev/stderr {{ default .Env.nginx_loglevel "error" }};
+        # TODO: the syslog server should be fed from the configuration.
         access_log syslog:server=10.58.0.54,facility=local2,tag=ci,severity=info combined;
     {{ else }}
-        # But if running locally preserve the logs for debugging
+        # This is switchable because for local development it is nice to see stdout/stderr, but 
+        # not usually nginx logs, which are voluminous.
+        {{ if isTrue (default .Env.nginx_log_stdout "true") }}
+        access_log /dev/stdout;
+        {{ else }}
         access_log /var/log/nginx/access.log;
-        error_log /var/log/nginx/error.log  {{ default .Env.nginx_loglevel "error" }};
+        {{ end }}
+
+        {{ if isTrue (default .Env.nginx_log_stderr "true") }}
+        error_log /dev/stderr {{ default .Env.nginx_loglevel "error" }};
+        {{ else }}
+        error_log /var/log/nginx/error.log {{ default .Env.nginx_loglevel "error" }};
+        {{ end }}
     {{ end }}
 
     ##

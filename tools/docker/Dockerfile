@@ -41,12 +41,25 @@ RUN apk upgrade --update-cache --available \
         nginx=1.12.2-r3 \
     && mkdir -p /kb
 
-# this pulls down steve's PR95 for dockerize, which includes url fetching.
-RUN archive=dockerize-alpine-linux-amd64-v0.6.1.tar.gz \
-    commit=1c2a8d81f8b0793fab2d1dd80420f0c382a5fe1f \
-    && wget https://raw.github.com/kbase/dockerize/$commit/$archive \
-    && tar -C /usr/local/bin -xzvf $archive \
-    && rm $archive
+WORKDIR /kb
+
+# this pulls down the kbase custom dockerize, which includes url fetching.
+# note: fixed to this commit because this dockerfile ensures reproducible builds.
+# TODO: better would be if the 
+# RUN archive=dockerize-alpine-linux-amd64-v0.6.1.tar.gz \
+#     commit=1c2a8d81f8b0793fab2d1dd80420f0c382a5fe1f \
+#     && wget https://raw.github.com/kbase/dockerize/$commit/$archive \
+#     && tar -C /usr/local/bin -xzvf $archive \
+#     && rm $archive
+
+# This version uses master; otherwise functionally equivalent other than style.
+RUN archive=dockerize-alpine-linux-amd64-v0.6.1.tar.gz && \
+	wget https://github.com/kbase/dockerize/raw/master/$archive && \
+	tar xvzf $archive && \
+    rm $archive && \
+	mv dockerize /usr/local/bin
+
+
 
 # Or, image designed to serve up static KBase UI contents
 # FROM kbase/nginx
@@ -78,7 +91,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       us.kbase.vcs-tag=$TAG \ 
       maintainer="Steve Chan sychan@lbl.gov"
 
-ENTRYPOINT [ "/usr/local/bin/dockerize", \
+ENTRYPOINT [ "dockerize", \
              "-template", "/kb/deployment/config-templates/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
              "-template", "/kb/deployment/config-templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json" ]
 

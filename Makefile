@@ -143,7 +143,15 @@ run-docker-image-dev: docker-network
 	@echo "> libraries $(libraries)"
 	@echo "> To map host directories into the container, you will need to run "
 	@echo ">   tools/run-image.sh with appropriate options."
-	$(eval cmd = $(TOPDIR)/tools/docker/run-image-dev.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l) $(foreach s,$(services),-s $s)  $(foreach d,$(data),-d $d) $(foreach f,$(folders),-f $f) -y "$(dynamic_service_proxies)")
+	$(eval cmd = $(TOPDIR)/tools/docker/run-image-dev.sh $(env) \
+	  $(foreach p,$(plugins),-p $(p)) \
+	  $(foreach i,$(internal),-i $i) \
+	  $(foreach l,$(libraries),-l $l) \
+	  $(foreach s,$(services),-s $s)  \
+	  $(foreach d,$(data),-d $d) \
+	  $(foreach f,$(folders),-f $f) \
+	  $(foreach v,$(env_vars),-v $v) \
+	  -y "$(dynamic_service_proxies)")
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
 
