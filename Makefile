@@ -138,7 +138,7 @@ docker-image:
 
 # The dev version of run-image also supports cli options for mapping plugins, libraries, 
 # and parts of ui into the image for (more) rapdi development workflow
-run-docker-image-dev: docker-network
+run-docker-image: docker-network
 	@echo "> Running kbase-ui image."
 	# @echo "> You will need to inspect the docker container for the ip address "
 	# @echo ">   set your /etc/hosts for ci.kbase.us accordingly."
@@ -151,7 +151,7 @@ run-docker-image-dev: docker-network
 	@echo ">   tools/run-image.sh with appropriate options."
 # 	  --kbase-ini-url "$(kbase-ini-url)" 
 #	  -t "$(kbase-ini-dir)" 
-	$(eval cmd = $(TOPDIR)/tools/docker/run-image-dev.sh $(env) \
+	$(eval cmd = $(TOPDIR)/tools/docker/run-image.sh $(env) \
 	  $(foreach p,$(plugins),-p $(p)) \
 	  $(foreach i,$(internal),-i $i) \
 	  $(foreach l,$(libraries),-l $l) \
@@ -161,16 +161,6 @@ run-docker-image-dev: docker-network
 	  $(foreach v,$(env_vars),-v $v) \
 	  $(if "$(kbase-ini-dir)",-n "$(kbase-ini-dir)") \
 	  -y "$(dynamic_service_proxies)")
-	@echo "> Issuing: $(cmd)"
-	bash $(cmd)
-
-run-docker-image: docker-network
-	@:$(call check_defined, env, "the deployment environmeng: dev ci next appdev prod)
-	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
-	@echo "> Running kbase-ui image."
-	# @echo "> You will need to inspect the docker container for the ip address "
-	# @echo ">   set your /etc/hosts for ci.kbase.us accordingly."
-	$(eval cmd = $(TOPDIR)/tools/docker/run-image-dev.sh $(env) $(net))
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
 

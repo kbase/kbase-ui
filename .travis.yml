@@ -1,9 +1,11 @@
 dist: trusty
 sudo: required
+# Note that node is not actually used in the build; but it is the closest to the truth 
+# for what happens. Without a language Travis installs completely unrelated stuff.
 language: node_js
-# Just to keep things sane; the default nodejs for trusty is 0.10.x
 node_js:
   - "8"
+# The build happens inside docker now.
 services:
   - docker
 
@@ -18,8 +20,6 @@ branches:
     only:
         - master
         - develop
-        # just temporarily
-        - docker-multi-stage
 
 install:
     - make docker-image build=ci

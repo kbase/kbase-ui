@@ -97,9 +97,9 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       us.kbase.vcs-tag=$TAG \ 
       maintainer="Steve Chan sychan@lbl.gov"
 
-ENTRYPOINT [ "dockerize", \
-             "-template", "/kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
-             "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json" ]
+ENTRYPOINT [ "dockerize" ]
 
-CMD [  "bash", "/kb/deployment/scripts/start-server.bash" ]
+CMD [  "-template", "/kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
+       "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json", \
+       "bash", "/kb/deployment/scripts/start-server.bash" ]
       
