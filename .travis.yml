@@ -18,8 +18,6 @@ branches:
     only:
         - master
         - develop
-        # just temporarily
-        - docker-multi-stage
 
 install:
     - make docker-image build=ci
