@@ -38,21 +38,26 @@ build           =
 
 # The deploy environment; used by dev-time image runners
 # dev, ci, next, appdev, prod
-# Defaults to dev, since it is only useful for local dev; dev is really ci.
-# Causes run-image.sh to use the file in deployment/conf/$(env).env for
-# "filling out" the nginx and ui config templates.
-# TODO: hook into the real configs out of KBase's gitlab
+# No default, because one should think about this.
+# Used to target the actual deploy config file (see kbase-ini-dir).
 env             = 
 
 # The custom docker network
+# For local development.
 net 			= kbase-dev
 
-
-DEV_DOCKER_CONTEXT	= $(TOPDIR)/deployment/dev/docker/context
-CI_DOCKER_CONTEXT	= $(TOPDIR)/deployment/ci/docker/context
-PROD_DOCKER_CONTEXT	= $(TOPDIR)/deployment/prod/docker/context
+# The source of deployment configuration files.
+# The value can be a filesystem path or a url; note that the actual config (ini) file is 
+# applied to the path based on the "env" 
+# This is for development only - deployment uses it's own script to launch the image.
+# TODO: for the sake of completeness, https with self-signed certs should be supported.
+kbase-ini-dir  = /kb/deployment/config
 
 # functions
+
+# check_defined variable-name message
+# Ensures that the given variable 'variable-name' is defined; if not 
+# prints 'message' and the process exits with 1.
 # thanks https://stackoverflow.com/questions/10858261/abort-makefile-if-variable-not-set
 check_defined = \
     $(strip $(foreach 1,$1, \
@@ -141,8 +146,11 @@ run-docker-image-dev: docker-network
 	@echo "> plugins $(plugins)"
 	@echo "> internal $(internal)"
 	@echo "> libraries $(libraries)"
+	@echo "> ini dir $(kbase-ini-dir)"
 	@echo "> To map host directories into the container, you will need to run "
 	@echo ">   tools/run-image.sh with appropriate options."
+# 	  --kbase-ini-url "$(kbase-ini-url)" 
+#	  -t "$(kbase-ini-dir)" 
 	$(eval cmd = $(TOPDIR)/tools/docker/run-image-dev.sh $(env) \
 	  $(foreach p,$(plugins),-p $(p)) \
 	  $(foreach i,$(internal),-i $i) \
@@ -151,6 +159,7 @@ run-docker-image-dev: docker-network
 	  $(foreach d,$(data),-d $d) \
 	  $(foreach f,$(folders),-f $f) \
 	  $(foreach v,$(env_vars),-v $v) \
+	  $(if "$(kbase-ini-dir)",-n "$(kbase-ini-dir)") \
 	  -y "$(dynamic_service_proxies)")
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
