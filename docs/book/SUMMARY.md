@@ -2,7 +2,7 @@
 
 * [Introduction](README.md)
 * [Getting Started](getting-started/README.md)
-    * [Prerequisites](getting-started/prerequisites.md)
+    * [Basic Prerequisites](getting-started/basic-prerequisites.md)
     * [Developer Setup](getting-started/local-dev-prerequisites.md)
     * [Quick Start](getting-started/quick-start.md)
 * [Devops](devops/README.md)

@@ -1,1 +1,4 @@
-docker run -it kbase/kbase-ui:develop /bin/sh
+docker run \
+    --network=kbase-dev \
+    --entrypoint /bin/sh \
+    -it kbase/kbase-ui:docker-multi-stage 

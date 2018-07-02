@@ -22,11 +22,11 @@ root=$(git rev-parse --show-toplevel)
 config_mount="${root}/config/deploy"
 branch=$(git symbolic-ref --short HEAD 2>&1)
 
-if [ ! -e "${config_mount}/${environment}.env" ]; then
-    echo "ERROR: environment (arg 1) does not resolve to a config file in ${config_mount}/${environment}.env"
-    usage
-    exit 1
-fi
+# if [ ! -e "${config_mount}/${environment}.env" ]; then
+#     echo "ERROR: environment (arg 1) does not resolve to a config file in ${config_mount}/${environment}.env"
+#     usage
+#     exit 1
+# fi
 
 echo "CONFIG MOUNT: ${config_mount}"
 echo "ENVIRONMENT : ${environment}"
@@ -101,14 +101,30 @@ case $key in
     shift # past argument
     shift # past value
     ;;
-     -y|--dynamic_service_proxies)
+    -y|--dynamic_service_proxies)
     dynamic_service_proxies="$2"
     echo "Using dynamic service proxy: ${dynamic_service_proxies}"
     # mounts="$mounts --mount type=bind,src=${root}/../kbase-ui-plugin-${plugin}/src/plugin,dst=/kb/deployment/services/kbase-ui/dist/modules/plugins/${plugin}"
     # envs="$envs --env "'"'"dynamic_service_proxies=${dynamic_service_proxies}"'"'
-    envs="$envs -e dynamic_service_proxies="'"'"${dynamic_service_proxies}"'"'
+    envs="$envs --env dynamic_service_proxies="'"'"${dynamic_service_proxies}"'"'
     shift # past argument
     shift # past value
+    ;;
+    -v|--env_var)
+    env_var="$2"
+    echo "Using environment variables: ${env_var}"
+    # mounts="$mounts --mount type=bind,src=${root}/../kbase-ui-plugin-${plugin}/src/plugin,dst=/kb/deployment/services/kbase-ui/dist/modules/plugins/${plugin}"
+    # envs="$envs --env "'"'"dynamic_service_proxies=${dynamic_service_proxies}"'"'
+    envs="$envs --env "'"'"${env_var}"'"'
+    shift # past argument
+    shift # past value
+    ;;
+    -n)
+    ini_path="$2"
+    echo "Using KBase INI url ${ini_path} "
+    kbase_ini="${ini_path}/${environment}.ini"
+    shift
+    shift
     ;;
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later
@@ -127,14 +143,18 @@ echo "stdout sent to kbase-ui.stdout, stderr sent to kbase-ui.stderr"
 echo "Running kbase-ui image kbase/kbase-ui:${image_tag}"
 echo ":)"
 
+#   --env-file ${config_mount}/${environment}.env \
+#   -env http://kbase-web-assets/kbase-ui/env/${environment}.env bash /kb/deployment/scripts/start-server.bash"
+
 cmd="docker run \
   --rm \
-  --env-file ${config_mount}/${environment}.env \
   $envs \
   --name=kbase-ui-container \
   --network=kbase-dev \
   $mounts \
-  kbase/kbase-ui:${image_tag}"
+  kbase/kbase-ui:${image_tag} \
+  -env ${kbase_ini} \
+  bash /kb/deployment/scripts/start-server.bash"
 echo "RUNNING: $cmd"
 eval $cmd
 
