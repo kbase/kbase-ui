@@ -38,12 +38,12 @@ Documentation is provided either directly from your host machine by building and
 This technique relies upon [rawgit](https://rawgit.com) a free service, which expresses caveats, but is in practice quite reliable and fast for our purposes:
 
 - [develop branch](https://rawgit.com/kbase/kbase-ui/develop/docs/book/_book/index.html) - follows changes in development (rate limited)
-- [latests release - 1.7.0]() - available after the release
+- [latest release - 1.7.0]() - will be available after the 1.7.0 is released
 
 ### Local Docs
 
-- ensure you have the following software installed:
-    - nodejs 6 or later
+- ensure you have the relatively current versions of following software installed (if you are curious about the versions supported, see the Dockerfile for versions used in the build):
+    - nodejs and npm
     - git
     - make
 - clone the repo
