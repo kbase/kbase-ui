@@ -76,7 +76,7 @@ function build_image() {
         --build-arg VCS_REF=$commit \
         --build-arg BRANCH=$branch \
         --build-arg BUILD=$build \
-        -f $root/tools/docker/Dockerfile \
+        -f $root/Dockerfile \
         -t $image_tag \
         $root
         

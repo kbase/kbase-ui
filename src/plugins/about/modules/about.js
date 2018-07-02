@@ -152,6 +152,8 @@ define([
                 ]);
             }
 
+            const documentationUrl = '/_book/index.html';
+
             return [
                 versionMessage,
                 p([
@@ -181,6 +183,10 @@ define([
                         href: aboutKbase,
                         target: '_blank'
                     }, 'About KBase')),
+                    li(a({
+                        href: documentationUrl,
+                        target: '_blank'
+                    }, 'Documenation'))
                 ])
             ];
         }

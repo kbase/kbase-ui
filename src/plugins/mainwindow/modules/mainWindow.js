@@ -19,16 +19,32 @@
  * Each of them may listen for messages from other parts of the user interface.
  */
 define([
+    'knockout',
     'kb_common/html',
-    'kb_lib/widget/widgetSet'
+    'kb_lib/widget/widgetSet',
+    './components/systemAlertBanner',
+    './components/systemAlertToggle'
 ], function (
+    ko,
     html,
-    widgetSet
+    widgetSet,
+    SystemAlertBannerComponent,
+    SystemAlertToggleComponent
 ) {
     'use strict';
 
     const t = html.tag,
         div = t('div');
+
+    class ViewModel {
+        constructor(params) {
+            this.runtime = params.runtime;
+
+            // The total number of alerts
+            this.alertCount = ko.observable(null);
+            this.hideAlerts = ko.observable(false);
+        }
+    }
 
     class MainWindow {
         constructor(config) {
@@ -39,6 +55,10 @@ define([
 
             this.hostNode = null;
             this.container = null;
+
+            this.vm = new ViewModel({
+                runtime: this.runtime
+            });
         }
 
         buildHeader() {
@@ -64,6 +84,25 @@ define([
                     class: '-cell -buttons',
                     id: this.widgets.addWidget('buttonbar')
                 }),
+                (() => {
+                    if (this.runtime.featureEnabled('system_alert_notification')) {
+                        console.log('alerts enabled.', this.runtime.featureEnabled('system_alert_notification'));
+                        return div({
+                            class: '-cell -alerts',
+                            // id: this.widgets.addWidget('alert')
+                            dataBind: {
+                                component: {
+                                    name: SystemAlertToggleComponent.quotedName(),
+                                    params: {
+                                        alertCount: 'alertCount',
+                                        hideAlerts: 'hideAlerts'
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    return null;
+                })(),
                 div({
                     class: '-cell -notification',
                     id: this.widgets.addWidget('notification')
@@ -97,10 +136,19 @@ define([
                         (() => {
                             if (this.runtime.featureEnabled('system_alert_notification')) {
                                 return div({
-                                    class: '-notification-banner',
-                                    id: this.widgets.addWidget('kb_mainWindow_systemAlertBanner')
+                                    dataBind: {
+                                        component: {
+                                            name: SystemAlertBannerComponent.quotedName(),
+                                            params: {
+                                                runtime: 'runtime',
+                                                alertCount: 'alertCount',
+                                                hideAlerts: 'hideAlerts'
+                                            }
+                                        }
+                                    }
                                 });
                             }
+                            return null;
                         })(),
                         div({
                             class: '-plugin-content',
@@ -126,6 +174,12 @@ define([
                 })
                 .then(() => {
                     return this.widgets.start(params);
+                })
+                .then(() => {
+                    if (this.runtime.featureEnabled('system_alert_notification')) {
+                        ko.applyBindings(this.vm, this.container.querySelector('.-content-area'));
+                        ko.applyBindings(this.vm, this.container.querySelector('.-alerts'));
+                    }
                 });
         }
 
