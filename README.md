@@ -38,7 +38,7 @@ Documentation is provided either directly from your host machine by building and
 This technique relies upon [rawgit](https://rawgit.com) a free service, which expresses caveats, but is in practice quite reliable and fast for our purposes:
 
 - [develop branch](https://rawgit.com/kbase/kbase-ui/develop/docs/book/_book/index.html) - follows changes in development (rate limited)
-- [latests release - 1.7.0]() - available after the release
+- [latest release - 1.7.0]() - available after the release
 
 ### Local Docs
 
