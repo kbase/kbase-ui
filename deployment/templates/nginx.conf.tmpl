@@ -22,26 +22,23 @@ http {
     # Logging Settings
     ##
 
-    {{ if isTrue .Env.nginx_syslog }}
-        # Only log to these locations if deployed. This allows local testing of this image.
-        error_log /dev/stderr {{ default .Env.nginx_loglevel "error" }};
-        # TODO: the syslog server should be fed from the configuration.
-        access_log syslog:server=10.58.0.54,facility=local2,tag=ci,severity=info combined;
-    {{ else }}
-        # This is switchable because for local development it is nice to see stdout/stderr, but 
-        # not usually nginx logs, which are voluminous.
-        {{ if isTrue (default .Env.nginx_log_stdout "true") }}
-        access_log /dev/stdout;
-        {{ else }}
-        access_log /var/log/nginx/access.log;
-        {{ end }}
+    # Always log to the logfiles, and default errors to stderr, with access logs to syslog and stdout
+    # as optional
 
-        {{ if isTrue (default .Env.nginx_log_stderr "true") }}
-        error_log /dev/stderr {{ default .Env.nginx_loglevel "error" }};
-        {{ else }}
-        error_log /var/log/nginx/error.log {{ default .Env.nginx_loglevel "error" }};
-        {{ end }}
+    # If the template is passed an nginx syslog path via nginx_log_syslog env var, log to there
+    {{ if .Env.nginx_log_syslog }}
+    access_log {{ .Env.nginx_log_syslog }} combined;
     {{ end }}
+    # If nginx_log_stdout env var isn't false or empty, log to stdout
+    {{ if isTrue (default .Env.nginx_log_stdout "true") }}
+    access_log /dev/stdout;
+    {{ end }}
+    access_log /var/log/nginx/access.log;
+
+    {{ if isTrue (default .Env.nginx_log_stderr "true") }}
+    error_log /dev/stderr {{ default .Env.nginx_loglevel "error" }};
+    {{ end }}
+    error_log /var/log/nginx/error.log {{ default .Env.nginx_loglevel "error" }};
 
     ##
     # Gzip settings
