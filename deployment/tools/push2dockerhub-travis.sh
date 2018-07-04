@@ -46,7 +46,7 @@ fi
 
 # $TAG was set from TRAVIS_BRANCH, which is a little wonky on pull requests,
 # but it should be okay since we should never get here on a PR
-if  ! ( [ "${TRAVIS_BRANCH}" == "master" ] || [ "${TRAVIS_BRANCH}" == "develop" ]  || [ "${TRAVIS_BRANCH}" == "docker-multi-stage" ])
+if  ! ( [ "${TRAVIS_BRANCH}" == "master" ] || [ "${TRAVIS_BRANCH}" == "develop" ] )
 then
     echo "Error: Will only push images for the master or develop branches; Will not push image for branch ${TRAVIS_BRANCH}"
     exit 1
@@ -54,7 +54,7 @@ fi
 
 
 # Assign the tag to be used for the docker image from current branch as known to Travis.
-TAG=`echo ${TRAVIS_BRANCH}`
+TAG="${TRAVIS_BRANCH}"
 
 # If the tag is master, we need to retag as latest before pushing
 if [ "${TAG}" == "master" ]

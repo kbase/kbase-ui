@@ -132,9 +132,13 @@ docker-network:
 
 # Build the docker image, assumes that make init and make build have been done already
 docker-image: 
-	@:$(call check_defined, build, "the build configuration: dev ci prod")
-	@echo "> Building docker image for this branch."
-	bash $(TOPDIR)/tools/docker/build-image.sh $(build)
+	@echo "> Building docker image for this branch; assuming we are on Travis CI"
+	@bash $(TOPDIR)/deployment/tools/build-travis.bash
+
+fake-docker-image:
+	@echo "> Building docker image for this branch, using fake "
+	@echo "  Travis environment variables derived from git."
+	@bash $(TOPDIR)/tools/docker/build-travis-fake.bash
 
 # The dev version of run-image also supports cli options for mapping plugins, libraries, 
 # and parts of ui into the image for (more) rapdi development workflow

@@ -46,15 +46,6 @@ RUN apk upgrade --update-cache --available \
 
 WORKDIR /kb
 
-# this pulls down the kbase custom dockerize, which includes url fetching.
-# note: fixed to this commit because this dockerfile ensures reproducible builds.
-# TODO: better would be if the 
-# RUN archive=dockerize-alpine-linux-amd64-v0.6.1.tar.gz \
-#     commit=1c2a8d81f8b0793fab2d1dd80420f0c382a5fe1f \
-#     && wget https://raw.github.com/kbase/dockerize/$commit/$archive \
-#     && tar -C /usr/local/bin -xzvf $archive \
-#     && rm $archive
-
 # This version uses master; otherwise functionally equivalent other than style.
 RUN archive=dockerize-alpine-linux-amd64-v0.6.1.tar.gz && \
 	wget https://github.com/kbase/dockerize/raw/master/$archive && \
@@ -91,7 +82,7 @@ COPY --from=builder /kb/docs/book/_book /kb/deployment/services/kbase-ui/dist/_b
 # the end
 LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-url="https://github.com/kbase/kbase-ui.git" \
-      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-ref=$COMMIT \
       org.label-schema.schema-version="1.0.0-rc1" \
       us.kbase.vcs-branch=$BRANCH  \
       us.kbase.vcs-tag=$TAG \ 

@@ -31,32 +31,8 @@ Most KBase users will be exposed to the KBase UI by ... [using KBase](https://na
 
 ## Documentation
 
-Documentation is provided either directly from your host machine by building and launching it, or from the fully built kbase-ui.
-
-### From the Repo
-
-This technique relies upon [rawgit](https://rawgit.com) a free service, which expresses caveats, but is in practice quite reliable and fast for our purposes:
-
-- [develop branch](https://rawgit.com/kbase/kbase-ui/develop/docs/book/_book/index.html) - follows changes in development (rate limited)
-- [latest release - 1.7.0]() - will be available after the 1.7.0 is released
-
-### Local Docs
-
-- ensure you have the relatively current versions of following software installed (if you are curious about the versions supported, see the Dockerfile for versions used in the build):
-    - nodejs and npm
-    - git
-    - make
-- clone the repo
-    - ```git clone https://gitub.com/kbase/kbase-ui```
-- from the repo directory:
-    - ```make docs-viewer```
-- this will build the documentation and launch your system default browser with the docs.
-
-### From a live kbase-ui
-
-
-
-Please see the [documentation](docs/index.md) for additional information on development and deployment.
+- [develop](https://ci.kbase.us/_book/index.html) - Documentation available in the current develop branch of kbase-ui
+- [release]() - Documentation available in the current production release (will be available after the 1.7.0 is released)
 
 ## Contributing
 

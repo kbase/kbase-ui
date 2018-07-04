@@ -18,7 +18,7 @@ nbproject
 /mutations/mutantfiles
 
 # Doc artifacts
-# _book
+_book
 
 # Developer artifacts
 /dev/*

@@ -1,0 +1,51 @@
+version: '3.2'
+networks:
+  kbase-dev:
+    external:
+      name: kbase-dev
+services:
+  kbase-ui:
+    build:
+      context: .
+      args:
+        - BUILD=${BUILD}
+    image: kbase/kbase-ui:${BUILD}_build
+    networks:
+      - kbase-dev
+    container_name: kbase-ui
+    command:
+      - '-env'
+      - /kb/deployment/config/${DEPLOY_ENV}.ini
+      - '-template'
+      - /kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf
+      - '-template'
+      - /kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json
+      - bash 
+      - /kb/deployment/scripts/start-server.bash
+    # volumes:
+    #   - type: bind
+    #     source: ../kbase-ui-plugin-jgi-search/src/plugin
+    #     target: /kb/deployment/services/kbase-ui/dist/modules/plugins/jgi-search
+    #   - type: bind
+    #     source: ../kbase-common-es6/src
+    #     target: /kb/deployment/services/kbase-ui/dist/modules/kb_lib
+    #   - type: bind
+    #     source: ./src/plugins/mainwindow
+    #     target: /kb/deployment/services/kbase-ui/dist/modules/plugins/mainwindow
+  kbase-ui-proxy:
+      build:
+        context: tools/proxy
+      image: kbase/kbase-ui-proxy:dev
+      depends_on: 
+        - kbase-ui
+      networks:
+        - kbase-dev
+      container_name: kbase-ui-proxy
+      ports:
+        - "80:80"
+        - "443:443"
+      dns: 8.8.8.8
+      # note that this is really a docker env file and is relative to the docker-compose file
+      env_file: tools/proxy/conf/${DEPLOY_ENV}.env
+
+
