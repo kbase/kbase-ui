@@ -54,7 +54,7 @@ fi
 
 
 # Assign the tag to be used for the docker image from current branch as known to Travis.
-TAG=`echo ${TRAVIS_BRANCH}`
+TAG="${TRAVIS_BRANCH}"
 
 # If the tag is master, we need to retag as latest before pushing
 if [ "${TAG}" == "master" ]
