@@ -81,12 +81,12 @@ define([
                     id: this.widgets.addWidget('title')
                 }),
                 div({
-                    class: '-cell -buttons',
+                    class: '-buttons',
                     id: this.widgets.addWidget('buttonbar')
                 }),
                 (() => {
                     if (this.runtime.featureEnabled('system_alert_notification')) {
-                        console.log('alerts enabled.', this.runtime.featureEnabled('system_alert_notification'));
+                        // console.log('alerts enabled.', this.runtime.featureEnabled('system_alert_notification'));
                         return div({
                             class: '-cell -alerts',
                             // id: this.widgets.addWidget('alert')

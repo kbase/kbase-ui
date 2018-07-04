@@ -88,16 +88,20 @@ define([
             }
 
             // a button with an event handler provided as "callback"
-            buttonAttribs.id = events.addEvent('click', (e) => {
-                e.preventDefault();
-                try {
-                    buttonDef.callback();
-                } catch (ex) {
-                    console.error('Error running button callback');
-                    console.error(ex);
-                    console.error(buttonDef);
+            const event = new domEvents.DOMEvent({
+                type: 'click',
+                handler:  (e) => {
+                    e.preventDefault();
+                    try {
+                        buttonDef.callback();
+                    } catch (ex) {
+                        console.error('Error running button callback');
+                        console.error(ex);
+                        console.error(buttonDef);
+                    }
                 }
             });
+            buttonAttribs.id = events.addEvent(event);
             return button(buttonAttribs, [
                 div({
                     class: 'fa fa-' + buttonDef.icon,
@@ -108,9 +112,9 @@ define([
         }
 
         render() {
-            const events = new domEvents.DomEvents({node: this.container});
+            const events = new domEvents.DOMEvents({node: this.container});
             this.container.innerHTML = span({
-                class: 'navbar-buttons kb-widget-buttonbar'
+                class: 'navbar-buttons kb-widget-buttonbar btn-toolbar'
             }, this.buttonList.map((buttonDef) => {
                 switch (buttonDef.type) {
                 case 'button':
@@ -121,6 +125,7 @@ define([
                 }
             }));
             // don't worry about removing events for now...
+            console.log('attaching events...');
             events.attachEvents();
         }
 
