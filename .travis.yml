@@ -26,3 +26,7 @@ install:
 
 after_success:
   - IMAGE_NAME=kbase/kbase-ui ./deployment/tools/push2dockerhub-travis.sh
+
+scripts:
+  - docker version
+  - docker-compose version
