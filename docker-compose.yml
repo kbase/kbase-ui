@@ -1,0 +1,16 @@
+version: '3'
+services:
+  kbase-ui:
+    build:
+      context: .
+      args:
+        # used in the build phase to select the appropriate
+        # build config (dev, ci, prod)
+        - BUILD
+        - BUILD_DATE
+        - VCS_REF=${COMMIT}
+        - BRANCH
+    image: kbase/kbase-ui:${BRANCH}
+    
+
+

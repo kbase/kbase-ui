@@ -7,6 +7,7 @@
     * [Quick Start](getting-started/quick-start.md)
 * [Devops](devops/README.md)
     * [Configuration]()
+    * [Just Deployments](devops/deployments.md)
     * [Deployment](devops/deployment.md)
     * [Disabling Menus](devops/disabling-menus.md)
     * [Disabling Plugins](devops/disabling-plugins.md)
