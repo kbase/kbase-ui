@@ -48,12 +48,12 @@ define([
             return client.callFunc(functionName, funcParams)
                 .catch((err) => {
                     if (err instanceof exceptions.AjaxError) {
-                        console.error('AJAX Error', err);
+                        // console.error('AJAX Error', err);
                         throw new RPCError('AJAX Error: ' + err.name, err.code, err.message, null, {
                             originalError: err
                         });
                     } else if (err instanceof RPCError) {
-                        console.error('RPC Error', err);
+                        // console.error('RPC Error', err);
                         const message = 'An error was encountered running an rpc method';
                         const detail = 'The module is "' + err.module + '", the method "' + err.func + '", ' +
                                     'the error returned from the service is "' + (err.message || 'unknown') + '"';
