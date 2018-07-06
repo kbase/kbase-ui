@@ -125,7 +125,6 @@ define([
                 }
             }));
             // don't worry about removing events for now...
-            console.log('attaching events...');
             events.attachEvents();
         }
 
