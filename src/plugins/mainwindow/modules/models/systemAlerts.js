@@ -53,7 +53,7 @@ define([
                     };
                 })
                 .catch((err) => {
-                    console.error('ERROR', err);
+                    // console.error('ERROR', err);
                     // this.vm.systemStatus(null);
                     // this.vm.error(err.message);
                     throw err;
