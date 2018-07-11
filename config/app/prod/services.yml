@@ -41,16 +41,13 @@ ui:
                 -
                   id: dashboard2
                   auth: true
-                  allow: [alpha]
-                  allowRoles: [DevToken]  
+                  allow: [alpha] 
                 -             
                   id: databrowser
-                  auth: true
-                  allowRoles: [DevToken]  
+                  allow: [alpha]
                 -
                   id: typebrowser
-                  auth: true
-                  allowRoles: [DevToken]      
+                  allow: [alpha]  
             help:
               items:
                 -
