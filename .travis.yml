@@ -32,7 +32,7 @@ branches:
         # This is rough, but all we are after for is a trigger, not semver 
         # validation!
         # master is tagged as a release after develop->master is merged
-        - ^v.*$
+        - /^v.*$/
         
 
 install:
