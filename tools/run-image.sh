@@ -85,6 +85,22 @@ case $key in
     shift # past argument
     shift # past value
     ;;
+    ### data
+    -d|--data)
+    data="$2"
+    echo "Using internal data: ${data}"
+    mounts="$mounts --mount type=bind,src=${root}/src/client/data/${data},dst=/kb/deployment/services/kbase-ui/data/${data}"
+    shift # past argument
+    shift # past value
+    ;;
+    ### arbitrary internal path
+    -f|--folder)
+    folder="$2"
+    echo "Using internal folder: ${folder}"
+    mounts="$mounts --mount type=bind,src=${root}/src/client/modules/${folder},dst=/kb/deployment/services/kbase-ui/modules/${folder}"
+    shift # past argument
+    shift # past value
+    ;;
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later
     shift # past argument
@@ -97,7 +113,7 @@ echo "MOUNTS: $mounts"
 
 image_tag="${branch}"
 
-echo "stdout sent to kbase-ui.stoud, stderr sent to kbase-ui.stderr"
+echo "stdout sent to kbase-ui.stdout, stderr sent to kbase-ui.stderr"
 echo "Running kbase-ui image kbase/kbase-ui:${image_tag}"
 echo ":)"
 

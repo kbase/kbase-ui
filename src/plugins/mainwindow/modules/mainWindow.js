@@ -3,7 +3,7 @@
  * The Main Window implements the widget interface, of course. It is controlled
  * by the main entry point program, probably main.js
  * The main window is the controller, manager, coordinator, whatever you want to
- * call it, for the primary user interface widgets. These widget include, at 
+ * call it, for the primary user interface widgets. These widget include, at
  * present:
  * - main (hamburger) menu
  * - logo
@@ -13,34 +13,56 @@
  * - user account
  * - console
  * - main content
- * 
- * Each of these areas is implemented as a widget. As much as possible, the 
- * Main Window tries to keep out of the way, and just manage the widgets. 
+ *
+ * Each of these areas is implemented as a widget. As much as possible, the
+ * Main Window tries to keep out of the way, and just manage the widgets.
  * Each of them may listen for messages from other parts of the user interface.
  */
 define([
-    'bluebird',
+    'knockout',
     'kb_common/html',
-    'kb_widget/widgetSet'
+    'kb_lib/widget/widgetSet',
+    './components/systemAlertBanner',
+    './components/systemAlertToggle'
 ], function (
-    Promise,
+    ko,
     html,
-    WidgetSet
+    widgetSet,
+    SystemAlertBannerComponent,
+    SystemAlertToggleComponent
 ) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div');
 
-    function factory(config) {
-        var mount, container, runtime = config.runtime,
-            widgetSet = WidgetSet.make({
-                runtime: runtime
+    class ViewModel {
+        constructor(params) {
+            this.runtime = params.runtime;
+
+            // The total number of alerts
+            this.alertCount = ko.observable(null);
+            this.hideAlerts = ko.observable(false);
+        }
+    }
+
+    class MainWindow {
+        constructor(config) {
+            this.runtime = config.runtime;
+            this.widgets = new widgetSet.WidgetSet({
+                widgetManager: this.runtime.service('widget').widgetManager
             });
 
-        function buildHeader() {
-            // var loginWidget = runtime.feature('auth', 'widgets.login.name');
-            var loginWidget = runtime.config('ui.services.session.loginWidget');
+            this.hostNode = null;
+            this.container = null;
+
+            this.vm = new ViewModel({
+                runtime: this.runtime
+            });
+        }
+
+        buildHeader() {
+            const loginWidget = this.runtime.config('ui.services.session.loginWidget');
 
             return div({
                 class: '-navbar',
@@ -48,108 +70,140 @@ define([
             }, [
                 div({
                     class: '-cell -menu',
-                    id: widgetSet.addWidget('menu')
+                    id: this.widgets.addWidget('menu')
                 }),
                 div({
                     class: '-cell -logo',
-                    id: widgetSet.addWidget('logo')
+                    id: this.widgets.addWidget('logo')
                 }),
                 div({
                     class: '-cell -title',
-                    id: widgetSet.addWidget('title')
+                    id: this.widgets.addWidget('title')
                 }),
                 div({
-                    class: '-cell -buttons',
-                    id: widgetSet.addWidget('buttonbar')
+                    class: '-buttons',
+                    id: this.widgets.addWidget('buttonbar')
                 }),
+                (() => {
+                    if (this.runtime.featureEnabled('system_alert_notification')) {
+                        // console.log('alerts enabled.', this.runtime.featureEnabled('system_alert_notification'));
+                        return div({
+                            class: '-cell -alerts',
+                            // id: this.widgets.addWidget('alert')
+                            dataBind: {
+                                component: {
+                                    name: SystemAlertToggleComponent.quotedName(),
+                                    params: {
+                                        alertCount: 'alertCount',
+                                        hideAlerts: 'hideAlerts'
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    return null;
+                })(),
                 div({
                     class: '-cell -notification',
-                    id: widgetSet.addWidget('notification')
+                    id: this.widgets.addWidget('notification')
                 }),
                 div({
                     class: '-cell -deployment',
-                    id: widgetSet.addWidget('deployment')
+                    id: this.widgets.addWidget('deployment')
                 }),
                 div({
                     class: '-cell -login',
-                    id: widgetSet.addWidget(loginWidget)
+                    id: this.widgets.addWidget(loginWidget)
                 })
             ]);
         }
 
-        function renderLayout() {
+        renderLayout() {
             return [
                 div({
                     class: '-header'
-                }, buildHeader()),
+                }, this.buildHeader()),
                 div({
                     class: '-body'
                 }, [
                     div({
                         class: '-nav',
-                        id: widgetSet.addWidget('kb_mainWindow_sidebarNav')
+                        id: this.widgets.addWidget('kb_mainWindow_sidebarNav')
                     }),
                     div({
-                        class: '-content',
-                        id: widgetSet.addWidget('body')
-                    })
+                        class: '-content-area'
+                    }, [
+                        (() => {
+                            if (this.runtime.featureEnabled('system_alert_notification')) {
+                                return div({
+                                    dataBind: {
+                                        component: {
+                                            name: SystemAlertBannerComponent.quotedName(),
+                                            params: {
+                                                runtime: 'runtime',
+                                                alertCount: 'alertCount',
+                                                hideAlerts: 'hideAlerts'
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                            return null;
+                        })(),
+                        div({
+                            class: '-plugin-content',
+                            id: this.widgets.addWidget('body')
+                        })
+                    ])
                 ])
             ].join('');
         }
 
-        function attach(node) {
-            mount = node;
-            container = document.createElement('div');
-            container.classList.add('plugin-mainwindow', 'widget-mainwindow', '-main');
-            container.setAttribute('data-k-b-testhook-plugin', 'mainwindow');
-            mount.appendChild(container);
+        attach(node) {
+            this.hostNode = node;
+            this.container = this.hostNode.appendChild(document.createElement('div'));
+            this.container.classList.add('plugin-mainwindow', 'widget-mainwindow', '-main');
+            this.container.setAttribute('data-k-b-testhook-plugin', 'mainwindow');
         }
 
-        function start(params) {
-            container.innerHTML = renderLayout();
-            return widgetSet.init()
-                .then(function () {
-                    return widgetSet.attach(container);
+        start(params) {
+            this.container.innerHTML = this.renderLayout();
+            return this.widgets.init()
+                .then(() => {
+                    return this.widgets.attach(this.container);
                 })
-                .then(function () {
-                    return widgetSet.start(params);
-                });
-        }
-
-        function run(params) {
-            return widgetSet.run(params);
-        }
-
-        function stop() {
-            return widgetSet.stop();
-        }
-
-        function detach() {
-            return widgetSet.detach()
-                .then(function () {
-                    if (mount && container) {
-                        mount.removeChild(container);
+                .then(() => {
+                    return this.widgets.start(params);
+                })
+                .then(() => {
+                    if (this.runtime.featureEnabled('system_alert_notification')) {
+                        ko.applyBindings(this.vm, this.container.querySelector('.-content-area'));
+                        ko.applyBindings(this.vm, this.container.querySelector('.-alerts'));
                     }
                 });
         }
 
-        function destroy() {
-            return widgetSet.destroy();
+        run(params) {
+            return this.widgets.run(params);
         }
 
-        return {
-            attach: attach,
-            start: start,
-            run: run,
-            stop: stop,
-            detach: detach,
-            destroy: destroy
-        };
+        stop() {
+            return this.widgets.stop();
+        }
+
+        detach() {
+            return this.widgets.detach()
+                .then(() => {
+                    if (this.hostNode && this.container) {
+                        this.hostNode.removeChild(this.container);
+                    }
+                });
+        }
+
+        destroy() {
+            return this.widgets.destroy();
+        }
     }
 
-    return {
-        make: function (config) {
-            return factory(config);
-        }
-    };
+    return {Widget: MainWindow};
 });

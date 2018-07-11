@@ -37,7 +37,7 @@ define([], function () {
 
             if (!alarm.timer) {
                 alarm.timer = window.setInterval(function () {
-                    Object.keys(alarm.listeners).forEach(function(id) {                        
+                    Object.keys(alarm.listeners).forEach(function (id) {
                         var listener = alarm.listeners[id];
                         try {
                             listener.callCount += 1;

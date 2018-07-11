@@ -1,0 +1,56 @@
+{
+    "deploy": {
+        "environment": "{{ default .Env.deploy_environment "dev" }}",
+        "hostname": "{{ default .Env.deploy_hostname "localhost" }}",
+        "icon": "{{ .Env.deploy_icon }}",
+        "name": "{{ .Env.deploy_name }}",
+        "services": {
+            "urlBase": "https://{{ default .Env.deploy_hostname "localhost" }}",
+            "dynamicServiceProxies": [{{ range $i, $v := split .Env.dynamic_service_proxies "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+        }
+    },
+    "ui": {       
+        "services": {
+            "analytics": {
+                "google": {
+                    "hostname": "{{ .Env.ui_services_analytics_google_hostname }}",
+                    "code": "{{ .Env.ui_services_analytics_google_code }}"
+                }
+            },
+             "session": {
+                "cookie": {
+                    "backup": {
+                        "domain": {{ if .Env.ui_backupCookie_domain }}"{{.Env.ui_backupCookie_domain}}"{{else}}null{{end}},
+                        "enabled": {{ default .Env.ui_backupCookie_enabled "false"}}
+                    }
+                }
+            },
+            "menu": {
+                "menus": {
+                    "hamburger": {
+                        "disabled": [{{ range $i, $v := split .Env.ui_services_menu_hamburger_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+                    },
+                    "sidebar": {
+                        "disabled": [{{ range $i, $v := split .Env.ui_services_menu_sidebar_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+                    }
+                }
+            }
+        },
+        "allow": [{{ range $i, $v := split .Env.allow "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+        "featureSwitches": {
+            "enabled": [{{ range $i, $v := split .Env.ui_featureSwitches_enabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+            "disabled": [{{ range $i, $v := split .Env.ui_featureSwitches_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+        }
+    },
+    "services": {
+        "narrative": {
+            "url": "{{ .Env.services_narrative_url }}"
+        },
+        "auth2": {
+            "providers": [{{ range $i, $v := split .Env.services_auth2_providers "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+            "version": {
+                "minimum": "{{ .Env.services_auth2_version_minimum }}"
+            }
+        }
+    }
+}

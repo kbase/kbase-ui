@@ -1,7 +1,13 @@
 define([
-    'bluebird'
-], function (Promise) {
+    'bluebird',
+], function (
+    Promise
+) {
     'use strict';
+
+    // Note that we use the global require here because we need to
+    // update the global confirmation.
+    var prequire = Promise.promisify(window.require);
 
     function factory(config) {
         var runtime = config.runtime,
@@ -9,7 +15,7 @@ define([
             services = {};
 
         /*
-         * All of these installXXX installers return an array of 
+         * All of these installXXX installers return an array of
          * promises.
          */
 
@@ -42,6 +48,7 @@ define([
                 }
                 typeName = nameMatch[1];
                 if (!runtime.hasService(typeName)) {
+                    console.error('missing service', typeName, def, pluginConfig);
                     throw {
                         name: 'MissingService',
                         message: 'The requested service "' + typeName + '" was not registered in the plugin manager',
@@ -61,7 +68,7 @@ define([
 
         function installPlugin(pluginLocation, pluginDef) {
             // build up a list of modules and add them to the require config.
-            return new Promise(function (resolve, reject) {
+            return Promise.try(function () {
                 var paths = {},
                     shims = {},
                     sourcePath = pluginLocation.directory,
@@ -112,8 +119,8 @@ define([
                 // Create a dynamic module for the plugin to use. The current use
                 // case is for code within the plugin to have access to the path
                 // to the plugin for loading other files.
-                // 
-                // NB: this implies that the plugin package name is unique in 
+                //
+                // NB: this implies that the plugin package name is unique in
                 // the system. To enforce or at least help developers with this
                 // we should have a plugin registry.
                 define('kb_plugin_' + pluginDef.package.name, [], function () {
@@ -121,7 +128,7 @@ define([
                         plugin: {
                             name: pluginDef.package.name,
                             resources: {
-                                // to be used for module loading, e.g. yaml, json, 
+                                // to be used for module loading, e.g. yaml, json,
                                 // css through requirejs
                                 modulePath: '/' + sourcePath + '/resources',
                                 // to be used for document references, e.g. img, css doc
@@ -141,30 +148,24 @@ define([
                     resourcesRoot: moduleBase + '/' + sourcePath + '/resources'
                 };
 
-                // Now install any routes.
+                // Now install any ui service configuration.
                 if (pluginDef.install) {
-                    require(dependencies, function () {
-                        var installSteps = [];
+                    return prequire(dependencies)
+                        .then(() => {
+                            var installSteps = [];
 
-                        Object.keys(pluginDef.install).forEach(function (serviceName) {
-                            var installDef = pluginDef.install[serviceName],
-                                intallationPromise = installIntoService(serviceName, installDef, pluginConfig);
-                            if (intallationPromise) {
-                                arrayExtend(installSteps, [intallationPromise]);
-                            }
-                        });
-                        // Do all of the install steps.
-                        Promise.all(installSteps)
-                            .then(function () {
-                                resolve();
-                            })
-                            .catch(function (err) {
-                                console.error(err);
-                                reject(err);
+                            Object.keys(pluginDef.install).forEach(function (serviceName) {
+                                var installDef = pluginDef.install[serviceName],
+                                    intallationPromise = installIntoService(serviceName, installDef, pluginConfig);
+                                if (intallationPromise) {
+                                    arrayExtend(installSteps, [intallationPromise]);
+                                }
                             });
-                    });
+                            // Do all of the install steps.
+                            return Promise.all(installSteps);
+                        });
                 } else {
-                    resolve();
+                    return null;
                 }
             });
         }
@@ -192,7 +193,7 @@ define([
         }
 
         /**
-         * 
+         *
          * @param {type} pluginDef
          * @returns {Promise}
          */

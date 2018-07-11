@@ -4,7 +4,8 @@
 
 | Branch   | Build  || Coverage ||
 |----------|--------|---|----------|---|
-| master   | ![travis](https://travis-ci.org/kbase/kbase-ui.svg?branch=master) | [details](https://travis-ci.org/kbase/kbase-ui) | ![coveralls](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master) | [details](https://coveralls.io/r/kbase/kbase-ui?branch=master)  |
+| master   | ![travis](https://travis-ci.org/kbase/kbase-ui.svg?branch=master) | [details](https://travis-ci.org/kbase/kbase-ui?branch=master) | ![coveralls](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master) | [details](https://coveralls.io/r/kbase/kbase-ui?branch=master)  |
+| develop   | ![travis](https://travis-ci.org/kbase/kbase-ui.svg?branch=develop) | [details](https://travis-ci.org/kbase/kbase-ui?branch=develop) | ![coveralls](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=develop) | [details](https://coveralls.io/r/kbase/kbase-ui?branch=develop)  |
 
 ## About
 
@@ -23,14 +24,15 @@ The KBase User Interface (*kbase-ui*) is a web browser Single Page App (SPA) pro
 The primary audience for this project is 
 
 - *KBase Developers and Staff* - who need access to the kbase-ui for development, testing, deployment
-- *KBase ContributorsAdvanced Users* - who are developing servivces and plugins for kbase-ui,
+- *KBase Advanced Users* - who are developing services and plugins for kbase-ui,
 - *KBase Contributors* - who wish to know more about the architecture and "sausage making" of KBase.
 
 Most KBase users will be exposed to the KBase UI by ... [using KBase](https://narrative.kbase.us) :)
 
-## Development
+## Documentation
 
-Please see the [documentation](docs/index.md) for additional information on development and deployment.
+- [develop](https://ci.kbase.us/_book/index.html) - Documentation available in the current develop branch of kbase-ui
+- [release]() - Documentation available in the current production release (will be available after the 1.7.0 is released)
 
 ## Contributing
 
@@ -38,7 +40,7 @@ The KBase UI is an open source project, managed through github. As such, contrib
 
 ## Release Notes
 
-The current released version is [1.5.0](release-notes/RELEASE_NOTES_1.5.0.md). 
+The current released version is [1.7.0](release-notes/RELEASE_NOTES_1.7.0.md).
 
 ## Reporting Bugs
 

@@ -16,14 +16,14 @@ define([
         th = t('th'),
         td = t('td');
 
+    class NotFoundWidget {
+        constructor() {
+            this.hostNode = null;
+            this.container = null;
+        }
 
-    function factory(config) {
-        var hostNode, container;
-
-        // IMPL
-
-        function render(params) {
-            var query;
+        render(params) {
+            let query;
             if (params.request.query && Object.keys(params.request.query).length > 0) {
                 query = table({
                     class: 'table',
@@ -35,11 +35,11 @@ define([
                         th({style: {fontWeight: 'normal'}}, 'Key'),
                         th({style: {fontWeight: 'normal'}}, 'Value')
                     ]),
-                    Object.keys(params.request.query).map(function(key) {
+                    Object.keys(params.request.query).map(function (key) {
                         return tr([
                             td({style: {fontWeight: 'bold'}}, html.embeddableString(key)),
                             td({style: {fontWeight: 'bold'}}, html.embeddableString(params.request.query[key]))
-                        ])
+                        ]);
                     }).join('\n')
                 ]);
             }
@@ -71,34 +71,22 @@ define([
             }));
         }
 
-        // API
-
-        function attach(node) {
-            hostNode = node;
-            container = document.createElement('div');
-            hostNode.appendChild(container);
+        attach(node) {
+            this.hostNode = node;
+            this.container = document.createElement('div');
+            this.hostNode.appendChild(this.container);
         }
 
-        function start(params) {
-            container.innerHTML = render(params);
+        start(params) {
+            this.container.innerHTML = this.render(params);
         }
 
-        function detach() {
-            if (hostNode && container) {
-                hostNode.removeChild(container);
+        detach() {
+            if (this.hostNode && this.container) {
+                this.hostNode.removeChild(this.container);
             }
         }
-
-        return {
-            attach: attach,
-            start: start,
-            detach: detach
-        };
     }
 
-    return {
-        make: function (config) {
-            return factory(config);
-        }
-    };
+    return {Widget: NotFoundWidget};
 });

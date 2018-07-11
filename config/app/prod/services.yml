@@ -13,6 +13,8 @@ ui:
     schema: {}
     route: {}
     session: {}
+    rpc: {}
+    coreService: {}
     # dynamic-service: {}
     menu:
       menus:
@@ -33,17 +35,22 @@ ui:
                   auth: true
                   allowRoles: [DevToken]
                 -
-                  id: simple-search
-                  auth: true           
-                  allowRoles: [DevToken]
-                -
                   id: narrative-info
                   auth: true
                   allow: [alpha]
                 -
-                  id: reske-admin
+                  id: dashboard2
                   auth: true
                   allow: [alpha]
+                  allowRoles: [DevToken]  
+                -             
+                  id: databrowser
+                  auth: true
+                  allowRoles: [DevToken]  
+                -
+                  id: typebrowser
+                  auth: true
+                  allowRoles: [DevToken]      
             help:
               items:
                 -

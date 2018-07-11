@@ -2,7 +2,7 @@ define([
     'kb_common/html',
     'kb_common/places'
 ],
-function(
+function (
     html,
     Places
 ) {
@@ -62,8 +62,7 @@ function(
         }
 
         function start(params) {
-            var id = params.messageId,
-                messageInfo = getInfo(params),
+            var messageInfo = getInfo(params),
                 message = findMessage(params.id, messageInfo);
             runtime.send('ui', 'setTitle', message.title);
             places.setContent('title', message.title);
@@ -84,7 +83,7 @@ function(
     }
 
     return {
-        make: function(config) {
+        make: function (config) {
             return widget(config);
         }
     };

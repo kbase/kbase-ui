@@ -2,7 +2,7 @@ define([
     'knockout-plus',
     'kb_common/html',
     '../clock'
-], function(
+], function (
     ko,
     html,
     Clock
@@ -113,10 +113,10 @@ define([
             if (startTime) {
                 var e =  currentTime() - startTime;
                 return niceDuration(e);
-            } 
+            }
             return 'n/a';
         });
-        
+
         function dispose() {
             if (listener) {
                 Clock.globalClock.forget(listener);
@@ -129,7 +129,7 @@ define([
             dispose: dispose
         });
     }
-    
+
     function template() {
         return div([
             span({

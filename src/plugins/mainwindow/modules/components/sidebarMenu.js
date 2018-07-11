@@ -1,8 +1,10 @@
 define([
-    'knockout-plus',
+    'kb_knockout/registry',
+    'kb_knockout/lib/generators',
     'kb_common/html'
 ], function (
-    ko,
+    reg,
+    gen,
     html
 ) {
     'use strict';
@@ -11,13 +13,11 @@ define([
         div = t('div'),
         a = t('a');
 
-    function viewModel(params) {
-        var buttons = params.buttons;
-
-        return {
-            buttons: buttons,
-            isAuthorized: params.isAuthorized
-        };
+    class ViewModel {
+        constructor(params) {
+            this.buttons = params.buttons;
+            this.isAuthorized = params.isAuthorized;
+        }
     }
 
     var styles = html.makeStyles({
@@ -84,22 +84,18 @@ define([
                     text: 'label'
                 }
             }),
-            '<!-- ko if: $data.beta -->',
-            div({
-                style: {
-                    position: 'absolute',
-                    top: '0',
-                    // left: '0',
-                    right: '0',
-                    color: 'rgb(193, 119, 54)',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    fontStyle: 'italic'
-                }
-            }, 'beta'),
-            '<!-- /ko -->'
-            // info,
-            // status
+            gen.if('$data.beta',
+                div({
+                    style: {
+                        position: 'absolute',
+                        top: '0',
+                        right: '0',
+                        color: 'rgb(193, 119, 54)',
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                        fontStyle: 'italic'
+                    }
+                }, 'beta'))
         ]);
     }
 
@@ -109,9 +105,7 @@ define([
                 foreach: 'buttons'
             }
         }, [
-            // '<!-- ko ifnot: authRequired && !$component.isAuthorized() -->',
-            buildButton(),
-            // '<!-- /ko -->'
+            buildButton()
         ]);
     }
 
@@ -124,10 +118,10 @@ define([
 
     function component() {
         return {
-            viewModel: viewModel,
+            viewModel: ViewModel,
             template: template()
         };
     }
 
-    return ko.kb.registerComponent(component);
+    return reg.registerComponent(component);
 });

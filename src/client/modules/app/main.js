@@ -3,9 +3,14 @@ define([
     'uuid',
     './hub',
     'kb_common/props',
+    'kb_knockout/load',
+    '../lib/utils',
+
     'yaml!config/plugin.yml',
     'json!config/config.json',
     'json!deploy/config.json',
+
+    // For effect
     'bootstrap',
     'css!font_awesome',
     'css!app/styles/kb-bootstrap',
@@ -17,6 +22,8 @@ define([
     Uuid,
     Hub,
     Props,
+    knockoutLoader,
+    utils,
     pluginConfig,
     appConfigBase,
     deployConfig
@@ -31,45 +38,8 @@ define([
         cancellation: true
     });
 
-    function isSimpleObject(obj) {
-        if (typeof obj !== 'object' || obj === null) {
-            return false;
-        }
-        return Object.getPrototypeOf(obj) === Object.getPrototypeOf({});
-    }
-
-    function mergeObjects(listOfObjects) {
-        function merge(obj1, obj2, keyStack) {
-            Object.keys(obj2).forEach(function (key) {
-                var obj1Value = obj1[key];
-                var obj2Value = obj2[key];
-                var obj1Type = typeof obj1Value;
-                var obj2Type = typeof obj2Value;
-                if (obj1Type === 'undefined' || obj1Value === null) {
-                    // undefined or null properties are always overwritable
-                    obj1[key] = obj2[key];
-                } else if (isSimpleObject(obj1Value) && isSimpleObject(obj2Value)) {
-                    // thread through objects.
-                    keyStack.push(key);
-                    merge(obj1Value, obj2Value, keyStack);
-                    keyStack.pop();
-                } else if (obj1Type === obj2Type) {
-                    // same typed values may be overwritten, but with a warning.
-                    obj1[key] = obj2[key];
-                } else {
-                    console.error('Unmergable at ' + keyStack.join('.') + ':' + key, obj1Type, obj1Value, obj2Type, obj2Value);
-                    throw new Error('Unmergable at ' + keyStack.join('.') + ':' + key);
-                }
-            });
-        }
-        var base = JSON.parse(JSON.stringify(listOfObjects[0]));
-        for (var i = 1; i < listOfObjects.length; i += 1) {
-            merge(base, listOfObjects[i], []);
-        }
-        return base;
-    }
-
     function fixConfig(config) {
+        // TODO: use a library call for this.
         function get(obj, props) {
             if (typeof props === 'string') {
                 props = props.split('.');
@@ -124,8 +94,15 @@ define([
                 var value = branch[key];
                 if (typeof value === 'string') {
                     branch[key] = fix(value);
-                } else if (isSimpleObject(value)) {
+                } else if (utils.isSimpleObject(value)) {
                     fixit(value);
+                } else if (value instanceof Array) {
+                    // console.log('fix array',value);
+                    value.forEach((v) => {
+                        if (utils.isSimpleObject(v)) {
+                            fixit(v);
+                        }
+                    });
                 }
             });
         }
@@ -136,26 +113,32 @@ define([
     // establish a global root namespace upon which we can
     // hang sine-qua-non structures, which at this time is
     // just the app.
-    var globalRef = new Uuid(4).format();
-    var global = window[globalRef] = Props.make();
+    const globalRef = new Uuid(4).format();
+    const global = window[globalRef] = Props.make();
 
-    return {
-        start: function () {
-            // merge the deploy and app config.
-            var merged = mergeObjects([appConfigBase, deployConfig]);
-            var appConfig = fixConfig(merged);
-            var app = Hub.make({
-                appConfig: appConfig,
-                nodes: {
-                    root: {
-                        selector: '#root'
-                    }
-                },
-                plugins: pluginConfig.plugins,
-                services: appConfig.ui.services
+    function start() {
+        // merge the deploy and app config.
+        var merged = utils.mergeObjects([appConfigBase, deployConfig]);
+        var appConfig = fixConfig(merged);
+        var app = Hub.make({
+            appConfig: appConfig,
+            nodes: {
+                root: {
+                    selector: '#root'
+                }
+            },
+            plugins: pluginConfig.plugins,
+            services: appConfig.ui.services
+        });
+        global.setItem('app', app);
+        return knockoutLoader.load()
+            .then((ko) => {
+                // Knockout Defaults
+                ko.options.deferUpdates = true;
+
+                return app.start();
             });
-            global.setItem('app', app);
-            return app.start();
-        }
-    };
+    }
+
+    return {start};
 });

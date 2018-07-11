@@ -2,9 +2,14 @@
     height: 46px;
     display: flex;
     align-items: flex-end;
+    flex: 1 1 0px;
+    min-width: 0;
 }
 
 .plugin-mainwindow .widget-title h1 {
     margin: 0;
     padding: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

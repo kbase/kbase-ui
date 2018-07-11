@@ -99,8 +99,8 @@ define([
         }
     }
 
-    function factory(config) {
-        var runtime = config.runtime,
+    function factory(config, params) {
+        var runtime = params.runtime,
             state = observed.make(),
             lastCheckAt = 0,
             lastConnectionAt = 0,
@@ -154,7 +154,7 @@ define([
 
             //     // show the disconnected dialog
             //     // which starts listening back to home base to see if we are
-            //     // connected yet. Allow the user to bail to a default "closer" 
+            //     // connected yet. Allow the user to bail to a default "closer"
             //     // page which is just a simple view which destroys the current view
             //     // and allows the user to just kill the tab.
             // });
@@ -164,7 +164,7 @@ define([
                 if (checking) {
                     return;
                 }
-                var now = new Date().getTime();
+                const now = new Date().getTime();
                 if (now - lastCheckAt > interval) {
                     checking = true;
                     var httpClient = new HttpClient.HttpClient();
@@ -293,8 +293,6 @@ define([
         };
     }
     return {
-        make: function (config) {
-            return factory(config);
-        }
+        make: factory
     };
 });

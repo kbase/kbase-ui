@@ -71,19 +71,19 @@ define([
                 }
             },
             indexList: {
-                css: {                    
+                css: {
                     listStyle: 'none',
                     padding: '0'
                 }
             },
             indexListItem: {
-                css: {                    
+                css: {
                     display: 'block',
                     padding: '4px'
                 }
             },
             indexListItemLink: {
-                css: {                                        
+                css: {
                     padding: '4px',
                     display: 'block'
                 },
@@ -118,7 +118,7 @@ define([
             },
             markdown: {
                 css: {
-    
+
                 },
                 inner: {
                     blockquote: {

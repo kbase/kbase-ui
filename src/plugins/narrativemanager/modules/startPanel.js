@@ -35,10 +35,10 @@ define([
                     }
                     //we need to construct a new narrative- we have a first timer
                     return narrativeManager.createTempNarrative({
-                            cells: [],
-                            parameters: [],
-                            importData: []
-                        })
+                        cells: [],
+                        parameters: [],
+                        importData: []
+                    })
                         .then(function (result) {
                             return {
                                 redirect: {

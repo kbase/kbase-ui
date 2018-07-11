@@ -1,0 +1,22 @@
+version: '3.6'
+services:
+  kbase-ui:
+    volumes: []
+      # - type: bind
+      #   source: ../kbase-ui-plugin-dataview/src/plugin
+      #   target: /kb/deployment/services/kbase-ui/dist/modules/plugins/dataview
+      # - type: bind
+      #   source: ../kbase-ui-plugin-jgi-search/src/plugin
+      #   target: /kb/deployment/services/kbase-ui/dist/modules/plugins/jgi-search
+      # - type: bind
+      #   source: ../kbase-ui-plugin-data-search/src/plugin
+      #   target: /kb/deployment/services/kbase-ui/dist/modules/plugins/data-search
+      # - type: bind
+      #   source: ../kbase-common-es6/src
+      #   target: /kb/deployment/services/kbase-ui/dist/modules/kb_lib
+      # - type: bind
+      #   source: ../kbase-knockout-extensions-es6/src
+      #   target: /kb/deployment/services/kbase-ui/dist/modules/kb_knockout
+      # - type: bind
+      #   source: ./src/plugins/mainwindow
+      #   target: /kb/deployment/services/kbase-ui/dist/modules/plugins/mainwindow

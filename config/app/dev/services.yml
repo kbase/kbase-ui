@@ -13,6 +13,8 @@ ui:
     schema: {}
     route: {}
     session: {}
+    rpc: {}
+    coreService: {}
     # dynamic-service: {}
     menu:
       menus:
@@ -29,17 +31,17 @@ ui:
             developer:
               items: 
                 -
+                  id: ui-service
+                  auth: true
+                - 
+                  id: dashboard2
+                  auth: true
+                -
                   id: test-lookup
                   auth: true
                 -
                   id: narrative-info
                   auth: true  
-                -
-                  id: dagre-example
-                  auth: true
-                -
-                  id: simple-search
-                  auth: true
                 -
                   id: simple-sample
                   auth: true
@@ -56,19 +58,10 @@ ui:
                 #   id: example-clojurescript
                 # auth: true
                 -
-                  id: reske-admin
-                  auth: true
-                -
-                  id: reske-object-search
-                  auth: true
-                -
                   id: tester
                   auth: true
                 -
                   id: test_dynamic_table
-                  auth: true
-                -
-                  id: paveldemo
                   auth: true
                 -             
                   id: databrowser

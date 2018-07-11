@@ -15,6 +15,14 @@ services:
         url: '{{ deploy.services.urlBase }}/services/auth'
         cookieName: kbase_session
         name: Authorization Version 2
+        coreService: true
+        type: rest
+        version: 
+            path: /
+            propertyPath: version
+            minimum: 0.2.0
+        # configure per deploy environment
+        providers: null
     awe:
         url: '{{ deploy.services.urlBase }}/services/awe-api'
         name: AWE
@@ -22,6 +30,11 @@ services:
         aliases: ['catalog']
         url: '{{ deploy.services.urlBase }}/services/catalog'
         name: Catalog
+        coreService: true
+        type: jsonrpc
+        version:
+            method: version
+            minimum: 2.1.0
     ftp_service:
         aliases: ['ftp']
         url: '{{ deploy.services.urlBase }}/services/kb-ftp-api/v0'
@@ -32,6 +45,11 @@ services:
         url: '{{ deploy.services.urlBase }}/services/narrative_method_store/rpc'
         image_url: '{{ deploy.services.urlBase }}/services/narrative_method_store/'
         name: Narrative Method Store
+        coreService: true
+        type: jsonrpc
+        version: 
+            method: ver
+            minimum: 0.3.6
     shock:
         url: '{{ deploy.services.urlBase }}/services/shock-api'
         name: Shock
@@ -39,6 +57,11 @@ services:
         aliases: ['user_profile']
         url: '{{ deploy.services.urlBase }}/services/user_profile/rpc'
         name: User Profile
+        coreService: true
+        type: jsonrpc
+        version:
+            method: ver
+            minimum: 0.2.0
     UserAndJobState:
         aliases: ['user_job_state']
         url: '{{ deploy.services.urlBase }}/services/userandjobstate'
@@ -51,22 +74,35 @@ services:
         aliases: ['data_import_export']
         url: '{{ deploy.services.urlBase }}/services/data_import_export'
         name: Data Import Export
-    KBaseRelationEngine:
-        aliases: ['reske']
-        url: '{{ deploy.services.urlBase }}/services/reske'
-        name: Search Two
     KBaseSearchEngine:
         aliases: ['search']
         url: '{{ deploy.services.urlBase }}/services/searchapi'
-        name: Search Three        
+        name: KBase Search Engine
+        coreService: true
+        type: jsonrpc
+        version: 
+            method: status
+            propertyPath: version
+            minimum: 0.1.1
     ServiceWizard:
         aliases: ['service_wizard']
         url: '{{ deploy.services.urlBase }}/services/service_wizard'
         name: Service Wizard
+        coreService: true
+        type: jsonrpc
+        version: 
+            method: version
+            minimum: 0.4.0
     Workspace:
         aliases: ['workspace']
         url: '{{ deploy.services.urlBase }}/services/ws'
         name: Workspace
+        coreService: true
+        type: jsonrpc
+        version: 
+            method: ver
+            minimum: 0.8.1
+
     # Not services, but useful endpoints
     doc_site:
         url: http://kbase.us
@@ -88,6 +124,15 @@ services:
     # KBaseSearchEngine:
     #     url: '{{deploy.services.urlBase}}/services/searchapi2'
     #     name: Local Search
+    # NarrativeService:
+    #     url: '{{deploy.services.urlBase}}/services/NarrativeService'
+    #     name: 'Narrative Service'
+    # DashboardService:
+    #     url: '{{deploy.services.urlBase}}/services/DashboardService'
+    #     name: 'Dashboard Service'
+    # UIService:
+    #     url: '{{deploy.services.urlBase}}/services/UIService'
+    #     name: 'UI Service'
 resources:
     docSite:
         base:

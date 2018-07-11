@@ -4,8 +4,8 @@ define([
     'kb_common/lang'
 ], function (Promise, Router, lang) {
     'use strict';
-    function factory(config) {
-        var runtime = config.runtime,
+    function factory(config, params) {
+        var runtime = params.runtime,
             router = Router.make(config),
             receivers = [],
             eventListeners = [];
@@ -63,7 +63,7 @@ define([
                     handler = {
                         params: {
                             title: 'Access Error',
-                            error: 'One or more required roles not available in your account: ' + handler.route.rolesRequired.join(', ')                           
+                            error: 'One or more required roles not available in your account: ' + handler.route.rolesRequired.join(', ')
                         },
                         route: {
                             authorization: false,
@@ -190,8 +190,6 @@ define([
         };
     }
     return {
-        make: function (config) {
-            return factory(config);
-        }
+        make: factory
     };
 });

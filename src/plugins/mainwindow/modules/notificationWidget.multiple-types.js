@@ -151,7 +151,7 @@ define([
         }
 
 
-        function viewModel(params) {
+        function viewModel() {
             var notifications = {
                 info: notificationSet({
                     label: 'info'
@@ -212,8 +212,8 @@ define([
                 dataBind: {
                     event: {
                         click: 'doToggleNotification'
-                            // mouseover: 'doMouseOver',
-                            // mouseout: 'doMouseOut'
+                        // mouseover: 'doMouseOver',
+                        // mouseout: 'doMouseOut'
                     },
                     // style: {
                     //     '"background-color"': 'backgroundColor'
@@ -270,19 +270,19 @@ define([
                         }
                     }, div({
                         class: '-notification'
-                            // dataBind: {
-                            //     css: {
-                            //         '"-hover"': 'over'
-                            //     }
-                            // }
+                        // dataBind: {
+                        //     css: {
+                        //         '"-hover"': 'over'
+                        //     }
+                        // }
                     }, [
                         div({
                             dataBind: {
                                 text: 'message'
-                                    // event: {
-                                    //     mouseover: 'doMouseOver',
-                                    //     mouseout: 'doMouseOut'
-                                    // }
+                                // event: {
+                                //     mouseover: 'doMouseOver',
+                                //     mouseout: 'doMouseOut'
+                                // }
                             },
                             style: {
                                 display: 'inline-block'
@@ -343,7 +343,7 @@ define([
             container = node;
         }
 
-        function start(params) {
+        function start() {
             container.innerHTML = div({
                 dataBind: {
                     component: {

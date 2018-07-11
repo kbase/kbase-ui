@@ -108,8 +108,8 @@ define([
                 textAlign: 'left',
                 display: 'flex',
                 alignItems: 'center'
-            }            
-        },        
+            }
+        },
         innerCell: {
             flex: '1 1 0px',
             overflow: 'hidden',
@@ -175,7 +175,7 @@ define([
         var subscriptions = ko.kb.SubscriptionManager.make();
 
         var slowLoadingThreshold = 300;
-        
+
         var table = params.table;
         var columns = table.columns;
         // calculate widths...
@@ -201,10 +201,10 @@ define([
         var sortDirection = ko.observable('descending');
 
         /*
-            Sorting is managed here in the table, and we 
+            Sorting is managed here in the table, and we
             communicate changes via the table.sortColumn() call.
              We don't know whether the implementation supports
-             single or multiple column sorts, etc. 
+             single or multiple column sorts, etc.
              In turn, the sorted property may be set to asending,
              descending, or falsy.
         */
@@ -216,11 +216,11 @@ define([
 
         // we hinge upon the height, which is updated when we start and when the ...
         var height = ko.observable();
-        
+
         function calcHeight() {
             return componentInfo.element.querySelector('.' + styles.classes.tableBody).clientHeight;
         }
-        
+
         // A cheap delay to avoid excessive resizing.
         var resizerTimeout = 200;
         var resizerTimer = null;
@@ -241,9 +241,9 @@ define([
         subscriptions.add(height.subscribe(function (newValue) {
             if (!newValue) {
                 table.pageSize(null);
-            }            
+            }
 
-            
+
             var rowCount = Math.floor(newValue / rowHeight);
 
             table.pageSize(rowCount);
@@ -273,7 +273,7 @@ define([
             doRowAction = null;
         }
 
-     
+
 
         var isLoadingSlowly = ko.observable(false);
 
@@ -293,7 +293,7 @@ define([
             }
             isLoadingSlowly(false);
         }
-        
+
         subscriptions.add(table.isLoading.subscribe(function (loading) {
             if (loading) {
                 timeLoading();
@@ -369,7 +369,7 @@ define([
         }, [
             '<!-- ko if: column.sort -->',
             div({
-                
+
                 class: [styles.classes.innerSortCell]
             }, [
                 // header label
@@ -381,7 +381,7 @@ define([
                             text: 'column.label'
                         },
                         style: {
-                            
+
                             marginRight: '2px'
                         },
                     })
@@ -460,9 +460,9 @@ define([
                     click: 'function () {$component.doOpenUrl(row[column.name]);}',
                     clickBubble: 'false'
                 }
-            }),            
+            }),
             '<!-- /ko -->',
-            
+
             '<!-- ko ifnot: row[column.name].url -->',
             span({
                 dataBind: {
@@ -477,7 +477,7 @@ define([
                 }
             }),
             '<!-- /ko -->',
-            
+
             '<!-- /ko -->',
         ];
     }
@@ -694,7 +694,7 @@ define([
                 }
             },
             class: styles.classes.itemRows
-        }, [            
+        }, [
             div({
                 dataBind: {
                     foreach: {
@@ -760,8 +760,8 @@ define([
 
                     '<!-- ko ifnot: column.component -->',
 
-                    '<!-- ko if: row[column.name]  -->',                    
-                    buildColValue(),                    
+                    '<!-- ko if: row[column.name]  -->',
+                    buildColValue(),
                     '<!-- /ko -->',
 
                     // '<!-- ko ifnot: column.type -->',
@@ -774,7 +774,7 @@ define([
                     //     }
                     // }),
                     '<!-- /ko -->',
-                    
+
                     '<!-- /ko -->',
                     // '<!-- ko ifnot: typeof row[column.name] === "object" && row[column.name] !== null  -->',
                     // span({
@@ -799,7 +799,7 @@ define([
                     right: '0',
                     top: '0',
                     bottom: '0',
-                    backgroundColor: 'rgba(255, 255, 255, 0.5)',                    
+                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
                     fontSize: '300%',
                     display: 'flex',
                     flexDirection: 'column',
@@ -862,7 +862,7 @@ define([
                 class: styles.classes.tableBody
             }, [
                 // Handle case of a search having been run, but nothing found.
-                '<!-- ko switch: $component.state() -->', 
+                '<!-- ko switch: $component.state() -->',
 
                 '<!-- ko case: "notfound" -->',
                 div({
@@ -874,7 +874,7 @@ define([
                 }, buildNoResults()),
                 '<!-- /ko -->',
 
-                // Handle case of no active search. We don't want to confuse the user 
+                // Handle case of no active search. We don't want to confuse the user
                 // by indicating that nothing was found.
                 '<!-- ko case: "none" -->',
                 div({

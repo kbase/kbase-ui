@@ -8,7 +8,7 @@ define([
         var messenger = config.messenger;
         var serviceManager = config.serviceManager;
 
-        // Access to ui config. 
+        // Access to ui config.
         // This is simply a wrapping around the venerable Props module.
         function getConfig(prop, defaultValue) {
             return configProps.getItem(prop, defaultValue);
@@ -23,8 +23,8 @@ define([
         }
 
         // allow tag
-        // Returns true if the provided string 'tag' is found in 
-        // the array of allowed tags, as defined in the config 
+        // Returns true if the provided string 'tag' is found in
+        // the array of allowed tags, as defined in the config
         // property 'ui.allow'.
         function allow(tag) {
             var allowed = configProps.getItem('ui.allow', []);
@@ -32,6 +32,42 @@ define([
                 allowed = [allowed];
             }
             return (allowed.indexOf(tag) >= 0);
+        }
+
+        var featureSwitches = {};
+        configProps.getItem('ui.featureSwitches.available', []).reduce((features, featureSwitch) => {
+            featureSwitches[featureSwitch.id] = featureSwitch;
+        }, {});
+
+        function featureEnabled(id) {
+            const featureSwitch = featureSwitches[id];
+            if (!featureSwitch) {
+                throw new Error('Feature switch "' + id + '" not defined');
+            }
+
+            // look for the feature switch in the.
+            const enabledFeatureSwitches = configProps.getItem('ui.featureSwitches.enabled');
+            // let disabledFeatureSwitches = configProps.getItem('ui.featureSwitches.disabled');
+
+            if (enabledFeatureSwitches.includes(id)) {
+                return true;
+            }
+            return false;
+        }
+
+        function featureDisabled(id) {
+            const featureSwitch = featureSwitches[id];
+            if (!featureSwitch) {
+                throw new Error('Feature switch "' + id + '" not defined');
+            }
+
+            // look for the feature switch in the.
+            const disabledFeatureSwitches = configProps.getItem('ui.featureSwitches.disabled');
+
+            if (disabledFeatureSwitches.includes(id)) {
+                return true;
+            }
+            return false;
         }
 
         // The receive and send functions are the primary message methods
@@ -112,6 +148,8 @@ define([
             rawConfig: rawConfig,
 
             allow: allow,
+            featureDisabled,
+            featureEnabled,
 
             // Messaging
             send: send,
@@ -136,17 +174,6 @@ define([
             getService: function () {
                 return proxyMethod(serviceManager, 'getService', arguments);
             }
-
-            // pretty sure all this is defunct.
-            // addService: function () {
-            //     return proxyMethod(appServiceManager, 'addService', arguments);
-            // },
-            // loadService: function () {
-            //     return proxyMethod(appServiceManager, 'loadService', arguments);
-            // },
-            // dumpServices: function () {
-            //     return proxyMethod(appServiceManager, 'dumpServices', arguments);
-            // }
         });
     }
 

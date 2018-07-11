@@ -41,6 +41,25 @@
     padding-top: 1em;
 }
 
+.plugin-mainwindow.widget-mainwindow.-main>.-body>.-content-area {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    /* padding-top: 1em; */
+}
+
+.plugin-mainwindow.widget-mainwindow.-main>.-body>.-content-area>.-notification-banner {
+    flex: 0 0 0px;
+}
+
+.plugin-mainwindow.widget-mainwindow.-main>.-body>.-content-area>.-plugin-content {
+    flex: 1 1 0px;
+    overflow: auto;
+    display:flex;
+    flex-direction: column;
+    padding-top: 1em;
+}
 
 /* Own */
 
@@ -92,6 +111,10 @@
     align-items: center;
     justify-content: left;
     display: flex;
+    width: 0px;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .plugin-mainwindow.widget-mainwindow .-navbar .-cell.-menu {}
@@ -104,6 +127,13 @@
     align-items: center;
     justify-content: center;
     display: flex;
+}
+
+.plugin-mainwindow.widget-mainwindow .-navbar .-cell.-alerts {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    margin-right: 4px;
 }
 
 .plugin-mainwindow.widget-mainwindow .-navbar .-cell.-deployment {
@@ -201,6 +231,18 @@
     color: #2196F3;
 }
 
+.plugin-mainwindow.widget-mainwindow .-navbar .fa.fa-color-warning::before {
+    color: orange;
+}
+
+.plugin-mainwindow.widget-mainwindow .-navbar .fa.fa-color-danger::before {
+    color: red;
+}
+
+.plugin-mainwindow.widget-mainwindow .-navbar .fa.fa-color-success::before {
+    color: green;
+}
+
 
 /* Enable background hover for navbar buttons. It is disabled for other buttons */
 
@@ -269,3 +311,15 @@ The content area is normal flow and just needs to have a matching top margin.
 .xbtn-xs .glyphicon-user {
     padding: 14px 5px 14px 5px;
 }*/
+
+.fa-color-warning::before {
+    /* color: rgb(143, 127, 97); */
+    color: orange;
+}
+
+.fa-color-danger::before {
+    color: red;
+}
+
+.fa-color-success::before {
+    color: green;

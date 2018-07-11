@@ -2,7 +2,7 @@ define([
     'bluebird',
     'kb_common/observed'
 ], function (
-    Promise, 
+    Promise,
     observed
 ) {
     'use strict';
@@ -43,7 +43,7 @@ define([
          * Add a defined menu item to a menu, according to a menu entry definition.
          */
         function addToMenu(menuEntry, menuItemSpec) {
-            var menu, section, position, 
+            var menu, section, position,
                 menuItems = state.getItem('menuItems'),
                 menuItemDef = menuItems[menuItemSpec.id];
 
@@ -78,7 +78,7 @@ define([
                 allowRoles: menuItemSpec.allowRoles || null,
                 authRequired: menuItemSpec.auth ? true : false
             };
-            
+
             menu = menuEntry.menu;
             section = menuEntry.section;
             position = menuEntry.position || 'bottom';
@@ -97,7 +97,6 @@ define([
             });
         }
 
-        // Get the 
         function getCurrentMenu(menu) {
             menu = menu || 'hamburger';
             var menus = state.getItem('menu.' + menu);
@@ -184,8 +183,6 @@ define([
     }
 
     return {
-        make: function (config) {
-            return factory(config);
-        }
+        make: factory
     };
 });

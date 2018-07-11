@@ -20,6 +20,7 @@
  */
 
 /*eslint-env node*/
+/*eslint {strict: ['error', 'global']}*/
 'use strict';
 
 var findit = require('findit2'),
@@ -37,7 +38,8 @@ function copyFiles(tryFrom, tryTo, globExpr) {
     return Promise.all([fs.realpathAsync(tryFrom.join('/')), fs.realpathAsync(tryTo.join('/'))])
         .spread(function (from, to) {
             return [from.split('/'), to.split('/'), glob(globExpr, {
-                cwd: from
+                cwd: from,
+                nodir: true
             })];
         })
         .spread(function (from, to, matches) {
@@ -48,6 +50,20 @@ function copyFiles(tryFrom, tryTo, globExpr) {
             }));
         });
 }
+
+// function copyFiles(from, to, globExpr) {
+//     return glob(globExpr, {
+//         cwd: from.join('/'),
+//         nodir: true
+//     })
+//         .then(function (matches) {
+//             return Promise.all(matches.map(function (match) {
+//                 var fromPath = from.concat([match]).join('/'),
+//                     toPath = to.concat([match]).join('/');
+//                 return fs.copy(fromPath, toPath, {});
+//             }));
+//         });
+// }
 
 function ensureEmptyDir(path) {
     var dir = path.join('/');
@@ -64,11 +80,47 @@ function ensureEmptyDir(path) {
         });
 }
 
+function loadDockerEnvFile(path) {
+    var filePath;
+    if (typeof path === 'string') {
+        filePath = path;
+    } else {
+        filePath = path.join('/');
+    }
+    return fs.readFileAsync(filePath, 'utf8')
+        .then(function (contents) {
+            return contents.split('\n')
+                .reduce(function (lines, line) {
+                    line = line.trimLeft();
+                    if (line.trim().length === 0) {
+                        return lines;
+                    } else if (line[0] === '#') {
+                        return lines;
+                    }
+                    var pos = line.indexOf('=');
+                    if (pos === -1) {
+                        lines[key] = null;
+                        return lines;
+                    } 
+                    var key = line.slice(0, pos);
+                    var value = line.slice(pos+1);
+                    lines[key] = value;
+                    return lines;
+                }, {});
+        });
+}
+
 function loadYaml(path) {
     var yamlPath = path.join('/');
     return fs.readFileAsync(yamlPath, 'utf8')
         .then(function (contents) {
-            return yaml.safeLoad(contents);
+            try {
+                return yaml.safeLoad(contents);
+            } catch (ex) {
+                console.log('Error loading yaml', ex);
+                console.log(contents);
+                throw new Error('Error loading yaml: ' + ex.message);
+            }
         });
 }
 
@@ -128,6 +180,10 @@ function mkdir(inPath, dirPath) {
     }
     fs.ensureDirSync(pathString);
     return path;
+}
+
+function ensureDir(path) {
+    return fs.ensureDirSync(path.join('/'));
 }
 
 function copydir(fromRoot, fromDir, toRoot, toDir) {
@@ -362,5 +418,7 @@ module.exports = {
     log: log,
     warn: warn,
     success: success,
-    mergeObjects: mergeObjects
+    mergeObjects: mergeObjects,
+    loadDockerEnvFile: loadDockerEnvFile,
+    ensureDir: ensureDir
 };

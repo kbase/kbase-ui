@@ -1,56 +1,48 @@
 dist: trusty
 sudo: required
+
+# Ensure we are using the most recent docker
+# TODO: specific docker version
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+# Note that node is not actually used in the build; but it is the closest to the truth 
+# for what happens. Without a language Travis installs completely unrelated stuff.
 language: node_js
+node_js:
+  - "8"
+# The build happens inside docker now.
 services:
   - docker
 
-# Note that travis-ci docs do not always reflect the current state of
-# node_js support. E.g. at the moment the docs say 4.2 is the latest on the 4.X
-# branch, but it is actually 4.4
-node_js:
-  - "6"
-
-# These are travis encrypted var for the DOCKER_USER and DOCKER_PASS creds
-# used in the build/push2dockerhub.sh script
+# These are travis encrypted var for the DOCKER_USER and DOCKER_PASS credentials
+# used in the deployment/tools/push2dockerhub-travis.sh script
 env:
   global:
     - secure: "rEkz6iLJq6W9Cp9EgWkmxE4eL7vUsBgG1bmSN42yy8SDjgot1VUYLrO0ZVonxCqdgGvXgfZaDVu/ohtG1D03smzpIvA+yCj/81UnewzBtzqejrAbCB05qGhWd+2VUIF7b0VpMtqmpT4TK6uuTswhYTrXoivduCI8GtqI8s7Yd4WTGUUEa8y6MaEP9qa3/NfPaXTo9OgG+1Obys5fLCdcWgtM58P9H4wFNeHeUBAzLFd96BKzTnctt4shqaUA7Kbh5xriAAC/5Zplna37FqY+wBOfXo7gesQmJs2GBBMinNvq1JDoyPF6Q0iX8UEbNys2/3RxnAwnfOgVw2GEcRF+68mhVApAz/PQK3K6vhKcRG7SnSYg4Gu6gsK0VB5UlNGnQWc0wb/qOGjvbDAZ0SHViCIjSo1m+TC4taOloTHR6iKX/L0lUxaJAxOaLO6dJkdiK2AK9FsukiRPBPjGIQowk+PhIwG88C1mUeBdO68bH0kU46PCbbW9hBT11pRkPHZnEkufOPNEKqE0rfvcuGij88+qzceO878+iYNhpu/MtuyiVX3nZEL6e4DmXRQApWaqf/TAqW1HDlupGCjPKf6jTS6NAJ9m84rKJfOsFbT2Ce0K8MxsXvjmXKnilOFl93SADwKP1PwalskjmTqRVOBxLYOLelP+by9ziwpw1d++LDA="
     - secure: "v3FaaIHRKGezEtemhmop7due3sHQWspnrnmOiY3kQyusfqzNmmcOIZ39wug3DRjhB88kzrJMUSLYQ5n95420Ss4w2d4mHJUidoG5tiftmXun9WKa1h1BOhk3RbvJff26ipdb+EJt8RrBEtwBANFifR5dQI1xgUkCkarS3QtvL/uCW/UcNX6J6sWkGc+9dGzrph6fM+LcWsX1cmKCVmnPdejbrhK3+YFgdb3bSWSpEMZme9pt0q9440Dg8Cb1lf8UOuVcWFmgLx87MvD1kHmOVkGxDXOxJzPv6gIB13XUH1pkShqVJEWK6DU/1A+ry7BsL6gw/YNXdmr0Cy0I3/EOXfBXrV4hKsQeU7ebvPRekkQD/49KXvA2crfkoMqufnFUTyLBq6iJDwlIqCud5+CRtlcsPtReFsGplP/x5++noW/wvs/EVSuZBoHSAJ28wAiTqMSyqO4iwLeEtxjcE/UeuR7fmJG618C7DpgyhlSXeCz9qpN2CjioqX/tisbMhJDHFrD7SkI/CaJB+FdfpO2BU+zeNbeGFSur74PRZL7PYNxIPzOaN1Tf8HfYE5WxduL+Q+yr5E5CwefWUzW0+SDk8/eTgVmINBW8rqPWIsdYE1tgPm1ST7mjATr9WvsjWeHgPAi2pQc3EYQ9yj7/m+vfoJ1bOdxXcU8F/X49fwtmegM="
-# upcoming
 
-addons:
-  firefox: latest
-
-# addons:
-#     apt:
-#         packages:
-#             - nginx
-#     sauce_connect: true
-
-#cache:
-#  directories:
-#  - bower_components
-#  - node_modules
 branches:
     only:
-        - master
+        # builds for any PR merged into the develop branch
         - develop
+        # builds when a release is tagged using a "v" prefixed semver tag.
+        # This is rough, but all we are after for is a trigger, not semver 
+        # validation!
+        # master is tagged as a release after develop->master is merged
+        - ^v.*$
+        
 
 install:
-    - make init
-    - make build config=ci
+    # Note that this will build the image appropriately, depending upon
+    # whether the current branch is develop or master
+    - make docker-image
 
-# upcoming
-# Sets up the nginx server for proxying
-# before_script:
-#     - tools/travis/deploy-travis.sh
-#     - tools/travis/start-nginx.sh
-
-script: make test-travis
-
-# upcoming
-# after_script:
-#     - tools/travis/stop-nginx.sh
 after_success:
-  - make docker_image
-  - IMAGE_NAME=kbase/kbase-ui ./deployment/tools/push2dockerhub.sh
+  - IMAGE_NAME=kbase/kbase-ui ./deployment/tools/push2dockerhub-travis.sh
+
+scripts:
+  - docker version
+  - docker-compose version

@@ -9,20 +9,24 @@ define([
         div = t('div'),
         span = t('span');
 
-    function factory(config) {
-        var runtime = config.runtime;
-        var container;
-
-        function attach(node) {
-            container = node;
+    class DeploymentWidget {
+        constructor(params) {
+            this.runtime = params.runtime;
+            this.hostNode = null;
+            this.container = null;
         }
 
-        function start() {
+        attach(node) {
+            this.hostNode = node;
+            this.container = node;
+        }
+
+        start() {
             // Do not show the deployment widget for prod
-            if (runtime.config('deploy.environment') === 'prod') {
+            if (this.runtime.config('deploy.environment') === 'prod') {
                 return;
             }
-            container.innerHTML = div({
+            this.container.innerHTML = div({
                 style: {
                     border: '1px silver solid',
                     padding: '3px',
@@ -34,26 +38,21 @@ define([
                         textAlign: 'center',
                         fontWeight: 'bold',
                     }
-                }, runtime.config('deploy.environment').toUpperCase()),
+                }, this.runtime.config('deploy.environment').toUpperCase()),
                 div({
                     style: {
                         textAlign: 'center'
                     }
                 }, span({
-                    class: ['fa', 'fa-2x', 'fa-' + runtime.config('deploy.icon')]
+                    class: ['fa', 'fa-2x', 'fa-' + this.runtime.config('deploy.icon')]
                 }))
             ]);
         }
 
-        return {
-            attach: attach,
-            start: start
-        };
+        detach() {
+            this.container.innerHTML = '';
+        }
     }
 
-    return {
-        make: function (config) {
-            return factory(config);
-        }
-    };
+    return {Widget: DeploymentWidget};
 });

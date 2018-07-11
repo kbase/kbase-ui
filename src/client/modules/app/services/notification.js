@@ -37,8 +37,8 @@ Subscriptions are via our mini-pub-sub system since it is included in the runtim
 define([], function () {
     'use strict';
 
-    function factory(config) {
-        var runtime = config.runtime;
+    function factory(config, params) {
+        var runtime = params.runtime;
         var queued = [];
         var recipientChannel = null;
 
@@ -77,8 +77,6 @@ define([], function () {
     }
 
     return {
-        make: function (config) {
-            return factory(config);
-        }
+        make: factory
     };
 });

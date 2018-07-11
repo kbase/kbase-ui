@@ -1,5 +1,3 @@
-/*global define*/
-/*jslint white: true*/
 define([
     'bluebird',
     'kb_service/utils',
@@ -29,8 +27,8 @@ define([
         function getMostRecentNarrative() {
             // get the full list of workspaces
             return workspaceClient.callFunc('list_workspace_info', [{
-                    owners: [runtime.service('session').getUsername()]
-                }])
+                owners: [runtime.service('session').getUsername()]
+            }])
                 .spread(function (wsList) {
                     var workspaces = wsList
                         .map(function (workspaceInfo) {
@@ -60,10 +58,10 @@ define([
                         ref = [workspaceInfo.id, workspaceInfo.metadata.narrative].join('/');
 
                     return workspaceClient.callFunc('get_object_info_new', [{
-                            objects: [{ ref: ref }],
-                            includeMetadata: 1,
-                            ignoreErrors: 1
-                        }])
+                        objects: [{ ref: ref }],
+                        includeMetadata: 1,
+                        ignoreErrors: 1
+                    }])
                         .spread(function (objList) {
                             return ({
                                 workspaceInfo: workspaceInfo,

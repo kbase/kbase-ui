@@ -27,30 +27,37 @@ KARMA			= ./node_modules/.bin/karma
 # The config used to control the build (build task)
 # dev, prod
 # Defaults to prod
-config			= prod
+config			= 
 
 # The kbase-ui build folder to use for the docker image.
 # values: build, dist
 # Defaults to dist 
 # For local development, one would use the build, since is much faster 
 # to create. A debug build may be available in the future.
-build           = dist
+build           = 
 
 # The deploy environment; used by dev-time image runners
 # dev, ci, next, appdev, prod
-# Defaults to dev, since it is only useful for local dev; dev is really ci.
-# Causes run-image.sh to use the file in deployment/conf/$(env).env for
-# "filling out" the nginx and ui config templates.
-# TODO: hook into the real configs out of KBase's gitlab
-env             = dev
+# No default, because one should think about this.
+# Used to target the actual deploy config file (see kbase-ini-dir).
+env             = 
 
+# The custom docker network
+# For local development.
+net 			= kbase-dev
 
-DEV_DOCKER_CONTEXT	= $(TOPDIR)/deployment/dev/docker/context
-CI_DOCKER_CONTEXT	= $(TOPDIR)/deployment/ci/docker/context
-PROD_DOCKER_CONTEXT	= $(TOPDIR)/deployment/prod/docker/context
-PROXIER_DOCKER_CONTEXT     = $(TOPDIR)/tools/proxier/docker/context
+# The source of deployment configuration files.
+# The value can be a filesystem path or a url; note that the actual config (ini) file is 
+# applied to the path based on the "env" 
+# This is for development only - deployment uses it's own script to launch the image.
+# TODO: for the sake of completeness, https with self-signed certs should be supported.
+kbase-ini-dir  = /kb/deployment/config
 
 # functions
+
+# check_defined variable-name message
+# Ensures that the given variable 'variable-name' is defined; if not 
+# prints 'message' and the process exits with 1.
 # thanks https://stackoverflow.com/questions/10858261/abort-makefile-if-variable-not-set
 check_defined = \
     $(strip $(foreach 1,$1, \
@@ -59,6 +66,8 @@ __check_defined = \
     $(if $(value $1),, \
         $(error Undefined $1$(if $2, ($2))$(if $(value @), \
                 required by target `$@')))
+
+.PHONY: all test build docs
 
 # Standard 'all' target = just do the standard build
 all:
@@ -76,7 +85,7 @@ default:
 run: init build start pause preview
 
 NODE=$(shell node --version 2> /dev/null)
-NODE_REQUIRED="v6"
+NODE_REQUIRED="v8"
 majorver=$(word 1, $(subst ., ,$1))
 
 preconditions:
@@ -93,11 +102,13 @@ setup-dirs:
 	@echo "> Setting up directories."
 	mkdir -p temp/files
 
-install-tools:
+node_modules:
 	@echo "> Installing build and test tools."
 	npm install
 
-init: preconditions setup-dirs install-tools
+setup: preconditions setup-dirs
+
+init: setup node_modules
 
 
 # Perform the build. Build scnearios are supported through the config option
@@ -106,31 +117,32 @@ build: clean-build
 	@echo "> Building."
 	cd mutations; node build $(config)
 
-build-ci:
-	@echo "> Building for CI."
-	cd mutations; node build ci
+build-deploy-configs:
+	@echo "> Building Deploy Configs..."
+	@mkdir -p $(TOPDIR)/build/deploy/configs
+	@cd mutations; node build-deploy-configs $(TOPDIR)/deployment/ci/docker/kb-deployment/conf/config.json.tmpl $(TOPDIR)/config/deploy $(TOPDIR)/build/deploy/configs
+	@echo "> ... deploy configs built in $(TOPDIR)/build/deploy/configs"
+
+docker-network:
+	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
+	bash tools/docker/create-docker-network.sh $(net)
+
+# $(if $(value network_exists),$(echo "exists"),$(echo "nope"))
+
 
 # Build the docker image, assumes that make init and make build have been done already
+docker-image: 
+	@echo "> Building docker image for this branch; assuming we are on Travis CI"
+	@bash $(TOPDIR)/deployment/tools/build-travis.bash
 
-image: build-docker-image
-
-docker_image: build-docker-image
-
-build-docker-image:
-	@echo "> Building docker image for this branch."
-	@echo "> Cleaning out old contents"
-	rm -rf $(CI_DOCKER_CONTEXT)/contents
-	@echo "> Copying dist build of kbase-ui into contents..."
-	mkdir -p $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui
-	cp -pr build/$(build)/client/* $(CI_DOCKER_CONTEXT)/contents/services/kbase-ui
-	@echo "> Copying kb/deployment templates..."
-	cp -pr $(CI_DOCKER_CONTEXT)/../kb-deployment/* $(CI_DOCKER_CONTEXT)/contents
-	@echo "> Beginning docker build..."
-	cd $(TOPDIR)/deployment/; bash tools/build_docker_image.sh
+fake-docker-image:
+	@echo "> Building docker image for this branch, using fake "
+	@echo "  Travis environment variables derived from git."
+	@bash $(TOPDIR)/tools/docker/build-travis-fake.bash
 
 # The dev version of run-image also supports cli options for mapping plugins, libraries, 
 # and parts of ui into the image for (more) rapdi development workflow
-run-image:
+run-docker-image: docker-network
 	@echo "> Running kbase-ui image."
 	# @echo "> You will need to inspect the docker container for the ip address "
 	# @echo ">   set your /etc/hosts for ci.kbase.us accordingly."
@@ -138,30 +150,31 @@ run-image:
 	@echo "> plugins $(plugins)"
 	@echo "> internal $(internal)"
 	@echo "> libraries $(libraries)"
+	@echo "> ini dir $(kbase-ini-dir)"
 	@echo "> To map host directories into the container, you will need to run "
 	@echo ">   tools/run-image.sh with appropriate options."
-	$(eval cmd = $(TOPDIR)/tools/run-image.sh $(env) $(foreach p,$(plugins),-p $(p)) $(foreach i,$(internal),-i $i) $(foreach l,$(libraries),-l $l) $(foreach s,$(services),-s $s))
+# 	  --kbase-ini-url "$(kbase-ini-url)" 
+#	  -t "$(kbase-ini-dir)" 
+	$(eval cmd = $(TOPDIR)/tools/docker/run-image.sh $(env) \
+	  $(foreach p,$(plugins),-p $(p)) \
+	  $(foreach i,$(internal),-i $i) \
+	  $(foreach l,$(libraries),-l $l) \
+	  $(foreach s,$(services),-s $s)  \
+	  $(foreach d,$(data),-d $d) \
+	  $(foreach f,$(folders),-f $f) \
+	  $(foreach v,$(env_vars),-v $v) \
+	  $(if "$(kbase-ini-dir)",-n "$(kbase-ini-dir)") \
+	  -y "$(dynamic_service_proxies)")
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
 
-# The proxier, for local dev support
+docker-clean:
+	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
+	bash tools/docker/clean-docker.sh
 
-proxier-image:
-	@echo "> Building docker image."
-	@echo "> Cleaning out old contents"
-	rm -rf $(PROXIER_DOCKER_CONTEXT)/contents
-	mkdir -p $(PROXIER_DOCKER_CONTEXT)/contents
-	@echo "> Copying proxier config templates..."
-	cp -pr $(PROXIER_DOCKER_CONTEXT)/../src/* $(PROXIER_DOCKER_CONTEXT)/contents
-	@echo "> Beginning docker build..."
-	cd $(PROXIER_DOCKER_CONTEXT)/../..; bash tools/build_docker_image.sh
 
-run-proxier-image:
-	$(eval cmd = $(TOPDIR)/tools/proxier/tools/run-image.sh $(env))
-	@echo "> Running proxier image"
-	@echo "> with env $(env)"
-	@echo "> Issuing: $(cmd)"
-	bash $(cmd)		
+uuid:
+	@node ./tools/gen-uuid.js
 
 # Tests are managed by grunt, but this also mimics the workflow.
 #init build
@@ -193,8 +206,15 @@ clean-build:
 # If you need more clean refinement, please see Gruntfile.js, in which you will
 # find clean tasks for each major build artifact.
 
-# Eventually, if docs need to be built, the process will go here.
-docs: init
-	@echo docs!
+node_modules: init
 
-.PHONY: all test build
+docs:
+	cd docs; \
+	npm install; \
+	./node_modules/.bin/gitbook build ./book
+
+docs-viewer: docs
+	cd docs; \
+	(./node_modules/.bin/wait-on -t 10000 http://localhost:4000 && ./node_modules/.bin/opn http://localhost:4000 &); \
+	./node_modules/.bin/gitbook serve ./book
+

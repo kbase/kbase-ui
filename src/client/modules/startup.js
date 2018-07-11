@@ -4,7 +4,7 @@
         switch (err.requireType) {
         case 'notloaded':
             if (/esprima/.test(err.message)) {
-                // ignore esprima for now. The loading is attempted within the 
+                // ignore esprima for now. The loading is attempted within the
                 // yaml library ...
                 console.warn('esprima require test detected');
                 return;
@@ -17,10 +17,7 @@
         case 'timeout':
             if (err.requireModules) {
                 if (err.requireModules.some(function (module) {
-                    if (module === '//www.google-analytics.com/analytics.js') {
-                        return true;
-                    }
-                    return false;
+                    return (module === '//www.google-analytics.com/analytics.js');
                 })) {
                     root.KBaseFallback.showError({
                         title: 'Analytics Blocked (timeout)',
@@ -95,7 +92,7 @@
         switch (err.requireType) {
         case 'notloaded':
             if (/xesprima/.test(err.message)) {
-                // ignore esprima for now. The loading is attempted within the 
+                // ignore esprima for now. The loading is attempted within the
                 // yaml library ...
                 console.warn('esprima require test detected');
                 return;
@@ -150,9 +147,9 @@
             .catch(function (err) {
                 console.error('Startup Error', err);
                 root.KBaseFallback.showError({
-                    title: 'KBase Hub Web Application Startup Error',
+                    title: 'KBase UI Startup Error',
                     content: [
-                        'An error has occurred while starting the KBase Hub Web Application.',
+                        'An error has occurred while starting the KBase UI.',
                         err.message
                     ],
                     references: [{
