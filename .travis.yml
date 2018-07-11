@@ -24,15 +24,19 @@ env:
     - secure: "rEkz6iLJq6W9Cp9EgWkmxE4eL7vUsBgG1bmSN42yy8SDjgot1VUYLrO0ZVonxCqdgGvXgfZaDVu/ohtG1D03smzpIvA+yCj/81UnewzBtzqejrAbCB05qGhWd+2VUIF7b0VpMtqmpT4TK6uuTswhYTrXoivduCI8GtqI8s7Yd4WTGUUEa8y6MaEP9qa3/NfPaXTo9OgG+1Obys5fLCdcWgtM58P9H4wFNeHeUBAzLFd96BKzTnctt4shqaUA7Kbh5xriAAC/5Zplna37FqY+wBOfXo7gesQmJs2GBBMinNvq1JDoyPF6Q0iX8UEbNys2/3RxnAwnfOgVw2GEcRF+68mhVApAz/PQK3K6vhKcRG7SnSYg4Gu6gsK0VB5UlNGnQWc0wb/qOGjvbDAZ0SHViCIjSo1m+TC4taOloTHR6iKX/L0lUxaJAxOaLO6dJkdiK2AK9FsukiRPBPjGIQowk+PhIwG88C1mUeBdO68bH0kU46PCbbW9hBT11pRkPHZnEkufOPNEKqE0rfvcuGij88+qzceO878+iYNhpu/MtuyiVX3nZEL6e4DmXRQApWaqf/TAqW1HDlupGCjPKf6jTS6NAJ9m84rKJfOsFbT2Ce0K8MxsXvjmXKnilOFl93SADwKP1PwalskjmTqRVOBxLYOLelP+by9ziwpw1d++LDA="
     - secure: "v3FaaIHRKGezEtemhmop7due3sHQWspnrnmOiY3kQyusfqzNmmcOIZ39wug3DRjhB88kzrJMUSLYQ5n95420Ss4w2d4mHJUidoG5tiftmXun9WKa1h1BOhk3RbvJff26ipdb+EJt8RrBEtwBANFifR5dQI1xgUkCkarS3QtvL/uCW/UcNX6J6sWkGc+9dGzrph6fM+LcWsX1cmKCVmnPdejbrhK3+YFgdb3bSWSpEMZme9pt0q9440Dg8Cb1lf8UOuVcWFmgLx87MvD1kHmOVkGxDXOxJzPv6gIB13XUH1pkShqVJEWK6DU/1A+ry7BsL6gw/YNXdmr0Cy0I3/EOXfBXrV4hKsQeU7ebvPRekkQD/49KXvA2crfkoMqufnFUTyLBq6iJDwlIqCud5+CRtlcsPtReFsGplP/x5++noW/wvs/EVSuZBoHSAJ28wAiTqMSyqO4iwLeEtxjcE/UeuR7fmJG618C7DpgyhlSXeCz9qpN2CjioqX/tisbMhJDHFrD7SkI/CaJB+FdfpO2BU+zeNbeGFSur74PRZL7PYNxIPzOaN1Tf8HfYE5WxduL+Q+yr5E5CwefWUzW0+SDk8/eTgVmINBW8rqPWIsdYE1tgPm1ST7mjATr9WvsjWeHgPAi2pQc3EYQ9yj7/m+vfoJ1bOdxXcU8F/X49fwtmegM="
 
-branches:
-    only:
-        # builds for any PR merged into the develop branch
-        - develop
-        # builds when a release is tagged using a "v" prefixed semver tag.
-        # This is rough, but all we are after for is a trigger, not semver 
-        # validation!
-        # master is tagged as a release after develop->master is merged
-        - /^v.*$/
+
+if: (branch IS develop) OR \
+    (branch IS master) AND (tag ~= ^v)
+
+# branches:
+#     only:
+#         # builds for any PR merged into the develop branch
+#         - develop
+#         # builds when a release is tagged using a "v" prefixed semver tag.
+#         # This is rough, but all we are after for is a trigger, not semver 
+#         # validation!
+#         # master is tagged as a release after develop->master is merged
+#         - /^v.*$/
         
 
 install:
