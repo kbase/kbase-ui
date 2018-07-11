@@ -31,6 +31,7 @@ function git_commit() {
 export TRAVIS="true"
 export TRAVIS_TAG=$(get_tag)
 export TRAVIS_BRANCH=$(git_branch)
+export REAL_BRANCH=$(git_branch)
 export TRAVIS_COMMIT=$(git_commit)
 export BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
