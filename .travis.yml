@@ -26,7 +26,7 @@ env:
 
 
 if: (branch IS develop) OR \
-    (branch IS master) AND (tag ~= ^v)
+    ((branch IS master) AND (tag ~= ^v))
 
 # branches:
 #     only:
