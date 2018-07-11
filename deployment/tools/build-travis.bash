@@ -17,7 +17,7 @@ fi
 # Import Travis variables in the normalized ones expected in the 
 # docker-compose.yml file
 export COMMIT="${TRAVIS_COMMIT}"
-export BRANCH="${TRAVIS_BRANCH}"
+export BRANCH="${REAL_BRANCH}"
 export TAG="${TRAVIS_TAG}"
 
 # We include the build date in the image as well.
