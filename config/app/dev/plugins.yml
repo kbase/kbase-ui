@@ -161,7 +161,7 @@ plugins:
     -
         name: jgi-search
         globalName: kbase-ui-plugin-jgi-search
-        version: 0.35.0
+        version: 0.35.1
         cwd: src/plugin
         source:
             bower: {}
@@ -221,14 +221,6 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
-    -
-        name: dagre-example
-        globalName: kbase-ui-plugin-dagre-example
-        version: 0.1.0
-        cwd: src/plugin
-        source:
-            bower: {}    
-
     -
         name: narrative-info
         globalName: kbase-ui-plugin-narrative-info
