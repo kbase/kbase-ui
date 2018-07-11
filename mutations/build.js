@@ -90,6 +90,16 @@ function gitinfo(state) {
                     version = null;
                 }
             }
+
+            // in Travis, the origin url may end in .git, remove it if so.
+            // another way, but more can go wrong...
+            // let [_m, originUrl] = url.match(/^(https:.+?)(?:[.]git)?$/) || [];
+
+            url = url.trim('\n');
+            if (url.endsWith('.git')) {
+                url = url.slice(0, -4);
+            }
+
             return {
                 commitHash: info[0],
                 commitAbbreviatedHash: info[1],
@@ -100,7 +110,7 @@ function gitinfo(state) {
                 reflogSelector: info[6],
                 subject: subject.trim('\n'),
                 commitNotes: notes.trim('\n'),
-                originUrl: url.trim('\n'),
+                originUrl: url,
                 branch: branch.trim('\n'),
                 tag: tag,
                 version: version
