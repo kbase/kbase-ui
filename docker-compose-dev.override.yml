@@ -3,6 +3,9 @@ services:
   kbase-ui:
     volumes: []
       # - type: bind
+      #   source: ../kbase-ui-plugin-dataview/src/plugin
+      #   target: /kb/deployment/services/kbase-ui/dist/modules/plugins/dataview
+      # - type: bind
       #   source: ../kbase-ui-plugin-jgi-search/src/plugin
       #   target: /kb/deployment/services/kbase-ui/dist/modules/plugins/jgi-search
       # - type: bind

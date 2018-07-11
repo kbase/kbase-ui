@@ -26,10 +26,18 @@ env:
 
 branches:
     only:
-        - master
+        # builds for any PR merged into the develop branch
         - develop
+        # builds when a release is tagged using a "v" prefixed semver tag.
+        # This is rough, but all we are after for is a trigger, not semver 
+        # validation!
+        # master is tagged as a release after develop->master is merged
+        - ^v.*$
+        
 
 install:
+    # Note that this will build the image appropriately, depending upon
+    # whether the current branch is develop or master
     - make docker-image
 
 after_success:
