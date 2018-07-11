@@ -44,8 +44,9 @@ then
     exit 1
 fi
 
-# $TAG was set from TRAVIS_BRANCH, which is a little wonky on pull requests,
-# but it should be okay since we should never get here on a PR
+# $TAG was set from REAL_BRANCH, 
+# TRAVIS_BRANCH does not work as expected (contains the tag not branch) 
+# when the commit is tagged.
 if  ! ( [ "${REAL_BRANCH}" == "master" ] || [ "${REAL_BRANCH}" == "develop" ] )
 then
     echo "Error: Will only push images for the master or develop branches; Will not push image for branch ${REAL_BRANCH}"
@@ -61,7 +62,7 @@ if [ "${IMAGE_TAG}" == "master" ]
 then
     docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest || \
     ( echo "Failed to retag master to latest" && exit 1 )
-    TAG="latest"
+    IMAGE_TAG="latest"
 fi
 
 if [ "${TRAVIS_SECURE_ENV_VARS}" != "true" ]
