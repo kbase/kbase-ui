@@ -33,7 +33,7 @@ plugins:
     -
         name: dataview
         globalName: kbase-ui-plugin-dataview
-        version: 3.8.3
+        version: 3.9.0
         cwd: src/plugin
         source:
             bower: {}
@@ -159,30 +159,9 @@ plugins:
         source:
             bower: {}
     -
-        name: reske-search
-        globalName: kbase-ui-plugin-reske-search
-        version: 0.14.1
-        cwd: src/plugin
-        source:
-            bower: {}
-    -
         name: jgi-search
         globalName: kbase-ui-plugin-jgi-search
         version: 0.35.0
-        cwd: src/plugin
-        source:
-            bower: {}
-    -
-        name: reske-admin
-        globalName: kbase-ui-plugin-reske-admin
-        version: 0.3.2
-        cwd: src/plugin
-        source:
-            bower: {}
-    -
-        name: reske-genome-browser
-        globalName: kbase-ui-plugin-reske-genome-browser
-        version: 0.10.3
         cwd: src/plugin
         source:
             bower: {}
@@ -197,13 +176,6 @@ plugins:
         name: example-gopherjs
         globalName: kbase-ui-plugin-example-gopherjs
         version: 0.2.0
-        cwd: src/plugin
-        source:
-            bower: {}
-    -
-        name: reske-simple-search
-        globalName: kbase-ui-plugin-reske-simple-search
-        version: 0.11.3
         cwd: src/plugin
         source:
             bower: {}
@@ -238,7 +210,7 @@ plugins:
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.19.3
+        version: 0.19.4
         cwd: src/plugin
         source:
             bower: {}

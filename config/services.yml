@@ -74,10 +74,6 @@ services:
         aliases: ['data_import_export']
         url: '{{ deploy.services.urlBase }}/services/data_import_export'
         name: Data Import Export
-    KBaseRelationEngine:
-        aliases: ['reske']
-        url: '{{ deploy.services.urlBase }}/services/reske'
-        name: Search Two
     KBaseSearchEngine:
         aliases: ['search']
         url: '{{ deploy.services.urlBase }}/services/searchapi'
