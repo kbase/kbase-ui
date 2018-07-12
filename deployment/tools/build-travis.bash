@@ -17,8 +17,15 @@ fi
 # Import Travis variables in the normalized ones expected in the 
 # docker-compose.yml file
 export COMMIT="${TRAVIS_COMMIT}"
-export BRANCH="${REAL_BRANCH}"
 export TAG="${TRAVIS_TAG}"
+
+# If the branch, from real_branch, is empty, try the travis branch
+if [ -n "${REAL_BRANCH}" ]
+then
+    export BRANCH="${REAL_BRANCH}"
+else
+    export BRANCH="${TRAVIS_BRANCH}"
+fi
 
 # We include the build date in the image as well.
 export BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
