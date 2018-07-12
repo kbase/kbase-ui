@@ -161,7 +161,7 @@ plugins:
     -
         name: jgi-search
         globalName: kbase-ui-plugin-jgi-search
-        version: 0.35.1
+        version: 0.35.2
         cwd: src/plugin
         source:
             bower: {}
@@ -210,7 +210,7 @@ plugins:
     -
         name: data-search
         globalName: kbase-ui-plugin-data-search
-        version: 0.19.4
+        version: 0.19.5
         cwd: src/plugin
         source:
             bower: {}
