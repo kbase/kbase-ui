@@ -129,6 +129,9 @@ docker-network:
 
 # $(if $(value network_exists),$(echo "exists"),$(echo "nope"))
 
+docker-ignore:
+	@echo "> Syncing .dockerignore from .gitignore"
+	@$(TOPDIR)/node_modules/.bin/dockerignore
 
 # Build the docker image, assumes that make init and make build have been done already
 docker-image: 
