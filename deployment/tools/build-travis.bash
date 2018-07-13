@@ -19,11 +19,16 @@ fi
 export COMMIT="${TRAVIS_COMMIT}"
 export TAG="${TRAVIS_TAG}"
 
-# If the branch, from real_branch, is empty, try the travis branch
+# Use the REAL_BRANCH, which is set directly from git
+# This solves the problem that travis does not correclty populate
+# TRAVIS_BRANCH with the filter we use (branch + tag).
+# But on a pull request 
 if [ -n "${REAL_BRANCH}" ]
 then
+    echo "using real git branch"
     export BRANCH="${REAL_BRANCH}"
 else
+    echo "using travis branch"
     export BRANCH="${TRAVIS_BRANCH}"
 fi
 
