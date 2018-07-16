@@ -10,26 +10,27 @@ Read the [prerequisites](prerequisites.md) guide to ensure your host machine is 
 
 1. A kbase-ui project requires a dedicated directory, into which you will clone the repos you are working with.
 2. open a terminal into this folder, either the built-in *Terminal* program, *iTerm*, or your terminal app of choice.
-3. Clone the following repos into this folder: *kbase/kbase-ui*,
+3. Clone the *kbase/kbase-ui* repo into this folder:
     ```bash
     git clone -b develop https://github.com/kbase/kbase-ui
     ```
 4. Create and launch the kbase-ui image:
+
+    Due to recent changes in the docker configuration, the make task has been replaced with less automated process. The following command line will build and launch the local development version of kbase-ui:
+
     ```bash
+    make docker-service-start
+    
+    ```
+
+    <!--```bash
     cd kbase-ui
     make docker-image build=dev
     make run-docker-image env=dev
-    ```
-5. Since that container is now running in the terminal, you'll need to open a new terminal window.[^1]
-6. Create and launch the *kbase-ui-proxy* image:
-    ```bash
-    cd ../kbase-ui-proxy
-    make docker-image
-    make run-docker-image env=dev
-    ```
+    ```-->
     
-7. Since that container is now running in the terminal, you'll need to open a new terminal window.
-8. Point *ci.kbase.us* to your local computer:
+5. Since that container is now running in the terminal, you'll need to open a new terminal window.
+6. Point *ci.kbase.us* to your local computer:
 
     Edit
     ```bash
@@ -40,15 +41,35 @@ Read the [prerequisites](prerequisites.md) guide to ensure your host machine is 
     127.0.0.1	ci.kbase.us
     ```
     at the end of the file, then save it ```[Shift][Z][Z]```
-9. Open a browser to [https://ci.kbase.us](https://ci.kbase.us)
-10. Since the proxy uses a *self-signed certificate* to support https, your browser will likely complain. Just suffer through the prompts to allow the connection to proceed.[^2]
-11. You should now see kbase-ui 😊
-12. When done, you can simply press ```[Control][C]``` in each terminal window to stop the containers.
-13. If you won't be conducting further builds for this instance, you'll want to clear out the intermediate build image:[^3]
+7. Open a browser to [https://ci.kbase.us](https://ci.kbase.us)
+8. Since the proxy uses a *self-signed certificate* to support https, your browser will likely complain. Just suffer through the prompts to allow the connection to proceed.[^2]
+9. You should now see kbase-ui 😊
+10. When done, you can simply press ```[Control][C]``` in the original terminal window to stop the containers.[^3]
+11. If you won't be conducting further builds for this instance, you'll want to clear out the intermediate build image:[^4]
 
-```bash
-make docker-clean
-```
+    ```bash
+    make docker-service-clean
+    ```
+    
+    And you can remove the custom network (kbase-dev) which was installed with 
+
+    ```bash
+    make docker-network-clean
+    ```
+
+## Linux
+
+[ to do ]
+
+## Windows 10
+
+[ to do ]
+
+## Next Steps
+
+* [Getting started with development](development/getting-started.md)
+
+
 
 \---
 
@@ -56,4 +77,6 @@ make docker-clean
 
 [^2]: If your browser hangs when attempting to connect, you should have better luck using the private mode of your browser. Both Safari and Chrome work fine in private mode with self-signed certs, Firefox will still hang.
 
-[^3]: This also removes the Docker network "kbase-dev" created during image-building process.
+[^3]: Currently docker-compose does not always clean up after itself when using ```[Control][C]``` to stop it; see [this github issue](https://github.com/docker/compose/issues/3317).
+
+[^4]: This also removes the Docker network "kbase-dev" created during image-building process.

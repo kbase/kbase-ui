@@ -34,13 +34,13 @@ config			=
 # Defaults to dist 
 # For local development, one would use the build, since is much faster 
 # to create. A debug build may be available in the future.
-build           = 
+build           = dev
 
 # The deploy environment; used by dev-time image runners
 # dev, ci, next, appdev, prod
 # No default, because one should think about this.
 # Used to target the actual deploy config file (see kbase-ini-dir).
-env             = 
+env             = dev
 
 # The custom docker network
 # For local development.
@@ -171,9 +171,42 @@ run-docker-image: docker-network
 	@echo "> Issuing: $(cmd)"
 	bash $(cmd)
 
-docker-clean:
-	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
-	bash tools/docker/clean-docker.sh
+docker-compose-override: 
+	@echo "> Creating docker compose override..."
+	@echo "> With options:"
+	@echo "> plugins $(plugins)"
+	@echo "> internal $(internal)"
+	@echo "> libraries $(libraries)"
+	@echo "> paths $(paths)"
+	@echo "> local narrative $(local-narrative)"
+	$(eval cmd = node $(TOPDIR)/tools/docker/start-docker-service.js $(env) \
+	  $(foreach p,$(plugins),--plugin $(p)) \
+	  $(foreach i,$(internal_plugins),--internal $i) \
+	  $(foreach l,$(libraries),--lib $l) \
+	  $(foreach f,$(paths),---path $f) \
+	  $(if $(findstring t, $(local-narrative)),--local-narrative))
+	@echo "> Issuing: $(cmd)"
+	$(cmd)
+
+docker-compose-up: docker-network docker-compose-override
+	@:$(call check_defined, build, "the kbase-ui build config: defaults to 'dev'")
+	@:$(call check_defined, env, "the runtime (deploy) environment: defaults to 'dev'")
+	@echo "> Building and running docker image for development"
+	@cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose up
+
+docker-compose-clean:
+	@echo "> Cleaning up after docker compose..."
+	@cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose rm -f -s
+	@echo "> If necessary, Docker containers have been stopped and removed"
+	@echo "> To remove the custom network use 'make docker-network-clean'"
+
+docker-network-clean:
+	# @:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
+	bash tools/docker/clean-docker-network.sh
+
+dev-start: docker-compose-up
+
+dev-stop: docker-compose-clean docker-network-clean
 
 
 uuid:
