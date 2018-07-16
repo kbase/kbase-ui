@@ -10,4 +10,8 @@ The kbase-ui is a web app providing access to many user services, including:
 
 This document provides a guide to developing and deploying with kbase-ui.
 
-For user documentation, please visit the [KBase Documentation](https://kbase.us){target=_blank} site.
+For user documentation, please visit the [KBase Documentation](https://kbase.us) site.
+
+## Notes
+
+1. Documentation is under revision - chapters prefixed with a pickaxe ⛏ are under revision, out of date and probably inaccurate.

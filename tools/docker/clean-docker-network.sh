@@ -1,11 +1,12 @@
 network=$1
 if [ -z "$network" ]; then 
-    echo "ERROR: argument 1, 'network', not provided"
-    usage
-    exit 1
+    network="kbase-dev"
+    # echo "ERROR: argument 1, 'network', not provided"
+    # usage
+    # exit 1
 fi
 
-function clean_docker() {
+function clean_docker_network() {
     local net=$1
     local network_exists=$(docker network ls --filter name=$net --format='{{.CreatedAt}}')
     if [ -n "$network_exists" ]
@@ -15,8 +16,9 @@ function clean_docker() {
     else
         echo "Docker network ${net} not present, skipping removal"
     fi
-	docker image prune --force --filter label=stage=intermediate
+    # TODO stop containers if still running! (bad docker-compose)
+	# docker image prune --force --filter label=stage=intermediate
 }
 
-clean_docker $network
+clean_docker_network $network
 

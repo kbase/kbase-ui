@@ -35,3 +35,4 @@ node_modules
 /temp/*
 !/temp/README.md
 
+docker-compose.override.yml
