@@ -47,14 +47,16 @@ define([
                     // fontWeight: 'bold',
                 }
             }, [
-                span({
-                    style: {
-                        fontWeight: 'bold'
-                    },
-                    dataBind: {
-                        text: 'alertCount'
-                    }
-                }),
+                gen.if('alertCount() > 0',
+                    span({
+                        style: {
+                            fontWeight: 'bold'
+                        },
+                        dataBind: {
+                            text: 'alertCount'
+                        }
+                    }),
+                    'no'),
                 ' ',
                 gen.plural('alertCount()', 'alert', 'alerts')
             ]),

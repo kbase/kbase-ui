@@ -98,8 +98,8 @@ define([
                             return;
                         }
 
-                        const startAt = new Date(notification.startAt);
-                        const endAt = new Date(notification.endAt);
+                        const startAt = new Date(notification.start_at);
+                        const endAt = new Date(notification.end_at);
 
                         const countdownToStart = ko.pureComputed(() => {
                             if (!this.now()) {
@@ -408,8 +408,11 @@ define([
                         click: 'function(d,e){$component.hide.call($component);}'
                     }
                 }, span({
-                    class: 'fa fa-minus-square-o'
-                }))
+                    // class: 'fa fa-minus-square-o'
+                }, [
+                    'hide ',
+                    gen.plural('maintenanceNotifications().length', ' alert', ' alerts')
+                ]))
             ])
             //     button({
             //         type: 'button',
