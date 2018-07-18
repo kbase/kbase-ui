@@ -212,5 +212,12 @@ plugins:
         version: 0.1.9
         cwd: src/plugin
         source:
-            bower: {}    
+            bower: {}
+    -
+        name: ui-service
+        globalName: kbase-ui-plugin-ui-service
+        version: 0.3.0
+        cwd: src/plugin
+        source:
+            bower: {}
             

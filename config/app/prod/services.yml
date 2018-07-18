@@ -42,6 +42,10 @@ ui:
                   id: dashboard2
                   auth: true
                   allow: [alpha] 
+                -
+                  id: ui-service
+                  auth: true
+                  allow: [alpha] 
                 -             
                   id: databrowser
                   allow: [alpha]
