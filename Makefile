@@ -207,7 +207,6 @@ docker-compose-clean:
 	@echo "> Cleaning up after docker compose..."
 	@cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose rm -f -s
 	@echo "> If necessary, Docker containers have been stopped and removed"
-	@echo "> To remove the custom network use 'make docker-network-clean'"
 
 docker-network-clean:
 	# @:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
