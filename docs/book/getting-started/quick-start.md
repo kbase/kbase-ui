@@ -19,7 +19,7 @@ Read the [prerequisites](prerequisites.md) guide to ensure your host machine is 
     Due to recent changes in the docker configuration, the make task has been replaced with less automated process. The following command line will build and launch the local development version of kbase-ui:
 
     ```bash
-    make docker-service-start
+    make dev-start
     
     ```
 
@@ -48,15 +48,9 @@ Read the [prerequisites](prerequisites.md) guide to ensure your host machine is 
 11. If you won't be conducting further builds for this instance, you'll want to clear out the intermediate build image:[^4]
 
     ```bash
-    make docker-service-clean
+    make dev-clean
     ```
     
-    And you can remove the custom network (kbase-dev) which was installed with 
-
-    ```bash
-    make docker-network-clean
-    ```
-
 ## Linux
 
 [ to do ]

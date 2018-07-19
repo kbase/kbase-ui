@@ -26,12 +26,11 @@ nbproject
 _book
 
 # Developer artifacts
-/dev/*
-!/dev/README.md
-
+/dev/docker-compose.override.yml
 node_modules
 
 # General purpose temp directory
 /temp/*
 !/temp/README.md
 
+docker-compose.override.yml

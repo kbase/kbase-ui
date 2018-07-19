@@ -138,7 +138,7 @@ docker-image:
 	@echo "> Building docker image for this branch; assuming we are on Travis CI"
 	@bash $(TOPDIR)/deployment/tools/build-travis.bash
 
-fake-docker-image:
+fake-travis-build:
 	@echo "> Building docker image for this branch, using fake "
 	@echo "  Travis environment variables derived from git."
 	@bash $(TOPDIR)/tools/docker/build-travis-fake.bash
@@ -154,6 +154,7 @@ run-docker-image: docker-network
 	@echo "> internal $(internal)"
 	@echo "> libraries $(libraries)"
 	@echo "> ini dir $(kbase-ini-dir)"
+	@echo "> dynamic service proxies $(dynamic_service_proxies)"
 	@echo "> To map host directories into the container, you will need to run "
 	@echo ">   tools/run-image.sh with appropriate options."
 # 	  --kbase-ini-url "$(kbase-ini-url)" 
@@ -166,6 +167,7 @@ run-docker-image: docker-network
 	  $(foreach d,$(data),-d $d) \
 	  $(foreach f,$(folders),-f $f) \
 	  $(foreach v,$(env_vars),-v $v) \
+	  $(foreach x,$(dynamic_service_proxies),-x $x) \
 	  $(if "$(kbase-ini-dir)",-n "$(kbase-ini-dir)") \
 	  -y "$(dynamic_service_proxies)")
 	@echo "> Issuing: $(cmd)"
@@ -175,16 +177,18 @@ docker-compose-override:
 	@echo "> Creating docker compose override..."
 	@echo "> With options:"
 	@echo "> plugins $(plugins)"
-	@echo "> internal $(internal)"
+	@echo "> internal $(internal-plugins)"
 	@echo "> libraries $(libraries)"
 	@echo "> paths $(paths)"
 	@echo "> local narrative $(local-narrative)"
-	$(eval cmd = node $(TOPDIR)/tools/docker/start-docker-service.js $(env) \
+	@echo "> dynamic service proxies $(dynamic-services)"
+	$(eval cmd = node $(TOPDIR)/tools/docker/build-docker-compose-override.js $(env) \
 	  $(foreach p,$(plugins),--plugin $(p)) \
-	  $(foreach i,$(internal_plugins),--internal $i) \
+	  $(foreach i,$(internal-plugins),--internal $i) \
 	  $(foreach l,$(libraries),--lib $l) \
 	  $(foreach f,$(paths),---path $f) \
-	  $(if $(findstring t, $(local-narrative)),--local-narrative))
+	  $(foreach d,$(dynamic-services),--dynamic_services $d) \
+	  $(if $(findstring t,$(local-narrative)),--local_narrative))
 	@echo "> Issuing: $(cmd)"
 	$(cmd)
 
@@ -192,7 +196,12 @@ docker-compose-up: docker-network docker-compose-override
 	@:$(call check_defined, build, "the kbase-ui build config: defaults to 'dev'")
 	@:$(call check_defined, env, "the runtime (deploy) environment: defaults to 'dev'")
 	@echo "> Building and running docker image for development"
-	@cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose up
+	$(eval cmd = cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose up \
+		$(if $(findstring t,$(build-image)),--build))
+	@echo "> Issuing $(cmd)"
+	$(cmd)
+
+# @cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose up --build
 
 docker-compose-clean:
 	@echo "> Cleaning up after docker compose..."
@@ -204,7 +213,7 @@ docker-network-clean:
 	# @:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
 	bash tools/docker/clean-docker-network.sh
 
-dev-start: docker-compose-up
+dev-start: init docker-compose-up
 
 dev-stop: docker-compose-clean docker-network-clean
 
