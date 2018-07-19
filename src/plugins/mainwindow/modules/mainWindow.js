@@ -42,6 +42,7 @@ define([
 
             // The total number of alerts
             this.alertCount = ko.observable(null);
+            this.alertSummary = ko.observable(null);
             this.hideAlerts = ko.observable(false);
         }
     }
@@ -95,6 +96,7 @@ define([
                                     name: SystemAlertToggleComponent.quotedName(),
                                     params: {
                                         alertCount: 'alertCount',
+                                        alertSummary: 'alertSummary',
                                         hideAlerts: 'hideAlerts'
                                     }
                                 }
@@ -142,6 +144,7 @@ define([
                                             params: {
                                                 runtime: 'runtime',
                                                 alertCount: 'alertCount',
+                                                alertSummary: 'alertSummary',
                                                 hideAlerts: 'hideAlerts'
                                             }
                                         }

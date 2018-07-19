@@ -26,13 +26,12 @@ define([
 
     const styles = html.makeStyles({
         component: {
-            css: {
-            }
+
         },
         wrapper: {
             css: {
-                margin: '0 0px 10px 10px',
-                // borderTop: '2px #f2dede solid'
+                margin: '4px 10px 10px 10px',
+                boxShadow: '4px 4px 4px silver',
             }
         },
         itemsWrapper: {
@@ -49,6 +48,8 @@ define([
             this.runtime = params.runtime;
             this.hideAlerts = params.hideAlerts;
             this.alertCount = params.alertCount;
+
+            this.alertSummary = params.alertSummary;
 
             this.systemStatus = ko.observable();
             this.error = ko.observable(false);
@@ -77,6 +78,24 @@ define([
                     .filter((notification) => {
                         return notification.read();
                     }).length;
+            });
+
+            // TODO: better way, pureComputed perhaps?
+            this.subscribe(this._maintenanceNotifications, (newValue) => {
+                const now = Date.now();
+                const summary = newValue.reduce((acc, alert) => {
+                    // console.log('present??', alert.startAt <= now, alert.EndAt >= now, alert.startAt > now, alert.endAt, now);
+                    if ((alert.startAt.getTime() <= now) && (alert.endAt.getTime() >= now)) {
+                        acc.present += 1;
+                    } else if (alert.startAt.getTime() > now) {
+                        acc.future += 1;
+                    }
+                    return acc;
+                }, {
+                    present: 0,
+                    future: 0
+                });
+                this.alertSummary(summary);
             });
 
             this.subscribe(this.systemStatus, (newValue) => {
@@ -353,7 +372,9 @@ define([
         }, [
             div({
                 style: {
-                    flex: '1 1 0px'
+                    flex: '1 1 0px',
+                    display: 'flex',
+                    alignItems: 'center'
                 }
             }, span({
                 style: {
