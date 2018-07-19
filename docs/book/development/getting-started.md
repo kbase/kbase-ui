@@ -135,7 +135,7 @@ When you are finished with a work session, or for whatever reason wish to stop t
 
 This is optional, but unless you are continuing to work on local kbase-ui, you should remove the /etc/hosts mapping in order to gain access to the "real" ci.kbase.us.
 
-I prefer to simply comment out the line.
+I prefer to simply comment out the line so it is ready for reuse later.
 
 ## Next Steps
 
