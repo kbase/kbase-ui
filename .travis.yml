@@ -34,8 +34,7 @@ env:
     # Note: this only works for gnu sed, not, e.g., bsd sed as distributed with macos
     - REAL_BRANCH=$(git ls-remote origin | sed -n "\|^$TRAVIS_COMMIT\s\+refs/heads/|{s///p}")
 
-if: (branch = develop) OR \
-    ((branch = master) AND (tag =~ ^v))
+if: (branch = develop) OR ((branch = master) AND (tag =~ ^v))
 
 # branches:
 #     only:
