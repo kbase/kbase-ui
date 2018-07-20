@@ -242,10 +242,10 @@ define([
     function buildAlertIcon() {
         return span({
             style: {
-                width: '32px',
+                width: '1.5em',
                 fontSize: '120%',
                 textAlign: 'center',
-                marginRight: '4px'
+                // marginRight: '4px'
             }
         }, [
             span({
@@ -283,13 +283,16 @@ define([
                         flex: '1 1 0px',
                         // backgroundColor: 'rgba(169,68,68,1)',
                         // color: 'white',
-                        padding: '4px'
+                        padding: '4px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center'
                     },
                     class: styles.classes.title2
                     // dataBind: {
                     //     class: 'showMessage() ? "' + styles.classes.title1 + '" : "' + styles.classes.title2 + '"'
                     // }
-                }, span({
+                }, div({
                     dataBind: {
                         text: '$data.title || "Upcoming System Maintenance"'
                     },
@@ -300,11 +303,17 @@ define([
                 div({
                     style: {
                         flex: '1 1 0px',
-                        padding: '4px'
+                        padding: '4px',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center'
                     }
                 }, [
                     buildAlertIcon(),
-                    span({
+                    div({
+                        style: {
+                            flex: '1 1 0px'
+                        },
                         dataBind: {
                             component: {
                                 name: CountdownClockComponent.quotedName(),
@@ -333,7 +342,10 @@ define([
                 // ]),
                 div({
                     style: {
-                        width: '2em'
+                        width: '2em',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center'
                     },
                 }, [
                     button({
