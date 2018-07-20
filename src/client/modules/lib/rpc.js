@@ -73,6 +73,7 @@ define([
         constructor(config) {
             this.runtime = config.runtime;
             this.moduleName = config.module;
+            this.timeout = config.timeout || 60000;
             this.RPCError = RPCError;
             // Note: setup must be synchronous
             this.setup();
@@ -85,7 +86,8 @@ define([
                 this.client = new GenericClient({
                     module: this.moduleName,
                     url: serviceUrl,
-                    token: token
+                    token: token,
+                    timeout: this.timeout
                 });
             } else {
                 const dynamicServiceProxies = this.runtime.config('deploy.services.dynamicServiceProxies');
@@ -94,13 +96,15 @@ define([
                     this.client = new GenericClient({
                         module: this.moduleName,
                         url: urlBase + '/dynamic_service_proxies/' + this.moduleName,
-                        token: token
+                        token: token,
+                        timeout: this.timeout
                     });
                 } else {
                     this.client = new DynamicService({
                         url: this.runtime.config('services.service_wizard.url'),
                         token: token,
-                        module: this.moduleName
+                        module: this.moduleName,
+                        timeout: this.timeout
                     });
                 }
             }

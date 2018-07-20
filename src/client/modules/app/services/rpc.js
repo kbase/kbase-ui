@@ -35,7 +35,8 @@ define([
         function makeClient(arg) {
             const client = new rpc.RPCClient({
                 runtime: runtime,
-                module: arg.module
+                module: arg.module,
+                timeout: arg.timeout
             });
             return client;
         }
