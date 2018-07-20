@@ -36,7 +36,8 @@ define([
 
         getActiveAlerts() {
             const client = new this.runtime.service('rpc').makeClient({
-                module: 'UIService'
+                module: 'UIService',
+                timeout: 2000
             });
 
             return client.callFunc('get_active_alerts', [])
@@ -77,21 +78,21 @@ define([
                                 try {
                                     listener.fun(alerts, null);
                                 } catch (ex) {
-                                    console.error('Error running listener: ', ex);
+                                    // console.error('Error running listener: ', ex);
                                     throw new Error('Error running listener: ' + ex.message);
                                 }
                             });
-                        })
-                        .catch((error) => {
-                            this.updateListeners.forEach((listener) => {
-                                try {
-                                    listener(null, error);
-                                } catch (ex) {
-                                    console.error('Error running listener: ', ex);
-                                    // throw new Error('Error running listener: ' + ex.message);
-                                }
-                            });
                         });
+                    // .catch((error) => {
+                    //     this.updateListeners.forEach((listener) => {
+                    //         try {
+                    //             listener(null, error);
+                    //         } catch (ex) {
+                    //             console.error('Error running listener: ', ex);
+                    //             // throw new Error('Error running listener: ' + ex.message);
+                    //         }
+                    //     });
+                    // });
                 }
             });
 
