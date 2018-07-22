@@ -245,7 +245,7 @@ plugins:
     -
         name: ui-service
         globalName: kbase-ui-plugin-ui-service
-        version: 0.4.1
+        version: 0.5.0
         cwd: src/plugin
         source:
             bower: {}

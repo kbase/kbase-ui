@@ -57,7 +57,11 @@ define([
     class Alert {
         constructor({startAt, endAt, title, message, hash, now}) {
             this.startAt = new Date(startAt);
-            this.endAt = new Date(endAt);
+            if (endAt === null || endAt === undefined) {
+                this.endAt = null;
+            } else {
+                this.endAt = new Date(endAt);
+            }
             this.title = title;
             this.message = message;
             this.hash = hash;
@@ -76,6 +80,9 @@ define([
             this.countdownToEnd = ko.pureComputed(() => {
                 if (!this.now()) {
                     return null;
+                }
+                if (this.endAt === null) {
+                    return Infinity;
                 }
                 return this.endAt - this.now();
             });
@@ -104,14 +111,14 @@ define([
 
             this.maintenanceNotifications = ko.pureComputed(() => {
                 return this._maintenanceNotifications()
-                    .filter((notification) => {
-                        const endTime = notification.endAt.getTime();
-                        const now = this.now();
-                        if ((now - endTime) > 60000) {
-                            return false;
-                        }
-                        return true;
-                    })
+                    // .filter((notification) => {
+                    //     const endTime = notification.endAt.getTime();
+                    //     const now = this.now();
+                    //     if ((now - endTime) > 60000) {
+                    //         return false;
+                    //     }
+                    //     return true;
+                    // })
                     .sort((a, b) => {
                         return (a.startAt.getTime() - b.startAt.getTime());
                     });
@@ -129,7 +136,8 @@ define([
                 const now = Date.now();
                 const summary = newValue.reduce((acc, alert) => {
                     // console.log('present??', alert.startAt <= now, alert.EndAt >= now, alert.startAt > now, alert.endAt, now);
-                    if ((alert.startAt.getTime() <= now) && (alert.endAt.getTime() >= now)) {
+                    if ((alert.startAt.getTime() <= now) &&
+                        ((alert.endAt === null || alert.endAt.getTime() >= now))) {
                         acc.present += 1;
                     } else if (alert.startAt.getTime() > now) {
                         acc.future += 1;
