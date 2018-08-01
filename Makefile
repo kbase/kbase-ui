@@ -250,8 +250,6 @@ clean-build:
 # If you need more clean refinement, please see Gruntfile.js, in which you will
 # find clean tasks for each major build artifact.
 
-node_modules: init
-
 docs:
 	cd docs; \
 	npm install; \
