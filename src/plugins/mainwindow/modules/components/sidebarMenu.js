@@ -63,6 +63,55 @@ define([
         }
     });
 
+    function buildPublicSearchIcon() {
+        return div({
+            class: 'fa-stack fa-2x',
+            style: {
+                marginBottom: '-12px'
+            },
+            ariaHidden: 'true'
+        },[
+            div({
+                class: 'fa fa-stack-2x',
+                style: {
+                    fontSize: '1.6em'
+                },
+                dataBind: {
+                    class: '"fa-search"'
+                }
+            }),
+            div({
+                class: 'fa fa-stack-1x ',
+                style: {
+                    fontSize: '85%',
+                    top: '-7px',
+                    left: '-3px'
+                },
+                dataBind: {
+                    class: '"fa-globe"'
+                }
+            })
+        ]);
+    }
+
+    function buildIcon() {
+        return gen.switch('icon', [
+            [
+                '"public-search"',
+                buildPublicSearchIcon()
+            ],
+            [
+                '$default',
+                div({
+                    class: 'fa fa-3x ',
+                    dataBind: {
+                        class: '"fa-" + icon'
+                    }
+                })
+            ]
+        ]);
+    }
+
     function buildButton() {
         return a({
             dataBind: {
@@ -73,12 +122,7 @@ define([
             },
             class: styles.classes.button
         }, [
-            div({
-                class: 'fa fa-3x ',
-                dataBind: {
-                    class: '"fa-" + icon'
-                }
-            }),
+            buildIcon(),
             div({
                 dataBind: {
                     text: 'label'
