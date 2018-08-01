@@ -1,6 +1,6 @@
 # The KBase User Interface - kbase-ui
 
-The kbase-ui is a web app providing access to many user services, including:
+*kbase-ui* is a web app providing access to many user services, including:
 
 - signup, signin, signout
 - account management

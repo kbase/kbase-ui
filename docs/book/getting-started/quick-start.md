@@ -20,7 +20,6 @@ Read the [prerequisites](prerequisites.md) guide to ensure your host machine is 
 
     ```bash
     make dev-start
-    
     ```
 
     <!--```bash
@@ -61,7 +60,7 @@ Read the [prerequisites](prerequisites.md) guide to ensure your host machine is 
 
 ## Next Steps
 
-* [Getting started with development](development/getting-started.md)
+* [Getting started with development](/development/getting-started.md)
 
 
 
