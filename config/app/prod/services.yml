@@ -48,9 +48,11 @@ ui:
                   allow: [alpha] 
                 -             
                   id: databrowser
+                  auth: true
                   allow: [alpha]
                 -
                   id: typebrowser
+                  auth: true
                   allow: [alpha]  
             help:
               items:
