@@ -85,6 +85,16 @@ function mergeLibs(root, config, args) {
     }
 }
 
+function mergeConfig(root, config, args) {
+    // if (args.configs) {
+        config.services['kbase-ui'].volumes.push({
+            type: 'bind',
+            source: root + '/deployment/config',
+            target: '/kb/deployment/config'
+        })
+    // }
+}
+
 function mergeDynamicServices(root, config, args) {
     if (args.dynamic_services) {
         let services;
@@ -101,7 +111,7 @@ function mergeDynamicServices(root, config, args) {
 
 function mergeLocalNarrative(root, config, args) {
     if (args.local_narrative) {
-        config.services['kbase-ui-proxy'].environment.push('local_narrative');
+        config.services['kbase-ui-proxy'].environment.push('local_narrative=true');
     }
 }
 
@@ -133,6 +143,8 @@ function main(args) {
     mergeDynamicServices(root, config, args);
 
     mergeLocalNarrative(root, config, args);
+
+    mergeConfig(root, config, args);
 
     const outputPath = [root, 'dev', 'docker-compose.override.yml'].join('/');
     fs.writeFileSync(outputPath, yaml.safeDump(config));
