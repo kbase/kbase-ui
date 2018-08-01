@@ -53,14 +53,14 @@ project
 
 #### Install a local copy of kbase-ui
 
-Development workflows for kbase-ui typically starting from the tip of the develop branch of the kbase-ui repo in kbase github account. You will therefore be pushing changes to your fork of kbase/kbase-ui.
+Development workflows for kbase-ui typically start from the tip of the develop branch of the kbase-ui repo in the kbase github account. You will therefore be pushing changes to your fork of kbase/kbase-ui.
 
 If you have your own preferred method of setting up a repo for this type of workflow, please use it. Here is one setup that I use:
 
 ```bash
 git clone -b develop https://github.com/kbase/kbase-ui
 cd kbase-ui
-git remote set-url --push origin no-push
+git remote set-url --push origin nopush
 git remote add NICKNAME ssh://git@github.com/YOURACCOUNT/kbase-ui
 git checkout -b BRANCHNAME
 git push NICKNAME BRANCHNAME
@@ -68,7 +68,9 @@ git push NICKNAME BRANCHNAME
 
 With this flow, you are operating in the branch *BRANCHNAME*, which started at the tip of the *develop* branch in the main *kbase/kbase-ui* repo. You will push it to your fork located at the github account *YOURACCOUNT*, which has been set up at remote *NICKNAME* in the local git configuration.
 
-> Note: this setup requires that you have generated an ssh key on your machine, and installed it in your giithub account.
+> Note: this setup requires that you have generated an ssh key on your machine, and installed it in your giithub account. If you prefer to work over https and use your github username and password that line above would be `git remote add NICKNAME https://github.com/YOURACCOUNT/kbase-ui
+
+> To be honest, I often skip the local BRANCHNAME and just operate directly on the develop branch.
 
 #### Install local copies of each other repo
 
@@ -103,7 +105,16 @@ If you are familiar with the previous incarnation of kbase-ui workflow, which re
 The general form of the dev-start tool is:
 
 ```
-make docker-compose-up [build=BUILD] [env=ENV] [plugins="P1 P2"] [internal="I2 I2" [libraries="L1 L2"] [paths="T1 T2"]
+make dev-start \
+    [build=BUILD] \
+    [env=ENV] \
+    [plugins="P1 P2"] \
+    [internal-plugins="I2 I2"] \
+    [libraries="L1 L2"] \
+    [paths="T1 T2"] \
+    [build-image="t/f"] \
+    [local-narrative="t/f"] \
+    [dynamic-services="D1 D2"]
 ```
 
 The most dead simple version is:
@@ -118,6 +129,12 @@ In order to incorporate a plugin cloned in the project directory, us this form
 
 ```
 make dev-start plugins="MYPLUGIN"
+```
+
+The first time you run `dev-start` the kbase-ui and kbase-ui-proxy images are built. Thereafter those images are used when you stop and start kbase-ui. If you have made changes to kbase-ui which you want incorporated directly into the image, you will need to regenerate the image. You do that with the `build-image` option.
+
+```
+make dev-start build-image=t
 ```
 
 For details on usage, see [Developer Tools](tools.md).
