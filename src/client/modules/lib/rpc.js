@@ -75,13 +75,19 @@ define([
             this.moduleName = config.module;
             this.timeout = config.timeout || 60000;
             this.RPCError = RPCError;
+            this.authenticated = config.authenticated;
             // Note: setup must be synchronous
             this.setup();
         }
 
         setup() {
             const serviceUrl = this.runtime.config(['services', this.moduleName, 'url'].join('.'));
-            const token = this.runtime.service('session').getAuthToken();
+            let token;
+            if (this.authenticated) {
+                token = this.runtime.service('session').getAuthToken();
+            } else {
+                token = null;
+            }
             if (serviceUrl) {
                 this.client = new GenericClient({
                     module: this.moduleName,

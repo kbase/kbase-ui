@@ -70,6 +70,10 @@ ui:
                 -
                   id: dashboard
                   auth: true
+                - 
+                  id: public-search
+                  auth: false
+                  allow: [alpha]
                 -
                   id: appcatalog
                   auth: false

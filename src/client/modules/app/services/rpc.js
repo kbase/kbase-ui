@@ -33,10 +33,17 @@ define([
         }
 
         function makeClient(arg) {
+            let authenticated;
+            if (arg.authenticated === undefined) {
+                authenticated = true;
+            } else {
+                authenticated = arg.authenticated ? true : false;
+            }
             const client = new rpc.RPCClient({
                 runtime: runtime,
                 module: arg.module,
-                timeout: arg.timeout
+                timeout: arg.timeout,
+                authenticated: authenticated
             });
             return client;
         }
