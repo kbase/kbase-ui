@@ -30,6 +30,11 @@ bowerFiles:
         src: knockout-arraytransforms.js
         bowerComponent: true
     -
+        name: knockout-projections
+        cwd: dist
+        src: knockout-projections.js
+        bowerComponent: true
+    -
         name: knockout-switch-case
         src: knockout-switch-case.js
         bowerComponent: true
