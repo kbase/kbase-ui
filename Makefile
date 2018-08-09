@@ -238,7 +238,7 @@ test-travis: unit-tests travis-tests
 
 
 # Clean slate
-clean:
+clean: clean-docs
 	$(GRUNT) clean-all
 
 clean-temp:
@@ -246,6 +246,10 @@ clean-temp:
 
 clean-build:
 	$(GRUNT) clean-build
+
+clean-docs:
+	@rm -rf ./docs/book/_book
+	@rm -rf ./docs/node_modules
 
 # If you need more clean refinement, please see Gruntfile.js, in which you will
 # find clean tasks for each major build artifact.
