@@ -143,35 +143,6 @@ fake-travis-build:
 	@echo "  Travis environment variables derived from git."
 	@bash $(TOPDIR)/tools/docker/build-travis-fake.bash
 
-# The dev version of run-image also supports cli options for mapping plugins, libraries, 
-# and parts of ui into the image for (more) rapdi development workflow
-run-docker-image: docker-network
-	@echo "> Running kbase-ui image."
-	# @echo "> You will need to inspect the docker container for the ip address "
-	# @echo ">   set your /etc/hosts for ci.kbase.us accordingly."
-	@echo "> With options:"
-	@echo "> plugins $(plugins)"
-	@echo "> internal $(internal)"
-	@echo "> libraries $(libraries)"
-	@echo "> ini dir $(kbase-ini-dir)"
-	@echo "> dynamic service proxies $(dynamic_service_proxies)"
-	@echo "> To map host directories into the container, you will need to run "
-	@echo ">   tools/run-image.sh with appropriate options."
-# 	  --kbase-ini-url "$(kbase-ini-url)" 
-#	  -t "$(kbase-ini-dir)" 
-	$(eval cmd = $(TOPDIR)/tools/docker/run-image.sh $(env) \
-	  $(foreach p,$(plugins),-p $(p)) \
-	  $(foreach i,$(internal),-i $i) \
-	  $(foreach l,$(libraries),-l $l) \
-	  $(foreach s,$(services),-s $s)  \
-	  $(foreach d,$(data),-d $d) \
-	  $(foreach f,$(folders),-f $f) \
-	  $(foreach v,$(env_vars),-v $v) \
-	  $(foreach x,$(dynamic_service_proxies),-x $x) \
-	  $(if "$(kbase-ini-dir)",-n "$(kbase-ini-dir)") \
-	  -y "$(dynamic_service_proxies)")
-	@echo "> Issuing: $(cmd)"
-	bash $(cmd)
 
 docker-compose-override: 
 	@echo "> Creating docker compose override..."
