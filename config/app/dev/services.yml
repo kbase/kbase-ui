@@ -26,9 +26,6 @@ ui:
                   id: narrative
                   auth: true
                 -
-                  id: public-search
-                  auth: false
-                -
                   id: jgi-search
                   auth: true
             developer:
