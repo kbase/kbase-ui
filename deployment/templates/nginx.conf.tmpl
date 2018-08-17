@@ -2,6 +2,7 @@ daemon off;
 error_log /dev/stdout info;
 worker_processes auto;
 pid /var/run/nginx.pid;
+user kbmodule;
 
 events {
     worker_connections 256;

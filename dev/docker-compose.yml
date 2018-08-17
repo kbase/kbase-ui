@@ -1,4 +1,4 @@
-version: '3.2'
+version: '3.6'
 networks:
   kbase-dev:
     external:
@@ -6,10 +6,12 @@ networks:
 services:
   kbase-ui:
     build:
-      context: .
+      context: ../
       args:
         - BUILD=${BUILD}
-    image: kbase/kbase-ui:${BUILD}_build
+    # just use dev_build for the image tag so we can easily clean
+    # up afterwards.
+    image: kbase/kbase-ui:dev_build
     networks:
       - kbase-dev
     container_name: kbase-ui
@@ -22,19 +24,12 @@ services:
       - /kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json
       - bash 
       - /kb/deployment/scripts/start-server.bash
-    # volumes:
-    #   - type: bind
-    #     source: ../kbase-ui-plugin-jgi-search/src/plugin
-    #     target: /kb/deployment/services/kbase-ui/dist/modules/plugins/jgi-search
-    #   - type: bind
-    #     source: ../kbase-common-es6/src
-    #     target: /kb/deployment/services/kbase-ui/dist/modules/kb_lib
-    #   - type: bind
-    #     source: ./src/plugins/mainwindow
-    #     target: /kb/deployment/services/kbase-ui/dist/modules/plugins/mainwindow
+    # environment:
+    #     - dynamic_service_proxies=UIService
   kbase-ui-proxy:
       build:
-        context: tools/proxy
+        context: ../tools/proxy
+      # there is only one proxy image, for local development, so just all it :dev
       image: kbase/kbase-ui-proxy:dev
       depends_on: 
         - kbase-ui
@@ -46,6 +41,10 @@ services:
         - "443:443"
       dns: 8.8.8.8
       # note that this is really a docker env file and is relative to the docker-compose file
-      env_file: tools/proxy/conf/${DEPLOY_ENV}.env
+      env_file: ../tools/proxy/conf/${DEPLOY_ENV}.env
+      # environment:
+      #   - dynamic_service_proxies=UIService
+        #   - local_narrative
+      
 
 

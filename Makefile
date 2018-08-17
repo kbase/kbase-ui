@@ -34,13 +34,13 @@ config			=
 # Defaults to dist 
 # For local development, one would use the build, since is much faster 
 # to create. A debug build may be available in the future.
-build           = 
+build           = dev
 
 # The deploy environment; used by dev-time image runners
 # dev, ci, next, appdev, prod
 # No default, because one should think about this.
 # Used to target the actual deploy config file (see kbase-ini-dir).
-env             = 
+env             = dev
 
 # The custom docker network
 # For local development.
@@ -129,48 +129,63 @@ docker-network:
 
 # $(if $(value network_exists),$(echo "exists"),$(echo "nope"))
 
+docker-ignore:
+	@echo "> Syncing .dockerignore from .gitignore"
+	@$(TOPDIR)/node_modules/.bin/dockerignore
 
 # Build the docker image, assumes that make init and make build have been done already
 docker-image: 
 	@echo "> Building docker image for this branch; assuming we are on Travis CI"
 	@bash $(TOPDIR)/deployment/tools/build-travis.bash
 
-fake-docker-image:
+fake-travis-build:
 	@echo "> Building docker image for this branch, using fake "
 	@echo "  Travis environment variables derived from git."
 	@bash $(TOPDIR)/tools/docker/build-travis-fake.bash
 
-# The dev version of run-image also supports cli options for mapping plugins, libraries, 
-# and parts of ui into the image for (more) rapdi development workflow
-run-docker-image: docker-network
-	@echo "> Running kbase-ui image."
-	# @echo "> You will need to inspect the docker container for the ip address "
-	# @echo ">   set your /etc/hosts for ci.kbase.us accordingly."
+
+docker-compose-override: 
+	@echo "> Creating docker compose override..."
 	@echo "> With options:"
 	@echo "> plugins $(plugins)"
-	@echo "> internal $(internal)"
+	@echo "> internal $(internal-plugins)"
 	@echo "> libraries $(libraries)"
-	@echo "> ini dir $(kbase-ini-dir)"
-	@echo "> To map host directories into the container, you will need to run "
-	@echo ">   tools/run-image.sh with appropriate options."
-# 	  --kbase-ini-url "$(kbase-ini-url)" 
-#	  -t "$(kbase-ini-dir)" 
-	$(eval cmd = $(TOPDIR)/tools/docker/run-image.sh $(env) \
-	  $(foreach p,$(plugins),-p $(p)) \
-	  $(foreach i,$(internal),-i $i) \
-	  $(foreach l,$(libraries),-l $l) \
-	  $(foreach s,$(services),-s $s)  \
-	  $(foreach d,$(data),-d $d) \
-	  $(foreach f,$(folders),-f $f) \
-	  $(foreach v,$(env_vars),-v $v) \
-	  $(if "$(kbase-ini-dir)",-n "$(kbase-ini-dir)") \
-	  -y "$(dynamic_service_proxies)")
+	@echo "> paths $(paths)"
+	@echo "> local narrative $(local-narrative)"
+	@echo "> dynamic service proxies $(dynamic-services)"
+	$(eval cmd = node $(TOPDIR)/tools/docker/build-docker-compose-override.js $(env) \
+	  $(foreach p,$(plugins),--plugin $(p)) \
+	  $(foreach i,$(internal-plugins),--internal $i) \
+	  $(foreach l,$(libraries),--lib $l) \
+	  $(foreach f,$(paths),---path $f) \
+	  $(foreach d,$(dynamic-services),--dynamic_services $d) \
+	  $(if $(findstring t,$(local-narrative)),--local_narrative))
 	@echo "> Issuing: $(cmd)"
-	bash $(cmd)
+	$(cmd)
 
-docker-clean:
-	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
-	bash tools/docker/clean-docker.sh
+docker-compose-up: docker-network docker-compose-override
+	@:$(call check_defined, build, "the kbase-ui build config: defaults to 'dev'")
+	@:$(call check_defined, env, "the runtime (deploy) environment: defaults to 'dev'")
+	@echo "> Building and running docker image for development"
+	$(eval cmd = cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose up \
+		$(if $(findstring t,$(build-image)),--build))
+	@echo "> Issuing $(cmd)"
+	$(cmd)
+
+# @cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose up --build
+
+docker-compose-clean:
+	@echo "> Cleaning up after docker compose..."
+	@cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose rm -f -s
+	@echo "> If necessary, Docker containers have been stopped and removed"
+
+docker-network-clean:
+	# @:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
+	bash tools/docker/clean-docker-network.sh
+
+dev-start: init docker-compose-up
+
+dev-stop: docker-compose-clean docker-network-clean
 
 
 uuid:
@@ -194,7 +209,7 @@ test-travis: unit-tests travis-tests
 
 
 # Clean slate
-clean:
+clean: clean-docs
 	$(GRUNT) clean-all
 
 clean-temp:
@@ -203,10 +218,12 @@ clean-temp:
 clean-build:
 	$(GRUNT) clean-build
 
+clean-docs:
+	@rm -rf ./docs/book/_book
+	@rm -rf ./docs/node_modules
+
 # If you need more clean refinement, please see Gruntfile.js, in which you will
 # find clean tasks for each major build artifact.
-
-node_modules: init
 
 docs:
 	cd docs; \

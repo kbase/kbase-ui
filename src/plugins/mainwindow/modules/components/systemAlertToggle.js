@@ -12,6 +12,7 @@ define([
     class ViewModel {
         constructor(params) {
             this.alertCount = params.alertCount;
+            this.alertSummary = params.alertSummary;
             this.hideAlerts = params.hideAlerts;
         }
 
@@ -25,7 +26,19 @@ define([
     }
 
     const styles = html.makeStyles({
-
+        button: {
+            css: {
+                border: '1px silver solid',
+                padding: '3px',
+                margin: '2px',
+                cursor: 'pointer'
+            },
+            pseudo: {
+                hover: {
+                    backgroundColor: 'rgba(200,200,200,0.5)'
+                }
+            }
+        }
     });
 
     const t  = html.tag,
@@ -34,42 +47,54 @@ define([
 
     function buildButton() {
         return div({
-            style: {
-                border: '1px silver solid',
-                padding: '3px',
-                margin: '2px'
+            class: styles.classes.button,
+            dataBind: {
+                click: 'function(d,e){$component.toggle.call($component,d,e);}'
             }
         }, [
             div({
                 style: {
                     textAlign: 'center',
                     whiteSpace: 'nowrap'
-                    // fontWeight: 'bold',
                 }
             }, [
-                span({
-                    style: {
-                        fontWeight: 'bold'
-                    },
-                    dataBind: {
-                        text: 'alertCount'
-                    }
-                }),
+                gen.if('alertCount() > 0',
+                    span({
+                        style: {
+                            fontWeight: 'bold'
+                        },
+                        dataBind: {
+                            text: 'alertCount'
+                        }
+                    }),
+                    'no'),
                 ' ',
                 gen.plural('alertCount()', 'alert', 'alerts')
             ]),
             gen.if('alertCount() > 0',
-                div({
-                    style: {
-                        textAlign: 'center',
-                        cursor: 'pointer'
-                    },
-                    dataBind: {
-                        click: 'function(d,e){$component.toggle.call($component,d,e);}'
-                    }
-                }, span({
-                    class: ['fa', 'fa-2x', 'fa-' + 'exclamation-triangle', 'fa-color-warning']
-                })),
+                gen.if('alertSummary()',
+                    [
+                        gen.if('alertSummary().present > 0',
+                            div({
+                                style: {
+                                    textAlign: 'center'
+                                }
+                            }, span({
+                                class: ['fa', 'fa-2x', 'fa-' + 'exclamation-triangle', 'fa-color-danger']
+                            })),
+                            gen.if('alertSummary().future > 0',
+                                div({
+                                    style: {
+                                        textAlign: 'center',
+                                        cursor: 'pointer'
+                                    },
+                                    dataBind: {
+                                        click: 'function(d,e){$component.toggle.call($component,d,e);}'
+                                    }
+                                }, span({
+                                    class: ['fa', 'fa-2x', 'fa-' + 'clock-o', 'fa-color-warning']
+                                }))))
+                    ]),
                 div({
                     style: {
                         textAlign: 'center',

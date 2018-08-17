@@ -29,7 +29,7 @@ ui:
                   id: jgi-search
                   auth: true
             developer:
-              items: 
+              items:                 
                 -
                   id: ui-service
                   auth: true
@@ -43,12 +43,6 @@ ui:
                   id: narrative-info
                   auth: true  
                 -
-                  id: dagre-example
-                  auth: true
-                -
-                  id: simple-search
-                  auth: true
-                -
                   id: simple-sample
                   auth: true
                 -
@@ -60,23 +54,11 @@ ui:
                 -
                   id: example-gopherjs
                   auth: true
-                # -
-                #   id: example-clojurescript
-                # auth: true
-                -
-                  id: reske-admin
-                  auth: true
-                -
-                  id: reske-object-search
-                  auth: true
                 -
                   id: tester
                   auth: true
                 -
                   id: test_dynamic_table
-                  auth: true
-                -
-                  id: paveldemo
                   auth: true
                 -             
                   id: databrowser
@@ -108,6 +90,9 @@ ui:
                 -
                   id: dashboard
                   auth: true
+                - 
+                  id: public-search
+                  auth: false
                 -
                   id: appcatalog
                   auth: false

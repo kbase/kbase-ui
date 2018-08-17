@@ -35,22 +35,25 @@ ui:
                   auth: true
                   allowRoles: [DevToken]
                 -
-                  id: simple-search
-                  auth: true           
-                  allowRoles: [DevToken]
-                -
                   id: narrative-info
-                  auth: true
-                  allow: [alpha]
-                -
-                  id: reske-admin
                   auth: true
                   allow: [alpha]
                 -
                   id: dashboard2
                   auth: true
+                  allow: [alpha] 
+                -
+                  id: ui-service
+                  auth: true
+                  allow: [alpha] 
+                -             
+                  id: databrowser
+                  auth: true
                   allow: [alpha]
-                  allowRoles: [DevToken]                  
+                -
+                  id: typebrowser
+                  auth: true
+                  allow: [alpha]  
             help:
               items:
                 -
@@ -69,6 +72,10 @@ ui:
                 -
                   id: dashboard
                   auth: true
+                - 
+                  id: public-search
+                  auth: false
+                  allow: [alpha]
                 -
                   id: appcatalog
                   auth: false

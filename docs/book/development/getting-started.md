@@ -1,17 +1,33 @@
 # Getting Started
 
-This doc describes how to get set up for kbase-ui development.
+This document describes how to get set up for kbase-ui development.
 
 ## Prerequisites
 
 - [Prerequisites](../getting-started/prerequisites.md)
-- [Local Development Prerequisites](../getting-started/local-dev-prerequisites.md)
+- [Quick Start](../getting-started/quick-start.md)
 
-## Basic usage
+## Introduction
 
-The first step for any kbase-ui effort is to set up a project directory, prepare a copy of kbase-ui, and ensure that it works.
+If you have followed the [Prerequisites](../getting-started/prerequisites.md) and [Quick Start](../getting-started/quick-start.md) documents, you will have all the setup you need to get started.
 
-### Create a working directory for your project
+To support development of kbase-ui itself, plugins, libraries, and local or dynamic services, several tools and techniques are available. The gist of these is:
+
+- proxying all requests to the ui, which allows kbase-ui to work seamlessley as if it were installed in any given kbase deployment environment;
+- mounting local directories into the kbase-ui container, allowing kbase-ui served inside the container to utilize files being edited locally
+
+## Workflow
+
+A typical work flow involves:
+
+1. create working folder
+2. checkout and setup repos you'll be working on
+3. map ci.kbase.us host 
+4. start up kbase-ui
+5. stop kbase-ui
+6. unmap ci.kbase.us host
+
+### 1. Create Working Folder
 
 In this and all developer documentation, it is assumed that all repos are installed under a single root working directory. Developer tools support this simple directory layout.
 
@@ -22,16 +38,29 @@ mkdir -p ~/work/project
 cd ~/work/project
 ```
 
-### Install a local copy of kbase-ui
+### 2. Checkout and Setup Repos
 
-Development workflows for kbase-ui typically starting from the tip of the develop branch of the kbase-ui repo in kbase github account. You will therefore be pushing changes to your fork of kbase/kbase-ui.
+Within the project directory created above, you will need to clone kbase-ui as well as any other plugin or library repo you will be working on.
+
+The directory structure will resemble:
+
+```
+project
+  kbase-ui
+  kbase-ui-plugin-MYPLUGIN
+  kbase-MYLIBRARY
+```
+
+#### Install a local copy of kbase-ui
+
+Development workflows for kbase-ui typically start from the tip of the develop branch of the kbase-ui repo in the kbase github account. You will therefore be pushing changes to your fork of kbase/kbase-ui.
 
 If you have your own preferred method of setting up a repo for this type of workflow, please use it. Here is one setup that I use:
 
 ```bash
 git clone -b develop https://github.com/kbase/kbase-ui
 cd kbase-ui
-git remote set-url --push origin no-push
+git remote set-url --push origin nopush
 git remote add NICKNAME ssh://git@github.com/YOURACCOUNT/kbase-ui
 git checkout -b BRANCHNAME
 git push NICKNAME BRANCHNAME
@@ -39,65 +68,18 @@ git push NICKNAME BRANCHNAME
 
 With this flow, you are operating in the branch *BRANCHNAME*, which started at the tip of the *develop* branch in the main *kbase/kbase-ui* repo. You will push it to your fork located at the github account *YOURACCOUNT*, which has been set up at remote *NICKNAME* in the local git configuration.
 
-> Note: this setup requires that you have generated an ssh key on your machine, and installed it in your giithub account.
+> Note: this setup requires that you have generated an ssh key on your machine, and installed it in your giithub account. If you prefer to work over https and use your github username and password that line above would be `git remote add NICKNAME https://github.com/YOURACCOUNT/kbase-ui
 
-#### Install custom Docker network
+> To be honest, I often skip the local BRANCHNAME and just operate directly on the develop branch.
 
-In order for the proxier to access the kbase-ui container, or for more advanced workflows involving locally hosted services or service mocks, we need to establish a local custom network for Docker. It can be named anything you like, as long as it is consistent across images. We choose the name ```kbase-dev```.
+#### Install local copies of each other repo
 
-```bash
-docker network create kbase-dev
-```
+In the same working directory clone each plugin or library you will be working on, using your preferred method.
 
-#### Build and run kbase-ui
 
-This will fetch, prepare, build, create the image, and run a container from that image. 
+### 3. Map ci.kbase.us to your local host
 
-```bash
-make init
-make build config=dev
-make image build=build
-make run-image env=dev
-```
-
-Where:
-
-- ```make init``` installs all of the build and testing tools and libraries not already covered by the prerequisites
-- ```make build config=dev``` runs the developer build of kbase-ui (defaults to prod build)
-- ```make image build=build``` builds a Docker image containing the dev build of the ui (defaults to the prod "dist" build)
-- `make run-image env=dev` runs the Docker image with the dev environment (defaults to the "prod" environment)
-
-> Tip: 
->
-> On macOS and Linux/Unix you may want to use the ```aliaas``` shell command to create your own shortcuts. E.g. 
->
->```bash
->alias buildui="make build config=dev;make image build=build"
->```
->
-> will make the shell command ```buildui``` available in your shell. See tools/devtools.sh
-
-#### Prepare and run the Proxier
-
-The proxier is a small Docker image which runs nginx to proxy requests for a given KBase deployment hostname (e.g. ci.kbase.us) to a local kbase-ui Docker container, with other requests routed to the canonical locations within KBase. 
-
-```bash
-make proxier-image
-make run-proxier-image env=dev
-```
-
-Where
-
-- `make proxier-image` builds the proxier Docker image
-- `make run-proxier-image env=dev` will start a container running this image, using the `dev` environment. The `dev` env is the default, so you may omit this.
-
-> Note: A shortcut for `make run-proxies-image env=dev`, runui, is provided in tools/devtools.sh
-
-The *dev* env responses to ci.kbase.us.
-
-#### Map ci.kbase.us to your local host
-
-In order for your browser to use the proxier for requests to ci.kbase.us, you need to add a line to your `/etc/hosts` (or equivalent, if on Windows). 
+In order for your browser to use the kbase-ui proxy for requests to ci.kbase.us, you need to add a line to your `/etc/hosts` (or equivalent, if on Windows). 
 
 ```hosts
 127.0.0.1  ci.kbase.us
@@ -112,32 +94,66 @@ In fact, you may find it handy to add this entire section to your /etc/hosts, an
 #127.0.0.1	kbase.us narrative.kbase.us
 ```
 
-#### Bring up the local kbase-ui
+### 4. Start kbase-ui
 
-Bring up your browser to [https://ci.kbase.us](https://ci.kbase.us).
+The local development workflow hinges on using Docker Compose to build and start both kbase-ui and the kbase-ui local proxy containers. Docker Compose simplifies configuration, as it is completely contained within `dev/docker-compose.yml` and `dev/docker-compose.override.yml`, and uses a simple set of docker-compose commands for all operations.
 
-You'll receive a security warning due to the usage of a self-signed ssl certificate inside the container. Just go through the hoops to accept it. Each browser is different.
+If you are familiar with the previous incarnation of kbase-ui workflow, which relied upon direct usage of `docker`, this new workflow is simpler and more reliable.
 
-> Tip: Browsers can be VERY finicky with self signed certs, especially if you have change the self signed cert, which may happen when you rebuild the proxier image.
+> However, it is new, so some workflows are not captured yet by the tools
 
-#### Stop it
+The general form of the dev-start tool is:
 
-When you are finished you will want to stop the container, simpley press `Ctrl`+ `C`. The container should immediately stop. 
+```
+make dev-start \
+    [build=BUILD] \
+    [env=ENV] \
+    [plugins="P1 P2"] \
+    [internal-plugins="I2 I2"] \
+    [libraries="L1 L2"] \
+    [paths="T1 T2"] \
+    [build-image="t/f"] \
+    [local-narrative="t/f"] \
+    [dynamic-services="D1 D2"]
+```
 
-You may also use your favorite docker management tool, such as Kitematic on macOS.
+The most dead simple version is:
 
-## More
+```
+make dev-start
+```
 
-[Docker Tips](docker-tips.md) - a collection of handy docker commands
+which simply starts up kbase-ui against CI, using the development build.
+
+In order to incorporate a plugin cloned in the project directory, us this form
+
+```
+make dev-start plugins="MYPLUGIN"
+```
+
+The first time you run `dev-start` the kbase-ui and kbase-ui-proxy images are built. Thereafter those images are used when you stop and start kbase-ui. If you have made changes to kbase-ui which you want incorporated directly into the image, you will need to regenerate the image. You do that with the `build-image` option.
+
+```
+make dev-start build-image=t
+```
+
+For details on usage, see [Developer Tools](tools.md).
+
+### 5. Stop kbase-ui
+
+When you are finished with a work session, or for whatever reason wish to stop the kbase-ui and proxy containers:
+
+- Press `Control` + `C` in the window in which the docker-compose-up tool was run.
+    This should exit the tool, and hopefully stop the containers. 
+- run `make dev-stop` 
+    We do this to stop and remove any started containers, as well as to remove the custom kbase-dev network created by `make dev-start`
+
+## 6. unmap ci.kbase.us
+
+This is optional, but unless you are continuing to work on local kbase-ui, you should remove the /etc/hosts mapping in order to gain access to the "real" ci.kbase.us.
+
+I prefer to simply comment out the line so it is ready for reuse later. 
 
 ## Next Steps
 
-- [Developing a Plugin](developing-a-plugin.md)
-- [Creating a External Plugin](creating-a-new-plugin.md)
-
-
----
-
-[Index](../index.md) - [README](../README.md) - [Release Notes](../../release-notes/index.md) - [KBase](http://kbase.us)
-
----
+- [⛏ Working with Plugins](../plugins/README.md)

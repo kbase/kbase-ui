@@ -38,30 +38,31 @@ then
 fi
 
 
-if [ -z "${TRAVIS_BRANCH}" ]
+if [ -z "${REAL_BRANCH}" ]
 then
-    echo "Error: A git branch was not found in TRAVIS_BRANCH"
+    echo "Error: A git branch was not found in REAL_BRANCH"
     exit 1
 fi
 
-# $TAG was set from TRAVIS_BRANCH, which is a little wonky on pull requests,
-# but it should be okay since we should never get here on a PR
-if  ! ( [ "${TRAVIS_BRANCH}" == "master" ] || [ "${TRAVIS_BRANCH}" == "develop" ] )
+# $TAG was set from REAL_BRANCH, 
+# TRAVIS_BRANCH does not work as expected (contains the tag not branch) 
+# when the commit is tagged.
+if  ! ( [ "${REAL_BRANCH}" == "master" ] || [ "${REAL_BRANCH}" == "develop" ] )
 then
-    echo "Error: Will only push images for the master or develop branches; Will not push image for branch ${TRAVIS_BRANCH}"
+    echo "Error: Will only push images for the master or develop branches; Will not push image for branch ${REAL_BRANCH}"
     exit 1
 fi
 
 
 # Assign the tag to be used for the docker image from current branch as known to Travis.
-TAG="${TRAVIS_BRANCH}"
+IMAGE_TAG="${REAL_BRANCH}"
 
 # If the tag is master, we need to retag as latest before pushing
-if [ "${TAG}" == "master" ]
+if [ "${IMAGE_TAG}" == "master" ]
 then
-    docker tag ${IMAGE_NAME}:${TAG} ${IMAGE_NAME}:latest || \
+    docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest || \
     ( echo "Failed to retag master to latest" && exit 1 )
-    TAG="latest"
+    IMAGE_TAG="latest"
 fi
 
 if [ "${TRAVIS_SECURE_ENV_VARS}" != "true" ]
@@ -85,6 +86,6 @@ fi
 # The Main Guts
 echo "Logging into Dockerhub as ${DOCKER_USER}"
 docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} && \
-echo "Pushing ${IMAGE_NAME}:${TAG}" && \
-docker push ${IMAGE_NAME}:${TAG} || \
+echo "Pushing ${IMAGE_NAME}:${IMAGE_TAG}" && \
+docker push ${IMAGE_NAME}:${IMAGE_TAG} || \
 ( echo "Failed to login and push tagged image" && exit 1 )
