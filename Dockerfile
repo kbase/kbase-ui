@@ -6,8 +6,8 @@ FROM alpine:3.8 as builder
 # add deps for building kbase-ui
 RUN apk upgrade --update-cache --available \
     && apk add --update --no-cache \
-        nodejs=8.11.3-r1 \
-        npm=8.11.3-r1 \
+        nodejs=8.11.4-r0 \
+        npm=8.11.4-r0 \
         git=2.18.0-r0 \
         make=4.2.1-r2 \
         bash=4.4.19-r1 \
