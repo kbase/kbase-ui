@@ -1016,7 +1016,7 @@ function cleanup(state) {
     var root = state.environment.path;
     return fs.removeAsync(root.concat(['build', 'bower_components']).join('/'))
         .then(function () {
-            fs.removeAsync(root.concat(['build', 'node_modules']).join('/'));
+            return fs.removeAsync(root.concat(['build', 'node_modules']).join('/'));
         })
         .then(function () {
             return fs.removeAsync(root.concat(['bower.json']).join('/'));
@@ -1032,12 +1032,15 @@ function makeBaseBuild(state) {
 
     return fs.removeAsync(buildPath.concat(['build']).join('/'))
         .then(function () {
+            mutant.log('Copying config...');
             return fs.moveAsync(root.concat(['config']).join('/'), root.concat(['build', 'config']).join('/'));
         })
         .then(function () {
+            mutant.log('Copying build...');
             return fs.copyAsync(root.concat(['build']).join('/'), buildPath.concat(['build']).join('/'));
         })
         .then(function () {
+            mutant.log('Copying test...');
             return fs.copyAsync(root.concat(['test']).join('/'), buildPath.concat(['test']).join('/'));
         })
         .then(function () {
@@ -1394,7 +1397,6 @@ function main(type) {
             mutant.log('Installing npm packages...');
             return installNpmPackages(state);
         })
-
 
         .then(function (state) {
             return mutant.copyState(state);
