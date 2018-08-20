@@ -81,7 +81,7 @@
         "bluebird": "3.5.1",
         "dagre": "0.8.2",
         "lodash": "4.17.5",
-        "vega": "4.2.0"
+        "vega-lib": "4.2.0"
     },
     "nextDependencies": {
         "d3": "4.13.0",
