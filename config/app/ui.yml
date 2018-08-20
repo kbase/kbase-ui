@@ -90,6 +90,12 @@ ui:
             -
                 id: search_features
                 title: Search over Genome Features
+            -
+                id: similar_genomes
+                title: Similar Genomes Landing Page Widget
+            -
+                id: new_provenance_widget
+                title: New Provenance Widget
         enabled: []
         disabled: []
 # Primarily for output links for the docsite.
