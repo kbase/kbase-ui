@@ -50,7 +50,7 @@ define([
             return [
                 p(['You are currently using the KBase User Interface (UI), a collection of tools for KBase Users and Developers.']),
                 // p(['This is ', buildHub(), ', a collection of tools for KBase Users and Developers. This is where you log in and out of KBase, can access your Narratives and those shared with you, access a catalog of Narrative Apps, and search for data. As a developer you can register and manage your apps as well.']),
-                p('The UI is just one of three primary user interfaces:'),
+                p('The UI is one of three primary web-based tools which comprise KBase:'),
                 ul([
                     li([
                         'The ',
@@ -61,7 +61,7 @@ define([
                                 fontWeight: 'bold'
                             }
                         }, 'Narrative Interface'),
-                        ', a tool for creating, editing, running and publishing active scienctific documents called Narratives. ',
+                        ', a tool for creating, editing, running and publishing active scientific documents called Narratives. ',
                         'New to the Narrative? Perhaps you would like to check out the ', a({
                             href: 'http://kbase.us/narrative-guide',
                             target: '_blank',
@@ -80,10 +80,10 @@ define([
                                 fontWeight: 'bold'
                             }
                         }, 'Documentation Site'),
-                        ', which provides tutorials and developer documenation, communications and publications, links to social media outlets, developer documentation, and background on KBase.'
+                        ', which provides tutorials and developer documentation, communications and publications, ',
+                        'links to social media outlets, developer documentation, and background on KBase.'
                     ]),
                     li('The UI, which provides login, account management, dashboard, catalog, data object viewing, and search services'),
-
                 ])
             ];
         }
