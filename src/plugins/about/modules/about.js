@@ -48,29 +48,42 @@ define([
             var docSiteUrl = runtime.config('resources.docSite.base.url');
 
             return [
-                p(['This is ', buildHub(), ', a collection of tools for KBase Users and Developers. This is where you log in and out of KBase, can access your Narratives and those shared with you, access a catalog of Narrative Apps, and search for data. As a developer you can register and manage your apps as well.']),
-                p('The Hub is just one of three primary user interfaces:'),
+                p(['You are currently using the KBase User Interface (UI), a collection of tools for KBase Users and Developers.']),
+                // p(['This is ', buildHub(), ', a collection of tools for KBase Users and Developers. This is where you log in and out of KBase, can access your Narratives and those shared with you, access a catalog of Narrative Apps, and search for data. As a developer you can register and manage your apps as well.']),
+                p('The UI is just one of three primary user interfaces:'),
                 ul([
-                    li('The Hub, which provides login, account management, dashboard, catalog, data object viewing, and search services'),
                     li([
                         'The ',
                         a({
                             href: narrativeUrl,
                             target: '_blank',
+                            style: {
+                                fontWeight: 'bold'
+                            }
                         }, 'Narrative Interface'),
-                        ', a tool for creating, editing, running and publishing active scienctific documents called Narratives '
+                        ', a tool for creating, editing, running and publishing active scienctific documents called Narratives. ',
+                        'New to the Narrative? Perhaps you would like to check out the ', a({
+                            href: 'http://kbase.us/narrative-guide',
+                            target: '_blank',
+                            style: {
+                                fontWeight: 'bold'
+                            }
+                        }, 'Narrative Interface User Guide'),
+                        '.'
                     ]),
                     li([
                         'The ',
                         a({
                             href: docSiteUrl,
-                            target: '_blank'
+                            target: '_blank',
+                            style: {
+                                fontWeight: 'bold'
+                            }
                         }, 'Documentation Site'),
                         ', which provides tutorials and developer documenation, communications and publications, links to social media outlets, developer documentation, and background on KBase.'
-                    ])
-                ]),
-                p([
-                    'KBase is under active development, adding new features, tools and content all the time. '
+                    ]),
+                    li('The UI, which provides login, account management, dashboard, catalog, data object viewing, and search services'),
+
                 ])
             ];
         }
@@ -164,9 +177,17 @@ define([
                 ]),
                 ul([
                     li(a({
-                        href: relNotesUrl,
+                        href: aboutKbase,
                         target: '_blank'
-                    }, 'Release Notes')),
+                    }, 'About KBase')),
+                    li(a({
+                        href: contactUrl,
+                        target: '_blank'
+                    }, 'Contact KBase')),
+                    li(a({
+                        href: documentationUrl,
+                        target: '_blank'
+                    }, 'Documenation')),
                     li(a({
                         href: githubUrl,
                         target: '_blank'
@@ -176,17 +197,9 @@ define([
                         target: '_blank'
                     }, 'Public Help Board')),
                     li(a({
-                        href: contactUrl,
+                        href: relNotesUrl,
                         target: '_blank'
-                    }, 'Contact KBase')),
-                    li(a({
-                        href: aboutKbase,
-                        target: '_blank'
-                    }, 'About KBase')),
-                    li(a({
-                        href: documentationUrl,
-                        target: '_blank'
-                    }, 'Documenation'))
+                    }, 'Release Notes')),
                 ])
             ];
         }
@@ -204,7 +217,7 @@ define([
                         class: 'col-sm-6',
                         dataKBTesthookPanel: 'welcome'
                     }, [
-                        h2('The KBase Hub'),
+                        h2('The KBase User Interface'),
                         buildWelcome()
                     ]),
                     div({
