@@ -85,7 +85,6 @@
             text: 'bower_components/requirejs-text/text',
             underscore: 'bower_components/underscore/underscore',
             uuid: 'bower_components/pure-uuid/uuid',
-            vega: 'node_modules/vega/vega',
             yaml: 'bower_components/requirejs-yaml/yaml'
         },
         shim: {

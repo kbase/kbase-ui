@@ -15,9 +15,6 @@ npmFiles:
         cwd: dist
     -
         name: lodash
-    -
-        name: vega
-        cwd: build
     # -
     #     name: d3
     #     cwd: build
