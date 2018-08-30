@@ -77,8 +77,7 @@
     "dependencies": {
         "ajv": "6.5.3",
         "bluebird": "3.5.1",
-        "dagre": "0.8.2",
-        "lodash": "4.17.10"
+        "dagre": "0.8.2"
     },
     "nextDependencies": {
         "d3": "4.13.0",
