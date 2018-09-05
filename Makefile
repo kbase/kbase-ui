@@ -79,11 +79,6 @@ default:
 	@echo Use "make init && make config=TARGET build"
 	@echo see docs/quick-deploy.md
 
-# The "EZ Install" version - init, build, start, preview
-# Note that this uses the default targets -- which are least disruptive (to production)
-# and most experimental (development ui, ci services)
-run: init build start pause preview
-
 NODE=$(shell node --version 2> /dev/null)
 NODE_REQUIRED="v8"
 majorver=$(word 1, $(subst ., ,$1))
@@ -91,7 +86,6 @@ majorver=$(word 1, $(subst ., ,$1))
 preconditions:
 	@echo "> Testing for preconditions."
 	@echo $(if $(findstring $(call majorver, $(NODE)), $(NODE_REQUIRED)), "Good node version ($(NODE))", $(error "! Node major version must be $(NODE_REQUIRED), it is $(NODE).") )
-
 
 # Initialization here pulls in all dependencies from Bower and NPM.
 # This is **REQUIRED** before any build process can proceed.
@@ -109,7 +103,6 @@ node_modules:
 setup: preconditions setup-dirs
 
 init: setup node_modules
-
 
 # Perform the build. Build scnearios are supported through the config option
 # which is passed in like "make build config=ci"
