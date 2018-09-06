@@ -14,7 +14,34 @@ define([
         var app = App.make(config);
 
         function start() {
-            return app.start();
+            return app.start()
+                .then((runtime) => {
+                    // kick off handling of the current route.
+                    // api.service('analytics').pageView('/index');
+                    // remove the loading status.
+
+                    runtime.send('app', 'do-route');
+
+
+                    // TODO: detect if already on signedout page.
+                    // TODO: this behavior should be defined in the main app
+                    // TODO: there this behavior should look at the current plugin route,
+                    // if it does not require authorization, just send let it be -- it should
+                    // listen for the auth event itself and handle things appropriately.
+                    // We'll have to update those or add a new plugin flag indicating that the
+                    // plugin handles auth change events itself.
+
+                    runtime.receive('session', 'loggedin', function () {
+
+                    });
+
+                    runtime.receive('session', 'loggedout', function () {
+                        console.log('loggedout');
+                        runtime.send('app', 'navigate', {
+                            path: 'auth2/signedout'
+                        });
+                    });
+                });
         }
 
         function stop() {

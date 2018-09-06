@@ -93,8 +93,8 @@ define([
         function logout() {
             return auth2Session.logout()
                 .then(function (result) {
-                    state.setItem('loggedin', false);
-                    runtime.send('session', 'loggedout');
+                    // state.setItem('loggedin', false);
+                    // runtime.send('session', 'loggedout');
                     return result;
                 });
         }
@@ -127,10 +127,10 @@ define([
                     // session.setSession(session.importFromCookie());
                     if (auth2Session.isAuthorized()) {
                         state.setItem('loggedin', true);
-                        runtime.send('session', 'loggedin');
+                        // runtime.send('session', 'loggedin');
                     } else {
                         state.setItem('loggedin', false);
-                        runtime.send('session', 'loggedout');
+                        // runtime.send('session', 'loggedout');
                     }
                     auth2Session.onChange(function (change) {
                         runtime.send('session', 'change', {
@@ -177,9 +177,15 @@ define([
                             state.setItem('loggedin', false);
                             runtime.send('session', 'loggedout');
                             // TODO: detect if already on signedout page.
-                            runtime.send('app', 'navigate', {
-                                path: 'auth2/signedout'
-                            });
+                            // TODO: this behavior should be defined in the main app
+                            // TODO: there this behavior should look at the current plugin route,
+                            // if it does not require authorization, just send let it be -- it should
+                            // listen for the auth event itself and handle things appropriately.
+                            // We'll have to update those or add a new plugin flag indicating that the
+                            // plugin handles auth change events itself.
+                            // runtime.send('app', 'navigate', {
+                            //     path: 'auth2/signedout'
+                            // });
                         }
                     });
                 });

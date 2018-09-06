@@ -145,6 +145,7 @@ define([
             // Messaging
             send: send,
             recv: receive,
+            receive: receive,
 
             sendp: sendp,
             drop: drop,

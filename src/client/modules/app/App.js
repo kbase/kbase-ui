@@ -216,14 +216,6 @@ define([
                     return mountRootWidget('root', api);
                 })
                 .then(function () {
-                    // kick off handling of the current route.
-                    // api.service('analytics').pageView('/index');
-                    // remove the loading status.
-
-                    messenger.send({
-                        channel: 'app',
-                        message: 'do-route'
-                    });
                     return api;
                 });
         }
