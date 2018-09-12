@@ -22,7 +22,6 @@ define([
 
                     runtime.send('app', 'do-route');
 
-
                     // TODO: detect if already on signedout page.
                     // TODO: this behavior should be defined in the main app
                     // TODO: there this behavior should look at the current plugin route,
@@ -36,10 +35,17 @@ define([
                     });
 
                     runtime.receive('session', 'loggedout', function () {
-                        console.log('loggedout');
-                        runtime.send('app', 'navigate', {
-                            path: 'auth2/signedout'
-                        });
+                        const authRequired = runtime.service('route').isAuthRequired();
+                        // If the current route specifies that authorization is required,
+                        // we just unceremoniously bounce to the signedout page.
+                        // Otherwise we do nothing -- the route handler widget should be
+                        // listening for session loggedin and loggedout and making
+                        // appropriate adjustments.
+                        if (authRequired) {
+                            runtime.send('app', 'navigate', {
+                                path: 'auth2/signedout'
+                            });
+                        }
                     });
                 });
         }
