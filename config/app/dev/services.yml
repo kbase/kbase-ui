@@ -36,6 +36,9 @@ ui:
                 - 
                   id: dashboard2
                   auth: true
+                - 
+                  id: dashboard3
+                  auth: true
                 -
                   id: test-lookup
                   auth: true

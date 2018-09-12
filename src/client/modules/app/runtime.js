@@ -146,6 +146,7 @@ define([
             send: send,
             recv: receive,
             receive: receive,
+            on: receive,
 
             sendp: sendp,
             drop: drop,

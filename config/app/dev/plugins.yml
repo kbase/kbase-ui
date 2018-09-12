@@ -252,7 +252,7 @@ plugins:
     -
         name: public-search
         globalName: kbase-ui-plugin-public-search
-        version: 0.12.3
+        version: 0.12.5
         cwd: src/plugin
         source:
             bower: {}
@@ -276,3 +276,11 @@ plugins:
     #     cwd: src/plugins
     #     source:
     #         bower: {}
+    -
+        name: dashboard3
+        globalName: kbase-ui-plugin-dashboard3
+        version: 0.1.0
+        cwd: src/plugin
+        source:
+            bower: {}
+        
