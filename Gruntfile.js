@@ -8,7 +8,6 @@ module.exports = function (grunt) {
     'use strict';
 
     // Load External Tasks
-    grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-mkdir');
