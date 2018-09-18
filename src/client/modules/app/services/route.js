@@ -152,7 +152,6 @@ define([
             });
 
             runtime.recv('app', 'navigate', function (data) {
-                console.log('navigating to', data);
                 router.navigateTo(data);
             });
 
