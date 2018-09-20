@@ -252,7 +252,7 @@ plugins:
     -
         name: public-search
         globalName: kbase-ui-plugin-public-search
-        version: 0.12.13
+        version: 0.12.14
         cwd: src/plugin
         source:
             bower: {}
