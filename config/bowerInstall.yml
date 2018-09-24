@@ -8,16 +8,16 @@
 # need to list the packages here and create config for exceptions
 # TODO: document the format
 bowerFiles:
-    # -
-    #     name: knockout
-    #     cwd: dist
-    #     src: knockout.js
-    #     bowerComponent: true
     -
-        name: kbase-knockout
+        name: knockout
         cwd: dist
         src: knockout.js
         bowerComponent: true
+    # -
+    #     name: kbase-knockout
+    #     cwd: dist
+    #     src: knockout.js
+    #     bowerComponent: true
     -
         name: knockout-arraytransforms
         cwd: dist
