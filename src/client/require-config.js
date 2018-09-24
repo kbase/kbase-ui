@@ -64,7 +64,7 @@
             kb_datatables: 'css/kb-datatables',
             kb_icons: 'css/kb-icons',
             kb_ui: 'css/kb-ui',
-            knockout: 'bower_components/kbase-knockout/knockout',
+            knockout: 'bower_components/knockout/knockout',
             'knockout-arraytransforms': 'bower_components/knockout-arraytransforms/knockout-arraytransforms',
             'knockout-projections': 'bower_components/knockout-projections/knockout-projections',
             'knockout-switch-case': 'bower_components/knockout-switch-case/knockout-switch-case',
