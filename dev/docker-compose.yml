@@ -17,7 +17,11 @@ services:
     container_name: kbase-ui
     command:
       - '-env'
-      - /kb/deployment/config/${DEPLOY_ENV}.ini
+      # The following line uses the ones provided in this repo
+      # Or this one which uses one installed by 'make get-gitlab-config'
+      - /kb/deployment/config/${DEPLOY_ENV}_config.ini
+      # Want to do this, but our gitlab is both a self-signed cert and expired
+      # - https://oauth2:${GITLAB_TOKEN}@gitlab.kbase.lbl.gov:1443/devops/kbase_ui_config/raw/develop/${DEPLOY_ENV}_config.ini
       - '-template'
       - /kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf
       - '-template'

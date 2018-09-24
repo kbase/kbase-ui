@@ -86,13 +86,22 @@ function mergeLibs(root, config, args) {
 }
 
 function mergeConfig(root, config, args) {
-    // if (args.configs) {
+    const gitlabConfigDir = root + '/dev/gitlab-config';
+    if (fs.existsSync(gitlabConfigDir)) {
+        console.log('using gitlab configs');
+        config.services['kbase-ui'].volumes.push({
+            type: 'bind',
+            source: gitlabConfigDir,
+            target: '/kb/deployment/config'
+        });
+    } else {
+        console.log('using local configs');
         config.services['kbase-ui'].volumes.push({
             type: 'bind',
             source: root + '/deployment/config',
             target: '/kb/deployment/config'
-        })
-    // }
+        });
+    }
 }
 
 function mergeDynamicServices(root, config, args) {
