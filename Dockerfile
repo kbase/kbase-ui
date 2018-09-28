@@ -11,7 +11,7 @@ RUN apk upgrade --update-cache --available \
         git=2.18.0-r0 \
         make=4.2.1-r2 \
         bash=4.4.19-r1 \
-        g++=6.4.0-r8 \
+        g++=6.4.0-r9 \
         python2=2.7.15-r1 \
         chromium=68.0.3440.75-r0 \
     && mkdir -p /kb
