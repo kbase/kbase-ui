@@ -2,19 +2,20 @@
 ---
 ui:
   services:
-    heartbeat: {}
-    widget: {}
-    data: {}
-    type: {}
-    userprofile: {}
     analytics: {}
+    coreService: {}
+    data: {}
+    heartbeat: {}
+    instrumentation: {}
     ko-component: {}
     notification: {}
-    schema: {}
     route: {}
-    session: {}
     rpc: {}
-    coreService: {}
+    schema: {}
+    session: {}
+    type: {}
+    userprofile: {}
+    widget: {}
     # dynamic-service: {}
     menu:
       menus:
