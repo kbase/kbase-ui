@@ -34,12 +34,12 @@ define([
             return new Promise(function (resolve, reject) {
                 var service = services[name],
                     moduleName = [moduleBasePath, service.module].join('/');
-                require([moduleName], function (serviceFactory) {
+                require([moduleName], function (serviceModule) {
                     var serviceInstance;
-                    if (serviceFactory.make) {
-                        serviceInstance = serviceFactory.make(services[name].config, params);
+                    if (serviceModule.make) {
+                        serviceInstance = serviceModule.make(services[name].config, params);
                     } else {
-                        serviceInstance = new serviceFactory.ServiceClass({
+                        serviceInstance = new serviceModule.ServiceClass({
                             config: services[name].config,
                             params: params
                         });
