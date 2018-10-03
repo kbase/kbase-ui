@@ -200,6 +200,14 @@ function doTasks(spec, tasks, testData, common) {
             info('-- skipping task', task.title);
             return;
         }
+        if (task.disable) {
+            if (task.disable.envs) {
+                if (task.disable.envs.includes(testData.env)) {
+                    info('skipping task because it is disabled for env: ' + testData.env);
+                    return;
+                }
+            }
+        }
         if (task.subtask) {
             doTasks(spec, common[task.subtask], testData, common);
             return;
@@ -208,11 +216,18 @@ function doTasks(spec, tasks, testData, common) {
     });
 }
 
-function runTest(test, common) {
-    var testData = loadJSONFile(__dirname + '/../config.json');
+function runTest(test, common, testData) {
     describe(test.description, function () {
         if (test.disabled) {
             return;
+        }
+        if (test.disable) {
+            if (test.disable.envs) {
+                if (test.disable.envs.includes(testData.env)) {
+                    info('skipping test because it is disabled for env: ' + testData.env);
+                    return;
+                }
+            }
         }
         var defaultUrl = test.defaultUrl || '/';
         test.specs.forEach(function (spec) {
@@ -224,6 +239,14 @@ function runTest(test, common) {
                     info('skipping spec', spec.description);
                     return;
                 }
+                if (spec.disable) {
+                    if (spec.disable.envs) {
+                        if (spec.disable.envs.includes(testData.env)) {
+                            info('skipping test spec because it is disabled for env: ' + testData.env);
+                            return;
+                        }
+                    }
+                }
                 var url = spec.url || defaultUrl;
                 browser.url(url);
                 doTasks(spec, spec.tasks, testData, common);
@@ -234,8 +257,9 @@ function runTest(test, common) {
 }
 
 function runTests(tests, common) {
+    const testData = loadJSONFile(__dirname + '/../config.json');
     tests.forEach(function (test) {
-        runTest(test, common);
+        runTest(test, common, testData);
     });
 }
 

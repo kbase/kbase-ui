@@ -1,5 +1,6 @@
 {
     "token": "TOKEN_HERE",
     "username": "USERNAME_HERE",
-    "realname": "REALNAME_HERE"
+    "realname": "REALNAME_HERE",
+    "env": "DEPLOY_ENV_HERE_ci_next_appdev_prod"
 }
