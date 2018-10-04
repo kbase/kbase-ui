@@ -35,15 +35,15 @@ env:
     - REAL_BRANCH=$(git ls-remote origin | sed -n "\|^$TRAVIS_COMMIT\s\+refs/heads/|{s///p}")
     - REAL_TAG=$(git tag -l --points-at HEAD)
 
-# if: (env(REAL_BRANCH) = develop) OR ((env(REAL_BRANCH) = master) AND (env(REAL_TAG) =~ /^v/))
+if: branch = develop OR tag =~ /^v.+$/
 # try this - revert to above before pushing to kbase
 # regex doesn't work???
-if: env(REAL_BRANCH) = develop 
+# if: env(REAL_BRANCH) = develop 
 
 # branches:
 #     only:
 #         # builds for any PR merged into the develop branch
-#         - develop
+#         - develo
 #         # builds when a release is tagged using a "v" prefixed semver tag.
 #         # This is rough, but all we are after for is a trigger, not semver 
 #         # validation!
