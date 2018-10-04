@@ -34,18 +34,10 @@ env:
     # Note: this only works for gnu sed, not, e.g., bsd sed as distributed with macos
     - REAL_BRANCH=$(git ls-remote origin | sed -n "\|^$TRAVIS_COMMIT\s\+refs/heads/|{s///p}")
 
-if: (branch = develop) OR ((branch = master) AND (tag =~ /^v.+$/))
-
-# branches:
-#     only:
-#         # builds for any PR merged into the develop branch
-#         - develop
-#         # builds when a release is tagged using a "v" prefixed semver tag.
-#         # This is rough, but all we are after for is a trigger, not semver 
-#         # validation!
-#         # master is tagged as a release after develop->master is merged
-#         - /^v.*$/
-        
+# Note that when a travis build is triggered by a tag, the branch is undefined
+# The previous travis config specified that the branch had to be master as well as tagged, 
+# but a change at Travis broke this unexpectedly.
+if: branch = develop OR tag =~ /^v.+$/
 
 install:
     # Note that this will build the image appropriately, depending upon
