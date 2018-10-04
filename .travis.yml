@@ -33,12 +33,11 @@ env:
     # ... the tag!
     # Note: this only works for gnu sed, not, e.g., bsd sed as distributed with macos
     - REAL_BRANCH=$(git ls-remote origin | sed -n "\|^$TRAVIS_COMMIT\s\+refs/heads/|{s///p}")
-    - REAL_TAG=$(git tag -l --points-at HEAD)
 
-# if: branch = develop OR tag =~ /^v.+$/
-# try this - revert to above before pushing to kbase
-# regex doesn't work???
-if: tag =~ /^v.+$/
+# Note that when a travis build is triggered by a tag, the branch is undefined
+# The previous travis config specified that the branch had to be master as well as tagged, 
+# but a change at Travis broke this unexpectedly.
+if: branch = develop OR tag =~ /^v.+$/
 
 # branches:
 #     only:
