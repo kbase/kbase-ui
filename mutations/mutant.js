@@ -35,22 +35,8 @@ var findit = require('findit2'),
 // UTILS
 
 function copyFiles(tryFrom, tryTo, globExpr) {
-    const fromPath = tryFrom.join('/');
-    const toPath = tryTo.join('/');
-    console.log('copying ', fromPath, toPath);
-
-    try {
-        console.log('from...', typeof  fromPath, fromPath);
-        const x = fs.realpathSync(fromPath);
-        console.log('is it?', fromPath, x);
-    } catch (ex) {
-        console.log('no, it is not!', ex);
-        throw ex;
-    }
-
-    return Promise.all([fs.realpathAsync(fromPath), fs.realpathAsync(toPath)])
+    return Promise.all([fs.realpathAsync(tryFrom.join('/')), fs.realpathAsync(tryTo.join('/'))])
         .spread(function (from, to) {
-            console.log('from/to:', from, to);
             return [from.split('/'), to.split('/'), glob(globExpr, {
                 cwd: from,
                 nodir: true
@@ -58,8 +44,8 @@ function copyFiles(tryFrom, tryTo, globExpr) {
         })
         .spread(function (from, to, matches) {
             return Promise.all(matches.map(function (match) {
-                const fromPath = from.concat([match]).join('/');
-                const toPath = to.concat([match]).join('/');
+                var fromPath = from.concat([match]).join('/'),
+                    toPath = to.concat([match]).join('/');
                 return fs.copy(fromPath, toPath, {});
             }));
         });
@@ -197,10 +183,7 @@ function mkdir(inPath, dirPath) {
 }
 
 function ensureDir(path) {
-    const dir = path.join('/');
-    console.log('ensuring ' + dir);
-
-    return fs.ensureDirSync(dir);
+    return fs.ensureDirSync(path.join('/'));
 }
 
 function copydir(fromRoot, fromDir, toRoot, toDir) {
