@@ -38,7 +38,7 @@ env:
 #if: (branch = develop) OR ((branch = master) AND (tag IS present))
 # try this - revert to above before pushing to kbase
 # regex doesn't work???
-if: branch = develop AND env(REAL_TAG) =~ /^v/
+if: branch = develop AND env(REAL_TAG) IS present
 
 # branches:
 #     only:
