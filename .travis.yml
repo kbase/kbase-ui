@@ -35,10 +35,10 @@ env:
     - REAL_BRANCH=$(git ls-remote origin | sed -n "\|^$TRAVIS_COMMIT\s\+refs/heads/|{s///p}")
     - REAL_TAG=$(git tag -l --points-at HEAD)
 
-if: branch = develop OR tag =~ /^v.+$/
+# if: branch = develop OR tag =~ /^v.+$/
 # try this - revert to above before pushing to kbase
 # regex doesn't work???
-# if: env(REAL_BRANCH) = develop 
+if: tag =~ /^v.+$/
 
 # branches:
 #     only:
