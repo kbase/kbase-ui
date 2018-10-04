@@ -36,7 +36,7 @@ env:
 
 #if: (branch = develop) OR ((branch = master) AND (tag IS present))
 # try this - revert to above before pushing to kbase
-if: (branch = develop) AND (tag =~ /^v.+$/)
+if: (branch = develop) AND (tag IS present)
 
 # branches:
 #     only:
