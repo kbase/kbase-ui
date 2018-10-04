@@ -612,14 +612,17 @@ function installPlugins(state) {
                                 cwd = cwds.split('/'),
                                 // Our actual cwd is mutations, so we need to escape one up to the
                                 // project root.
-                                repoRoot = (plugin.source.directory.root && plugin.source.directory.root.split('/')) || ['..', '..'],
+                                repoRoot = (plugin.source.directory.path && plugin.source.directory.path.split('/')) || ['..', '..'],
                                 source = repoRoot.concat([plugin.globalName]).concat(cwd),
                                 destination = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+                            console.log('install plugin from directory', cwd, repoRoot, source)
                             mutant.ensureDir(destination);
+                            console.log('ensured!');
                             return mutant.copyFiles(source, destination, '**/*');
                         }));
                 })
                 .then(function () {
+                    console.log('PLUGINS COPIED');
                     return  Promise.all(plugins
                         .filter(function (plugin) {
                             return (typeof plugin === 'string');
@@ -627,7 +630,6 @@ function installPlugins(state) {
                         .map(function (plugin) {
                             var source = root.concat(['plugins', plugin]),
                                 destination = root.concat(['build', 'client', 'modules', 'plugins', plugin]);
-                            // console.log('internal plugin?', plugin, root, source.join('/'), destination.join('/'));
                             mutant.ensureDir(destination);
                             return mutant.copyFiles(source, destination, '**/*');
                         }));
