@@ -10,7 +10,7 @@ define([
 
         // METHODS
         send(instrumentation) {
-            console.log('SENDING', instrumentation);
+            // console.log('SENDING', instrumentation);
         }
 
         // API
