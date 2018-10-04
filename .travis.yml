@@ -38,7 +38,7 @@ env:
 # if: (env(REAL_BRANCH) = develop) OR ((env(REAL_BRANCH) = master) AND (env(REAL_TAG) =~ /^v/))
 # try this - revert to above before pushing to kbase
 # regex doesn't work???
-if: env(REAL_BRANCH) = develop AND env(REAL_TAG) =~ /^v/
+if: env(REAL_BRANCH) = develop 
 
 # branches:
 #     only:
