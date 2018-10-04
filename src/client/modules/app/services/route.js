@@ -7,6 +7,7 @@ define([
     function factory(config, params) {
         var runtime = params.runtime,
             router = Router.make(config),
+            currentRouteHandler = null,
             receivers = [],
             eventListeners = [];
 
@@ -36,6 +37,7 @@ define([
                 }
             }
             runtime.send('route', 'routing', handler);
+            currentRouteHandler = handler;
             if (handler.route.authorization) {
                 if (!runtime.service('session').isLoggedIn()) {
                     var loginParams = {
@@ -183,10 +185,18 @@ define([
             });
         }
 
+        function isAuthRequired() {
+            if (!currentRouteHandler) {
+                return false;
+            }
+            return currentRouteHandler.route.authorization;
+        }
+
         return {
             pluginHandler: pluginHandler,
             start: start,
-            stop: stop
+            stop: stop,
+            isAuthRequired: isAuthRequired
         };
     }
     return {

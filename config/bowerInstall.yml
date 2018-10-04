@@ -8,26 +8,25 @@
 # need to list the packages here and create config for exceptions
 # TODO: document the format
 bowerFiles:
-   
-    # -
-    #     name: buffer
-    #     src:
-    #         - buffer.js
-    #     bowerComponent: true
-    # -
-    #     name: esprima
-    #     src: 
-    #         - esprima.js
-    #     bowerComponent: true        
     -
         name: knockout
         cwd: dist
         src: knockout.js
         bowerComponent: true
+    # -
+    #     name: kbase-knockout
+    #     cwd: dist
+    #     src: knockout.js
+    #     bowerComponent: true
     -
         name: knockout-arraytransforms
         cwd: dist
         src: knockout-arraytransforms.js
+        bowerComponent: true
+    -
+        name: knockout-projections
+        cwd: dist
+        src: knockout-projections.js
         bowerComponent: true
     -
         name: knockout-switch-case

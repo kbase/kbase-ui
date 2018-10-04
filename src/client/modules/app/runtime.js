@@ -45,14 +45,9 @@ define([
                 throw new Error('Feature switch "' + id + '" not defined');
             }
 
-            // look for the feature switch in the.
             const enabledFeatureSwitches = configProps.getItem('ui.featureSwitches.enabled');
-            // let disabledFeatureSwitches = configProps.getItem('ui.featureSwitches.disabled');
-
-            if (enabledFeatureSwitches.includes(id)) {
-                return true;
-            }
-            return false;
+            const enabled = enabledFeatureSwitches.includes(id);
+            return enabled;
         }
 
         function featureDisabled(id) {
@@ -61,13 +56,9 @@ define([
                 throw new Error('Feature switch "' + id + '" not defined');
             }
 
-            // look for the feature switch in the.
             const disabledFeatureSwitches = configProps.getItem('ui.featureSwitches.disabled');
-
-            if (disabledFeatureSwitches.includes(id)) {
-                return true;
-            }
-            return false;
+            const disabled = disabledFeatureSwitches.includes(id);
+            return disabled;
         }
 
         // The receive and send functions are the primary message methods
@@ -154,6 +145,8 @@ define([
             // Messaging
             send: send,
             recv: receive,
+            receive: receive,
+            on: receive,
 
             sendp: sendp,
             drop: drop,

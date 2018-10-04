@@ -17,8 +17,20 @@ fi
 # Import Travis variables in the normalized ones expected in the 
 # docker-compose.yml file
 export COMMIT="${TRAVIS_COMMIT}"
-export BRANCH="${REAL_BRANCH}"
 export TAG="${TRAVIS_TAG}"
+
+# Use the REAL_BRANCH, which is set directly from git
+# This solves the problem that travis does not correclty populate
+# TRAVIS_BRANCH with the filter we use (branch + tag).
+# But on a pull request 
+if [ -n "${REAL_BRANCH}" ]
+then
+    echo "using real git branch"
+    export BRANCH="${REAL_BRANCH}"
+else
+    echo "using travis branch"
+    export BRANCH="${TRAVIS_BRANCH}"
+fi
 
 # We include the build date in the image as well.
 export BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")

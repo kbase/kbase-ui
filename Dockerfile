@@ -1,19 +1,19 @@
 # ------------------------------
 # The build image
 # ------------------------------
-FROM alpine:3.7 as builder
+FROM alpine:3.8 as builder
 
 # add deps for building kbase-ui
 RUN apk upgrade --update-cache --available \
     && apk add --update --no-cache \
-        nodejs=8.9.3-r1 \
-        nodejs-npm=8.9.3-r1 \
-        git=2.15.2-r0 \
-        make=4.2.1-r0 \
+        nodejs=8.11.4-r0 \
+        npm=8.11.4-r0 \
+        git=2.18.0-r0 \
+        make=4.2.1-r2 \
         bash=4.4.19-r1 \
-        python=2.7.14-r2 \
-        g++=6.4.0-r5 \
-        chromium=61.0.3163.100-r0 \
+        g++=6.4.0-r9 \
+        python2=2.7.15-r1 \
+        chromium=68.0.3440.75-r0 \
     && mkdir -p /kb
 
 COPY ./package.json /kb
@@ -36,12 +36,13 @@ LABEL stage=intermediate
 # ------------------------------
 # The product image
 # ------------------------------
-FROM alpine:3.7
+FROM alpine:3.8
 
 RUN apk upgrade --update-cache --available \
     && apk add --update --no-cache \
         bash=4.4.19-r1 \
-        nginx=1.12.2-r3 \
+        ca-certificates=20171114-r3 \
+        nginx=1.14.0-r1 \        
     && mkdir -p /kb
 
 WORKDIR /kb
@@ -58,8 +59,6 @@ ARG BUILD_DATE
 ARG VCS_REF
 ARG BRANCH=develop
 ARG TAG
-
-RUN mkdir -p /kb/deployment/services/kbase-ui
 
 # The main thing -- the kbase-ui built code.
 COPY --from=builder /kb/build/dist/client /kb/deployment/services/kbase-ui/dist/
@@ -87,6 +86,10 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       us.kbase.vcs-branch=$BRANCH  \
       us.kbase.vcs-tag=$TAG \ 
       maintainer="Steve Chan sychan@lbl.gov"
+
+RUN addgroup --system kbmodule && \
+    adduser --system --ingroup kbmodule kbmodule && \
+	chown -R kbmodule:kbmodule /kb
 
 ENTRYPOINT [ "dockerize" ]
 

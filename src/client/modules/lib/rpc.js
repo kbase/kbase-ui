@@ -73,19 +73,27 @@ define([
         constructor(config) {
             this.runtime = config.runtime;
             this.moduleName = config.module;
+            this.timeout = config.timeout || 60000;
             this.RPCError = RPCError;
+            this.authenticated = config.authenticated;
             // Note: setup must be synchronous
             this.setup();
         }
 
         setup() {
             const serviceUrl = this.runtime.config(['services', this.moduleName, 'url'].join('.'));
-            const token = this.runtime.service('session').getAuthToken();
+            let token;
+            if (this.authenticated) {
+                token = this.runtime.service('session').getAuthToken();
+            } else {
+                token = null;
+            }
             if (serviceUrl) {
                 this.client = new GenericClient({
                     module: this.moduleName,
                     url: serviceUrl,
-                    token: token
+                    token: token,
+                    timeout: this.timeout
                 });
             } else {
                 const dynamicServiceProxies = this.runtime.config('deploy.services.dynamicServiceProxies');
@@ -94,13 +102,15 @@ define([
                     this.client = new GenericClient({
                         module: this.moduleName,
                         url: urlBase + '/dynamic_service_proxies/' + this.moduleName,
-                        token: token
+                        token: token,
+                        timeout: this.timeout
                     });
                 } else {
                     this.client = new DynamicService({
                         url: this.runtime.config('services.service_wizard.url'),
                         token: token,
-                        module: this.moduleName
+                        module: this.moduleName,
+                        timeout: this.timeout
                     });
                 }
             }

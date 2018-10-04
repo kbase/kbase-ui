@@ -27,7 +27,6 @@ _book
 
 # Developer artifacts
 /dev/docker-compose.override.yml
-/dev/gitlab-config
 node_modules
 
 # General purpose temp directory

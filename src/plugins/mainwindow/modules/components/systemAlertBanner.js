@@ -26,13 +26,12 @@ define([
 
     const styles = html.makeStyles({
         component: {
-            css: {
-            }
+
         },
         wrapper: {
             css: {
-                margin: '0 0px 10px 10px',
-                // borderTop: '2px #f2dede solid'
+                margin: '4px 10px 10px 10px',
+                boxShadow: '4px 4px 4px silver',
             }
         },
         itemsWrapper: {
@@ -40,8 +39,59 @@ define([
                 border: '2px #f2dede solid',
                 // padding: '10px'
             }
+        },
+        title1: {
+            css: {
+                backgroundColor: 'rgba(169,68,68,1)',
+                color: 'white'
+            }
+        },
+        title2: {
+            css: {
+                backgroundColor: 'white',
+                color: 'rgba(169,68,68,1)'
+            }
         }
     });
+
+    class Alert {
+        constructor({startAt, endAt, title, message, hash, now}) {
+            this.startAt = new Date(startAt);
+            if (endAt === null || endAt === undefined) {
+                this.endAt = null;
+            } else {
+                this.endAt = new Date(endAt);
+            }
+            this.title = title;
+            this.message = message;
+            this.hash = hash;
+            this.now = now;
+
+            this.read = ko.observable(false);
+            this.showMessage = ko.observable(false);
+
+            this.countdownToStart = ko.pureComputed(() => {
+                if (!this.now()) {
+                    return null;
+                }
+                return this.startAt - this.now();
+            });
+
+            this.countdownToEnd = ko.pureComputed(() => {
+                if (!this.now()) {
+                    return null;
+                }
+                if (this.endAt === null) {
+                    return Infinity;
+                }
+                return this.endAt - this.now();
+            });
+        }
+
+        toggleMessage() {
+            this.showMessage(!this.showMessage());
+        }
+    }
 
     class AlertsViewModel extends ViewModelBase {
         constructor(params) {
@@ -49,6 +99,8 @@ define([
             this.runtime = params.runtime;
             this.hideAlerts = params.hideAlerts;
             this.alertCount = params.alertCount;
+
+            this.alertSummary = params.alertSummary;
 
             this.systemStatus = ko.observable();
             this.error = ko.observable(false);
@@ -59,14 +111,14 @@ define([
 
             this.maintenanceNotifications = ko.pureComputed(() => {
                 return this._maintenanceNotifications()
-                    .filter((notification) => {
-                        const endTime = notification.endAt.getTime();
-                        const now = this.now();
-                        if ((now - endTime) > 60000) {
-                            return false;
-                        }
-                        return true;
-                    })
+                    // .filter((notification) => {
+                    //     const endTime = notification.endAt.getTime();
+                    //     const now = this.now();
+                    //     if ((now - endTime) > 60000) {
+                    //         return false;
+                    //     }
+                    //     return true;
+                    // })
                     .sort((a, b) => {
                         return (a.startAt.getTime() - b.startAt.getTime());
                     });
@@ -77,6 +129,25 @@ define([
                     .filter((notification) => {
                         return notification.read();
                     }).length;
+            });
+
+            // TODO: better way, pureComputed perhaps?
+            this.subscribe(this._maintenanceNotifications, (newValue) => {
+                const now = Date.now();
+                const summary = newValue.reduce((acc, alert) => {
+                    // console.log('present??', alert.startAt <= now, alert.EndAt >= now, alert.startAt > now, alert.endAt, now);
+                    if ((alert.startAt.getTime() <= now) &&
+                        ((alert.endAt === null || alert.endAt.getTime() >= now))) {
+                        acc.present += 1;
+                    } else if (alert.startAt.getTime() > now) {
+                        acc.future += 1;
+                    }
+                    return acc;
+                }, {
+                    present: 0,
+                    future: 0
+                });
+                this.alertSummary(summary);
             });
 
             this.subscribe(this.systemStatus, (newValue) => {
@@ -98,34 +169,15 @@ define([
                             return;
                         }
 
-                        const startAt = new Date(notification.startAt);
-                        const endAt = new Date(notification.endAt);
-
-                        const countdownToStart = ko.pureComputed(() => {
-                            if (!this.now()) {
-                                return null;
-                            }
-                            return startAt - this.now();
-                        });
-
-                        const countdownToEnd = ko.pureComputed(() => {
-                            if (!this.now()) {
-                                return null;
-                            }
-                            return endAt - this.now();
-                        });
-
-                        // add new ones.
-                        const newNotification = {
-                            startAt: startAt,
-                            endAt: endAt,
-                            countdownToStart: countdownToStart,
-                            countdownToEnd: countdownToEnd,
+                        const newNotification = new Alert({
+                            startAt: notification.start_at,
+                            endAt: notification.end_at,
                             title: notification.title,
                             message: notification.message,
-                            read: ko.observable(false),
-                            hash: hash
-                        };
+                            hash: hash,
+                            now: this.now
+                        });
+
                         this._maintenanceNotifications.push(newNotification);
                     });
 
@@ -198,10 +250,10 @@ define([
     function buildAlertIcon() {
         return span({
             style: {
-                width: '32px',
+                width: '1.5em',
                 fontSize: '120%',
                 textAlign: 'center',
-                marginRight: '4px'
+                // marginRight: '4px'
             }
         }, [
             span({
@@ -223,8 +275,134 @@ define([
             style: {
                 borderRadius: '0px',
                 marginBottom: '0px',
+                borderTop: '2px #f2dede solid'
+            }
+        }, [
+            div({
+                style: {
+                    display: 'flex',
+                    flexDirection: 'row',
+                    // borderBottom: '1px #f2dede solid',
+                    // marginBottom: '8px'
+                }
+            }, [
+                div({
+                    style: {
+                        flex: '1 1 0px',
+                        // backgroundColor: 'rgba(169,68,68,1)',
+                        // color: 'white',
+                        padding: '4px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center'
+                    },
+                    class: styles.classes.title2
+                    // dataBind: {
+                    //     class: 'showMessage() ? "' + styles.classes.title1 + '" : "' + styles.classes.title2 + '"'
+                    // }
+                }, div({
+                    dataBind: {
+                        text: '$data.title || "Upcoming System Maintenance"'
+                    },
+                    style: {
+                        fontWeight: 'bold'
+                    }
+                })),
+                div({
+                    style: {
+                        flex: '1 1 0px',
+                        padding: '4px',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center'
+                    }
+                }, [
+                    buildAlertIcon(),
+                    div({
+                        style: {
+                            flex: '1 1 0px'
+                        },
+                        dataBind: {
+                            component: {
+                                name: CountdownClockComponent.quotedName(),
+                                params: {
+                                    startAt: 'startAt',
+                                    endAt: 'endAt'
+                                }
+                            }
+                        }
+                    })
+                ]),
+                // span({
+                //     style: {
+                //     }
+                // }, [
+                //     button({
+                //         type: 'button',
+                //         class: 'btn btn-default btn-kbase-subtle btn-kbase-compact',
+                //         dataBind: {
+                //             click: 'function(d,e){d.read(true);}'
+                //         },
+                //         title: 'Use this button close the alert; when you reload the browser it will reappear; it will be permanently removed when it expires.'
+                //     }, span({
+                //         class: 'fa fa-times'
+                //     }))
+                // ]),
+                div({
+                    style: {
+                        width: '2em',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center'
+                    },
+                }, [
+                    button({
+                        type: 'button',
+
+                        class: 'btn btn-default btn-kbase-subtle btn-kbase-compact',
+                        dataBind: {
+                            click: 'function(d,e){d.toggleMessage();}',
+                        },
+                        title: 'Use this button close the alert details; when you reload the browser it will reappear; it will be permanently removed when it expires.'
+                    }, span({
+                        dataBind: {
+                            class: 'showMessage() ? "fa-chevron-down" : "fa-chevron-right"'
+                        },
+                        class: 'fa'
+                    }))
+                ])
+            ]),
+            gen.if('showMessage()',
+                div({
+                    style: {
+                        display: 'flex',
+                        flexDirection: 'row',
+                        padding: '4px'
+                    }
+                }, [
+                    div({
+                        style: {
+                            verticalAlign: 'top',
+                            flex: '1 1 0px'
+                        }
+                    }, [
+
+                        div({
+                            dataBind: {
+                                htmlMarkdown: 'message'
+                            }
+                        })
+                    ])
+                ]))
+        ]);
+    }
+
+    function buildMaintenanceNotificationx() {
+        return div({
+            style: {
+                borderRadius: '0px',
+                marginBottom: '0px',
                 padding: '4px',
-                // paddingTop: '4px',
                 borderTop: '2px #f2dede solid'
             }
         }, [
@@ -239,7 +417,6 @@ define([
                         flexDirection: 'row'
                     }
                 }, [
-
                     div({
                         style: {
                             flex: '1 1 0px'
@@ -353,7 +530,9 @@ define([
         }, [
             div({
                 style: {
-                    flex: '1 1 0px'
+                    flex: '1 1 0px',
+                    display: 'flex',
+                    alignItems: 'center'
                 }
             }, span({
                 style: {
@@ -408,8 +587,11 @@ define([
                         click: 'function(d,e){$component.hide.call($component);}'
                     }
                 }, span({
-                    class: 'fa fa-minus-square-o'
-                }))
+                    // class: 'fa fa-minus-square-o'
+                }, [
+                    'hide ',
+                    gen.plural('maintenanceNotifications().length', ' alert', ' alerts')
+                ]))
             ])
             //     button({
             //         type: 'button',

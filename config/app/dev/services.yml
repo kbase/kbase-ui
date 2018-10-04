@@ -2,19 +2,20 @@
 ---
 ui:
   services:
-    heartbeat: {}
-    widget: {}
-    data: {}
-    type: {}
-    userprofile: {}
     analytics: {}
+    coreService: {}
+    data: {}
+    heartbeat: {}
+    instrumentation: {}
     ko-component: {}
     notification: {}
-    schema: {}
     route: {}
-    session: {}
     rpc: {}
-    coreService: {}
+    schema: {}
+    session: {}
+    type: {}
+    userprofile: {}
+    widget: {}
     # dynamic-service: {}
     menu:
       menus:
@@ -29,12 +30,15 @@ ui:
                   id: jgi-search
                   auth: true
             developer:
-              items: 
+              items:                 
                 -
                   id: ui-service
                   auth: true
                 - 
                   id: dashboard2
+                  auth: true
+                - 
+                  id: dashboard3
                   auth: true
                 -
                   id: test-lookup
@@ -54,9 +58,6 @@ ui:
                 -
                   id: example-gopherjs
                   auth: true
-                # -
-                #   id: example-clojurescript
-                # auth: true
                 -
                   id: tester
                   auth: true
@@ -93,6 +94,9 @@ ui:
                 -
                   id: dashboard
                   auth: true
+                - 
+                  id: public-search
+                  auth: false
                 -
                   id: appcatalog
                   auth: false
