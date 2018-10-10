@@ -75,7 +75,7 @@ ui:
                   auth: true
                 - 
                   id: public-search
-                  auth: false
+                  auth: true
                   allow: [alpha]
                 -
                   id: appcatalog

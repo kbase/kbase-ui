@@ -96,7 +96,7 @@ ui:
                   auth: true
                 - 
                   id: public-search
-                  auth: false
+                  auth: true
                 -
                   id: appcatalog
                   auth: false
