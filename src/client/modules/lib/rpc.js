@@ -70,12 +70,12 @@ define([
     }
 
     class RPCClient {
-        constructor(config) {
-            this.runtime = config.runtime;
-            this.moduleName = config.module;
-            this.timeout = config.timeout || 60000;
+        constructor({runtime, module, timeout, authenticated}) {
+            this.runtime = runtime;
+            this.moduleName = module;
+            this.timeout = timeout || 60000;
             this.RPCError = RPCError;
-            this.authenticated = config.authenticated;
+            this.authenticated = authenticated;
             // Note: setup must be synchronous
             this.setup();
         }
