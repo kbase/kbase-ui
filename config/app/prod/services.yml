@@ -74,6 +74,10 @@ ui:
                   id: dashboard
                   auth: true
                 - 
+                  id: projects-mvp1
+                  auth: true
+                  allow: [alpha]
+                - 
                   id: public-search
                   auth: true
                   allow: [alpha]

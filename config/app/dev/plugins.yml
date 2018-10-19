@@ -283,4 +283,11 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
+    -
+        name: projects-mvp1
+        globalName: kbase-ui-plugin-projects-mvp1
+        version: 0.2.0
+        cwd: src/plugin
+        source:
+            bower: {}
         
