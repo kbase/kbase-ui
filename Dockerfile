@@ -8,7 +8,7 @@ RUN apk upgrade --update-cache --available \
     && apk add --update --no-cache \
         nodejs=8.11.4-r0 \
         npm=8.11.4-r0 \
-        git=2.18.0-r0 \
+        git=2.18.1-r0 \
         make=4.2.1-r2 \
         bash=4.4.19-r1 \
         g++=6.4.0-r9 \
