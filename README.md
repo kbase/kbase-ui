@@ -32,7 +32,7 @@ Most KBase users will be exposed to the KBase UI by ... [using KBase](https://na
 ## Documentation
 
 - [develop](https://ci.kbase.us/_book/index.html) - Documentation available in the current develop branch of kbase-ui
-- [release]() - Documentation available in the current production release (will be available after the 1.7.0 is released)
+- [release](https://narrative.kbase.us/_book/index.html) - Documentation available in the current production release (will be available after the 1.7.0 is released)
 
 ## Contributing
 
