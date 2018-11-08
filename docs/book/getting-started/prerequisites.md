@@ -16,15 +16,15 @@ You will need to ensure that you have a basic set of the following tools on your
 
 | app | version | notes |
 |-----|---------|------ |
-| make | >= 3.8 | any relatively recent make should work |
+| docker | 18.x.x | the linux container manager you will use to build and run kbase-ui |
 | git    | * | the source revision management tool with integration into github |
-| docker | 18.x.x | the linux container manager you will use to run kbase-ui |
+| make | >= 3.8 | any relatively recent make should work |
+| node | >= 8 | any recent version should work |
+
 
 > \* we haven't documented any substantial differences between these tools regarding the kbase-ui development process. However, it is best to keep them always at the most recent version by updating your tool stack periodically.
 
-You may have noticed that there are no Javascript tools above, such as nodejs or npm, or development tools such as make. This is because kbase-ui is built inside of a Docker build process, using build tools installed into a Docker image.
-
-It is certainly possible to build kbase-ui locally on your host machine, and this is described in the [Development](../development/README.md) documentation. However, for normal deployment and development, this should not be necessary.
+The reason for the relaxed version requirements is that kbase-ui is built inside of a Docker build process, using specific software package versions which are installed into a Docker image. The software requirements specified above are for local development tools only.
 
 ## macOS
 
