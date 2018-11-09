@@ -6,14 +6,14 @@ FROM alpine:3.8 as builder
 # add deps for building kbase-ui
 RUN apk upgrade --update-cache --available \
     && apk add --update --no-cache \
-        nodejs=8.11.4-r0 \
-        npm=8.11.4-r0 \
-        git=2.18.1-r0 \
-        make=4.2.1-r2 \
-        bash=4.4.19-r1 \
-        g++=6.4.0-r9 \
-        python2=2.7.15-r1 \
-        chromium=68.0.3440.75-r0 \
+    nodejs=8.11.4-r0 \
+    npm=8.11.4-r0 \
+    git=2.18.1-r0 \
+    make=4.2.1-r2 \
+    bash=4.4.19-r1 \
+    g++=6.4.0-r9 \
+    python2=2.7.15-r1 \
+    chromium=68.0.3440.75-r0 \
     && mkdir -p /kb
 
 COPY ./package.json /kb
@@ -40,19 +40,19 @@ FROM alpine:3.8
 
 RUN apk upgrade --update-cache --available \
     && apk add --update --no-cache \
-        bash=4.4.19-r1 \
-        ca-certificates=20171114-r3 \
-        nginx=1.14.0-r1 \        
+    bash=4.4.19-r1 \
+    ca-certificates=20171114-r3 \
+    nginx=1.14.1-r0 \        
     && mkdir -p /kb
 
 WORKDIR /kb
 
 # This version uses master; otherwise functionally equivalent other than style.
 RUN archive=dockerize-alpine-linux-amd64-v0.6.1.tar.gz && \
-	wget https://github.com/kbase/dockerize/raw/master/$archive && \
-	tar xvzf $archive && \
+    wget https://github.com/kbase/dockerize/raw/master/$archive && \
+    tar xvzf $archive && \
     rm $archive && \
-	mv dockerize /usr/local/bin
+    mv dockerize /usr/local/bin
 
 # These ARGs values are passed in via the docker build command
 ARG BUILD_DATE
@@ -80,20 +80,19 @@ COPY --from=builder /kb/docs/book/_book /kb/deployment/services/kbase-ui/dist/_b
 # The BUILD_DATE value seem to bust the docker cache when the timestamp changes, move to
 # the end
 LABEL org.label-schema.build-date=$BUILD_DATE \
-      org.label-schema.vcs-url="https://github.com/kbase/kbase-ui.git" \
-      org.label-schema.vcs-ref=$COMMIT \
-      org.label-schema.schema-version="1.0.0-rc1" \
-      us.kbase.vcs-branch=$BRANCH  \
-      us.kbase.vcs-tag=$TAG \ 
-      maintainer="Steve Chan sychan@lbl.gov"
+    org.label-schema.vcs-url="https://github.com/kbase/kbase-ui.git" \
+    org.label-schema.vcs-ref=$COMMIT \
+    org.label-schema.schema-version="1.0.0-rc1" \
+    us.kbase.vcs-branch=$BRANCH  \
+    us.kbase.vcs-tag=$TAG \ 
+    maintainer="Steve Chan sychan@lbl.gov"
 
 RUN addgroup --system kbmodule && \
     adduser --system --ingroup kbmodule kbmodule && \
-	chown -R kbmodule:kbmodule /kb
+    chown -R kbmodule:kbmodule /kb
 
 ENTRYPOINT [ "dockerize" ]
 
 CMD [  "-template", "/kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
-       "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json", \
-       "bash", "/kb/deployment/scripts/start-server.bash" ]
-      
+    "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json", \
+    "bash", "/kb/deployment/scripts/start-server.bash" ]

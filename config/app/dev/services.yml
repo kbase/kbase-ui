@@ -94,8 +94,8 @@ ui:
                 -
                   id: dashboard
                   auth: true
-                - 
-                  id: projects-mvp1
+                -
+                  id: organizations
                   auth: true
                   allow: [alpha]
                 - 

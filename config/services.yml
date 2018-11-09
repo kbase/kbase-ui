@@ -35,6 +35,15 @@ services:
         version:
             method: version
             minimum: 2.1.0
+    Groups:
+        aliases: ['groups']
+        url: '{{ deploy.services.urlBase }}/services/groups'
+        name: Groups
+        coreService: true
+        type: rest
+        version:
+            method: version 
+            minimum: 0.1.0
     ftp_service:
         aliases: ['ftp']
         url: '{{ deploy.services.urlBase }}/services/kb-ftp-api/v0'
