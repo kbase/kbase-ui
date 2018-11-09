@@ -42,7 +42,8 @@ services:
         coreService: true
         type: rest
         version:
-            method: version 
+            method: / 
+            propertyPath: version
             minimum: 0.1.0
     ftp_service:
         aliases: ['ftp']
