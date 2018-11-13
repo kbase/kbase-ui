@@ -464,7 +464,7 @@ function copyFromBower(state) {
                 })
                     .then(function (matches) {
                         // Do the copy!
-                        return Promise.all(matches.map(function (match) {                    
+                        return Promise.all(matches.map(function (match) {
                             var fromPath = state.environment.path.concat(copySpec.cwd).concat([match]).join('/'),
                                 toPath = state.environment.path.concat(copySpec.dest).concat([match]).join('/');
                             return fs.copy(fromPath, toPath, {});
@@ -603,7 +603,7 @@ function installPlugins(state) {
                     return mutant.copyFiles(srcDir, destDir, '**/*');
                 }))
                 .then(function () {
-                    return  Promise.all(plugins
+                    return Promise.all(plugins
                         .filter(function (plugin) {
                             return (typeof plugin === 'object' && plugin.source.directory);
                         })
@@ -620,7 +620,7 @@ function installPlugins(state) {
                         }));
                 })
                 .then(function () {
-                    return  Promise.all(plugins
+                    return Promise.all(plugins
                         .filter(function (plugin) {
                             return (typeof plugin === 'string');
                         })
@@ -631,7 +631,7 @@ function installPlugins(state) {
                             mutant.ensureDir(destination);
                             return mutant.copyFiles(source, destination, '**/*');
                         }));
-                });                
+                });
         })
         // now move the test files into the test dir
         .then(function () {
@@ -869,7 +869,7 @@ function verifyVersion(state) {
                     throw new Error('Release notes not found for this version ' + releaseVersion + ', but required for a release');
                 }
             });
-            
+
     })
         .then(function () {
             return state;
@@ -934,7 +934,7 @@ function makeKbConfig(state) {
                         .map(([module, serviceConfig]) => {
                             return {
                                 url: serviceConfig.url,
-                                module:  module,
+                                module: module,
                                 type: serviceConfig.type,
                                 version: serviceConfig.version
                             };
@@ -1131,7 +1131,8 @@ function makeDistBuild(state) {
                                             // around a bug in the inline implementation.
                                             // it should be fixed in an upcoming release.
                                             inline: 1
-                                        }
+                                        },
+                                        safari10: true
                                     });
 
                                     if (result.error) {
@@ -1264,50 +1265,50 @@ function makeModuleVFS(state, whichBuild) {
                             }
                             return fs.readFileAsync(match, 'utf8')
                                 .then(function (contents) {
-                                    
+
                                     switch (ext) {
-                                    case 'js':
-                                        include(ext);
-                                        vfs.scripts[path] = 'function () { ' + contents + ' }';
-                                        break;
-                                    case 'yaml':
-                                    case 'yml':
-                                        include(ext);
-                                        vfs.resources.json[base] = yaml.safeLoad(contents);
-                                        break;
-                                    case 'json':
-                                        if (vfs.resources.json[base]) {
-                                            throw new Error('duplicate entry for json detected: ' + path);
-                                        }
-                                        try {
+                                        case 'js':
                                             include(ext);
-                                            vfs.resources.json[base] = JSON.parse(contents);
-                                        } catch (ex) {
-                                            skip('error');
-                                            console.error('Error parsing json file: ' + path + ':' + ex.message);
-                                            // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
-                                        }
-                                        break;
-                                    case 'text':
-                                    case 'txt':
-                                        include(ext);
-                                        vfs.resources.text[base] = contents;
-                                        break;
-                                    case 'css':
-                                        if (cssExceptions.some(function (re) {
-                                            return re.test(contents);
-                                        })) {
-                                            skip('css excluded');
-                                        } else {
+                                            vfs.scripts[path] = 'function () { ' + contents + ' }';
+                                            break;
+                                        case 'yaml':
+                                        case 'yml':
                                             include(ext);
-                                            vfs.resources.css[base] = contents;
-                                        }
-                                        break;
-                                    case 'csv':
-                                        skip(ext);
-                                        break;
-                                    default:
-                                        skip(ext);
+                                            vfs.resources.json[base] = yaml.safeLoad(contents);
+                                            break;
+                                        case 'json':
+                                            if (vfs.resources.json[base]) {
+                                                throw new Error('duplicate entry for json detected: ' + path);
+                                            }
+                                            try {
+                                                include(ext);
+                                                vfs.resources.json[base] = JSON.parse(contents);
+                                            } catch (ex) {
+                                                skip('error');
+                                                console.error('Error parsing json file: ' + path + ':' + ex.message);
+                                                // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
+                                            }
+                                            break;
+                                        case 'text':
+                                        case 'txt':
+                                            include(ext);
+                                            vfs.resources.text[base] = contents;
+                                            break;
+                                        case 'css':
+                                            if (cssExceptions.some(function (re) {
+                                                return re.test(contents);
+                                            })) {
+                                                skip('css excluded');
+                                            } else {
+                                                include(ext);
+                                                vfs.resources.css[base] = contents;
+                                            }
+                                            break;
+                                        case 'csv':
+                                            skip(ext);
+                                            break;
+                                        default:
+                                            skip(ext);
                                     }
                                 });
                         });
@@ -1357,7 +1358,7 @@ function main(type) {
             path: ['config']
         }];
         var buildControlConfigPath = ['..', 'config', 'build', 'configs', type + '.yml'];
-        var buildControlDefaultsPath = ['..', 'config', 'build',  'defaults.yml'];
+        var buildControlDefaultsPath = ['..', 'config', 'build', 'defaults.yml'];
         var config = {
             initialFilesystem: initialFilesystem,
             buildControlConfigPath: buildControlConfigPath,
@@ -1486,7 +1487,7 @@ function main(type) {
             return makeBaseBuild(state);
         })
 
-        
+
         .then(function (state) {
             return mutant.copyState(state);
         })
