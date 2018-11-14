@@ -230,14 +230,14 @@ plugins:
     -
         name: projects-mvp1
         globalName: kbase-ui-plugin-projects-mvp1
-        version: 0.2.1
+        version: 0.2.2
         cwd: src/plugin
         source:
             bower: {}
     -
         name: organizations
         globalName: kbase-ui-plugin-organizations
-        version: 0.3.1
+        version: 0.3.3
         cwd: src/plugin
         source:
             bower: {}
