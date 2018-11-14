@@ -4,19 +4,19 @@
 // we try our best...
 let browsers;
 switch (process.platform) {
-case 'darwin':
-    // ensured by the npm module ... but may not work on non-consumer
-    // oses.
-    process.env.CHROME_BIN = require('puppeteer').executablePath();
-    browsers = ['ChromeHeadless'];
-    break;
-case 'linux':
-    // better have it installed there!
-    browsers = ['ChromiumNoSandbox'];
-    process.env.CHROME_BIN='/usr/bin/chromium-browser';
-    break;
-default:
-    throw new Error('Unsupported platform: ' + process.platform);
+    case 'darwin':
+        // ensured by the npm module ... but may not work on non-consumer
+        // oses.
+        process.env.CHROME_BIN = require('puppeteer').executablePath();
+        browsers = ['ChromeHeadless'];
+        break;
+    case 'linux':
+        // better have it installed there!
+        browsers = ['ChromiumNoSandbox'];
+        process.env.CHROME_BIN = '/usr/bin/chromium-browser';
+        break;
+    default:
+        throw new Error('Unsupported platform: ' + process.platform);
 }
 
 module.exports = function (config) {
@@ -60,7 +60,7 @@ module.exports = function (config) {
         // Note that we exclude all of the external modules (bower_components).
         // TODO: We may want to find a way to evaluate dependency test coverage at some point.
         preprocessors: {
-            'build/build/client/modules/!(bower_components)/**/*.js': ['coverage']
+            'build/build/client/modules/!(bower_components|plugins)/**/*.js': ['coverage']
             // 'build/build/client/modules/**/*.js': ['coverage']
         },
 
