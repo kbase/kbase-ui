@@ -14,7 +14,7 @@ RUN apk --update upgrade && \
     apk add --no-cache \
     ca-certificates=20171114-r3 \
     nginx=1.14.1-r0 \
-    openssl=1.0.2p-r0 \
+    openssl=1.0.2q-r0 \
     wget=1.19.5-r0 \
     bash=4.4.19-r1 \
     bash-completion=2.8-r0 && \
