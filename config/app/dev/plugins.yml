@@ -50,8 +50,8 @@ plugins:
         version: 0.2.2
         cwd: src/plugin
         source:
-            bower: {}            
-            
+            bower: {}
+
     # These are just developer
     # -
     #     name: viswidgetdemo
@@ -168,7 +168,7 @@ plugins:
     -
         name: feeds
         globalName: kbase-ui-plugin-feeds
-        version: 0.3.1
+        version: 0.4.0
         cwd: src/plugin
         source:
             bower: {}
@@ -184,7 +184,7 @@ plugins:
         globalName: kbase-ui-plugin-simple-sample
         version: 0.1.3
         cwd: src/plugin
-        source: 
+        source:
             bower: {}
     -
         name: staging-browser
@@ -199,7 +199,7 @@ plugins:
         version: 1.2.15
         cwd: src/plugin
         source:
-            bower: {}      
+            bower: {}
     -
         name: narrative-finder
         globalName: kbase-ui-plugin-narrative-finder
@@ -233,7 +233,7 @@ plugins:
         globalName: kbase-ui-plugin-test-lookup
         version: 0.1.1
         cwd: src/plugin
-        source: 
+        source:
             bower: {}
     -
         name: report-viewer
@@ -297,4 +297,4 @@ plugins:
         cwd: src/plugin
         source:
             bower: {}
-        
+
