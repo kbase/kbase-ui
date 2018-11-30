@@ -55,6 +55,10 @@ define([
             return auth2Session.getRoles() || [];
         }
 
+        function getCustomRoles() {
+            return auth2Session.getCustomRoles() || [];
+        }
+
         function getTokenInfo() {
             return auth2Session.getTokenInfo();
         }
@@ -219,6 +223,7 @@ define([
             getUsername: getUsername,
             getRealname: getRealname,
             getRoles: getRoles,
+            getCustomRoles: getCustomRoles,
             isLoggedIn: isLoggedIn,
             isAuthorized: isAuthorized,
             getKbaseSession: getKbaseSession,
