@@ -17,7 +17,7 @@ services:
         name: Authorization Version 2
         coreService: true
         type: rest
-        version: 
+        version:
             path: /
             propertyPath: version
             minimum: 0.2.0
@@ -35,6 +35,16 @@ services:
         version:
             method: version
             minimum: 2.1.0
+    Feeds:
+        aliases: ['feeds']
+        url: '{{ deploy.services.urlBase }}/services/feeds'
+        name: Feeds
+        coreService: true
+        type: rest
+        version:
+            method: /
+            propertyPath: version
+            minimum: 0.0.1
     Groups:
         aliases: ['groups']
         url: '{{ deploy.services.urlBase }}/services/groups'
@@ -42,7 +52,7 @@ services:
         coreService: true
         type: rest
         version:
-            method: / 
+            method: /
             propertyPath: version
             minimum: 0.1.0
     ftp_service:
@@ -57,7 +67,7 @@ services:
         name: Narrative Method Store
         coreService: true
         type: jsonrpc
-        version: 
+        version:
             method: ver
             minimum: 0.3.6
     shock:
@@ -90,7 +100,7 @@ services:
         name: KBase Search Engine
         coreService: true
         type: jsonrpc
-        version: 
+        version:
             method: status
             propertyPath: version
             minimum: 0.1.1
@@ -100,7 +110,7 @@ services:
         name: Service Wizard
         coreService: true
         type: jsonrpc
-        version: 
+        version:
             method: version
             minimum: 0.4.0
     Workspace:
@@ -109,7 +119,7 @@ services:
         name: Workspace
         coreService: true
         type: jsonrpc
-        version: 
+        version:
             method: ver
             minimum: 0.8.1
 
