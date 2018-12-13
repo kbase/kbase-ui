@@ -14,7 +14,7 @@ define([
     'use strict';
 
     class KBaseServiceManager {
-        constructor({runtime, throwErrors}) {
+        constructor({ runtime, throwErrors }) {
             this.runtime = runtime;
             this.servicesToCheck = this.runtime.config('coreServices');
             this.timeout = runtime.config('ui.constants.service_check_timeouts.hard');
@@ -27,7 +27,7 @@ define([
             header.setHeader('accept', 'application/json');
             return http.request({
                 method: 'GET',
-                url: serviceConfig.url,
+                url: serviceConfig.url + serviceConfig.version.path,
                 header: header,
                 timeout: this.timeout
             })
@@ -120,14 +120,14 @@ define([
                     });
                 }))
                 .then((result) => {
-                    const mismatches = result .filter((result) => {
+                    const mismatches = result.filter((result) => {
                         return result === null ? false : true;
                     });
                     if (mismatches.length > 0) {
                         const message = mismatches.map((mismatch) => {
                             return '(' + mismatch.code + ') ' +
-                              mismatch.module + ' needs to be at least ' +
-                              mismatch.minimumVersion + ' but is ' + mismatch.serviceVersion;
+                                    mismatch.module + ' needs to be at least ' +
+                                    mismatch.minimumVersion + ' but is ' + mismatch.serviceVersion;
                         }).join('; ');
                         let prefix;
                         if (mismatches.length === 1) {
@@ -147,5 +147,5 @@ define([
         }
     }
 
-    return {KBaseServiceManager};
+    return { KBaseServiceManager };
 });
