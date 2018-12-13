@@ -42,7 +42,7 @@ services:
         coreService: true
         type: rest
         version:
-            method: /
+            path: /
             propertyPath: version
             minimum: 0.0.1
     Groups:
@@ -52,7 +52,7 @@ services:
         coreService: true
         type: rest
         version:
-            method: /
+            path: /
             propertyPath: version
             minimum: 0.1.0
     ftp_service:

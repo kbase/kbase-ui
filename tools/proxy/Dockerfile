@@ -13,7 +13,7 @@ ENV DOCKERIZE_VERSION v0.6.1
 RUN apk --update upgrade && \
     apk add --no-cache \
     ca-certificates=20171114-r3 \
-    nginx=1.14.1-r0 \
+    nginx=1.14.2-r0 \
     openssl=1.0.2q-r0 \
     wget=1.19.5-r0 \
     bash=4.4.19-r1 \
