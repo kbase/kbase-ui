@@ -42,7 +42,7 @@ RUN apk upgrade --update-cache --available \
     && apk add --update --no-cache \
     bash=4.4.19-r1 \
     ca-certificates=20171114-r3 \
-    nginx=1.14.1-r0 \        
+    nginx=1.14.2-r0 \        
     && mkdir -p /kb
 
 WORKDIR /kb
