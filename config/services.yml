@@ -12,6 +12,7 @@
 # lack this pattern.
 services:
     auth2:
+        aliases: ['auth', 'Auth']
         url: '{{ deploy.services.urlBase }}/services/auth'
         cookieName: kbase_session
         name: Authorization Version 2
