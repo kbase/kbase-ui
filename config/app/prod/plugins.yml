@@ -160,7 +160,7 @@ plugins:
     -
         name: feeds
         globalName: kbase-ui-plugin-feeds
-        version: 0.4.1
+        version: 0.5.0
         cwd: src/plugin
         source:
             bower: {}
