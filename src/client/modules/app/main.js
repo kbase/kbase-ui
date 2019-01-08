@@ -49,8 +49,8 @@ define([
             var i;
             for (i = 0; i < props.length; i += 1) {
                 if ((obj === undefined) ||
-                    (typeof obj !== 'object') ||
-                    (obj === null)) {
+                        (typeof obj !== 'object') ||
+                        (obj === null)) {
                     throw new Error('Invalid object path: ' + props.join('.') + ' at ' + i);
                 }
                 obj = obj[props[i]];
@@ -97,7 +97,6 @@ define([
                 } else if (utils.isSimpleObject(value)) {
                     fixit(value);
                 } else if (value instanceof Array) {
-                    // console.log('fix array',value);
                     value.forEach((v) => {
                         if (utils.isSimpleObject(v)) {
                             fixit(v);
@@ -140,5 +139,5 @@ define([
             });
     }
 
-    return {start};
+    return { start };
 });

@@ -30,41 +30,39 @@ define([
                 if (params.app && params.method) {
                     throw 'Must provide no more than one of the app or method params';
                 }
-                var importData, appData, tmp, i, cells;
+                var appData, tmp, i;
+                const newNarrativeParams = {};
                 if (params.copydata) {
-                    importData = params.copydata.split(';');
-                }
-                if (params.appparam) {
-                    /* TODO: convert to forEach */
-                    tmp = params.appparam.split(';');
-                    appData = [];
-                    for (i = 0; i < tmp.length; i += 1) {
-                        appData[i] = tmp[i].split(',');
-                        if (appData[i].length !== 3) {
-                            throw new Error('Illegal app parameter set, expected 3 parameters separated by commas: ' + tmp[i]);
-                        }
-                        /* TODO: use standard lib for math and string->number conversions) */
-                        appData[i][0] = parseInt(appData[i][0], 10);
-                        if (isNaN(appData[i][0]) || appData[i][0] < 1) {
-                            throw new Error('Illegal app parameter set, first item in set must be an integer > 0: ' + tmp[i]);
-                        }
-                    }
+                    newNarrativeParams.importData = params.copydata.split(';');
                 }
 
                 // Note that these are exclusive cell creation options.
-                if (params.app) {
-                    cells = [{ app: params.app }];
-                } else if (params.method) {
-                    cells = [{ method: params.method }];
+                if (params.app || params.method) {
+                    newNarrativeParams.method = params.app || params.method;
+                    if (params.appparam) {
+                        /* TODO: convert to forEach */
+                        tmp = params.appparam.split(';');
+                        appData = [];
+                        for (i = 0; i < tmp.length; i += 1) {
+                            appData[i] = tmp[i].split(',');
+                            if (appData[i].length !== 3) {
+                                throw new Error('Illegal app parameter set, expected 3 parameters separated by commas: ' + tmp[i]);
+                            }
+                            /* TODO: use standard lib for math and string->number conversions) */
+                            appData[i][0] = parseInt(appData[i][0], 10);
+                            if (isNaN(appData[i][0]) || appData[i][0] < 1) {
+                                throw new Error('Illegal app parameter set, first item in set must be an integer > 0: ' + tmp[i]);
+                            }
+                        }
+                        newNarrativeParams.appData = appData;
+                    }
+                    // } else if (params.method) {
+                    //     cells = [{ method: params.method }];
                 } else if (params.markdown) {
-                    cells = [{ markdown: params.markdown }];
+                    newNarrativeParams.markdown = params.markdown;
                 }
 
-                return narrativeManager.createTempNarrative({
-                    cells: cells,
-                    parameters: appData,
-                    importData: importData
-                })
+                return narrativeManager.createTempNarrative(newNarrativeParams)
                     .then(function (info) {
                         var wsId = info.narrativeInfo.wsid,
                             objId = info.narrativeInfo.id,
@@ -99,29 +97,34 @@ define([
 
         function start(params) {
             container.innerHTML = wrapPanel(html.loading('Creating a new Narrative for you...'));
-            return new Promise(function (resolve, reject) {
-                createNewNarrative(params)
-                    .then(function (result) {
-                        container.innerHTML = wrapPanel([
-                            p('Opening your new Narrative.'),
-                            p('If the Narrative did not open, use this link'),
-                            p(a({ href: result.redirect.url, target: '_blank' }, [
-                                'Open your new Narrative: ',
-                                result.redirect.url
-                            ]))
-                        ]);
-                        runtime.send('app', 'redirect', {
-                            url: result.redirect.url,
-                            new_window: false
-                        });
-                        resolve();
-                    })
-                    .catch(function (err) {
-                        container.innerHTML = 'ERROR creating and opening a new narrative';
-                        console.error('ERROR creating and opening a new narrative', err);
-                        reject(err);
+            return createNewNarrative(params)
+                .then(function (result) {
+                    container.innerHTML = wrapPanel([
+                        p('Opening your new Narrative.'),
+                        p('If the Narrative did not open, use this link'),
+                        p(a({ href: result.redirect.url, target: '_blank' }, [
+                            'Open your new Narrative: ',
+                            result.redirect.url
+                        ]))
+                    ]);
+                    runtime.send('app', 'redirect', {
+                        url: result.redirect.url,
+                        new_window: false
                     });
-            });
+                })
+                .catch(function (err) {
+                    container.innerHTML = div({
+                        class: 'alert alert-danger'
+                    }, [
+                        div('ERROR creating and opening a new narrative'),
+                        div({
+                            style: {
+                                fontFamily: 'monospace'
+                            }
+                        }, err.message)
+                    ]);
+                    console.error('ERROR creating and opening a new narrative', err);
+                });
         }
 
         function stop() {
