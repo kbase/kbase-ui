@@ -87,7 +87,6 @@ define([
                 }),
                 (() => {
                     if (this.runtime.featureEnabled('system_alert_notification')) {
-                        // console.log('alerts enabled.', this.runtime.featureEnabled('system_alert_notification'));
                         return div({
                             class: '-cell -alerts',
                             // id: this.widgets.addWidget('alert')
@@ -208,5 +207,5 @@ define([
         }
     }
 
-    return {Widget: MainWindow};
+    return { Widget: MainWindow };
 });
