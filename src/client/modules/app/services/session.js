@@ -97,8 +97,6 @@ define([
         function logout() {
             return auth2Session.logout()
                 .then(function (result) {
-                    // state.setItem('loggedin', false);
-                    // runtime.send('session', 'loggedout');
                     return result;
                 });
         }
@@ -128,13 +126,10 @@ define([
         function start() {
             return auth2Session.start()
                 .then(function () {
-                    // session.setSession(session.importFromCookie());
                     if (auth2Session.isAuthorized()) {
                         state.setItem('loggedin', true);
-                        // runtime.send('session', 'loggedin');
                     } else {
                         state.setItem('loggedin', false);
-                        // runtime.send('session', 'loggedout');
                     }
                     auth2Session.onChange(function (change) {
                         runtime.send('session', 'change', {
@@ -142,12 +137,6 @@ define([
                         });
                         switch (change) {
                         case 'interrupted':
-                            // runtime.send('app', 'navigate', {
-                            //     path: 'auth2/interrupted'
-                            // });
-                            // runtime.send('connection', 'disconnected', {
-                            //     source: 'session'
-                            // });
                             var description = div([
                                 p('Your session cannot be verified because the authorization service is currently inaccessible'),
                                 p([
