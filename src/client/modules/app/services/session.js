@@ -128,8 +128,10 @@ define([
                 .then(function () {
                     if (auth2Session.isAuthorized()) {
                         state.setItem('loggedin', true);
+                        runtime.send('session', 'loggedin');
                     } else {
                         state.setItem('loggedin', false);
+                        runtime.send('session', 'loggedout');
                     }
                     auth2Session.onChange(function (change) {
                         runtime.send('session', 'change', {

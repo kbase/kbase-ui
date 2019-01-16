@@ -130,7 +130,8 @@ define([
                         name: SidebarMenuComponent.quotedName(),
                         params: {
                             buttons: 'buttons',
-                            isAuthorized: 'isAuthorized'
+                            isAuthorized: 'isAuthorized',
+                            runtime: 'runtime'
                         }
                     }
                 }
@@ -150,5 +151,5 @@ define([
         }
     }
 
-    return {Widget: SidebarNav};
+    return { Widget: SidebarNav };
 });

@@ -33,6 +33,9 @@ define([
 
         // Adds a menu item definition
         function addMenuItem(id, menuDef) {
+            // Another quick hack - not all menu defs have the name - the name
+            // aka id  is also the may key for plugin config menu items.
+            menuDef.id = id;
             state.modifyItem('menuItems', function (menuItems) {
                 menuItems[id] = menuDef;
                 return menuItems;
@@ -40,8 +43,8 @@ define([
         }
 
         /*
-         * Add a defined menu item to a menu, according to a menu entry definition.
-         */
+                    * Add a defined menu item to a menu, according to a menu entry definition.
+                    */
         function addToMenu(menuEntry, menuItemSpec) {
             var menu, section, position,
                 menuItems = state.getItem('menuItems'),
@@ -67,6 +70,7 @@ define([
             }
             var menuItem = {
                 // These are from the plugin's menu item definition
+                id: menuItemDef.id,
                 label: menuItemSpec.label || menuItemDef.label,
                 path: path,
                 icon: menuItemDef.icon,
@@ -110,6 +114,10 @@ define([
             }
             return Promise.try(function () {
                 newMenus.forEach(function (menu) {
+                    // quick patch to the definition to add the id.
+                    // TODO: maybe just store the whole menu from
+                    // the plugin config?
+                    menu.id = menu.name;
                     addMenuItem(menu.name, menu.definition || menu);
                 });
             });
@@ -161,7 +169,7 @@ define([
             });
         }
 
-        function stop() {}
+        function stop() { }
 
         // MAIN
         state.setItem('menu', []);
