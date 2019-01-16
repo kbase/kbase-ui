@@ -24,15 +24,11 @@ define([
             this.notificationCount = ko.observable(null);
             this.notificationError = ko.observable(null);
 
-
-
             params.runtime.db().subscribe({
                 path: 'feeds'
             }, (feeds) => {
                 this.processFeeds(feeds);
             });
-
-
 
             const feeds = params.runtime.db().get('feeds');
             this.processFeeds(feeds);
@@ -176,35 +172,33 @@ define([
         return gen.if('$data.beta',
             buildBeta(),
             gen.if('$data.id === "feeds"',
-                div({
-                    style: {
-                        position: 'absolute',
-                        top: '0',
-                        right: '0',
-
-                    }
-                }, div({
-                    style: {
-                        padding: '4px',
-                        // color: 'rgb(193, 119, 54)',
-                        color: 'white',
-                        backgroundColor: 'rgba(255, 0, 0, 0.8)',
-                        textAlign: 'center',
-                        fontWeight: 'bold',
-                        fontStyle: 'italic',
-                        borderRadius: '3px'
-                    }
-                }, gen.if('$component.notificationCount()',
-                    span({
-                        dataBind: {
-                            text: '$component.notificationCount'
+                gen.if('$component.notificationCount() || $component.notificationError()',
+                    div({
+                        style: {
+                            position: 'absolute',
+                            top: '0',
+                            right: '0'
                         }
-                    }),
-                    gen.if('$component.notificationError()', span({
-                        class: 'fa fa-ban'
-                    }))
-                )
-                ))));
+                    }, div({
+                        style: {
+                            padding: '4px',
+                            color: 'white',
+                            backgroundColor: 'rgba(255, 0, 0, 0.8)',
+                            textAlign: 'center',
+                            fontWeight: 'bold',
+                            fontStyle: 'italic',
+                            borderRadius: '3px'
+                        }
+                    }, gen.if('$component.notificationCount()',
+                        span({
+                            dataBind: {
+                                text: '$component.notificationCount'
+                            }
+                        }),
+                        gen.if('$component.notificationError()', span({
+                            class: 'fa fa-ban'
+                        }))
+                    ))))));
     }
 
     function buildButton() {
