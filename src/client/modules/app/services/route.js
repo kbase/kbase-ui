@@ -1,12 +1,12 @@
 define([
     'bluebird',
-    'kb_common/router',
-    'kb_common/lang'
-], function (Promise, Router, lang) {
+    'kb_lib/router',
+    'kb_lib/lang'
+], function (Promise, routerMod, lang) {
     'use strict';
     function factory(config, params) {
         var runtime = params.runtime,
-            router = Router.make(config),
+            router = new routerMod.Router(config),
             currentRouteHandler = null,
             receivers = [],
             eventListeners = [];
@@ -17,7 +17,7 @@ define([
                 handler = router.findCurrentRoute();
             } catch (ex) {
                 console.error(ex);
-                if (ex instanceof Router.NotFoundException) {
+                if (ex instanceof routerMod.NotFoundException) {
                     handler = {
                         request: ex.request,
                         original: ex.original,
@@ -38,6 +38,11 @@ define([
             }
             runtime.send('route', 'routing', handler);
             currentRouteHandler = handler;
+
+            // Ensure that if authorization is enabled for this route, that we have it.
+            // If not, route to the login path with the current path encoded as
+            // "nextrequest". This ensures that we can close the loop for accessing
+            // auth-required endpoints.
             if (handler.route.authorization) {
                 if (!runtime.service('session').isLoggedIn()) {
                     var loginParams = {
@@ -55,6 +60,8 @@ define([
                     return;
                 }
             }
+
+            // We can also require that the route match at least one role defined in a list.
             if (handler.route.rolesRequired) {
                 var roles = runtime.service('session').getRoles();
                 if (!roles.some(function (role) {

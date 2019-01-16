@@ -1,8 +1,10 @@
 define([
+    'knockout',
     'kb_knockout/registry',
     'kb_knockout/lib/generators',
     'kb_common/html'
 ], function (
+    ko,
     reg,
     gen,
     html
@@ -11,12 +13,56 @@ define([
 
     var t = html.tag,
         div = t('div'),
+        span = t('span'),
         a = t('a');
 
     class ViewModel {
         constructor(params) {
             this.buttons = params.buttons;
             this.isAuthorized = params.isAuthorized;
+
+            this.notificationCount = ko.observable(null);
+            this.notificationError = ko.observable(null);
+
+
+
+            params.runtime.db().subscribe({
+                path: 'feeds'
+            }, (feeds) => {
+                this.processFeeds(feeds);
+            });
+
+
+
+            const feeds = params.runtime.db().get('feeds');
+            this.processFeeds(feeds);
+            // if (feeds.error) {
+            //     this.notificationError(feeds.error);
+            //     return;
+            // }
+            // this.notificationError(null);
+            // if (feeds.notifications) {
+            //     const nsCount = Object.entries(feeds.notifications).reduce((total, [, feed]) => {
+            //         return total + feed.unseen;
+            //     }, 0);
+            //     this.notificationCount(nsCount);
+            // }
+
+        }
+
+        processFeeds(feeds) {
+            if (feeds.error) {
+                this.notificationError(feeds.error);
+                return;
+            }
+            this.notificationError(null);
+            if (!feeds.notifications) {
+                return;
+            }
+            const nsCount = Object.entries(feeds.notifications).reduce((total, [, feed]) => {
+                return total + feed.unseen;
+            }, 0);
+            this.notificationCount(nsCount);
         }
     }
 
@@ -70,7 +116,7 @@ define([
                 marginBottom: '-12px'
             },
             ariaHidden: 'true'
-        },[
+        }, [
             div({
                 class: 'fa fa-stack-2x',
                 style: {
@@ -112,6 +158,55 @@ define([
         ]);
     }
 
+    function buildBeta() {
+        return div({
+            style: {
+                position: 'absolute',
+                top: '0',
+                right: '0',
+                color: 'rgb(193, 119, 54)',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                fontStyle: 'italic'
+            }
+        }, 'beta');
+    }
+
+    function buildBadge() {
+        return gen.if('$data.beta',
+            buildBeta(),
+            gen.if('$data.id === "feeds"',
+                div({
+                    style: {
+                        position: 'absolute',
+                        top: '0',
+                        right: '0',
+
+                    }
+                }, div({
+                    style: {
+                        padding: '4px',
+                        // color: 'rgb(193, 119, 54)',
+                        color: 'white',
+                        backgroundColor: 'rgba(255, 0, 0, 0.8)',
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                        fontStyle: 'italic',
+                        borderRadius: '3px'
+                    }
+                }, gen.if('$component.notificationCount()',
+                    span({
+                        dataBind: {
+                            text: '$component.notificationCount'
+                        }
+                    }),
+                    gen.if('$component.notificationError()', span({
+                        class: 'fa fa-ban'
+                    }))
+                )
+                ))));
+    }
+
     function buildButton() {
         return a({
             dataBind: {
@@ -128,18 +223,7 @@ define([
                     text: 'label'
                 }
             }),
-            gen.if('$data.beta',
-                div({
-                    style: {
-                        position: 'absolute',
-                        top: '0',
-                        right: '0',
-                        color: 'rgb(193, 119, 54)',
-                        textAlign: 'center',
-                        fontWeight: 'bold',
-                        fontStyle: 'italic'
-                    }
-                }, 'beta'))
+            buildBadge()
         ]);
     }
 

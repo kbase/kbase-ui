@@ -16,6 +16,7 @@ ui:
     type: {}
     userprofile: {}
     widget: {}
+    feeds: {}
     # dynamic-service: {}
     menu:
       menus:
