@@ -8,7 +8,7 @@ define([
     'use strict';
 
     class FeedsService {
-        constructor({ config, params }) {
+        constructor({ params }) {
             this.runtime = params.runtime;
 
             this.monitoringInterval = 10000;
@@ -29,12 +29,10 @@ define([
 
             // listen for login and out events...
             this.runtime.receive('session', 'loggedin', () => {
-                console.log('logged in, starting notifications listener...');
                 this.startFeedsMonitoring();
             });
 
             this.runtime.receive('session', 'loggedout', () => {
-                console.log('logged out, stopping notifications listener...');
                 this.stopFeedsMonitoring();
             });
 
@@ -133,7 +131,7 @@ define([
                     loop();
                 })
                 .catch((err) => {
-                    console.error('Errer');
+                    console.error('Error', err);
                 });
         }
 
@@ -143,7 +141,7 @@ define([
             this.monitoringTimer = null;
         }
 
-        pluginHandler(widgetsConfig, pluginConfig) {
+        pluginHandler() {
 
         }
 
