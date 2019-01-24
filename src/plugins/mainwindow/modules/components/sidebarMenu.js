@@ -55,9 +55,9 @@ define([
             if (!feeds.notifications) {
                 return;
             }
-            const nsCount = Object.entries(feeds.notifications).reduce((total, [, feed]) => {
-                return total + feed.unseen;
-            }, 0);
+            const nsCount = feeds.notifications.user.unseen +
+                    feeds.notifications.global.unseen;
+
             this.notificationCount(nsCount);
         }
     }

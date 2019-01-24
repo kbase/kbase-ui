@@ -8,10 +8,12 @@ define([
     'use strict';
 
     class FeedsService {
-        constructor({ config, params }) {
+        constructor({ params }) {
             this.runtime = params.runtime;
 
+            // TODO: move to service config.
             this.monitoringInterval = 10000;
+
             this.monitorRunning = false;
             this.monitoringRunCount = 0;
             this.monitoringErrorCount = 0;
@@ -25,16 +27,12 @@ define([
                 console.warn('session not authorized, not ');
             }
 
-            // console.log('HERE', this.runtime.service('session').getAuthToken());
-
             // listen for login and out events...
             this.runtime.receive('session', 'loggedin', () => {
-                console.log('logged in, starting notifications listener...');
                 this.startFeedsMonitoring();
             });
 
             this.runtime.receive('session', 'loggedout', () => {
-                console.log('logged out, stopping notifications listener...');
                 this.stopFeedsMonitoring();
             });
 
@@ -42,14 +40,6 @@ define([
                 notifications: null,
                 error: null
             });
-
-            // just for kicks, this certainly doesn't live here!
-            // this.runtime.db().subscribe({
-            //     path: 'feeds'
-            // }, (feeds) => {
-            //     console.log('notifications change detected...', feeds);
-            // });
-
         }
 
         stop() {
@@ -59,17 +49,6 @@ define([
         startFeedsMonitoring() {
             this.monitorRunning = true;
             this.monitoringLoop();
-            // this.feedsClient = new feeds.FeedsClient({
-            //     url: this.runtime.config('services.Feeds.url'),
-            //     token: this.runtime.service('session').getAuthToken()
-            // });
-
-            // return this.feedsClient.getNotifications()
-            //     .then((notifications) => {
-            //         console.log('got notifications!', notifications);
-            //         // this.monitoringTimer = window.setTimeout
-            //     });
-
         }
 
         monitoringLoop() {
@@ -78,15 +57,12 @@ define([
             }
 
             const monitoringJob = () => {
-                // const start = new Date().getTime();
                 const feedsClient = new feeds.FeedsClient({
                     url: this.runtime.config('services.Feeds.url'),
                     token: this.runtime.service('session').getAuthToken()
                 });
                 return feedsClient.getNotifications()
                     .then((notifications) => {
-                        // console.log('check notifications', new Date().getTime() - start, notifications);
-
                         // are notifications different than the last time?
                         const currentNotifications = this.runtime.db().get('feeds.notifications');
                         // only way is a deep equality comparison
@@ -95,7 +71,6 @@ define([
                             return;
                         }
 
-                        // console.log('setting notifications', currentNotifications, notifications);
                         this.runtime.db().set('feeds', {
                             notifications: notifications,
                             error: null
@@ -104,7 +79,7 @@ define([
                         return notifications;
                     })
                     .catch((err) => {
-                        // console.error('ERROR', err.message);
+                        console.error('ERROR', err.message);
                         this.runtime.db().set('feeds', {
                             error: err.message
                         });
@@ -113,7 +88,6 @@ define([
 
             const loop = () => {
                 this.monitoringTimer = window.setTimeout(() => {
-                    // console.log('feeds monitoring job loop', this.monitoringRunCount, this.monitoringErrorCount);
                     monitoringJob()
                         .then(() => {
                             this.monitoringRunCount += 1;
@@ -133,7 +107,7 @@ define([
                     loop();
                 })
                 .catch((err) => {
-                    console.error('Errer');
+                    console.error('Error', err);
                 });
         }
 
@@ -143,12 +117,9 @@ define([
             this.monitoringTimer = null;
         }
 
-        pluginHandler(widgetsConfig, pluginConfig) {
+        pluginHandler() {
 
         }
-
-        // PUBLIC api
-
     }
 
     return { ServiceClass: FeedsService };
