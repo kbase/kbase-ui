@@ -123,6 +123,16 @@ services:
         version:
             method: ver
             minimum: 0.8.1
+    RelationEngine:
+        aliases: []
+        url: '{{ deploy.services.urlBase }}/services/relation_engine_api'
+        name: Relation Engine 
+        coreService: true
+        type: rest
+        version:
+            path: /
+            semverNotImplemented: true
+            
 
     # Not services, but useful endpoints
     doc_site:

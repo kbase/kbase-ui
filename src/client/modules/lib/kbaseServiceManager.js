@@ -101,6 +101,9 @@ define([
                             } else {
                                 throw new Error('Invalid semver check result: ' + result);
                             }
+                        }
+                        if (serviceConfig.version.semverNotImplemented) {
+                            return null;
                         } else if (serviceConfig.version.propertyPath) {
                             version = props.getProp(result, serviceConfig.version.propertyPath);
                         } else {
