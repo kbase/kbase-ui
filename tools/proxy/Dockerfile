@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.9
 # Container designed to serve up static KBase UI contents
 
 # These ARGs values are passed in via the docker build command
@@ -12,9 +12,9 @@ ARG TAG
 ENV DOCKERIZE_VERSION v0.6.1
 RUN apk --update upgrade && \
     apk add --no-cache \
-    ca-certificates=20171114-r3 \
+    ca-certificates=20190108-r0 \
     nginx=1.14.2-r0 \
-    openssl=1.0.2q-r0 \
+    openssl=1.1.1a-r1 \
     bash=4.4.19-r1 \
     bash-completion=2.8-r0 && \
     update-ca-certificates && \
