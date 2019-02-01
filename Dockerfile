@@ -1,19 +1,19 @@
 # ------------------------------
 # The build image
 # ------------------------------
-FROM alpine:3.8 as builder
+FROM alpine:3.9 as builder
 
 # add deps for building kbase-ui
 RUN apk upgrade --update-cache --available \
     && apk add --update --no-cache \
-    nodejs=8.14.0-r0 \
-    npm=8.14.0-r0 \
-    git=2.18.1-r0 \
+    nodejs=10.14.2-r0 \
+    npm=10.14.2-r0 \
+    git=2.20.1-r0 \
     make=4.2.1-r2 \
     bash=4.4.19-r1 \
-    g++=6.4.0-r9 \
-    python2=2.7.15-r1 \
-    chromium=68.0.3440.75-r0 \
+    g++=8.2.0-r2 \
+    python2=2.7.15-r3 \
+    chromium=71.0.3578.98-r2 \
     && mkdir -p /kb
 
 COPY ./package.json /kb
@@ -36,12 +36,12 @@ LABEL stage=intermediate
 # ------------------------------
 # The product image
 # ------------------------------
-FROM alpine:3.8
+FROM alpine:3.9
 
 RUN apk upgrade --update-cache --available \
     && apk add --update --no-cache \
     bash=4.4.19-r1 \
-    ca-certificates=20171114-r3 \
+    ca-certificates=20190108-r0 \
     nginx=1.14.2-r0 \        
     && mkdir -p /kb
 
