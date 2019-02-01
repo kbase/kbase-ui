@@ -1,19 +1,14 @@
 define([
-    'bluebird',
-    'uuid',
     'kb_common_ts/HttpClient'
 ], function (
-    Promise,
-    Uuid,
     HttpClient
 ) {
     'use strict';
 
     function factory(config) {
-        var code = config.code,
-            host = config.hostname,
-            clientId = config.clientId;
-            // uuid = new Uuid(4).format();
+        const code = config.code;
+        const host = config.hostname;
+        const clientId = config.clientId;
 
         function encodeQuery(params) {
             return Object.keys(params).map(function (key) {
@@ -22,8 +17,8 @@ define([
         }
 
         function sendToGA(query) {
-            var data = encodeQuery(query);
-            var http = new HttpClient.HttpClient();
+            const data = encodeQuery(query);
+            const http = new HttpClient.HttpClient();
             return http.request({
                 method: 'POST',
                 url: 'https://www.google-analytics.com/collect',
@@ -40,7 +35,7 @@ define([
         }
 
         function send(path) {
-            var query = {
+            const query = {
                 v: 1,
                 tid: code,
                 cid: clientId,
@@ -56,7 +51,7 @@ define([
         function sendEvent(arg) {
             // see https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters#ec
 
-            var query = {
+            const query = {
                 v: 1,
                 tid: code,
                 cid: clientId,
@@ -77,7 +72,7 @@ define([
         function sendTiming(arg) {
             // see https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters#ec
 
-            var query = {
+            const query = {
                 v: 1,
                 tid: code,
                 cid: clientId,

@@ -12,8 +12,8 @@ define([
     'use strict';
 
     function factory(config, params) {
-        var runtime = params.runtime,
-            analytics;
+        const runtime = params.runtime;
+        let analytics;
 
         function pageView(path) {
             return analytics.send(path);
@@ -28,18 +28,23 @@ define([
         }
 
         function ensureCookie() {
-            var cookieManager = new Cookie.CookieManager();
-            // var cookieName = runtime.config('ui.services.analytics.cookie.name', 'kbase_client_id');
-            var analyticsCookie = cookieManager.getItem('kbase_client_id');
+            const cookieManager = new Cookie.CookieManager();
+            const cookieName = runtime.config('ui.services.analytics.cookie.name');
+            const cookieDomain = runtime.config('ui.services.analytics.cookie.domain', null);
+            let analyticsCookie = cookieManager.getItem(cookieName);
             if (!analyticsCookie) {
                 analyticsCookie = new Uuid(4).format();
                 // 2 year cookie, per Google recommendation.
-                var maxAge = runtime.config('ui.services.analytics.cookie.maxAge', 60 * 60 * 24 * 365 * 2);
-                cookieManager.setItem(new Cookie.Cookie('kbase_client_id')
+                const maxAge = runtime.config('ui.services.analytics.cookie.maxAge', 60 * 60 * 24 * 365 * 2);
+                const cookie = new Cookie.Cookie(cookieName)
                     .setValue(analyticsCookie)
                     .setPath('/')
                     .setMaxAge(maxAge)
-                    .setSecure(true));
+                    .setSecure(true);
+                if (cookieDomain) {
+                    cookie.setDomain(cookieDomain);
+                }
+                cookieManager.setItem(cookie);
             }
             return analyticsCookie;
         }
@@ -48,7 +53,7 @@ define([
 
         function start() {
             return Promise.try(function () {
-                var clientId = ensureCookie();
+                const clientId = ensureCookie();
                 analytics = GoogleAnalytics.make({
                     code: runtime.config('ui.services.analytics.google.code'),
                     hostname: runtime.config('ui.services.analytics.google.hostname'),
