@@ -1,7 +1,7 @@
 define([
     'bluebird',
     'uuid',
-    'app/analytics',
+    'lib/analytics',
     'kb_common_ts/Cookie'
 ], function (
     Promise,
@@ -11,77 +11,132 @@ define([
 ) {
     'use strict';
 
-    function factory(config, params) {
-        const runtime = params.runtime;
-        let analytics;
-
-        function pageView(path) {
-            return analytics.send(path);
-        }
-
-        function sendEvent(arg) {
-            return analytics.sendEvent(arg);
-        }
-
-        function sendTiming(arg) {
-            return analytics.sendTiming(arg);
-        }
-
-        function ensureCookie() {
-            const cookieManager = new Cookie.CookieManager();
-            const cookieName = runtime.config('ui.services.analytics.cookie.name');
-            const cookieDomain = runtime.config('ui.services.analytics.cookie.domain', null);
-            let analyticsCookie = cookieManager.getItem(cookieName);
-            if (!analyticsCookie) {
-                analyticsCookie = new Uuid(4).format();
-                // 2 year cookie, per Google recommendation.
-                const maxAge = runtime.config('ui.services.analytics.cookie.maxAge', 60 * 60 * 24 * 365 * 2);
-                const cookie = new Cookie.Cookie(cookieName)
-                    .setValue(analyticsCookie)
-                    .setPath('/')
-                    .setMaxAge(maxAge)
-                    .setSecure(true);
-                if (cookieDomain) {
-                    cookie.setDomain(cookieDomain);
-                }
-                cookieManager.setItem(cookie);
+    class AnalyticsService {
+        constructor({ params }) {
+            if (!params.runtime) {
+                throw new Error('AnalyticsService requires a runtime object; provide as "runtime"');
             }
-            return analyticsCookie;
+            this.runtime = params.runtime;
+            this.analyticsClient = null;
+            this.routeListener = null;
+            this.cookiePrefix = 'GA1.2.';
+            this.cookieRegex = /^GA1\.2\.(.+)$/;
         }
 
-        // API
+        pageView(path) {
+            return this.analyticsClient.send(path);
+        }
 
-        function start() {
-            return Promise.try(function () {
-                const clientId = ensureCookie();
-                analytics = GoogleAnalytics.make({
-                    code: runtime.config('ui.services.analytics.google.code'),
-                    hostname: runtime.config('ui.services.analytics.google.hostname'),
-                    clientId: clientId
+        sendEvent(arg) {
+            return this.analyticsClient.sendEvent(arg);
+        }
+
+        sendTiming(arg) {
+            return this.analyticsClient.sendTiming(arg);
+        }
+
+        extractClientId(cookie) {
+            const match = this.cookieRegex.exec(cookie);
+            if (!match) {
+                // throw new Error('Invalid cookie');
+                return null;
+            }
+            return match[1];
+        }
+
+        setDailyCookie() {
+            const clientId = new Uuid(4).format();
+            const cookieName = '_gid';
+            const analyticsCookie = this.cookiePrefix + clientId;
+            const cookieDomain = this.runtime.config('ui.services.analytics.cookie.domain', null);
+            // 24 hours for this cookie, per Google recommendation.
+            // const maxAge = this.runtime.config('ui.services.analytics.cookie.maxAge', 60 * 60 * 24 * 365 * 2);
+            const maxAge = 60 * 60 * 24;
+            const cookie = new Cookie.Cookie(cookieName)
+                .setValue(analyticsCookie)
+                .setPath('/')
+                .setMaxAge(maxAge)
+                .setSecure(true);
+            if (cookieDomain) {
+                cookie.setDomain(cookieDomain);
+            }
+            const cookieManager = new Cookie.CookieManager();
+            cookieManager.setItem(cookie);
+        }
+
+        ensureDailyCookie() {
+            const cookieManager = new Cookie.CookieManager();
+            // const cookieName = this.runtime.config('ui.services.analytics.cookie.name');
+            const cookieName = '_gid';
+
+            const analyticsCookie = cookieManager.getItem(cookieName);
+            let clientId;
+            if (analyticsCookie) {
+                clientId = this.extractClientId(analyticsCookie);
+                if (clientId) {
+                    return clientId;
+                }
+            }
+            return this.setDailyCookie();
+        }
+
+        setCookie() {
+            const clientId = new Uuid(4).format();
+            const analyticsCookie = this.cookiePrefix + clientId;
+            const cookieName = this.runtime.config('ui.services.analytics.cookie.name');
+            const cookieDomain = this.runtime.config('ui.services.analytics.cookie.domain', null);
+            // 2 year cookie, per Google recommendation.
+            const maxAge = this.runtime.config('ui.services.analytics.cookie.maxAge', 60 * 60 * 24 * 365 * 2);
+            const cookie = new Cookie.Cookie(cookieName)
+                .setValue(analyticsCookie)
+                .setPath('/')
+                .setMaxAge(maxAge)
+                .setSecure(true);
+            if (cookieDomain) {
+                cookie.setDomain(cookieDomain);
+            }
+            const cookieManager = new Cookie.CookieManager();
+            cookieManager.setItem(cookie);
+        }
+
+        ensureCookie() {
+            const cookieManager = new Cookie.CookieManager();
+            const cookieName = this.runtime.config('ui.services.analytics.cookie.name');
+            const analyticsCookie = cookieManager.getItem(cookieName);
+            let clientId;
+            if (analyticsCookie) {
+                clientId = this.extractClientId(analyticsCookie);
+                if (clientId) {
+                    return clientId;
+                }
+            }
+            return this.setCookie();
+        }
+
+        start() {
+            return Promise.try(() => {
+                const clientId = this.ensureCookie();
+                const dailyClientId = this.ensureDailyCookie();
+                this.analyticsClient = new GoogleAnalytics({
+                    apiEndpoint: this.runtime.config('ui.services.analytics.google.apiEndpoint'),
+                    code: this.runtime.config('ui.services.analytics.google.code'),
+                    hostname: this.runtime.config('ui.services.analytics.google.hostname'),
+                    clientId: clientId,
+                    dailyClientId: dailyClientId,
+                    ip: null // this.runtime.service('ui').publicIPAddress()
                 });
-                runtime.recv('route', 'routing', function (route) {
-                    pageView(route.request.original);
+                this.routeListener = this.runtime.recv('route', 'routing', (route) => {
+                    this.pageView(route.request.original || '/');
                 });
             });
         }
 
-        function stop() {
-            // nothing to do?
-            //            return Promise.try(function () {
-            //                return true;
-            //            });
+        stop() {
+            if (this.routeListener) {
+                this.runtime.drop(this.routeListener);
+            }
         }
-
-        return {
-            start: start,
-            stop: stop,
-            pageView: pageView,
-            sendEvent: sendEvent,
-            sendTiming: sendTiming
-        };
     }
 
-    return {
-        make: factory
-    };
+    return { ServiceClass: AnalyticsService };
 });
