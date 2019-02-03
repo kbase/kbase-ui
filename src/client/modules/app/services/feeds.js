@@ -17,14 +17,24 @@ define([
             this.monitorRunning = false;
             this.monitoringRunCount = 0;
             this.monitoringErrorCount = 0;
+
+            this.disabled = this.runtime.config('ui.coreServices.disabled', []).includes('Feeds');
         }
 
         start() {
+            this.runtime.db().set('feeds', {
+                notifications: null,
+                error: null
+            });
+
+            if (this.disabled) {
+                console.warn('Feeds service disabled; skipping monitoring hooks');
+                return;
+            }
+
             // if logged in, populate and start monitoring for feeds notifications
             if (this.runtime.service('session').getAuthToken()) {
                 return this.startupFeedsMonitoring();
-            } else {
-                console.warn('session not authorized, not ');
             }
 
             // listen for login and out events...
@@ -34,11 +44,6 @@ define([
 
             this.runtime.receive('session', 'loggedout', () => {
                 this.stopFeedsMonitoring();
-            });
-
-            this.runtime.db().set('feeds', {
-                notifications: null,
-                error: null
             });
         }
 

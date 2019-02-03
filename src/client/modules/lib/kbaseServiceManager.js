@@ -16,7 +16,7 @@ define([
     class KBaseServiceManager {
         constructor({ runtime, throwErrors }) {
             this.runtime = runtime;
-            this.servicesToCheck = this.runtime.config('coreServices');
+            this.coreServices = this.runtime.config('coreServices');
             this.timeout = runtime.config('ui.constants.service_check_timeouts.hard');
             this.throwErrors = throwErrors || false;
         }
@@ -76,7 +76,15 @@ define([
         }
 
         check() {
-            return Promise.all(this.servicesToCheck
+            const disabledServices = this.runtime.config('ui.coreServices.disabled', []);
+            return Promise.all(this.coreServices
+                .filter((serviceConfig) => {
+                    const disabled = disabledServices.includes(serviceConfig.module);
+                    if (disabled) {
+                        console.warn('Check disabled for core service: ' + serviceConfig.module);
+                    }
+                    return !disabled;
+                })
                 .map((serviceConfig) => {
                     return Promise.try(() => {
                         switch (serviceConfig.type) {
