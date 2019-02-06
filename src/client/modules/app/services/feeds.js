@@ -1,9 +1,7 @@
 define([
-    'lib/feeds',
-    'kb_lib/lang'
+    'lib/feeds'
 ], (
-    feeds,
-    lang
+    feeds
 ) => {
     'use strict';
 
@@ -66,22 +64,21 @@ define([
                     url: this.runtime.config('services.Feeds.url'),
                     token: this.runtime.service('session').getAuthToken()
                 });
-                return feedsClient.getNotifications()
-                    .then((notifications) => {
+                return feedsClient.getUnseenNotificationCount()
+                    .then(({ unseen: { global, user } }) => {
+                        const currentUnseen = global + user;
                         // are notifications different than the last time?
-                        const currentNotifications = this.runtime.db().get('feeds.notifications');
+                        const unseenNotificationsCount = this.runtime.db().get('feeds.unseenNotificationsCount');
                         // only way is a deep equality comparison
 
-                        if (lang.isEqual(currentNotifications, notifications)) {
+                        if (unseenNotificationsCount === currentUnseen) {
                             return;
                         }
 
                         this.runtime.db().set('feeds', {
-                            notifications: notifications,
+                            unseenNotificationsCount: currentUnseen,
                             error: null
                         });
-
-                        return notifications;
                     })
                     .catch((err) => {
                         console.error('ERROR', err.message);
