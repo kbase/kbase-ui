@@ -14,6 +14,14 @@ define([], () => {
         }
     }
 
+    function queryToString(query) {
+        return Array.from(query.entries()).map(([k, v]) => {
+            return [
+                k, encodeURIComponent(v)
+            ].join('=');
+        }).join('&');
+    }
+
 
     class FeedsClient {
         // params: FeedsClientParams
@@ -138,13 +146,18 @@ define([], () => {
                 });
         }
 
+        makeUrl(path, query) {
+            const baseUrl = (this.baseURLPath().concat(path)).join('/');
+            if (query) {
+                return baseUrl +
+                    '?' +
+                    queryToString(query);
+            }
+            return baseUrl;
+        }
+
         get(path, query) {
-            const queryString = Array.from(query.entries()).map(([k, v]) => {
-                return [
-                    k, encodeURIComponent(v)
-                ].join('=');
-            }).join('&');
-            const url = (this.baseURLPath().concat(path)).join('/') + '?' + queryString;
+            const url = this.makeUrl(path, query);
             return fetch(url, {
                 headers: {
                     Authorization: this.params.token,
@@ -187,6 +200,10 @@ define([], () => {
             const options = new Map();
             options.set('n', String(count));
             return this.get(['notifications'], options);
+        }
+
+        getUnseenNotificationCount() {
+            return this.get(['notifications', 'unseen_count']);
         }
 
         seeNotifications(param) {

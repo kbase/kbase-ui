@@ -32,18 +32,6 @@ define([
 
             const feeds = params.runtime.db().get('feeds');
             this.processFeeds(feeds);
-            // if (feeds.error) {
-            //     this.notificationError(feeds.error);
-            //     return;
-            // }
-            // this.notificationError(null);
-            // if (feeds.notifications) {
-            //     const nsCount = Object.entries(feeds.notifications).reduce((total, [, feed]) => {
-            //         return total + feed.unseen;
-            //     }, 0);
-            //     this.notificationCount(nsCount);
-            // }
-
         }
 
         processFeeds(feeds) {
@@ -52,11 +40,10 @@ define([
                 return;
             }
             this.notificationError(null);
-            if (!feeds.notifications) {
-                return;
-            }
-            const nsCount = feeds.notifications.user.unseen +
-                    feeds.notifications.global.unseen;
+            // if (!feeds.unseenNotificationsCount) {
+            //     return;
+            // }
+            const nsCount = feeds.unseenNotificationsCount;
 
             this.notificationCount(nsCount);
         }
