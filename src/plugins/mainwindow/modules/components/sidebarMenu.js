@@ -47,6 +47,13 @@ define([
 
             this.notificationCount(nsCount);
         }
+
+        onNavClick(path, e) {
+            console.log('nav clicked...', path, e);
+            // e.preventDefault();
+            // window.history.pushState(null, '', '/#/' + path);
+            window.location.href = '/#/' + path;
+        }
     }
 
     var styles = html.makeStyles({
@@ -191,10 +198,13 @@ define([
     function buildButton() {
         return a({
             dataBind: {
-                attr: {
-                    href: '"#" + path'
-                },
-                class: 'active() ? "' + styles.scopes.active + '" : null'
+                // attr: {
+                //     href: '"#" + path'
+                // },
+                class: 'active() ? "' + styles.scopes.active + '" : null',
+                event: {
+                    click: '(d,e) => {$component.onNavClick.call($component, path, e)}'
+                }
             },
             class: styles.classes.button
         }, [
