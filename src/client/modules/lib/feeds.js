@@ -22,14 +22,9 @@ define([], () => {
         }).join('&');
     }
 
-
     class FeedsClient {
-        // params: FeedsClientParams
-
-
         constructor(params) {
             this.params = params;
-            // console.log('params', params);
         }
 
         put(path, body) {
@@ -173,7 +168,6 @@ define([], () => {
                         case 'application/json':
                             return response.json()
                                 .then((result) => {
-                                    // console.log('feeds error', result);
                                     throw new FeedsError(result);
                                 });
                         case 'text/plain':
