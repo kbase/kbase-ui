@@ -2,7 +2,7 @@ define([
     'knockout',
     'kb_knockout/registry',
     'kb_knockout/lib/generators',
-    'kb_common/html'
+    'kb_lib/html'
 ], function (
     ko,
     reg,
@@ -49,10 +49,11 @@ define([
         }
 
         onNavClick(path, e) {
-            console.log('nav clicked...', path, e);
-            // e.preventDefault();
-            // window.history.pushState(null, '', '/#/' + path);
+            const oldHref = window.location.href;
             window.location.href = '/#/' + path;
+            if (oldHref === window.location.href) {
+                window.dispatchEvent(new HashChangeEvent('hashchange'));
+            }
         }
     }
 
@@ -72,20 +73,32 @@ define([
             pseudo: {
                 hover: {
                     color: '#000',
-                    backgroundColor: 'rgba(200, 200, 200, 0.5)'
+                    backgroundColor: 'rgba(200, 200, 200, 0.7)'
                 },
                 focus: {
                     color: '#000',
-                    backgroundColor: 'rgba(200, 200, 200, 0.5)'
+                    backgroundColor: 'rgba(200, 200, 200, 0.7)'
                 },
                 active: {
-                    color: '#000',
-                    backgroundColor: 'rgba(200, 200, 200, 0.5)'
+                    color: 'rgba(150, 150, 150, 1)',
+                    backgroundColor: 'rgba(200, 200, 200, 0.7)'
                 }
             },
             modifiers: {
                 active: {
-                    backgroundColor: 'rgba(200, 200, 200, 0.5)'
+                    css: {
+                        backgroundColor: 'rgba(200, 200, 200, 0.5)'
+                    },
+                    pseudo: {
+                        hover: {
+                            color: '#000',
+                            backgroundColor: 'rgba(200, 200, 200, 0.7)'
+                        },
+                        active: {
+                            color: 'rgba(150, 150, 150, 1)',
+                            backgroundColor: 'rgba(200, 200, 200, 0.7)'
+                        }
+                    }
                 }
             }
         },

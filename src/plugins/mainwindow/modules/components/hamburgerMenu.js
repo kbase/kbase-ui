@@ -1,7 +1,7 @@
 define([
     'kb_knockout/registry',
     'kb_knockout/lib/generators',
-    'kb_common/html'
+    'kb_lib/html'
 ], function (
     reg,
     gen,
