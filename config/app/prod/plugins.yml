@@ -237,7 +237,7 @@ plugins:
     -
         name: organizations
         globalName: kbase-ui-plugin-organizations
-        version: 0.15.41
+        version: 0.15.42
         cwd: src/plugin
         source:
             bower: {}
