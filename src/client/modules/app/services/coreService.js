@@ -16,7 +16,7 @@ define([
     // }
 
     class CoreServicesMonitor {
-        constructor({params}) {
+        constructor({ params }) {
             this.runtime = params.runtime;
 
             this.services = {};
@@ -31,7 +31,7 @@ define([
         }
 
         pluginHandler() {
-            // console.log('plugin handler', config);
+
         }
 
         addCoreServiceDepenency() {
@@ -40,5 +40,5 @@ define([
     }
 
 
-    return {ServiceClass: CoreServicesMonitor};
+    return { ServiceClass: CoreServicesMonitor };
 });

@@ -14,14 +14,17 @@ define([], () => {
         }
     }
 
+    function queryToString(query) {
+        return Array.from(query.entries()).map(([k, v]) => {
+            return [
+                k, encodeURIComponent(v)
+            ].join('=');
+        }).join('&');
+    }
 
     class FeedsClient {
-        // params: FeedsClientParams
-
-
         constructor(params) {
             this.params = params;
-            // console.log('params', params);
         }
 
         put(path, body) {
@@ -138,13 +141,18 @@ define([], () => {
                 });
         }
 
+        makeUrl(path, query) {
+            const baseUrl = (this.baseURLPath().concat(path)).join('/');
+            if (query) {
+                return baseUrl +
+                    '?' +
+                    queryToString(query);
+            }
+            return baseUrl;
+        }
+
         get(path, query) {
-            const queryString = Array.from(query.entries()).map(([k, v]) => {
-                return [
-                    k, encodeURIComponent(v)
-                ].join('=');
-            }).join('&');
-            const url = (this.baseURLPath().concat(path)).join('/') + '?' + queryString;
+            const url = this.makeUrl(path, query);
             return fetch(url, {
                 headers: {
                     Authorization: this.params.token,
@@ -160,7 +168,6 @@ define([], () => {
                         case 'application/json':
                             return response.json()
                                 .then((result) => {
-                                    // console.log('feeds error', result);
                                     throw new FeedsError(result);
                                 });
                         case 'text/plain':
@@ -187,6 +194,10 @@ define([], () => {
             const options = new Map();
             options.set('n', String(count));
             return this.get(['notifications'], options);
+        }
+
+        getUnseenNotificationCount() {
+            return this.get(['notifications', 'unseen_count']);
         }
 
         seeNotifications(param) {
