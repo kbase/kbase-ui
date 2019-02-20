@@ -88,10 +88,10 @@ code .
 Test for prod:
 
 ```bash
-make build-prod
-make prod-image
-make run-prod-image
+make dev-start env=prod build=prod build-image=t
 ```
+
+This will build the prod image, and launch it in a container.
 
 ### Test the Presumptive Release
 
@@ -152,44 +152,24 @@ build a minified version of kbase-ui suitable for deployment.
 ### build the image
 
 The makefile target "docker_image" is a target shared with many KBase repos that build
-docker deployment images. This makefile target requires that the "build-ci" makefile target has
-been run in order to generate the files that are to be published in the docker_image. Note that
-the "ci" in "build-ci" is construed to mean build for continuous integration _in general_ rather
-than build for the CI environment _specifically_.
+docker deployment images. This makefile target requires that the "build-ci" makefile target has been run in order to generate the files that are to be published in the docker_image. Note that the "ci" in "build-ci" is construed to mean build for continuous integration _in general_ ratherthan build for the CI environment _specifically_.
 
-The build process builds an image named kbase/kbase-ui:$TAG where $TAG is the current branch
-that is checked out. If the branch is master, $TAG substitutes "latest" for master.
+The build process builds an image named kbase/kbase-ui:$TAG where $TAG is the current branch that is checked out. If the branch is master, $TAG substitutes "latest" for master.
 
-The Travis-CI environment performs builds of the master and develop branches, and pushes the new builds into
-dockerhub. It should not be necessary to modify docker images for different environments, aside from
-passing in difference values for the environment variables.
+The Travis-CI environment performs builds of the master and develop branches, and pushes the new builds into dockerhub. It should not be necessary to modify docker images for different environments, aside from passing in difference values for the environment variables.
 
-It should also not be necessary to retag a develop image as latest in order to promote it for release.
-The image tagged with latest should automatically track the master branch of the repo.
+It should also not be necessary to retag a develop image as latest in order to promote it for release. The image tagged with latest should automatically track the master branch of the repo.
 
-The docker image is built to be suitable for development mode (serves up JS files un-minified)
-as well as in production ( serves up JS files minified as well as a minified archive of all the libraries).
-The settings for running in CI, AppDev, Next and Prod KBase environments are handled via templates that
-are populated at runtime for each particular environment. The template files can be found in this directory
+The docker image is built to be suitable for development mode (serves up JS files un-minified) as well as in production ( serves up JS files minified as well as a minified archive of all the libraries). The settings for running in CI, AppDev, Next and Prod KBase environments are handled via templates that are populated at runtime for each particular environment. The template files can be found in this directory
 under the repository root: deployment/ci/docker/context/contents/conf
 
-The templates are build for use with the [docker tool](https://github.com/kbase/dockerize) and follow
-the Golang [text/template](https://golang.org/pkg/text/template/) templating rules. At runtime the
-dockerize program is given environment variables as well as the templates that need to be rendered,
-and these determine the nginx configuration as well as the details of the content to be served. The
-dockerfile in deployment/ci/docker/context/Dockerfile shows the parameters passed to dockerize to
+The templates are build for use with the [docker tool](https://github.com/kbase/dockerize) and follow the Golang [text/template](https://golang.org/pkg/text/template/) templating rules. At runtime the dockerize program is given environment variables as well as the templates that need to be rendered, and these determine the nginx configuration as well as the details of the content to be served. The dockerfile in deployment/ci/docker/context/Dockerfile shows the parameters passed to dockerize to
 configure the container.
 
-Examples of environment variables for each different deployment environment ( CI, AppDev, Next, Prod ) can
-be found in deployment/conf/*.env
-These files contain name/value pairs for environment variables that can be interpreted by either docker
-as an --env_file parameter, or as files that dockerize can directly read, via the dockerize --env
-parameter.
+Examples of environment variables for each different deployment environment ( CI, AppDev, Next, Prod ) can be found in deployment/conf/*.env These files contain name/value pairs for environment variables that can be interpreted by either docker
+as an --env_file parameter, or as files that dockerize can directly read, via the dockerize --env parameter.
 
-For the purposes of the config.json file, the key environment variable that determines the running environment
-is the "deploy_environment" variable, which is set to ci, appdev, next, prod as necessary. Another important
-variable is the flag "uncompress", if this variable is set, then the nginx container will serve the uncompressed
-versions of the JS files. Leave uncompress *undefined* (not false or 0) to serve minified content.
+For the purposes of the config.json file, the key environment variable that determines the running environment is the "deploy_environment" variable, which is set to ci, appdev, next, prod as necessary. Another important variable is the flag "uncompress", if this variable is set, then the nginx container will serve the uncompressed versions of the JS files. Leave uncompress *undefined* (not false or 0) to serve minified content.
 
 Other important environment variables are:
 
@@ -198,6 +178,11 @@ Other important environment variables are:
 * nginx_loglevel - what level of logging should be set in the nginx error log?
 * nginx_syslog - enable syslogging of the nginx access and error logs
 
-As a rule, when there are differences in images between dev, CI, AppDev and Prod, work the differences
-into the template files or else have the differences enabled/disabled via environment variables or
-some configuration file setting.
+As a rule, when there are differences in images between dev, CI, AppDev and Prod, work the differences into the template files or else have the differences enabled/disabled via environment variables or some configuration file setting.
+
+
+## Updates
+
+### gitlab configuration
+
+Deployment configurations for kbase-ui are stored at 
