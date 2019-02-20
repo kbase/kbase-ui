@@ -16,6 +16,7 @@ ui:
     type: {}
     userprofile: {}
     widget: {}
+    feeds: {}
     # dynamic-service: {}
     menu:
       menus:
@@ -23,75 +24,58 @@ ui:
           sections:
             main:
               items:
-                -
-                  id: narrative
+                - id: narrative
                   auth: true
-                -
-                  id: jgi-search
+                - id: jgi-search
                   auth: true
             developer:
               items:
-                -
-                  id: about-services
+                - id: about-services
                   auth: true
                   allowRoles: [DevToken]
-                -
-                  id: narrative-info
+                - id: narrative-info
                   auth: true
                   allow: [alpha]
-                -
-                  id: dashboard2
-                  auth: true
-                  allow: [alpha] 
-                -
-                  id: ui-service
-                  auth: true
-                  allow: [alpha] 
-                -             
-                  id: databrowser
+                - id: dashboard2
                   auth: true
                   allow: [alpha]
-                -
-                  id: typebrowser
+                - id: ui-service
                   auth: true
-                  allow: [alpha]  
+                  allow: [alpha]
+                - id: databrowser
+                  auth: true
+                  allow: [alpha]
+                - id: typebrowser
+                  auth: true
+                  allow: [alpha]
             help:
               items:
-                -
-                  id: about
+                - id: about
                   auth: false
-                -
-                  id: contact-kbase
+                - id: contact-kbase
                   auth: false
-                -
-                  id: help
+                - id: help
                   auth: false
         sidebar:
           sections:
             main:
               items:
-                -
-                  id: dashboard
+                - id: dashboard
                   auth: true
-                - 
-                  id: public-search
-                  auth: false
+                - id: organizations
+                  auth: true
+                - id: public-search
+                  auth: true
                   allow: [alpha]
-                -
-                  id: appcatalog
+                - id: appcatalog
                   auth: false
-                -
-                  id: search
+                - id: search
                   auth: true
-                -
-                  id: jobbrowser
+                - id: jobbrowser
                   # The label can ovveride the label from the plugin here
                   label: Jobs
                   auth: true
-                -
-                  id: account
+                - id: account
                   auth: true
-                -
-                  id: feeds
+                - id: feeds
                   auth: true
-                  allow: [alpha]

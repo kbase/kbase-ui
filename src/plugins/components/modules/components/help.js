@@ -166,13 +166,6 @@ define([
         }
     });
 
-    ko.bindingHandlers.htmlMarkdown = {
-        update: function (element, valueAccessor) {
-            var markdown = marked(valueAccessor());
-            element.innerHTML = markdown;
-        }
-    };
-
     function template() {
         return div({
             class: styles.classes.component

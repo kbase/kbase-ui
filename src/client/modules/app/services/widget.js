@@ -20,7 +20,7 @@ define([
     }
 
     class WidgetService {
-        constructor({config, params}) {
+        constructor({ config, params }) {
             // the config has two properties:
             // config - from the service config
             // params - runtime params required for integration with ui runtime
@@ -69,45 +69,5 @@ define([
 
         // }
     }
-    // function factory(config) {
-    //     var widgetManager =
-
-    //     function start() {
-    //         return true;
-    //     }
-    //     function stop() {
-    //         return true;
-    //     }
-    //     function pluginHandler(widgetsConfig, pluginConfig) {
-    //         return Promise.try(function () {
-    //             widgetsConfig.forEach(function (widgetDef) {
-    //                 // If source modules are not specified, we are using module
-    //                 // paths. A full path will start with "plugins/" and a relative
-    //                 // path won't. Prefix a relative path with the plugin's module path.
-    //                 if (!pluginConfig.usingSourceModules) {
-    //                     if (!widgetDef.module.match(/^plugins\//)) {
-    //                         widgetDef.module = [pluginConfig.moduleRoot, widgetDef.module].join('/');
-    //                     }
-    //                 }
-    //                 widgetManager.addWidget(widgetDef);
-    //             });
-    //         });
-    //     }
-    //     return {
-    //         // lifecycle interface
-    //         start: start,
-    //         stop: stop,
-    //         // plugin interface
-    //         pluginHandler: pluginHandler,
-    //         widgetManager: widgetManager,
-    //         makeWidget: function () {
-    //             return proxyMethod(widgetManager, 'makeWidget', arguments);
-    //         },
-    //         getWidget: function () {
-    //             return proxyMethod(widgetManager, 'getWidget', arguments);
-    //         }
-    //     };
-    // }
-
-    return {ServiceClass: WidgetService};
+    return { ServiceClass: WidgetService };
 });

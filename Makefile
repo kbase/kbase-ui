@@ -79,14 +79,6 @@ default:
 	@echo Use "make init && make config=TARGET build"
 	@echo see docs/quick-deploy.md
 
-NODE=$(shell node --version 2> /dev/null)
-NODE_REQUIRED="v8"
-majorver=$(word 1, $(subst ., ,$1))
-
-preconditions:
-	@echo "> Testing for preconditions."
-	@echo $(if $(findstring $(call majorver, $(NODE)), $(NODE_REQUIRED)), "Good node version ($(NODE))", $(error "! Node major version must be $(NODE_REQUIRED), it is $(NODE).") )
-
 # Initialization here pulls in all dependencies from Bower and NPM.
 # This is **REQUIRED** before any build process can proceed.
 # bower install is not part of the build process, since the bower
@@ -100,13 +92,13 @@ node_modules:
 	@echo "> Installing build and test tools."
 	npm install
 
-setup: preconditions setup-dirs
+setup: setup-dirs
 
 init: setup node_modules
 
 # Perform the build. Build scnearios are supported through the config option
 # which is passed in like "make build config=ci"
-build: clean-build
+build: clean-build 
 	@echo "> Building."
 	cd mutations; node build $(config)
 

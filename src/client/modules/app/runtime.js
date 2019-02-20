@@ -1,5 +1,7 @@
 define([
+    'kb_lib/reactiveDb'
 ], function (
+    reactiveDb
 ) {
     'use strict';
 
@@ -7,6 +9,8 @@ define([
         var configProps = config.config;
         var messenger = config.messenger;
         var serviceManager = config.serviceManager;
+
+        var globalDB = new reactiveDb.DB();
 
         // Access to ui config.
         // This is simply a wrapping around the venerable Props module.
@@ -131,6 +135,10 @@ define([
             return obj[method].apply(obj, args);
         }
 
+        function db() {
+            return globalDB;
+        }
+
         return Object.freeze({
             // Configuration
             config: getConfig,
@@ -153,6 +161,8 @@ define([
             snd: snd,
             rcv: rcv,
             urcv: urcv,
+
+            db: db,
 
             // navigation
             navigate: navigate,

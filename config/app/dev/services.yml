@@ -16,103 +16,77 @@ ui:
     type: {}
     userprofile: {}
     widget: {}
+    feeds: {}
     # dynamic-service: {}
     menu:
       menus:
         hamburger:
-          sections: 
+          sections:
             main:
               items:
-                -
-                  id: narrative
+                - id: narrative
                   auth: true
-                -
-                  id: jgi-search
+                - id: jgi-search
                   auth: true
             developer:
-              items:                 
-                -
-                  id: ui-service
+              items:
+                - id: ui-service
                   auth: true
-                - 
-                  id: dashboard2
+                - id: dashboard2
                   auth: true
-                - 
-                  id: dashboard3
+                - id: dashboard3
                   auth: true
-                -
-                  id: test-lookup
+                - id: test-lookup
                   auth: true
-                -
-                  id: narrative-info
-                  auth: true  
-                -
-                  id: simple-sample
+                - id: narrative-info
                   auth: true
-                -
-                  id: narrative-finder
+                - id: simple-sample
                   auth: true
-                -
-                  id: staging-browser
+                - id: narrative-finder
                   auth: true
-                -
-                  id: example-gopherjs
+                - id: staging-browser
                   auth: true
-                -
-                  id: tester
+                - id: example-gopherjs
                   auth: true
-                -
-                  id: test_dynamic_table
+                - id: tester
                   auth: true
-                -             
-                  id: databrowser
+                - id: test_dynamic_table
                   auth: true
-                -
-                  id: typebrowser
+                - id: databrowser
                   auth: true
-                -
-                  id: shockbrowser
+                - id: typebrowser
                   auth: true
-                -
-                  id: about-services
+                - id: shockbrowser
+                  auth: true
+                - id: about-services
                   auth: true
             help:
               items:
-                -
-                  id: about
+                - id: about
                   auth: false
-                -
-                  id: contact-kbase
+                - id: contact-kbase
                   auth: false
-                -
-                  id: help
+                - id: help
                   auth: false
         sidebar:
           sections:
             main:
               items:
-                -
-                  id: dashboard
+                - id: dashboard
                   auth: true
-                - 
-                  id: public-search
-                  auth: false
-                -
-                  id: appcatalog
-                  auth: false
-                -
-                  id: search
+                - id: organizations
                   auth: true
-                -
-                  id: jobbrowser
+                - id: public-search
+                  auth: true
+                - id: appcatalog
+                  auth: false
+                - id: search
+                  auth: true
+                - id: jobbrowser
                   # The label can ovveride the label from the plugin here
                   label: Jobs
                   auth: true
-                -
-                  id: account
+                - id: account
                   auth: true
-                -
-                  id: feeds
+                - id: feeds
                   auth: true
-                  allow: [alpha]
-

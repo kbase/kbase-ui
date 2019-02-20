@@ -28,5 +28,5 @@ define([
         }
     }
 
-    return {ServiceClass: InstrumentationService};
+    return { ServiceClass: InstrumentationService };
 });

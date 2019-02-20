@@ -40,10 +40,12 @@ ui:
     services:
         analytics:
             cookie:
-                name: kbase_client_id
+                name: _ga
+                domain: kbase.us
                 # approx 2 years
                 maxAge: 63072000
             google:
+                apiEndpoint: https://www.google-analytics.com/collect
                 hostname: null
                 code: null
         session:

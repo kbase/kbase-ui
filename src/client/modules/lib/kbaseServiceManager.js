@@ -14,9 +14,9 @@ define([
     'use strict';
 
     class KBaseServiceManager {
-        constructor({runtime, throwErrors}) {
+        constructor({ runtime, throwErrors }) {
             this.runtime = runtime;
-            this.servicesToCheck = this.runtime.config('coreServices');
+            this.coreServices = this.runtime.config('coreServices');
             this.timeout = runtime.config('ui.constants.service_check_timeouts.hard');
             this.throwErrors = throwErrors || false;
         }
@@ -27,7 +27,7 @@ define([
             header.setHeader('accept', 'application/json');
             return http.request({
                 method: 'GET',
-                url: serviceConfig.url,
+                url: serviceConfig.url + serviceConfig.version.path,
                 header: header,
                 timeout: this.timeout
             })
@@ -76,7 +76,15 @@ define([
         }
 
         check() {
-            return Promise.all(this.servicesToCheck
+            const disabledServices = this.runtime.config('ui.coreServices.disabled', []);
+            return Promise.all(this.coreServices
+                .filter((serviceConfig) => {
+                    const disabled = disabledServices.includes(serviceConfig.module);
+                    if (disabled) {
+                        console.warn('Check disabled for core service: ' + serviceConfig.module);
+                    }
+                    return !disabled;
+                })
                 .map((serviceConfig) => {
                     return Promise.try(() => {
                         switch (serviceConfig.type) {
@@ -101,6 +109,9 @@ define([
                             } else {
                                 throw new Error('Invalid semver check result: ' + result);
                             }
+                        }
+                        if (serviceConfig.version.semverNotImplemented) {
+                            return null;
                         } else if (serviceConfig.version.propertyPath) {
                             version = props.getProp(result, serviceConfig.version.propertyPath);
                         } else {
@@ -120,14 +131,14 @@ define([
                     });
                 }))
                 .then((result) => {
-                    const mismatches = result .filter((result) => {
+                    const mismatches = result.filter((result) => {
                         return result === null ? false : true;
                     });
                     if (mismatches.length > 0) {
                         const message = mismatches.map((mismatch) => {
                             return '(' + mismatch.code + ') ' +
-                              mismatch.module + ' needs to be at least ' +
-                              mismatch.minimumVersion + ' but is ' + mismatch.serviceVersion;
+                                    mismatch.module + ' needs to be at least ' +
+                                    mismatch.minimumVersion + ' but is ' + mismatch.serviceVersion;
                         }).join('; ');
                         let prefix;
                         if (mismatches.length === 1) {
@@ -147,5 +158,5 @@ define([
         }
     }
 
-    return {KBaseServiceManager};
+    return { KBaseServiceManager };
 });

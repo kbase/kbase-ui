@@ -78,6 +78,16 @@ http {
       ssl_certificate /kb/deployment/test.crt;
       ssl_certificate_key /kb/deployment/test.key;
 
+      location /google-analytics-collect {
+        include /etc/nginx/cors.conf;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwared-For $proxy_add_x_forwarded_for;
+        proxy_pass https://www.google-analytics.com/collect;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+      }
+
       location / {
         client_max_body_size 300M;
         proxy_pass http://kbase_ui;
@@ -170,9 +180,17 @@ http {
         client_max_body_size 300M;
       }
 
+      
+
       # Proxy all non-services to the local kbase-ui running in the vm
 
       {{ if not .Env.deploy_ui_hostname }}
+
+      location /google-analytics-collect {
+        proxy_pass https://www.google-analytics.com/collect;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+      }
 
       location / {
         proxy_pass http://kbase_ui;
