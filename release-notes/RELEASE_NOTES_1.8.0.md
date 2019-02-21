@@ -1,4 +1,4 @@
-# KBase kbase-ui 1.7.2 Release Notes
+# KBase kbase-ui 1.8.0 Release Notes
 
 ## CHANGES
 
