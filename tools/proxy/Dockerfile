@@ -12,11 +12,11 @@ ARG TAG
 ENV DOCKERIZE_VERSION v0.6.1
 RUN apk --update upgrade && \
     apk add --no-cache \
-    ca-certificates=20190108-r0 \
-    nginx=1.14.2-r0 \
-    openssl=1.1.1a-r1 \
-    bash=4.4.19-r1 \
-    bash-completion=2.8-r0 && \
+    ca-certificates \
+    nginx \
+    openssl \
+    bash \
+    bash-completion \
     update-ca-certificates && \
     mkdir -p /kb/deployment && \
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /kb/deployment/test.key -out /kb/deployment/test.crt -subj "/C=US/ST=California/L=Berkeley/O=LBNL/OU=KBase/CN=ci.kbase.us" && \
