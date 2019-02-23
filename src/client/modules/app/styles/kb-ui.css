@@ -46,7 +46,6 @@
     font-style: normal;
 }
 
-
 /* H1 should only be used on the title area of the UI. The total height is 70px with 5px lower border, so the font size, 
    padding, and margin are arranged to center it vertically within this height.*/
 
@@ -58,7 +57,6 @@
     padding: 5px 0px;
     margin: 8px 0px;
 }
-
 
 /* H2 should be used for main panel titles. It may be used for the primary title for the panel, or if there 
    are multiple sub-panels or areas, for each of them. */
@@ -91,7 +89,6 @@
     font-size: 17px;
 }
 
-
 /*@media screen and (max-width: 768px){
     body{font-size: 12px;}
 }
@@ -113,6 +110,8 @@ i b {}
 body.kbase-ui {
     font-family: 'Oxygen', Arial, sans-serif;
     color: #333333;
+    /* for scrolling in older FF (<= 65) */
+    min-height: 0;
 }
 
 html,
@@ -146,7 +145,6 @@ hr.ws-hr {
     margin: 2px 10px 0 10px;
 }
 
-
 /* fix styling issues */
 
 #signin-button {
@@ -166,7 +164,6 @@ hr.ws-hr {
 .nav>li>a:focus {
     text-decoration: none;
 }
-
 
 /*
  *  Slide-Down Notifications
@@ -457,7 +454,6 @@ hr.ws-hr {
     margin: 10px 0 0 0;
 }
 
-
 /*
  *  Narrative Pages
 */
@@ -542,7 +538,6 @@ hr.ws-hr {
     margin: 0 3px 0 0;
 }
 
-
 /*
  * text overflow 
 */
@@ -560,7 +555,6 @@ hr.ws-hr {
     text-overflow: ellipsis;
     overflow: hidden;
 }
-
 
 /* custom checkboxes (prototyped) */
 
@@ -613,7 +607,6 @@ hr.ws-hr {
 .open-obj {
     margin: 7px 0 0 20px;
 }
-
 
 /******************	narrative     ***************/
 
@@ -765,13 +758,11 @@ hr.ws-hr {
     margin: 10px 0 0 50px;
 }
 
-
 /* provide underlines in prettyprinted links */
 
 .prettyprinted a {
     text-decoration: underline;
 }
-
 
 /* more subtle buttons...*/
 
@@ -790,7 +781,6 @@ hr.ws-hr {
 .btn.btn-kbase-compact {
     padding: 3px 6px;
 }
-
 
 /* Safari fixes */
 
