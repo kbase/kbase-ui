@@ -4,17 +4,9 @@
 FROM alpine:3.9 as builder
 
 # add deps for building kbase-ui
-RUN apk upgrade --update-cache --available \
-    && apk add --update --no-cache \
-    nodejs \
-    npm \
-    git \
-    make \
-    bash \
-    g++ \
-    python2 \
-    chromium \
-    && mkdir -p /kb
+RUN apk upgrade --update-cache --available && \
+    apk add --update --no-cache bash chromium g++ git make nodejs npm python2 && \
+    mkdir -p /kb
 
 COPY ./package.json /kb
 WORKDIR /kb
@@ -38,12 +30,9 @@ LABEL stage=intermediate
 # ------------------------------
 FROM alpine:3.9
 
-RUN apk upgrade --update-cache --available \
-    && apk add --update --no-cache \
-    bash \
-    ca-certificates \
-    nginx \        
-    && mkdir -p /kb
+RUN apk upgrade --update-cache --available && \
+    apk add --update --no-cache bash ca-certificates nginx && \
+    mkdir -p /kb
 
 WORKDIR /kb
 

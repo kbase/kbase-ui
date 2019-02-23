@@ -11,13 +11,7 @@ ARG TAG
 # used for processing the config file templates
 ENV DOCKERIZE_VERSION v0.6.1
 RUN apk --update upgrade && \
-    apk add --no-cache \
-    ca-certificates \
-    nginx \
-    openssl \
-    bash \
-    bash-completion \
-    update-ca-certificates && \
+    apk add --no-cache bash bash-completion ca-certificates nginx openssl && \
     mkdir -p /kb/deployment && \
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /kb/deployment/test.key -out /kb/deployment/test.crt -subj "/C=US/ST=California/L=Berkeley/O=LBNL/OU=KBase/CN=ci.kbase.us" && \
     wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
