@@ -75,7 +75,8 @@
     "dependencies": {
         "ajv": "6.9.1",
         "bluebird": "3.5.3",
-        "dagre": "0.8.4"
+        "dagre": "0.8.4",
+        "preact": "10.0.0-alpha.1"
     },
     "nextDependencies": {
         "d3": "4.13.0",

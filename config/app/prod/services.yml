@@ -28,6 +28,9 @@ ui:
                   auth: true
                 - id: jgi-search
                   auth: true
+                - id: biochem-search
+                  auth: true
+                  allow: [alpha]
             developer:
               items:
                 - id: about-services
