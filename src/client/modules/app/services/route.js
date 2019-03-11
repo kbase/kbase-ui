@@ -124,11 +124,13 @@ define([
         }
 
         function installRoutes(routes) {
-            if (!routes) {
-                return;
-            }
-            return routes.map(function (route) {
-                return installRoute(route);
+            return Promise.try(() => {
+                if (!routes) {
+                    return;
+                }
+                return Promise.all(routes.map(function (route) {
+                    return installRoute(route);
+                }));
             });
         }
 

@@ -255,3 +255,9 @@ plugins:
     cwd: src/plugin
     source:
       bower: {}
+  - name: biochem-search
+    globalName: kbase-ui-plugin-biochem-search
+    version: 0.0.2
+    cwd: src/plugin
+    source:
+      bower: {}
