@@ -117,7 +117,7 @@ The override tool also allows you to work on kbase Javascript libraries. The ui 
 - kbase-common-ts, aka "kb_common_ts"
 - kbase-knockout-extensions-es6, aka "kb_knockout"
 
-All of the kbase libraries follow the AMD pattern of using a single module root and loading modules by filename. Thus "kb_common/html" refers to the "html.js" file within the kbase-common-js codebase, which is installed under the module root name "kb_common".
+All of the kbase libraries follow the AMD pattern of using a single module root and loading modules by filename. Thus "kb_lib/html" refers to the "html.js" file within the kbase-common-js codebase, which is installed under the module root name "kb_common".
 
 Libraries come in two varieties, compiled and non-compiled. Compiled libraries typically are distributed in the "dist" directory, and non-compiled in the "src". Thus the override option for libraries requires that one specify the location of the library source within the library's root directory.
 

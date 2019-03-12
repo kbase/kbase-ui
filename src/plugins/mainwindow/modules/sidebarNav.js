@@ -1,7 +1,7 @@
 define([
     'bluebird',
     'knockout',
-    'kb_common/html',
+    'kb_lib/html',
     './components/sidebarMenu'
 ], function (
     Promise,

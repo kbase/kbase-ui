@@ -17,13 +17,13 @@ ui:
         # the current version. This affects the startup experience so we need to use a gradation
         # of timeouts. the slow timeout will trigger a warning for the user, but the check will
         # continue, the hard timeout will cancel the requests. slow is 10 seconds, hard limit is 1 minute.
-        service_check_timeouts: 
+        service_check_timeouts:
             slow: 10000
             hard: 60000
-     # TODO: simply paths?
+        # TODO: simply paths?
     paths:
-        spa_root: '#'
-        landing_pages: '#dataview/'
+        spa_root: "#"
+        landing_pages: "#dataview/"
         # ws_browser: '#/ws'
         version_check: /narrative_version
         dashboard_metrics: /userMetrics
@@ -58,7 +58,7 @@ ui:
                     enabled: false
             # The widget id of the current login widget; supplied by the
             # auth plugin.
-            loginWidget: auth2_signin
+            loginWidget: kb_login_signin
 
         route:
             defaultRoute:
@@ -66,38 +66,30 @@ ui:
                     path: login
         heartbeat:
             interval: 500
-        # dynamic-service:
-        #     hardTtl: 3600000 # 1 min
-        #     hotTtl:  18000000 # 5 min
     # Feature Switches are unique values (preferrably uuids) which indicate a single feature or
-    # or group of features. The featureSwitch id may be used within code, kbase-ui or plugins, to 
+    # or group of features. The featureSwitch id may be used within code, kbase-ui or plugins, to
     # disable or enable code features.
     # The feature switch must be registered here, and then asserted as enabled, if desired, in a deploy
     # configuration.
-    # The presence of a feature switch within the deploy config indicates that that switch is "on". 
+    # The presence of a feature switch within the deploy config indicates that that switch is "on".
     # Code may check whether a feature is on or off.
     # If a feature is referenced without it being defined, an error is thrown.
     # Therefore integration testing is your friend.
     featureSwitches:
-        available: 
-            -
-                # id: "7b04d4d5-51fd-4789-a4f7-196ddf66b682"
-                id: orcid_auth_provider
-                title: ORCiD auth provider
-                description: The ORCiD auth provider is
-            -
-                # id: "e4aa4a8a-2c42-497e-85da-ff050e45ba13"
-                id: system_alert_notification
-                title: The New System Alert Notification
-            -
-                id: search_features
-                title: Search over Genome Features
-            -
-                id: similar_genomes
-                title: Similar Genomes Landing Page Widget
-            -
-                id: new_provenance_widget
-                title: New Provenance Widget
+        available:
+            - # id: "7b04d4d5-51fd-4789-a4f7-196ddf66b682"
+              id: orcid_auth_provider
+              title: ORCiD auth provider
+              description: The ORCiD auth provider is
+            - # id: "e4aa4a8a-2c42-497e-85da-ff050e45ba13"
+              id: system_alert_notification
+              title: The New System Alert Notification
+            - id: search_features
+              title: Search over Genome Features
+            - id: similar_genomes
+              title: Similar Genomes Landing Page Widget
+            - id: new_provenance_widget
+              title: New Provenance Widget
         enabled: []
         disabled: []
 # Primarily for output links for the docsite.

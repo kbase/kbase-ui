@@ -1,8 +1,4 @@
-define([
-    'kb_common/html'
-], function (
-    html
-) {
+define(['kb_lib/html', 'kb_lib/htmlBuilders'], function (html, build) {
     'use strict';
 
     const serviceError = {
@@ -19,7 +15,7 @@ define([
         },
         error1 = {
             error: {
-                type: 'object',
+                type: 'object'
             },
             title: {
                 type: 'string'
@@ -39,7 +35,7 @@ define([
             column: { type: 'number' },
             line: { type: 'number' }
         };
-        
+
     const t = html.tag,
         div = t('div');
 
@@ -133,17 +129,20 @@ define([
             console.error(error);
 
             if (error.extra) {
-                error.extended = html.makeObjTable([error.extra], { rotated: true });
+                error.extended = build.makeObjTable([error.extra], { rotated: true });
             }
 
-            return div({
-                class: 'container-fluid',
-                dataWidget: 'error'
-            }, html.makePanel({
-                title: params.title,
-                class: 'danger',
-                content: html.makeObjTable([error], { rotated: true })
-            }));
+            return div(
+                {
+                    class: 'container-fluid',
+                    dataWidget: 'error'
+                },
+                build.makePanel({
+                    title: params.title,
+                    class: 'danger',
+                    content: build.makeObjTable([error], { rotated: true })
+                })
+            );
         }
 
         attach(node) {
@@ -162,5 +161,5 @@ define([
         }
     }
 
-    return {Widget: ErrorWidget};
+    return { Widget: ErrorWidget };
 });

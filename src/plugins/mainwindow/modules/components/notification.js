@@ -2,7 +2,7 @@ define([
     'knockout',
     'kb_knockout/registry',
     'uuid',
-    'kb_common/html',
+    'kb_lib/html',
 
     // for effect
     'bootstrap'

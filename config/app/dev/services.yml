@@ -17,7 +17,6 @@ ui:
     userprofile: {}
     widget: {}
     feeds: {}
-    # dynamic-service: {}
     menu:
       menus:
         hamburger:
@@ -74,8 +73,8 @@ ui:
           sections:
             main:
               items:
-                - id: dashboard
-                  auth: true
+                # - id: dashboard
+                #   auth: true
                 # - id: organizations
                 #   auth: true
                 # - id: public-search
@@ -88,7 +87,7 @@ ui:
                 #   # The label can ovveride the label from the plugin here
                 #   label: Jobs
                 #   auth: true
-                - id: account
-                  auth: true
+                # - id: account
+                #   auth: true
                 # - id: feeds
                 #   auth: true

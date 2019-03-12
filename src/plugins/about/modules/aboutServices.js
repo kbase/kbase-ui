@@ -1,18 +1,13 @@
 define([
     'bluebird',
-    'kb_common/html',
-    'kb_common/bootstrapUtils',
-    'kb_common/jsonRpc/genericClient',
+    'kb_lib/html',
+    'kb_lib/htmlBuilders',
+    'kb_lib/htmlBootstrapBuilders',
+    'kb_lib/jsonRpc/genericClient',
     'kb_common_ts/HttpClient',
 
     'bootstrap'
-], function (
-    Promise,
-    html,
-    BS,
-    GenericClient,
-    HttpClient
-) {
+], function (Promise, html, build, BS, GenericClient, HttpClient) {
     'use strict';
     var t = html.tag,
         div = t('div'),
@@ -26,7 +21,8 @@ define([
      * The widget factory function implements the widget interface.
      */
     function widget(config) {
-        var mount, container,
+        var mount,
+            container,
             runtime = config.runtime,
             vm = {
                 auth: {
@@ -60,21 +56,38 @@ define([
             };
 
         function layout() {
-            return div({
-                class: 'container-fluid'
-            }, [
-                div({
-                    class: 'row'
-                }, [
-                    div({
-                        class: 'col-sm-12'
-                    }, ['auth', 'nms', 'workspace', 'userProfile', 'catalog', 'serviceWizard', 'dynamicServices'].map(function (id) {
-                        return div({
-                            id: vm[id].id
-                        });
-                    }))
-                ])
-            ]);
+            return div(
+                {
+                    class: 'container-fluid'
+                },
+                [
+                    div(
+                        {
+                            class: 'row'
+                        },
+                        [
+                            div(
+                                {
+                                    class: 'col-sm-12'
+                                },
+                                [
+                                    'auth',
+                                    'nms',
+                                    'workspace',
+                                    'userProfile',
+                                    'catalog',
+                                    'serviceWizard',
+                                    'dynamicServices'
+                                ].map(function (id) {
+                                    return div({
+                                        id: vm[id].id
+                                    });
+                                })
+                            )
+                        ]
+                    )
+                ]
+            );
         }
 
         function sum(array, fun) {
@@ -103,12 +116,11 @@ define([
                         resolve(stats);
                     } else {
                         var start = new Date().getTime();
-                        call()
-                            .then(function () {
-                                var elapsed = new Date().getTime() - start;
-                                measures.push(elapsed);
-                                next(itersLeft - 1);
-                            });
+                        call().then(function () {
+                            var elapsed = new Date().getTime() - start;
+                            measures.push(elapsed);
+                            next(itersLeft - 1);
+                        });
                     }
                 }
                 next(iters);
@@ -123,20 +135,20 @@ define([
             });
 
             function status() {
-                return client.callFunc('status', []).spread((result) => {return result;});
+                return client.callFunc('status', []).spread((result) => {
+                    return result;
+                });
             }
 
             function ver() {
-                return client.callFunc('ver', []).spread((result) => {return result;});
+                return client.callFunc('ver', []).spread((result) => {
+                    return result;
+                });
             }
 
-            vm.nms.node.innerHTML = html.loading();
+            vm.nms.node.innerHTML = build.loading();
 
-            return Promise.all([
-                status(),
-                ver(),
-                perf(ver)
-            ])
+            return Promise.all([status(), ver(), perf(ver)])
                 .spread(function (status, version, perf) {
                     var info = [];
                     // Version info
@@ -172,18 +184,24 @@ define([
                 .then(function (info) {
                     vm.nms.node.innerHTML = div({}, [
                         h3('Narrative Method Store'),
-                        table({
-                            class: 'table table-striped'
-                        }, info.map(function (item) {
-                            return tr([
-                                th({
-                                    style: {
-                                        width: '10%'
-                                    }
-                                }, item.label),
-                                td(item.value)
-                            ]);
-                        }))
+                        table(
+                            {
+                                class: 'table table-striped'
+                            },
+                            info.map(function (item) {
+                                return tr([
+                                    th(
+                                        {
+                                            style: {
+                                                width: '10%'
+                                            }
+                                        },
+                                        item.label
+                                    ),
+                                    td(item.value)
+                                ]);
+                            })
+                        )
                     ]);
                 });
         }
@@ -197,10 +215,12 @@ define([
             function ver() {
                 return client.callFunc('ver', []);
             }
-            vm.workspace.node.innerHTML = html.loading();
+            vm.workspace.node.innerHTML = build.loading();
 
             return Promise.all([
-                client.callFunc('ver', []).spread((result) => {return result;}),
+                client.callFunc('ver', []).spread((result) => {
+                    return result;
+                }),
                 perf(ver)
             ])
                 .spread(function (version, perf) {
@@ -224,35 +244,41 @@ define([
                 .then(function (info) {
                     vm.workspace.node.innerHTML = div({}, [
                         h3('Workspace'),
-                        table({
-                            class: 'table table-striped'
-                        }, info.map(function (item) {
-                            return tr([
-                                th({
-                                    style: {
-                                        width: '10%'
-                                    }
-                                }, item.label),
-                                td(item.value)
-                            ]);
-                        }))
+                        table(
+                            {
+                                class: 'table table-striped'
+                            },
+                            info.map(function (item) {
+                                return tr([
+                                    th(
+                                        {
+                                            style: {
+                                                width: '10%'
+                                            }
+                                        },
+                                        item.label
+                                    ),
+                                    td(item.value)
+                                ]);
+                            })
+                        )
                     ]);
                 });
         }
 
-
         function renderAuth() {
             var http = new HttpClient.HttpClient();
-            vm.auth.node.innerHTML = html.loading();
+            vm.auth.node.innerHTML = build.loading();
 
             function getRoot() {
                 var header = new HttpClient.HttpHeader();
                 header.setHeader('accept', 'application/json');
-                return http.request({
-                    method: 'GET',
-                    url: runtime.config('services.auth2.url'),
-                    header: header
-                })
+                return http
+                    .request({
+                        method: 'GET',
+                        url: runtime.config('services.auth2.url'),
+                        header: header
+                    })
                     .then(function (result) {
                         try {
                             var data = JSON.parse(result.response);
@@ -285,18 +311,24 @@ define([
                 .then(function (info) {
                     vm.auth.node.innerHTML = div({}, [
                         h3('Auth'),
-                        table({
-                            class: 'table table-striped'
-                        }, info.map(function (item) {
-                            return tr([
-                                th({
-                                    style: {
-                                        width: '10%'
-                                    }
-                                }, item.label),
-                                td(item.value)
-                            ]);
-                        }))
+                        table(
+                            {
+                                class: 'table table-striped'
+                            },
+                            info.map(function (item) {
+                                return tr([
+                                    th(
+                                        {
+                                            style: {
+                                                width: '10%'
+                                            }
+                                        },
+                                        item.label
+                                    ),
+                                    td(item.value)
+                                ]);
+                            })
+                        )
                     ]);
                 });
         }
@@ -308,16 +340,13 @@ define([
                 module: 'UserProfile'
             });
 
-            vm.userProfile.node.innerHTML = html.loading();
+            vm.userProfile.node.innerHTML = build.loading();
 
             function ver() {
                 return client.callFunc('ver', []);
             }
 
-            return Promise.all([
-                ver(),
-                perf(ver)
-            ])
+            return Promise.all([ver(), perf(ver)])
                 .spread(function (version, perf) {
                     var info = [];
                     // Version info
@@ -339,18 +368,24 @@ define([
                 .then(function (info) {
                     vm.userProfile.node.innerHTML = div({}, [
                         h3('User Profile'),
-                        table({
-                            class: 'table table-striped'
-                        }, info.map(function (item) {
-                            return tr([
-                                th({
-                                    style: {
-                                        width: '10%'
-                                    }
-                                }, item.label),
-                                td(item.value)
-                            ]);
-                        }))
+                        table(
+                            {
+                                class: 'table table-striped'
+                            },
+                            info.map(function (item) {
+                                return tr([
+                                    th(
+                                        {
+                                            style: {
+                                                width: '10%'
+                                            }
+                                        },
+                                        item.label
+                                    ),
+                                    td(item.value)
+                                ]);
+                            })
+                        )
                     ]);
                 });
         }
@@ -362,13 +397,12 @@ define([
                 module: 'KBaseSearchEngine'
             });
 
-            vm.userProfile.node.innerHTML = html.loading();
+            vm.userProfile.node.innerHTML = build.loading();
 
             function theCall() {
-                return client.callFunc('status', [])
-                    .spread((result) => {
-                        return result;
-                    });
+                return client.callFunc('status', []).spread((result) => {
+                    return result;
+                });
             }
 
             return Promise.all([theCall(), perf(theCall)])
@@ -388,24 +422,29 @@ define([
                         value: perf.measures.join(', ')
                     });
 
-
                     return info;
                 })
                 .then(function (info) {
                     vm.userProfile.node.innerHTML = div({}, [
                         h3('Search API'),
-                        table({
-                            class: 'table table-striped'
-                        }, info.map(function (item) {
-                            return tr([
-                                th({
-                                    style: {
-                                        width: '10%'
-                                    }
-                                }, item.label),
-                                td(item.value)
-                            ]);
-                        }))
+                        table(
+                            {
+                                class: 'table table-striped'
+                            },
+                            info.map(function (item) {
+                                return tr([
+                                    th(
+                                        {
+                                            style: {
+                                                width: '10%'
+                                            }
+                                        },
+                                        item.label
+                                    ),
+                                    td(item.value)
+                                ]);
+                            })
+                        )
                     ]);
                 });
         }
@@ -417,15 +456,14 @@ define([
                 token: runtime.service('session').getAuthToken()
             });
             function version() {
-                return client.callFunc('version', []).spread((result) => {return result;});
+                return client.callFunc('version', []).spread((result) => {
+                    return result;
+                });
             }
 
-            vm.catalog.node.innerHTML = html.loading();
+            vm.catalog.node.innerHTML = build.loading();
 
-            return Promise.all([
-                version(),
-                perf(version)
-            ])
+            return Promise.all([version(), perf(version)])
                 .spread(function (version, perf) {
                     var info = [];
                     // Version info
@@ -447,18 +485,24 @@ define([
                 .then(function (info) {
                     vm.catalog.node.innerHTML = div({}, [
                         h3('Catalog'),
-                        table({
-                            class: 'table table-striped'
-                        }, info.map(function (item) {
-                            return tr([
-                                th({
-                                    style: {
-                                        width: '10%'
-                                    }
-                                }, item.label),
-                                td(item.value)
-                            ]);
-                        }))
+                        table(
+                            {
+                                class: 'table table-striped'
+                            },
+                            info.map(function (item) {
+                                return tr([
+                                    th(
+                                        {
+                                            style: {
+                                                width: '10%'
+                                            }
+                                        },
+                                        item.label
+                                    ),
+                                    td(item.value)
+                                ]);
+                            })
+                        )
                     ]);
                 });
         }
@@ -470,7 +514,7 @@ define([
                 module: 'ServiceWizard'
             });
 
-            vm.serviceWizard.node.innerHTML = html.loading();
+            vm.serviceWizard.node.innerHTML = build.loading();
 
             function theCall() {
                 return serviceWizard.callFunc('version', []);
@@ -499,18 +543,24 @@ define([
                 .then(function (info) {
                     vm.serviceWizard.node.innerHTML = div({}, [
                         h3('Service Wizard'),
-                        table({
-                            class: 'table table-striped'
-                        }, info.map(function (item) {
-                            return tr([
-                                th({
-                                    style: {
-                                        width: '10%'
-                                    }
-                                }, item.label),
-                                td(item.value)
-                            ]);
-                        }))
+                        table(
+                            {
+                                class: 'table table-striped'
+                            },
+                            info.map(function (item) {
+                                return tr([
+                                    th(
+                                        {
+                                            style: {
+                                                width: '10%'
+                                            }
+                                        },
+                                        item.label
+                                    ),
+                                    td(item.value)
+                                ]);
+                            })
+                        )
                     ]);
                 });
         }
@@ -521,21 +571,26 @@ define([
                 token: runtime.service('session').getAuthToken(),
                 module: 'ServiceWizard'
             });
-            vm.dynamicServices.node.innerHTML = html.loading();
-            return client.callFunc('list_service_status', [{
-                is_up: 0,
-                module_names: ['NarrativeService']
-            }])
+            vm.dynamicServices.node.innerHTML = build.loading();
+            return client
+                .callFunc('list_service_status', [
+                    {
+                        is_up: 0,
+                        module_names: ['NarrativeService']
+                    }
+                ])
                 .then(function (result) {
                     vm.dynamicServices.node.innerHTML = div({}, [
                         h3('Dynamic Services'),
-                        table({
-                            class: 'table table-striped'
-                        }, BS.buildPresentableJson(result[0]))
+                        table(
+                            {
+                                class: 'table table-striped'
+                            },
+                            BS.buildPresentableJson(result[0])
+                        )
                     ]);
                 });
         }
-
 
         function render() {
             return Promise.all([
@@ -591,5 +646,4 @@ define([
             return widget(config);
         }
     };
-
 });
