@@ -26,31 +26,31 @@ ui:
               items:
                 - id: narrative
                   auth: true
-                - id: jgi-search
-                  auth: true
-                - id: biochem-search
-                  auth: true
-                  allow: [alpha]
+                # - id: jgi-search
+                #   auth: true
+                # - id: biochem-search
+                #   auth: true
+                #   allow: [alpha]
             developer:
               items:
                 - id: about-services
                   auth: true
                   allowRoles: [DevToken]
-                - id: narrative-info
-                  auth: true
-                  allow: [alpha]
-                - id: dashboard2
-                  auth: true
-                  allow: [alpha]
-                - id: ui-service
-                  auth: true
-                  allow: [alpha]
-                - id: databrowser
-                  auth: true
-                  allow: [alpha]
-                - id: typebrowser
-                  auth: true
-                  allow: [alpha]
+                # - id: narrative-info
+                #   auth: true
+                #   allow: [alpha]
+                # - id: dashboard2
+                #   auth: true
+                #   allow: [alpha]
+                # - id: ui-service
+                #   auth: true
+                #   allow: [alpha]
+                # - id: databrowser
+                #   auth: true
+                #   allow: [alpha]
+                # - id: typebrowser
+                #   auth: true
+                #   allow: [alpha]
             help:
               items:
                 - id: about
@@ -65,20 +65,20 @@ ui:
               items:
                 - id: dashboard
                   auth: true
-                - id: organizations
-                  auth: true
-                - id: public-search
-                  auth: true
-                  allow: [alpha]
-                - id: appcatalog
-                  auth: false
-                - id: search
-                  auth: true
-                - id: jobbrowser
-                  # The label can ovveride the label from the plugin here
-                  label: Jobs
-                  auth: true
+                # - id: organizations
+                #   auth: true
+                # - id: public-search
+                #   auth: true
+                #   allow: [alpha]
+                # - id: appcatalog
+                #   auth: false
+                # - id: search
+                #   auth: true
+                # - id: jobbrowser
+                #   # The label can ovveride the label from the plugin here
+                #   label: Jobs
+                #   auth: true
                 - id: account
                   auth: true
-                - id: feeds
-                  auth: true
+                # - id: feeds
+                #   auth: true
