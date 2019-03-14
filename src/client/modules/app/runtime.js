@@ -23,7 +23,7 @@ define([
         }
 
         function rawConfig() {
-            return configProps.debug();
+            return configProps.getRaw();
         }
 
         // allow tag

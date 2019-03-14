@@ -2,7 +2,7 @@ env:
   browser: true
   amd: true
   es6: true
-extends: 'eslint:recommended'
+extends: "eslint:recommended"
 rules:
   strict:
     - error
@@ -22,15 +22,14 @@ rules:
   no-console:
     - error
     - allow:
-      - warn
-      - error
+        - warn
+        - error
   # stylistic
   no-trailing-spaces:
     - error
   space-before-function-paren:
     - error
-    -
-      anonymous: always
+    - anonymous: always
       named: never
       asyncArrow: always
   space-in-parens:
@@ -41,12 +40,10 @@ rules:
     - never
   keyword-spacing:
     - error
-    - 
-      before: true
+    - before: true
       after: true
   no-fallthrough:
     - error
-    - 
-      commentPattern: fallthrough
+    - commentPattern: fallthrough
   prefer-const:
     - error

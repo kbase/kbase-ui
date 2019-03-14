@@ -62,8 +62,8 @@ ui:
           sections:
             main:
               items:
-                # - id: dashboard
-                #   auth: true
+                - id: dashboard
+                  auth: true
                 # - id: organizations
                 #   auth: true
                 # - id: public-search
