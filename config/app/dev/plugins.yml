@@ -111,7 +111,7 @@ plugins:
       bower: {}
   - name: user-profile
     globalName: kbase-ui-plugin-user-profile
-    version: 1.5.4
+    version: 1.5.5
     cwd: src/plugin
     source:
       bower: {}
