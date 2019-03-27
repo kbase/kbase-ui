@@ -30,7 +30,6 @@ ui:
                   auth: true
                 - id: biochem-search
                   auth: true
-                  allow: [alpha]
             developer:
               items:
                 - id: about-services
