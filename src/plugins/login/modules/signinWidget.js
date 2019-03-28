@@ -230,7 +230,7 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
         function attach(node) {
             hostNode = node;
             container = hostNode.appendChild(document.createElement('div'));
-            container.classList.add('widget-auth2_signin');
+            container.classList.add('kb_plugin_login_signin');
             container.setAttribute('data-k-b-testhook-widget', 'auth2_signin');
         }
 
