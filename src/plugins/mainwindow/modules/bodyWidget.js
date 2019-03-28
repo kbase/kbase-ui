@@ -1,10 +1,4 @@
-define([
-    'bluebird',
-    'kb_lib/widget/mount'
-], function (
-    Promise,
-    mount
-) {
+define(['bluebird', 'kb_lib/widget2/mount'], function (Promise, mount) {
     'use strict';
 
     class BodyWidget {
@@ -34,30 +28,40 @@ define([
         start() {
             this.routeListener = this.runtime.recv('app', 'route-widget', (data) => {
                 if (data.routeHandler.route.widget) {
-                    this.widgetMount.unmount()
-                        .then(() => {
-                            return this.runtime.sendp('ui', 'clearButtons');
-                        })
-                        .then(() => {
-                            return this.widgetMount.mount(data.routeHandler.route.widget, data.routeHandler.params);
-                        })
-                        .catch((err) => {
-                            // need a catch-all widget to mount here??
-                            console.error('ERROR mounting widget', err, data);
-                            this.widgetMount.unmount()
-                                .then(() => {
-                                    // Note that 'error' is a globally defined widget dependency.
-                                    return this.widgetMount.mountWidget('error', {
-                                        title: 'ERROR 😞',
-                                        error: err
+                    if (
+                        this.widgetMount.mountedWidget &&
+                        data.routeHandler.route.widget === this.widgetMount.mountedWidget.widgetId &&
+                        data.routeHandler.route.reentrant
+                    ) {
+                        this.widgetMount.mountedWidget.widget.run(data.routeHandler.params);
+                    } else {
+                        this.widgetMount
+                            .unmount()
+                            .then(() => {
+                                return this.runtime.sendp('ui', 'clearButtons');
+                            })
+                            .then(() => {
+                                return this.widgetMount.mount(data.routeHandler.route.widget, data.routeHandler.params);
+                            })
+                            .catch((err) => {
+                                // need a catch-all widget to mount here??
+                                console.error('ERROR mounting widget', err, data);
+                                this.widgetMount
+                                    .unmount()
+                                    .then(() => {
+                                        // Note that 'error' is a globally defined widget dependency.
+                                        return this.widgetMount.mountWidget('error', {
+                                            title: 'ERROR 😞',
+                                            error: err
+                                        });
+                                    })
+                                    .catch((err2) => {
+                                        console.error('ERROR mounting error widget!');
+                                        console.error(err2);
+                                        console.error(err);
                                     });
-                                })
-                                .catch((err2) => {
-                                    console.error('ERROR mounting error widget!');
-                                    console.error(err2);
-                                    console.error(err);
-                                });
-                        });
+                            });
+                    }
                 } else {
                     console.warn('No widget in route');
                 }
@@ -74,5 +78,5 @@ define([
         }
     }
 
-    return {Widget: BodyWidget};
+    return { Widget: BodyWidget };
 });
