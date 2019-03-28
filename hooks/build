@@ -19,7 +19,7 @@ docker build \
     --build-arg BUILD=$BUILD \
     -f $DOCKERFILE_PATH \
     -t $IMAGE_NAME \
-    $root
+    .
     
 err=$?
 if (( $err > 0 )); then
