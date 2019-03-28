@@ -24,7 +24,8 @@ docker build \
 err=$?
 if (( $err > 0 )); then
     echo "Error running docker build: ${err}"
+    exit 1
 else
     echo "Successfully built docker image. You may invoke it "
-    echo "with tag \"${image_tag}\""
+    echo "with tag \"${IMAGE_NAME}\""
 fi
