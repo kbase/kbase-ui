@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ -z "$BUILD" ]; then 
+    echo "ERROR: argument 1, the build (dev, ci, or prod), not provided"
+    usage
+    exit 1
+fi
+
+local date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+local err
+
+echo "DATE: $date"
+
+# Note: SOURCE_COMMIT, SOURCE_BRANCH, DOCKERFILE_PATH, IMAGE_NAME are dockerhub env variables
+#       BUILD is a custom env variable provided in our build config
+docker build \
+    --build-arg BUILD_DATE=$date \
+    --build-arg VCS_REF=$SOURCE_COMMIT \
+    --build-arg BRANCH=$SOURCE_BRANCH \
+    --build-arg BUILD=$BUILD \
+    -f $DOCKERFILE_PATH \
+    -t $IMAGE_NAME \
+    $root
+    
+err=$?
+if (( $err > 0 )); then
+    echo "Error running docker build: ${err}"
+else
+    echo "Successfully built docker image. You may invoke it "
+    echo "with tag \"${image_tag}\""
+fi
