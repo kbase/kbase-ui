@@ -6,8 +6,7 @@ if [ -z "$BUILD" ]; then
     exit 1
 fi
 
-local date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-local err
+date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 echo "DATE: $date"
 
