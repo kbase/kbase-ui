@@ -96,23 +96,12 @@ define([
                     timeout: this.timeout
                 });
             } else {
-                const dynamicServiceProxies = this.runtime.config('deploy.services.dynamicServiceProxies');
-                const urlBase = this.runtime.config('deploy.services.urlBase');
-                if (dynamicServiceProxies.includes(this.moduleName)) {
-                    this.client = new GenericClient({
-                        module: this.moduleName,
-                        url: urlBase + '/dynamic_service_proxies/' + this.moduleName,
-                        token: token,
-                        timeout: this.timeout
-                    });
-                } else {
-                    this.client = new DynamicService({
-                        url: this.runtime.config('services.service_wizard.url'),
-                        token: token,
-                        module: this.moduleName,
-                        timeout: this.timeout
-                    });
-                }
+                this.client = new DynamicService({
+                    url: this.runtime.config('services.service_wizard.url'),
+                    token: token,
+                    module: this.moduleName,
+                    timeout: this.timeout
+                });
             }
         }
 

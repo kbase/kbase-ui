@@ -1,20 +1,20 @@
-# Copy npm amd packages into the main 
+# Copy npm amd packages into the main
 npmFiles:
-    -
-        name: ajv
-        cwd: dist
-        src:
-            - ajv.bundle.js
-    -
-        name: bluebird
-        cwd: js/browser
-        src:
-            - bluebird.js
-    -
-        name: dagre
-        cwd: dist
-    -
-        name: lodash
+    - name: ajv
+      cwd: dist
+      src:
+          - ajv.bundle.js
+    - name: bluebird
+      cwd: js/browser
+      src:
+          - bluebird.js
+    - name: dagre
+      cwd: dist
+    - name: lodash
+    - name: preact
+      cwd: dist
+      src:
+          - preact.umd.js
     # -
     #     name: d3
     #     cwd: build
@@ -37,10 +37,9 @@ npmFiles:
     #     dir: d3-array
     #     cwd: build
     #     src:
-    #         - d3-array.js   
+    #         - d3-array.js
     # -
     #     dir: d3-path
     #     cwd: build
     #     src:
-    #         - d3-path.js                      
-            
+    #         - d3-path.js

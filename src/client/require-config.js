@@ -46,8 +46,9 @@
             datatables_css: 'bower_components/datatables/css/jquery.dataTables',
             datatables: 'bower_components/datatables/js/jquery.dataTables',
             domReady: 'bower_components/requirejs-domready/domReady',
-            'bootstrap-datetimepicker'    : 'bower_components/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker',
-            'bootstrap-datetimepicker-css': 'bower_components/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker',
+            'bootstrap-datetimepicker': 'bower_components/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker',
+            'bootstrap-datetimepicker-css':
+                'bower_components/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker',
             fileSaver: 'bower_components/file-saver/FileSaver',
             font_awesome: 'bower_components/font-awesome/css/font-awesome',
             'google-code-prettify-style': 'bower_components/google-code-prettify/prettify',
@@ -79,6 +80,7 @@
             numeral: 'bower_components/numeral/numeral',
             nunjucks: 'bower_components/nunjucks/nunjucks',
             plotly: 'bower_components/plotly.js/plotly',
+            preact: 'node_modules/preact/preact.umd',
             select2: 'bower_components/select2/js/select2.full',
             select2_css: 'bower_components/select2/css/select2',
             select2_bootstrap_theme: 'bower_components/select2-bootstrap-theme/select2-bootstrap',
@@ -121,8 +123,8 @@
         map: {
             '*': {
                 // 'css': 'bower_components/require-css/css',
-                'promise': 'bluebird'
+                promise: 'bluebird'
             }
         }
     };
-}(window));
+})(window);

@@ -20,7 +20,7 @@
  */
 define([
     'knockout',
-    'kb_common/html',
+    'kb_lib/html',
     'kb_lib/widget/widgetSet',
     './components/systemAlertBanner',
     './components/systemAlertToggle'

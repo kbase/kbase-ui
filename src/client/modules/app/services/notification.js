@@ -9,7 +9,7 @@ Notifications are displayed as soon as the are received, and may be removed, or 
 
 Notification counts are displayed in the title bar until the notification is dismissed.
 
-Notifiations are displayed in a container per type, closing the container does not remove the notification.
+Notifications are displayed in a container per type, closing the container does not remove the notification.
 
 Some notifications will auto-remove themselves after a period of time, because it is annoying to have to dismiss informational alerts.
 
@@ -67,7 +67,7 @@ define([], function () {
             });
         }
 
-        function stop() {}
+        function stop() { }
 
         return {
             pluginHandler: pluginHandler,
