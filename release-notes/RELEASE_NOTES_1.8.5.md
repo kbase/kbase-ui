@@ -6,9 +6,10 @@ This release brings new features (job queue tool in Catalog, orgs list in user p
 
 ### NEW
 
-user-profile: now lists apps the given user is a member of
-job queue panel - available in the Catalog Tool at #catalog/queue
+user-profile: now lists apps the viewed user is a member of
+catalog: job queue panel - available in the Catalog Tool at #catalog/queue
 organizations: app association now available
+biochemistry search: available in hamburger menu
 
 ### REMOVED
 
@@ -16,11 +17,12 @@ none
 
 ### UNRELEASED
 
-biochemistry search: new plugin, will be "integrated" with other search tools as another tab
+none
 
 ### IMPROVEMENTS
 
 organizations: performance, usability, styling, and layout improvements; app association
+feeds: ui improvements
 
 ### FIXES
 
