@@ -58,7 +58,7 @@ ui:
                     enabled: false
             # The widget id of the current login widget; supplied by the
             # auth plugin.
-            loginWidget: auth2_signin
+            loginWidget: kb_login_signin
 
         route:
             defaultRoute:
@@ -66,9 +66,6 @@ ui:
                     path: login
         heartbeat:
             interval: 500
-        # dynamic-service:
-        #     hardTtl: 3600000 # 1 min
-        #     hotTtl:  18000000 # 5 min
     # Feature Switches are unique values (preferrably uuids) which indicate a single feature or
     # or group of features. The featureSwitch id may be used within code, kbase-ui or plugins, to
     # disable or enable code features.
@@ -85,7 +82,6 @@ ui:
               description: The ORCiD auth provider is
             - id: system_alert_notification
               title: The New System Alert Notification
-              disabled: true
             - id: search_features
               title: Search over Genome Features
             - id: similar_genomes

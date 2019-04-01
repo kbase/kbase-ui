@@ -18,10 +18,12 @@ ARG BUILD
 
 # This actually builds the ui codebase. Note that the build-arg BUILD is passed along
 # as an environment variabl 'build'.
-RUN make setup && make build config=$BUILD && make docs
+RUN make setup && make build config=$BUILD
+#  && make docs
 
 # Run unit tests.
-RUN make unit-tests
+# disable just during testing
+# RUN make unit-tests
 
 LABEL stage=intermediate
 
@@ -64,7 +66,7 @@ COPY --from=builder /kb/deployment/config /kb/deployment/config
 COPY --from=builder /kb/deployment/scripts /kb/deployment/scripts
 
 # Generated documentation is copied into the distribution.
-COPY --from=builder /kb/docs/book/_book /kb/deployment/services/kbase-ui/dist/_book
+# COPY --from=builder /kb/docs/book/_book /kb/deployment/services/kbase-ui/dist/_book
 
 # The BUILD_DATE value seem to bust the docker cache when the timestamp changes, move to
 # the end

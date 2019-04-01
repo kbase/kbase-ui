@@ -1,5 +1,5 @@
 define([
-    'kb_common/html',
+    'kb_lib/html',
     'kb_knockout/registry',
     'kb_knockout/lib/generators'
 ], function (

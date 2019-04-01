@@ -1,13 +1,4 @@
-define([
-    'bluebird',
-    'kb_common/html',
-    'kb_common/bootstrapUtils',
-    'bootstrap'
-], function (
-    Promise,
-    html,
-    BS
-) {
+define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBootstrapBuilders', 'bootstrap'], function (Promise, html, BS) {
     'use strict';
     var t = html.tag,
         h1 = t('h1'),
@@ -19,7 +10,8 @@ define([
      * The widget factory function implements the widget interface.
      */
     function widget(config) {
-        var mount, container,
+        var mount,
+            container,
             runtime = config.runtime;
 
         function buildBuildInfo() {
@@ -48,43 +40,52 @@ define([
         }
 
         function buildLayout() {
-            return div({
-                class: 'container-fluid'
-            }, [
-                div({
-                    class: 'row'
-                }, [
-                    div({
-                        class: 'col-sm-6',
-                        style: {}
-                    }, [
-                        h1('About the KBase User Interface')
-                    ]),
-                    div({
-                        class: 'col-sm-6',
-                        style: {}
-                    })
-                ]),
-                div({
-                    class: 'row'
-                }, [
-
-                    div({
-                        class: 'col-sm-6',
-                        style: {}
-                    }, [
-                        h2('Build'),
-                        buildBuildInfo()
-                    ]),
-                    div({
-                        class: 'col-sm-6',
-                        style: {}
-                    }, [
-                        h2('Dependencies'),
-                        p('dependencies here...')
-                    ])
-                ])
-            ]);
+            return div(
+                {
+                    class: 'container-fluid'
+                },
+                [
+                    div(
+                        {
+                            class: 'row'
+                        },
+                        [
+                            div(
+                                {
+                                    class: 'col-sm-6',
+                                    style: {}
+                                },
+                                [h1('About the KBase User Interface')]
+                            ),
+                            div({
+                                class: 'col-sm-6',
+                                style: {}
+                            })
+                        ]
+                    ),
+                    div(
+                        {
+                            class: 'row'
+                        },
+                        [
+                            div(
+                                {
+                                    class: 'col-sm-6',
+                                    style: {}
+                                },
+                                [h2('Build'), buildBuildInfo()]
+                            ),
+                            div(
+                                {
+                                    class: 'col-sm-6',
+                                    style: {}
+                                },
+                                [h2('Dependencies'), p('dependencies here...')]
+                            )
+                        ]
+                    )
+                ]
+            );
         }
 
         function render() {
@@ -125,5 +126,4 @@ define([
             return widget(config);
         }
     };
-
 });

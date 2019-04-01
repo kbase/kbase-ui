@@ -2,7 +2,7 @@ define([
     'bluebird',
     'uuid',
     './hub',
-    'kb_common/props',
+    'kb_lib/props',
     'kb_knockout/load',
     '../lib/utils',
 
@@ -17,17 +17,7 @@ define([
     'css!app/styles/kb-icons',
     'css!app/styles/kb-ui',
     'css!app/styles/kb-datatables'
-], function (
-    Promise,
-    Uuid,
-    Hub,
-    Props,
-    knockoutLoader,
-    utils,
-    pluginConfig,
-    appConfigBase,
-    deployConfig
-) {
+], function (Promise, Uuid, Hub, props, knockoutLoader, utils, pluginConfig, appConfigBase, deployConfig) {
     'use strict';
 
     // Set up global configuration of bluebird promises library.
@@ -44,13 +34,11 @@ define([
             if (typeof props === 'string') {
                 props = props.split('.');
             } else if (!(props instanceof Array)) {
-                throw new TypeError('Invalid type for key: ' + (typeof props));
+                throw new TypeError('Invalid type for key: ' + typeof props);
             }
             var i;
             for (i = 0; i < props.length; i += 1) {
-                if ((obj === undefined) ||
-                        (typeof obj !== 'object') ||
-                        (obj === null)) {
+                if (obj === undefined || typeof obj !== 'object' || obj === null) {
                     throw new Error('Invalid object path: ' + props.join('.') + ' at ' + i);
                 }
                 obj = obj[props[i]];
@@ -79,7 +67,7 @@ define([
                     throw new Error('Tag not terminated in ' + str + ' at ' + tagStart);
                 }
                 pos = tagEnd + 2;
-                var tag = str.substr(tagStart, (tagEnd - tagStart)).trim(' ');
+                var tag = str.substr(tagStart, tagEnd - tagStart).trim(' ');
                 if (tag.length === 0) {
                     continue;
                 }
@@ -113,7 +101,7 @@ define([
     // hang sine-qua-non structures, which at this time is
     // just the app.
     const globalRef = new Uuid(4).format();
-    const global = window[globalRef] = Props.make();
+    const global = (window[globalRef] = new props.Props());
 
     function start() {
         // merge the deploy and app config.
@@ -130,13 +118,12 @@ define([
             services: appConfig.ui.services
         });
         global.setItem('app', app);
-        return knockoutLoader.load()
-            .then((ko) => {
-                // Knockout Defaults
-                ko.options.deferUpdates = true;
+        return knockoutLoader.load().then((ko) => {
+            // Knockout Defaults
+            ko.options.deferUpdates = true;
 
-                return app.start();
-            });
+            return app.start();
+        });
     }
 
     return { start };

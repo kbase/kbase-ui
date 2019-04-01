@@ -1,7 +1,7 @@
 define([
     'kb_common_ts/Auth2Session',
     'kb_common/observed',
-    'kb_common/html'
+    'kb_lib/html'
 ], function (
     M_auth2Session,
     observed,

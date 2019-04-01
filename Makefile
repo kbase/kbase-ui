@@ -71,12 +71,12 @@ __check_defined = \
 
 # Standard 'all' target = just do the standard build
 all:
-	@echo Use "make init && make config=TARGET build"
+	@echo Use "make init && make build config=TARGET build"
 	@echo see docs/quick-deploy.md
 
 # See above for 'all' - just running 'make' should locally build
 default:
-	@echo Use "make init && make config=TARGET build"
+	@echo Use "make init && make build config=TARGET build"
 	@echo see docs/quick-deploy.md
 
 # Initialization here pulls in all dependencies from Bower and NPM.

@@ -1,5 +1,5 @@
 define([
-    'kb_common/html',
+    'kb_lib/html',
     'kb_plugin_mainWindow'
 ], function (
     html,

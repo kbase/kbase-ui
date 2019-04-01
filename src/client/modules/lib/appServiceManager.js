@@ -1,8 +1,4 @@
-define([
-    'bluebird'
-], function (
-    Promise
-) {
+define(['bluebird'], function (Promise) {
     'use strict';
 
     function AppServiceError(type, message, suggestion) {
@@ -54,7 +50,14 @@ define([
 
         function loadServices(params) {
             var all = Object.keys(services).map(function (name) {
-                return loadService(name, params);
+                return loadService(name, params)
+                    .then((result) => {
+                        return result;
+                    })
+                    .catch((err) => {
+                        console.error('ERROR loading service', name);
+                        throw err;
+                    });
             });
             return Promise.all(all);
         }
@@ -99,7 +102,8 @@ define([
                 throw new AppServiceError({
                     type: 'UndefinedService',
                     message: 'The requested service "' + name + '" has not been registered',
-                    suggestion: 'This is a system configuration issue. The requested service should be installed or the client code programmed to check for its existence first (with hasService)'
+                    suggestion:
+                        'This is a system configuration issue. The requested service should be installed or the client code programmed to check for its existence first (with hasService)'
                 });
             }
             return service.instance;

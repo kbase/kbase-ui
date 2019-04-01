@@ -17,7 +17,6 @@ ui:
         userprofile: {}
         widget: {}
         feeds: {}
-        # dynamic-service: {}
         menu:
             menus:
                 hamburger:
@@ -26,38 +25,40 @@ ui:
                             items:
                                 - id: narrative
                                   auth: true
-                                - id: jgi-search
-                                  auth: true
-                                - id: biochem-search
-                                  auth: true
+                                # - id: jgi-search
+                                #   auth: true
+                                # - id: biochem-search
+                                #   auth: true
                         developer:
                             items:
-                                - id: dashboard2
-                                  auth: true
-                                - id: dashboard3
-                                  auth: true
-                                - id: test-lookup
-                                  auth: true
-                                - id: narrative-info
-                                  auth: true
-                                - id: simple-sample
-                                  auth: true
-                                - id: narrative-finder
-                                  auth: true
-                                - id: staging-browser
-                                  auth: true
-                                - id: example-gopherjs
-                                  auth: true
-                                - id: tester
-                                  auth: true
-                                - id: test_dynamic_table
-                                  auth: true
-                                - id: databrowser
-                                  auth: true
-                                - id: typebrowser
-                                  auth: true
-                                - id: shockbrowser
-                                  auth: true
+                                # - id: ui-service
+                                #   auth: true
+                                # - id: dashboard2
+                                #   auth: true
+                                # - id: dashboard3
+                                #   auth: true
+                                # - id: test-lookup
+                                #   auth: true
+                                # - id: narrative-info
+                                #   auth: true
+                                # - id: simple-sample
+                                #   auth: true
+                                # - id: narrative-finder
+                                #   auth: true
+                                # - id: staging-browser
+                                #   auth: true
+                                # - id: example-gopherjs
+                                #   auth: true
+                                # - id: tester
+                                #   auth: true
+                                # - id: test_dynamic_table
+                                #   auth: true
+                                # - id: databrowser
+                                #   auth: true
+                                # - id: typebrowser
+                                #   auth: true
+                                # - id: shockbrowser
+                                #   auth: true
                                 - id: about-services
                                   auth: true
                         help:
@@ -74,19 +75,19 @@ ui:
                             items:
                                 - id: dashboard
                                   auth: true
-                                - id: organizations
-                                  auth: true
-                                - id: public-search
-                                  auth: true
-                                - id: appcatalog
-                                  auth: false
-                                - id: search
-                                  auth: true
-                                - id: jobbrowser
-                                  # The label can ovveride the label from the plugin here
-                                  label: Jobs
-                                  auth: true
+                                # - id: organizations
+                                #   auth: true
+                                # - id: public-search
+                                #   auth: true
+                                # - id: appcatalog
+                                #   auth: false
+                                # - id: search
+                                #   auth: true
+                                # - id: jobbrowser
+                                #   # The label can ovveride the label from the plugin here
+                                #   label: Jobs
+                                #   auth: true
                                 - id: account
                                   auth: true
-                                - id: feeds
-                                  auth: true
+                                # - id: feeds
+                                #   auth: true

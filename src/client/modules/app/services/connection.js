@@ -2,7 +2,7 @@ define([
     'promise',
     'kb_common/observed',
     'kb_common/lang',
-    'kb_common/html',
+    'kb_lib/html',
     'kb_common/format',
     'kb_common_ts/HttpClient'
 ], function (

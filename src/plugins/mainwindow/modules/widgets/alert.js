@@ -1,6 +1,6 @@
 define([
     'knockout',
-    'kb_common/html'
+    'kb_lib/html'
 ], function (
     ko,
     html
