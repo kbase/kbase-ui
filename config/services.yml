@@ -12,8 +12,8 @@
 # lack this pattern.
 services:
     auth2:
-        aliases: ["auth", "Auth"]
-        url: "{{ deploy.services.urlBase }}/services/auth"
+        aliases: ['auth', 'Auth']
+        url: '{{ deploy.services.urlBase }}/services/auth'
         cookieName: kbase_session
         name: Authorization Version 2
         coreService: true
@@ -25,11 +25,11 @@ services:
         # configure per deploy environment
         providers: null
     awe:
-        url: "{{ deploy.services.urlBase }}/services/awe-api"
+        url: '{{ deploy.services.urlBase }}/services/awe-api'
         name: AWE
     Catalog:
-        aliases: ["catalog"]
-        url: "{{ deploy.services.urlBase }}/services/catalog"
+        aliases: ['catalog']
+        url: '{{ deploy.services.urlBase }}/services/catalog'
         name: Catalog
         coreService: true
         type: jsonrpc
@@ -37,8 +37,8 @@ services:
             method: version
             minimum: 2.1.0
     Feeds:
-        aliases: ["feeds"]
-        url: "{{ deploy.services.urlBase }}/services/feeds"
+        aliases: ['feeds']
+        url: '{{ deploy.services.urlBase }}/services/feeds'
         name: Feeds
         coreService: true
         type: rest
@@ -47,8 +47,8 @@ services:
             propertyPath: version
             minimum: 1.0.1
     Groups:
-        aliases: ["groups"]
-        url: "{{ deploy.services.urlBase }}/services/groups"
+        aliases: ['groups']
+        url: '{{ deploy.services.urlBase }}/services/groups'
         name: Groups
         coreService: true
         type: rest
@@ -57,14 +57,14 @@ services:
             propertyPath: version
             minimum: 0.1.0
     ftp_service:
-        aliases: ["ftp"]
-        url: "{{ deploy.services.urlBase }}/services/kb-ftp-api/v0"
+        aliases: ['ftp']
+        url: '{{ deploy.services.urlBase }}/services/kb-ftp-api/v0'
         root: /data/bulk
         name: Staging Service
     NarrativeMethodStore:
-        aliases: ["narrative_method_store"]
-        url: "{{ deploy.services.urlBase }}/services/narrative_method_store/rpc"
-        image_url: "{{ deploy.services.urlBase }}/services/narrative_method_store/"
+        aliases: ['narrative_method_store']
+        url: '{{ deploy.services.urlBase }}/services/narrative_method_store/rpc'
+        image_url: '{{ deploy.services.urlBase }}/services/narrative_method_store/'
         name: Narrative Method Store
         coreService: true
         type: jsonrpc
@@ -72,11 +72,11 @@ services:
             method: ver
             minimum: 0.3.6
     shock:
-        url: "{{ deploy.services.urlBase }}/services/shock-api"
+        url: '{{ deploy.services.urlBase }}/services/shock-api'
         name: Shock
     UserProfile:
-        aliases: ["user_profile"]
-        url: "{{ deploy.services.urlBase }}/services/user_profile/rpc"
+        aliases: ['user_profile']
+        url: '{{ deploy.services.urlBase }}/services/user_profile/rpc'
         name: User Profile
         coreService: true
         type: jsonrpc
@@ -84,20 +84,20 @@ services:
             method: ver
             minimum: 0.2.0
     UserAndJobState:
-        aliases: ["user_job_state"]
-        url: "{{ deploy.services.urlBase }}/services/userandjobstate"
+        aliases: ['user_job_state']
+        url: '{{ deploy.services.urlBase }}/services/userandjobstate'
         name: User and Job State
     NarrativeJobService:
-        aliases: ["narrative_job_service"]
-        url: "{{ deploy.services.urlBase }}/services/njs_wrapper"
+        aliases: ['narrative_job_service']
+        url: '{{ deploy.services.urlBase }}/services/njs_wrapper'
         name: Narrative Job Service
     KBaseDataImport:
-        aliases: ["data_import_export"]
-        url: "{{ deploy.services.urlBase }}/services/data_import_export"
+        aliases: ['data_import_export']
+        url: '{{ deploy.services.urlBase }}/services/data_import_export'
         name: Data Import Export
     KBaseSearchEngine:
-        aliases: ["search"]
-        url: "{{ deploy.services.urlBase }}/services/searchapi"
+        aliases: ['search']
+        url: '{{ deploy.services.urlBase }}/services/searchapi'
         name: KBase Search Engine
         coreService: true
         type: jsonrpc
@@ -106,8 +106,8 @@ services:
             propertyPath: version
             minimum: 0.1.1
     ServiceWizard:
-        aliases: ["service_wizard"]
-        url: "{{ deploy.services.urlBase }}/services/service_wizard"
+        aliases: ['service_wizard']
+        url: '{{ deploy.services.urlBase }}/services/service_wizard'
         name: Service Wizard
         coreService: true
         type: jsonrpc
@@ -115,8 +115,8 @@ services:
             method: version
             minimum: 0.4.0
     Workspace:
-        aliases: ["workspace"]
-        url: "{{ deploy.services.urlBase }}/services/ws"
+        aliases: ['workspace']
+        url: '{{ deploy.services.urlBase }}/services/ws'
         name: Workspace
         coreService: true
         type: jsonrpc
@@ -125,7 +125,7 @@ services:
             minimum: 0.8.1
     RelationEngine:
         aliases: []
-        url: "{{ deploy.services.urlBase }}/services/relation_engine_api"
+        url: '{{ deploy.services.urlBase }}/services/relation_engine_api'
         name: Relation Engine
         coreService: true
         type: rest
@@ -138,14 +138,14 @@ services:
         url: http://kbase.us
         name: Documentation and Support Site
     narrative:
-        url: "{{ deploy.services.urlBase }}"
+        url: '{{ deploy.services.urlBase }}'
         name: Narrative User Interface
     # search:
     #     url: https://kbase.us/services/search/
     #     name: Data Search
     staging:
-        aliases: ["staging_service"]
-        url: "{{ deploy.services.urlBase }}/services/staging_service"
+        aliases: ['staging_service']
+        url: '{{ deploy.services.urlBase }}/services/staging_service'
     # Overrides for dynamic services can go here. Use the module name for the
     # key and a config-aware dsclient wrapper can use generic client instead
     # to reach this service.

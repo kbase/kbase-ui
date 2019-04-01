@@ -11,19 +11,19 @@ define([
     'lib/appServiceManager',
     'lib/kbaseServiceManager',
     './runtime',
-    'kb_common/messenger',
-    'kb_common/props',
+    'kb_lib/messenger',
+    'kb_lib/props',
     'kb_lib/widget/mount',
-    'kb_common/asyncQueue'
+    'kb_lib/asyncQueue'
 ], function (
     pluginManagerFactory,
     AppServiceManager,
     kbaseServiceManager,
     Runtime,
-    messengerFactory,
-    Props,
+    Messenger,
+    props,
     widgetMount,
-    asyncQueue
+    AsyncQueue
 ) {
     'use strict';
 
@@ -67,7 +67,7 @@ define([
         const nodes = _config.nodes;
 
         // We simply wrap the incoming props in our venerable Props thing.
-        var appConfig = Props.make({
+        var appConfig = new props.Props({
             data: _config.appConfig
         });
 
@@ -82,7 +82,7 @@ define([
         // Events
 
         // Our own event system.
-        const messenger = messengerFactory.make();
+        const messenger = new Messenger();
 
         // DOM
 
@@ -101,7 +101,6 @@ define([
                     // runtime: runtime,
                     widgetManager: runtime.service('widget').widgetManager
                 });
-
             }
             // ask it to load a widget.
             return rootMount.mountWidget(widgetId);
@@ -109,7 +108,7 @@ define([
 
         // RENDER QUEUE - GET RID OF THIS
 
-        var renderQueue = asyncQueue.make();
+        var renderQueue = new AsyncQueue();
 
         // SERVICES
 
@@ -200,9 +199,10 @@ define([
                 }
             });
 
-            return appServiceManager.loadServices({
-                runtime: api
-            })
+            return appServiceManager
+                .loadServices({
+                    runtime: api
+                })
                 .then(function () {
                     return pluginManager.installPlugins(plugins);
                 })

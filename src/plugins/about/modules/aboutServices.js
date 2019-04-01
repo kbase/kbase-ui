@@ -1,12 +1,13 @@
 define([
     'bluebird',
-    'kb_common/html',
-    'kb_common/bootstrapUtils',
-    'kb_common/jsonRpc/genericClient',
+    'kb_lib/html',
+    'kb_lib/htmlBuilders',
+    'kb_lib/htmlBootstrapBuilders',
+    'kb_lib/jsonRpc/genericClient',
     'kb_common_ts/HttpClient',
 
     'bootstrap'
-], function (Promise, html, BS, GenericClient, HttpClient) {
+], function (Promise, html, build, BS, GenericClient, HttpClient) {
     'use strict';
     var t = html.tag,
         div = t('div'),
@@ -160,7 +161,7 @@ define([
                 });
             }
 
-            vm.nms.node.innerHTML = html.loading();
+            vm.nms.node.innerHTML = build.loading();
 
             return Promise.all([status(), ver(), perf(ver)])
                 .spread(function (status, version, perf) {
@@ -229,7 +230,7 @@ define([
             function ver() {
                 return client.callFunc('ver', []);
             }
-            vm.workspace.node.innerHTML = html.loading();
+            vm.workspace.node.innerHTML = build.loading();
 
             return Promise.all([
                 client.callFunc('ver', []).spread((result) => {
@@ -282,7 +283,7 @@ define([
 
         function renderAuth() {
             var http = new HttpClient.HttpClient();
-            vm.auth.node.innerHTML = html.loading();
+            vm.auth.node.innerHTML = build.loading();
 
             function getRoot() {
                 var header = new HttpClient.HttpHeader();
@@ -488,7 +489,7 @@ define([
                 module: 'UserProfile'
             });
 
-            vm.userProfile.node.innerHTML = html.loading();
+            vm.userProfile.node.innerHTML = build.loading();
 
             function ver() {
                 return client.callFunc('ver', []);
@@ -553,7 +554,7 @@ define([
                 module: 'KBaseSearchEngine'
             });
 
-            vm.searchAPI.node.innerHTML = html.loading();
+            vm.userProfile.node.innerHTML = build.loading();
 
             function theCall() {
                 return client.callFunc('status', []).spread((result) => {
@@ -617,7 +618,7 @@ define([
                 });
             }
 
-            vm.catalog.node.innerHTML = html.loading();
+            vm.catalog.node.innerHTML = build.loading();
 
             return Promise.all([version(), perf(version)])
                 .spread(function (version, perf) {
@@ -670,7 +671,7 @@ define([
                 module: 'ServiceWizard'
             });
 
-            vm.serviceWizard.node.innerHTML = html.loading();
+            vm.serviceWizard.node.innerHTML = build.loading();
 
             function theCall() {
                 return serviceWizard.callFunc('version', []);
@@ -727,7 +728,7 @@ define([
                 token: runtime.service('session').getAuthToken(),
                 module: 'ServiceWizard'
             });
-            vm.dynamicServices.node.innerHTML = html.loading();
+            vm.dynamicServices.node.innerHTML = build.loading();
             return client
                 .callFunc('list_service_status', [
                     {

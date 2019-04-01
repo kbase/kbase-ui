@@ -1,6 +1,6 @@
 define([
     'bluebird',
-    'kb_common/html'
+    'kb_lib/html'
 ], function (
     Promise,
     html

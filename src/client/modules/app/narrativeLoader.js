@@ -1,17 +1,14 @@
-/*global define*/
-/*jslint white:true,browser:true,nomen:true*/
-
 define([
-    'jquery',
     'bluebird',
-    'kb_common/html',
+    'kb_lib/html',
     'bootstrap',
     'css!font_awesome',
     'css!app/styles/kb-bootstrap',
     'css!app/styles/kb-ui',
     'domReady'
-], function ($, Promise, html) {
+], function (Promise, html) {
     'use strict';
+
     var t = html.tag,
         div = t('div'),
         p = t('p'),
@@ -52,12 +49,17 @@ define([
 
     function showError(arg) {
         if (arg.suggestions) {
-            arg.suggestions = ul({ style: { paddingLeft: '1.2em' } }, arg.suggestions.map(function (suggestion) {
-                if (suggestion.url) {
-                    return li(a({ href: suggestion.url }, suggestion.label));
-                }
-                return li(suggestion.label);
-            }).join('\n'));
+            arg.suggestions = ul(
+                { style: { paddingLeft: '1.2em' } },
+                arg.suggestions
+                    .map(function (suggestion) {
+                        if (suggestion.url) {
+                            return li(a({ href: suggestion.url }, suggestion.label));
+                        }
+                        return li(suggestion.label);
+                    })
+                    .join('\n')
+            );
         }
         if (arg.description) {
             if (typeof arg.description === 'string') {
@@ -95,11 +97,19 @@ define([
     }
 
     function updateProgress(currentItem, totalItems) {
-        var width = Math.round(100 * currentItem / totalItems),
+        var width = Math.round((100 * currentItem) / totalItems),
             content = div({ class: 'progress' }, [
-                div({ class: 'progress-bar', role: 'progressbar', ariaValuenow: '60', ariaValuemin: '0', ariaValuemax: '100', style: { width: String(width) + '%' } }, [
-                    'Loading ... '
-                ])
+                div(
+                    {
+                        class: 'progress-bar',
+                        role: 'progressbar',
+                        ariaValuenow: '60',
+                        ariaValuemin: '0',
+                        ariaValuemax: '100',
+                        style: { width: String(width) + '%' }
+                    },
+                    ['Loading ... ']
+                )
             ]);
 
         setContent('progress', content);
@@ -250,22 +260,26 @@ define([
                         }
                         if (tries >= options.maxTries) {
                             hideElement('waiting');
-                            return reject(new UIError({
-                                code: 'max-tries-exceeded',
-                                message: 'Internal server error',
-                                description: [
-                                    'An unexpected internal server error was encountered accessing this Narrative.',
-                                    'I could not successfully start it after ' + String(tries) + ' attempts'
-                                ],
-                                suggestions: [{
-                                    label: 'Try again later',
-                                    url: '/load-narrative.html?n=' + narrativeId + '&check=true'
-                                },
-                                {
-                                    label: 'Report this to KBase',
-                                    url: '//kbase.us/user-support/report-issue/'
-                                }]
-                            }));
+                            return reject(
+                                new UIError({
+                                    code: 'max-tries-exceeded',
+                                    message: 'Internal server error',
+                                    description: [
+                                        'An unexpected internal server error was encountered accessing this Narrative.',
+                                        'I could not successfully start it after ' + String(tries) + ' attempts'
+                                    ],
+                                    suggestions: [
+                                        {
+                                            label: 'Try again later',
+                                            url: '/load-narrative.html?n=' + narrativeId + '&check=true'
+                                        },
+                                        {
+                                            label: 'Report this to KBase',
+                                            url: '//kbase.us/user-support/report-issue/'
+                                        }
+                                    ]
+                                })
+                            );
                         }
                         return Promise.delay(options.retryPause).then(function () {
                             return loop(checkUrl);
@@ -279,43 +293,49 @@ define([
                         // spinning up...
                         if (tries > options.maxTries) {
                             hideElement('waiting');
-                            return reject(new UIError({
-                                code: 'request-timed-out',
-                                message: 'Request timed out',
-                                description: [
-                                    'A request to the Narrative session timed out too many times.',
-                                    'The last request timed out after ' + err.elapsed + ' milliseconds (ms).',
-                                    'The timeout limit is ' + err.timeout + ' ms.',
-                                    'This may indicate that the Narrative service or a related KBase service is very busy, or the network is saturated.'
-                                ],
-                                suggestions: [{
-                                    label: 'Try again later',
-                                    url: '/load-narrative.html?n=' + narrativeId + '&check=true',
+                            return reject(
+                                new UIError({
+                                    code: 'request-timed-out',
+                                    message: 'Request timed out',
                                     description: [
-                                        'This type of error is not permanent, so you should just try again later'
+                                        'A request to the Narrative session timed out too many times.',
+                                        'The last request timed out after ' + err.elapsed + ' milliseconds (ms).',
+                                        'The timeout limit is ' + err.timeout + ' ms.',
+                                        'This may indicate that the Narrative service or a related KBase service is very busy, or the network is saturated.'
+                                    ],
+                                    suggestions: [
+                                        {
+                                            label: 'Try again later',
+                                            url: '/load-narrative.html?n=' + narrativeId + '&check=true',
+                                            description: [
+                                                'This type of error is not permanent, so you should just try again later'
+                                            ]
+                                        },
+                                        {
+                                            label: 'Monitor KBase service status',
+                                            url: '',
+                                            description: [
+                                                'Since this indicates a problem with KBase services, ',
+                                                'you may wish to open our service monitoring page, ',
+                                                'which shoudl show any ongoing issues'
+                                            ]
+                                        }
                                     ]
-                                },
-                                {
-                                    label: 'Monitor KBase service status',
-                                    url: '',
-                                    description: [
-                                        'Since this indicates a problem with KBase services, ',
-                                        'you may wish to open our service monitoring page, ',
-                                        'which shoudl show any ongoing issues'
-                                    ]
-                                }]
-                            }));
+                                })
+                            );
                         }
                         return Promise.delay(options.retryPause).then(function () {
                             return loop(checkUrl);
                         });
                     })
                     .catch(LoadingError, function (err) {
-                        reject(new UIError({
-                            code: 'loading-' + err.type,
-                            message: 'Timeout accessing Narrative session',
-                            description: err.message
-                        }));
+                        reject(
+                            new UIError({
+                                code: 'loading-' + err.type,
+                                message: 'Timeout accessing Narrative session',
+                                description: err.message
+                            })
+                        );
                     })
                     .catch(LoadingHttpError, function (err) {
                         var nextRequest;
@@ -327,30 +347,49 @@ define([
                             var grokkedError = 'An error occurred while setting up your narrative.';
 
                             if (err.responseText) {
-                                var $errorHTML = $($.parseHTML(err.responseText));
-                                var msg = $errorHTML.find('#error-message > h3').text();
-                                if (msg.indexOf('may not read workspace') !== -1) {
-                                    grokkedError = permErr;
+                                // scrub the error html.
+                                const temp = document.createElement('div');
+                                temp.innerHTML = err.responseText;
+                                const msg = temp.querySelector('#error-message > h3');
+                                if (!msg) {
+                                    grokkedError = customErr;
                                 } else {
-                                    grokkedError = customErr(msg);
+                                    const errorHeader = msg.innerText;
+                                    if (errorHeader.indexOf('may not read workspace') !== -1) {
+                                        grokkedError = permErr;
+                                    } else {
+                                        grokkedError = customErr(msg);
+                                    }
                                 }
+
+                                // var $errorHTML = $($.parseHTML(err.responseText));
+                                // var msg = $errorHTML.find('#error-message > h3').text();
+                                // if (msg.indexOf('may not read workspace') !== -1) {
+                                //     grokkedError = permErr;
+                                // } else {
+                                //     grokkedError = customErr(msg);
+                                // }
                             }
-                            reject(new UIError({
-                                code: 'internal-error',
-                                title: 'Internal server error',
-                                message: [
-                                    'An unexpected internal server error was encountered accessing this Narrative.',
-                                    grokkedError
-                                ],
-                                suggestions: [{
-                                    label: 'Try again later',
-                                    url: ''
-                                },
-                                {
-                                    label: 'Report issue to KBase',
-                                    url: '//kbase.us/user-support/report-issue/'
-                                }]
-                            }));
+                            reject(
+                                new UIError({
+                                    code: 'internal-error',
+                                    title: 'Internal server error',
+                                    message: [
+                                        'An unexpected internal server error was encountered accessing this Narrative.',
+                                        grokkedError
+                                    ],
+                                    suggestions: [
+                                        {
+                                            label: 'Try again later',
+                                            url: ''
+                                        },
+                                        {
+                                            label: 'Report issue to KBase',
+                                            url: '//kbase.us/user-support/report-issue/'
+                                        }
+                                    ]
+                                })
+                            );
                             break;
                         case 401:
                             // Do not have permission to open narrative.
@@ -358,21 +397,26 @@ define([
                                 path: currentPath(),
                                 external: true
                             };
-                            reject(new UIError({
-                                code: 'not-logged-in',
-                                message: 'You are not logged in',
-                                description: [
-                                    'Narrative access requires that you be logged in to KBase'
-                                ],
-                                suggestions: [{
-                                    label: 'Log in',
-                                    url: document.location.origin + '#login?nextrequest=' + encodeURIComponent(JSON.stringify(nextRequest))
-                                },
-                                {
-                                    label: 'Sign up for KBase',
-                                    url: '//kbase.us/sign-up'
-                                }]
-                            }));
+                            reject(
+                                new UIError({
+                                    code: 'not-logged-in',
+                                    message: 'You are not logged in',
+                                    description: ['Narrative access requires that you be logged in to KBase'],
+                                    suggestions: [
+                                        {
+                                            label: 'Log in',
+                                            url:
+                                                    document.location.origin +
+                                                    '#login?nextrequest=' +
+                                                    encodeURIComponent(JSON.stringify(nextRequest))
+                                        },
+                                        {
+                                            label: 'Sign up for KBase',
+                                            url: '//kbase.us/sign-up'
+                                        }
+                                    ]
+                                })
+                            );
                             break;
                         case 403:
                             // Do not have permission to open narrative.
@@ -380,65 +424,76 @@ define([
                                 path: currentPath(),
                                 external: true
                             };
-                            reject(new UIError({
-                                code: 'permission-denied',
-                                message: 'You do not have access to this Narrative',
-                                description: [
-                                    'You do not have read or write permission for this Narrative.'
-                                ],
-                                suggestions: [{
-                                    label: 'Contact the owner of this Narrative and request they share it with you'
-                                },
-                                {
-                                    label: 'Contact KBase, referencing narrative ' + narrativeId,
-                                    url: '//kbase.us/user-support/report-issue/'
-                                }
-                                ]
-                            }));
+                            reject(
+                                new UIError({
+                                    code: 'permission-denied',
+                                    message: 'You do not have access to this Narrative',
+                                    description: ['You do not have read or write permission for this Narrative.'],
+                                    suggestions: [
+                                        {
+                                            label:
+                                                    'Contact the owner of this Narrative and request they share it with you'
+                                        },
+                                        {
+                                            label: 'Contact KBase, referencing narrative ' + narrativeId,
+                                            url: '//kbase.us/user-support/report-issue/'
+                                        }
+                                    ]
+                                })
+                            );
                             break;
                         case 404:
                             // Do not have permission to open narrative.
-                            reject(new UIError({
-                                code: 'does-not-exist',
-                                message: 'Narrative could not be found',
-                                description: [
-                                    'A Narrative could not be found matching the id provided',
-                                    narrativeId
-                                ],
-                                suggestions: [{
-                                    label: 'Contact KBase referencing this Narrative',
-                                    url: '//kbase.us/user-support/report-issue/'
-                                }]
-                            }));
+                            reject(
+                                new UIError({
+                                    code: 'does-not-exist',
+                                    message: 'Narrative could not be found',
+                                    description: [
+                                        'A Narrative could not be found matching the id provided',
+                                        narrativeId
+                                    ],
+                                    suggestions: [
+                                        {
+                                            label: 'Contact KBase referencing this Narrative',
+                                            url: '//kbase.us/user-support/report-issue/'
+                                        }
+                                    ]
+                                })
+                            );
                             break;
                         case 0:
                             // network error
-                            reject(new UIError({
-                                code: 'network-problem',
-                                message: 'Problem accessing Narrative',
-                                description: [
-                                    'There is a problem accessing the Narrative.',
-                                    'It is probably a network connection problem between your browser and the KBase services'
-                                ],
-                                suggestions: [{
-                                    label: 'KBase Service Status',
-                                    url: ''
-                                },
-                                {
-                                    label: 'Try again later',
-                                    url: ''
-                                }
-                                ]
-                            }));
+                            reject(
+                                new UIError({
+                                    code: 'network-problem',
+                                    message: 'Problem accessing Narrative',
+                                    description: [
+                                        'There is a problem accessing the Narrative.',
+                                        'It is probably a network connection problem between your browser and the KBase services'
+                                    ],
+                                    suggestions: [
+                                        {
+                                            label: 'KBase Service Status',
+                                            url: ''
+                                        },
+                                        {
+                                            label: 'Try again later',
+                                            url: ''
+                                        }
+                                    ]
+                                })
+                            );
                             break;
                         default:
-                            reject(new UIError({
-                                code: 'unknown-error',
-                                message: 'Unknown error',
-                                description: [
-                                    'There was an unknown error accessing the narrative: ' + err.status
-                                ]
-                            }));
+                            reject(
+                                new UIError({
+                                    code: 'unknown-error',
+                                    message: 'Unknown error',
+                                    description: [
+                                        'There was an unknown error accessing the narrative: ' + err.status
+                                    ]
+                                })
+                            );
                             break;
                         }
                     })
@@ -448,15 +503,23 @@ define([
                             path: currentPath(),
                             external: true
                         };
-                        reject(new UIError({
-                            code: 'no-authorization',
-                            message: 'You are not logged in',
-                            description: 'You are not currently logged in, but Narrative access requires that you be logged in with a KBase account.',
-                            suggestions: [{
-                                label: 'Log in',
-                                url: document.location.origin + '#login?nextrequest=' + encodeURIComponent(JSON.stringify(nextRequest))
-                            }]
-                        }));
+                        reject(
+                            new UIError({
+                                code: 'no-authorization',
+                                message: 'You are not logged in',
+                                description:
+                                    'You are not currently logged in, but Narrative access requires that you be logged in with a KBase account.',
+                                suggestions: [
+                                    {
+                                        label: 'Log in',
+                                        url:
+                                            document.location.origin +
+                                            '#login?nextrequest=' +
+                                            encodeURIComponent(JSON.stringify(nextRequest))
+                                    }
+                                ]
+                            })
+                        );
                     });
             }
             loop();
@@ -478,9 +541,11 @@ define([
                     'This error is caused by an invalid url.',
                     'Since this url is typically generated by the Narrative service itself, it indicates either a problem with the Narrative service, or with your browser.'
                 ],
-                suggestions: [{
-                    label: 'Try clicking the original link to this Narrative again'
-                }]
+                suggestions: [
+                    {
+                        label: 'Try clicking the original link to this Narrative again'
+                    }
+                ]
             });
             return;
         }
@@ -494,20 +559,19 @@ define([
                     'This error is caused by an invalid call to the narrative loader.',
                     'The required options are timeout, maxTries, and retryPause'
                 ],
-                suggestions: [{
-                    label: 'Contact KBase referencing this Narrative',
-                    url: '//kbase.us/user-support/report-issue/'
-                }]
+                suggestions: [
+                    {
+                        label: 'Contact KBase referencing this Narrative',
+                        url: '//kbase.us/user-support/report-issue/'
+                    }
+                ]
             });
             return;
         }
 
         // This is the standard "waiting" message.
         showElement('loader-animated');
-        setContent('status', [
-            'Starting a new Narrative session for you.',
-            'Please wait...'
-        ].map(p).join('\n'));
+        setContent('status', ['Starting a new Narrative session for you.', 'Please wait...'].map(p).join('\n'));
 
         return tryLoading(narrativeId, options)
             .then(function (narrativeUrl) {
@@ -524,7 +588,6 @@ define([
                     description: [err.message]
                 });
             });
-
     }
 
     return Object.freeze({

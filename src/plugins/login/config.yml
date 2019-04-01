@@ -1,0 +1,22 @@
+## Login Panel
+---
+package:
+  name: login
+  description: A login page
+  author: Erik Pearson
+  date: March 12, 2019
+install:
+  widgets:
+    - id: kb_login_login
+      module: loginPanel
+      type: es6
+    - id: kb_login_signin
+      module: signinWidget
+      css: true
+      type: factory
+  routes:
+    # our little fake login
+    - path: ["loginx"]
+      widget: kb_login_login
+  # Set up a menu item to invoke the path above
+  # menu:

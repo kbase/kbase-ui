@@ -1,6 +1,6 @@
 define([
     'moment',
-    'kb_common/html',
+    'kb_lib/html',
     'bootstrap'
 ], function (
     moment,

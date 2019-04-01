@@ -395,7 +395,7 @@ Simply change the text of the string *'Simple Sample Plugin Title'* to whatever 
 
 ### Panel Content
 
-The panel widget's content is also set in the *panel.js* file. In the sample the content is created using the *kb_common/html* module's *tag* function. The tag function allows for creation of html via a functional style. Towards the top of the module several tags are defined (div, p, etc.). When applied, these functions generate the corresponding html.
+The panel widget's content is also set in the *panel.js* file. In the sample the content is created using the *kb_lib/html* module's *tag* function. The tag function allows for creation of html via a functional style. Towards the top of the module several tags are defined (div, p, etc.). When applied, these functions generate the corresponding html.
 
 In the sample, a "layout" function is used to separate the content building from the point at which it is inserted into the DOM. This is not necessary, but it is generally good practice to keep invoke a simple point of entry to construct the panels layout, outside of the *attach* or *start* lifecycle method in which the layout DOM is necessarily updated.
 
