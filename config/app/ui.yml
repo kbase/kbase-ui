@@ -82,6 +82,7 @@ ui:
               description: The ORCiD auth provider is
             - id: system_alert_notification
               title: The New System Alert Notification
+              disabled: true
             - id: search_features
               title: Search over Genome Features
             - id: similar_genomes
