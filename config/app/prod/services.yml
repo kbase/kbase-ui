@@ -69,14 +69,14 @@ ui:
                                 # - id: public-search
                                 #   auth: true
                                 #   allow: [alpha]
-                                # - id: appcatalog
-                                #   auth: false
+                                - id: catalog
+                                  auth: false
                                 # - id: search
                                 #   auth: true
-                                # - id: jobbrowser
-                                #   # The label can ovveride the label from the plugin here
-                                #   label: Jobs
-                                #   auth: true
+                                - id: jobbrowser
+                                  # The label can override the label from the plugin here
+                                  label: Jobs
+                                  auth: true
                                 - id: account
                                   auth: true
                                 # - id: feeds
