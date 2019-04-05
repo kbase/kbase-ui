@@ -8,43 +8,17 @@ package:
 install:
     # Register the welcome widget
     widgets:
-        - 
-            id: kb_welcome_welcome
-            module: welcomePanelWidget
-            type: factory
-        -
-            id: kb_welcome_hello
-            module: helloPanelWidget
-            type: factory
-        -
-            id: kb_welcome_goodbye
-            module: goodbyePanelWidget
-            type: factory
         -
             id: kb_welcome_deprecated-bulk-ui
             module: ./deprecatedBulkUi
-            type: factory
+            type: es6
     # Set up a route to install that widget in the main body view
     routes:
-        -
-            path: ['welcome']
-            widget: kb_welcome_welcome
-        -
-            path: ['hello']
-            widget: kb_welcome_hello
-        -
-            path: ['goodbye']
-            widget: kb_welcome_goodbye 
         -
             path: ['bulk-ui']
             widget: kb_welcome_deprecated-bulk-ui
     # Set up a menu item to invoke the path above
     menu:
-        -
-            name: welcome
-            path: welcome
-            label: Welcome!
-            icon: smile-o
         -
             name: about-kbase
             uri: https://kbase.us/about
