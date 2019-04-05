@@ -1,8 +1,4 @@
-define([
-    'promise',
-    // 'kb_widget/widgetManager'
-    '../../lib/widget/manager'
-], function (Promise, widgetManager) {
+define(['promise', '../../lib/widget/manager'], function (Promise, widgetManager) {
     'use strict';
 
     function proxyMethod(obj, method, args) {

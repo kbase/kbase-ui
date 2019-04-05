@@ -350,7 +350,7 @@ define([
 
         function renderGroups() {
             var http = new HttpClient.HttpClient();
-            vm.auth.node.innerHTML = html.loading();
+            vm.auth.node.innerHTML = build.loading();
 
             function getRoot() {
                 var header = new HttpClient.HttpHeader();
@@ -417,7 +417,7 @@ define([
 
         function renderFeeds() {
             var http = new HttpClient.HttpClient();
-            vm.auth.node.innerHTML = html.loading();
+            vm.auth.node.innerHTML = build.loading();
 
             function getRoot() {
                 var header = new HttpClient.HttpHeader();

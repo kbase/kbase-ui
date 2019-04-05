@@ -127,12 +127,12 @@ plugins:
     #   cwd: src/plugin
     #   source:
     #     bower: {}
-    # - name: jgi-search
-    #   globalName: kbase-ui-plugin-jgi-search
-    #   version: 0.35.3
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
+    - name: jgi-search
+      globalName: kbase-ui-plugin-jgi-search
+      version: kbase-ui-plugin-jgi-search#payoff
+      cwd: src/plugin
+      source:
+          bower: {}
     # - name: feeds
     #   globalName: kbase-ui-plugin-feeds
     #   version: 0.9.1
