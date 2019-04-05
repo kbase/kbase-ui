@@ -71,13 +71,13 @@ ui:
                                 #   allow: [alpha]
                                 - id: catalog
                                   auth: false
-                                # - id: search
-                                #   auth: true
+                                - id: search
+                                  auth: true
                                 - id: jobbrowser
                                   # The label can override the label from the plugin here
                                   label: Jobs
                                   auth: true
                                 - id: account
                                   auth: true
-                                # - id: feeds
-                                #   auth: true
+                                - id: feeds
+                                  auth: true

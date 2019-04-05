@@ -6,12 +6,14 @@ define(['kb_lib/html', 'kb_lib/htmlBootstrapBuilders'], function (html, BS) {
         a = t('a'),
         p = t('p');
 
-    function factory(config) {
-        var hostNode,
-            container,
-            runtime = config.runtime;
+    class DeprecatedBulkUI {
+        constructor({ runtime }) {
+            this.runtime = runtime;
+            this.hostNode = null;
+            this.container = null;
+        }
 
-        function render() {
+        render() {
             return div(
                 {
                     class: 'container-fluid'
@@ -67,35 +69,26 @@ define(['kb_lib/html', 'kb_lib/htmlBootstrapBuilders'], function (html, BS) {
             );
         }
 
-        function attach(node) {
-            hostNode = node;
-            container = hostNode.appendChild(document.createElement('div'));
-            container.innerHTML = render();
+        attach(node) {
+            this.hostNode = node;
+            this.container = this.hostNode.appendChild(document.createElement('div'));
+            this.container.innerHTML = this.render();
         }
 
-        function start() {
-            runtime.send('ui', 'setTitle', 'Bulk Import - DEPRECATED');
+        start() {
+            this.runtime.send('ui', 'setTitle', 'Bulk Import - DEPRECATED');
         }
 
-        function stop() {
+        stop() {
             return null;
         }
 
-        function detach() {
-            if (hostNode && container) {
-                hostNode.removeChild(container);
+        detach() {
+            if (this.hostNode && this.container) {
+                this.hostNode.removeChild(this.container);
             }
         }
-
-        return {
-            attach: attach,
-            start: start,
-            stop: stop,
-            detach: detach
-        };
     }
 
-    return {
-        make: factory
-    };
+    return DeprecatedBulkUI;
 });
