@@ -35,26 +35,6 @@ plugins:
       cwd: src/plugin
       source:
           bower: {}
-    # These are just developer
-    # -
-    #     name: viswidgetdemo
-    #     globalName: kbase-ui-plugin-demo-vis-widget
-    #     cwd: src/plugin
-    #     version: 1.0.0
-    #     source:
-    #         bower: {}
-    # - name: databrowser
-    #   globalName: kbase-ui-plugin-databrowser
-    #   version: 1.0.1
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
-    # - name: typebrowser
-    #   globalName: kbase-ui-plugin-typebrowser
-    #   version: 1.0.2
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
     # - name: datawidgets
     #   globalName: kbase-ui-plugin-datawidgets
     #   version: 0.4.2
@@ -70,6 +50,12 @@ plugins:
     # - name: shockbrowser
     #   globalName: kbase-ui-plugin-shockbrowser
     #   version: 0.2.0
+    #   cwd: src/plugin
+    #   source:
+    #     bower: {}
+    # - name: staging-browser
+    #   globalName: kbase-ui-plugin-staging-browser
+    #   version: 0.1.2
     #   cwd: src/plugin
     #   source:
     #     bower: {}
@@ -91,12 +77,6 @@ plugins:
     #   cwd: src/plugin
     #   source:
     #     bower: {}
-    # - name: sdk-clients-test
-    #   globalName: kbase-ui-plugin-sdk-clients-test
-    #   version: 0.1.0
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
     - name: auth2-client
       globalName: kbase-ui-plugin-auth2-client
       version: kbase-ui-plugin-auth2-client#payoff
@@ -109,54 +89,30 @@ plugins:
     #   cwd: src/plugin
     #   source:
     #     bower: {}
-    # - name: pavel-demo
-    #   globalName: kbase-ui-plugin-pavel-demo
-    #   version: 0.1.2
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
-    # - name: test-dynamic-table-widget
-    #   globalName: kbase-ui-plugin-test-dynamic-table-widget
-    #   version: 0.1.2
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
-    # - name: tester
-    #   globalName: kbase-ui-plugin-tester
-    #   version: 0.1.2
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
     - name: jgi-search
       globalName: kbase-ui-plugin-jgi-search
       version: kbase-ui-plugin-jgi-search#payoff
       cwd: src/plugin
       source:
           bower: {}
-    # - name: feeds
-    #   globalName: kbase-ui-plugin-feeds
-    #   version: 0.9.1
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
-    # - name: staging-browser
-    #   globalName: kbase-ui-plugin-staging-browser
-    #   version: 0.1.2
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
+    - name: feeds
+      globalName: kbase-ui-plugin-feeds
+      version: kbase-ui-plugin-feeds#payoff
+      cwd: src/plugin
+      source:
+        bower: {}
     - name: catalog
       globalName: kbase-ui-plugin-catalog
       version: kbase-ui-plugin-catalog#payoff
       cwd: src/plugin
       source:
           bower: {}
-    # - name: data-search
-    #   globalName: kbase-ui-plugin-data-search
-    #   version: 0.19.12
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
+    - name: data-search
+      globalName: kbase-ui-plugin-data-search
+      version: kbase-ui-plugin-data-search#payoff
+      cwd: src/plugin
+      source:
+        bower: {}
     # - name: narrative-finder
     #   globalName: kbase-ui-plugin-narrative-finder
     #   version: 0.1.2
@@ -190,12 +146,6 @@ plugins:
     # - name: public-search
     #   globalName: kbase-ui-plugin-public-search
     #   version: 0.13.6
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
-    # - name: projects-mvp1
-    #   globalName: kbase-ui-plugin-projects-mvp1
-    #   version: 0.2.2
     #   cwd: src/plugin
     #   source:
     #     bower: {}
