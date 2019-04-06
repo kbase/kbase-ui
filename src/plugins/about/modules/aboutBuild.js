@@ -9,13 +9,15 @@ define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBootstrapBuilders', 'bootstrap'],
     /*
      * The widget factory function implements the widget interface.
      */
-    function widget(config) {
-        var mount,
-            container,
-            runtime = config.runtime;
+    class AboutBuild {
+        constructor({ runtime }) {
+            this.runtime = runtime;
+            this.mount = null;
+            this.container = null;
+        }
 
-        function buildBuildInfo() {
-            var buildInfo = runtime.config('buildInfo');
+        buildBuildInfo() {
+            var buildInfo = this.runtime.config('buildInfo');
 
             var info = {
                 builtAt: new Date(buildInfo.builtAt).toLocaleString(),
@@ -39,7 +41,7 @@ define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBootstrapBuilders', 'bootstrap'],
             return BS.buildPresentableJson(info);
         }
 
-        function buildLayout() {
+        buildLayout() {
             return div(
                 {
                     class: 'container-fluid'
@@ -73,7 +75,7 @@ define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBootstrapBuilders', 'bootstrap'],
                                     class: 'col-sm-6',
                                     style: {}
                                 },
-                                [h2('Build'), buildBuildInfo()]
+                                [h2('Build'), this.buildBuildInfo()]
                             ),
                             div(
                                 {
@@ -88,42 +90,30 @@ define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBootstrapBuilders', 'bootstrap'],
             );
         }
 
-        function render() {
-            container.innerHTML = buildLayout();
+        render() {
+            this.container.innerHTML = this.buildLayout();
         }
         // Widget API
-        function attach(node) {
-            mount = node;
-            container = mount.appendChild(document.createElement('div'));
+        attach(node) {
+            this.mount = node;
+            this.container = this.mount.appendChild(document.createElement('div'));
         }
 
-        function detach() {
-            if (mount && container) {
-                mount.removeChild(container);
-                container = null;
+        detach() {
+            if (this.mount && this.container) {
+                this.mount.removeChild(this.container);
+                this.container = null;
             }
         }
 
-        function start() {
-            runtime.send('ui', 'setTitle', 'About then KBase User Interface');
-            return render();
+        start() {
+            this.runtime.send('ui', 'setTitle', 'About then KBase User Interface');
+            return this.render();
         }
 
-        function stop() {
+        stop() {
             return null;
         }
-
-        return {
-            attach: attach,
-            detach: detach,
-            start: start,
-            stop: stop
-        };
     }
-
-    return {
-        make: function (config) {
-            return widget(config);
-        }
-    };
+    return AboutBuild;
 });

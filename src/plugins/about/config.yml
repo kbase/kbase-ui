@@ -12,15 +12,15 @@ install:
         - 
             module: aboutBuild
             id: about_build
-            type: factory
+            type: es6
         - 
             module: about
             id: about
-            type: factory
+            type: es6
         -
             module: aboutServices
             id: about_services
-            type: factory
+            type: es6
     routes:
         -
             path: ['about']
