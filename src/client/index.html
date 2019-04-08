@@ -2,6 +2,9 @@
 <html lang="en">
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-137652528-1"></script>
+    <script src="./gtagSupport.js"></script>
     <title>KBase</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,6 +44,15 @@
     <script src="/require-config.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
     <script src="/modules/bower_components/requirejs/require.js?cb={{buildInfo.git.commitAbbreviatedHash}}" 
             data-main="startup"></script>
+    <script>
+        console.log("I'm at the bottom of the page");
+        let lookingForUserId = document.querySelector('.data-k-b-testhook-label');
+        if(lookingForUserId){
+            lookingForUserId.addEventListener('loadend', function(e) {
+                console.log('does this even', e.target)
+            });
+        }
+    </script>
 </body>
 
 </html>

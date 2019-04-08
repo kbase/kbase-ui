@@ -16,7 +16,7 @@ bower register kbase-ui git://github.com/eapearson/kbase-ui
 
 ```
 {
-    "analytics": true,
+    "analytics": false,
     "directory": "bower_components",
     "registry": "http://localhost:5678/",
     "timeout": 300000

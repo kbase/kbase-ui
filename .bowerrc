@@ -1,5 +1,5 @@
 {
-    "analytics": true,
+    "analytics": false,
     "directory": "bower_components",
     "timeout": 300000
 }

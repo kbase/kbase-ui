@@ -11,26 +11,7 @@
     },
     "ui": {       
         "services": {
-            "analytics": {
-                "google": {
-                    {{/* 
-                        Note that this will omit the apiEndpoint deploy override if it is absent (or falsy?) from the deploy config.
-                        This is necessary for cases in which the ui and deploy config has introduced a new property, but the deploy
-                        configs repo is not yet updated. THe base ui config has the default value, and since there is no official
-                        deploy config, this just omits the attempt to merge the deploy config in.
-                        The problem is that we have no other way of "skipping" the deploy merge. Any value here would either overwrite
-                        the default value in ui.yml (if they are of the same type - string) or cause an error (if different types.)
-                        Thus we can't, for example, use "null" to indicate that the apiEndpoint should not be overridden.
-                        Yes, we could change the behavior of config merging, but if we did, it would be to ensure that "null" is 
-                        able to override anything, to provide nullable config properties. For now, we don't allow this. 
-                        Keeps things cleaner.
-                     */}}
-                    {{ if .Env.ui_services_analytics_google_apiEndpoint }}"apiEndpoint": "{{ .Env.ui_services_analytics_google_apiEndpoint }}",{{end}}
-                    "hostname": "{{ .Env.ui_services_analytics_google_hostname }}",
-                    "code": "{{ .Env.ui_services_analytics_google_code }}"
-                }
-            },
-             "session": {
+            "session": {
                 "cookie": {
                     "backup": {
                         "domain": {{ if .Env.ui_backupCookie_domain }}"{{.Env.ui_backupCookie_domain}}"{{else}}null{{end}},
@@ -48,7 +29,7 @@
                     }
                 }
             }
-        },
+        },   
         "allow": [{{ range $i, $v := split .Env.allow "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
         "featureSwitches": {
             "enabled": [{{ range $i, $v := split .Env.ui_featureSwitches_enabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
