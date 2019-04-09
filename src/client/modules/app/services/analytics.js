@@ -45,7 +45,6 @@ define([
         }
 
         setDailyCookie() {
-            console.log('i"m setting _gid cookie');
             const clientId = new Uuid(4).format();
             const cookieName = '_gid';
             const analyticsCookie = this.cookiePrefix + clientId;

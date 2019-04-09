@@ -11,8 +11,6 @@ services:
         - VCS_REF=${COMMIT}
         - BRANCH
     image: kbase/kbase-ui:${BRANCH}
-    volumes:
-      - ${PWD}:/kb/build/dist/client
     
 
 

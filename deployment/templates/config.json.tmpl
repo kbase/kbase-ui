@@ -29,7 +29,7 @@
                     }
                 }
             }
-        },   
+        },
         "allow": [{{ range $i, $v := split .Env.allow "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
         "featureSwitches": {
             "enabled": [{{ range $i, $v := split .Env.ui_featureSwitches_enabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],

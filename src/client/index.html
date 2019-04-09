@@ -44,15 +44,6 @@
     <script src="/require-config.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
     <script src="/modules/bower_components/requirejs/require.js?cb={{buildInfo.git.commitAbbreviatedHash}}" 
             data-main="startup"></script>
-    <script>
-        console.log("I'm at the bottom of the page");
-        let lookingForUserId = document.querySelector('.data-k-b-testhook-label');
-        if(lookingForUserId){
-            lookingForUserId.addEventListener('loadend', function(e) {
-                console.log('does this even', e.target)
-            });
-        }
-    </script>
 </body>
 
 </html>

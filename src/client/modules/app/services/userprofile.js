@@ -6,7 +6,7 @@ define([
     'kb_service/userProfile',
     'kb_service/client/userProfile',
     'kb_common/lang',
-    'lib/userProfile',
+    'lib/userProfile'
 ], function (
     Promise,
     observed,

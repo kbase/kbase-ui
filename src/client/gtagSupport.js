@@ -65,4 +65,5 @@ window.onpopstate = function () {
         'page_title': title
     });
     gtag('set', {'user_id': userName});
+    gtag('config', 'AW-753507180');
 };

@@ -1,7 +1,6 @@
 (function (root) {
     'use strict';
     function handleGlobalError(err) {
-        console.log(err.requireType);
         switch (err.requireType) {
         case 'notloaded':
             if (/esprima/.test(err.message)) {
