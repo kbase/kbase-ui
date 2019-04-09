@@ -149,15 +149,15 @@ plugins:
     #   cwd: src/plugin
     #   source:
     #     bower: {}
-    # - name: organizations
-    #   globalName: kbase-ui-plugin-organizations
-    #   version: 0.15.90
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
-    # - name: biochem-search
-    #   globalName: kbase-ui-plugin-biochem-search
-    #   version: 0.0.2
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
+    - name: organizations
+      globalName: kbase-ui-plugin-organizations
+      version: kbase-ui-plugin-organizations#payoff
+      cwd: src/plugin
+      source:
+        bower: {}
+    - name: biochem-search
+      globalName: kbase-ui-plugin-biochem-search
+      version: kbase-ui-plugin-biochem-search#payoff
+      cwd: src/plugin
+      source:
+        bower: {}
