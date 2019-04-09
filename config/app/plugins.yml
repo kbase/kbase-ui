@@ -23,12 +23,12 @@ plugins:
       version: kbase-ui-plugin-typeview#payoff
       source:
           bower: {}
-    # - name: dataview
-    #   globalName: kbase-ui-plugin-dataview
-    #   version: 3.11.2
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
+    - name: dataview
+      globalName: kbase-ui-plugin-dataview
+      version: kbase-ui-plugin-dataview#payoff
+      cwd: src/plugin
+      source:
+        bower: {}
     - name: dashboard
       globalName: kbase-ui-plugin-dashboard
       version: kbase-ui-plugin-dashboard#payoff
