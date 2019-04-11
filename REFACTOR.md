@@ -501,6 +501,14 @@ Reload the browser
 The first time you get this working, things will probably be broken.
 Look out for modules which don’t load. If the module being loaded is terribly obsolete, think about an easy way to refactor. For instance, kb_ko is an obsolete knockout wrapper, kb_knockout is better.
 
+## Cleanup Tasks
+
+Other than encountering issues and fixing them, here are some common issues:
+
+-   fix up ui links
+-   replace usages of plugin special module
+-   fix up styles
+
 ## Notes
 
 Here are some various notes on porting issues:
@@ -512,6 +520,14 @@ TODO
 ### Fix up links
 
 Links formed like “#plugin/some/thing” will need to be rewritten as “/#/plugin/some/thing”. Since the plugin is located at an internal path within the ui, the initial “/” is required to ensure that the url starts at the root.
+
+#### Tasks
+
+search for internal ui links. E.g. "# or '#. When you find such links you may wish to narrow your search to specific links, e.g. #people, because there can be a lot of false positives
+
+all such links need a / before the # to ensure the url is absolute
+
+all such links need a target, either \_blank to open a new window (such links probably already have this) or \_parent otherwise.
 
 ### A note on reentrant top level widgets.
 
@@ -568,4 +584,18 @@ The link includes the target attribute set to “\_parent” (unless “\_blank�
 Urls which are set directly on the window (window.location.href = “#blah”) may be okay; the kbase-ui integration code catches changes the hashchange and forwards them to the ui through the communication channel.
 TODO: Verify that this works well.
 
-### converting usages of jg_plugin_PLUGIN
+### converting usages of kb_plugin_PLUGIN
+
+kbase-ui provided a special module for each plugin named "kb_plugin_PLUGIN" (where PLUGIN is the plugin name). This module was used for accessing the path of the plugin within the ui codebase.
+
+This has been replaced with the runtime properties named: `runtime.pluginPath`, which stores the root path for the plugin, and `runtime.pluginResourcePath`, which stores the path of the resources directory within the plugin.
+
+This property is typically used to create a path to a resource contained within the plugin which is cannot be loaded as an AMD module. E.g. images, data files which are not json or yaml.
+
+Solution: search the codebase for usages of `kb\_plugin\_`, which is usually mapped to the receiving variable Plugin.
+
+Remove this module from the define function.
+
+Replace useages of `Plugin.plugin.fullPath` with `runtime.pluginResourcePath` (most common), or `Plugin.plugin.path` with `runtime.pluginPath`.
+
+> Tip: when searching the plugin codebase, exclude the `vendor` directory.
