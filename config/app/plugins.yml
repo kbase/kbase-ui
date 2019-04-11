@@ -76,14 +76,12 @@ plugins:
       cwd: src/plugin
       source:
         bower: {}
-
-    # TODO
-    # - name: user-profile
-    #   globalName: kbase-ui-plugin-user-profile
-    #   version: 1.5.2
-    #   cwd: src/plugin
-    #   source:
-    #     bower: {}
+    - name: user-profile
+      globalName: kbase-ui-plugin-user-profile
+      version: kbase-ui-plugin-user-profile#payoff
+      cwd: src/plugin
+      source:
+        bower: {}
     
     # - name: narrative-info
     #   globalName: kbase-ui-plugin-narrative-info
