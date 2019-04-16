@@ -17,23 +17,36 @@ const fetchUserInfo = (token) => {
             'Authorization': token,
         },
     })
-        .then(response => response.json())
-        .then(response => response)
-        .catch(error => console.error('error occered during fetch user id', error));
+        .then((response) => { response.json(); })
+        .then((response) => {
+            if (response.status === 200) {
+                return response['user'];
+            } else {
+                return null;
+            }
+        })
+        .catch((error) => {
+            console.error('error occered during fetch user id', error);
+            return null;
+        });
 };
+
 /**
  * find kbase session ID from cookies and get user name.
  * @param {string} cookies
  */
-const getUserName = (cookies) => {
-    const cookiesArr = cookies.split(';');
-    for (let i=0; i<cookiesArr.length; i+=1){
+const getToken = () => {
+    if (!document.cookie){
+        return null;
+    }
+    const cookiesArr = document.cookie.split(';');
+    for (let i = 0; i < cookiesArr.length; i +=1){
         const cookie = cookiesArr[i];
         if (cookie.includes('kbase_session')) {
-            const token = cookie.slice(cookie.indexOf('=') + 1);
-            return fetchUserInfo(token).then(response => response['user']);
+            return cookie.slice(cookie.indexOf('=') + 1);
         }
     }
+    return null;
 };
 
 /**
@@ -47,27 +60,29 @@ window.onpopstate = function () {
     const regex = /\/#\/|#\/|\/#/gi;
     const title = path.replace(regex, '');
     window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
+    function gtag() { window.dataLayer.push(arguments); }
     // if cookies are set, get user name to add to config.
-    if (document.cookie){
-        getUserName(document.cookie).then((value) => {
+    const token = getToken();
+    if (token){
+        fetchUserInfo(token).then((response)=>{
+            const userID = response;
             gtag('js', new Date());
             gtag('config', 'UA-137652528-1', {
-                'username': value,
+                'user': userID,
                 'Page_location': location,
                 'page_path': path,
                 'page_title': title
             });
-            gtag('set', {'user_id': value});
+            gtag('set', userID);
+            gtag('config', 'AW-753507180');
         });
-    } else {
-        // take URL into page_path and page title that gtag config can use.
-        gtag('js', new Date());
-        gtag('config', 'UA-137652528-1', {
-            'Page_location': location,
-            'page_path': path,
-            'page_title': title
-        });
+        return;
     }
+    gtag('js', new Date());
+    gtag('config', 'UA-137652528-1', {
+        'Page_location': location,
+        'page_path': path,
+        'page_title': title
+    });
     gtag('config', 'AW-753507180');
 };
