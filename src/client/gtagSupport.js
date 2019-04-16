@@ -40,7 +40,8 @@ const getUserName = (cookies) => {
  * Google Analytics code snippet
  */
 window.onpopstate = function () {
-    const str = document.URL.toLowerCase();
+    const location = document.URL;
+    const str = location.toLowerCase();
     const sliceAt = str.indexOf('kbase.us') + 'kbase.us'.length;
     const path = str.slice(sliceAt);
     const regex = /\/#\/|#\/|\/#/gi;
@@ -53,7 +54,7 @@ window.onpopstate = function () {
             gtag('js', new Date());
             gtag('config', 'UA-137652528-1', {
                 'username': value,
-                'Page_location': document.URL,
+                'Page_location': location,
                 'page_path': path,
                 'page_title': title
             });
@@ -63,7 +64,7 @@ window.onpopstate = function () {
         // take URL into page_path and page title that gtag config can use.
         gtag('js', new Date());
         gtag('config', 'UA-137652528-1', {
-            'Page_location': document.URL,
+            'Page_location': location,
             'page_path': path,
             'page_title': title
         });
