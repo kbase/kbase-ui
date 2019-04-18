@@ -1,8 +1,8 @@
-# UI SErvices
+# UI Services
 ---
 ui:
     services:
-        analytics: {}
+        # analytics: {}
         coreService: {}
         data: {}
         heartbeat: {}
