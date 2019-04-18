@@ -14,33 +14,33 @@
             mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': token,
-            },
+                Authorization: token
+            }
         })
-            .then((response) => { response.json(); })
             .then((response) => {
-                if (response.status === 200) {
-                    return response['user'];
-                } else {
+                if (response.status !== 200) {
+                    console.warn('[gtagSupport] bad auth response, user not available', response);
                     return null;
                 }
+                return response.json().then((result) => {
+                    return result.user;
+                });
             })
             .catch((error) => {
-                console.error('error occered during fetch user id', error);
+                console.error('error occurred during fetch user id', error);
                 return null;
             });
     };
 
     /**
      * find kbase session ID from cookies and get user name.
-     * @param {string} cookies
      */
     const getToken = () => {
-        if (!document.cookie){
+        if (!document.cookie) {
             return null;
         }
         const cookiesArr = document.cookie.split(';');
-        for (let i = 0; i < cookiesArr.length; i +=1){
+        for (let i = 0; i < cookiesArr.length; i += 1) {
             const cookie = cookiesArr[i];
             if (cookie.includes('kbase_session')) {
                 return cookie.slice(cookie.indexOf('=') + 1);
@@ -60,18 +60,20 @@
         const regex = /\/#\/|#\/|\/#/gi;
         const title = path.replace(regex, '');
         window.dataLayer = window.dataLayer || [];
-        function gtag() { window.dataLayer.push(arguments); }
+        function gtag() {
+            window.dataLayer.push(arguments);
+        }
         // if cookies are set, get user name to add to config.
         const token = getToken();
-        if (token){
-            fetchUserInfo(token).then((response)=>{
+        if (token) {
+            fetchUserInfo(token).then((response) => {
                 const userID = response;
                 gtag('js', new Date());
                 gtag('config', 'UA-137652528-1', {
-                    'user': userID,
-                    'Page_location': location,
-                    'page_path': path,
-                    'page_title': title
+                    user: userID,
+                    Page_location: location,
+                    page_path: path,
+                    page_title: title
                 });
                 gtag('set', userID);
                 gtag('config', 'AW-753507180');
@@ -80,10 +82,10 @@
         }
         gtag('js', new Date());
         gtag('config', 'UA-137652528-1', {
-            'Page_location': location,
-            'page_path': path,
-            'page_title': title
+            Page_location: location,
+            page_path: path,
+            page_title: title
         });
         gtag('config', 'AW-753507180');
     };
-}());
+})();
