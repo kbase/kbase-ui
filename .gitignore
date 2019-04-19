@@ -30,6 +30,7 @@ _book
 /dev/docker-compose.override.yml
 /dev/gitlab-config
 /dev/test-config.json
+/dev/test/**/*
 node_modules
 
 # General purpose temp directory
