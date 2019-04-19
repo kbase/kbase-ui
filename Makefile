@@ -87,6 +87,7 @@ default:
 setup-dirs:
 	@echo "> Setting up directories."
 	mkdir -p temp/files
+	mkdir -p dev/test
 
 node_modules:
 	@echo "> Installing build and test tools."
