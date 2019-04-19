@@ -4,8 +4,8 @@ This document describes how to get set up for kbase-ui development.
 
 ## Prerequisites
 
-- [Prerequisites](../getting-started/prerequisites.md)
-- [Quick Start](../getting-started/quick-start.md)
+-   [Prerequisites](../getting-started/prerequisites.md)
+-   [Quick Start](../getting-started/quick-start.md)
 
 ## Introduction
 
@@ -13,8 +13,8 @@ If you have followed the [Prerequisites](../getting-started/prerequisites.md) an
 
 To support development of kbase-ui itself, plugins, libraries, and local or dynamic services, several tools and techniques are available. The gist of these is:
 
-- proxying all requests to the ui, which allows kbase-ui to work seamlessley as if it were installed in any given kbase deployment environment;
-- mounting local directories into the kbase-ui container, allowing kbase-ui served inside the container to utilize files being edited locally
+-   proxying all requests to the ui, which allows kbase-ui to work seamlessly as if it were installed in any given kbase deployment environment;
+-   mounting local directories into the kbase-ui container, allowing kbase-ui served inside the container to utilize files being edited locally
 
 ## Workflow
 
@@ -22,7 +22,7 @@ A typical work flow involves:
 
 1. create working folder
 2. checkout and setup repos you'll be working on
-3. map ci.kbase.us host 
+3. map ci.kbase.us host
 4. start up kbase-ui
 5. stop kbase-ui
 6. unmap ci.kbase.us host
@@ -31,7 +31,7 @@ A typical work flow involves:
 
 In this and all developer documentation, it is assumed that all repos are installed under a single root working directory. Developer tools support this simple directory layout.
 
-We'll just call this directory *~/work/project*, but you can of course place it wherever you like and name it whatever pleases you.
+We'll just call this directory _~/work/project_, but you can of course place it wherever you like and name it whatever pleases you.
 
 ```bash
 mkdir -p ~/work/project
@@ -66,7 +66,7 @@ git checkout -b BRANCHNAME
 git push NICKNAME BRANCHNAME
 ```
 
-With this flow, you are operating in the branch *BRANCHNAME*, which started at the tip of the *develop* branch in the main *kbase/kbase-ui* repo. You will push it to your fork located at the github account *YOURACCOUNT*, which has been set up at remote *NICKNAME* in the local git configuration.
+With this flow, you are operating in the branch _BRANCHNAME_, which started at the tip of the _develop_ branch in the main _kbase/kbase-ui_ repo. You will push it to your fork located at the github account _YOURACCOUNT_, which has been set up at remote _NICKNAME_ in the local git configuration.
 
 > Note: this setup requires that you have generated an ssh key on your machine, and installed it in your giithub account. If you prefer to work over https and use your github username and password that line above would be `git remote add NICKNAME https://github.com/YOURACCOUNT/kbase-ui
 
@@ -76,10 +76,9 @@ With this flow, you are operating in the branch *BRANCHNAME*, which started at t
 
 In the same working directory clone each plugin or library you will be working on, using your preferred method.
 
-
 ### 3. Map ci.kbase.us to your local host
 
-In order for your browser to use the kbase-ui proxy for requests to ci.kbase.us, you need to add a line to your `/etc/hosts` (or equivalent, if on Windows). 
+In order for your browser to use the kbase-ui proxy for requests to ci.kbase.us, you need to add a line to your `/etc/hosts` (or equivalent, if on Windows).
 
 ```hosts
 127.0.0.1  ci.kbase.us
@@ -143,17 +142,17 @@ For details on usage, see [Developer Tools](tools.md).
 
 When you are finished with a work session, or for whatever reason wish to stop the kbase-ui and proxy containers:
 
-- Press `Control` + `C` in the window in which the docker-compose-up tool was run.
-    This should exit the tool, and hopefully stop the containers. 
-- run `make dev-stop` 
+-   Press `Control` + `C` in the window in which the docker-compose-up tool was run.
+    This should exit the tool, and hopefully stop the containers.
+-   run `make dev-stop`
     We do this to stop and remove any started containers, as well as to remove the custom kbase-dev network created by `make dev-start`
 
 ## 6. unmap ci.kbase.us
 
 This is optional, but unless you are continuing to work on local kbase-ui, you should remove the /etc/hosts mapping in order to gain access to the "real" ci.kbase.us.
 
-I prefer to simply comment out the line so it is ready for reuse later. 
+I prefer to simply comment out the line so it is ready for reuse later.
 
 ## Next Steps
 
-- [⛏ Working with Plugins](../plugins/README.md)
+-   [⛏ Working with Plugins](../plugins/README.md)

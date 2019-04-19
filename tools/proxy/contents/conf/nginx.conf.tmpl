@@ -76,8 +76,8 @@ http {
   server {
     listen 443 ssl;
     server_name {{ .Env.deploy_ui_hostname }};
-    ssl_certificate /kb/deployment/test.crt;
-    ssl_certificate_key /kb/deployment/test.key;
+    ssl_certificate /kb/deployment/ssl/test.crt;
+    ssl_certificate_key /kb/deployment/ssl/test.key;
 
     # An experiment in proxying google analytics calls through kbase.
     # location /google-analytics-collect {
@@ -119,8 +119,8 @@ http {
   server {
     listen 443 ssl;
     server_name {{ .Env.deploy_hostname }};
-    ssl_certificate /kb/deployment/test.crt;
-    ssl_certificate_key /kb/deployment/test.key;
+    ssl_certificate /kb/deployment/ssl/test.crt;
+    ssl_certificate_key /kb/deployment/ssl/test.key;
 
     # Proxy all service calls, including auth2, to the real CI
     location /services {

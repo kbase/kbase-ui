@@ -68,6 +68,10 @@ COPY --from=builder /kb/deployment/scripts /kb/deployment/scripts
 # Generated documentation is copied into the distribution.
 # COPY --from=builder /kb/docs/book/_book /kb/deployment/services/kbase-ui/dist/_book
 
+# Need to include the integration tests since otherwise we need a local build 
+# to pick them up.
+COPY --from=builder /kb/build/test /kb/deployment/services/kbase-ui/test
+
 # The BUILD_DATE value seem to bust the docker cache when the timestamp changes, move to
 # the end
 LABEL org.label-schema.build-date=$BUILD_DATE \

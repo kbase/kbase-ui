@@ -56,10 +56,8 @@ ui:
                     name: kbase_session_backup
                     domain: null
                     enabled: false
-            # The widget id of the current login widget; supplied by the
-            # auth plugin.
+            # The widget id of the current login widget
             loginWidget: kb_login_signin
-
         route:
             defaultRoute:
                 redirect:

@@ -7,13 +7,14 @@ ARG VCS_REF
 ARG BRANCH=develop
 ARG TAG
 
-# Python and friends installed to get jinja2-cli, a jinja2 template cmd line tool
 # used for processing the config file templates
+# Move the following line below the "mkdir" line to enable self signed certs; 
+# by default mkcert generated certs should be used.
+# openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /kb/deployment/ssl/test.key -out /kb/deployment/ssl/test.crt -subj "/C=US/ST=California/L=Berkeley/O=LBNL/OU=KBase/CN=ci.kbase.us" && \
 ENV DOCKERIZE_VERSION v0.6.1
 RUN apk --update upgrade && \
     apk add --no-cache bash bash-completion ca-certificates nginx openssl && \
-    mkdir -p /kb/deployment && \
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /kb/deployment/test.key -out /kb/deployment/test.crt -subj "/C=US/ST=California/L=Berkeley/O=LBNL/OU=KBase/CN=ci.kbase.us" && \
+    mkdir -p /kb/deployment && \    
     wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
     tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
     rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
