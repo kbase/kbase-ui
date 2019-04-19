@@ -228,7 +228,9 @@ get-gitlab-config:
 clean-gitlab-config:
 	rm -rf dev/gitlab-config
 	
-dev-certs:
-	bash tools/make-dev-certs.sh
+dev-cert:
+	bash tools/make-dev-cert.sh
 
+rm-dev-cert:
+	rm tools/proxy/contents/ssl/*
 

@@ -22,11 +22,15 @@ This allows using a browser in its normal mode, with full plugin support.
 
 The solution hinges on a single utility named `mkcert`: https://github.com/FiloSottile/mkcert
 
-`mkcert` works by installing its own root certificate into the local system and browsers and generating a certificate and key which chain to this root certificate.
+`mkcert` works by installing its own certficate authority (CS) into the local system and browser (Firefox, Chrome) trust stores and generating a certificate and key which will be subsequently trusted, and avoid browser (and test tool) workarounds required by using a self signed cert.
 
-While the prospect of installing a "fake" trusted certificate on your local machine may seem scary, the tool is widely used and complete reversible:
+While the prospect of installing a "fake" trusted certificate on your local machine may seem scary, the tool is widely used and complete reversible.
 
-Instructions for installing it can be found at the repo cited above. For example, if you are a macOS user utilized macports:
+Instructions for installing it can be found at the repo cited above.
+
+### macports
+
+For example, if you are a macOS user utilized macports:
 
 ```
 sudo port selfupdate
@@ -46,11 +50,10 @@ mkcert -install
 
 ### generate cert files
 
-By hand
+kbase-ui now has a script to generate server cert files and place them in the correct location. That location is within the development proxy ssl directory (`tools/proxy/contents/ssl`).
 
 ```
-mkcert -cert-file test.crt --key-file test.key kbase.us "*.kbase.us"
-
+make dev-cert
 ```
 
 After this the certs will be in the proper location for the local proxy, and it can be run as normal.
@@ -59,9 +62,9 @@ After this the certs will be in the proper location for the local proxy, and it 
 
 ```
 mkcert -uninstall
-rm tools/proxy/contents/ssl/*
+make remove-dev-cert
 ```
 
 ## Enabling self signed certs
 
-You'll need to edit `tools/proxy/Docker`.
+If you do not install the dev cert through the process described above, a self signed certificate will be generated when the proxy is launched.

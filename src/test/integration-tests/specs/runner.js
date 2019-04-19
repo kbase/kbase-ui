@@ -158,7 +158,6 @@ function doTask(spec, task, testData) {
         }
 
         if (task.waitForText) {
-            // result = browser.$(selector).waitForText(interpValue(task.waitForText, testData));
             result = browser.waitUntil(function () {
                 try {
                     var text = browser.$(selector).getText();
