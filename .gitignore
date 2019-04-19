@@ -39,4 +39,5 @@ node_modules
 
 docker-compose.override.yml
 
-tools/proxy/contents/ssl/*
+/tools/proxy/contents/ssl/*
+!/tools/proxy/contents/ssl/README.md
