@@ -195,20 +195,25 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
                             );
                         });
                 }
-                return a(
+                return span(
                     {
-                        class: 'btn btn-primary navbar-btn kb-nav-btn',
-                        dataButton: 'signin',
-                        dataKBTesthookButton: 'signin',
-                        href: '#login'
+                        dataKBTesthookWidget: 'signin'
                     },
-                    [
-                        div({
-                            class: 'fa fa-sign-in  fa-inverse',
-                            style: { marginRight: '5px' }
-                        }),
-                        div({ class: 'kb-nav-btn-txt' }, 'Sign In')
-                    ]
+                    a(
+                        {
+                            class: 'btn btn-primary navbar-btn kb-nav-btn',
+                            dataButton: 'signin',
+                            dataKBTesthookButton: 'signin',
+                            href: '#login'
+                        },
+                        [
+                            div({
+                                class: 'fa fa-sign-in  fa-inverse',
+                                style: { marginRight: '5px' }
+                            }),
+                            div({ class: 'kb-nav-btn-txt' }, 'Sign In')
+                        ]
+                    )
                 );
             });
         }
@@ -231,7 +236,7 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
             hostNode = node;
             container = hostNode.appendChild(document.createElement('div'));
             container.classList.add('kb_plugin_login_signin');
-            container.setAttribute('data-k-b-testhook-widget', 'auth2_signin');
+            container.setAttribute('data-k-b-testhook-plugin', 'login');
         }
 
         function start() {

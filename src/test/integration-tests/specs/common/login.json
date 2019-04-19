@@ -6,7 +6,7 @@
         "params": {
             "name": "kbase_session",
             "path": "/",
-            "value": "$token"
+            "value": "${token}"
         }
     },
     {
@@ -15,8 +15,8 @@
             "type": "absolute",
             "path": [
                 {
-                    "type": "widget",
-                    "value": "auth2_signin"
+                    "type": "plugin",
+                    "value": "login"
                 },
                 {
                     "type": "menu",
@@ -37,8 +37,8 @@
             "type": "absolute",
             "path": [
                 {
-                    "type": "widget",
-                    "value": "auth2_signin"
+                    "type": "plugin",
+                    "value": "login"
                 },
                 {
                     "type": "menu",
@@ -50,8 +50,10 @@
                 }
             ]
         },
-        "waitForText": 10000,
-        "text": "$username"
+        "waitUntilText": {
+            "value": "${username}",
+            "wait": 10000
+        }
     },
     {
         "title": "close menu",
@@ -59,8 +61,8 @@
             "type": "absolute",
             "path": [
                 {
-                    "type": "widget",
-                    "value": "auth2_signin"
+                    "type": "plugin",
+                    "value": "login"
                 },
                 {
                     "type": "menu",
@@ -73,22 +75,5 @@
             ]
         },
         "action": "click"
-    },
-    {
-        "title": "wait for dashboard",
-        "selector": {
-            "type": "absolute", 
-            "path": [
-                {
-                    "type": "plugin",
-                    "value": "mainwindow"
-                },
-                {
-                    "type": "label",
-                    "value": "title"
-                }
-            ]
-        },
-        "waitForText": 5000
     }
 ]

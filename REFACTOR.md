@@ -432,7 +432,7 @@ The primary task we repeat here goes like this:
 
 Below we'll walk through the process of porting one route.
 
-#### Ensure that a route exists
+##### Ensure that a route exists
 
 kbase-ui expects a plugins routing to be defined in the plugins top level `config.yml` file. Our current config.yml file is the one copied from kbase-ui-tools, and then lightly edited to replace "example" with our plugin name.
 
@@ -474,13 +474,18 @@ Set the view as the value of the `view` property. You may choose any value which
 
 Inside the iframe, the `main.js` file is responsible for handling routing within the app. It will receive the `params.view` property and dispatch the matching widget, if any.
 
-With an iframe-based plugin, the same routing file is required, but instead of each route leading to an individual widget, they all lead to the same one. This widget, supplied by kbase-ui-tools, is responsible simply for passing the routing information into the iframe for evalutation.
+With an iframe-based plugin, the same routing file is required, but instead of each route leading to an individual widget, they all lead to the same one. This widget, supplied by kbase-ui-tools, is responsible simply for passing the routing information into the iframe for evaluation.
 
-Our job is to ensure that for each route originally defined (as can be found in `iframe_root/modules/config.yml` we create a new route which leads to our one widget.)
+In addition, while the kbase-ui router operates on matching paths, path params, and query params, the iframe router operates on a simple view identifier (string).
 
-Copy the routes from iframe_root/modules/config.yml (which will not be used directly, it is just for reference to the configuration of the plugin.)
+Our job is to ensure that for each route originally defined in the original `config.yml` (as can be found in `iframe_root/modules/config.yml`) we create a new route which leads to our one widget.
+
+We are going to conceptually copy the routes in `iframe_root/modules/config.yml` (which will not be used directly, it is just for reference to the configuration of the plugin) to views in the same file.
+
+LEFT OFT HERE
 
 The iframe based routing works best with a single point of entry. One route on the host side of the plugin catches everything sent to the top navigation path; the iframe side of the plugin receives this and does it’s own internal routing.
+
 Some plugins cannot have a full movement of plugin functionality into an iframe; e.g. auth-client login/logout integration. In such cases, the plugin config may continue to support multiple routes. However, there will still be a single route which leads into the iframe.
 
 This is enabled by the route syntax:
@@ -493,11 +498,15 @@ In iframe_root/main.js, you’ll need to set up routes:
 Find the comment // Add routes here
 
 Main.js routes work by dispatching on the second path element. The first was used by the ui (or rather the top level config.yml for this plugin) to dispatch to the plugin itself. The second element is used to dispatch on the “view”
+
 If this is not possible, an outer route can set the view in queryParams as the literal param named ‘view’
 queryParams:
 path: {literal: [‘viewIdHere’]}
+
 The widget module which is invoked by the view will receive the remainder of the path as a parameter named ‘rest’.
+
 Reload the browser
+
 The first time you get this working, things will probably be broken.
 Look out for modules which don’t load. If the module being loaded is terribly obsolete, think about an easy way to refactor. For instance, kb_ko is an obsolete knockout wrapper, kb_knockout is better.
 
@@ -505,7 +514,7 @@ Look out for modules which don’t load. If the module being loaded is terribly 
 
 Other than encountering issues and fixing them, here are some common issues:
 
--   fix up ui links
+-   [fix up ui links](#Fix_up_links)
 -   replace usages of plugin special module
 -   fix up styles
 
@@ -516,6 +525,8 @@ Here are some various notes on porting issues:
 ### A note on routes.
 
 TODO
+
+<a name="fix_up_links"></a>
 
 ### Fix up links
 

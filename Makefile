@@ -228,4 +228,7 @@ get-gitlab-config:
 clean-gitlab-config:
 	rm -rf dev/gitlab-config
 	
+dev-certs:
+	bash tools/make-dev-certs.sh
+
 

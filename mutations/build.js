@@ -703,10 +703,6 @@ function installPlugins(state) {
                         });
                     });
                 });
-                // warning for those without tests
-                // filter for those with a test directory
-                // ensure test/plugins exists
-                // move test directory there
             })
             .then(function () {
                 return state;
@@ -1132,9 +1128,16 @@ function fixupBaseBuild(state) {
         mapRe = /\/\*#\s*sourceMappingURL.*\*\//m;
 
     // remove mapping from css files.
-    return glob(root.concat(['build', 'client', 'modules', '**', '*.css']).join('/'), {
-        nodir: true
-    })
+    return glob(
+        root
+            .concat(['build', 'client', 'modules', '**', '*.css'], {
+                ignore: ['iframe_root']
+            })
+            .join('/'),
+        {
+            nodir: true
+        }
+    )
         .then(function (matches) {
             return Promise.all(
                 matches.map(function (match) {

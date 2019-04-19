@@ -1,22 +1,22 @@
 /*
  * MUTANT
  * Not a build system, a mutation machine.
- * 
+ *
  */
 
 /*
  * Here is the idea of mutant. It decomposes the build process into a map of mutation
  * machines. The initial raw material + inputs enters the first process, which
  * works on it, then passes it to a second, and so forth.
- * 
+ *
  * The main ideas are:
  * - the system travels between processes, does not exist anywhere else.
- * - each process may mutate the system, and must pass those mutations to 
+ * - each process may mutate the system, and must pass those mutations to
  *   the next process.
  * - processes are just javascript, so may include conditional branching, etc.
- * - procsses are asynchronous by nature, promises, so may arbitrarily contain 
+ * - procsses are asynchronous by nature, promises, so may arbitrarily contain
  *   async tasks, as long as they adhere to the promises api.
- *   
+ *
  */
 
 /*eslint-env node*/
@@ -37,17 +37,23 @@ var findit = require('findit2'),
 function copyFiles(tryFrom, tryTo, globExpr) {
     return Promise.all([fs.realpathAsync(tryFrom.join('/')), fs.realpathAsync(tryTo.join('/'))])
         .spread(function (from, to) {
-            return [from.split('/'), to.split('/'), glob(globExpr, {
-                cwd: from,
-                nodir: true
-            })];
+            return [
+                from.split('/'),
+                to.split('/'),
+                glob(globExpr, {
+                    cwd: from,
+                    nodir: true
+                })
+            ];
         })
         .spread(function (from, to, matches) {
-            return Promise.all(matches.map(function (match) {
-                var fromPath = from.concat([match]).join('/'),
-                    toPath = to.concat([match]).join('/');
-                return fs.copy(fromPath, toPath, {});
-            }));
+            return Promise.all(
+                matches.map(function (match) {
+                    var fromPath = from.concat([match]).join('/'),
+                        toPath = to.concat([match]).join('/');
+                    return fs.copy(fromPath, toPath, {});
+                })
+            );
         });
 }
 
@@ -69,7 +75,8 @@ function ensureEmptyDir(path) {
     var dir = path.join('/');
 
     // ensure dir
-    return fs.ensureDirAsync(dir)
+    return fs
+        .ensureDirAsync(dir)
         .then(function () {
             return fs.readdirAsync(dir);
         })
@@ -87,61 +94,55 @@ function loadDockerEnvFile(path) {
     } else {
         filePath = path.join('/');
     }
-    return fs.readFileAsync(filePath, 'utf8')
-        .then(function (contents) {
-            return contents.split('\n')
-                .reduce(function (lines, line) {
-                    line = line.trimLeft();
-                    if (line.trim().length === 0) {
-                        return lines;
-                    } else if (line[0] === '#') {
-                        return lines;
-                    }
-                    var pos = line.indexOf('=');
-                    if (pos === -1) {
-                        lines[key] = null;
-                        return lines;
-                    } 
-                    var key = line.slice(0, pos);
-                    var value = line.slice(pos+1);
-                    lines[key] = value;
-                    return lines;
-                }, {});
-        });
+    return fs.readFileAsync(filePath, 'utf8').then(function (contents) {
+        return contents.split('\n').reduce(function (lines, line) {
+            line = line.trimLeft();
+            if (line.trim().length === 0) {
+                return lines;
+            } else if (line[0] === '#') {
+                return lines;
+            }
+            var pos = line.indexOf('=');
+            if (pos === -1) {
+                lines[key] = null;
+                return lines;
+            }
+            var key = line.slice(0, pos);
+            var value = line.slice(pos + 1);
+            lines[key] = value;
+            return lines;
+        }, {});
+    });
 }
 
 function loadYaml(path) {
     var yamlPath = path.join('/');
-    return fs.readFileAsync(yamlPath, 'utf8')
-        .then(function (contents) {
-            try {
-                return yaml.safeLoad(contents);
-            } catch (ex) {
-                console.log('Error loading yaml', ex);
-                console.log(contents);
-                throw new Error('Error loading yaml: ' + ex.message);
-            }
-        });
+    return fs.readFileAsync(yamlPath, 'utf8').then(function (contents) {
+        try {
+            return yaml.safeLoad(contents);
+        } catch (ex) {
+            console.log('Error loading yaml', ex);
+            console.log(contents);
+            throw new Error('Error loading yaml: ' + ex.message);
+        }
+    });
 }
 
 function loadJson(path) {
-    return fs.readFileAsync(path.join('/'), 'utf8')
-        .then(function (contents) {
-            return JSON.parse(contents);
-        });
+    return fs.readFileAsync(path.join('/'), 'utf8').then(function (contents) {
+        return JSON.parse(contents);
+    });
 }
 
 function saveYaml(path, data) {
     return fs.writeFileAsync(path.join('/'), yaml.safeDump(data));
 }
 
-
 function loadIni(iniPath) {
     var yamlPath = iniPath.join('/');
-    return fs.readFileAsync(yamlPath, 'utf8')
-        .then(function (contents) {
-            return ini.parse(contents);
-        });
+    return fs.readFileAsync(yamlPath, 'utf8').then(function (contents) {
+        return ini.parse(contents);
+    });
 }
 
 function rtrunc(array, len) {
@@ -158,7 +159,6 @@ function saveJson(path, jsonData) {
     return fs.writeFileAsync(path.join('/'), JSON.stringify(jsonData, null, 4));
 }
 
-
 function uniq(prefix) {
     if (!uniqState[prefix]) {
         uniqState[prefix] = 0;
@@ -168,7 +168,7 @@ function uniq(prefix) {
 }
 
 function uniqts(prefix) {
-    var ts = (new Date()).getTime();
+    var ts = new Date().getTime();
     return prefix + String(ts);
 }
 
@@ -234,16 +234,17 @@ function copyState(oldState) {
             var newState = JSON.parse(JSON.stringify(oldState)),
                 tempDir = uniq('temp_'),
                 newFs = [tempDir],
-                start = (new Date()).getTime();
+                start = new Date().getTime();
 
             // Give the next process a fresh copy of all the files.
             newState.environment.filesystem = newFs;
             newState.environment.path = newState.environment.root.concat(newFs);
 
-            newState.copyTime = (new Date()).getTime() - start;
-            start = (new Date()).getTime();
+            newState.copyTime = new Date().getTime() - start;
+            start = new Date().getTime();
 
-            return fs.copyAsync(oldState.environment.path.join('/'), newState.environment.path.join('/'))
+            return fs
+                .copyAsync(oldState.environment.path.join('/'), newState.environment.path.join('/'))
                 .then(function () {
                     return newState;
                 });
@@ -263,10 +264,9 @@ function makeRunDir(state) {
 
 function removeRunDir(state) {
     if (state.environment.root) {
-        return fs.removeAsync(state.environment.root.join('/'))
-            .then(function () {
-                return state;
-            });
+        return fs.removeAsync(state.environment.root.join('/')).then(function () {
+            return state;
+        });
     }
     return state;
 }
@@ -276,21 +276,21 @@ function timestamp() {
 }
 
 function log(msg) {
-    var line = 'INFO: '+ timestamp() + ': ' + msg;
+    var line = 'INFO: ' + timestamp() + ': ' + msg;
     var chalked = chalk.blue(line);
     process.stdout.write(chalked);
     process.stdout.write('\n');
 }
 
 function warn(msg) {
-    var line = 'WARN: '+ timestamp() + ': ' + msg;
+    var line = 'WARN: ' + timestamp() + ': ' + msg;
     var chalked = chalk.yellow(line);
     process.stdout.write(chalked);
     process.stdout.write('\n');
 }
 
 function success(msg) {
-    var line = '✔   : '+ timestamp() + ': ' + msg;
+    var line = '✔   : ' + timestamp() + ': ' + msg;
     var chalked = chalk.green(line);
     process.stdout.write(chalked);
     process.stdout.write('\n');
@@ -373,7 +373,7 @@ function createInitialState(initialConfig) {
                 }
             });
 
-            // And also create a temp staging dir for build processes to 
+            // And also create a temp staging dir for build processes to
             // place files
             mkdir(state.environment.root.concat(['inputfiles']), 'tmp');
 
@@ -395,10 +395,9 @@ function finish(state) {
         if (!state.buildConfig.keepBuildDir) {
             return removeRunDir(state);
         }
-    })
-        .then(function () {
-            log('Finished with mutations');
-        });
+    }).then(function () {
+        log('Finished with mutations');
+    });
 }
 
 module.exports = {

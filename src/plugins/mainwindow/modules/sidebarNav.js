@@ -1,9 +1,4 @@
-define([
-    'bluebird',
-    'knockout',
-    'kb_lib/html',
-    './components/sidebarMenu'
-], function (
+define(['bluebird', 'knockout', 'kb_lib/html', './components/sidebarMenu'], function (
     Promise,
     ko,
     html,
@@ -107,7 +102,6 @@ define([
             button.active(true);
         }
     }
-
 
     class SidebarNav {
         constructor(config) {

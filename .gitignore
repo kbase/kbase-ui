@@ -21,6 +21,7 @@ nbproject
 /build/test
 /build/deploy
 /mutations/mutantfiles
+report.*.json
 
 # Doc artifacts
 _book
@@ -28,6 +29,7 @@ _book
 # Developer artifacts
 /dev/docker-compose.override.yml
 /dev/gitlab-config
+/dev/test-config.json
 node_modules
 
 # General purpose temp directory
@@ -35,3 +37,5 @@ node_modules
 !/temp/README.md
 
 docker-compose.override.yml
+
+tools/proxy/contents/ssl/*
