@@ -53,6 +53,10 @@ net 			= kbase-dev
 # TODO: for the sake of completeness, https with self-signed certs should be supported.
 kbase-ini-dir  = /kb/deployment/config
 
+# Host is the kbase deployment host to utilize for integration tests
+# ci, next, appdev, prod
+host = ci
+
 # functions
 
 # check_defined variable-name message
