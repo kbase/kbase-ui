@@ -16,7 +16,8 @@ define(['kb_lib/html', 'kb_lib/htmlBootstrapBuilders'], function (html, BS) {
         render() {
             return div(
                 {
-                    class: 'container-fluid'
+                    class: 'container-fluid',
+                    dataKBTesthookPlugin: 'welcome'
                 },
                 [
                     div(

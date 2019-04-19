@@ -1,0 +1,48 @@
+[
+    {
+        "description": "Unauthenticated",
+        "specs": [
+            {
+                "description": "should get the signin page",
+                "baseSelector": [],
+                "tasks": [
+                    {
+                        "title": "navigate to dashboard ",
+                        "navigate": {
+                            "path": "narrativemanager/new"
+                        }
+                    },
+                    {
+                        "switchToFrame": {
+                            "selector": [
+                                {
+                                    "type": "iframe",
+                                    "value": "plugin-iframe"
+                                }
+                            ],
+                            "wait": 1000
+                        }
+                    },
+                    {
+                        "selector": [
+                            {
+                                "type": "plugin",
+                                "value": "auth2-client"
+                            },
+                            {
+                                "type": "component",
+                                "value": "login-view"
+                            },
+                            {
+                                "type": "field",
+                                "value": "requested-path"
+                            }
+                        ],
+                        "wait": 10000,
+                        "text": "narrativemanager/new"
+                    }
+                ]
+            }
+        ]
+    }
+]

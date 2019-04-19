@@ -1,0 +1,35 @@
+[
+    {
+        "description": "Welcome plugin",
+        "specs": [
+            {
+                "description": "",
+                "baseSelector": [
+                    {
+                        "type": "plugin",
+                        "value": "welcome"
+                    }
+                ],
+                "tasks": [
+                    {
+                        "navigate": {
+                            "path": "bulk-ui"
+                        }
+                    },
+
+                    {
+                        "selector": [
+                            {
+                                "type": "raw",
+                                "name": "data-element",
+                                "value": "title"
+                            }
+                        ],
+                        "waitForText": 5000,
+                        "text": "Bulk Import - DEPRECATED"
+                    }
+                ]
+            }
+        ]
+    }
+]
