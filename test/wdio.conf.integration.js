@@ -59,12 +59,12 @@ exports.config = {
             // 'goog:chromeOptions': {
             //     args: ['--headless']
             // }
-        },
-        {
-            maxInstances: 5,
-            browserName: 'firefox',
-            acceptInsecureCerts: true
         }
+        // {
+        //     maxInstances: 5,
+        //     browserName: 'firefox',
+        //     acceptInsecureCerts: true
+        // }
         // {
         //     maxInstances: 5,
         //     browserName: 'safari',
