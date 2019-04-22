@@ -194,7 +194,7 @@ class Task {
                 };
             case 'baseSelector':
                 return () => {
-                    this.spec.baseSelector = this.taskDef.baseSelector;
+                    this.spec.baseSelector = this.taskDef.selector;
                 };
             case 'click':
                 return () => {
@@ -233,7 +233,7 @@ class Task {
                     return false;
                 }
                 const value = Number(text.replace(/,/g, ''));
-                return utils.isValidNumber(value, this.taskDef.comparison);
+                return utils.isValidNumber(value, this.taskDef.number);
             };
         case 'forElementCount':
             return () => {
@@ -243,7 +243,7 @@ class Task {
                     }
                     const els = browser.$$(this.taskDef.resolvedSelector);
                     const count = els.length;
-                    return utils.isValidNumber(count, this.taskDef.elementCount);
+                    return utils.isValidNumber(count, this.taskDef.count);
                 } catch (ex) {
                     return false;
                 }
