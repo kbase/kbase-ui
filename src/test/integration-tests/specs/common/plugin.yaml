@@ -1,0 +1,8 @@
+---
+  - wait: forElement
+    selector:
+      type: absolute
+      path:
+        - type: iframe
+          value: plugin-iframe
+  - action: switchToFrame

@@ -4,43 +4,50 @@
 
 'use strict';
 
-var runner = require('./runner');
-var glob = require('glob');
-var path = require('path');
+const runner = require('./runner');
+const utils = require('./utils');
+const glob = require('glob');
+const path = require('path');
 
-var jsonFiles = glob.sync('plugins/*/*.json', {
+const jsonFiles = glob.sync('plugins/*/*.json', {
     nodir: true,
     absolute: true,
     cwd: __dirname
 });
 
-var yamlFiles = glob.sync('plugins/*/*.@(yml|yaml)', {
+const yamlFiles = glob.sync('plugins/*/*.@(yml|yaml)', {
     nodir: true,
     absolute: true,
     cwd: __dirname
 });
 
-var common = glob
-    .sync('common/*.json', {
+const commonSpecs = glob
+    .sync('common/*.yaml', {
         nodir: true,
         absolute: true,
         cwd: __dirname
     })
     .reduce(function (common, match) {
-        common[path.basename(match, '.json')] = runner.loadJSONFile(match);
+        common[path.basename(match, '.yaml')] = utils.loadYAMLFile(match);
         return common;
     }, {});
 
-var pluginTests = jsonFiles
+const pluginTests = jsonFiles
     .map(function (file) {
-        return runner.loadJSONFile(file);
+        return utils.loadJSONFile(file);
     })
     .concat(
         yamlFiles.map(function (file) {
-            return runner.loadYAMLFile(file);
+            return utils.loadYAMLFile(file);
         })
     );
 
-pluginTests.forEach(function (tests) {
-    return runner.runTests(tests, common);
+const testData = utils.loadJSONFile(__dirname + '/../config.json');
+
+const testSuite = new runner.Suite({
+    testFiles: pluginTests,
+    commonSpecs,
+    testData
 });
+
+testSuite.run();

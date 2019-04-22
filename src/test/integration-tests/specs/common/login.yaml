@@ -1,0 +1,46 @@
+---
+- action: setSessionCookie
+  title: Set kbase session cookie (simulate login)
+  params:
+    name: kbase_session
+    path: "/"
+    value: "${token}"
+- wait: forElement
+  timeout: 10000
+  title: Ensure the logged-in menu appears, then open the user menu
+  selector:
+    type: absolute
+    path:
+      - type: plugin
+        value: login
+      - type: menu
+        value: signed-in
+      - type: button
+        value: avatar
+- action: click
+- wait: forText
+  timeout: 10000
+  title: Username should be now rendered
+  text: ${username}
+  selector:
+    type: absolute
+    path:
+      - type: plugin
+        value: login
+      - type: menu
+        value: signed-in
+      - type: label
+        value: username
+- wait: forElement
+  title: select button
+  selector:
+    type: absolute
+    path:
+      - type: plugin
+        value: login
+      - type: menu
+        value: signed-in
+      - type: button
+        value: avatar
+- action: click
+  title: close menu

@@ -91,13 +91,156 @@ If all goes well, after several tens of seconds you should see a summary of the 
 
 ## Plugin Testing Script
 
-Each plugin should have a directory `src/plugin/test` which contains one or JSON files containing test scripts.
+Each plugin should have a directory `src/plugin/test` which contains one or YAML files containing test scripts.
 
-[ describe the script format here ]
+> At present the integration test tools support YAML or JSON, but YAML is preferred due the ability to add comments and comment out tests, which are quite handy during testing work.
+
+### Test Script Format
+
+A plugin can have one or more test scripts. Each script should be dedicated to a set of concerns, such as a route. Each plugin should have a test script for each route.
+
+A test script may contain one or more test specs. Each spec is composed of one or more test tasks. Any task may cause a test spec failure.
+
+The basic structure is:
+
+-   test
+    -   spec 1
+        -   task 1
+        -   task 2
+        -   task 3
+    -   spec 2
+        -   task 1
+        -   task 2
+
+```yaml
+# Test Script for Dashboard Plugin
+---
+- description: Dashboard with authentication
+  specs:
+      - description: Dashboard should appear when the route is navigated to
+        tasks:
+            - title: login
+              subtask: login
+            - title: navigate to dashboard
+              navigate:
+                  path: dashboard
+            - switchToFrame:
+                  selector:
+                      - type: iframe
+                        value: plugin-iframe
+                  wait: 1000
+            - selector:
+                  - type: plugin
+                    value: dashboard
+                  - type: widget
+                    value: narratives-widget
+                  - type: slider
+                    value: your-narratives
+              wait: 10000
+            - selector:
+                  - type: plugin
+                    value: dashboard
+                  - type: widget
+                    value: narratorials-widget
+                  - type: slider
+                    value: narratorials
+              wait: 10000
+            - selector:
+                  - type: plugin
+                    value: dashboard
+                  - type: widget
+                    value: shared-narratives-widget
+                  - type: slider
+                    value: shared-narratives
+              wait: 10000
+            - selector:
+                  - type: plugin
+                    value: dashboard
+                  - type: widget
+                    value: public-narratives-widget
+                  - type: slider
+                    value: public-narratives
+              wait: 10000
+```
+
+#### Test
+
+Each test script has a single top level node which describes the test. The most important aspect of it is the `description` field. This field should briefly describe the test. It will be printed in the test results, so should be descriptive enough to distinguish the test amongst many. It should mention the plugin name as well as the overall purpose of the test.
+
+#### `description`
+
+Describes the test script; it should mention the plugin name as well as the overall purpose of the test.
+
+#### `baseSelector`
+
+A selector to be applied to all spec tasks which specify document navigation with a selector. It can be handy to avoid boilerplate in selectors, since a plugin's tests should primarily operate within the plugin's dom subtree.
+
+#### selectors
+
+A key concept of the integration test scripts is dom navigation. After all, the primary mechanism of integration tests is to poke at the ui and observe how it changes. Both the actions and observations are require that one specify a location with in the DOM -- and that location is defined by a DOM selector.
+
+In a test script, the selector is represented as an array of objects - each object describes the next DOM node in the selection path.
+
+There are two basic ways to specify a path node. The preferred way is to use a special _testhook_ embedded in the plugin's markup. Testhook support is built into the test tool, and requires less configuration in the test script. Other than testhooks, any attribute and attribute value can be used as a selector.
+
+##### testhook selectors
+
+A "testhook" is simply a special data- attribute which has been applied to a node. The format is `data-k-b-testhook-type`, where `type` is one of `plugin`, `component`, `widget`, `button`, `element` and so forth.
+
+The testhook type lets us reduce collisions, and improve readability.
+
+The format `k-b-testhook` is driven by the need to namespace the `data-` attribute with some form of `kbase`. In legacy kbase functional html style, this is specified in code as `dataKBTesthookType`, which is not as strange as `data-k-b-testhook-type`. Now, one might think that `data-kbase-testhook-type` is more pleasing on the eyes, but the code form of that is `dataKbaseTexthookType`, which is error-prone since the official form of `kbase` is `KBase`, which would result in `data-k-base-testhook-type`, which does not seem like an improvement.
+
+Here is an example of setting and specifying a testhook:
+
+Using legacy kbase functional html style:
+
+```javascript
+div({
+    dataKBTesthookPlugin: 'myplugin'
+});
+```
+
+In the test script:
+
+```yaml
+- type: plugin
+  value: myplugin
+```
+
+##### raw selectors
+
+The usage of raw selectors is frowned upon, but sometimes necessary. The testhook form is preferred because it is orthogonal to all other usage of DOM node attributes. Classes, for instance, are primarily associated with visual concerns. A developer may be altering classes to improve appearance, and not realize that it is a critical component of a test. By using a dedicated attribute format for testing, tests are much more stable over time and easier to debug, since the same prefix is used for all testhooks.
+
+However, at times we don't have control over markup. For instance, we may be using components which don't allow custom attributes.
+
+In such cases, the test script can use the type `raw`, and specify any arbitrary attribute name and optional value.
+
+E.g.
+
+Using legacy kbase functional html style:
+
+```javascript
+div({
+    class: 'someclass'
+});
+```
+
+In the test script:
+
+```yaml
+- type: raw
+  name: class
+  value: someclass
+```
+
+#### Spec
 
 ## kbase-ui integration test runner
 
 [ describe the test runner scripts ]
+
+## Integration Test Script
 
 Adding Testhooks
 
