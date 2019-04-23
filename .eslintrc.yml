@@ -47,3 +47,5 @@ rules:
     - commentPattern: fallthrough
   prefer-const:
     - error
+  arrow-parens:
+    - error

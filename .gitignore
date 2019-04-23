@@ -7,12 +7,10 @@ _trash
 
 # IDEs
 # put your ide here
-nbproject
-
-# Editor and OS artifacts
-.DS_Store
-.vscode
 .idea
+
+# OS artifacts
+.DS_Store
 
 # Build artifacts
 /build/dist

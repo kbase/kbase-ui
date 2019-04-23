@@ -46,7 +46,10 @@ class Test {
             if (this.testDef.disable) {
                 if (this.testDef.disable.envs) {
                     if (this.testDef.disable.envs.includes(this.suite.testData.env)) {
-                        utils.info('skipping test because it is disabled for env: ' + this.suite.testData.env);
+                        utils.info(
+                            'skipping test because it is disabled for env: ' +
+                this.suite.testData.env
+                        );
                         return;
                     }
                 }
@@ -77,9 +80,12 @@ class Spec {
             }
             if (this.specDef.disable) {
                 if (this.specDef.disable.envs) {
-                    if (this.specDef.disable.envs.includes(this.test.suite.testData.env)) {
+                    if (
+                        this.specDef.disable.envs.includes(this.test.suite.testData.env)
+                    ) {
                         utils.info(
-                            'skipping test spec because it is disabled for env: ' + this.test.suite.testData.env
+                            'skipping test spec because it is disabled for env: ' +
+                this.test.suite.testData.env
                         );
                         return;
                     }
@@ -132,7 +138,9 @@ class Task {
         if (this.taskDef.disable) {
             if (this.taskDef.disable.envs) {
                 if (this.taskDef.disable.envs.includes(this.testData.env)) {
-                    utils.info('skipping task because it is disabled for env: ' + this.testData.env);
+                    utils.info(
+                        'skipping task because it is disabled for env: ' + this.testData.env
+                    );
                     return;
                 }
             }
@@ -202,13 +210,18 @@ class Task {
                 };
             case 'setValue':
                 return () => {
-                    browser.setValue(this.spec.resolvedSelector, this.taskDef.params.value);
+                    browser.setValue(
+                        this.spec.resolvedSelector,
+                        this.taskDef.params.value
+                    );
                 };
             default:
                 throw new Error('Unknown task action: "' + this.taskDef.action + '"');
             }
         } else {
-            throw new Error('Missing action in task "' + this.taskDef.title || 'no title' + '"');
+            throw new Error(
+                'Missing action in task "' + this.taskDef.title || 'no title' + '"'
+            );
         }
     }
 
@@ -257,11 +270,11 @@ class Task {
     }
 
     doTask() {
-        // Primary tasks types are
-        // switching to a window
-        // setting a base selector
-        // waiting for appearance, text, or number
-        //
+    // Primary tasks types are
+    // switching to a window
+    // setting a base selector
+    // waiting for appearance, text, or number
+    //
 
         if (this.taskDef.selector) {
             // selector based actions
@@ -319,9 +332,18 @@ class Task {
             nth = ':nth-child(' + this.interpValue(element.nth) + ')';
         }
         if (element.type !== 'raw') {
-            return '[data-k-b-testhook-' + element.type + '="' + this.interpValue(element.value) + '"]' + nth;
+            return (
+                '[data-k-b-testhook-' +
+        element.type +
+        '="' +
+        this.interpValue(element.value) +
+        '"]' +
+        nth
+            );
         } else {
-            return '[' + element.name + '="' + this.interpValue(element.value) + '"]' + nth;
+            return (
+                '[' + element.name + '="' + this.interpValue(element.value) + '"]' + nth
+            );
         }
     }
     buildSelector(path) {
