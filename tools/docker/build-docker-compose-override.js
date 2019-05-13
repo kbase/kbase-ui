@@ -25,7 +25,7 @@ function mergePlugins(root, config, args) {
                 type: 'bind',
                 source: root + '/../kbase-ui-plugin-' + pluginName + '/src/plugin',
                 target: '/kb/deployment/services/kbase-ui/dist/modules/plugins/' + pluginName
-            })
+            });
         });
     }
 }
@@ -43,7 +43,7 @@ function mergeInternalPlugins(root, config, args) {
                 type: 'bind',
                 source: root + '/src/plugins/' + pluginName,
                 target: '/kb/deployment/services/kbase-ui/dist/modules/plugins/' + pluginName
-            })
+            });
         });
     }
 }
@@ -61,7 +61,7 @@ function mergePaths(root, config, args) {
                 type: 'bind',
                 source: [root, 'src/client/modules', path].join('/'),
                 target: '/kb/deployment/services/kbase-ui/dist/modules/' + path
-            })
+            });
         });
     }
 }
@@ -80,7 +80,7 @@ function mergeLibs(root, config, args) {
                 type: 'bind',
                 source: root + '/../kbase-' + libName + '/' + path,
                 target: '/kb/deployment/services/kbase-ui/dist/modules/' + moduleName
-            })
+            });
         });
     }
 }

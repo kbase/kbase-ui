@@ -48,6 +48,9 @@ define([
             if (!featureSwitch) {
                 throw new Error('Feature switch "' + id + '" not defined');
             }
+            if (featureSwitch.disabled) {
+                return false;
+            }
 
             const enabledFeatureSwitches = configProps.getItem('ui.featureSwitches.enabled');
             const enabled = enabledFeatureSwitches.includes(id);
@@ -58,6 +61,9 @@ define([
             const featureSwitch = featureSwitches[id];
             if (!featureSwitch) {
                 throw new Error('Feature switch "' + id + '" not defined');
+            }
+            if (featureSwitch.disabled) {
+                return true;
             }
 
             const disabledFeatureSwitches = configProps.getItem('ui.featureSwitches.disabled');
