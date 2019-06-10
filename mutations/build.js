@@ -42,9 +42,9 @@ var Promise = require('bluebird'),
 const NODE_BIN = __dirname + '/../node_modules/.bin/';
 
 // UTILS
-function run(command, ignoreStdErr=false) {
+function run(command, ignoreStdErr=false, verbose=false) {
     return new Promise(function (resolve, reject) {
-        exec(command, {}, function (err, stdout, stderr) {
+        const proc = exec(command, {}, function (err, stdout, stderr) {
             if (err) {
                 reject(err);
             }
@@ -54,6 +54,10 @@ function run(command, ignoreStdErr=false) {
             }
             resolve(stdout);
         });
+        if (verbose) {
+            return proc.stdout.pipe(process.stdout);
+        }
+        return proc;
     });
 }
 
@@ -299,7 +303,10 @@ function buildPlugin(state, pluginDir) {
         ['cd', pluginDir].join(' '),
         'npm install --unsafe-perm'
     ].join(' && ');
-    return run(commands, true);
+    return run(commands, true, true)
+        .then((out) => {
+            console.log(out);
+        })
 }
 
 function fetchPluginsFromGit(state) {
