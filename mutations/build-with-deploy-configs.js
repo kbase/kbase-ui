@@ -619,7 +619,6 @@ function installPlugins(state) {
                         .map(function (plugin) {
                             var source = root.concat(['plugins', plugin]),
                                 destination = root.concat(['build', 'client', 'modules', 'plugins', plugin]);
-                            // console.log('internal plugin?', plugin, root, source.join('/'), destination.join('/'));
                             return copyFiles(source, destination, '**/*');
                         }));
                 });                
@@ -978,8 +977,6 @@ function makeDeployConfig(state) {
     var cfgDir = root.concat(['build', 'deploy', 'cfg']);
     var sourceDir = root.concat(['config', 'deploy']);
 
-    // console.log('make deploy config...', root, cfgDir, sourceDir);
-
     // make deploy dir
     return fs.mkdirsAsync(cfgDir.join('/'))
         .then(function () {
@@ -989,7 +986,6 @@ function makeDeployConfig(state) {
             });
         })
         .then(function (matches) {
-            // console.log('matches', matches);
             return Promise.all(matches.map(function (match) {
                 var baseName = path.basename(match);
 

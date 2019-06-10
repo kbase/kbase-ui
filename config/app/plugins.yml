@@ -27,12 +27,13 @@ plugins:
       cwd: src/plugin
       source:
           bower: {}
-    - name: jobbrowser
-      globalName: kbase-ui-plugin-jobbrowser
-      version: kbase-ui-plugin-jobbrowser#payoff
+    - name: job-browser2
+      globalName: kbase-ui-plugin-job-browser2
+      version: kbase-ui-plugin-job-browser2#payoff
       cwd: src/plugin
       source:
-          bower: {}
+          git: 
+            url: https://github.com/eapearson/kbase-ui-plugin-job-browser2
     - name: auth2-client
       globalName: kbase-ui-plugin-auth2-client
       version: kbase-ui-plugin-auth2-client#payoff

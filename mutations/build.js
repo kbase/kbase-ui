@@ -42,21 +42,32 @@ var Promise = require('bluebird'),
 const NODE_BIN = __dirname + '/../node_modules/.bin/';
 
 // UTILS
-
-function gitinfo(state) {
-    function run(command) {
-        return new Promise(function (resolve, reject) {
-            exec(command, {}, function (err, stdout, stderr) {
-                if (err) {
-                    reject(err);
-                }
-                if (stderr) {
-                    reject(new Error(stderr));
-                }
-                resolve(stdout);
-            });
+function run(command, ignoreStdErr=false) {
+    return new Promise(function (resolve, reject) {
+        exec(command, {}, function (err, stdout, stderr) {
+            if (err) {
+                reject(err);
+            }
+            if (stderr && !ignoreStdErr) {
+                console.error('RUN error:', stderr);
+                reject(new Error(stderr));
+            }
+            resolve(stdout);
         });
-    }
+    });
+}
+
+function gitClone(url, dest) {
+    const commandLine = [
+        'git clone --quiet --depth 1',
+        url,
+        dest
+    ].join(' ')
+    return run(commandLine);
+}
+
+function gitInfo(state) {
+    
     // fatal: no tag exactly matches 'bf5efa0810d9f097b7c6ba8390f97c008d98d80e'
     return Promise.all([
         run('git show --format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d --name-status | head -n 8'),
@@ -283,6 +294,54 @@ function injectPluginsIntoBower(state) {
         });
 }
 
+function buildPlugin(state, pluginDir) {
+    const commands  = [
+        ['cd', pluginDir].join(' '),
+        'npm install --unsafe-perm'
+    ].join(' && ');
+    return run(commands, true);
+}
+
+function fetchPluginsFromGit(state) {
+    // Load plugin config
+    var root = state.environment.path,
+        pluginConfig,
+        pluginConfigFile = root.concat(['config', 'app', 'plugins.yml']).join('/'),
+        gitDestination = root.concat(['build', 'gitDownloads']);
+
+    return fs.mkdirsAsync(gitDestination.join('/'))
+        .then(() => {
+            return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8')])
+        })
+        .spread(function (pluginFile) {
+            pluginConfig = yaml.safeLoad(pluginFile);
+        })
+        .then(function () {
+            // First generate urls to all the plugin repos.
+            return Promise.all(pluginConfig.plugins
+                .filter(function (plugin) {
+                    if (typeof plugin === 'object' && !plugin.internal && plugin.source.git) {
+                        return true;
+                    }
+                    return false;
+                })
+                .map(function (plugin) {
+                    var name = plugin.source.git.name || plugin.globalName,
+                        version = plugin.source.git.version || plugin.version,
+                        url = plugin.source.git.url || 'https://github.com/kbase/' + name + '#' + version;
+
+                    const dest = gitDestination.concat([plugin.globalName]).join('/');
+                    mutant.log('...gitClone');
+                    return gitClone(url, dest)
+                        .then(() => {
+                            mutant.log('...buildPlugin');
+                            return buildPlugin(state, dest);
+                        })
+                }));
+
+        });
+}
+
 /*
  *
  * Create the plugins load config from the plugins master config. The load config
@@ -342,7 +401,7 @@ function bowerInstall(state) {
 
 function npm(cmd, argv, options) {
     return new Promise(function (resolve, reject) {
-        exec(NODE_BIN + 'npm ' + cmd + argv.join(' '), options, function (err, stdout, stderr) {
+        exec('npm ' + cmd + argv.join(' '), options, function (err, stdout, stderr) {
             if (err) {
                 reject(err);
             }
@@ -646,6 +705,23 @@ function installPlugins(state) {
                         return Promise.all(
                             plugins
                                 .filter(function (plugin) {
+                                    return typeof plugin === 'object' && plugin.source.git;
+                                })
+                                .map(function (plugin) {
+                                    const cwds = plugin.cwd || 'dist/plugin', 
+                                          cwd = cwds.split('/'),
+                                          srcDir = root.concat(['build', 'gitDownloads', plugin.globalName]).concat(cwd),
+                                          destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+
+                                    mutant.ensureDir(destDir);
+                                    return mutant.copyFiles(srcDir, destDir, '**/*');
+                                })
+                        )
+                    })
+                    .then(function () {
+                        return Promise.all(
+                            plugins
+                                .filter(function (plugin) {
                                     return typeof plugin === 'object' && plugin.source.directory;
                                 })
                                 .map(function (plugin) {
@@ -654,7 +730,7 @@ function installPlugins(state) {
                                         // Our actual cwd is mutations, so we need to escape one up to the
                                         // project root.
                                         repoRoot = (plugin.source.directory.root &&
-                                            plugin.source.directory.root.split('/')) || ['..', '..'],
+                                            plugin.source.directory.root.split('/')) || ['', 'kb', 'plugins'],
                                         source = repoRoot.concat([plugin.globalName]).concat(cwd),
                                         destination = root.concat([
                                             'build',
@@ -665,7 +741,7 @@ function installPlugins(state) {
                                         ]);
                                     mutant.ensureDir(destination);
                                     return mutant.copyFiles(source, destination, '**/*');
-                                })
+                                }) 
                         );
                     })
                     .then(function () {
@@ -677,7 +753,6 @@ function installPlugins(state) {
                                 .map(function (plugin) {
                                     var source = root.concat(['plugins', plugin]),
                                         destination = root.concat(['build', 'client', 'modules', 'plugins', plugin]);
-                                    // console.log('internal plugin?', plugin, root, source.join('/'), destination.join('/'));
                                     mutant.ensureDir(destination);
                                     return mutant.copyFiles(source, destination, '**/*');
                                 })
@@ -768,9 +843,15 @@ function setupBuild(state) {
             return fs.rmdirAsync(root.concat(['src']).join('/'));
         })
         .then(function () {
+            mutant.log('injectPluginsIntoBower');
             return injectPluginsIntoBower(state);
         })
         .then(function () {
+            mutant.log('Fetch plugins from github and build...');
+            return fetchPluginsFromGit(state);
+        })
+        .then(function () {
+            mutant.log('injectPluginsIntoConfig');
             return injectPluginsIntoConfig(state);
         })
         .then(function () {
@@ -853,7 +934,7 @@ function copyUiConfig(state) {
 }
 
 function createBuildInfo(state) {
-    return gitinfo(state).then(function (gitInfo) {
+    return gitInfo(state).then(function (gitInfo) {
         var root = state.environment.path,
             configDest = root.concat(['build', 'client', 'modules', 'config', 'buildInfo.yml']),
             buildInfo = {
@@ -1421,8 +1502,7 @@ function makeModuleVFS(state, whichBuild) {
  */
 
 function main(type) {
-    return (
-        Promise.try(function () {
+    return Promise.try(function () {
             mutant.log('Creating initial state for build: ' + type);
             var initialFilesystem = [
                 {
@@ -1596,24 +1676,9 @@ function main(type) {
                     return state;
                 });
             })
-
             .then(function (state) {
                 return mutant.finish(state);
-            })
-            .catch(function (err) {
-                console.error('ERROR');
-                console.error(err);
-                console.error(
-                    util.inspect(err, {
-                        showHidden: false,
-                        depth: 10
-                    })
-                );
-                console.error(err.message);
-                console.error(err.name);
-                console.error(err.stack);
-            })
-    );
+            });
 }
 
 function usage() {
@@ -1628,4 +1693,18 @@ if (type === undefined) {
     process.exit(1);
 }
 
-main(type);
+main(type)
+    .catch((err) => {
+        console.error('ERROR');
+        console.error(err);
+        console.error(
+            util.inspect(err, {
+                showHidden: false,
+                depth: 10
+            })
+        );
+        console.error(err.message);
+        console.error(err.name);
+        console.error(err.stack);
+        process.exit(1);
+    });
