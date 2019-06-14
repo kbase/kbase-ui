@@ -16,7 +16,7 @@ ui:
         # service check is conducted at ui startup; all core services are contacted to fetch
         # the current version. This affects the startup experience so we need to use a gradation
         # of timeouts. the slow timeout will trigger a warning for the user, but the check will
-        # continue, the hard timeout will cancel the requests. slow is 10 seconds, hard limit is 1 minute.
+        # continue, the hard timeout will cancel the requests. slow is 1 seconds, hard limit is 10 seconds.
         service_check_timeouts:
             slow: 10000
             hard: 60000
