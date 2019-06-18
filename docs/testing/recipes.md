@@ -1,3 +1,9 @@
+---
+title: Recipes
+parent: Testing
+nav_order: 4
+---
+
 # Test Recipes
 
 ## Unit Testing

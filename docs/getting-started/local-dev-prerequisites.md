@@ -1,3 +1,9 @@
+---
+title: Developer Prerequisites
+parent: Getting Started
+nav_order: 3
+---
+
 # Prerequisites
 
 The kbase-ui web app is used as a Docker image. For basic usage, including building and running the Docker image, just two applications are required: docker and git.
@@ -8,22 +14,22 @@ For full-blown development of kbase-ui, these same two dependencies would suffic
 
 You will need to ensure that you have a basic set of development tools on your host desktop machine. These tools are available on Mac, Linux, and Windows.
 
-| app | version | notes |
-|-----|---------|------ |
-| nodejs | 6 (LTS) | The V8 javascript system, required for building kbase-ui and running tests; we are currently on version 8. |
-| npm | 6 | |
-| git    | * | the source revision management tool with integration into github |
-| docker | * | the linux container manager you will use to run kbase-ui |
-| dockerize | * | a utility to make running docker containers more sane |
-| make  | * | all build tasks go through make |
+| app       | version | notes                                                                                                      |
+| --------- | ------- | ---------------------------------------------------------------------------------------------------------- |
+| nodejs    | 6 (LTS) | The V8 javascript system, required for building kbase-ui and running tests; we are currently on version 8. |
+| npm       | 6       |                                                                                                            |
+| git       | \*      | the source revision management tool with integration into github                                           |
+| docker    | \*      | the linux container manager you will use to run kbase-ui                                                   |
+| dockerize | \*      | a utility to make running docker containers more sane                                                      |
+| make      | \*      | all build tasks go through make                                                                            |
 
 > \* we haven't documented any substantial differences between these tools regarding the kbase-ui development process. However, it is best to keep them always at the most recent version by updating your tool stack periodically
 
 _kbase-ui_ is built not just on your local development workstation, but int the following places:
 
-- in Travis CI, as part of the github workflow
-- in the KBase Jenkins instance, as part of the CI deployment
-- in a KBase VM (??) as part of the next/appdev/production deployment process
+-   in Travis CI, as part of the github workflow
+-   in the KBase Jenkins instance, as part of the CI deployment
+-   in a KBase VM (??) as part of the next/appdev/production deployment process
 
 As such, we need to ensure that each part of the build toolchain is consistent in each environment. Thus, even though a different version of the above tools may work for you (and of course no-one is watching you to make sure you aren't!) please be advised that it is possible that you can introduce dependencies upon a version of a tool which will break in one of the other KBase build environments.
 
@@ -35,7 +41,7 @@ Node and npm are used together to build _kbase-ui_ and to run tests. Node and np
 
 [ to be done ]
 
-### docker 
+### docker
 
 [ to be done ]
 
@@ -58,7 +64,7 @@ sudo mv dockerize /usr/local/bin
 
 You may also install it via go. This is especially handy if you are already set up for go, or need to use other go-based programs which are not available through a package manager.
 
-install go 
+install go
 
 ```bash
 sudo port install golang
@@ -96,8 +102,6 @@ go install github.com/jwilder/dockerize
 
 now the dockerize command will be available.
 
-
-
 ### make
 
 [ to be done]
@@ -116,7 +120,7 @@ Procedures for installation of system level packages depends on the system you u
 
 The following tools are available on all supported platforms (Mac, Windows, Linux). Please consult the installation instructions at the respective web sites:
 
-- Docker - [https://www.docker.com](https://www.docker.com)
+-   Docker - [https://www.docker.com](https://www.docker.com)
 
 That leaves us with nodejs and git to install through other means.
 
@@ -124,10 +128,10 @@ That leaves us with nodejs and git to install through other means.
 
 There are three common sources for these tools natively on a Mac:
 
-- Apple xCode
-- Native Mac installation packages
-- Macports
-- Homebrew
+-   Apple xCode
+-   Native Mac installation packages
+-   Macports
+-   Homebrew
 
 (see the Linux section for Vagrant on Mac instructions.)
 
@@ -167,7 +171,7 @@ As of this time, please use version 8 of NodeJS. We try to stay on the most rece
 
 It is no longer recommended to install the global version of npm-based development tools. Rather, they run out of the local kbase-ui repo. The local repo always installs these tools, since they are used by the build and testing tools.
 
-For convenience, you may run 
+For convenience, you may run
 
 ```bash
 . tools/devtools.sh
@@ -202,8 +206,6 @@ Note that the version of nodejs is important. We try very hard to use the same v
 In general we try to stay on the most recent Long Term Support (LTS) of any dependency, but sometimes it takes us a while to have time to coordinate the concurrent update of all of the places they are used.
 
 > Note: Although xCode installs git, the one available through macports is probably more up-to-date.
-
-
 
 #### Homebrew
 

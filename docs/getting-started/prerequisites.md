@@ -1,3 +1,9 @@
+---
+title: Prerequisites
+parent: Getting Started
+nav_order: 2
+---
+
 # Prerequisites
 
 The kbase-ui is a web app, composed of html, javascript, css, data files, image files, and many other assets. As a web app it can be used behind just about any type of web server. In order to use the web app, it must operate on a supported KBase host. Practically this means that it should operate behind a proxy server which itself operates on the KBase host. (These hosts are https://X.kbase.host, where X is ci, next, appdev, and narrative).
@@ -14,13 +20,12 @@ For certain development tasks, or to run specific phases of the development proc
 
 You will need to ensure that you have a basic set of the following tools on your host desktop machine. These tools are available on Mac, Linux, and Windows.
 
-| app | version | notes |
-|-----|---------|------ |
-| docker | 18.x.x | the linux container manager you will use to build and run kbase-ui |
-| git    | * | the source revision management tool with integration into github |
-| make | >= 3.8 | any relatively recent make should work |
-| node | >= 8 | any recent version should work |
-
+| app    | version | notes                                                              |
+| ------ | ------- | ------------------------------------------------------------------ |
+| docker | 18.x.x  | the linux container manager you will use to build and run kbase-ui |
+| git    | \*      | the source revision management tool with integration into github   |
+| make   | >= 3.8  | any relatively recent make should work                             |
+| node   | >= 8    | any recent version should work                                     |
 
 > \* we haven't documented any substantial differences between these tools regarding the kbase-ui development process. However, it is best to keep them always at the most recent version by updating your tool stack periodically.
 
@@ -58,7 +63,7 @@ The ubiquitous and venerable "make" program is used to automate just about all o
 
 The make program is installed with xCode, and that version seems adequate.
 
-Note that the make installed with xCode is GNU make, which is good, because it is compatible with Linux. This may be true of xCode tools, but generally macOS distributes BSD versions of other unixy tools like sed and grep. 
+Note that the make installed with xCode is GNU make, which is good, because it is compatible with Linux. This may be true of xCode tools, but generally macOS distributes BSD versions of other unixy tools like sed and grep.
 
 ### Windows
 
@@ -110,9 +115,8 @@ sudo apt-get install git
 
 [ to be done ]
 
-## docker 
+## docker
 
 Distribution of Docker changes from time to time. Currently it is best to consule the [Docker Store](https://store.docker.com/search?type=edition&offering=community), which should list a distribution for macOS, Windows, and various Linux distributions.
 
 That failing, just explore [Docker](https://docker.com).
-

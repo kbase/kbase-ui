@@ -1,3 +1,9 @@
+---
+title: Integration Testing
+parent: Testing
+nav_order: 2
+---
+
 # Integration Testing
 
 ## Prerequisites

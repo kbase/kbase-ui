@@ -1,3 +1,9 @@
+---
+title: Image Testing
+parent: Testing
+nav_order: 3
+---
+
 # Testing Images
 
 This document will cover testing of already-build images hosted at hub.docker.com.
