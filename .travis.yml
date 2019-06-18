@@ -37,7 +37,7 @@ env:
 # Note that when a travis build is triggered by a tag, the branch is undefined
 # The previous travis config specified that the branch had to be master as well as tagged, 
 # but a change at Travis broke this unexpectedly.
-if: branch = develop OR tag =~ /^v.+$/
+if: branch = develop OR tag =~ /^v.+$/ OR branch =~ /^feature-.+$/
 
 install:
     # Note that this will build the image appropriately, depending upon
