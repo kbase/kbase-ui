@@ -47,7 +47,9 @@ fi
 # $TAG was set from REAL_BRANCH, 
 # TRAVIS_BRANCH does not work as expected (contains the tag not branch) 
 # when the commit is tagged.
-if  ! ( [ "${REAL_BRANCH}" == "master" ] || [ "${REAL_BRANCH}" == "develop" ] )
+if  ! ( [ "${REAL_BRANCH}" == "master" ] ||
+        [ "${REAL_BRANCH}" == "develop" ] ||
+        [[ "${REAL_BRANCH}" =~ ^feature-.+$ ]] )
 then
     echo "Error: Will only push images for the master or develop branches; Will not push image for branch ${REAL_BRANCH}"
     exit 1
