@@ -53,7 +53,6 @@ then
     exit 1
 fi
 
-
 # Assign the tag to be used for the docker image from current branch as known to Travis.
 IMAGE_TAG="${REAL_BRANCH}"
 
