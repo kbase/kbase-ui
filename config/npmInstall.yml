@@ -15,6 +15,10 @@ npmFiles:
       cwd: dist
       src:
           - preact.umd.js
+    - name: kbase-ui-lib
+      cwd: lib 
+      src: 
+        - "**/*"
     # -
     #     name: d3
     #     cwd: build

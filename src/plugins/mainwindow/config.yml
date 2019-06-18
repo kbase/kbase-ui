@@ -4,8 +4,7 @@ package:
     author: Erik Pearson
     name: mainWindow
     description: A package containing the main kbase ui!
-    date: September 8, 2015
-    version: 0.0.1
+    type: legacy
 source:
     ## sources are relative to build/plugins/PACKAGE/source/javascript
     ## NB: need to quote file names, otherwise
@@ -78,4 +77,8 @@ install:
         -
             module: systemAlertBanner
             id: kb_mainWindow_systemAlertBanner
+            type: es6
+        - 
+            module: pluginSupport/panel
+            id: kb_iframe_loader
             type: es6
