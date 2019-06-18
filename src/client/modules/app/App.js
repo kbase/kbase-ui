@@ -60,8 +60,8 @@ define([
 
     */
     function factory(_config) {
-        // Import the config.
-        // TODO: validate all incoming config.
+    // Import the config.
+    // TODO: validate all incoming config.
         const plugins = _config.plugins;
         const services = _config.services;
         const nodes = _config.nodes;

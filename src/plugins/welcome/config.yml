@@ -4,7 +4,7 @@ package:
     name: welcome
     description: A welcome page
     author: Erik Pearson
-    date: September 14, 2015
+    type: legacy
 install:
     # Register the welcome widget
     widgets:

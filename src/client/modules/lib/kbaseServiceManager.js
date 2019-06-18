@@ -19,6 +19,11 @@ define([
             const http = new httpClient.HttpClient();
             const header = new httpClient.HttpHeader();
             header.setHeader('accept', 'application/json');
+            // console.log(
+            //     'checking REST service ' + serviceConfig.name,
+            //     serviceConfig.url + serviceConfig.version.path,
+            //     this.timeout
+            // );
             return http
                 .request({
                     method: 'GET',
@@ -29,8 +34,7 @@ define([
                 .then((result) => {
                     const contentType = result.header.getHeader('content-type');
                     if (contentType !== 'application/json') {
-                        const errorMessage =
-                            'Unexpected content type; expected "application/json", received "' + contentType + '"';
+                        const errorMessage = 'Unexpected content type; expected "application/json", received "' + contentType + '"';
                         if (this.throwErrors) {
                             throw new Error(errorMessage);
                         } else {
@@ -41,7 +45,7 @@ define([
                 })
                 .catch((err) => {
                     const errorMessage =
-                        'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
+            'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
                     if (this.throwErrors) {
                         throw new Error(errorMessage);
                     } else {
@@ -57,6 +61,11 @@ define([
                 url: serviceConfig.url,
                 timeout: this.timeout
             });
+            // console.log(
+            //     'checking JSONRPC service ' + serviceConfig.name,
+            //     serviceConfig.url + serviceConfig.version.path,
+            //     this.timeout
+            // );
             return client
                 .callFunc(serviceConfig.version.method, [])
                 .spread((result) => {
@@ -64,7 +73,7 @@ define([
                 })
                 .catch((err) => {
                     const errorMessage =
-                        'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
+            'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
                     if (this.throwErrors) {
                         throw new Error(errorMessage);
                     } else {
@@ -139,13 +148,13 @@ define([
                         .map((mismatch) => {
                             return (
                                 '(' +
-                                mismatch.code +
-                                ') ' +
-                                mismatch.module +
-                                ' needs to be at least ' +
-                                mismatch.minimumVersion +
-                                ' but is ' +
-                                mismatch.serviceVersion
+                mismatch.code +
+                ') ' +
+                mismatch.module +
+                ' needs to be at least ' +
+                mismatch.minimumVersion +
+                ' but is ' +
+                mismatch.serviceVersion
                             );
                         })
                         .join('; ');

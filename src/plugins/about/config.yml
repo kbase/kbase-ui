@@ -2,9 +2,10 @@
 ---
 package:
     author: Erik Pearson
-    name: about panel
+    name: About Panel
     description: A package containing the about panel
-    date: August 5, 2015
+    # the plugin type may be legacy or iframe
+    type: legacy
 source:
     modules:
 install:

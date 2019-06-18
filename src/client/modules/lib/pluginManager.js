@@ -1,8 +1,4 @@
-define([
-    'bluebird',
-], function (
-    Promise
-) {
+define(['bluebird'], function (Promise) {
     'use strict';
 
     // Note that we use the global require here because we need to
@@ -66,7 +62,7 @@ define([
             });
         }
 
-        function installPlugin(pluginLocation, pluginDef) {
+        function installLegacyPlugin(pluginLocation, pluginDef) {
             // build up a list of modules and add them to the require config.
             return Promise.try(function () {
                 var paths = {},
@@ -150,22 +146,72 @@ define([
 
                 // Now install any ui service configuration.
                 if (pluginDef.install) {
-                    return prequire(dependencies)
-                        .then(() => {
-                            var installSteps = [];
+                    return prequire(dependencies).then(() => {
+                        var installSteps = [];
 
-                            Object.keys(pluginDef.install).forEach(function (serviceName) {
-                                var installDef = pluginDef.install[serviceName],
-                                    intallationPromise = installIntoService(serviceName, installDef, pluginConfig);
-                                if (intallationPromise) {
-                                    arrayExtend(installSteps, [intallationPromise]);
-                                }
-                            });
-                            // Do all of the install steps.
-                            return Promise.all(installSteps);
+                        Object.keys(pluginDef.install).forEach(function (serviceName) {
+                            var installDef = pluginDef.install[serviceName],
+                                intallationPromise = installIntoService(serviceName, installDef, pluginConfig);
+                            if (intallationPromise) {
+                                arrayExtend(installSteps, [intallationPromise]);
+                            }
                         });
+                        // Do all of the install steps.
+                        return Promise.all(installSteps);
+                    });
                 } else {
                     return null;
+                }
+            });
+        }
+
+        function installIFramePlugin(pluginLocation, pluginDef) {
+            // build up a list of modules and add them to the require config.
+            return Promise.try(function () {
+                var sourcePath = pluginLocation.directory,
+                    dependencies = [],
+                    usingSourceModules = false;
+
+                var pluginConfig = {
+                    usingSourceModules: usingSourceModules,
+                    root: sourcePath,
+                    iframePath: sourcePath + '/iframe_root/index.html'
+                };
+
+                // Now install any ui service configuration.
+                if (pluginDef.install) {
+                    return prequire(dependencies).then(() => {
+                        var installSteps = [];
+
+                        Object.keys(pluginDef.install).forEach(function (serviceName) {
+                            var installDef = pluginDef.install[serviceName],
+                                intallationPromise = installIntoService(serviceName, installDef, pluginConfig);
+                            if (intallationPromise) {
+                                arrayExtend(installSteps, [intallationPromise]);
+                            }
+                        });
+                        // Do all of the install steps.
+                        return Promise.all(installSteps);
+                    });
+                } else {
+                    return null;
+                }
+            });
+        }
+
+        function installPlugin(pluginLocation, pluginDef) {
+            // build up a list of modules and add them to the require config.
+            return Promise.try(function () {
+                // Plugin type - legacy or iframe.
+                const pluginType = pluginDef.package.type || 'legacy';
+
+                switch (pluginType) {
+                case 'legacy':
+                    return installLegacyPlugin(pluginLocation, pluginDef);
+                case 'iframe':
+                    return installIFramePlugin(pluginLocation, pluginDef);
+                default:
+                    throw new Error('Unsupported plugin type: ' + pluginType);
                 }
             });
         }
@@ -182,11 +228,13 @@ define([
                         return new Promise(function (resolve, reject, notify) {
                             next(resolve, reject, notify);
                         });
-                    }).then(function () {
-                        return promiseIterator(rest);
-                    }).catch(function (err) {
-                        topReject(err);
-                    });
+                    })
+                        .then(function () {
+                            return promiseIterator(rest);
+                        })
+                        .catch(function (err) {
+                            topReject(err);
+                        });
                 }
                 promiseIterator(actions);
             });
