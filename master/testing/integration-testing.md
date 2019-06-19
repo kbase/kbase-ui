@@ -1,6 +1,7 @@
 ---
 title: Integration Testing
-parent: Testing
+parent: testing
+grand_parent: master
 nav_order: 2
 ---
 
@@ -42,9 +43,9 @@ You can run the integration tests from the basic kbase-ui development environmen
 
 Before running the tests, you must:
 
--   build kbase-ui
--   run the kbase-ui container
--   edit the test config file
+- build kbase-ui
+- run the kbase-ui container
+- edit the test config file
 
 Okay, that last step is a new one. The integration tests consult a single configuration file for information which cannot be included in the codebase itself.
 
@@ -54,9 +55,9 @@ Configuration values include core configuration like a user token, the associate
 
 ### Core configuration
 
--   token - copy a valid login or dev token into this property
--   username - copy the username associated with this token
--   realname - copy the "realname" (as set in the auth2 record) for this token
+- token - copy a valid login or dev token into this property
+- username - copy the username associated with this token
+- realname - copy the "realname" (as set in the auth2 record) for this token
 
 ### Plugin configuration
 
@@ -82,12 +83,12 @@ If all goes well, after several tens of seconds you should see a summary of the 
 
 ## Files
 
--   `dev/test` - placeholder directory for integration test scripts, code, and configuration; this directory is populated when the ui is built; the files are overlaid from the container via a volume mount.
--   `test/wdio.conf.integration.js` - webdriver io test configuration file
--   `src/test` - location of script runner files, which are copied into the kbase-ui image and subsequently made available locally through a volume mount at `/dev/test`.
--   `tools/proxy/contents/ssl` - empty directory which is populated with `test.crt` and `test.key` when `make dev-cert` is run (and emptyed by `make rm-dev-cert`).
--   `src/client/plugins/PLUGIN/test` - location of internal plugin integration test scripts
--   `kbase-ui-plugin-PLUGIN/src/plugin/test` - location of external plugin integration test scripts.
+- `dev/test` - placeholder directory for integration test scripts, code, and configuration; this directory is populated when the ui is built; the files are overlaid from the container via a volume mount.
+- `test/wdio.conf.integration.js` - webdriver io test configuration file
+- `src/test` - location of script runner files, which are copied into the kbase-ui image and subsequently made available locally through a volume mount at `/dev/test`.
+- `tools/proxy/contents/ssl` - empty directory which is populated with `test.crt` and `test.key` when `make dev-cert` is run (and emptyed by `make rm-dev-cert`).
+- `src/client/plugins/PLUGIN/test` - location of internal plugin integration test scripts
+- `kbase-ui-plugin-PLUGIN/src/plugin/test` - location of external plugin integration test scripts.
 
 ---
 
@@ -109,64 +110,64 @@ A test script may contain one or more test specs. Each spec is composed of one o
 
 The basic structure is:
 
--   test
-    -   spec 1
-        -   task 1
-        -   task 2
-        -   task 3
-    -   spec 2
-        -   task 1
-        -   task 2
+- test
+  - spec 1
+    - task 1
+    - task 2
+    - task 3
+  - spec 2
+    - task 1
+    - task 2
 
 ```yaml
 # Test Script for Dashboard Plugin
 ---
 - description: Dashboard with authentication
   specs:
-      - description: Dashboard should appear when the route is navigated to
-        tasks:
-            - title: login
-              subtask: login
-            - title: navigate to dashboard
-              navigate:
-                  path: dashboard
-            - switchToFrame:
-                  selector:
-                      - type: iframe
-                        value: plugin-iframe
-                  wait: 1000
-            - selector:
-                  - type: plugin
-                    value: dashboard
-                  - type: widget
-                    value: narratives-widget
-                  - type: slider
-                    value: your-narratives
-              wait: 10000
-            - selector:
-                  - type: plugin
-                    value: dashboard
-                  - type: widget
-                    value: narratorials-widget
-                  - type: slider
-                    value: narratorials
-              wait: 10000
-            - selector:
-                  - type: plugin
-                    value: dashboard
-                  - type: widget
-                    value: shared-narratives-widget
-                  - type: slider
-                    value: shared-narratives
-              wait: 10000
-            - selector:
-                  - type: plugin
-                    value: dashboard
-                  - type: widget
-                    value: public-narratives-widget
-                  - type: slider
-                    value: public-narratives
-              wait: 10000
+    - description: Dashboard should appear when the route is navigated to
+      tasks:
+        - title: login
+          subtask: login
+        - title: navigate to dashboard
+          navigate:
+            path: dashboard
+        - switchToFrame:
+            selector:
+              - type: iframe
+                value: plugin-iframe
+            wait: 1000
+        - selector:
+            - type: plugin
+              value: dashboard
+            - type: widget
+              value: narratives-widget
+            - type: slider
+              value: your-narratives
+          wait: 10000
+        - selector:
+            - type: plugin
+              value: dashboard
+            - type: widget
+              value: narratorials-widget
+            - type: slider
+              value: narratorials
+          wait: 10000
+        - selector:
+            - type: plugin
+              value: dashboard
+            - type: widget
+              value: shared-narratives-widget
+            - type: slider
+              value: shared-narratives
+          wait: 10000
+        - selector:
+            - type: plugin
+              value: dashboard
+            - type: widget
+              value: public-narratives-widget
+            - type: slider
+              value: public-narratives
+          wait: 10000
 ```
 
 #### Test
@@ -203,7 +204,7 @@ Using legacy kbase functional html style:
 
 ```javascript
 div({
-    dataKBTesthookPlugin: 'myplugin'
+  dataKBTesthookPlugin: "myplugin"
 });
 ```
 
@@ -228,7 +229,7 @@ Using legacy kbase functional html style:
 
 ```javascript
 div({
-    class: 'someclass'
+  class: "someclass"
 });
 ```
 
@@ -274,13 +275,13 @@ Safari currently works. Don't know how to run headless yet. A bit finicky though
 
 First:
 
--   Open Safari:
+- Open Safari:
 
-    -   enable developer menu (Preferences > Advanced > Show Developer menu in menu bar)
-    -   enable automation (Developer > Allow Remote Automation )
+  - enable developer menu (Preferences > Advanced > Show Developer menu in menu bar)
+  - enable automation (Developer > Allow Remote Automation )
 
--   From Terminal:
+- From Terminal:
 
-    -   /usr/bin/safaridriver --enable
+  - /usr/bin/safaridriver --enable
 
-    ​
+  ​

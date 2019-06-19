@@ -1,6 +1,7 @@
 ---
-title: KBase UI
-nav_order: 3
+title: KBase UI Notes
+parent: master
+nav_order: 10
 ---
 
 ### An aside: How plugins are built into kbase-ui

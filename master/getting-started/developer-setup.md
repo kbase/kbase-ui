@@ -1,6 +1,7 @@
 ---
 title: Developer Setup
-parent: Getting Started
+parent: getting-started
+grand_parent: master
 nav_order: 4
 ---
 

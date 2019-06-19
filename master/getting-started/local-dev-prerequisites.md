@@ -1,6 +1,7 @@
 ---
 title: Developer Prerequisites
-parent: Getting Started
+parent: getting-started
+grand_parent: master
 nav_order: 3
 ---
 
@@ -27,9 +28,9 @@ You will need to ensure that you have a basic set of development tools on your h
 
 _kbase-ui_ is built not just on your local development workstation, but int the following places:
 
--   in Travis CI, as part of the github workflow
--   in the KBase Jenkins instance, as part of the CI deployment
--   in a KBase VM (??) as part of the next/appdev/production deployment process
+- in Travis CI, as part of the github workflow
+- in the KBase Jenkins instance, as part of the CI deployment
+- in a KBase VM (??) as part of the next/appdev/production deployment process
 
 As such, we need to ensure that each part of the build toolchain is consistent in each environment. Thus, even though a different version of the above tools may work for you (and of course no-one is watching you to make sure you aren't!) please be advised that it is possible that you can introduce dependencies upon a version of a tool which will break in one of the other KBase build environments.
 
@@ -120,7 +121,7 @@ Procedures for installation of system level packages depends on the system you u
 
 The following tools are available on all supported platforms (Mac, Windows, Linux). Please consult the installation instructions at the respective web sites:
 
--   Docker - [https://www.docker.com](https://www.docker.com)
+- Docker - [https://www.docker.com](https://www.docker.com)
 
 That leaves us with nodejs and git to install through other means.
 
@@ -128,10 +129,10 @@ That leaves us with nodejs and git to install through other means.
 
 There are three common sources for these tools natively on a Mac:
 
--   Apple xCode
--   Native Mac installation packages
--   Macports
--   Homebrew
+- Apple xCode
+- Native Mac installation packages
+- Macports
+- Homebrew
 
 (see the Linux section for Vagrant on Mac instructions.)
 

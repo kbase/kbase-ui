@@ -1,6 +1,7 @@
 ---
 title: Recipes
-parent: Testing
+parent: testing
+grand_parent: master
 nav_order: 4
 ---
 
