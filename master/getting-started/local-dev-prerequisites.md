@@ -1,8 +1,4 @@
 ---
-title: Developer Prerequisites
-parent: getting-started
-grand_parent: master
-nav_order: 3
 ---
 
 # Prerequisites

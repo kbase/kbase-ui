@@ -1,8 +1,4 @@
 ---
-title: Prerequisites
-parent: getting-started
-grand_parent: master
-nav_order: 2
 ---
 
 # Prerequisites

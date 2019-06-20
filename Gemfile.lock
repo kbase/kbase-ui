@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/eapearson/just-the-docs
-  revision: eda6f42d03bac6b015b35951d9c90c902778e21b
+  revision: c4b686ec413a1507396f2492ea2a90e4d755ea08
   specs:
     just-the-docs (0.2.5)
       jekyll (~> 3.8.5)

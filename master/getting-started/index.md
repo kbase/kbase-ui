@@ -1,9 +1,4 @@
 ---
-title: Getting Started
-slug: getting-started
-parent: master
-nav_order: 2
-has_children: true
 ---
 
 # Getting Started

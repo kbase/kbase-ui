@@ -1,8 +1,4 @@
 ---
-title: Image Testing
-parent: testing
-grand_parent: master
-nav_order: 3
 ---
 
 # Testing Images
