@@ -97,7 +97,7 @@ services:
         name: Data Import Export
     KBaseSearchEngine:
         aliases: ["search"]
-        url: "{{ deploy.services.urlBase }}/services/searchapi"
+        url: "{{ deploy.services.urlBase }}/services/searchapi2/legacy"
         name: KBase Search Engine
         coreService: true
         type: jsonrpc
