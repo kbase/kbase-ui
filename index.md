@@ -1,7 +1,4 @@
 ---
-title: Home
-slug: home
-nav_order: 1
 ---
 
 _kbase-ui_ is a web app providing access to many user services, including:

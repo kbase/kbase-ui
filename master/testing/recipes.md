@@ -1,8 +1,4 @@
 ---
-title: Recipes
-parent: testing
-grand_parent: master
-nav_order: 4
 ---
 
 # Test Recipes

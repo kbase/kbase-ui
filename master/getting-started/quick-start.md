@@ -1,8 +1,4 @@
 ---
-title: Quick Start
-parent: getting-started
-grand_parent: master
-nav_order: 1
 ---
 
 # Quick Start

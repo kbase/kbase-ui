@@ -1,8 +1,4 @@
 ---
-title: Integration Testing
-parent: testing
-grand_parent: master
-nav_order: 2
 ---
 
 # Integration Testing
