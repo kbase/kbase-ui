@@ -82,6 +82,13 @@ plugins:
       cwd: src/plugin
       source:
         bower: {}
+    - name: example-hello
+      globalName: kbase-ui-plugin-example-hello
+      version: kbase-ui-plugin-example-hello#master
+      cwd: plugin
+      source:
+          git: 
+            url: https://github.com/eapearson/kbase-ui-plugin-example-hello
     
     # - name: narrative-info
     #   globalName: kbase-ui-plugin-narrative-info
