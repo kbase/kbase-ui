@@ -22,7 +22,7 @@ _trash
 report.*.json
 
 # Doc artifacts
-_book
+/docs/_site
 
 # Developer artifacts
 /dev/docker-compose.override.yml
@@ -43,3 +43,4 @@ docker-compose.override.yml
 
 # can be left over with a manual npm install with --no-cache (I think)
 /false
+

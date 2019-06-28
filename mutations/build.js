@@ -268,7 +268,7 @@ function injectPluginsIntoBower(state) {
     // Load plugin config
     var root = state.environment.path,
         pluginConfig,
-        pluginConfigFile = root.concat(['config', 'app', 'plugins.yml']).join('/'),
+        pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/'),
         bowerConfig,
         bowerConfigFile = root.concat(['build', 'bower.json']).join('/');
     return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8'), fs.readFileAsync(bowerConfigFile, 'utf8')])
@@ -313,7 +313,7 @@ function fetchPluginsFromGit(state) {
     // Load plugin config
     var root = state.environment.path,
         pluginConfig,
-        pluginConfigFile = root.concat(['config', 'app', 'plugins.yml']).join('/'),
+        pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/'),
         gitDestination = root.concat(['build', 'gitDownloads']);
 
     return fs.mkdirsAsync(gitDestination.join('/'))
@@ -359,7 +359,7 @@ function injectPluginsIntoConfig(state) {
     // Load plugin config
     var root = state.environment.path,
         configPath = root.concat(['build', 'client', 'modules', 'config']),
-        pluginConfigFile = root.concat(['config', 'app', 'plugins.yml']).join('/');
+        pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/');
 
     return fs
         .ensureDirAsync(configPath.join('/'))
@@ -687,7 +687,7 @@ function installPlugins(state) {
     // Load plugin config
     var root = state.environment.path,
         pluginConfig,
-        pluginConfigFile = root.concat(['config', 'app', 'plugins.yml']).join('/');
+        pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/');
     return (
         fs
             .readFileAsync(pluginConfigFile, 'utf8')
