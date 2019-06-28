@@ -134,7 +134,7 @@ At present this repo contains starter files and libraries, but does not provide 
 
 ### Adjust kbase-ui’s plugin configuration to enable this plugin
 
-In `project/kbase-ui/config/app/plugins.yml` there should already be a commented-out entry for this plugin. (All existing plugins were commented out at the beginning of this project.)
+In `project/kbase-ui/config/plugins.yml` there should already be a commented-out entry for this plugin. (All existing plugins were commented out at the beginning of this project.)
 
 Uncomment the entry for this plugin.
 
