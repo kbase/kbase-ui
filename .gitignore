@@ -31,6 +31,7 @@ report.*.json
 /dev/temp
 /dev/test
 node_modules
+yarn.lock
 
 # General purpose temp directory
 /temp/*

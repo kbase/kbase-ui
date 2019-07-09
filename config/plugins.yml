@@ -27,13 +27,6 @@ plugins:
       cwd: src/plugin
       source:
           bower: {}
-    - name: job-browser2
-      globalName: kbase-ui-plugin-job-browser2
-      version: kbase-ui-plugin-job-browser2#payoff
-      cwd: src/plugin
-      source:
-          git: 
-            url: https://github.com/eapearson/kbase-ui-plugin-job-browser2
     - name: auth2-client
       globalName: kbase-ui-plugin-auth2-client
       version: kbase-ui-plugin-auth2-client#payoff
@@ -82,13 +75,23 @@ plugins:
       cwd: src/plugin
       source:
         bower: {}
-    - name: example-hello
-      globalName: kbase-ui-plugin-example-hello
-      version: kbase-ui-plugin-example-hello#master
+    - name: job-browser2
+      globalName: kbase-ui-plugin-job-browser2
+      version: 0.1.3
       cwd: plugin
       source:
           git: 
-            url: https://github.com/eapearson/kbase-ui-plugin-example-hello
+            account: eapearson
+            # branch: master
+            # url: https://github.com/eapearson/kbase-ui-plugin-job-browser2
+    # - name: example-hello
+    #   globalName: kbase-ui-plugin-example-hello
+    #   version: 0.1.2
+    #   cwd: plugin
+    #   source:
+    #       git: 
+    #         account: kbaseIncubator
+            # url: https://github.com/kbaseIncubator/kbase-ui-plugin-example-hello
     
     # - name: narrative-info
     #   globalName: kbase-ui-plugin-narrative-info

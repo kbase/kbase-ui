@@ -1,16 +1,16 @@
 # ------------------------------
 # The build image
 # ------------------------------
-FROM alpine:3.9 as builder
+FROM alpine:3.10 as builder
 
 # add deps for building kbase-ui
 RUN apk upgrade --update-cache --available && \
-    apk add --update --no-cache bash chromium g++ git make nodejs npm python2 && \
+    apk add --update --no-cache bash chromium g++ git make nodejs yarn python2 && \
     mkdir -p /kb
 
 COPY ./package.json /kb
 WORKDIR /kb
-RUN npm install
+RUN yarn install
 
 COPY . /kb
 
@@ -30,7 +30,7 @@ LABEL stage=intermediate
 # ------------------------------
 # The product image
 # ------------------------------
-FROM alpine:3.9
+FROM alpine:3.10
 
 RUN apk upgrade --update-cache --available && \
     apk add --update --no-cache bash ca-certificates nginx && \
