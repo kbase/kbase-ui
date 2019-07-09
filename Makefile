@@ -95,7 +95,7 @@ setup-dirs:
 
 node_modules:
 	@echo "> Installing build and test tools."
-	npm install
+	yarn install
 
 setup: setup-dirs
 
@@ -217,7 +217,7 @@ clean-docs:
 
 docs:
 	cd docs; \
-	npm install; \
+	yarn install; \
 	./node_modules/.bin/gitbook build ./book
 
 docs-viewer: docs

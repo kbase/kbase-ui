@@ -11,13 +11,13 @@
         "url": "git://github.com/kbase/kbase-ui"
     },
     "dependencies": {
-        "bluebird": "3.5.3",
+        "bluebird": "3.5.5",
         "bootstrap": "3.4.1",
         "bower-knockout-mapping": "2.6.0",
         "eonasdan-bootstrap-datetimepicker": "4.17.47",
         "font-awesome": "4.7.0",
         "jquery": "2.2.4",
-        "js-yaml": "3.12.1",
+        "js-yaml": "3.13.1",
         "kbase-ko-components-js": "0.6.2",
         "kbase-knockout-extensions-es6": "0.6.16",
         "kbase-common-ts": "0.19.0",
@@ -30,7 +30,7 @@
         "knockout-projections": "eapearson/knockout-projections#1.1.1",
         "knockout-switch-case": "2.1.0",
         "knockout-validation": "2.0.3",
-        "marked": "0.6.0",
+        "marked": "0.6.3",
         "moment": "2.24.0",
         "numeral": "2.0.6",
         "pure-uuid": "eapearson/pure-uuid#1.1.1",
@@ -38,7 +38,7 @@
         "requirejs-yaml": "eapearson/requirejs-yaml#1.0.5",
         "requirejs-domready": "2.0.1",
         "requirejs-json": "0.0.3",
-        "requirejs-text": "2.0.15",
+        "requirejs-text": "2.0.16",
         "requirejs": "eapearson/requirejs#3.0.0-alpha5",
         "spark-md5": "3.0.0"
     },

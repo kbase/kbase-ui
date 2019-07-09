@@ -42,7 +42,7 @@ var Promise = require('bluebird'),
 const NODE_BIN = __dirname + '/../node_modules/.bin/';
 
 // UTILS
-function run(command, ignoreStdErr=false, verbose=false) {
+function run(command, ignoreStdErr = false, verbose = false) {
     return new Promise(function (resolve, reject) {
         const proc = exec(command, {}, function (err, stdout, stderr) {
             if (err) {
@@ -61,17 +61,12 @@ function run(command, ignoreStdErr=false, verbose=false) {
     });
 }
 
-function gitClone(url, dest) {
-    const commandLine = [
-        'git clone --quiet --depth 1',
-        url,
-        dest
-    ].join(' ')
-    return run(commandLine);
+function gitClone(url, dest, branch = 'master') {
+    const commandLine = ['git clone --quiet --depth 1', '--branch', branch, url, dest].join(' ');
+    return run(commandLine, true);
 }
 
 function gitInfo(state) {
-    
     // fatal: no tag exactly matches 'bf5efa0810d9f097b7c6ba8390f97c008d98d80e'
     return Promise.all([
         run('git show --format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d --name-status | head -n 8'),
@@ -299,14 +294,19 @@ function injectPluginsIntoBower(state) {
 }
 
 function buildPlugin(state, pluginDir) {
-    const commands  = [
-        ['cd', pluginDir].join(' '),
-        'npm install --unsafe-perm'
-    ].join(' && ');
+    const commands = [
+        ['cd', pluginDir].join(' '), 
+        ['rm', 'yarn.lock'].join(' '),
+        ['rm', 'react-app/yarn.lock'].join(' '),
+        'yarn install --cache-folder=".yarn-cache" --no-lockfile'].join(' && ');
     return run(commands, true, true)
         .then((out) => {
             console.log(out);
         })
+        .catch((err) => {
+            console.log('Error building plugin', pluginDir, err.message);
+            throw err;
+        });
 }
 
 function fetchPluginsFromGit(state) {
@@ -314,38 +314,41 @@ function fetchPluginsFromGit(state) {
     var root = state.environment.path,
         pluginConfig,
         pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/'),
-        gitDestination = root.concat(['build', 'gitDownloads']);
+        gitDestination = root.concat(['gitDownloads']);
 
-    return fs.mkdirsAsync(gitDestination.join('/'))
+    return fs
+        .mkdirsAsync(gitDestination.join('/'))
         .then(() => {
-            return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8')])
+            return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8')]);
         })
         .spread(function (pluginFile) {
             pluginConfig = yaml.safeLoad(pluginFile);
         })
         .then(function () {
             // First generate urls to all the plugin repos.
-            return Promise.all(pluginConfig.plugins
-                .filter(function (plugin) {
-                    if (typeof plugin === 'object' && !plugin.internal && plugin.source.git) {
-                        return true;
-                    }
-                    return false;
-                })
-                .map(function (plugin) {
-                    var name = plugin.source.git.name || plugin.globalName,
-                        version = plugin.source.git.version || plugin.version,
-                        url = plugin.source.git.url || 'https://github.com/kbase/' + name + '#' + version;
+            return Promise.all(
+                pluginConfig.plugins
+                    .filter(function (plugin) {
+                        if (typeof plugin === 'object' && !plugin.internal && plugin.source.git) {
+                            return true;
+                        }
+                        return false;
+                    })
+                    .map(function (plugin) {
+                        const repoName = plugin.source.git.name || plugin.globalName,
+                            version = plugin.version,
+                            branch = plugin.source.git.branch || (version ? 'v' + version : null),
+                            gitAccount = plugin.source.git.account || 'kbase',
+                            url = plugin.source.git.url || 'https://github.com/' + gitAccount + '/' + repoName;
 
-                    const dest = gitDestination.concat([plugin.globalName]).join('/');
-                    mutant.log('...gitClone');
-                    return gitClone(url, dest)
-                        .then(() => {
+                        const dest = gitDestination.concat([plugin.globalName]).join('/');
+                        mutant.log('...gitClone');
+                        return gitClone(url, dest, branch).then(() => {
                             mutant.log('...buildPlugin');
                             return buildPlugin(state, dest);
-                        })
-                }));
-
+                        });
+                    })
+            );
         });
 }
 
@@ -423,6 +426,42 @@ function npm(cmd, argv, options) {
             });
         });
     });
+}
+
+function yarn(cmd, argv, options) {
+    return new Promise(function (resolve, reject) {
+        exec('yarn ' + cmd + argv.join(' '), options, function (err, stdout, stderr) {
+            if (err) {
+                reject(err);
+            }
+            if (stderr) {
+                // reject(new Error(stderr));
+                resolve({
+                    warnings: stderr
+                });
+            }
+            resolve({
+                result: stdout
+            });
+        });
+    });
+}
+
+function yarnInstall(state) {
+    var base = state.environment.path.concat(['build']);
+    var packagePath = base.concat(['package.json']);
+    return mutant
+        .loadJson(packagePath)
+        .then(function (packageConfig) {
+            delete packageConfig.devDependencies;
+            return mutant.saveJson(packagePath, packageConfig);
+        })
+        .then(function () {
+            return yarn('install', [], {
+                cwd: base.join('/'),
+                timeout: 300000
+            });
+        });
 }
 
 function npmInstall(state) {
@@ -674,6 +713,114 @@ function copyFromNpm(state) {
     });
 }
 
+function copyFromNodeNodules(state) {
+    var root = state.environment.path;
+
+    return mutant.loadYaml(root.concat(['config', 'npmInstall.yml'])).then(function (config) {
+        var copyJobs = [];
+
+        config.npmFiles.forEach(function (cfg) {
+            /*
+                 The top level bower directory name is usually the name of the
+                 package (which also is often also base of the sole json file name)
+                 but since this is not always the case, we allow the dir setting
+                 to override this.
+                 */
+            var dir = cfg.dir || cfg.name,
+                sources,
+                cwd,
+                dest;
+            if (!dir) {
+                throw new Error(
+                    'Either the name or dir property must be provided to establish the top level directory'
+                );
+            }
+
+            /*
+                 The source defaults to the package name with .js, unless the
+                 src property is provided, in which case it must be either a single
+                 or set of glob-compatible strings.*/
+            if (cfg.src) {
+                if (typeof cfg.src === 'string') {
+                    sources = [cfg.src];
+                } else {
+                    sources = cfg.src;
+                }
+            } else if (cfg.name) {
+                sources = [cfg.name + '.js'];
+            } else {
+                throw new Error('Either the src or name must be provided in order to have something to copy');
+            }
+
+            /*
+                 Finally, the cwd serves as a way to dig into a subdirectory and use it as the
+                 basis for copying. This allows us to "bring up" files to the top level of
+                 the destination. Since we are relative to the root of this process, we
+                 need to jigger that here.
+                 */
+            if (cfg.cwd) {
+                if (typeof cfg.cwd === 'string') {
+                    cfg.cwd = cfg.cwd.split(/,/);
+                }
+                cwd = ['build', 'node_modules', dir].concat(cfg.cwd);
+            } else {
+                cwd = ['build', 'node_modules', dir];
+            }
+
+            /*
+                 The destination will be composed of 'node_modules' at the top
+                 level, then the package name or dir (as specified above).
+                 This is the core of our "thinning and flattening", which is part of the
+                 point of this bower copy process.
+                 In addition, if the spec includes a dest property, we will use that
+                 */
+            if (cfg.standalone) {
+                dest = ['build', 'client', 'modules'].concat([cfg.name]);
+            } else {
+                dest = ['build', 'client', 'modules', 'node_modules'].concat([cfg.dir || cfg.name]);
+            }
+
+            sources.forEach(function (source) {
+                copyJobs.push({
+                    cwd: cwd,
+                    src: source,
+                    dest: dest
+                });
+            });
+        });
+
+        // Create and execute a set of promises to fetch and operate on the files found
+        // in the above spec.
+        return Promise.all(
+            copyJobs.map(function (copySpec) {
+                return glob(copySpec.src, {
+                    cwd: state.environment.path.concat(copySpec.cwd).join('/'),
+                    nodir: true
+                })
+                    .then(function (matches) {
+                        // Do the copy!
+                        return Promise.all(
+                            matches.map(function (match) {
+                                var fromPath = state.environment.path
+                                        .concat(copySpec.cwd)
+                                        .concat([match])
+                                        .join('/'),
+                                    toPath = state.environment.path
+                                        .concat(copySpec.dest)
+                                        .concat([match])
+                                        .join('/');
+                                return fs.copy(fromPath, toPath, {});
+                            })
+                        );
+                    })
+                    .then(function () {
+                        return state;
+                    });
+            })
+        );
+    });
+}
+
 /*
  * Copy plugins from the bower module installation directory into the plugins
  * directory. We _could_ reference plugins directly from the bower directory,
@@ -715,15 +862,15 @@ function installPlugins(state) {
                                     return typeof plugin === 'object' && plugin.source.git;
                                 })
                                 .map(function (plugin) {
-                                    const cwds = plugin.cwd || 'dist/plugin', 
-                                          cwd = cwds.split('/'),
-                                          srcDir = root.concat(['build', 'gitDownloads', plugin.globalName]).concat(cwd),
-                                          destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+                                    const cwds = plugin.cwd || 'dist/plugin',
+                                        cwd = cwds.split('/'),
+                                        srcDir = root.concat(['gitDownloads', plugin.globalName]).concat(cwd),
+                                        destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
 
                                     mutant.ensureDir(destDir);
                                     return mutant.copyFiles(srcDir, destDir, '**/*');
                                 })
-                        )
+                        );
                     })
                     .then(function () {
                         return Promise.all(
@@ -748,7 +895,7 @@ function installPlugins(state) {
                                         ]);
                                     mutant.ensureDir(destination);
                                     return mutant.copyFiles(source, destination, '**/*');
-                                }) 
+                                })
                         );
                     })
                     .then(function () {
@@ -883,6 +1030,19 @@ function installNpmPackages(state) {
         })
         .then(function () {
             return copyFromNpm(state);
+        })
+        .then(function () {
+            return state;
+        });
+}
+
+function installYarnPackages(state) {
+    return yarnInstall(state)
+        .then(function () {
+            return fs.remove(state.environment.path.concat(['build', 'package.json']).join('/'));
+        })
+        .then(function () {
+            return copyFromNodeNodules(state);
         })
         .then(function () {
             return state;
@@ -1509,7 +1669,8 @@ function makeModuleVFS(state, whichBuild) {
  */
 
 function main(type) {
-    return Promise.try(function () {
+    return (
+        Promise.try(function () {
             mutant.log('Creating initial state for build: ' + type);
             var initialFilesystem = [
                 {
@@ -1566,9 +1727,14 @@ function main(type) {
             .then(function (state) {
                 return mutant.copyState(state);
             })
+            // .then(function (state) {
+            //     mutant.log('Installing npm packages...');
+            //     return installNpmPackages(state);
+            // })
+
             .then(function (state) {
-                mutant.log('Installing npm packages...');
-                return installNpmPackages(state);
+                mutant.log('Installing YARN packages...');
+                return installYarnPackages(state);
             })
 
             .then(function (state) {
@@ -1685,7 +1851,8 @@ function main(type) {
             })
             .then(function (state) {
                 return mutant.finish(state);
-            });
+            })
+    );
 }
 
 function usage() {
@@ -1700,18 +1867,17 @@ if (type === undefined) {
     process.exit(1);
 }
 
-main(type)
-    .catch((err) => {
-        console.error('ERROR');
-        console.error(err);
-        console.error(
-            util.inspect(err, {
-                showHidden: false,
-                depth: 10
-            })
-        );
-        console.error(err.message);
-        console.error(err.name);
-        console.error(err.stack);
-        process.exit(1);
-    });
+main(type).catch((err) => {
+    console.error('ERROR');
+    console.error(err);
+    console.error(
+        util.inspect(err, {
+            showHidden: false,
+            depth: 10
+        })
+    );
+    console.error(err.message);
+    console.error(err.name);
+    console.error(err.stack);
+    process.exit(1);
+});
