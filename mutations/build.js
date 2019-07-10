@@ -296,8 +296,8 @@ function injectPluginsIntoBower(state) {
 function buildPlugin(state, pluginDir) {
     const commands = [
         ['cd', pluginDir].join(' '), 
-        ['rm', 'yarn.lock'].join(' '),
-        ['rm', 'react-app/yarn.lock'].join(' '),
+        ['rm', '-f', 'yarn.lock'].join(' '),
+        ['rm', '-f', 'react-app/yarn.lock'].join(' '),
         'yarn install --cache-folder=".yarn-cache" --no-lockfile'].join(' && ');
     return run(commands, true, true)
         .then((out) => {
