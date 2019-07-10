@@ -1,10 +1,4 @@
-define([
-    'bluebird',
-    'kb_common/observed'
-], function (
-    Promise,
-    observed
-) {
+define(['bluebird', 'kb_common/observed'], function (Promise, observed) {
     'use strict';
 
     function factory(config) {
@@ -43,10 +37,12 @@ define([
         }
 
         /*
-                    * Add a defined menu item to a menu, according to a menu entry definition.
-                    */
+         * Add a defined menu item to a menu, according to a menu entry definition.
+         */
         function addToMenu(menuEntry, menuItemSpec) {
-            var menu, section, position,
+            var menu,
+                section,
+                position,
                 menuItems = state.getItem('menuItems'),
                 menuItemDef = menuItems[menuItemSpec.id];
 
@@ -54,7 +50,7 @@ define([
                 throw {
                     type: 'InvalidKey',
                     reason: 'MenuItemNotFound',
-                    message: 'The menu item key provided, ' + menuItemSpec.id + ', is not registered'
+                    message: 'The menu item key provided, "' + menuItemSpec.id + '", is not registered'
                 };
             }
 
@@ -158,18 +154,21 @@ define([
                         if (disabled.indexOf(menuItem.id) >= 0) {
                             return;
                         }
-                        addToMenu({
-                            menu: menu,
-                            section: section,
-                            position: 'bottom',
-                            allow: menuItem.allow
-                        }, menuItem);
+                        addToMenu(
+                            {
+                                menu: menu,
+                                section: section,
+                                position: 'bottom',
+                                allow: menuItem.allow
+                            },
+                            menuItem
+                        );
                     });
                 });
             });
         }
 
-        function stop() { }
+        function stop() {}
 
         // MAIN
         state.setItem('menu', []);
