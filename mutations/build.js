@@ -298,7 +298,7 @@ function buildPlugin(state, pluginDir) {
         ['cd', pluginDir].join(' '), 
         ['rm', '-f', 'yarn.lock'].join(' '),
         ['rm', '-f', 'react-app/yarn.lock'].join(' '),
-        'yarn install --cache-folder=".yarn-cache" --no-lockfile'].join(' && ');
+        'yarn build-plugin'].join(' && ');
     return run(commands, true, true)
         .then((out) => {
             console.log(out);
