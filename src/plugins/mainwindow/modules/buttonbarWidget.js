@@ -147,7 +147,7 @@ define([
         }
 
         on(channel, event, handler) {
-            this.listeners.push(this.runtime.recv(channel, event, handler));
+            this.listeners.push(this.runtime.receive(channel, event, handler));
         }
 
         offAll() {
@@ -177,7 +177,7 @@ define([
             this.on('ui', 'disableButton', ({name}) => {
                 this.disableButton(name);
             });
-            // this.recv('ui', 'addDropdown', function (data) {
+            // this.receive('ui', 'addDropdown', function (data) {
             //     addDropdown(widget, data);
             // });
         }

@@ -7,7 +7,6 @@ ui:
         data: {}
         heartbeat: {}
         instrumentation: {}
-        ko-component: {}
         notification: {}
         route: {}
         rpc: {}

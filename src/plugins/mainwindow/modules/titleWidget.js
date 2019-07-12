@@ -34,7 +34,7 @@ define([
             // We use the widget convenience function in order to
             // get automatic event listener cleanup. We could almost
             // as easily do this ourselves.
-            this.runtime.recv('ui', 'setTitle', (newTitle) => {
+            this.runtime.receive('ui', 'setTitle', (newTitle) => {
                 if (typeof newTitle !== 'string') {
                     return;
                 }

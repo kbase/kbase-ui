@@ -35,10 +35,17 @@ define(['bluebird'], function (Promise) {
                     if (serviceModule.make) {
                         serviceInstance = serviceModule.make(services[name].config, params);
                     } else {
-                        serviceInstance = new serviceModule.ServiceClass({
-                            config: services[name].config,
-                            params: params
-                        });
+                        if (serviceModule.ServiceClass) {
+                            serviceInstance = new serviceModule.ServiceClass({
+                                config: services[name].config,
+                                params: params
+                            });
+                        } else {
+                            serviceInstance = new serviceModule({
+                                config: services[name].config,
+                                params: params
+                            });
+                        }
                     }
                     service.instance = serviceInstance;
                     resolve();

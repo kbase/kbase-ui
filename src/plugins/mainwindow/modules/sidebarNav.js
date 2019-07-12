@@ -37,7 +37,7 @@ define(['bluebird', 'knockout', 'kb_lib/html', './components/sidebarMenu'], func
 
             // A session state change may signal that the session has been logged
             // out.
-            this.runtime.recv('session', 'change', () => {
+            this.runtime.receive('session', 'change', () => {
                 this.isLoggedIn(this.runtime.service('session').isLoggedIn());
             });
 
@@ -81,11 +81,11 @@ define(['bluebird', 'knockout', 'kb_lib/html', './components/sidebarMenu'], func
             this.isAuthorized = ko.observable(this.runtime.service('session').isLoggedIn());
 
             // TODO: rethink this!!!
-            this.runtime.recv('session', 'change', () => {
+            this.runtime.receive('session', 'change', () => {
                 this.isAuthorized(this.runtime.service('session').isLoggedIn());
             });
 
-            this.runtime.recv('route', 'routing', (route) => {
+            this.runtime.receive('route', 'routing', (route) => {
                 this.selectButton(route);
             });
         }

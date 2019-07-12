@@ -7,50 +7,34 @@ define([
 ) {
     'use strict';
 
-    // function proxyMethod(obj, method, args) {
-    //     if (!obj[method]) {
-    //         throw {
-    //             name: 'UndefinedMethod',
-    //             message: 'The requested method "' + method + '" does not exist on this object',
-    //             suggestion: 'This is a developer problem, not your fault'
-    //         };
-    //     }
-    //     return obj[method].apply(obj, args);
-    // }
+    return class RPC {
+        constructor({runtime}) {
+            this.runtime = runtime;
+        }
 
-    function factory(config, params) {
-        var runtime = params.runtime;
-
-        function start() {
+        start() {
             return true;
         }
-        function stop() {
+        stop() {
             return true;
         }
-        function pluginHandler() {
+        pluginHandler() {
             return Promise.try(function () {
             });
         }
-
-        function makeClient(arg) {
-            let authenticated;
-            if (arg.authenticated === undefined) {
+        makeClient({authenticated, module, timeout}) {
+            if (authenticated === undefined) {
                 authenticated = true;
             } else {
-                authenticated = arg.authenticated ? true : false;
+                authenticated = authenticated ? true : false;
             }
             const client = new rpc.RPCClient({
-                runtime: runtime,
-                module: arg.module,
-                timeout: arg.timeout,
+                runtime: this.runtime,
+                module: module,
+                timeout: timeout,
                 authenticated: authenticated
             });
             return client;
         }
-
-        return {start, stop, pluginHandler, makeClient};
-    }
-    return {
-        make: factory
     };
 });

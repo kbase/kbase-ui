@@ -69,7 +69,7 @@ define([
         // list for request fetch the user profile
         function start() {
 
-            runtime.recv('profile', 'check', function () {
+            runtime.receive('profile', 'check', function () {
                 return loadProfile()
                     .then(function (profile) {
                         state.setItem('userprofile', profile);
@@ -78,7 +78,7 @@ define([
                     .done();
             });
 
-            runtime.recv('profile', 'reload', function () {
+            runtime.receive('profile', 'reload', function () {
                 return loadProfile()
                     .then(function (profile) {
                         state.setItem('userprofile', profile);
@@ -148,7 +148,7 @@ define([
             });
         }
 
-        //runtime.recv('session', 'loggedin', function () {
+        //runtime.receive('session', 'loggedin', function () {
         //    loadSession();
         //});
 

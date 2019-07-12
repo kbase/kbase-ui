@@ -24,21 +24,21 @@ define([
     'kb_lib/widget/widgetSet',
     './components/systemAlertBanner',
     './components/systemAlertToggle'
-], function (
+], (
     ko,
     html,
     widgetSet,
     SystemAlertBannerComponent,
     SystemAlertToggleComponent
-) {
+) => {
     'use strict';
 
     const t = html.tag,
         div = t('div');
 
     class ViewModel {
-        constructor(params) {
-            this.runtime = params.runtime;
+        constructor({runtime}) {
+            this.runtime = runtime;
 
             // The total number of alerts
             this.alertCount = ko.observable(null);
@@ -48,8 +48,8 @@ define([
     }
 
     class MainWindow {
-        constructor(config) {
-            this.runtime = config.runtime;
+        constructor({runtime}) {
+            this.runtime = runtime;
             this.widgets = new widgetSet.WidgetSet({
                 widgetManager: this.runtime.service('widget').widgetManager
             });

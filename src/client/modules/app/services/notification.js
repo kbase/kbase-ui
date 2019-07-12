@@ -51,7 +51,7 @@ define([], function () {
 
         function start() {
             // Listen for notifications to come in.
-            runtime.recv('notification', 'ready', function (message) {
+            runtime.receive('notification', 'ready', function (message) {
                 recipientChannel = message.channel;
                 var toSend = queued;
                 queued = [];
@@ -59,7 +59,7 @@ define([], function () {
                     runtime.send(recipientChannel, 'new', message);
                 });
             });
-            runtime.recv('notification', 'notify', function (message) {
+            runtime.receive('notification', 'notify', function (message) {
                 if (!recipientChannel) {
                     queued.push(message);
                 }
