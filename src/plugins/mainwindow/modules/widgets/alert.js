@@ -207,7 +207,7 @@ define([
             }
         }
 
-        runtime.recv('ui', 'alert', function (newAlert) {
+        runtime.receive('ui', 'alert', function (newAlert) {
             var alert = findAlert(newAlert);
             if (alert) {
                 alert.message(newAlert.message);
@@ -387,7 +387,7 @@ define([
 
         function start() {
             render();
-            // listeners.push(runtime.recv('ui', 'alert', function (alert) {
+            // listeners.push(runtime.receive('ui', 'alert', function (alert) {
             //     setAlert(alert);
             // }));
         }

@@ -2,16 +2,11 @@ define(['bluebird', './adapters/objectWidget', 'kb_lib/merge'], function (Promis
     'use strict';
 
     class WidgetManager {
-        constructor(config) {
-            // TODO: get rid of this?
-            // if (!config.runtime) {
-            //     throw new Error('WidgetManager requires a runtime argument; pass as "runtime"')
-            // }
-            // this.runtime = config.runtime;
-            if (!config.baseWidgetConfig) {
-                throw new Error('WidgetManager requires a baseWidgetConfig argument; pass as "baseWidgetConfig"');
+        constructor({runtime}) {
+            if (!runtime) {
+                throw new Error('WidgetManager requires a runtime argument; pass as "runtime"');
             }
-            this.baseWidgetConfig = config.baseWidgetConfig;
+            this.runtime = runtime;
 
             this.widgets = {};
         }
@@ -123,13 +118,11 @@ define(['bluebird', './adapters/objectWidget', 'kb_lib/merge'], function (Promis
 
             let widgetPromise;
 
-            const configCopy = new merge.DeepMerger({}).mergeIn(config).value();
-            const widgetConfig = new merge.DeepMerger(configCopy).mergeIn(this.baseWidgetConfig).value();
+            const widgetConfig = new merge.DeepMerger({}).mergeIn(config).value();
+
+            widgetConfig.runtime = this.runtime;
 
             config = config || {};
-            // config.runtime = this.runtime;
-            // TODO: this is not wonderful...
-            // config =
 
             // How we create a widget depends on what type it is.
             switch (widgetDef.type) {

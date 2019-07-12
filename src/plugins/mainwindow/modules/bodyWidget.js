@@ -27,7 +27,7 @@ define(['bluebird', 'kb_lib/widget2/mount'], function (Promise, mount) {
 
         start() {
             // Um, this is where a plugin route is handled.
-            this.routeListener = this.runtime.recv('app', 'route-widget', (data) => {
+            this.routeListener = this.runtime.receive('app', 'route-widget', (data) => {
                 if (data.routeHandler.route.widget) {
                     if (
                         this.widgetMount.mountedWidget &&

@@ -6,11 +6,13 @@ It incorporates much of what used to be encoded into app.js, but in order to hav
 define(['./App'], function (App) {
     'use strict';
 
-    function factory(config) {
-        var app = App.make(config);
+    return class Hub {
+        constructor(params) {
+            this.app = new App(params);
+        }
 
-        function start() {
-            return app.start().then((runtime) => {
+        start() {
+            return this.app.start().then((runtime) => {
                 // kick off handling of the current route.
                 runtime.send('app', 'do-route');
 
@@ -40,17 +42,8 @@ define(['./App'], function (App) {
             });
         }
 
-        function stop() {
-            return app.stop();
+        stop() {
+            return this.app.stop();
         }
-
-        return {
-            start: start,
-            stop: stop
-        };
-    }
-
-    return {
-        make: factory
     };
 });

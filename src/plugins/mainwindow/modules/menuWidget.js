@@ -27,7 +27,7 @@ define([
             this.userRoles = ko.observableArray();
 
             // TODO: can this just be a more generic change in session state?
-            this.runtime.recv('session', 'change', () => {
+            this.runtime.receive('session', 'change', () => {
                 this.syncMenu();
             });
 

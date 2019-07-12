@@ -147,7 +147,7 @@ define([
         function start() {
 
             // listen for disconnection events.
-            // runtime.recv('connection', 'disconnected', function() {
+            // runtime.receive('connection', 'disconnected', function() {
             //     console.warn('disconnected!!!');
             //     // alert('disconnected');
             //     // verify this is true
@@ -160,7 +160,7 @@ define([
             // });
 
 
-            runtime.recv('app', 'heartbeat', function () {
+            runtime.receive('app', 'heartbeat', function () {
                 if (checking) {
                     return;
                 }

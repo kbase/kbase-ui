@@ -98,7 +98,7 @@ define([
                 channel: this.sendingChannel
             });
 
-            this.runtime.recv(this.sendingChannel, 'new', (message) => {
+            this.runtime.receive(this.sendingChannel, 'new', (message) => {
                 this.processMessage(message);
             });
         }

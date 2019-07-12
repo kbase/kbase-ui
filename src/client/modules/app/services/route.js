@@ -143,11 +143,11 @@ define(['bluebird', 'kb_lib/router', 'kb_lib/lang'], function (Promise, routerMo
         }
 
         function start() {
-            runtime.recv('app', 'do-route', function () {
+            runtime.receive('app', 'do-route', function () {
                 doRoute();
             });
 
-            runtime.recv('app', 'new-route', function (data) {
+            runtime.receive('app', 'new-route', function (data) {
                 if (data.routeHandler.route.redirect) {
                     runtime.send('app', 'route-redirect', data);
                 } else if (data.routeHandler.route.widget) {
@@ -157,18 +157,18 @@ define(['bluebird', 'kb_lib/router', 'kb_lib/lang'], function (Promise, routerMo
                 }
             });
 
-            runtime.recv('app', 'route-redirect', function (data) {
+            runtime.receive('app', 'route-redirect', function (data) {
                 runtime.send('app', 'navigate', {
                     path: data.routeHandler.route.redirect.path,
                     params: data.routeHandler.route.redirect.params
                 });
             });
 
-            runtime.recv('app', 'navigate', function (data) {
+            runtime.receive('app', 'navigate', function (data) {
                 router.navigateTo(data);
             });
 
-            runtime.recv('app', 'redirect', function (data) {
+            runtime.receive('app', 'redirect', function (data) {
                 router.redirectTo(data.url, data.new_window || data.newWindow);
             });
 

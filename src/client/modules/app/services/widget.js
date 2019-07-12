@@ -1,30 +1,17 @@
 define(['promise', '../../lib/widget/manager'], function (Promise, widgetManager) {
     'use strict';
 
-    function proxyMethod(obj, method, args) {
-        if (!obj[method]) {
-            throw {
-                name: 'UndefinedMethod',
-                message: 'The requested method "' + method + '" does not exist on this object',
-                suggestion: 'This is a developer problem, not your fault'
-            };
-        }
-        return obj[method].apply(obj, args);
-    }
-
     class WidgetService {
-        constructor({ config, params }) {
+        constructor({ params: {runtime} }) {
             // the config has two properties:
             // config - from the service config
             // params - runtime params required for integration with ui runtime
 
-            if (!params.runtime) {
+            if (!runtime) {
                 throw new Error('WidgetService start requires a runtime object; provide as "runtime"');
             }
             this.widgetManager = new widgetManager.WidgetManager({
-                baseWidgetConfig: {
-                    runtime: params.runtime
-                }
+                runtime
             });
         }
         start() {
@@ -49,18 +36,11 @@ define(['promise', '../../lib/widget/manager'], function (Promise, widgetManager
             });
         }
         getWidget() {
-            return proxyMethod(this.widgetManager, 'getWidget', arguments);
+            return this.widgetManager.getWidget.apply(this.widgetManager, arguments);
         }
         makeWidget() {
-            return proxyMethod(this.widgetManager, 'makeWidget', arguments);
+            return this.widgetManager.makeWidget.apply(this.widgetManager, arguments);
         }
-
-        // makeWidget() {
-
-        // }
-        // getWidget() {
-
-        // }
     }
     return { ServiceClass: WidgetService };
 });

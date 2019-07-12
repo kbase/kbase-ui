@@ -1,36 +1,44 @@
-define(['bluebird', 'kb_common/observed'], function (Promise, observed) {
+define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
     'use strict';
 
-    function factory(config) {
-        var state = observed.make();
+    return class Menu {
+        constructor({config}) {
+            this.config = config;
+            this.state = new Observed();
 
-        function setupMenus() {
+            this.state.setItem('menuItems', {
+                divider: {
+                    type: 'divider'
+                }
+            });
+
+            // MAIN
+            this.state.setItem('menu', []);
+
+            // creates initial empty menus
+            this.setupMenus();
+        }
+
+        setupMenus() {
             var hamburgerMenu = {
                 main: [],
                 developer: [],
                 help: []
             };
-            state.setItem('menu.hamburger', hamburgerMenu);
+            this.state.setItem('menu.hamburger', hamburgerMenu);
 
             var sidebarMenu = {
                 main: []
             };
-            state.setItem('menu.sidebar', sidebarMenu);
+            this.state.setItem('menu.sidebar', sidebarMenu);
         }
 
-        // Create default menu item definitions
-        state.setItem('menuItems', {
-            divider: {
-                type: 'divider'
-            }
-        });
-
         // Adds a menu item definition
-        function addMenuItem(id, menuDef) {
+        addMenuItem(id, menuDef) {
             // Another quick hack - not all menu defs have the name - the name
             // aka id  is also the may key for plugin config menu items.
             menuDef.id = id;
-            state.modifyItem('menuItems', function (menuItems) {
+            this.state.modifyItem('menuItems', (menuItems) => {
                 menuItems[id] = menuDef;
                 return menuItems;
             });
@@ -39,11 +47,11 @@ define(['bluebird', 'kb_common/observed'], function (Promise, observed) {
         /*
          * Add a defined menu item to a menu, according to a menu entry definition.
          */
-        function addToMenu(menuEntry, menuItemSpec) {
+        addToMenu(menuEntry, menuItemSpec) {
             var menu,
                 section,
                 position,
-                menuItems = state.getItem('menuItems'),
+                menuItems = this.state.getItem('menuItems'),
                 menuItemDef = menuItems[menuItemSpec.id];
 
             if (!menuItemDef) {
@@ -83,7 +91,7 @@ define(['bluebird', 'kb_common/observed'], function (Promise, observed) {
             section = menuEntry.section;
             position = menuEntry.position || 'bottom';
 
-            state.modifyItem('menu.' + menu, function (menus) {
+            this.state.modifyItem('menu.' + menu, (menus) => {
                 if (!menus[section]) {
                     console.error('ERROR: Menu section not defined', menuEntry, menu, section, menus);
                     throw new Error('Menu section not defined: ' + section);
@@ -97,47 +105,47 @@ define(['bluebird', 'kb_common/observed'], function (Promise, observed) {
             });
         }
 
-        function getCurrentMenu(menu) {
+        getCurrentMenu(menu) {
             menu = menu || 'hamburger';
-            var menus = state.getItem('menu.' + menu);
+            var menus = this.state.getItem('menu.' + menu);
             return menus;
         }
 
         // Plugin interface
-        function pluginHandler(newMenus) {
+        pluginHandler(newMenus) {
             if (!newMenus) {
                 return;
             }
-            return Promise.try(function () {
-                newMenus.forEach(function (menu) {
+            return Promise.try(() => {
+                newMenus.forEach((menu) => {
                     // quick patch to the definition to add the id.
                     // TODO: maybe just store the whole menu from
                     // the plugin config?
                     menu.id = menu.name;
-                    addMenuItem(menu.name, menu.definition || menu);
+                    this.addMenuItem(menu.name, menu.definition || menu);
                 });
             });
         }
 
-        function onChange(fun) {
-            state.listen('menu.hamburger', {
-                onSet: function () {
-                    fun(getCurrentMenu('hamburger'));
+        onChange(fun) {
+            this.state.listen('menu.hamburger', {
+                onSet: () => {
+                    fun(this.getCurrentMenu('hamburger'));
                 }
             });
         }
 
         // SERVICE API
 
-        function start() {
+        start() {
             // The hamburger menu.
-            Object.keys(config.menus).forEach(function (menu) {
-                var menuDef = config.menus[menu];
+            Object.keys(this.config.menus).forEach((menu) => {
+                var menuDef = this.config.menus[menu];
                 // Skip a menu with no sections
                 if (!menuDef.sections) {
                     return;
                 }
-                Object.keys(menuDef.sections).forEach(function (section) {
+                Object.keys(menuDef.sections).forEach((section) => {
                     // Skip sections with no items.
                     if (!menuDef.sections[section]) {
                         return;
@@ -147,14 +155,14 @@ define(['bluebird', 'kb_common/observed'], function (Promise, observed) {
                     }
                     var items = menuDef.sections[section].items;
                     var disabled = menuDef.disabled || [];
-                    items.forEach(function (menuItem) {
+                    items.forEach((menuItem) => {
                         if (menuItem.disabled) {
                             return;
                         }
                         if (disabled.indexOf(menuItem.id) >= 0) {
                             return;
                         }
-                        addToMenu(
+                        this.addToMenu(
                             {
                                 menu: menu,
                                 section: section,
@@ -168,28 +176,6 @@ define(['bluebird', 'kb_common/observed'], function (Promise, observed) {
             });
         }
 
-        function stop() {}
-
-        // MAIN
-        state.setItem('menu', []);
-
-        // creates initial empty menus
-        setupMenus();
-
-        // API
-        return {
-            getCurrentMenu: getCurrentMenu,
-            pluginHandler: pluginHandler,
-            onChange: onChange,
-            // setMenus: setMenus,
-            addMenuItem: addMenuItem,
-            addToMenu: addToMenu,
-            start: start,
-            stop: stop
-        };
-    }
-
-    return {
-        make: factory
+        stop() {}
     };
 });

@@ -1,47 +1,39 @@
 define([
-    'promise'
+    'bluebird'
 ], function (
     Promise
 ) {
     'use strict';
 
-    function factory(config, params) {
-        var runtime = params.runtime;
+    return class Service {
+        constructor({runtime}) {
+            this.runtime = runtime;
+        }
 
-        function pluginHandler(serviceConfigs) {
+        pluginHandler(serviceConfigs) {
             return Promise.try(function () {
-                var services = serviceConfigs.map(function (serviceConfig) {
+                var services = serviceConfigs.map((serviceConfig) => {
                     try {
-                        runtime.addService(serviceConfig.name, {
-                            runtime: runtime,
+                        this.runtime.addService(serviceConfig.name, {
+                            runtime: this.runtime,
                             module: serviceConfig.module
                         });
                     } catch (ex) {
                         console.error('** ERROR ** ');
                         console.error(ex);
                     }
-                    return runtime.loadService(serviceConfig.name);
+                    return this.runtime.loadService(serviceConfig.name);
                 });
                 return Promise.all(services);
             });
         }
 
-        function start() {
+        start() {
             return true;
         }
 
-        function stop() {
+        stop() {
             return true;
         }
-
-        return {
-            pluginHandler: pluginHandler,
-            start: start,
-            stop: stop
-        };
-    }
-
-    return {
-        make: factory
     };
 });

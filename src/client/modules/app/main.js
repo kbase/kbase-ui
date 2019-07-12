@@ -107,7 +107,7 @@ define([
         // merge the deploy and app config.
         var merged = utils.mergeObjects([appConfigBase, deployConfig]);
         var appConfig = fixConfig(merged);
-        var app = Hub.make({
+        var app = new Hub({
             appConfig: appConfig,
             nodes: {
                 root: {
