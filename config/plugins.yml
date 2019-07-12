@@ -69,12 +69,12 @@ plugins:
       cwd: src/plugin
       source:
         bower: {}
-    - name: user-profile
-      globalName: kbase-ui-plugin-user-profile
-      version: 2.0.0
-      cwd: src/plugin
-      source:
-        bower: {}
+    # - name: user-profile
+    #   globalName: kbase-ui-plugin-user-profile
+    #   version: 2.0.0
+    #   cwd: src/plugin
+    #   source:
+    #     bower: {}
     - name: job-browser2
       globalName: kbase-ui-plugin-job-browser2
       version: 0.1.8
@@ -88,6 +88,13 @@ plugins:
       source:
           git: 
             account: kbaseIncubator
+    - name: react-profile-view
+      globalName: kbase-ui-plugin-react-profile-view
+      version: 0.1.1
+      cwd: plugin
+      source:
+          git:
+            account: eapearson
     
     # - name: narrative-info
     #   globalName: kbase-ui-plugin-narrative-info

@@ -22,7 +22,7 @@
         "kbase-knockout-extensions-es6": "0.6.16",
         "kbase-common-ts": "0.19.0",
         "kbase-common-js": "2.18.1",
-        "kbase-common-es6": "0.10.20",
+        "kbase-common-es6": "0.10.21",
         "kbase-service-clients-js": "3.3.5",
         "kbase-ui-widget": "1.3.0",
         "knockout": "3.5.0",

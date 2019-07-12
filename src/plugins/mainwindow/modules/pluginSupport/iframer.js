@@ -297,11 +297,11 @@ define(['kb_lib/html', './windowChannel', 'kb_lib/httpUtils'], function (html, W
                         // username: this.runtime.service('session').getUsername(),
                         // realname: this.runtime.service('session').getRealname(),
                         // email: this.runtime.service('session').getEmail(),
-                        config: this.runtime.rawConfig()
+                        config: this.runtime.rawConfig(),
+                        params: this.params.routeParams
                     });
                     // Any sends to the channel should only be enabled after the
                     // start message is received.
-                    // TODO: reorganize this.
                     this.setupChannelSends();
                     // resolve();
                 });
