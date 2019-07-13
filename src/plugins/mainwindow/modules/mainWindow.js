@@ -35,6 +35,7 @@ define([
 
     const t = html.tag,
         div = t('div');
+        
 
     class ViewModel {
         constructor({runtime}) {
