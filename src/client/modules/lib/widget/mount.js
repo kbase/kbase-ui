@@ -1,4 +1,4 @@
-define(['bluebird'], function (Promise) {
+define(['bluebird'], (Promise) => {
     'use strict';
 
     class WidgetMount {
@@ -12,9 +12,7 @@ define(['bluebird'], function (Promise) {
                 throw new Error('The widget mounter needs a widget manager; pass it as "widgetManager"');
             }
             this.widgetManager = config.widgetManager;
-
             this.container = this.hostNode;
-
             this.mountedWidget = null;
         }
 
@@ -40,7 +38,7 @@ define(['bluebird'], function (Promise) {
                     this.mountedWidget.widget = widget;
                     return Promise.all([widget, widget.init && widget.init()]);
                 })
-                .spread((widget) => {
+                .then(([widget]) => {
                     // Give it a container and attach it to it.
 
                     // aww, just give it the container...
@@ -48,15 +46,15 @@ define(['bluebird'], function (Promise) {
                     this.mountedWidget.container = this.container;
                     return Promise.all([widget, widget.attach && widget.attach(this.mountedWidget.container)]);
                 })
-                .spread((widget) => {
+                .then(([widget]) => {
                     // Start it if applicable.
                     return Promise.all([widget, widget.start && widget.start(params)]);
                 })
-                .spread((widget) => {
+                .then(([widget]) => {
                     // Run it if applicable
                     return Promise.all([widget, widget.run && widget.run(params)]);
                 })
-                .spread((widget) => {
+                .then(([widget]) => {
                     return widget;
                 });
             return this.mountedWidget.promise;

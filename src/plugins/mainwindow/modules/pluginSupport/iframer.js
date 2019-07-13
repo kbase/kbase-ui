@@ -285,7 +285,7 @@ define(['kb_lib/html', './windowChannel', 'kb_lib/httpUtils'], function (html, W
             return new Promise((resolve, reject) => {
                 this.setupAndStartChannel();
                 this.channel.setWindow(this.iframe.window);
-                this.channel.on('ready', ({ channelId }) => {
+                this.channel.once('ready', ({ channelId }) => {
                     this.channel.partnerId = channelId;
                     this.channel.send('start', {
                         authorization: {
@@ -293,26 +293,21 @@ define(['kb_lib/html', './windowChannel', 'kb_lib/httpUtils'], function (html, W
                             username: this.runtime.service('session').getUsername(),
                             realname: this.runtime.service('session').getRealname()
                         },
-                        // token: this.runtime.service('session').getAuthToken(),
-                        // username: this.runtime.service('session').getUsername(),
-                        // realname: this.runtime.service('session').getRealname(),
-                        // email: this.runtime.service('session').getEmail(),
                         config: this.runtime.rawConfig(),
                         params: this.params.routeParams
                     });
                     // Any sends to the channel should only be enabled after the
                     // start message is received.
                     this.setupChannelSends();
-                    // resolve();
                 });
                 // forward clicks to the parent, to enable closing dropdowns,
                 // etc.
 
-                this.channel.on('started', () => {
+                this.channel.once('started', () => {
                     resolve();
                 });
 
-                this.channel.on('start-error', (config) => {
+                this.channel.once('start-error', (config) => {
                     reject(new Error(config.message));
                 });
             });
@@ -327,7 +322,8 @@ define(['kb_lib/html', './windowChannel', 'kb_lib/httpUtils'], function (html, W
             history.replaceState(null, '', currentURL.toString());
 
             if (this.channel) {
-                return this.channel.stop();
+                this.channel.stop();
+                this.channel = null;
             }
         }
     }
