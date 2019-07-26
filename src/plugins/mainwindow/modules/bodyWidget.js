@@ -29,39 +29,30 @@ define(['bluebird', 'lib/widget/mount'], function(Promise, mount) {
         start() {
             // Um, this is where a plugin route is handled.
             this.routeListener = this.runtime.receive('app', 'route-widget', (data) => {
-                console.log('in route listener');
                 if (this.isLoading) {
                     console.warn('Already loading, ignoring.');
                     return;
                 }
-                console.log('[routeListener] about to try');
                 Promise.try(() => {
                     this.isLoading = true;
-                    console.log('[routeListener] trying', data.routeHandler);
                     if (data.routeHandler.route.widget) {
                         if (
                             this.widgetMount.mountedWidget &&
                             data.routeHandler.route.widget === this.widgetMount.mountedWidget.widgetId &&
                             data.routeHandler.route.reentrant
                         ) {
-                            console.log('[routeListener] running');
                             this.widgetMount.mountedWidget.widget.run(data.routeHandler.params);
                         } else {
-                            console.log('[routeListener] mounting');
                             return this.widgetMount
                                 .unmount()
                                 .then(() => {
                                     return this.runtime.sendp('ui', 'clearButtons');
                                 })
                                 .then(() => {
-                                    console.log('[routeListener] mounting widget');
                                     return this.widgetMount.mount(
                                         data.routeHandler.route.widget,
                                         data.routeHandler.params
                                     );
-                                })
-                                .then(() => {
-                                    console.log('widget mount finished.');
                                 })
                                 .catch((err) => {
                                     // need a catch-all widget to mount here??
@@ -86,7 +77,6 @@ define(['bluebird', 'lib/widget/mount'], function(Promise, mount) {
                         console.warn('No widget in route');
                     }
                 }).finally(() => {
-                    console.log('loading finished...');
                     this.isLoading = false;
                 });
             });

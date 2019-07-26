@@ -20,7 +20,7 @@ plugins:
       version: 4.0.0
       cwd: src/plugin
       source:
-        bower: {}
+          bower: {}
     - name: dashboard
       globalName: kbase-ui-plugin-dashboard
       version: 3.0.3
@@ -29,7 +29,7 @@ plugins:
           bower: {}
     - name: auth2-client
       globalName: kbase-ui-plugin-auth2-client
-      version: 2.0.0
+      version: 2.0.1
       cwd: src/plugin
       source:
           bower: {}
@@ -44,10 +44,10 @@ plugins:
       version: 1.0.0
       cwd: src/plugin
       source:
-        bower: {}
+          bower: {}
     - name: catalog
       globalName: kbase-ui-plugin-catalog
-      version: 2.0.0
+      version: 2.0.1
       cwd: src/plugin
       source:
           bower: {}
@@ -56,19 +56,19 @@ plugins:
       version: 1.0.0
       cwd: src/plugin
       source:
-        bower: {}
+          bower: {}
     - name: organizations
       globalName: kbase-ui-plugin-organizations
       version: 1.0.0
       cwd: src/plugin
       source:
-        bower: {}
+          bower: {}
     - name: biochem-search
       globalName: kbase-ui-plugin-biochem-search
       version: 1.0.1
       cwd: src/plugin
       source:
-        bower: {}
+          bower: {}
     # - name: user-profile
     #   globalName: kbase-ui-plugin-user-profile
     #   version: 2.0.0
@@ -86,25 +86,21 @@ plugins:
       version: 0.1.5
       cwd: plugin
       source:
-          git: 
-            account: kbaseIncubator
+          git:
+              account: kbaseIncubator
     - name: react-profile-view
       globalName: kbase-ui-plugin-react-profile-view
       version: 0.1.2
       cwd: plugin
       source:
           git:
-            account: eapearson
-    
+              account: eapearson
     # - name: narrative-info
     #   globalName: kbase-ui-plugin-narrative-info
     #   version: 1.1.4
     #   cwd: src/plugin
     #   source:
     #     bower: {}
-
-
-
     # Unreleased
     # - name: public-search
     #   globalName: kbase-ui-plugin-public-search
@@ -112,7 +108,6 @@ plugins:
     #   cwd: src/plugin
     #   source:
     #     bower: {}
-
     # Experimental or Dev Only
     # - name: shockbrowser
     #   globalName: kbase-ui-plugin-shockbrowser
@@ -144,7 +139,6 @@ plugins:
     #   cwd: src/plugin
     #   source:
     #     bower: {}
-
     # Obsolete
     # - name: methodview
     #   globalName: kbase-ui-plugin-methodview
