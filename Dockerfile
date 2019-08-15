@@ -10,7 +10,7 @@ RUN apk upgrade --update-cache --available && \
 
 COPY ./package.json /kb
 WORKDIR /kb
-RUN yarn install
+RUN yarn install --no-lockfile
 
 COPY . /kb
 

@@ -81,13 +81,13 @@ plugins:
       cwd: plugin
       source:
           git: {}
-    - name: example-hello
-      globalName: kbase-ui-plugin-example-hello
-      version: 0.1.5
-      cwd: plugin
-      source:
-          git:
-              account: kbaseIncubator
+    # - name: example-hello
+    #   globalName: kbase-ui-plugin-example-hello
+    #   version: 0.1.5
+    #   cwd: plugin
+    #   source:
+    #       git:
+    #           account: kbaseIncubator
     - name: react-profile-view
       globalName: kbase-ui-plugin-react-profile-view
       version: 0.1.2
