@@ -1,4 +1,4 @@
-define(['bluebird', 'lib/widget/mount'], function(Promise, mount) {
+define(['bluebird', 'lib/widget/mount'], function (Promise, mount) {
     'use strict';
 
     class BodyWidget {

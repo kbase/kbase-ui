@@ -32,6 +32,8 @@ define(['module', './iframer', 'css!./panel.css'], function (module, Iframer) {
 
             const pluginPath = ['modules', 'plugins', params.plugin].join('/');
 
+            this.runtime.send('ui', 'setTitle', '');
+
             this.iframer = new Iframer({
                 runtime: this.runtime,
                 node: this.container,

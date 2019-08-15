@@ -94,7 +94,14 @@ plugins:
       cwd: plugin
       source:
           git:
-              account: eapearson
+              account: kbaseIncubator
+    - name: re-landing-pages
+      globalName: kbase-ui-plugin-re-landing-pages
+      version: 0.2.0
+      cwd: plugin
+      source:
+          git:
+              account: kbaseIncubator
     # - name: narrative-info
     #   globalName: kbase-ui-plugin-narrative-info
     #   version: 1.1.4
