@@ -137,14 +137,15 @@ fake-travis-build:
 docker-compose-override: 
 	@echo "> Creating docker compose override..."
 	@echo "> With options:"
-	@echo "> plugins $(plugins)"
-	@echo "> internal $(internal-plugins)"
-	@echo "> libraries $(libraries)"
-	@echo "> paths $(paths)"
-	@echo "> local narrative $(local-narrative)"
-	@echo "> dynamic service proxies $(dynamic-services)"
+	@echo "> plugins: $(plugins)"
+	@echo "> internal: $(internal-plugins)"
+	@echo "> libraries: $(libraries)"
+	@echo "> paths: $(paths)"
+	@echo "> local-narrative: $(local-narrative)"
+	@echo "> dynamic-services: $(dynamic-services)"
 	$(eval cmd = node $(TOPDIR)/tools/docker/build-docker-compose-override.js $(env) \
 	  $(foreach p,$(plugins),--plugin $(p)) \
+	  $(foreach p,$(plugin),--plugin $(p)) \
 	  $(foreach i,$(internal-plugins),--internal $i) \
 	  $(foreach l,$(libraries),--lib $l) \
 	  $(foreach f,$(paths),---path $f) \
