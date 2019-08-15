@@ -95,7 +95,7 @@ setup-dirs:
 
 node_modules:
 	@echo "> Installing build and test tools."
-	yarn install
+	yarn install --no-lockfile
 
 setup: setup-dirs
 
@@ -218,7 +218,7 @@ clean-docs:
 
 docs:
 	cd docs; \
-	yarn install; \
+	yarn install --no-lockfile; \
 	./node_modules/.bin/gitbook build ./book
 
 docs-viewer: docs

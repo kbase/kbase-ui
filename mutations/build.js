@@ -430,7 +430,7 @@ function npm(cmd, argv, options) {
 
 function yarn(cmd, argv, options) {
     return new Promise(function (resolve, reject) {
-        exec('yarn ' + cmd + argv.join(' '), options, function (err, stdout, stderr) {
+        exec('yarn ' + cmd + ' ' + argv.join(' '), options, function (err, stdout, stderr) {
             if (err) {
                 reject(err);
             }
@@ -457,7 +457,7 @@ function yarnInstall(state) {
             return mutant.saveJson(packagePath, packageConfig);
         })
         .then(function () {
-            return yarn('install', [], {
+            return yarn('install', ['--no-lockfile'], {
                 cwd: base.join('/'),
                 timeout: 300000
             });
