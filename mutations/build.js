@@ -326,29 +326,27 @@ function fetchPluginsFromGit(state) {
         })
         .then(function () {
             // First generate urls to all the plugin repos.
-            return Promise.all(
-                pluginConfig.plugins
-                    .filter(function (plugin) {
-                        if (typeof plugin === 'object' && !plugin.internal && plugin.source.git) {
-                            return true;
-                        }
-                        return false;
-                    })
-                    .map(function (plugin) {
-                        const repoName = plugin.source.git.name || plugin.globalName,
-                            version = plugin.version,
-                            branch = plugin.source.git.branch || (version ? 'v' + version : null),
-                            gitAccount = plugin.source.git.account || 'kbase',
-                            url = plugin.source.git.url || 'https://github.com/' + gitAccount + '/' + repoName;
+            const githubPlugins = pluginConfig.plugins
+            .filter(function (plugin) {
+                if (typeof plugin === 'object' && !plugin.internal && plugin.source.git) {
+                    return true;
+                }
+                return false;
+            });
+            return Promise.each(githubPlugins, (plugin) =>{
+                const repoName = plugin.source.git.name || plugin.globalName,
+                    version = plugin.version,
+                    branch = plugin.source.git.branch || (version ? 'v' + version : null),
+                    gitAccount = plugin.source.git.account || 'kbase',
+                    url = plugin.source.git.url || 'https://github.com/' + gitAccount + '/' + repoName;
 
-                        const dest = gitDestination.concat([plugin.globalName]).join('/');
-                        mutant.log('...gitClone');
-                        return gitClone(url, dest, branch).then(() => {
-                            mutant.log('...buildPlugin');
-                            return buildPlugin(state, dest);
-                        });
-                    })
-            );
+                const dest = gitDestination.concat([plugin.globalName]).join('/');
+                mutant.log('...gitClone');
+                return gitClone(url, dest, branch).then(() => {
+                    mutant.log('...buildPlugin');
+                    return buildPlugin(state, dest);
+                });
+            });
         });
 }
 
