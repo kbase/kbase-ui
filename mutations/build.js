@@ -344,7 +344,9 @@ function fetchPluginsFromGit(state) {
                 mutant.log('...gitClone');
                 return gitClone(url, dest, branch).then(() => {
                     mutant.log('...buildPlugin');
-                    return buildPlugin(state, dest);
+                    if (!plugin.prebuilt) {
+                        return buildPlugin(state, dest);
+                    }
                 });
             });
         });
