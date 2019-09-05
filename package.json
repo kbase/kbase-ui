@@ -78,7 +78,7 @@
         "ajv": "6.10.2",
         "bluebird": "3.5.5",
         "dagre": "0.8.4",
-        "@kbase/ui-lib": "0.1.0-alpha.55",
+        "@kbase/ui-lib": "0.2.0-alpha.3",
         "preact": "10.0.0-rc.0"
     },
     "scripts": {
