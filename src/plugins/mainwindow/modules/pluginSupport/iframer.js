@@ -291,7 +291,10 @@ define(['kb_lib/html', './windowChannel', 'kb_lib/httpUtils'], function (html, W
                         authorization: {
                             token: this.runtime.service('session').getAuthToken(),
                             username: this.runtime.service('session').getUsername(),
-                            realname: this.runtime.service('session').getRealname()
+                            realname: this.runtime.service('session').getRealname(),
+                            roles: this.runtime.service('session').getRoles().map(({ id }) => {
+                                return id;
+                            })
                         },
                         config: this.runtime.rawConfig(),
                         params: this.params.routeParams
