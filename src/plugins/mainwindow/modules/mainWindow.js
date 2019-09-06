@@ -22,14 +22,12 @@ define([
     'knockout',
     'kb_lib/html',
     'kb_lib/widget/widgetSet',
-    './components/systemAlertBannerTemp',
     './components/systemAlertBanner',
     './components/systemAlertToggle'
 ], function (
     ko,
     html,
     widgetSet,
-    SystemAlertBannerComponentTemp,
     SystemAlertBannerComponent,
     SystemAlertToggleComponent
 ) {
