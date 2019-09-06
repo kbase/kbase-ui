@@ -77,7 +77,7 @@ plugins:
   #     bower: {}
   - name: job-browser2
     globalName: kbase-ui-plugin-job-browser2
-    version: 0.3.2
+    version: 0.3.3
     cwd: plugin
     prebuilt: true
     source:
