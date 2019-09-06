@@ -34,7 +34,18 @@ define([
     'use strict';
 
     const t = html.tag,
-        div = t('div');
+        div = t('div'),
+        span = t('span'),
+        p = t('p'),
+        b = t('b'),
+        a = t('a');
+
+    function niceDate(d) {
+        var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZoneName: 'short',
+            hour: 'numeric', minute: 'numeric'  };
+        return Intl.DateTimeFormat('en-US', options).format(d);
+
+    }
 
     class ViewModel {
         constructor(params) {
@@ -44,6 +55,7 @@ define([
             this.alertCount = ko.observable(null);
             this.alertSummary = ko.observable(null);
             this.hideAlerts = ko.observable(false);
+
         }
     }
 
@@ -134,24 +146,79 @@ define([
                     div({
                         class: '-content-area'
                     }, [
-                        (() => {
-                            if (this.runtime.featureEnabled('system_alert_notification')) {
-                                return div({
-                                    dataBind: {
-                                        component: {
-                                            name: SystemAlertBannerComponent.quotedName(),
-                                            params: {
-                                                runtime: 'runtime',
-                                                alertCount: 'alertCount',
-                                                alertSummary: 'alertSummary',
-                                                hideAlerts: 'hideAlerts'
-                                            }
-                                        }
-                                    }
-                                });
+                        // (() => {
+                        //     const enabled = true;
+                        //     if (enabled) {
+                        //     // if (this.runtime.featureEnabled('system_alert_notification')) {
+                        //         return div({
+                        //             dataBind: {
+                        //                 component: {
+                        //                     name: SystemAlertBannerComponent.quotedName(),
+                        //                     params: {
+                        //                         runtime: 'runtime',
+                        //                         alertCount: 'alertCount',
+                        //                         alertSummary: 'alertSummary',
+                        //                         hideAlerts: 'hideAlerts'
+                        //                     }
+                        //                 }
+                        //             }
+                        //         });
+                        //     }
+                        //     return null;
+                        // })(),
+                        div({
+                            style: {
+                                border: '2px solid orange',
+                                margin: '10px',
+                                padding: '4px'
                             }
-                            return null;
-                        })(),
+                        }, [
+                            div({
+                                style: {
+                                    fontWeight: 'bold',
+                                    textAlign: 'center',
+                                    fontSize: '150%'
+                                }
+                            }, 'Extended data center maintenance'),
+                            div({
+                                style: {
+                                    fontWeight: 'bold',
+                                    textAlign: 'center',
+                                    fontSize: '120%'
+                                }
+                            }, [
+                                // 'from Fri Sep 6 at 10:00am to Tue Sep 10 at 1:00pm PST',
+                                span({style: {
+                                    fontStyle: 'italic',
+                                    color: 'gray'
+                                }}, 'from '),
+                                niceDate(new Date('2019-09-06T10:00')),
+                                span({style: {
+                                    fontStyle: 'italic',
+                                    color: 'gray'
+                                }}, '  to  '),
+                                niceDate(new Date('2019-09-10T13:00')),
+                            ]),
+                            div({
+                                style: {
+                                    width: '50%',
+                                    margin: '5px auto 8px auto',
+                                    borderBottom: '1px solid silver'
+                                }
+                            }),
+                            p({style: {textAlign: 'center'}}, [
+                                b('narrative.kbase.us'), ' ',
+                                'will be accessible with ',
+                                span({style: {fontStyle: 'italic'}}, 'limited functionality'),
+                                '. ',
+                                'For details and ongoing updates visit ',
+                                a({href: 'http://kbase.us/dc-maintenance-sep2019/', target: '_blank'}, 'kbase.us'),
+                                '.'
+                            ]),
+                            // p([
+                            //     'The following features are not available: submitting or viewing compute jobs, all uploads, and search.'
+                            // ]),
+                        ]),
                         div({
                             class: '-plugin-content',
                             id: this.widgets.addWidget('body')
