@@ -208,17 +208,17 @@ define([
                                     borderBottom: '1px solid silver'
                                 }
                             }),
-                            p([
+                            p({style: {textAlign: 'center'}}, [
                                 b('narrative.kbase.us'), ' ',
-                                'will be accessible with limited functionality.'
+                                'will be accessible with ',
+                                span({style: {fontStyle: 'italic'}}, 'limited functionality'),
+                                '. ',
+                                'For details and ongoing updates visit ',
+                                a({href: 'http://kbase.us', target: '_blank'}, 'kbase.us')
                             ]),
-                            p([
-                                'The following features are not available: submitting or viewing compute jobs, all uploads, and search.'
-                            ]),
-                            p([
-                                'For updates on visit ',
-                                a({href: 'http://kbase.us'}, 'kbase.us')
-                            ]),
+                            // p([
+                            //     'The following features are not available: submitting or viewing compute jobs, all uploads, and search.'
+                            // ]),
                         ]),
                         div({
                             class: '-plugin-content',
