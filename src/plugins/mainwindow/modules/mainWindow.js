@@ -212,7 +212,8 @@ define([
                                 span({style: {fontStyle: 'italic'}}, 'limited functionality'),
                                 '. ',
                                 'For details and ongoing updates visit ',
-                                a({href: 'http://kbase.us', target: '_blank'}, 'kbase.us')
+                                a({href: 'http://kbase.us', target: '_blank'}, 'kbase.us'),
+                                '.'
                             ]),
                             // p([
                             //     'The following features are not available: submitting or viewing compute jobs, all uploads, and search.'
