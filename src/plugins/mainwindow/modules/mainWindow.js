@@ -212,7 +212,7 @@ define([
                                 span({style: {fontStyle: 'italic'}}, 'limited functionality'),
                                 '. ',
                                 'For details and ongoing updates visit ',
-                                a({href: 'http://kbase.us', target: '_blank'}, 'kbase.us'),
+                                a({href: 'http://kbase.us/dc-maintenance-sep2019/', target: '_blank'}, 'kbase.us'),
                                 '.'
                             ]),
                             // p([
