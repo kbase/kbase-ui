@@ -91,7 +91,7 @@ plugins:
   #           account: kbaseIncubator
   - name: react-profile-view
     globalName: kbase-ui-plugin-react-profile-view
-    version: 0.2.1
+    version: 0.3.0
     cwd: plugin
     prebuilt: true
     source:
