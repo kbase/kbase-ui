@@ -99,7 +99,7 @@ plugins:
         account: kbaseIncubator
   - name: re-landing-pages
     globalName: kbase-ui-plugin-re-landing-pages
-    version: 0.3.0
+    version: 0.3.1
     cwd: plugin
     prebuilt: true
     source:
