@@ -170,7 +170,7 @@ define(['moment', 'kb_lib/html', 'bootstrap'], function (moment, html) {
                 ]);
             }
 
-            const documentationUrl = '/_book/index.html';
+            const documentationUrl = 'http://kbaseincubator.github.io/kbase-ui-docs';
 
             return [
                 versionMessage,
