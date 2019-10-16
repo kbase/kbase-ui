@@ -16,7 +16,7 @@
         "url": "git://github.com/kbase/kbase-ui"
     },
     "dependencies": {
-        "bluebird": "3.5.5",
+        "bluebird": "3.7.1",
         "bootstrap": "3.4.1",
         "bower-knockout-mapping": "2.6.0",
         "eonasdan-bootstrap-datetimepicker": "4.17.47",
@@ -34,7 +34,7 @@
         "knockout-arraytransforms": "2.1.1",
         "knockout-projections": "eapearson/knockout-projections#1.1.1",
         "knockout-switch-case": "2.1.0",
-        "knockout-validation": "2.0.3",
+        "knockout-validation": "2.0.4",
         "marked": "0.6.3",
         "moment": "2.24.0",
         "numeral": "2.0.6",
