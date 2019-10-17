@@ -17,7 +17,7 @@ plugins:
       bower: {}
   - name: dataview
     globalName: kbase-ui-plugin-dataview
-    version: 4.1.2
+    version: 4.2.0
     cwd: src/plugin
     source:
       bower: {}
@@ -91,7 +91,7 @@ plugins:
   #           account: kbaseIncubator
   - name: react-profile-view
     globalName: kbase-ui-plugin-react-profile-view
-    version: 0.3.1
+    version: 0.3.3
     cwd: plugin
     prebuilt: true
     source:
