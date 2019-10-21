@@ -4,7 +4,7 @@
   params:
     name: kbase_session
     path: "/"
-    value: "${token}"
+    value: "${config.auth.token}"
 - wait: forElement
   timeout: 10000
   title: Ensure the logged-in menu appears, then open the user menu
@@ -21,7 +21,7 @@
 - wait: forText
   timeout: 10000
   title: Username should be now rendered
-  text: ${username}
+  text: ${config.auth.username}
   selector:
     type: absolute
     path:
@@ -44,3 +44,14 @@
         value: avatar
 - action: click
   title: close menu
+- wait: forText
+  timeout: 10000
+  title: Dashboard should begin to appears
+  text: Dashboard
+  selector:
+    type: absolute
+    path:
+      - type: plugin
+        value: mainwindow
+      - type: label
+        value: title

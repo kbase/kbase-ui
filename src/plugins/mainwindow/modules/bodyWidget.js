@@ -29,10 +29,10 @@ define(['bluebird', 'lib/widget/mount'], function (Promise, mount) {
         start() {
             // Um, this is where a plugin route is handled.
             this.routeListener = this.runtime.receive('app', 'route-widget', (data) => {
-                if (this.isLoading) {
-                    console.warn('Already loading, ignoring.');
-                    return;
-                }
+                // if (this.isLoading) {
+                //     console.warn('Already loading, ignoring.');
+                //     return;
+                // }
                 Promise.try(() => {
                     this.isLoading = true;
                     if (data.routeHandler.route.widget) {

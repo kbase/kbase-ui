@@ -73,7 +73,7 @@ define([
             });
 
             // The entire ui (from the app's perspective) hinges upon a single
-            // root node, which must already be establibished by the
+            // root node, which must already be established by the
             // calling code. If this node is absent, we simply fail here.
             this.rootNode = document.querySelector(this.nodes.root.selector);
             if (!this.rootNode) {
@@ -110,8 +110,6 @@ define([
             });
 
             this.addServices(this.services);
-
-
         }
 
         mountRootWidget(widgetId, runtime) {
