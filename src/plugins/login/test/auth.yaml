@@ -1,7 +1,7 @@
 ---
 description: Login plugin - authorized
 specs:
-  - description: ''
+  - description: ""
     baseSelector:
       - type: plugin
         value: login
@@ -32,10 +32,10 @@ specs:
               value: signed-in
             - type: label
               value: username
-        text: "${username}"
+        text: "${config.auth.username}"
       - wait: forText
         title: And the real name too
         selector:
           - type: label
             value: realname
-        text: ${realname}
+        text: ${config.auth.realname}

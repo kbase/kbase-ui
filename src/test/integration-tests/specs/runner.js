@@ -6,8 +6,8 @@ var utils = require('./utils');
 
 // a suite is a set of tests
 class Suite {
-    constructor({ testFiles, testData, commonSpecs }) {
-        this.testData = testData;
+    constructor({ testFiles, context, commonSpecs }) {
+        this.context = context;
         this.commonSpecs = commonSpecs;
         this.tests = testFiles.map((testFile) => {
             return new Test({
@@ -45,10 +45,10 @@ class Test {
             }
             if (this.testDef.disable) {
                 if (this.testDef.disable.envs) {
-                    if (this.testDef.disable.envs.includes(this.suite.testData.env)) {
+                    if (this.testDef.disable.envs.includes(this.suite.context.config.env)) {
                         utils.info(
                             'skipping test because it is disabled for env: ' +
-                this.suite.testData.env
+                this.suite.context.config.env
                         );
                         return;
                     }
@@ -81,17 +81,17 @@ class Spec {
             if (this.specDef.disable) {
                 if (this.specDef.disable.envs) {
                     if (
-                        this.specDef.disable.envs.includes(this.test.suite.testData.env)
+                        this.specDef.disable.envs.includes(this.test.suite.context.config.env)
                     ) {
                         utils.info(
                             'skipping test spec because it is disabled for env: ' +
-                this.test.suite.testData.env
+                this.test.suite.context.config.env
                         );
                         return;
                     }
                 }
             }
-            var url = this.test.suite.testData.url;
+            var url = this.test.suite.context.config.url;
             browser.url(url);
             this.tasks.run();
             // porque?
@@ -127,7 +127,7 @@ class Task {
     constructor({ taskDef, spec }) {
         this.taskDef = taskDef;
         this.spec = spec;
-        this.testData = this.spec.test.suite.testData;
+        this.context = this.spec.test.suite.context;
     }
 
     run() {
@@ -137,9 +137,9 @@ class Task {
         }
         if (this.taskDef.disable) {
             if (this.taskDef.disable.envs) {
-                if (this.taskDef.disable.envs.includes(this.testData.env)) {
+                if (this.taskDef.disable.envs.includes(this.context.config.env)) {
                     utils.info(
-                        'skipping task because it is disabled for env: ' + this.testData.env
+                        'skipping task because it is disabled for env: ' + this.context.config.env
                     );
                     return;
                 }
@@ -161,7 +161,7 @@ class Task {
                     browser.setCookies([
                         {
                             name: 'kbase_session',
-                            value: this.testData.token,
+                            value: this.context.config.auth.token,
                             path: '/'
                         }
                     ]);
@@ -171,7 +171,7 @@ class Task {
                             cookie = cookies[0];
                         });
                     });
-                    expect(cookie.value).toEqual(this.testData.token);
+                    expect(cookie.value).toEqual(this.context.config.auth.token);
                 };
             case 'deleteSessionCookie':
                 return () => {
@@ -214,6 +214,10 @@ class Task {
                         this.spec.resolvedSelector,
                         this.taskDef.params.value
                     );
+                };
+            case 'log':
+                return () => {
+                    console.log('LOG', this.taskDef.text);
                 };
             default:
                 throw new Error('Unknown task action: "' + this.taskDef.action + '"');
@@ -284,7 +288,9 @@ class Task {
 
         if (this.taskDef.wait) {
             const waitFunction = this.waitFunc();
-            browser.waitUntil(waitFunction, this.taskDef.timeout || 5000);
+            const timeout = this.taskDef.timeout || 5000;
+            // console.log('waiting for', timeout);
+            browser.waitUntil(waitFunction, timeout);
         } else if (this.taskDef.action) {
             const actionFunction = this.actionFunc();
             actionFunction();
@@ -310,7 +316,7 @@ class Task {
                 }
                 result += m[1];
                 if (m[2]) {
-                    result += utils.getProp(this.testData, m[2], '');
+                    result += utils.getProp(this.context, m[2], '');
                 }
             } else if (m.length == 2) {
                 result += m[1];

@@ -66,6 +66,11 @@ define(['bluebird'], (Promise) => {
                 // unmount anything we find...
                 var widget;
                 if (this.mountedWidget) {
+                    // Detach the widget from the container ...
+                    while (this.container.firstChild) {
+                        this.container.removeChild(this.container.firstChild);
+                    }
+
                     if (this.mountedWidget.promise) {
                         this.mountedWidget.promise.cancel();
                     }

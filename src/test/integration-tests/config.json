@@ -1,14 +1,9 @@
 {
-    "token": "LOGIN_TOKEN_HERE",
-    "username": "USERNAME_ASSOCIATED_WITH_TOKEN_HERE",
-    "realname": "REALNAME_ASSOCIATED_WITH_TOKEN_HERE",
+    "auth": {
+        "token": "LOGIN_TOKEN_HERE",
+        "username": "USERNAME_ASSOCIATED_WITH_TOKEN_HERE",
+        "realname": "REALNAME_ASSOCIATED_WITH_TOKEN_HERE"
+    },
     "env": "DEPLOY_ENV_HERE(ci, next, appdev, prod)",
-    "plugins": {
-        "user-profile": {
-            "otherUser": {
-                "username": "OTHER_USER_USERNAME",
-                "realname": "OTHER_USER_REALAME"
-            }
-        }
-    }
+    "url": "LOCAL_URL_FOR_THE UI: e.g. https://ci.kbase.us"
 }

@@ -287,6 +287,12 @@ define(['kb_lib/html', './windowChannel', 'kb_lib/httpUtils'], function (html, W
                 this.channel.setWindow(this.iframe.window);
                 this.channel.once('ready', ({ channelId }) => {
                     this.channel.partnerId = channelId;
+                    // TODO: narrow and improve the config support for plugins
+                    // const config = this.runtime.rawConfig();
+                    // const pluginConfig = {
+                    //     baseURL: config.deploy.services.urlBase,
+                    //     services: config.services
+                    // };
                     this.channel.send('start', {
                         authorization: {
                             token: this.runtime.service('session').getAuthToken(),

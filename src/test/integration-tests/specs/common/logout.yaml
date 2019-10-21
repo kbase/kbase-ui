@@ -4,5 +4,4 @@
   params:
     name: kbase_session
     path: "/"
-    value: "$token"
-
+    value: "${config.auth.token}"

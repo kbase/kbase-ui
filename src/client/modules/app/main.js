@@ -36,8 +36,7 @@ define([
             } else if (!(props instanceof Array)) {
                 throw new TypeError('Invalid type for key: ' + typeof props);
             }
-            var i;
-            for (i = 0; i < props.length; i += 1) {
+            for (let i = 0; i < props.length; i += 1) {
                 if (obj === undefined || typeof obj !== 'object' || obj === null) {
                     throw new Error('Invalid object path: ' + props.join('.') + ' at ' + i);
                 }
@@ -51,9 +50,9 @@ define([
         }
 
         function fix(str) {
-            var parsing = false;
-            var parsed = [];
-            var pos = 0;
+            let parsing = false;
+            const parsed = [];
+            let pos = 0;
             do {
                 var tagStart = str.indexOf('{{', pos);
                 if (tagStart < 0) {
@@ -62,12 +61,12 @@ define([
                 }
                 parsed.push(str.substr(pos, tagStart));
                 tagStart += 2;
-                var tagEnd = str.indexOf('}}', tagStart);
+                const tagEnd = str.indexOf('}}', tagStart);
                 if (tagEnd < 0) {
                     throw new Error('Tag not terminated in ' + str + ' at ' + tagStart);
                 }
                 pos = tagEnd + 2;
-                var tag = str.substr(tagStart, tagEnd - tagStart).trim(' ');
+                const tag = str.substr(tagStart, tagEnd - tagStart).trim(' ');
                 if (tag.length === 0) {
                     continue;
                 }
@@ -78,8 +77,8 @@ define([
         }
 
         function fixit(branch) {
-            Object.keys(branch).forEach(function (key) {
-                var value = branch[key];
+            Object.keys(branch).forEach((key) => {
+                const value = branch[key];
                 if (typeof value === 'string') {
                     branch[key] = fix(value);
                 } else if (utils.isSimpleObject(value)) {
@@ -105,9 +104,9 @@ define([
 
     function start() {
         // merge the deploy and app config.
-        var merged = utils.mergeObjects([appConfigBase, deployConfig]);
-        var appConfig = fixConfig(merged);
-        var app = new Hub({
+        const merged = utils.mergeObjects([appConfigBase, deployConfig]);
+        const appConfig = fixConfig(merged);
+        const app = new Hub({
             appConfig: appConfig,
             nodes: {
                 root: {

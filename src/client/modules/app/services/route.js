@@ -1,4 +1,4 @@
-define(['bluebird', 'kb_lib/router', 'kb_lib/lang'], function (Promise, routerMod, lang) {
+define(['bluebird', 'lib/router', 'kb_lib/lang'], function (Promise, routerMod, lang) {
     'use strict';
     function factory(config, params) {
         var runtime = params.runtime,
