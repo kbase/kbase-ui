@@ -16,7 +16,7 @@
         "url": "git://github.com/kbase/kbase-ui"
     },
     "dependencies": {
-        "bluebird": "3.7.1",
+        "bluebird": "3.5.5",
         "bootstrap": "3.4.1",
         "bower-knockout-mapping": "2.6.0",
         "eonasdan-bootstrap-datetimepicker": "4.17.47",
