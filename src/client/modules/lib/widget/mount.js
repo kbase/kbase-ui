@@ -67,10 +67,6 @@ define(['bluebird'], (Promise) => {
                 var widget;
                 if (this.mountedWidget) {
                     // Detach the widget from the container ...
-                    while (this.container.firstChild) {
-                        this.container.removeChild(this.container.firstChild);
-                    }
-
                     if (this.mountedWidget.promise) {
                         this.mountedWidget.promise.cancel();
                     }
@@ -83,7 +79,9 @@ define(['bluebird'], (Promise) => {
                             return widget && widget.detach && widget.detach();
                         })
                         .then(() => {
-                            this.container.innerHTML = '';
+                            while (this.container.firstChild) {
+                                this.container.removeChild(this.container.firstChild);
+                            }
                         })
                         .then(() => {
                             return widget && widget.destroy && widget.destroy();
