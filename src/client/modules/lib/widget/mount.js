@@ -16,6 +16,15 @@ define(['bluebird'], (Promise) => {
             this.mountedWidget = null;
         }
 
+        makeContainer() {
+            const container = this.hostNode.appendChild(document.createElement('div'));
+            container.style.display = 'flex';
+            container.style.flex = '1 1 0px';
+            container.style['flex-direction'] = 'column';
+            container.style['overflow-y'] = 'auto';
+            return container;
+        }
+
         mount(widgetId, params) {
             // We create the widget mount object first, in order to be
             // able to attach its mounting promise to itself. This is what
@@ -23,7 +32,7 @@ define(['bluebird'], (Promise) => {
             // to unmount before it is finished.
             this.mountedWidget = {
                 widget: null,
-                container: null,
+                container: this.makeContainer(),
                 promise: null
             };
             this.mountedWidget.promise = Promise.try(() => {
@@ -40,10 +49,6 @@ define(['bluebird'], (Promise) => {
                 })
                 .then(([widget]) => {
                     // Give it a container and attach it to it.
-
-                    // aww, just give it the container...
-                    // mountedWidget.container = container.appendChild(dom.createElement('div'));
-                    this.mountedWidget.container = this.container;
                     return Promise.all([widget, widget.attach && widget.attach(this.mountedWidget.container)]);
                 })
                 .then(([widget]) => {
@@ -65,23 +70,28 @@ define(['bluebird'], (Promise) => {
                 // TODO make no assumptions about what is mounted, just
                 // unmount anything we find...
                 var widget;
-                if (this.mountedWidget) {
+                const mountedWidget  = this.mountedWidget;
+                this.mountedWidget = null;
+                if (mountedWidget) {
                     // Detach the widget from the container ...
-                    if (this.mountedWidget.promise) {
-                        this.mountedWidget.promise.cancel();
+                    if (mountedWidget.promise) {
+                        mountedWidget.promise.cancel();
                     }
 
-                    widget = this.mountedWidget.widget;
+                    widget = mountedWidget.widget;
+                    // First thing is to ensure that the widget is
+                    // no longer in the DOM.
+                    try {
+                        this.hostNode.removeChild(mountedWidget.container);
+                    } catch (ex) {
+                        // Log error and continue
+                        console.error('Error removing mounted widget', ex);
+                    }
                     return Promise.try(() => {
                         return widget && widget.stop && widget.stop();
                     })
                         .then(() => {
                             return widget && widget.detach && widget.detach();
-                        })
-                        .then(() => {
-                            while (this.container.firstChild) {
-                                this.container.removeChild(this.container.firstChild);
-                            }
                         })
                         .then(() => {
                             return widget && widget.destroy && widget.destroy();

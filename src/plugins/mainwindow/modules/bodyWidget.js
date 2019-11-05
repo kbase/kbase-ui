@@ -41,6 +41,7 @@ define(['bluebird', 'lib/widget/mount'], function (Promise, mount) {
                             data.routeHandler.route.widget === this.widgetMount.mountedWidget.widgetId &&
                             data.routeHandler.route.reentrant
                         ) {
+                            // If widget is already mounted, just do the run method.
                             this.widgetMount.mountedWidget.widget.run(data.routeHandler.params);
                         } else {
                             return this.widgetMount
