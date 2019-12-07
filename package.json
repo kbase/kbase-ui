@@ -76,7 +76,6 @@
     },
     "dependencies": {
         "@kbase/ui-lib": "0.2.1-alpha.2",
-        "ajv": "6.10.2",
         "bluebird": "3.7.1",
         "preact": "10.0.5"
     },
