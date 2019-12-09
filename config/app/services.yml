@@ -1,81 +1,80 @@
 # UI Services
 ---
 ui:
-    services:
-        # analytics: {}
-        coreService: {}
-        data: {}
-        heartbeat: {}
-        instrumentation: {}
-        notification: {}
-        route: {}
-        rpc: {}
-        schema: {}
-        session: {}
-        type: {}
-        userprofile: {}
-        widget: {}
-        feeds: {}
-        menu:
-            menus:
-                hamburger:
-                    sections:
-                        main:
-                            items:
-                                - id: narrative
-                                  auth: true
-                                - id: jgi-search
-                                  auth: true
-                                - id: biochem-search
-                                  auth: true
-                        developer:
-                            items:
-                                - id: about-services
-                                  auth: true
-                                  allowRoles: [DevToken]
-                                # - id: narrative-info
-                                #   auth: true
-                                #   allow: [alpha]
-                                # - id: dashboard2
-                                #   auth: true
-                                #   allow: [alpha]
-                                # - id: ui-service
-                                #   auth: true
-                                #   allow: [alpha]
-                                # - id: databrowser
-                                #   auth: true
-                                #   allow: [alpha]
-                                # - id: typebrowser
-                                #   auth: true
-                                #   allow: [alpha]
-                        help:
-                            items:
-                                - id: about
-                                  auth: false
-                                - id: contact-kbase
-                                  auth: false
-                                - id: help
-                                  auth: false
-                sidebar:
-                    sections:
-                        main:
-                            items:
-                                - id: dashboard
-                                  auth: true
-                                - id: organizations
-                                  auth: true
-                                # - id: public-search
-                                #   auth: true
-                                #   allow: [alpha]
-                                - id: catalog
-                                  auth: false
-                                - id: search
-                                  auth: true
-                                - id: jobbrowser
-                                  # The label can override the label from the plugin here
-                                  label: Jobs
-                                  auth: true
-                                - id: account
-                                  auth: true
-                                - id: feeds
-                                  auth: true
+  services:
+    # analytics: {}
+    coreService: {}
+    data: {}
+    heartbeat: {}
+    instrumentation: {}
+    notification: {}
+    route: {}
+    rpc: {}
+    session: {}
+    type: {}
+    userprofile: {}
+    widget: {}
+    feeds: {}
+    menu:
+      menus:
+        hamburger:
+          sections:
+            main:
+              items:
+                - id: narrative
+                  auth: true
+                - id: jgi-search
+                  auth: true
+                - id: biochem-search
+                  auth: true
+            developer:
+              items:
+                - id: about-services
+                  auth: true
+                  allowRoles: [DevToken]
+                # - id: narrative-info
+                #   auth: true
+                #   allow: [alpha]
+                # - id: dashboard2
+                #   auth: true
+                #   allow: [alpha]
+                # - id: ui-service
+                #   auth: true
+                #   allow: [alpha]
+                # - id: databrowser
+                #   auth: true
+                #   allow: [alpha]
+                # - id: typebrowser
+                #   auth: true
+                #   allow: [alpha]
+            help:
+              items:
+                - id: about
+                  auth: false
+                - id: contact-kbase
+                  auth: false
+                - id: help
+                  auth: false
+        sidebar:
+          sections:
+            main:
+              items:
+                - id: dashboard
+                  auth: true
+                - id: organizations
+                  auth: true
+                # - id: public-search
+                #   auth: true
+                #   allow: [alpha]
+                - id: catalog
+                  auth: false
+                - id: search
+                  auth: true
+                - id: jobbrowser
+                  # The label can override the label from the plugin here
+                  label: Jobs
+                  auth: true
+                - id: account
+                  auth: true
+                - id: feeds
+                  auth: true
