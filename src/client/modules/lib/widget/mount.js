@@ -17,6 +17,15 @@ define(['bluebird'], (Promise) => {
         }
 
         makeContainer() {
+            // We only allow a single node on the host node.
+            // We'll issue a warning if we have to zap an existing node, which indicates
+            // overlapping requests to mount. The most recent one wins, though.
+            if (this.hostNode.childNodes.length) {
+                console.warn('[mount] Mounting on top of an existing widget, removing old widget');
+                while (this.hostNode.childNodes.length) {
+                    this.hostNode.removeChild(this.hostNode.firstChild);
+                }
+            }
             const container = this.hostNode.appendChild(document.createElement('div'));
             container.style.display = 'flex';
             container.style.flex = '1 1 0px';
@@ -26,6 +35,15 @@ define(['bluebird'], (Promise) => {
         }
 
         mount(widgetId, params) {
+            if (this.mountedWidget) {
+                if (this.hostNode.childNodes.length) {
+                    console.warn('[mount] Mounting on top of an existing widget, removing old widget');
+                    while (this.hostNode.childNodes.length) {
+                        this.hostNode.removeChild(this.hostNode.firstChild);
+                    }
+                }
+            }
+
             // We create the widget mount object first, in order to be
             // able to attach its mounting promise to itself. This is what
             // allows us to interrupt it if the route changes and we need
@@ -70,7 +88,7 @@ define(['bluebird'], (Promise) => {
                 // TODO make no assumptions about what is mounted, just
                 // unmount anything we find...
                 var widget;
-                const mountedWidget  = this.mountedWidget;
+                const mountedWidget = this.mountedWidget;
                 this.mountedWidget = null;
                 if (mountedWidget) {
                     // Detach the widget from the container ...
