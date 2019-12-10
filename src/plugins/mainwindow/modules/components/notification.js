@@ -14,7 +14,7 @@ define([
 ) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         span = t('span'),
         a = t('a');
@@ -104,11 +104,11 @@ define([
         }
 
         runAutoDismisser() {
-            var toRemove = [];
-            var now = new Date().getTime();
+            const toRemove = [];
+            const now = new Date().getTime();
             this.notificationQueue().forEach((item) => {
                 if (item.autodismiss()) {
-                    var elapsed = now - item.autodismiss.startedAt;
+                    const elapsed = now - item.autodismiss.startedAt;
                     if (item.autodismiss() < elapsed) {
                         toRemove.push(item);
                     }
@@ -156,7 +156,7 @@ define([
         }
 
         summaryItem(name) {
-            var count = ko.observable(0);
+            const count = ko.observable(0);
             return {
                 label: name,
                 count: count,
@@ -171,7 +171,7 @@ define([
         }
 
         addNotification(newMessage) {
-            const notification = new Notification({notification: newMessage});
+            const notification = new Notification({ notification: newMessage });
             const summaryItem = this.summary[notification.type()];
             if (summaryItem) {
                 summaryItem.count(summaryItem.count() + 1);

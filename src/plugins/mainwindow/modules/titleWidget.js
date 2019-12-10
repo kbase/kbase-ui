@@ -5,11 +5,11 @@ define([
 ) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         h1 = t('h1');
 
     function safeContent(content) {
-        var anonDiv = document.createElement('div');
+        const anonDiv = document.createElement('div');
         anonDiv.innerHTML = content;
         return anonDiv.textContent || '';
     }
@@ -53,5 +53,5 @@ define([
         }
     }
 
-    return {Widget: TitleWidget};
+    return { Widget: TitleWidget };
 });

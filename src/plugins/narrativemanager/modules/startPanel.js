@@ -1,16 +1,16 @@
 define(['kb_lib/html', 'kb_lib/htmlBuilders', './narrativeManager'], function (html, build, NarrativeManagerService) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         a = t('a'),
         p = t('p');
 
     function factory(config) {
-        var mount,
-            container,
-            runtime = config.runtime,
-            narrativeManager = NarrativeManagerService({ runtime: runtime });
+        let mount;
+        let container;
+        const runtime = config.runtime;
+        const narrativeManager = NarrativeManagerService({ runtime: runtime });
 
         function makeNarrativePath(objectInfo) {
             return runtime.getConfig('services.narrative.url') + '/narrative/' + objectInfo.obj_id;

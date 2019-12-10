@@ -13,7 +13,7 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
     }
 
     function myWidget(config) {
-        var runtime = config.runtime;
+        const runtime = config.runtime;
         if (!runtime) {
             throw {
                 name: 'RuntimeMissing',
@@ -22,7 +22,7 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
             };
         }
 
-        var t = html.tag,
+        const t = html.tag,
             button = t('button'),
             div = t('div'),
             a = t('a'),
@@ -73,7 +73,7 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
                 console.warn('no profile?', profile);
                 return '';
             }
-            var avatarUrl = buildAvatarUrl(profile);
+            const avatarUrl = buildAvatarUrl(profile);
 
             return img({
                 src: avatarUrl,
@@ -97,8 +97,8 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
                                 // yet.
                                 return;
                             }
-                            var realname = cleanText(profile.user.realname);
-                            var username = cleanText(profile.user.username);
+                            const realname = cleanText(profile.user.realname);
+                            const username = cleanText(profile.user.username);
                             return div(
                                 {
                                     class: 'navbar container-fluid'
@@ -219,7 +219,7 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
         }
 
         function render() {
-            var events = DomEvents.make({
+            const events = DomEvents.make({
                 node: container
             });
             return renderLogin(events).then(function (loginContent) {
@@ -230,7 +230,7 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
 
         // LIFECYCLE API
 
-        var hostNode, container;
+        let hostNode, container;
 
         function attach(node) {
             hostNode = node;

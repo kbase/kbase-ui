@@ -6,7 +6,7 @@ define([
     Plugin
 ) {
     'use strict';
-    var t = html.tag,
+    const t = html.tag,
         a = t('a'),
         img = t('img');
 
@@ -44,5 +44,5 @@ define([
         }
     }
 
-    return {Widget: LogoWidget};
+    return { Widget: LogoWidget };
 });

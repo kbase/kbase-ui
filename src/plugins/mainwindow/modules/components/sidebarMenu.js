@@ -1,7 +1,7 @@
 define(['knockout', 'kb_knockout/registry', 'kb_knockout/lib/generators', 'kb_lib/html'], function (ko, reg, gen, html) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         span = t('span'),
         a = t('a');
@@ -50,7 +50,7 @@ define(['knockout', 'kb_knockout/registry', 'kb_knockout/lib/generators', 'kb_li
         }
     }
 
-    var styles = html.makeStyles({
+    const styles = html.makeStyles({
         button: {
             css: {
                 backgroundColor: 'transparent',

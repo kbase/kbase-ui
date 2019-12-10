@@ -50,11 +50,11 @@ define(['kb_lib/html', 'kb_lib/htmlBuilders'], function (html, build) {
         // stop at leaves of def (meaning that it may leave bits of the object
         // unspecified)
         function compare(obj, def) {
-            var keys = Object.keys(def);
-            for (var i = 0; i < keys.length; i += 1) {
-                var defKey = keys[i];
-                var defProp = def[defKey];
-                var objProp = obj[defKey];
+            const keys = Object.keys(def);
+            for (let i = 0; i < keys.length; i += 1) {
+                const defKey = keys[i];
+                const defProp = def[defKey];
+                const objProp = obj[defKey];
 
                 if (obj[defProp] === undefined) {
                     return false;

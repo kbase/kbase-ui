@@ -31,7 +31,7 @@ define([
                 this.syncMenu();
             });
 
-            var allowedTags = this.runtime.config('ui.allow', []);
+            const allowedTags = this.runtime.config('ui.allow', []);
 
             this.menu = {
                 main: ko.observableArray(this.menuDefinition.main).filter((item) => {
@@ -89,7 +89,7 @@ define([
 
             this.hostNode = null;
             this.container = null;
-            this.viewModel = new ViewModel({runtime: this.runtime});
+            this.viewModel = new ViewModel({ runtime: this.runtime });
         }
 
         attach(node) {
@@ -120,7 +120,7 @@ define([
         }
     }
 
-    return {Widget: MenuWidget};
+    return { Widget: MenuWidget };
 });
 
 

@@ -1,6 +1,6 @@
 define(['moment', 'kb_lib/html', 'bootstrap'], function (moment, html) {
     'use strict';
-    var t = html.tag,
+    const t = html.tag,
         span = t('span'),
         a = t('a'),
         h2 = t('h2'),
@@ -47,8 +47,8 @@ define(['moment', 'kb_lib/html', 'bootstrap'], function (moment, html) {
         }
 
         buildWelcome() {
-            var narrativeUrl = this.runtime.config('services.narrative.url');
-            var docSiteUrl = this.runtime.config('resources.docSite.base.url');
+            const narrativeUrl = this.runtime.config('services.narrative.url');
+            const docSiteUrl = this.runtime.config('resources.docSite.base.url');
 
             return [
                 p([
@@ -106,27 +106,27 @@ define(['moment', 'kb_lib/html', 'bootstrap'], function (moment, html) {
         }
 
         buildVersionInfo() {
-            var buildInfo = this.runtime.config('buildInfo');
-            var builtAt = moment(new Date(buildInfo.builtAt));
-            var buildDate = builtAt.format('dddd MMMM D, YYYY');
-            var buildTime = builtAt.format('h:mm:ss a');
-            var repoUrl = buildInfo.git.originUrl; // 'https://github.com/kbase/kbase-ui';
-            var hash = buildInfo.git.commitHash;
+            const buildInfo = this.runtime.config('buildInfo');
+            const builtAt = moment(new Date(buildInfo.builtAt));
+            const buildDate = builtAt.format('dddd MMMM D, YYYY');
+            const buildTime = builtAt.format('h:mm:ss a');
+            let repoUrl = buildInfo.git.originUrl; // 'https://github.com/kbase/kbase-ui';
+            const hash = buildInfo.git.commitHash;
             // https://github.com/eapearson/kbase-ui/blob/bf5efa0810d9f097b7c6ba8390f97c008d98d80e/release-notes/RELEASE_NOTES_1.5.0.md
             if (/^ssh:/.test(repoUrl)) {
                 var m = /^ssh:\/\/git@(.*?)\/(.*?)$/.exec(repoUrl);
                 repoUrl = 'https://' + m[1] + '/' + m[2];
             }
 
-            var contactUrl = this.runtime.config('resources.contact.url');
-            var helpUrl = this.runtime.config('resources.help.url');
-            var aboutKbase = this.runtime.config('resources.documentation.aboutKbase.url');
+            const contactUrl = this.runtime.config('resources.contact.url');
+            const helpUrl = this.runtime.config('resources.help.url');
+            const aboutKbase = this.runtime.config('resources.documentation.aboutKbase.url');
 
-            var commitHash = buildInfo.git.commitHash;
+            const commitHash = buildInfo.git.commitHash;
 
-            var githubUrl;
-            var relNotesUrl;
-            var versionMessage;
+            let githubUrl;
+            let relNotesUrl;
+            let versionMessage;
             if (buildInfo.git.tag) {
                 relNotesUrl = [
                     repoUrl,

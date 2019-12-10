@@ -1,7 +1,7 @@
 define(['kb_lib/html', 'kb_lib/htmlBootstrapBuilders'], function (html, BS) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         p = t('p'),
         div = t('div'),
         span = t('span'),

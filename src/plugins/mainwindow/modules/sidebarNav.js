@@ -1,20 +1,18 @@
-define(['bluebird', 'knockout', 'kb_lib/html', './components/sidebarMenu'], function (
-    Promise,
+define(['knockout', 'kb_lib/html', './components/sidebarMenu'], function (
     ko,
     html,
     SidebarMenuComponent
 ) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div');
 
     function routeToPath(route) {
-        var path = [];
-        var i;
+        const path = [];
         if (route.route.path) {
-            for (i = 0; i < route.route.path.length; i += 1) {
-                var pathElement = route.route.path[i];
+            for (let i = 0; i < route.route.path.length; i += 1) {
+                const pathElement = route.route.path[i];
                 if (pathElement.type !== 'literal') {
                     break;
                 }
@@ -48,7 +46,7 @@ define(['bluebird', 'knockout', 'kb_lib/html', './components/sidebarMenu'], func
             this.buttonsPathMap = {};
 
             params.buttons.forEach((button) => {
-                var viewButton = {
+                const viewButton = {
                     id: button.id,
                     label: button.label,
                     icon: button.icon,

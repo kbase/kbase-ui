@@ -1,6 +1,6 @@
 define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBootstrapBuilders', 'bootstrap'], function (Promise, html, BS) {
     'use strict';
-    var t = html.tag,
+    const t = html.tag,
         h1 = t('h1'),
         h2 = t('h2'),
         p = t('p'),
@@ -17,9 +17,9 @@ define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBootstrapBuilders', 'bootstrap'],
         }
 
         buildBuildInfo() {
-            var buildInfo = this.runtime.config('buildInfo');
+            const buildInfo = this.runtime.config('buildInfo');
 
-            var info = {
+            const info = {
                 builtAt: new Date(buildInfo.builtAt).toLocaleString(),
                 git: {
                     branch: buildInfo.git.branch,

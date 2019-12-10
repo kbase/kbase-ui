@@ -1,7 +1,7 @@
 define(['kb_lib/html', './windowChannel', 'kb_lib/httpUtils'], function (html, WindowChannel, httpUtils) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         iframe = t('iframe');
 
