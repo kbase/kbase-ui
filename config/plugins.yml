@@ -23,13 +23,13 @@ plugins:
       bower: {}
   - name: dashboard
     globalName: kbase-ui-plugin-dashboard
-    version: 3.0.4
+    version: 3.0.5
     cwd: src/plugin
     source:
       bower: {}
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
-    version: 2.0.4
+    version: 2.0.5
     cwd: src/plugin
     source:
       bower: {}
@@ -41,19 +41,19 @@ plugins:
       bower: {}
   - name: feeds
     globalName: kbase-ui-plugin-feeds
-    version: 1.0.0
+    version: 1.0.1
     cwd: src/plugin
     source:
       bower: {}
   - name: catalog
     globalName: kbase-ui-plugin-catalog
-    version: 2.0.3
+    version: 2.0.5
     cwd: src/plugin
     source:
       bower: {}
   - name: data-search
     globalName: kbase-ui-plugin-data-search
-    version: 1.0.0
+    version: 1.0.1
     cwd: src/plugin
     source:
       bower: {}
