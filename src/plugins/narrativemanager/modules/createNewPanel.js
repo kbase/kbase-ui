@@ -6,16 +6,16 @@ define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBuilders', './narrativeManager'],
 ) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         a = t('a'),
         p = t('p');
 
     function factory(config) {
-        var mount,
-            container,
-            runtime = config.runtime,
-            narrativeManager = NarrativeManagerService({ runtime: runtime });
+        let mount;
+        let container;
+        const runtime = config.runtime;
+        const narrativeManager = NarrativeManagerService({ runtime: runtime });
 
         function makeNarrativePath(wsId, objId) {
             return runtime.getConfig('services.narrative.url') + '/narrative/ws.' + wsId + '.obj.' + objId;
@@ -27,7 +27,7 @@ define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBuilders', './narrativeManager'],
                 if (params.app && params.method) {
                     throw 'Must provide no more than one of the app or method params';
                 }
-                var appData, tmp, i;
+                let appData, tmp, i;
                 const newNarrativeParams = {};
                 if (params.copydata) {
                     newNarrativeParams.importData = params.copydata.split(';');
@@ -64,7 +64,7 @@ define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBuilders', './narrativeManager'],
                 }
 
                 return narrativeManager.createTempNarrative(newNarrativeParams).then(function (info) {
-                    var wsId = info.narrativeInfo.wsid,
+                    const wsId = info.narrativeInfo.wsid,
                         objId = info.narrativeInfo.id,
                         path = makeNarrativePath(wsId, objId);
                     return {

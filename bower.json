@@ -29,7 +29,7 @@
         "kbase-common-js": "2.18.1",
         "kbase-common-es6": "0.10.23",
         "kbase-service-clients-js": "3.3.5",
-        "kbase-ui-widget": "1.3.0",
+        "kbase-ui-widget": "1.3.1",
         "knockout": "3.5.0",
         "knockout-arraytransforms": "2.1.1",
         "knockout-projections": "eapearson/knockout-projections#1.1.1",

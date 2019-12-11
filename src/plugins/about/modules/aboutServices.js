@@ -9,7 +9,7 @@ define([
     'bootstrap'
 ], (Promise, html, build, BS, GenericClient, HttpClient) => {
     'use strict';
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         table = t('table'),
         tr = t('tr'),
@@ -109,7 +109,7 @@ define([
         }
 
         sum(array, fun) {
-            var total = 0;
+            let total = 0;
             array.forEach((item) => {
                 if (fun) {
                     total += fun(item);
@@ -121,21 +121,20 @@ define([
         }
 
         perf(call) {
-            var measures = [];
-            var iters = 5;
+            const measures = [];
+            const iters = 5;
             return new Promise((resolve) => {
                 const next = (itersLeft) => {
                     if (itersLeft === 0) {
-                        var stats = {
+                        resolve({
                             measures: measures,
                             total: this.sum(measures),
                             average: this.sum(measures) / measures.length
-                        };
-                        resolve(stats);
+                        });
                     } else {
-                        var start = new Date().getTime();
                         call().then(() => {
-                            var elapsed = new Date().getTime() - start;
+                            const start = new Date().getTime();
+                            const elapsed = new Date().getTime() - start;
                             measures.push(elapsed);
                             next(itersLeft - 1);
                         });
@@ -146,7 +145,7 @@ define([
         }
 
         renderNMS() {
-            var client = new GenericClient({
+            const client = new GenericClient({
                 module: 'NarrativeMethodStore',
                 url: this.runtime.config('services.narrative_method_store.url'),
                 token: this.runtime.service('session').getAuthToken()
@@ -168,7 +167,7 @@ define([
 
             return Promise.all([status(), ver(), this.perf(ver)])
                 .spread((status, version, perf) => {
-                    var info = [];
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -285,11 +284,11 @@ define([
         }
 
         renderAuth() {
-            var http = new HttpClient.HttpClient();
+            const http = new HttpClient.HttpClient();
             this.vm.auth.node.innerHTML = build.loading();
 
             const getRoot = () => {
-                var header = new HttpClient.HttpHeader();
+                const header = new HttpClient.HttpHeader();
                 header.setHeader('accept', 'application/json');
                 return http
                     .request({
@@ -299,7 +298,7 @@ define([
                     })
                     .then((result) => {
                         try {
-                            var data = JSON.parse(result.response);
+                            const data = JSON.parse(result.response);
                             return data.version;
                         } catch (ex) {
                             return 'ERROR: ' + ex.message;
@@ -309,7 +308,7 @@ define([
 
             return Promise.all([getRoot(), this.perf(getRoot)])
                 .spread((version, perf) => {
-                    var info = [];
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -352,11 +351,11 @@ define([
         }
 
         renderGroups() {
-            var http = new HttpClient.HttpClient();
+            const http = new HttpClient.HttpClient();
             this.vm.auth.node.innerHTML = build.loading();
 
             const getRoot = () => {
-                var header = new HttpClient.HttpHeader();
+                const header = new HttpClient.HttpHeader();
                 header.setHeader('accept', 'application/json');
                 return http
                     .request({
@@ -366,7 +365,7 @@ define([
                     })
                     .then((result) => {
                         try {
-                            var data = JSON.parse(result.response);
+                            const data = JSON.parse(result.response);
                             return data.version;
                         } catch (ex) {
                             return 'ERROR: ' + ex.message;
@@ -376,7 +375,7 @@ define([
 
             return Promise.all([getRoot(), this.perf(getRoot)])
                 .spread((version, perf) => {
-                    var info = [];
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -419,11 +418,11 @@ define([
         }
 
         renderFeeds() {
-            var http = new HttpClient.HttpClient();
+            const http = new HttpClient.HttpClient();
             this.vm.auth.node.innerHTML = build.loading();
 
             const getRoot = () => {
-                var header = new HttpClient.HttpHeader();
+                const header = new HttpClient.HttpHeader();
                 header.setHeader('accept', 'application/json');
                 return http
                     .request({
@@ -433,7 +432,7 @@ define([
                     })
                     .then((result) => {
                         try {
-                            var data = JSON.parse(result.response);
+                            const data = JSON.parse(result.response);
                             return data.version;
                         } catch (ex) {
                             return 'ERROR: ' + ex.message;
@@ -443,7 +442,7 @@ define([
 
             return Promise.all([getRoot(), this.perf(getRoot)])
                 .spread((version, perf) => {
-                    var info = [];
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -486,7 +485,7 @@ define([
         }
 
         renderUserProfile() {
-            var client = new GenericClient({
+            const client = new GenericClient({
                 url: this.runtime.config('services.user_profile.url'),
                 token: this.runtime.service('session').getAuthToken(),
                 module: 'UserProfile'
@@ -500,7 +499,7 @@ define([
 
             return Promise.all([ver(), this.perf(ver)])
                 .spread((version, perf) => {
-                    var info = [];
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -567,7 +566,7 @@ define([
 
             return Promise.all([theCall(), this.perf(theCall)])
                 .spread((result, perf) => {
-                    var info = [];
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -610,7 +609,7 @@ define([
         }
 
         renderCatalog() {
-            var client = new GenericClient({
+            const client = new GenericClient({
                 module: 'Catalog',
                 url: this.runtime.config('services.Catalog.url'),
                 token: this.runtime.service('session').getAuthToken()
@@ -625,7 +624,7 @@ define([
 
             return Promise.all([version(), this.perf(version)])
                 .spread((version, perf) => {
-                    var info = [];
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -668,7 +667,7 @@ define([
         }
 
         renderServiceWizard() {
-            var serviceWizard = new GenericClient({
+            const serviceWizard = new GenericClient({
                 url: this.runtime.config('services.service_wizard.url'),
                 token: this.runtime.service('session').getAuthToken(),
                 module: 'ServiceWizard'
@@ -682,8 +681,8 @@ define([
 
             return Promise.all([theCall(), this.perf(theCall)])
                 .spread((result, perf) => {
-                    var version = result[0];
-                    var info = [];
+                    const version = result[0];
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -726,7 +725,7 @@ define([
         }
 
         renderDynamicServices() {
-            var client = new GenericClient({
+            const client = new GenericClient({
                 url: this.runtime.config('services.service_wizard.url'),
                 token: this.runtime.service('session').getAuthToken(),
                 module: 'ServiceWizard'
@@ -774,7 +773,7 @@ define([
             this.container.innerHTML = this.layout();
             // bind
             Object.keys(this.vm).forEach((id) => {
-                var vmNode = this.vm[id];
+                const vmNode = this.vm[id];
                 vmNode.node = document.getElementById(vmNode.id);
             });
         }

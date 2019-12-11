@@ -12,7 +12,7 @@ define([
     'use strict';
 
     function factory(config) {
-        var runtime = config.runtime,
+        const runtime = config.runtime,
             workspaceClient = new GenericClient({
                 module: 'Workspace',
                 url: runtime.config('services.workspace.url'),
@@ -30,7 +30,7 @@ define([
                 owners: [runtime.service('session').getUsername()]
             }])
                 .spread(function (wsList) {
-                    var workspaces = wsList
+                    const workspaces = wsList
                         .map(function (workspaceInfo) {
                             return serviceUtils.workspaceInfoToObject(workspaceInfo);
                         })
@@ -54,7 +54,7 @@ define([
                         }
                         return 0;
                     });
-                    var workspaceInfo = workspaces[0],
+                    const workspaceInfo = workspaces[0],
                         ref = [workspaceInfo.id, workspaceInfo.metadata.narrative].join('/');
 
                     return workspaceClient.callFunc('get_object_info_new', [{

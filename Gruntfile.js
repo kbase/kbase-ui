@@ -10,15 +10,13 @@ module.exports = function (grunt) {
     // Load External Tasks
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-mkdir');
-    grunt.loadNpmTasks('grunt-shell');
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-coveralls');
     grunt.loadNpmTasks('grunt-webdriver');
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-       
+
         // Testing with Karma!
         karma: {
             unit: {
