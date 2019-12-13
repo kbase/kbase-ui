@@ -51,20 +51,20 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
 
         function buildAvatarUrl(profile) {
             switch (profile.profile.userdata.avatarOption || 'gravatar') {
-            case 'gravatar':
-                var gravatarDefault = profile.profile.userdata.gravatarDefault || 'identicon';
-                var gravatarHash = profile.profile.synced.gravatarHash;
-                if (gravatarHash) {
-                    return (
-                        'https://www.gravatar.com/avatar/' + gravatarHash + '?s=32&amp;r=pg&d=' + gravatarDefault
-                    );
-                } else {
+                case 'gravatar':
+                    var gravatarDefault = profile.profile.userdata.gravatarDefault || 'identicon';
+                    var gravatarHash = profile.profile.synced.gravatarHash;
+                    if (gravatarHash) {
+                        return (
+                            'https://www.gravatar.com/avatar/' + gravatarHash + '?s=32&amp;r=pg&d=' + gravatarDefault
+                        );
+                    } else {
+                        return Plugin.plugin.fullPath + '/images/nouserpic.png';
+                    }
+                case 'silhouette':
+                case 'mysteryman':
+                default:
                     return Plugin.plugin.fullPath + '/images/nouserpic.png';
-                }
-            case 'silhouette':
-            case 'mysteryman':
-            default:
-                return Plugin.plugin.fullPath + '/images/nouserpic.png';
             }
         }
 
@@ -160,20 +160,60 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
                                                 li({}, [
                                                     a(
                                                         {
+                                                            href: '/#people',
+                                                            dataMenuItem: 'user-profile',
+                                                            dataKBTesthookButton: 'user-profile',
+                                                            target: '_parent',
+                                                            style: {
+                                                                display: 'flex',
+                                                                flexDirection: 'row',
+                                                                alignItems: 'center'
+                                                            }
+
+                                                        },
+                                                        [
+                                                            div(
+                                                                {
+                                                                    style: {
+                                                                        flex: '0 0 34px'
+                                                                    }
+                                                                },
+                                                                span({
+                                                                    class: 'fa fa-user',
+                                                                    style: {
+                                                                        fontSize: '150%',
+                                                                    }
+                                                                })
+                                                            ),
+                                                            div({
+                                                                style: {
+                                                                    flex: '1 1 0px'
+                                                                }
+                                                            }, 'Your Profile')
+                                                        ]
+                                                    )
+                                                ]),
+                                                li({}, [
+                                                    a(
+                                                        {
                                                             href: '#',
                                                             dataMenuItem: 'logout',
                                                             dataKBTesthookButton: 'logout',
                                                             id: events.addEvent({
                                                                 type: 'click',
                                                                 handler: handleSignout
-                                                            })
+                                                            }),
+                                                            style: {
+                                                                display: 'flex',
+                                                                flexDirection: 'row',
+                                                                alignItems: 'center'
+                                                            }
                                                         },
                                                         [
                                                             div(
                                                                 {
                                                                     style: {
-                                                                        display: 'inline-block',
-                                                                        width: '34px'
+                                                                        flex: '0 0 34px'
                                                                     }
                                                                 },
                                                                 span({
@@ -184,7 +224,11 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
                                                                     }
                                                                 })
                                                             ),
-                                                            'Sign Out'
+                                                            div({
+                                                                style: {
+                                                                    flex: '1 1 0px'
+                                                                }
+                                                            }, 'Sign Out')
                                                         ]
                                                     )
                                                 ])
