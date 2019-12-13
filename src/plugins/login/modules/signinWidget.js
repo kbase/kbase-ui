@@ -160,20 +160,59 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
                                                 li({}, [
                                                     a(
                                                         {
+                                                            href: '/#people',
+                                                            dataMenuItem: 'user-profile',
+                                                            dataKBTesthookButton: 'user-profile',
+                                                            style: {
+                                                                display: 'flex',
+                                                                flexDirection: 'row',
+                                                                alignItems: 'center'
+                                                            }
+
+                                                        },
+                                                        [
+                                                            div(
+                                                                {
+                                                                    style: {
+                                                                        flex: '0 0 34px'
+                                                                    }
+                                                                },
+                                                                span({
+                                                                    class: 'fa fa-user',
+                                                                    style: {
+                                                                        fontSize: '150%',
+                                                                    }
+                                                                })
+                                                            ),
+                                                            div({
+                                                                style: {
+                                                                    flex: '1 1 0px'
+                                                                }
+                                                            }, 'Your Profile')
+                                                        ]
+                                                    )
+                                                ]),
+                                                li({}, [
+                                                    a(
+                                                        {
                                                             href: '#',
                                                             dataMenuItem: 'logout',
                                                             dataKBTesthookButton: 'logout',
                                                             id: events.addEvent({
                                                                 type: 'click',
                                                                 handler: handleSignout
-                                                            })
+                                                            }),
+                                                            style: {
+                                                                display: 'flex',
+                                                                flexDirection: 'row',
+                                                                alignItems: 'center'
+                                                            }
                                                         },
                                                         [
                                                             div(
                                                                 {
                                                                     style: {
-                                                                        display: 'inline-block',
-                                                                        width: '34px'
+                                                                        flex: '0 0 34px'
                                                                     }
                                                                 },
                                                                 span({
@@ -184,7 +223,11 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
                                                                     }
                                                                 })
                                                             ),
-                                                            'Sign Out'
+                                                            div({
+                                                                style: {
+                                                                    flex: '1 1 0px'
+                                                                }
+                                                            }, 'Sign Out')
                                                         ]
                                                     )
                                                 ])
