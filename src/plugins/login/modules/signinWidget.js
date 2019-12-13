@@ -51,20 +51,20 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
 
         function buildAvatarUrl(profile) {
             switch (profile.profile.userdata.avatarOption || 'gravatar') {
-                case 'gravatar':
-                    var gravatarDefault = profile.profile.userdata.gravatarDefault || 'identicon';
-                    var gravatarHash = profile.profile.synced.gravatarHash;
-                    if (gravatarHash) {
-                        return (
-                            'https://www.gravatar.com/avatar/' + gravatarHash + '?s=32&amp;r=pg&d=' + gravatarDefault
-                        );
-                    } else {
-                        return Plugin.plugin.fullPath + '/images/nouserpic.png';
-                    }
-                case 'silhouette':
-                case 'mysteryman':
-                default:
+            case 'gravatar':
+                var gravatarDefault = profile.profile.userdata.gravatarDefault || 'identicon';
+                var gravatarHash = profile.profile.synced.gravatarHash;
+                if (gravatarHash) {
+                    return (
+                        'https://www.gravatar.com/avatar/' + gravatarHash + '?s=32&amp;r=pg&d=' + gravatarDefault
+                    );
+                } else {
                     return Plugin.plugin.fullPath + '/images/nouserpic.png';
+                }
+            case 'silhouette':
+            case 'mysteryman':
+            default:
+                return Plugin.plugin.fullPath + '/images/nouserpic.png';
             }
         }
 
@@ -163,7 +163,6 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
                                                             href: '/#people',
                                                             dataMenuItem: 'user-profile',
                                                             dataKBTesthookButton: 'user-profile',
-                                                            target: '_parent',
                                                             style: {
                                                                 display: 'flex',
                                                                 flexDirection: 'row',
