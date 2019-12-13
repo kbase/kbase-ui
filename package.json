@@ -51,7 +51,7 @@
     "lodash": "4.17.15",
     "node-dir": "0.1.17",
     "node-ini": "1.0.0",
-    "npm": "6.10.1",
+    "npm": "6.13.4",
     "numeral": "2.0.6",
     "path-exists": "4.0.0",
     "puppeteer": "1.18.1",
