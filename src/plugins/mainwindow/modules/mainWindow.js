@@ -1,5 +1,5 @@
 /*
- * implements the kbase web app main interface
+ * implements the KBase web app main interface
  * The Main Window implements the widget interface, of course. It is controlled
  * by the main entry point program, probably main.js
  * The main window is the controller, manager, coordinator, whatever you want to
@@ -35,10 +35,9 @@ define([
 
     const t = html.tag,
         div = t('div');
-        
 
     class ViewModel {
-        constructor({runtime}) {
+        constructor({ runtime }) {
             this.runtime = runtime;
 
             // The total number of alerts
@@ -49,7 +48,7 @@ define([
     }
 
     class MainWindow {
-        constructor({runtime}) {
+        constructor({ runtime }) {
             this.runtime = runtime;
             this.widgets = new widgetSet.WidgetSet({
                 widgetManager: this.runtime.service('widget').widgetManager

@@ -221,6 +221,28 @@ define(['kb_lib/html', './windowChannel', 'kb_lib/httpUtils'], function (html, W
                 this.runtime.send('ui', 'setTitle', config.title);
             });
 
+            /*
+            examples:
+            {
+                type: 'warning',
+                id: 'connection',
+                icon: 'exclamation-triangle',
+                message: message.message,
+                description: message.description
+            }
+            {
+                type: 'success',
+                id: 'connection',
+                icon: 'check',
+                message: message.message,
+                description: message.description,
+                autodismiss: 5000
+            }
+            */
+            this.channel.on('notification', (notification) => {
+                this.runtime.send('notification', 'notify', notification);
+            });
+
             this.channel.start();
         }
 
