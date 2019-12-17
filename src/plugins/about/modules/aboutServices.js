@@ -1,14 +1,15 @@
 define([
     'bluebird',
-    'kb_common/html',
-    'kb_common/bootstrapUtils',
-    'kb_common/jsonRpc/genericClient',
+    'kb_lib/html',
+    'kb_lib/htmlBuilders',
+    'kb_lib/htmlBootstrapBuilders',
+    'kb_lib/jsonRpc/genericClient',
     'kb_common_ts/HttpClient',
 
     'bootstrap'
-], function (Promise, html, BS, GenericClient, HttpClient) {
+], (Promise, html, build, BS, GenericClient, HttpClient) => {
     'use strict';
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         table = t('table'),
         tr = t('tr'),
@@ -19,11 +20,13 @@ define([
     /*
      * The widget factory function implements the widget interface.
      */
-    function widget(config) {
-        var mount,
-            container,
-            runtime = config.runtime,
-            vm = {
+    class AboutServices {
+        constructor({ runtime }) {
+            this.runtime = runtime;
+            this.mount = null;
+            this.container = null;
+
+            this.vm = {
                 auth: {
                     id: html.genId(),
                     node: null
@@ -65,8 +68,9 @@ define([
                     node: null
                 }
             };
+        }
 
-        function layout() {
+        layout() {
             return div(
                 {
                     class: 'container-fluid'
@@ -92,9 +96,9 @@ define([
                                     'groups',
                                     'feeds',
                                     'dynamicServices'
-                                ].map(function (id) {
+                                ].map((id) => {
                                     return div({
-                                        id: vm[id].id
+                                        id: this.vm[id].id
                                     });
                                 })
                             )
@@ -104,9 +108,9 @@ define([
             );
         }
 
-        function sum(array, fun) {
-            var total = 0;
-            array.forEach(function (item) {
+        sum(array, fun) {
+            let total = 0;
+            array.forEach((item) => {
                 if (fun) {
                     total += fun(item);
                 } else {
@@ -116,55 +120,54 @@ define([
             return total;
         }
 
-        function perf(call) {
-            var measures = [];
-            var iters = 5;
-            return new Promise(function (resolve) {
-                function next(itersLeft) {
+        perf(call) {
+            const measures = [];
+            const iters = 5;
+            return new Promise((resolve) => {
+                const next = (itersLeft) => {
                     if (itersLeft === 0) {
-                        var stats = {
+                        resolve({
                             measures: measures,
-                            total: sum(measures),
-                            average: sum(measures) / measures.length
-                        };
-                        resolve(stats);
+                            total: this.sum(measures),
+                            average: this.sum(measures) / measures.length
+                        });
                     } else {
-                        var start = new Date().getTime();
-                        call().then(function () {
-                            var elapsed = new Date().getTime() - start;
+                        call().then(() => {
+                            const start = new Date().getTime();
+                            const elapsed = new Date().getTime() - start;
                             measures.push(elapsed);
                             next(itersLeft - 1);
                         });
                     }
-                }
+                };
                 next(iters);
             });
         }
 
-        function renderNMS() {
-            var client = new GenericClient({
+        renderNMS() {
+            const client = new GenericClient({
                 module: 'NarrativeMethodStore',
-                url: runtime.config('services.narrative_method_store.url'),
-                token: runtime.service('session').getAuthToken()
+                url: this.runtime.config('services.narrative_method_store.url'),
+                token: this.runtime.service('session').getAuthToken()
             });
 
-            function status() {
+            const status = () => {
                 return client.callFunc('status', []).spread((result) => {
                     return result;
                 });
-            }
+            };
 
-            function ver() {
+            const ver = () => {
                 return client.callFunc('ver', []).spread((result) => {
                     return result;
                 });
-            }
+            };
 
-            vm.nms.node.innerHTML = html.loading();
+            this.vm.nms.node.innerHTML = build.loading();
 
-            return Promise.all([status(), ver(), perf(ver)])
-                .spread(function (status, version, perf) {
-                    var info = [];
+            return Promise.all([status(), ver(), this.perf(ver)])
+                .spread((status, version, perf) => {
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -195,14 +198,14 @@ define([
                     });
                     return info;
                 })
-                .then(function (info) {
-                    vm.nms.node.innerHTML = div({}, [
+                .then((info) => {
+                    this.vm.nms.node.innerHTML = div({}, [
                         h3('Narrative Method Store'),
                         table(
                             {
                                 class: 'table table-striped'
                             },
-                            info.map(function (item) {
+                            info.map((item) => {
                                 return tr([
                                     th(
                                         {
@@ -220,25 +223,25 @@ define([
                 });
         }
 
-        function renderWorkspace() {
-            var client = new GenericClient({
+        renderWorkspace() {
+            const client = new GenericClient({
                 module: 'Workspace',
-                url: runtime.config('services.Workspace.url'),
-                token: runtime.service('session').getAuthToken()
+                url: this.runtime.config('services.Workspace.url'),
+                token: this.runtime.service('session').getAuthToken()
             });
-            function ver() {
+            const ver = () => {
                 return client.callFunc('ver', []);
-            }
-            vm.workspace.node.innerHTML = html.loading();
+            };
+            this.vm.workspace.node.innerHTML = build.loading();
 
             return Promise.all([
                 client.callFunc('ver', []).spread((result) => {
                     return result;
                 }),
-                perf(ver)
+                this.perf(ver)
             ])
-                .spread(function (version, perf) {
-                    var info = [];
+                .spread((version, perf) => {
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -255,14 +258,14 @@ define([
 
                     return info;
                 })
-                .then(function (info) {
-                    vm.workspace.node.innerHTML = div({}, [
+                .then((info) => {
+                    this.vm.workspace.node.innerHTML = div({}, [
                         h3('Workspace'),
                         table(
                             {
                                 class: 'table table-striped'
                             },
-                            info.map(function (item) {
+                            info.map((item) => {
                                 return tr([
                                     th(
                                         {
@@ -280,32 +283,32 @@ define([
                 });
         }
 
-        function renderAuth() {
-            var http = new HttpClient.HttpClient();
-            vm.auth.node.innerHTML = html.loading();
+        renderAuth() {
+            const http = new HttpClient.HttpClient();
+            this.vm.auth.node.innerHTML = build.loading();
 
-            function getRoot() {
-                var header = new HttpClient.HttpHeader();
+            const getRoot = () => {
+                const header = new HttpClient.HttpHeader();
                 header.setHeader('accept', 'application/json');
                 return http
                     .request({
                         method: 'GET',
-                        url: runtime.config('services.auth2.url'),
+                        url: this.runtime.config('services.auth2.url'),
                         header: header
                     })
-                    .then(function (result) {
+                    .then((result) => {
                         try {
-                            var data = JSON.parse(result.response);
+                            const data = JSON.parse(result.response);
                             return data.version;
                         } catch (ex) {
                             return 'ERROR: ' + ex.message;
                         }
                     });
-            }
+            };
 
-            return Promise.all([getRoot(), perf(getRoot)])
-                .spread(function (version, perf) {
-                    var info = [];
+            return Promise.all([getRoot(), this.perf(getRoot)])
+                .spread((version, perf) => {
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -322,14 +325,14 @@ define([
 
                     return info;
                 })
-                .then(function (info) {
-                    vm.auth.node.innerHTML = div({}, [
+                .then((info) => {
+                    this.vm.auth.node.innerHTML = div({}, [
                         h3('Auth'),
                         table(
                             {
                                 class: 'table table-striped'
                             },
-                            info.map(function (item) {
+                            info.map((item) => {
                                 return tr([
                                     th(
                                         {
@@ -347,32 +350,32 @@ define([
                 });
         }
 
-        function renderGroups() {
-            var http = new HttpClient.HttpClient();
-            vm.auth.node.innerHTML = html.loading();
+        renderGroups() {
+            const http = new HttpClient.HttpClient();
+            this.vm.auth.node.innerHTML = build.loading();
 
-            function getRoot() {
-                var header = new HttpClient.HttpHeader();
+            const getRoot = () => {
+                const header = new HttpClient.HttpHeader();
                 header.setHeader('accept', 'application/json');
                 return http
                     .request({
                         method: 'GET',
-                        url: runtime.config('services.groups.url') + '/',
+                        url: this.runtime.config('services.groups.url') + '/',
                         header: header
                     })
-                    .then(function (result) {
+                    .then((result) => {
                         try {
-                            var data = JSON.parse(result.response);
+                            const data = JSON.parse(result.response);
                             return data.version;
                         } catch (ex) {
                             return 'ERROR: ' + ex.message;
                         }
                     });
-            }
+            };
 
-            return Promise.all([getRoot(), perf(getRoot)])
-                .spread(function (version, perf) {
-                    var info = [];
+            return Promise.all([getRoot(), this.perf(getRoot)])
+                .spread((version, perf) => {
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -389,14 +392,14 @@ define([
 
                     return info;
                 })
-                .then(function (info) {
-                    vm.groups.node.innerHTML = div({}, [
+                .then((info) => {
+                    this.vm.groups.node.innerHTML = div({}, [
                         h3('Groups'),
                         table(
                             {
                                 class: 'table table-striped'
                             },
-                            info.map(function (item) {
+                            info.map((item) => {
                                 return tr([
                                     th(
                                         {
@@ -414,32 +417,32 @@ define([
                 });
         }
 
-        function renderFeeds() {
-            var http = new HttpClient.HttpClient();
-            vm.auth.node.innerHTML = html.loading();
+        renderFeeds() {
+            const http = new HttpClient.HttpClient();
+            this.vm.auth.node.innerHTML = build.loading();
 
-            function getRoot() {
-                var header = new HttpClient.HttpHeader();
+            const getRoot = () => {
+                const header = new HttpClient.HttpHeader();
                 header.setHeader('accept', 'application/json');
                 return http
                     .request({
                         method: 'GET',
-                        url: runtime.config('services.feeds.url') + '/',
+                        url: this.runtime.config('services.feeds.url') + '/',
                         header: header
                     })
-                    .then(function (result) {
+                    .then((result) => {
                         try {
-                            var data = JSON.parse(result.response);
+                            const data = JSON.parse(result.response);
                             return data.version;
                         } catch (ex) {
                             return 'ERROR: ' + ex.message;
                         }
                     });
-            }
+            };
 
-            return Promise.all([getRoot(), perf(getRoot)])
-                .spread(function (version, perf) {
-                    var info = [];
+            return Promise.all([getRoot(), this.perf(getRoot)])
+                .spread((version, perf) => {
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -456,14 +459,14 @@ define([
 
                     return info;
                 })
-                .then(function (info) {
-                    vm.feeds.node.innerHTML = div({}, [
+                .then((info) => {
+                    this.vm.feeds.node.innerHTML = div({}, [
                         h3('Feeds'),
                         table(
                             {
                                 class: 'table table-striped'
                             },
-                            info.map(function (item) {
+                            info.map((item) => {
                                 return tr([
                                     th(
                                         {
@@ -481,22 +484,22 @@ define([
                 });
         }
 
-        function renderUserProfile() {
-            var client = new GenericClient({
-                url: runtime.config('services.user_profile.url'),
-                token: runtime.service('session').getAuthToken(),
+        renderUserProfile() {
+            const client = new GenericClient({
+                url: this.runtime.config('services.user_profile.url'),
+                token: this.runtime.service('session').getAuthToken(),
                 module: 'UserProfile'
             });
 
-            vm.userProfile.node.innerHTML = html.loading();
+            this.vm.userProfile.node.innerHTML = build.loading();
 
-            function ver() {
+            const ver = () => {
                 return client.callFunc('ver', []);
-            }
+            };
 
-            return Promise.all([ver(), perf(ver)])
-                .spread(function (version, perf) {
-                    var info = [];
+            return Promise.all([ver(), this.perf(ver)])
+                .spread((version, perf) => {
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -513,14 +516,14 @@ define([
 
                     return info;
                 })
-                .then(function (info) {
-                    vm.userProfile.node.innerHTML = div({}, [
+                .then((info) => {
+                    this.vm.userProfile.node.innerHTML = div({}, [
                         h3('User Profile'),
                         table(
                             {
                                 class: 'table table-striped'
                             },
-                            info.map(function (item) {
+                            info.map((item) => {
                                 return tr([
                                     th(
                                         {
@@ -536,8 +539,8 @@ define([
                         )
                     ]);
                 })
-                .catch(function (err) {
-                    vm.userProfile.node.innerHTML = div(
+                .catch((err) => {
+                    this.vm.userProfile.node.innerHTML = div(
                         {
                             class: 'alert alert-danger'
                         },
@@ -546,24 +549,24 @@ define([
                 });
         }
 
-        function renderSearchAPI() {
-            var client = new GenericClient({
-                url: runtime.config('services.KBaseSearchEngine.url'),
-                token: runtime.service('session').getAuthToken(),
+        renderSearchAPI() {
+            const client = new GenericClient({
+                url: this.runtime.config('services.KBaseSearchEngine.url'),
+                token: this.runtime.service('session').getAuthToken(),
                 module: 'KBaseSearchEngine'
             });
 
-            vm.searchAPI.node.innerHTML = html.loading();
+            this.vm.userProfile.node.innerHTML = build.loading();
 
-            function theCall() {
+            const theCall = () => {
                 return client.callFunc('status', []).spread((result) => {
                     return result;
                 });
-            }
+            };
 
-            return Promise.all([theCall(), perf(theCall)])
-                .spread(function (result, perf) {
-                    var info = [];
+            return Promise.all([theCall(), this.perf(theCall)])
+                .spread((result, perf) => {
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -580,14 +583,14 @@ define([
 
                     return info;
                 })
-                .then(function (info) {
-                    vm.searchAPI.node.innerHTML = div({}, [
+                .then((info) => {
+                    this.vm.searchAPI.node.innerHTML = div({}, [
                         h3('Search API'),
                         table(
                             {
                                 class: 'table table-striped'
                             },
-                            info.map(function (item) {
+                            info.map((item) => {
                                 return tr([
                                     th(
                                         {
@@ -605,23 +608,23 @@ define([
                 });
         }
 
-        function renderCatalog() {
-            var client = new GenericClient({
+        renderCatalog() {
+            const client = new GenericClient({
                 module: 'Catalog',
-                url: runtime.config('services.Catalog.url'),
-                token: runtime.service('session').getAuthToken()
+                url: this.runtime.config('services.Catalog.url'),
+                token: this.runtime.service('session').getAuthToken()
             });
-            function version() {
+            const version = () => {
                 return client.callFunc('version', []).spread((result) => {
                     return result;
                 });
-            }
+            };
 
-            vm.catalog.node.innerHTML = html.loading();
+            this.vm.catalog.node.innerHTML = build.loading();
 
-            return Promise.all([version(), perf(version)])
-                .spread(function (version, perf) {
-                    var info = [];
+            return Promise.all([version(), this.perf(version)])
+                .spread((version, perf) => {
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -638,14 +641,14 @@ define([
 
                     return info;
                 })
-                .then(function (info) {
-                    vm.catalog.node.innerHTML = div({}, [
+                .then((info) => {
+                    this.vm.catalog.node.innerHTML = div({}, [
                         h3('Catalog'),
                         table(
                             {
                                 class: 'table table-striped'
                             },
-                            info.map(function (item) {
+                            info.map((item) => {
                                 return tr([
                                     th(
                                         {
@@ -663,23 +666,23 @@ define([
                 });
         }
 
-        function renderServiceWizard() {
-            var serviceWizard = new GenericClient({
-                url: runtime.config('services.service_wizard.url'),
-                token: runtime.service('session').getAuthToken(),
+        renderServiceWizard() {
+            const serviceWizard = new GenericClient({
+                url: this.runtime.config('services.service_wizard.url'),
+                token: this.runtime.service('session').getAuthToken(),
                 module: 'ServiceWizard'
             });
 
-            vm.serviceWizard.node.innerHTML = html.loading();
+            this.vm.serviceWizard.node.innerHTML = build.loading();
 
-            function theCall() {
+            const theCall = () => {
                 return serviceWizard.callFunc('version', []);
-            }
+            };
 
-            return Promise.all([theCall(), perf(theCall)])
-                .spread(function (result, perf) {
-                    var version = result[0];
-                    var info = [];
+            return Promise.all([theCall(), this.perf(theCall)])
+                .spread((result, perf) => {
+                    const version = result[0];
+                    const info = [];
                     // Version info
                     info.push({
                         label: 'Version',
@@ -696,14 +699,14 @@ define([
 
                     return info;
                 })
-                .then(function (info) {
-                    vm.serviceWizard.node.innerHTML = div({}, [
+                .then((info) => {
+                    this.vm.serviceWizard.node.innerHTML = div({}, [
                         h3('Service Wizard'),
                         table(
                             {
                                 class: 'table table-striped'
                             },
-                            info.map(function (item) {
+                            info.map((item) => {
                                 return tr([
                                     th(
                                         {
@@ -721,13 +724,13 @@ define([
                 });
         }
 
-        function renderDynamicServices() {
-            var client = new GenericClient({
-                url: runtime.config('services.service_wizard.url'),
-                token: runtime.service('session').getAuthToken(),
+        renderDynamicServices() {
+            const client = new GenericClient({
+                url: this.runtime.config('services.service_wizard.url'),
+                token: this.runtime.service('session').getAuthToken(),
                 module: 'ServiceWizard'
             });
-            vm.dynamicServices.node.innerHTML = html.loading();
+            this.vm.dynamicServices.node.innerHTML = build.loading();
             return client
                 .callFunc('list_service_status', [
                     {
@@ -735,8 +738,8 @@ define([
                         module_names: ['NarrativeService']
                     }
                 ])
-                .then(function (result) {
-                    vm.dynamicServices.node.innerHTML = div({}, [
+                .then((result) => {
+                    this.vm.dynamicServices.node.innerHTML = div({}, [
                         h3('Dynamic Services'),
                         table(
                             {
@@ -748,60 +751,49 @@ define([
                 });
         }
 
-        function render() {
+        render() {
             return Promise.all([
-                renderAuth(),
-                renderNMS(),
-                renderWorkspace(),
-                renderUserProfile(),
-                renderSearchAPI(),
-                renderCatalog(),
-                renderServiceWizard(),
-                renderGroups(),
-                renderFeeds(),
-                renderDynamicServices()
+                this.renderAuth(),
+                this.renderNMS(),
+                this.renderWorkspace(),
+                this.renderUserProfile(),
+                this.renderSearchAPI(),
+                this.renderCatalog(),
+                this.renderServiceWizard(),
+                this.renderGroups(),
+                this.renderFeeds(),
+                this.renderDynamicServices()
             ]);
         }
 
         // Widget API
-        function attach(node) {
-            mount = node;
-            container = mount.appendChild(document.createElement('div'));
-            container.innerHTML = layout();
+        attach(node) {
+            this.mount = node;
+            this.container = this.mount.appendChild(document.createElement('div'));
+            this.container.innerHTML = this.layout();
             // bind
-            Object.keys(vm).forEach(function (id) {
-                var vmNode = vm[id];
+            Object.keys(this.vm).forEach((id) => {
+                const vmNode = this.vm[id];
                 vmNode.node = document.getElementById(vmNode.id);
             });
         }
 
-        function detach() {
-            if (mount && container) {
-                mount.removeChild(container);
-                container = null;
+        detach() {
+            if (this.mount && this.container) {
+                this.mount.removeChild(this.container);
+                this.container = null;
             }
         }
 
-        function start() {
-            runtime.send('ui', 'setTitle', 'KBase Services Runtime Status');
-            return render();
+        start() {
+            this.runtime.send('ui', 'setTitle', 'KBase Services Runtime Status');
+            return this.render();
         }
 
-        function stop() {
+        stop() {
             return null;
         }
-
-        return {
-            attach: attach,
-            detach: detach,
-            start: start,
-            stop: stop
-        };
     }
 
-    return {
-        make: function (config) {
-            return widget(config);
-        }
-    };
+    return AboutServices;
 });

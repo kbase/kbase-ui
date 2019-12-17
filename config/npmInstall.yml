@@ -1,45 +1,45 @@
 # Copy npm amd packages into the main
 npmFiles:
-    - name: ajv
-      cwd: dist
-      src:
-          - ajv.bundle.js
-    - name: bluebird
-      cwd: js/browser
-      src:
-          - bluebird.js
-    - name: dagre
-      cwd: dist
-    - name: lodash
-    - name: preact
-      cwd: dist
-      src:
-          - preact.umd.js
-    # -
-    #     name: d3
-    #     cwd: build
-    # -
-    #     dir: d3-sankey
-    #     cwd: build
-    #     src:
-    #         - d3-sankey.js
-    # -
-    #     dir: d3-shape
-    #     cwd: build
-    #     src:
-    #         - d3-shape.js
-    # -
-    #     dir: d3-collection
-    #     cwd: build
-    #     src:
-    #         - d3-collection.js
-    # -
-    #     dir: d3-array
-    #     cwd: build
-    #     src:
-    #         - d3-array.js
-    # -
-    #     dir: d3-path
-    #     cwd: build
-    #     src:
-    #         - d3-path.js
+  - name: bluebird
+    cwd: js/browser
+    src:
+      - bluebird.js
+  - name: dagre
+    cwd: dist
+  - name: lodash
+  - name: preact
+    cwd: dist
+    src:
+      - preact.umd.js
+  - name: kbase-ui-lib
+    cwd: lib
+    src:
+      - "**/*"
+  # -
+  #     name: d3
+  #     cwd: build
+  # -
+  #     dir: d3-sankey
+  #     cwd: build
+  #     src:
+  #         - d3-sankey.js
+  # -
+  #     dir: d3-shape
+  #     cwd: build
+  #     src:
+  #         - d3-shape.js
+  # -
+  #     dir: d3-collection
+  #     cwd: build
+  #     src:
+  #         - d3-collection.js
+  # -
+  #     dir: d3-array
+  #     cwd: build
+  #     src:
+  #         - d3-array.js
+  # -
+  #     dir: d3-path
+  #     cwd: build
+  #     src:
+  #         - d3-path.js

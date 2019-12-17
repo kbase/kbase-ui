@@ -8,252 +8,130 @@
 # need to list the packages here and create config for exceptions
 # TODO: document the format
 bowerFiles:
-    -
-        name: knockout
-        cwd: dist
-        src: knockout.js
-        bowerComponent: true
-    # -
-    #     name: kbase-knockout
-    #     cwd: dist
-    #     src: knockout.js
-    #     bowerComponent: true
-    -
-        name: knockout-arraytransforms
-        cwd: dist
-        src: knockout-arraytransforms.js
-        bowerComponent: true
-    -
-        name: knockout-projections
-        cwd: dist
-        src: knockout-projections.js
-        bowerComponent: true
-    -
-        name: knockout-switch-case
-        src: knockout-switch-case.js
-        bowerComponent: true
-    -
-        name: knockout-validation
-        cwd: dist
-        src: knockout.validation.js
-        bowerComponent: true
-    -
-        name: bower-knockout-mapping
-        cwd: dist
-        src: knockout.mapping.js
-        bowerComponent: true
-    -
-        name: bootstrap
-        cwd: dist
-        src: 
-            - js/bootstrap.js
-            - css/bootstrap.css
-            - fonts/*
-        bowerComponent: true
-    -
-        name: d3
-        bowerComponent: true
-    -
-        dir: d3-plugins-sankey
-        src:
-            - sankey.js
-            - sankey.css
-        bowerComponent: true   
-    -
-        name: eonasdan-bootstrap-datetimepicker
-        # dir: eonasdan-bootstrap-datetimepicker
-        normalizeDirectory: true
-        src:
-            - 
-                cwd: src/js
-                path: bootstrap-datetimepicker.js
-            - 
-                cwd: build/css
-                path: bootstrap-datetimepicker.css
-        bowerComponent: true
-    -
-        name: file-saver
-        src: 
-            - FileSaver.js
-        bowerComponent: true
-    -
-        name: font-awesome
-        src:
-            - css/font-awesome.css
-            - fonts/*
-        bowerComponent: true
-    -
-        name: jquery
-        cwd: dist
-        bowerComponent: true
-    -
-        name: jquery-ui
-        bowerComponent: true
-    -
-        name: js-yaml
-        cwd: dist
-        bowerComponent: true
-    -
-        dir: pure-uuid
-        src:
-            - uuid.js
-        bowerComponent: true
-    -
-        name: require-css
-        src:
-            - css.js
-            - css-builder.js
-            - normalize.js
-        bowerComponent: true
-    -
-        dir: requirejs-yaml
-        name: yaml
-        bowerComponent: true
-    -
-        dir: requirejs
-        name: require
-        bowerComponent: true
-    -
-        dir: requirejs-domready
-        name: domReady
-        bowerComponent: true
-    -
-        dir: requirejs-json
-        name: json
-        bowerComponent: true
-    -
-        dir: requirejs-text
-        name: text
-        bowerComponent: true
-    -
-        name: select2
-        cwd: dist
-        src:
-            - js/select2.full.js
-            - css/select2.css
-        bowerComponent: true
-    -
-        name: select2-bootstrap-theme
-        cwd: dist
-        src:
-            - select2-bootstrap.css
-        bowerComponent: true
-    -
-        dir: spark-md5
-        name: spark-md5
-        bowerComponent: true
-    -
-        name: underscore
-        bowerComponent: true
-    -
-        name: datatables
-        cwd: media
-        src:
-            - css/jquery.dataTables.css
-            - images/*
-            - js/jquery.dataTables.js
-        bowerComponent: true
-    -
-        name: datatables-bootstrap
-        dir: datatables-bootstrap3-plugin
-        cwd: media
-        src:
-            - css/datatables-bootstrap3.css
-            - js/datatables-bootstrap3.js
-        bowerComponent: true
-    -
-        name: google-code-prettify
-        cwd: src
-        src:
-            - prettify.js
-            - prettify.css
-        bowerComponent: true
-   
-    -
-        name: handlebars
-        bowerComponent: true
-    -
-        name: marked
-        bowerComponent: true
-        cwd: lib
-    -
-        name: nunjucks
-        cwd: browser
-        src: nunjucks.js
-        bowerComponent: true
-    -
-        dir: numeral
-        src:
-            - numeral.js
-        bowerComponent: true
-    -
-        dir: moment
-        src:
-            - moment.js
-        bowerComponent: true        
-    -
-        name: blockui
-        src:
-            - jquery.blockUI.js
-        bowerComponent: true
-    -
-        dir: highlightjs
-        src:
-            - highlight.pack.js
-            - styles/*
-        bowerComponent: true
-    -
-        name: plotly
-        dir: plotly.js
-        cwd: dist
-        src: plotly.js
-        bowerComponent: true    
-    -
-        name: kb_common
-        dir: kbase-common-js
-        cwd: dist/kb_common
-        src: "**/*"
-        bowerComponent: false
-    -
-        name: kb_lib
-        dir: kbase-common-es6
-        cwd: src
-        src: '**/*'
-        bowerComponent: false
-    -
-        name: kb_ko
-        dir: kbase-ko-components-js
-        cwd: src
-        src: "**/*"
-        bowerComponent: false
-    -
-        name: kb_knockout
-        dir: kbase-knockout-extensions-es6
-        cwd: src
-        src: "**/*"
-        bowerComponent: false
-    -
-        name: kb_service
-        dir: kbase-service-clients-js
-        cwd: dist/kb_service
-        src: "**/*"
-        bowerComponent: false
-    -
-        name: kb_widget
-        dir: kbase-ui-widget
-        cwd: src/kb/widget
-        src: "**/*"
-        bowerComponent: false
-    -
-        name: kb_common_ts
-        dir: kbase-common-ts
-        cwd: dist
-        src: "*.js"
-        bowerComponent: false
-    -
-        name: kb_sdk_clients
-        dir: kbase-sdk-clients-js
-        cwd: dist/amd/kb_sdk_clients
-        src: "**/*"
-        bowerComponent: false
-
+    - name: knockout
+      cwd: dist
+      src: knockout.js
+      bowerComponent: true
+    - name: knockout-arraytransforms
+      cwd: dist
+      src: knockout-arraytransforms.js
+      bowerComponent: true
+    - name: knockout-projections
+      cwd: dist
+      src: knockout-projections.js
+      bowerComponent: true
+    - name: knockout-switch-case
+      src: knockout-switch-case.js
+      bowerComponent: true
+    - name: knockout-validation
+      cwd: dist
+      src: knockout.validation.js
+      bowerComponent: true
+    - name: bower-knockout-mapping
+      cwd: dist
+      src: knockout.mapping.js
+      bowerComponent: true
+    - name: bootstrap
+      cwd: dist
+      src:
+          - js/bootstrap.js
+          - css/bootstrap.css
+          - fonts/*
+      bowerComponent: true
+    - name: eonasdan-bootstrap-datetimepicker
+      normalizeDirectory: true
+      src:
+          - cwd: src/js
+            path: bootstrap-datetimepicker.js
+          - cwd: build/css
+            path: bootstrap-datetimepicker.css
+      bowerComponent: true
+    - name: font-awesome
+      src:
+          - css/font-awesome.css
+          - fonts/*
+      bowerComponent: true
+    - name: jquery
+      cwd: dist
+      bowerComponent: true
+    - name: js-yaml
+      cwd: dist
+      bowerComponent: true
+    - dir: pure-uuid
+      src:
+          - uuid.js
+      bowerComponent: true
+    - name: require-css
+      src:
+          - css.js
+          - css-builder.js
+          - normalize.js
+      bowerComponent: true
+    - dir: requirejs-yaml
+      name: yaml
+      bowerComponent: true
+    - dir: requirejs
+      name: require
+      bowerComponent: true
+    - dir: requirejs-domready
+      name: domReady
+      bowerComponent: true
+    - dir: requirejs-json
+      name: json
+      bowerComponent: true
+    - dir: requirejs-text
+      name: text
+      bowerComponent: true
+    - dir: spark-md5
+      name: spark-md5
+      bowerComponent: true
+    - name: underscore
+      bowerComponent: true
+    - name: handlebars
+      bowerComponent: true
+    - name: marked
+      bowerComponent: true
+      cwd: lib
+    - dir: moment
+      src:
+          - moment.js
+      bowerComponent: true
+    - name: kb_common
+      dir: kbase-common-js
+      cwd: dist/kb_common
+      src: '**/*'
+      bowerComponent: false
+    - name: kb_lib
+      dir: kbase-common-es6
+      cwd: src
+      src: '**/*'
+      bowerComponent: false
+    - name: kb_ko
+      dir: kbase-ko-components-js
+      cwd: src
+      src: '**/*'
+      bowerComponent: false
+    - name: kb_knockout
+      dir: kbase-knockout-extensions-es6
+      cwd: src
+      src: '**/*'
+      bowerComponent: false
+    - name: kb_service
+      dir: kbase-service-clients-js
+      cwd: dist/kb_service
+      src: '**/*'
+      bowerComponent: false
+    - name: kb_widget
+      dir: kbase-ui-widget
+      cwd: src/kb/widget
+      src: '**/*'
+      bowerComponent: false
+    - name: kb_common_ts
+      dir: kbase-common-ts
+      cwd: dist
+      src: '*.js'
+      bowerComponent: false
+    - dir: numeral
+      src:
+          - numeral.js
+      bowerComponent: true

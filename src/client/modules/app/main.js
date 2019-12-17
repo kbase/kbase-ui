@@ -2,7 +2,7 @@ define([
     'bluebird',
     'uuid',
     './hub',
-    'kb_common/props',
+    'kb_lib/props',
     'kb_knockout/load',
     '../lib/utils',
 
@@ -17,17 +17,7 @@ define([
     'css!app/styles/kb-icons',
     'css!app/styles/kb-ui',
     'css!app/styles/kb-datatables'
-], function (
-    Promise,
-    Uuid,
-    Hub,
-    Props,
-    knockoutLoader,
-    utils,
-    pluginConfig,
-    appConfigBase,
-    deployConfig
-) {
+], function (Promise, Uuid, Hub, props, knockoutLoader, utils, pluginConfig, appConfigBase, deployConfig) {
     'use strict';
 
     // Set up global configuration of bluebird promises library.
@@ -44,13 +34,10 @@ define([
             if (typeof props === 'string') {
                 props = props.split('.');
             } else if (!(props instanceof Array)) {
-                throw new TypeError('Invalid type for key: ' + (typeof props));
+                throw new TypeError('Invalid type for key: ' + typeof props);
             }
-            var i;
-            for (i = 0; i < props.length; i += 1) {
-                if ((obj === undefined) ||
-                        (typeof obj !== 'object') ||
-                        (obj === null)) {
+            for (let i = 0; i < props.length; i += 1) {
+                if (obj === undefined || typeof obj !== 'object' || obj === null) {
                     throw new Error('Invalid object path: ' + props.join('.') + ' at ' + i);
                 }
                 obj = obj[props[i]];
@@ -63,9 +50,9 @@ define([
         }
 
         function fix(str) {
-            var parsing = false;
-            var parsed = [];
-            var pos = 0;
+            let parsing = false;
+            const parsed = [];
+            let pos = 0;
             do {
                 var tagStart = str.indexOf('{{', pos);
                 if (tagStart < 0) {
@@ -74,12 +61,12 @@ define([
                 }
                 parsed.push(str.substr(pos, tagStart));
                 tagStart += 2;
-                var tagEnd = str.indexOf('}}', tagStart);
+                const tagEnd = str.indexOf('}}', tagStart);
                 if (tagEnd < 0) {
                     throw new Error('Tag not terminated in ' + str + ' at ' + tagStart);
                 }
                 pos = tagEnd + 2;
-                var tag = str.substr(tagStart, (tagEnd - tagStart)).trim(' ');
+                const tag = str.substr(tagStart, tagEnd - tagStart).trim(' ');
                 if (tag.length === 0) {
                     continue;
                 }
@@ -90,8 +77,8 @@ define([
         }
 
         function fixit(branch) {
-            Object.keys(branch).forEach(function (key) {
-                var value = branch[key];
+            Object.keys(branch).forEach((key) => {
+                const value = branch[key];
                 if (typeof value === 'string') {
                     branch[key] = fix(value);
                 } else if (utils.isSimpleObject(value)) {
@@ -113,13 +100,13 @@ define([
     // hang sine-qua-non structures, which at this time is
     // just the app.
     const globalRef = new Uuid(4).format();
-    const global = window[globalRef] = Props.make();
+    const global = (window[globalRef] = new props.Props());
 
     function start() {
         // merge the deploy and app config.
-        var merged = utils.mergeObjects([appConfigBase, deployConfig]);
-        var appConfig = fixConfig(merged);
-        var app = Hub.make({
+        const merged = utils.mergeObjects([appConfigBase, deployConfig]);
+        const appConfig = fixConfig(merged);
+        const app = new Hub({
             appConfig: appConfig,
             nodes: {
                 root: {
@@ -130,13 +117,12 @@ define([
             services: appConfig.ui.services
         });
         global.setItem('app', app);
-        return knockoutLoader.load()
-            .then((ko) => {
-                // Knockout Defaults
-                ko.options.deferUpdates = true;
+        return knockoutLoader.load().then((ko) => {
+            // Knockout Defaults
+            ko.options.deferUpdates = true;
 
-                return app.start();
-            });
+            return app.start();
+        });
     }
 
     return { start };

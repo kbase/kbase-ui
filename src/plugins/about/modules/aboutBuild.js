@@ -1,15 +1,6 @@
-define([
-    'bluebird',
-    'kb_common/html',
-    'kb_common/bootstrapUtils',
-    'bootstrap'
-], function (
-    Promise,
-    html,
-    BS
-) {
+define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBootstrapBuilders', 'bootstrap'], function (Promise, html, BS) {
     'use strict';
-    var t = html.tag,
+    const t = html.tag,
         h1 = t('h1'),
         h2 = t('h2'),
         p = t('p'),
@@ -18,14 +9,17 @@ define([
     /*
      * The widget factory function implements the widget interface.
      */
-    function widget(config) {
-        var mount, container,
-            runtime = config.runtime;
+    class AboutBuild {
+        constructor({ runtime }) {
+            this.runtime = runtime;
+            this.mount = null;
+            this.container = null;
+        }
 
-        function buildBuildInfo() {
-            var buildInfo = runtime.config('buildInfo');
+        buildBuildInfo() {
+            const buildInfo = this.runtime.config('buildInfo');
 
-            var info = {
+            const info = {
                 builtAt: new Date(buildInfo.builtAt).toLocaleString(),
                 git: {
                     branch: buildInfo.git.branch,
@@ -47,83 +41,79 @@ define([
             return BS.buildPresentableJson(info);
         }
 
-        function buildLayout() {
-            return div({
-                class: 'container-fluid'
-            }, [
-                div({
-                    class: 'row'
-                }, [
-                    div({
-                        class: 'col-sm-6',
-                        style: {}
-                    }, [
-                        h1('About the KBase User Interface')
-                    ]),
-                    div({
-                        class: 'col-sm-6',
-                        style: {}
-                    })
-                ]),
-                div({
-                    class: 'row'
-                }, [
-
-                    div({
-                        class: 'col-sm-6',
-                        style: {}
-                    }, [
-                        h2('Build'),
-                        buildBuildInfo()
-                    ]),
-                    div({
-                        class: 'col-sm-6',
-                        style: {}
-                    }, [
-                        h2('Dependencies'),
-                        p('dependencies here...')
-                    ])
-                ])
-            ]);
+        buildLayout() {
+            return div(
+                {
+                    class: 'container-fluid'
+                },
+                [
+                    div(
+                        {
+                            class: 'row'
+                        },
+                        [
+                            div(
+                                {
+                                    class: 'col-sm-6',
+                                    style: {}
+                                },
+                                [h1('About the KBase User Interface')]
+                            ),
+                            div({
+                                class: 'col-sm-6',
+                                style: {}
+                            })
+                        ]
+                    ),
+                    div(
+                        {
+                            class: 'row'
+                        },
+                        [
+                            div(
+                                {
+                                    class: 'col-sm-6',
+                                    style: {}
+                                },
+                                [h2('Build'), this.buildBuildInfo()]
+                            ),
+                            div(
+                                {
+                                    class: 'col-sm-6',
+                                    style: {}
+                                },
+                                [h2('Dependencies'), p('dependencies here...')]
+                            )
+                        ]
+                    )
+                ]
+            );
         }
 
-        function render() {
-            container.innerHTML = buildLayout();
+        render() {
+            this.container.innerHTML = this.buildLayout();
         }
         // Widget API
-        function attach(node) {
-            mount = node;
-            container = mount.appendChild(document.createElement('div'));
+        attach(node) {
+            this.mount = node;
+            this.container = this.mount.appendChild(document.createElement('div'));
         }
 
-        function detach() {
-            if (mount && container) {
-                mount.removeChild(container);
-                container = null;
+        detach() {
+            if (this.mount && this.container) {
+                this.mount.removeChild(this.container);
+                this.container = null;
             }
         }
 
-        function start() {
-            runtime.send('ui', 'setTitle', 'About then KBase User Interface');
-            return render();
+        start() {
+            this.runtime.send('ui', 'setTitle', 'About then KBase User Interface');
+            return this.render();
         }
 
-        function stop() {
+        stop() {
             return null;
         }
-
-        return {
-            attach: attach,
-            detach: detach,
-            start: start,
-            stop: stop
-        };
     }
-
-    return {
-        make: function (config) {
-            return widget(config);
-        }
-    };
-
+    return AboutBuild;
 });

@@ -1,0 +1,18 @@
+---
+description: Ensure main view appears
+specs:
+  - description: should have main panel framing appear when hit the path
+    baseSelector: []
+    tasks:
+      - subtask: login
+        title: login
+      - action: navigate
+        title: navigate to narrativemanager/new
+        path: narrativemanager/new
+      - wait: forElement 
+        timeout: 10000
+        selector:
+          - type: raw
+            name: id
+            value: ipython-main-app
+

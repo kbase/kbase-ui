@@ -1,6 +1,6 @@
 define([
     'knockout',
-    'kb_common/html',
+    'kb_lib/html',
     './components/notification'
 ], function (
     ko,
@@ -9,7 +9,7 @@ define([
 ) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div');
 
     class NotificationWidget {
@@ -46,5 +46,5 @@ define([
         }
     }
 
-    return {Widget: NotificationWidget};
+    return { Widget: NotificationWidget };
 });

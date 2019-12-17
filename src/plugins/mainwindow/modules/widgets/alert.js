@@ -1,12 +1,12 @@
 define([
     'knockout',
-    'kb_common/html'
+    'kb_lib/html'
 ], function (
     ko,
     html
 ) {
     'use strict';
-    var t = html.tag,
+    const t = html.tag,
         span = t('span'),
         div = t('div'),
         button = t('button'),
@@ -139,29 +139,29 @@ define([
     }
 
     function alertViewModel(params) {
-        var name = params.name;
-        var icon = ko.observable(params.icon);
-        var type = ko.observable(params.type);
-        var message = ko.observable(params.message);
-        var description = ko.observable(params.description);
+        const name = params.name;
+        const icon = ko.observable(params.icon);
+        const type = ko.observable(params.type);
+        const message = ko.observable(params.message);
+        const description = ko.observable(params.description);
 
-        var timeout = ko.observable(null);
+        const timeout = ko.observable(null);
 
-        var remaining = ko.observable(null);
+        const remaining = ko.observable(null);
 
-        var secondsRemaining = ko.pureComputed(function () {
+        const secondsRemaining = ko.pureComputed(function () {
             if (remaining() === null) {
                 return '';
             }
-            var timeLeft = remaining() / 1000;
+            const timeLeft = remaining() / 1000;
             return 'Autoclosing in ' + Math.round(timeLeft) + ' seconds';
         });
 
-        var showDescription = ko.observable(false);
-        var iconClass = ko.pureComputed(function () {
+        const showDescription = ko.observable(false);
+        const iconClass = ko.pureComputed(function () {
             return 'fa-' + icon();
         });
-        var alertClass = ko.pureComputed(function () {
+        const alertClass = ko.pureComputed(function () {
             return 'alert-' + type();
         });
 
@@ -190,25 +190,25 @@ define([
     }
 
     function viewModel(params) {
-        var alerts = ko.observableArray();
+        const alerts = ko.observableArray();
 
         function closeAlert(alert) {
             alerts.remove(alert);
         }
 
-        var runtime = params.runtime;
+        const runtime = params.runtime;
 
         function findAlert(findAlert) {
-            for (var i = 0; i < alerts().length; i += 1) {
-                var alert = alerts()[i];
+            for (let i = 0; i < alerts().length; i += 1) {
+                const alert = alerts()[i];
                 if (alert.name === findAlert.name) {
                     return alert;
                 }
             }
         }
 
-        runtime.recv('ui', 'alert', function (newAlert) {
-            var alert = findAlert(newAlert);
+        runtime.receive('ui', 'alert', function (newAlert) {
+            let alert = findAlert(newAlert);
             if (alert) {
                 alert.message(newAlert.message);
                 alert.description(newAlert.description);
@@ -231,19 +231,19 @@ define([
             }
         });
 
-        var timeouts = [];
+        const timeouts = [];
 
         function runTimeouts() {
-            var todo = timeouts;
-            timeouts = [];
-            var now = new Date().getTime();
+            const todo = timeouts;
+            const timeouts = [];
+            const now = new Date().getTime();
             todo.forEach(function (item) {
-                var elapsed = now - item.startedAt;
-                var alert = findAlert(item);
+                const elapsed = now - item.startedAt;
+                const alert = findAlert(item);
                 if (elapsed > alert.timeout()) {
                     alerts.remove(alert);
                 } else {
-                    var remaining = Math.round((item.timeout() - elapsed));
+                    const remaining = Math.round((item.timeout() - elapsed));
                     alert.remaining(remaining);
                     timeouts.push(item);
                 }
@@ -278,9 +278,10 @@ define([
 
 
     function factory(config) {
-        var hostNode, container,
-            runtime = config.runtime,
-            listeners = [];
+        let hostNode;
+        let container;
+        const runtime = config.runtime;
+        const listeners = [];
 
         // function updateAlert(node, alert) {
         //     node.classList.forEach(function (klass) {
@@ -372,7 +373,7 @@ define([
                     }
                 })
             ]);
-            var vm = {
+            const vm = {
                 runtime: runtime
             };
             ko.applyBindings(vm, container);
@@ -387,7 +388,7 @@ define([
 
         function start() {
             render();
-            // listeners.push(runtime.recv('ui', 'alert', function (alert) {
+            // listeners.push(runtime.receive('ui', 'alert', function (alert) {
             //     setAlert(alert);
             // }));
         }

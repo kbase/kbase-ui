@@ -1,0 +1,7 @@
+---
+- action: deleteSessionCookie
+  title: Delete kbase session cookie
+  params:
+    name: kbase_session
+    path: "/"
+    value: "${config.auth.token}"

@@ -1,0 +1,13 @@
+## Signin/Signout Widget
+---
+package:
+  name: login
+  description: A login page
+  author: Erik Pearson
+  type: legacy
+install:
+  widgets:
+    - id: kb_login_signin
+      module: signinWidget
+      css: true
+      type: factory

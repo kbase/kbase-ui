@@ -1,43 +1,52 @@
 define([
     'knockout',
     'kb_knockout/registry',
+    'kb_knockout/lib/generators',
     'uuid',
-    'kb_common/html',
+    'kb_lib/html',
 
     // for effect
     'bootstrap'
 ], function (
     ko,
     reg,
+    gen,
     Uuid,
     html
 ) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         span = t('span'),
-        a = t('a');
+        a = t('a'),
+        svg = t('svg'),
+        polygon = t('polygon');
+
+    const AUTODISMISSER_INTERVAL = 1000;
 
     class Notification {
-        constructor(params) {
-            const newNotification = params.notification;
+        constructor({ notification, parent }) {
+            const newNotification = notification;
             this.id = newNotification.id || new Uuid(4).format();
             this.message = ko.observable(newNotification.message);
+            this.description = ko.observable(newNotification.description);
             this.autodismiss = ko.observable(newNotification.autodismiss);
+            this.icon = ko.observable(newNotification.icon);
             this.autodismissStartedAt = newNotification.autodismiss ? new Date().getTime() : null;
             this.type = ko.observable(newNotification.type);
+            this.parent = parent;
 
             this.type.subscribeChanged((newVal, oldVal) => {
-                this.summary[oldVal].count(this.summary[oldVal].count() - 1);
-                this.summary[newVal].count(this.summary[newVal].count() + 1);
+                this.parent.summary[oldVal].count(this.parent.summary[oldVal].count() - 1);
+                this.parent.summary[newVal].count(this.parent.summary[newVal].count() + 1);
             });
 
             this.autodismiss.subscribe((newVal) => {
                 if (newVal) {
                     // TODO: this
                     this.autodismissStartedAt = new Date().getTime();
-                    this.startAutoDismisser();
+                    this.parent.startAutoDismisser();
                 }
             });
         }
@@ -63,8 +72,8 @@ define([
                         item.addedAt = new Date().getTime();
                     }
                     if (item.autodismiss()) {
-                        if (!item.autodismiss.startedAt) {
-                            item.autodismiss.startedAt = new Date().getTime();
+                        if (!item.autodismissStartedAt) {
+                            item.autodismissStartedAt = new Date().getTime();
                         }
                         autoDismissable = true;
                     }
@@ -98,19 +107,22 @@ define([
                 channel: this.sendingChannel
             });
 
-            this.runtime.recv(this.sendingChannel, 'new', (message) => {
+            this.runtime.receive(this.sendingChannel, 'new', (message) => {
                 this.processMessage(message);
             });
         }
 
         runAutoDismisser() {
-            var toRemove = [];
-            var now = new Date().getTime();
+            const toRemove = [];
+            const now = new Date().getTime();
+            let autodismissLeft = 0;
             this.notificationQueue().forEach((item) => {
                 if (item.autodismiss()) {
-                    var elapsed = now - item.autodismiss.startedAt;
+                    const elapsed = now - item.autodismissStartedAt;
                     if (item.autodismiss() < elapsed) {
                         toRemove.push(item);
+                    } else {
+                        autodismissLeft += 1;
                     }
                 }
             });
@@ -118,20 +130,25 @@ define([
             toRemove.forEach((item) => {
                 this.removeNotification(item);
             });
-            if (this.notificationQueue().length > 0) {
-                this.startAutoDismisser(true);
+
+            if (autodismissLeft > 0) {
+                this.autoDismisserLoop();
             } else {
                 this.autoDismisser = null;
             }
+        }
+
+        autoDismisserLoop() {
+            this.autoDismisser = window.setTimeout(() => {
+                this.runAutoDismisser();
+            }, AUTODISMISSER_INTERVAL);
         }
 
         startAutoDismisser(force) {
             if (this.autoDismisser && !force) {
                 return;
             }
-            this.autoDismisser = window.setTimeout(() => {
-                this.runAutoDismisser();
-            }, 1000);
+            this.runAutoDismisser();
         }
 
         doToggleNotification() {
@@ -156,7 +173,7 @@ define([
         }
 
         summaryItem(name) {
-            var count = ko.observable(0);
+            const count = ko.observable(0);
             return {
                 label: name,
                 count: count,
@@ -171,7 +188,7 @@ define([
         }
 
         addNotification(newMessage) {
-            const notification = new Notification({notification: newMessage});
+            const notification = new Notification({ notification: newMessage, parent: this });
             const summaryItem = this.summary[notification.type()];
             if (summaryItem) {
                 summaryItem.count(summaryItem.count() + 1);
@@ -296,10 +313,21 @@ define([
                     textAlign: 'center'
                 }
             }, [
-                // triangle pointing to the notification summary box
                 div({
-                    class: '-triangle'
-                }, '▶'),
+                    class: '-pointer'
+                }, [
+                    svg({
+                        viewBox: '0 0 25 25',
+                        xmlns: 'http://www.w3.org/2000/svg',
+                        width: '25px',
+                        height: '25px'
+                    }, [
+                        polygon({
+                            points: '0 0, 0 20, 20 10',
+                            fill: 'gray'
+                        })
+                    ])
+                ]),
                 div({
                     style: {
                         display: 'inline-block'
@@ -308,7 +336,7 @@ define([
                 // dismiss button will close the list of notifications
                 a({
                     dataBind: {
-                        click: '$component.doCloseNotifications',
+                        click: '$component.doCloseNotifications.bind($component)',
                     },
                     class: '-button',
                     style: {
@@ -317,7 +345,7 @@ define([
                         marginTop: '2px',
                         marginBottom: '3px'
                     }
-                }, 'dismiss'),
+                }, 'close'),
                 // container for the list of notifications.
                 // has a max-height and is vertically scrollable
                 div({
@@ -338,16 +366,30 @@ define([
                 }, [
                     a({
                         dataBind: {
-                            click: '$parent.doClearNotification',
+                            click: '$parent.doClearNotification.bind($parent)',
                         },
-                        class: '-button -close-button'
+                        class: '-button -close-button',
+                        title: 'Clear this notification'
                     }, span({ class: 'fa fa-times' })),
                     div({
                         dataBind: {
-                            html: 'message'
+                            attr: {
+                                title: 'description'
+                            }
                         },
-                        class: '-message'
-                    })
+                        class: '-message',
+                    }, [
+                        // gen.if('icon', span({
+                        //     dataBind: {
+                        //         css: '"fa fa-"' + 'icon'
+                        //     }
+                        // })),
+                        span({
+                            dataBind: {
+                                html: 'message'
+                            }
+                        })
+                    ])
                 ]))
             ])
         ]);

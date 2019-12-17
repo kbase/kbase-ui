@@ -1,0 +1,8 @@
+{
+    "prettier.arrowParens": "always",
+    "prettier.eslintIntegration": true,
+    "prettier.printWidth": 120,
+    "prettier.singleQuote": true,
+    "prettier.tabWidth": 4,
+    "editor.detectIndentation": false
+}

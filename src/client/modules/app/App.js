@@ -11,20 +11,20 @@ define([
     'lib/appServiceManager',
     'lib/kbaseServiceManager',
     './runtime',
-    'kb_common/messenger',
-    'kb_common/props',
+    'kb_lib/messenger',
+    'kb_lib/props',
     'kb_lib/widget/mount',
-    'kb_common/asyncQueue'
-], function (
+    'kb_lib/asyncQueue'
+], (
     pluginManagerFactory,
     AppServiceManager,
     kbaseServiceManager,
     Runtime,
-    messengerFactory,
-    Props,
+    Messenger,
+    props,
     widgetMount,
-    asyncQueue
-) {
+    AsyncQueue
+) => {
     'use strict';
 
     /*
@@ -59,101 +59,100 @@ define([
     }
 
     */
-    function factory(_config) {
-        // Import the config.
-        // TODO: validate all incoming config.
-        const plugins = _config.plugins;
-        const services = _config.services;
-        const nodes = _config.nodes;
 
-        // We simply wrap the incoming props in our venerable Props thing.
-        var appConfig = Props.make({
-            data: _config.appConfig
-        });
 
-        // The entire ui (from the app's perspective) hinges upon a single
-        // root node, which must already be establibished by the
-        // calling code. If this node is absent, we simply fail here.
-        const rootNode = document.querySelector(nodes.root.selector);
-        if (!rootNode) {
-            throw new Error('Cannot set root node for selector ' + nodes.root.selector);
+    return class App {
+        constructor(params) {
+            this.plugins = params.plugins;
+            this.services = params.services;
+            this.nodes = params.nodes;
+
+            // We simply wrap the incoming props in our venerable Props thing.
+            this.appConfig = new props.Props({
+                data: params.appConfig
+            });
+
+            // The entire ui (from the app's perspective) hinges upon a single
+            // root node, which must already be established by the
+            // calling code. If this node is absent, we simply fail here.
+            this.rootNode = document.querySelector(this.nodes.root.selector);
+            if (!this.rootNode) {
+                throw new Error('Cannot set root node for selector ' + this.nodes.root.selector);
+            }
+
+            // Events
+
+            // Our own event system.
+            this.messenger = new Messenger();
+
+            // DOM
+
+            this.rootMount = null;
+
+            // RENDER QUEUE - GET RID OF THIS
+
+            this.renderQueue = new AsyncQueue();
+
+            // SERVICES
+
+            this.appServiceManager = AppServiceManager.make({
+                moduleBasePath: 'app/services'
+            });
+
+            this.api = new Runtime({
+                config: this.appConfig,
+                messenger: this.messenger,
+                serviceManager: this.appServiceManager
+            });
+
+            this.pluginManager = pluginManagerFactory.make({
+                runtime: this.api
+            });
+
+            this.addServices(this.services);
         }
 
-        // Events
-
-        // Our own event system.
-        const messenger = messengerFactory.make();
-
-        // DOM
-
-        let rootMount;
-
-        function mountRootWidget(widgetId, runtime) {
-            if (!rootNode) {
+        mountRootWidget(widgetId, runtime) {
+            if (!this.rootNode) {
                 throw new Error('Cannot set root widget without a root node');
             }
             // remove anything on the root mount, such as a waiter.
-            rootNode.innerHTML = '';
-            if (!rootMount) {
+            this.rootNode.innerHTML = '';
+            if (!this.rootMount) {
                 // create the root mount.
-                rootMount = new widgetMount.WidgetMount({
-                    node: rootNode,
-                    // runtime: runtime,
+                this.rootMount = new widgetMount.WidgetMount({
+                    node: this.rootNode,
+                    runtime,
                     widgetManager: runtime.service('widget').widgetManager
                 });
-
             }
             // ask it to load a widget.
-            return rootMount.mountWidget(widgetId);
+            return this.rootMount.mountWidget(widgetId);
         }
 
-        // RENDER QUEUE - GET RID OF THIS
-
-        var renderQueue = asyncQueue.make();
-
-        // SERVICES
-
-        var appServiceManager = AppServiceManager.make({
-            moduleBasePath: 'app/services'
-        });
-
-        var api = Runtime.make({
-            config: appConfig,
-            messenger: messenger,
-            serviceManager: appServiceManager
-        });
-
-        function addServices(services) {
-            Object.keys(services).forEach(function (serviceName) {
+        addServices(services) {
+            Object.keys(services).forEach((serviceName) => {
                 // A service which is just declared may not have any configuration
                 // at all.
-                var serviceConfig = JSON.parse(JSON.stringify(services[serviceName]));
-                var service = {
+                const serviceConfig = JSON.parse(JSON.stringify(services[serviceName]));
+                const service = {
                     name: serviceName
                 };
                 service.module = serviceName;
 
                 // serviceConfig.runtime = api;
-                appServiceManager.addService(service, serviceConfig);
+                this.appServiceManager.addService(service, serviceConfig);
             });
         }
 
-        function checkCoreServices() {
+        checkCoreServices() {
             const manager = new kbaseServiceManager.KBaseServiceManager({
-                runtime: api
+                runtime: this.api
             });
             return manager.check();
         }
 
-        // PLUGINS
-
-        var pluginManager = pluginManagerFactory.make({
-            runtime: api
-        });
-
-        addServices(services);
-
-        function start() {
+        start() {
             // Behavior
             // There are not too many global behaviors, and perhaps there should
             // even fewer or none. Most behavior is within services or
@@ -162,11 +161,11 @@ define([
             // TODO: replace this with call to mount a page not found panel
             // rather than routing... This will preserve the url and ease the life
             // of developers around the world.
-            messenger.receive({
+            this.messenger.receive({
                 channel: 'app',
                 message: 'route-not-found',
-                handler: function (info) {
-                    messenger.send({
+                handler: (info) => {
+                    this.messenger.send({
                         channel: 'app',
                         message: 'navigate',
                         data: {
@@ -183,12 +182,12 @@ define([
             // UI should be a service...
             // NB this was never developed beyond this stage, and should
             // probably be hunted down and removed.
-            messenger.receive({
+            this.messenger.receive({
                 channel: 'ui',
                 message: 'render',
-                handler: function (arg) {
-                    renderQueue.addItem({
-                        onRun: function () {
+                handler: (arg) => {
+                    this.renderQueue.addItem({
+                        onRun: () => {
                             if (arg.node) {
                                 arg.node.innerHTML = arg.content;
                             } else {
@@ -200,36 +199,27 @@ define([
                 }
             });
 
-            return appServiceManager.loadServices({
-                runtime: api
-            })
-                .then(function () {
-                    return pluginManager.installPlugins(plugins);
+            return this.appServiceManager
+                .loadServices({
+                    runtime: this.api
                 })
                 .then(() => {
-                    return checkCoreServices();
+                    return this.pluginManager.installPlugins(this.plugins);
                 })
-                .then(function () {
-                    return appServiceManager.startServices();
+                .then(() => {
+                    return this.checkCoreServices();
                 })
-                .then(function () {
-                    return mountRootWidget('root', api);
+                .then(() => {
+                    return this.appServiceManager.startServices();
                 })
-                .then(function () {
-                    return api;
+                .then(() => {
+                    return this.mountRootWidget('root', this.api);
+                })
+                .then(() => {
+                    return this.api;
                 });
         }
 
-        function stop() {}
-
-        return {
-            config: appConfig,
-            addServices: addServices,
-            start: start,
-            stop: stop
-        };
-    }
-    return {
-        make: factory
+        stop() {}
     };
 });

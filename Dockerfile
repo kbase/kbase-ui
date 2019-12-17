@@ -1,16 +1,16 @@
 # ------------------------------
 # The build image
 # ------------------------------
-FROM alpine:3.9 as builder
+FROM alpine:3.10 as builder
 
 # add deps for building kbase-ui
 RUN apk upgrade --update-cache --available && \
-    apk add --update --no-cache bash chromium g++ git make nodejs npm python2 && \
+    apk add --update --no-cache bash chromium g++ git make nodejs yarn python2 && \
     mkdir -p /kb
 
 COPY ./package.json /kb
 WORKDIR /kb
-RUN npm install
+RUN yarn install --no-lockfile
 
 COPY . /kb
 
@@ -18,17 +18,19 @@ ARG BUILD
 
 # This actually builds the ui codebase. Note that the build-arg BUILD is passed along
 # as an environment variabl 'build'.
-RUN make setup && make build config=$BUILD && make docs
+RUN make setup && make build config=$BUILD
+#  && make docs
 
 # Run unit tests.
-RUN make unit-tests
+# disable just during testing
+# RUN make unit-tests
 
 LABEL stage=intermediate
 
 # ------------------------------
 # The product image
 # ------------------------------
-FROM alpine:3.9
+FROM alpine:3.10
 
 RUN apk upgrade --update-cache --available && \
     apk add --update --no-cache bash ca-certificates nginx && \
@@ -64,7 +66,11 @@ COPY --from=builder /kb/deployment/config /kb/deployment/config
 COPY --from=builder /kb/deployment/scripts /kb/deployment/scripts
 
 # Generated documentation is copied into the distribution.
-COPY --from=builder /kb/docs/book/_book /kb/deployment/services/kbase-ui/dist/_book
+# COPY --from=builder /kb/docs/book/_book /kb/deployment/services/kbase-ui/dist/_book
+
+# Need to include the integration tests since otherwise we need a local build 
+# to pick them up.
+COPY --from=builder /kb/build/test /kb/deployment/services/kbase-ui/test
 
 # The BUILD_DATE value seem to bust the docker cache when the timestamp changes, move to
 # the end

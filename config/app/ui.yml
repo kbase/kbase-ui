@@ -16,10 +16,10 @@ ui:
         # service check is conducted at ui startup; all core services are contacted to fetch
         # the current version. This affects the startup experience so we need to use a gradation
         # of timeouts. the slow timeout will trigger a warning for the user, but the check will
-        # continue, the hard timeout will cancel the requests. slow is 10 seconds, hard limit is 1 minute.
+        # continue, the hard timeout will cancel the requests. slow is 1 seconds, hard limit is 10 seconds.
         service_check_timeouts:
-            slow: 10000
-            hard: 60000
+            slow: 3000
+            hard: 5000
         # TODO: simply paths?
     paths:
         spa_root: '#'
@@ -39,15 +39,15 @@ ui:
     # Services are configured here...
     services:
         # analytics:
-            # cookie:
-            #     name: _ga
-            #     domain: kbase.us
-            #     # approx 2 years
-            #     maxAge: 63072000
-            # google:
-            #     apiEndpoint: https://www.google-analytics.com/collect
-            #     hostname: null
-            #     code: null
+        # cookie:
+        #     name: _ga
+        #     domain: kbase.us
+        #     # approx 2 years
+        #     maxAge: 63072000
+        # google:
+        #     apiEndpoint: https://www.google-analytics.com/collect
+        #     hostname: null
+        #     code: null
         session:
             cookie:
                 maxAge: 5184000
@@ -56,19 +56,14 @@ ui:
                     name: kbase_session_backup
                     domain: null
                     enabled: false
-            # The widget id of the current login widget; supplied by the
-            # auth plugin.
-            loginWidget: auth2_signin
-
+            # The widget id of the current login widget
+            loginWidget: kb_login_signin
         route:
             defaultRoute:
                 redirect:
                     path: login
         heartbeat:
             interval: 500
-        # dynamic-service:
-        #     hardTtl: 3600000 # 1 min
-        #     hotTtl:  18000000 # 5 min
     # Feature Switches are unique values (preferrably uuids) which indicate a single feature or
     # or group of features. The featureSwitch id may be used within code, kbase-ui or plugins, to
     # disable or enable code features.
