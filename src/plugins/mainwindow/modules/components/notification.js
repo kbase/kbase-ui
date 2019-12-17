@@ -318,7 +318,9 @@ define([
                 }, [
                     svg({
                         viewBox: '0 0 25 25',
-                        xmlns: 'http://www.w3.org/2000/svg'
+                        xmlns: 'http://www.w3.org/2000/svg',
+                        width: '25px',
+                        height: '25px'
                     }, [
                         polygon({
                             points: '0 0, 0 20, 20 10',
