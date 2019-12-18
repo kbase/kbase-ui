@@ -22,8 +22,8 @@ ui:
             hard: 5000
         # TODO: simply paths?
     paths:
-        spa_root: '#'
-        landing_pages: '#dataview/'
+        spa_root: "#"
+        landing_pages: "#dataview/"
         # ws_browser: '#/ws'
         version_check: /narrative_version
         dashboard_metrics: /userMetrics
@@ -87,6 +87,8 @@ ui:
               title: Similar Genomes Landing Page Widget
             - id: new_provenance_widget
               title: New Provenance Widget
+            - id: re-lineage
+              title: Lineage driven by Relation Engine
         enabled: []
         disabled: []
 # Primarily for output links for the docsite.

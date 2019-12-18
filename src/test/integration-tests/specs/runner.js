@@ -48,7 +48,7 @@ class Test {
                     if (this.testDef.disable.envs.includes(this.suite.context.config.env)) {
                         utils.info(
                             'skipping test because it is disabled for env: ' +
-                this.suite.context.config.env
+                            this.suite.context.config.env
                         );
                         return;
                     }
@@ -85,13 +85,26 @@ class Spec {
                     ) {
                         utils.info(
                             'skipping test spec because it is disabled for env: ' +
-                this.test.suite.context.config.env
+                            this.test.suite.context.config.env
                         );
                         return;
                     }
                 }
             }
-            var url = this.test.suite.context.config.url;
+            if (this.specDef.enable) {
+                if (this.specDef.enable.envs) {
+                    if (
+                        !this.specDef.enable.envs.includes(this.test.suite.context.config.env)
+                    ) {
+                        utils.info(
+                            'skipping test spec because it is not enabled for env: ' +
+                            this.test.suite.context.config.env
+                        );
+                        return;
+                    }
+                }
+            }
+            const url = this.test.suite.context.config.url;
             browser.url(url);
             this.tasks.run();
             // porque?
@@ -140,6 +153,17 @@ class Task {
                 if (this.taskDef.disable.envs.includes(this.context.config.env)) {
                     utils.info(
                         'skipping task because it is disabled for env: ' + this.context.config.env
+                    );
+                    return;
+                }
+            }
+
+        }
+        if (this.taskDef.enable) {
+            if (this.taskDef.enable.envs) {
+                if (!this.taskDef.enable.envs.includes(this.context.config.env)) {
+                    utils.info(
+                        'skipping task because it is not enabled for env: ' + this.context.config.env
                     );
                     return;
                 }
@@ -274,11 +298,11 @@ class Task {
     }
 
     doTask() {
-    // Primary tasks types are
-    // switching to a window
-    // setting a base selector
-    // waiting for appearance, text, or number
-    //
+        // Primary tasks types are
+        // switching to a window
+        // setting a base selector
+        // waiting for appearance, text, or number
+        //
 
         if (this.taskDef.selector) {
             // selector based actions
@@ -289,7 +313,6 @@ class Task {
         if (this.taskDef.wait) {
             const waitFunction = this.waitFunc();
             const timeout = this.taskDef.timeout || 5000;
-            // console.log('waiting for', timeout);
             browser.waitUntil(waitFunction, timeout);
         } else if (this.taskDef.action) {
             const actionFunction = this.actionFunc();
@@ -340,11 +363,11 @@ class Task {
         if (element.type !== 'raw') {
             return (
                 '[data-k-b-testhook-' +
-        element.type +
-        '="' +
-        this.interpValue(element.value) +
-        '"]' +
-        nth
+                element.type +
+                '="' +
+                this.interpValue(element.value) +
+                '"]' +
+                nth
             );
         } else {
             return (
