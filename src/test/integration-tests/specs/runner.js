@@ -1,4 +1,4 @@
-/*global describe, it, browser, expect, exports */
+/*global describe, it, browser, expect */
 /*eslint-env node */
 /*eslint strict: ["error", "global"] */
 'use strict';
@@ -46,10 +46,7 @@ class Test {
             if (this.testDef.disable) {
                 if (this.testDef.disable.envs) {
                     if (this.testDef.disable.envs.includes(this.suite.context.config.env)) {
-                        utils.info(
-                            'skipping test because it is disabled for env: ' +
-                            this.suite.context.config.env
-                        );
+                        utils.info('skipping test because it is disabled for env: ' + this.suite.context.config.env);
                         return;
                     }
                 }
@@ -66,7 +63,11 @@ class Spec {
     constructor({ specDef, test }) {
         this.specDef = specDef;
         this.test = test;
-        this.tasks = new TaskList({ taskDefs: specDef.tasks, spec: this });
+        this.tasks = new TaskList({
+            taskDefs: specDef.tasks,
+            spec: this,
+            context: this.test.suite.context
+        });
     }
 
     run(it) {
@@ -80,12 +81,9 @@ class Spec {
             }
             if (this.specDef.disable) {
                 if (this.specDef.disable.envs) {
-                    if (
-                        this.specDef.disable.envs.includes(this.test.suite.context.config.env)
-                    ) {
+                    if (this.specDef.disable.envs.includes(this.test.suite.context.config.env)) {
                         utils.info(
-                            'skipping test spec because it is disabled for env: ' +
-                            this.test.suite.context.config.env
+                            'skipping test spec because it is disabled for env: ' + this.test.suite.context.config.env
                         );
                         return;
                     }
@@ -93,9 +91,7 @@ class Spec {
             }
             if (this.specDef.enable) {
                 if (this.specDef.enable.envs) {
-                    if (
-                        !this.specDef.enable.envs.includes(this.test.suite.context.config.env)
-                    ) {
+                    if (!this.specDef.enable.envs.includes(this.test.suite.context.config.env)) {
                         utils.info(
                             'skipping test spec because it is not enabled for env: ' +
                             this.test.suite.context.config.env
@@ -114,19 +110,73 @@ class Spec {
 }
 
 class TaskList {
-    constructor({ taskDefs, spec }) {
+    constructor({ taskDefs, spec, context }) {
         this.spec = spec;
+        this.context = context;
 
-        this.tasks = taskDefs.map((taskDef) => {
-            if (taskDef.subtask) {
-                return new TaskList({
-                    taskDefs: this.spec.test.suite.commonSpecs[taskDef.subtask],
-                    spec
-                });
-            } else {
-                return new Task({ taskDef, spec });
+        this.tasks = taskDefs
+            .map((taskDef) => {
+                if (taskDef.subtask) {
+                    if (typeof taskDef.subtask === 'string') {
+                        return new TaskList({
+                            taskDefs: this.spec.test.suite.commonSpecs[taskDef.subtask].tasks,
+                            spec,
+                            context
+                        });
+                    } else {
+                        if (this.isDisabled(taskDef.subtask)) {
+                            return null;
+                        }
+                        return new TaskList({
+                            taskDefs: taskDef.subtask.tasks,
+                            spec,
+                            context
+                        });
+                    }
+                } else {
+                    return new Task({ taskDef, spec });
+                }
+            })
+            .filter((taskDef) => {
+                return taskDef;
+            });
+    }
+
+    isDisabled(taskDef) {
+        if (taskDef.disable) {
+            if (taskDef.disable.envs) {
+                if (taskDef.disable.envs.includes(this.context.config.env)) {
+                    utils.info('skipping task because it is disabled for env: ' + this.context.config.env);
+                    return true;
+                }
             }
-        });
+        }
+        if (taskDef.enable) {
+            if (taskDef.enable.envs) {
+                if (taskDef.enable.envs.includes(this.context.config.env)) {
+                    return false;
+                } else {
+                    utils.info('skipping task because it is not enabled for env: ' + this.context.config.env);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    isEnabled(taskDef) {
+        if (taskDef.enable) {
+            if (taskDef.enable.envs) {
+                if (taskDef.enable.envs.includes(this.context.config.env)) {
+                    return true;
+                } else {
+                    utils.info('skipping task because it is not enabled for env: ' + this.context.config.env);
+                    return false;
+                }
+            }
+        } else {
+            return null;
+        }
     }
 
     run(it) {
@@ -151,20 +201,15 @@ class Task {
         if (this.taskDef.disable) {
             if (this.taskDef.disable.envs) {
                 if (this.taskDef.disable.envs.includes(this.context.config.env)) {
-                    utils.info(
-                        'skipping task because it is disabled for env: ' + this.context.config.env
-                    );
+                    utils.info('skipping task because it is disabled for env: ' + this.context.config.env);
                     return;
                 }
             }
-
         }
         if (this.taskDef.enable) {
             if (this.taskDef.enable.envs) {
                 if (!this.taskDef.enable.envs.includes(this.context.config.env)) {
-                    utils.info(
-                        'skipping task because it is not enabled for env: ' + this.context.config.env
-                    );
+                    utils.info('skipping task because it is not enabled for env: ' + this.context.config.env);
                     return;
                 }
             }
@@ -234,22 +279,18 @@ class Task {
                 };
             case 'setValue':
                 return () => {
-                    browser.setValue(
-                        this.spec.resolvedSelector,
-                        this.taskDef.params.value
-                    );
+                    browser.setValue(this.spec.resolvedSelector, this.taskDef.params.value);
                 };
             case 'log':
                 return () => {
+                    // eslint-disable-next-line no-console
                     console.log('LOG', this.taskDef.text);
                 };
             default:
                 throw new Error('Unknown task action: "' + this.taskDef.action + '"');
             }
         } else {
-            throw new Error(
-                'Missing action in task "' + this.taskDef.title || 'no title' + '"'
-            );
+            throw new Error('Missing action in task "' + this.taskDef.title || 'no title' + '"');
         }
     }
 
@@ -361,18 +402,9 @@ class Task {
             nth = ':nth-child(' + this.interpValue(element.nth) + ')';
         }
         if (element.type !== 'raw') {
-            return (
-                '[data-k-b-testhook-' +
-                element.type +
-                '="' +
-                this.interpValue(element.value) +
-                '"]' +
-                nth
-            );
+            return '[data-k-b-testhook-' + element.type + '="' + this.interpValue(element.value) + '"]' + nth;
         } else {
-            return (
-                '[' + element.name + '="' + this.interpValue(element.value) + '"]' + nth
-            );
+            return '[' + element.name + '="' + this.interpValue(element.value) + '"]' + nth;
         }
     }
     buildSelector(path) {

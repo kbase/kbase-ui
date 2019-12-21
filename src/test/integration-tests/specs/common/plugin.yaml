@@ -1,4 +1,6 @@
 ---
+title: Plugin Task
+tasks:
   - wait: forElement
     selector:
       type: absolute

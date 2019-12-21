@@ -61,7 +61,7 @@ ui:
         route:
             defaultRoute:
                 redirect:
-                    path: login
+                    path: dashboard
         heartbeat:
             interval: 500
     # Feature Switches are unique values (preferrably uuids) which indicate a single feature or
