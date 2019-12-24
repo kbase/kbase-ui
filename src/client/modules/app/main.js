@@ -28,74 +28,6 @@ define([
         cancellation: true
     });
 
-    function fixConfig(config) {
-        // TODO: use a library call for this.
-        function get(obj, props) {
-            if (typeof props === 'string') {
-                props = props.split('.');
-            } else if (!(props instanceof Array)) {
-                throw new TypeError('Invalid type for key: ' + typeof props);
-            }
-            for (let i = 0; i < props.length; i += 1) {
-                if (obj === undefined || typeof obj !== 'object' || obj === null) {
-                    throw new Error('Invalid object path: ' + props.join('.') + ' at ' + i);
-                }
-                obj = obj[props[i]];
-            }
-            if (obj === undefined) {
-                throw new Error('No value found on object path: ' + props.join('.'));
-            } else {
-                return obj;
-            }
-        }
-
-        function fix(str) {
-            let parsing = false;
-            const parsed = [];
-            let pos = 0;
-            do {
-                var tagStart = str.indexOf('{{', pos);
-                if (tagStart < 0) {
-                    parsing = false;
-                    break;
-                }
-                parsed.push(str.substr(pos, tagStart));
-                tagStart += 2;
-                const tagEnd = str.indexOf('}}', tagStart);
-                if (tagEnd < 0) {
-                    throw new Error('Tag not terminated in ' + str + ' at ' + tagStart);
-                }
-                pos = tagEnd + 2;
-                const tag = str.substr(tagStart, tagEnd - tagStart).trim(' ');
-                if (tag.length === 0) {
-                    continue;
-                }
-                parsed.push(get(config, tag));
-            } while (parsing);
-            parsed.push(str.substr(pos));
-            return parsed.join('');
-        }
-
-        function fixit(branch) {
-            Object.keys(branch).forEach((key) => {
-                const value = branch[key];
-                if (typeof value === 'string') {
-                    branch[key] = fix(value);
-                } else if (utils.isSimpleObject(value)) {
-                    fixit(value);
-                } else if (value instanceof Array) {
-                    value.forEach((v) => {
-                        if (utils.isSimpleObject(v)) {
-                            fixit(v);
-                        }
-                    });
-                }
-            });
-        }
-        fixit(config);
-        return config;
-    }
-
     // establish a global root namespace upon which we can
     // hang sine-qua-non structures, which at this time is
     // just the app.
@@ -104,17 +36,51 @@ define([
 
     function start() {
         // merge the deploy and app config.
-        const merged = utils.mergeObjects([appConfigBase, deployConfig]);
-        const appConfig = fixConfig(merged);
+
+        // Siphon off core services.
+        var coreServices = Object.keys(deployConfig.services)
+            .map((key) => {
+                return [key, deployConfig.services[key]];
+            })
+            .filter(([, serviceConfig]) => {
+                return serviceConfig.coreService;
+            })
+            .map(([module, serviceConfig]) => {
+                return {
+                    url: serviceConfig.url,
+                    module: module,
+                    type: serviceConfig.type,
+                    version: serviceConfig.version
+                };
+            });
+        deployConfig.coreServices = coreServices;
+
+        // Expand aliases
+        Object.keys(deployConfig.services).forEach((serviceKey) => {
+            const serviceConfig = deployConfig.services[serviceKey];
+            const aliases = serviceConfig.aliases;
+            if (serviceConfig.aliases) {
+                delete serviceConfig.aliases;
+                aliases.forEach((alias) => {
+                    if (deployConfig.services[alias]) {
+                        throw new Error(
+                            'Service alias for ' + serviceKey + ' already in used: ' + alias
+                        );
+                    }
+                    deployConfig.services[alias] = serviceConfig;
+                });
+            }
+        });
+
         const app = new Hub({
-            appConfig: appConfig,
+            appConfig: deployConfig,
             nodes: {
                 root: {
                     selector: '#root'
                 }
             },
             plugins: pluginConfig.plugins,
-            services: appConfig.ui.services
+            services: deployConfig.ui.services
         });
         global.setItem('app', app);
         return knockoutLoader.load().then((ko) => {

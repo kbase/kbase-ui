@@ -1,164 +1,164 @@
 ## Build Configuration
 ---
 plugins:
-  # Plugins which come-with kbase-ui
-  # - components
-  - mainwindow
-  - welcome
-  - narrativemanager
-  - about
-  - login
-  # external:
-  - name: typeview
-    globalName: kbase-ui-plugin-typeview
-    cwd: src/plugin
-    version: 2.0.0
-    source:
-      bower: {}
-  - name: dataview
-    globalName: kbase-ui-plugin-dataview
-    version: 4.2.5
-    cwd: src/plugin
-    source:
-      bower: {}
-  - name: dashboard
-    globalName: kbase-ui-plugin-dashboard
-    version: 3.0.7
-    cwd: src/plugin
-    source:
-      bower: {}
-  - name: auth2-client
-    globalName: kbase-ui-plugin-auth2-client
-    version: 2.0.8
-    cwd: src/plugin
-    source:
-      bower: {}
-  - name: jgi-search
-    globalName: kbase-ui-plugin-jgi-search
-    version: 1.0.0
-    cwd: src/plugin
-    source:
-      bower: {}
-  - name: feeds
-    globalName: kbase-ui-plugin-feeds
-    version: 1.0.1
-    cwd: src/plugin
-    source:
-      bower: {}
-  - name: catalog
-    globalName: kbase-ui-plugin-catalog
-    version: 2.0.5
-    cwd: src/plugin
-    source:
-      bower: {}
-  - name: data-search
-    globalName: kbase-ui-plugin-data-search
-    version: 1.0.2
-    cwd: src/plugin
-    source:
-      bower: {}
-  - name: organizations
-    globalName: kbase-ui-plugin-organizations
-    version: 1.0.0
-    cwd: src/plugin
-    source:
-      bower: {}
-  - name: biochem-search
-    globalName: kbase-ui-plugin-biochem-search
-    version: 1.0.1
-    cwd: src/plugin
-    source:
-      bower: {}
-  # - name: user-profile
-  #   globalName: kbase-ui-plugin-user-profile
-  #   version: 2.0.0
-  #   cwd: src/plugin
-  #   source:
-  #     bower: {}
-  - name: job-browser2
-    globalName: kbase-ui-plugin-job-browser2
-    version: 1.0.3
-    cwd: plugin
-    prebuilt: true
-    source:
-      git: {}
-  # - name: example-hello
-  #   globalName: kbase-ui-plugin-example-hello
-  #   version: 0.1.5
-  #   cwd: plugin
-  #   source:
-  #       git:
-  #           account: kbaseIncubator
-  - name: react-profile-view
-    globalName: kbase-ui-plugin-react-profile-view
-    version: 0.3.5
-    cwd: plugin
-    prebuilt: true
-    source:
-      git:
-        account: kbaseIncubator
-  - name: re-landing-pages
-    globalName: kbase-ui-plugin-re-landing-pages
-    version: 0.5.0
-    cwd: plugin
-    prebuilt: true
-    source:
-      git:
-        account: kbaseIncubator
-  # - name: narrative-info
-  #   globalName: kbase-ui-plugin-narrative-info
-  #   version: 1.1.4
-  #   cwd: src/plugin
-  #   source:
-  #     bower: {}
-  # Unreleased
-  # - name: public-search
-  #   globalName: kbase-ui-plugin-public-search
-  #   version: 0.13.6
-  #   cwd: src/plugin
-  #   source:
-  #     bower: {}
-  # Experimental or Dev Only
-  # - name: shockbrowser
-  #   globalName: kbase-ui-plugin-shockbrowser
-  #   version: 0.2.0
-  #   cwd: src/plugin
-  #   source:
-  #     bower: {}
-  # - name: staging-browser
-  #   globalName: kbase-ui-plugin-staging-browser
-  #   version: 0.1.2
-  #   cwd: src/plugin
-  #   source:
-  #     bower: {}
-  # - name: ui-service
-  #   globalName: kbase-ui-plugin-ui-service
-  #   version: 0.5.0
-  #   cwd: src/plugin
-  #   source:
-  #     bower: {}
-  # - name: dashboard2
-  #   globalName: kbase-ui-plugin-dashboard2
-  #   version: 0.2.2
-  #   cwd: src/plugin
-  #   source:
-  #     bower: {}
-  # - name: narrative-finder
-  #   globalName: kbase-ui-plugin-narrative-finder
-  #   version: 0.1.2
-  #   cwd: src/plugin
-  #   source:
-  #     bower: {}
-  # Obsolete
-  # - name: methodview
-  #   globalName: kbase-ui-plugin-methodview
-  #   version: 1.1.0
-  #   cwd: src/plugin
-  #   source:
-  #     bower: {}
-  # - name: ontology-widgets
-  #   globalName: kbase-ui-plugin-ontology-widgets
-  #   version: 1.0.4
-  #   cwd: src/plugin
-  #   source:
-  #     bower: {}
+    # Plugins which come-with kbase-ui
+    # - components
+    - mainwindow
+    - welcome
+    - narrativemanager
+    - about
+    - login
+    # external:
+    - name: typeview
+      globalName: kbase-ui-plugin-typeview
+      cwd: src/plugin
+      version: 2.0.0
+      source:
+          bower: {}
+    - name: dataview
+      globalName: kbase-ui-plugin-dataview
+      version: 4.2.5
+      cwd: src/plugin
+      source:
+          bower: {}
+    - name: dashboard
+      globalName: kbase-ui-plugin-dashboard
+      version: 3.0.7
+      cwd: src/plugin
+      source:
+          bower: {}
+    - name: auth2-client
+      globalName: kbase-ui-plugin-auth2-client
+      version: 2.0.8
+      cwd: src/plugin
+      source:
+          bower: {}
+    - name: jgi-search
+      globalName: kbase-ui-plugin-jgi-search
+      version: 1.0.0
+      cwd: src/plugin
+      source:
+          bower: {}
+    - name: feeds
+      globalName: kbase-ui-plugin-feeds
+      version: 1.0.1
+      cwd: src/plugin
+      source:
+          bower: {}
+    - name: catalog
+      globalName: kbase-ui-plugin-catalog
+      version: 2.0.5
+      cwd: src/plugin
+      source:
+          bower: {}
+    - name: data-search
+      globalName: kbase-ui-plugin-data-search
+      version: 1.0.2
+      cwd: src/plugin
+      source:
+          bower: {}
+    - name: organizations
+      globalName: kbase-ui-plugin-organizations
+      version: 1.0.0
+      cwd: src/plugin
+      source:
+          bower: {}
+    - name: biochem-search
+      globalName: kbase-ui-plugin-biochem-search
+      version: 1.0.1
+      cwd: src/plugin
+      source:
+          bower: {}
+    # - name: user-profile
+    #   globalName: kbase-ui-plugin-user-profile
+    #   version: 2.0.0
+    #   cwd: src/plugin
+    #   source:
+    #     bower: {}
+    - name: job-browser2
+      globalName: kbase-ui-plugin-job-browser2
+      version: 1.0.3
+      cwd: plugin
+      prebuilt: true
+      source:
+          git: {}
+    # - name: example-hello
+    #   globalName: kbase-ui-plugin-example-hello
+    #   version: 0.1.5
+    #   cwd: plugin
+    #   source:
+    #       git:
+    #           account: kbaseIncubator
+    - name: react-profile-view
+      globalName: kbase-ui-plugin-react-profile-view
+      version: 0.3.5
+      cwd: plugin
+      prebuilt: true
+      source:
+          git:
+              account: kbaseIncubator
+    - name: re-landing-pages
+      globalName: kbase-ui-plugin-re-landing-pages
+      version: 0.5.0
+      cwd: plugin
+      prebuilt: true
+      source:
+          git:
+              account: kbaseIncubator
+    # - name: narrative-info
+    #   globalName: kbase-ui-plugin-narrative-info
+    #   version: 1.1.4
+    #   cwd: src/plugin
+    #   source:
+    #     bower: {}
+    # Unreleased
+    # - name: public-search
+    #   globalName: kbase-ui-plugin-public-search
+    #   version: 0.13.6
+    #   cwd: src/plugin
+    #   source:
+    #     bower: {}
+    # Experimental or Dev Only
+    # - name: shockbrowser
+    #   globalName: kbase-ui-plugin-shockbrowser
+    #   version: 0.2.0
+    #   cwd: src/plugin
+    #   source:
+    #     bower: {}
+    # - name: staging-browser
+    #   globalName: kbase-ui-plugin-staging-browser
+    #   version: 0.1.2
+    #   cwd: src/plugin
+    #   source:
+    #     bower: {}
+    # - name: ui-service
+    #   globalName: kbase-ui-plugin-ui-service
+    #   version: 0.5.0
+    #   cwd: src/plugin
+    #   source:
+    #     bower: {}
+    # - name: dashboard2
+    #   globalName: kbase-ui-plugin-dashboard2
+    #   version: 0.2.2
+    #   cwd: src/plugin
+    #   source:
+    #     bower: {}
+    # - name: narrative-finder
+    #   globalName: kbase-ui-plugin-narrative-finder
+    #   version: 0.1.2
+    #   cwd: src/plugin
+    #   source:
+    #     bower: {}
+    # Obsolete
+    # - name: methodview
+    #   globalName: kbase-ui-plugin-methodview
+    #   version: 1.1.0
+    #   cwd: src/plugin
+    #   source:
+    #     bower: {}
+    # - name: ontology-widgets
+    #   globalName: kbase-ui-plugin-ontology-widgets
+    #   version: 1.0.4
+    #   cwd: src/plugin
+    #   source:
+    #     bower: {}

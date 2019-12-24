@@ -1,5 +1,7 @@
 {
     "deploy": {
+        "id": "kbase-ui",
+        "target": "/kb/deployment/services/kbase-ui",
         "environment": "{{ default .Env.deploy_environment "dev" }}",
         "hostname": "{{ default .Env.deploy_hostname "localhost" }}",
         "icon": "{{ .Env.deploy_icon }}",
@@ -11,43 +13,432 @@
     },
     "ui": {       
         "services": {
-            "session": {
-                "cookie": {
-                    "backup": {
-                        "domain": {{ if .Env.ui_backupCookie_domain }}"{{.Env.ui_backupCookie_domain}}"{{else}}null{{end}},
-                        "enabled": {{ default .Env.ui_backupCookie_enabled "false"}}
+			"connection": {},
+			"coreService": {},
+			"data": {},
+			"heartbeat": {
+                "interval": 500
+            },
+			"instrumentation": {},
+			"notification": {},
+			"route": {
+                "defaultRoute": {
+                    "redirect": {
+                        "path": "dashboard"
                     }
                 }
             },
-            "menu": {
-                "menus": {
-                    "hamburger": {
-                        "disabled": [{{ range $i, $v := split .Env.ui_services_menu_hamburger_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
-                    },
-                    "sidebar": {
-                        "disabled": [{{ range $i, $v := split .Env.ui_services_menu_sidebar_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+			"rpc": {},
+			"session": {
+                "cookie": {
+                    "maxAge": 5184000,
+                    "name": "kbase_session",
+                    "backup": {
+                        "name": "kbase_session_backup",
+                        "domain": {{ if .Env.ui_backupCookie_domain }}"{{.Env.ui_backupCookie_domain}}"{{else}}null{{end}},
+                        "enabled": {{ default .Env.ui_backupCookie_enabled "false"}}
                     }
-                }
-            }
-        },
+                },
+                "loginWidget": "kb_login_signin"
+            },
+			"type": {},
+			"userprofile": {},
+			"widget": {},
+			"feeds": {},
+			"menu": {
+				"menus": {
+					"hamburger": {
+						"sections": {
+							"main": {
+								"items": [{
+										"id": "narrative",
+										"auth": true
+									},
+									{
+										"id": "jgi-search",
+										"auth": true
+									},
+									{
+										"id": "biochem-search",
+										"auth": true
+									}
+								]
+							},
+							"developer": {
+								"items": [{
+									"id": "about-services",
+									"auth": true,
+									"allowRoles": [
+										"DevToken"
+									]
+								}]
+							},
+							"help": {
+								"items": [{
+										"id": "about",
+										"auth": false
+									},
+									{
+										"id": "contact-kbase",
+										"auth": false
+									},
+									{
+										"id": "help",
+										"auth": false
+									}
+								]
+							}
+						},
+                        "disabled": [{{ range $i, $v := split .Env.ui_services_menu_hamburger_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+					},
+					"sidebar": {
+						"sections": {
+							"main": {
+								"items": [{
+										"id": "dashboard",
+										"auth": true
+									},
+									{
+										"id": "organizations",
+										"auth": true
+									},
+									{
+										"id": "catalog",
+										"auth": false
+									},
+									{
+										"id": "search",
+										"auth": true
+									},
+									{
+										"id": "jobbrowser",
+										"label": "Jobs",
+										"auth": true
+									},
+									{
+										"id": "account",
+										"auth": true
+									},
+									{
+										"id": "feeds",
+										"auth": true
+									}
+								]
+							}
+						},
+                        "disabled": [{{ range $i, $v := split .Env.ui_services_menu_sidebar_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+					}
+				}
+			}
+		},
         "allow": [{{ range $i, $v := split .Env.allow "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
         "featureSwitches": {
             "enabled": [{{ range $i, $v := split .Env.ui_featureSwitches_enabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
-            "disabled": [{{ range $i, $v := split .Env.ui_featureSwitches_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+            "disabled": [{{ range $i, $v := split .Env.ui_featureSwitches_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+            "available": [{
+					"id": "orcid_auth_provider",
+					"title": "ORCiD auth provider",
+					"description": "The ORCiD auth provider is"
+				},
+				{
+					"id": "system_alert_notification",
+					"title": "The New System Alert Notification",
+					"disabled": true
+				},
+				{
+					"id": "search_features",
+					"title": "Search over Genome Features"
+				},
+				{
+					"id": "similar_genomes",
+					"title": "Similar Genomes Landing Page Widget"
+				},
+				{
+					"id": "new_provenance_widget",
+					"title": "New Provenance Widget"
+				},
+				{
+					"id": "re-lineage",
+					"title": "Lineage driven by Relation Engine"
+				}
+			]
         },
         "coreServices": {
             "disabled": [{{ range $i, $v := split (default .Env.ui_coreServices_disabled "") "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+        },
+        "images": {
+            "spinner": {
+                "url": "/images/ajax-loader.gif"
+            }
+        },
+        "constants": {
+            "client_timeout": 900000,
+            "service_check_timeouts": {
+                "slow": 3000,
+                "hard": 5000
+            }
+        },
+        "paths": {
+            "spa_root": "#",
+            "version_check": "/narrative_version",
+            "dashboard_metrics": "/userMetrics"
+        },
+        "urls": {
+            "status_page": "http://kbase.us/internal/status",
+            "submit_jira_ticket": "https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%20version"
         }
     },
+    "docsite": {
+		"base_url": "http://kbase.us",
+		"host": "kbase.us",
+		"paths": {
+			"about": "/what-is-kbase",
+			"contact": "/contact-us",
+			"browser_support": "/supported-browsers"
+		}
+	},
     "services": {
-        "narrative": {
-            "url": "{{ .Env.services_narrative_url }}"
-        },
         "auth2": {
-            "providers": [{{ range $i, $v := split .Env.services_auth2_providers "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
-            "version": {
-                "minimum": "{{ .Env.services_auth2_version_minimum }}"
-            }
-        }
-    }
+			"aliases": [
+				"auth",
+				"Auth"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/auth",
+			"cookieName": "kbase_session",
+			"name": "Authorization Version 2",
+			"coreService": true,
+			"type": "rest",
+			"version": {
+				"path": "/",
+				"propertyPath": "version",
+				"minimum": "{{ .Env.services_auth2_version_minimum }}"
+			},
+			"providers": [{{ range $i, $v := split .Env.services_auth2_providers "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+		},
+		"awe": {
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/awe-api",
+			"name": "AWE"
+		},
+		"Catalog": {
+			"aliases": [
+				"catalog"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/catalog",
+			"name": "Catalog",
+			"coreService": true,
+			"type": "jsonrpc",
+			"version": {
+				"method": "version",
+				"minimum": "2.1.0"
+			}
+		},
+		"Feeds": {
+			"aliases": [
+				"feeds"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/feeds",
+			"name": "Feeds",
+			"coreService": true,
+			"type": "rest",
+			"version": {
+				"path": "/",
+				"propertyPath": "version",
+				"minimum": "1.0.1"
+			}
+		},
+		"Groups": {
+			"aliases": [
+				"groups"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/groups",
+			"name": "Groups",
+			"coreService": true,
+			"type": "rest",
+			"version": {
+				"path": "/",
+				"propertyPath": "version",
+				"minimum": "0.1.0"
+			}
+		},
+		"ftp_service": {
+			"aliases": [
+				"ftp"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/kb-ftp-api/v0",
+			"root": "/data/bulk",
+			"name": "Staging Service"
+		},
+		"NarrativeMethodStore": {
+			"aliases": [
+				"narrative_method_store"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/narrative_method_store/rpc",
+			"image_url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/narrative_method_store/",
+			"name": "Narrative Method Store",
+			"coreService": true,
+			"type": "jsonrpc",
+			"version": {
+				"method": "ver",
+				"minimum": "0.3.6"
+			}
+		},
+		"shock": {
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/shock-api",
+			"name": "Shock"
+		},
+		"UserProfile": {
+			"aliases": [
+				"user_profile"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/user_profile/rpc",
+			"name": "User Profile",
+			"coreService": true,
+			"type": "jsonrpc",
+			"version": {
+				"method": "ver",
+				"minimum": "0.2.0"
+			}
+		},
+		"UserAndJobState": {
+			"aliases": [
+				"user_job_state"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/userandjobstate",
+			"name": "User and Job State"
+		},
+		"NarrativeJobService": {
+			"aliases": [
+				"narrative_job_service"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/njs_wrapper",
+			"name": "Narrative Job Service"
+		},
+		"KBaseDataImport": {
+			"aliases": [
+				"data_import_export"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/data_import_export",
+			"name": "Data Import Export"
+		},
+		"KBaseSearchEngine": {
+			"aliases": [
+				"search"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/searchapi",
+			"name": "KBase Search Engine",
+			"coreService": true,
+			"type": "jsonrpc",
+			"version": {
+				"method": "status",
+				"propertyPath": "version",
+				"minimum": "0.2.0"
+			}
+		},
+		"ServiceWizard": {
+			"aliases": [
+				"service_wizard"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/service_wizard",
+			"name": "Service Wizard",
+			"coreService": true,
+			"type": "jsonrpc",
+			"version": {
+				"method": "version",
+				"minimum": "0.4.0"
+			}
+		},
+		"Workspace": {
+			"aliases": [
+				"workspace"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/ws",
+			"name": "Workspace",
+			"coreService": true,
+			"type": "jsonrpc",
+			"version": {
+				"method": "ver",
+				"minimum": "0.9.0"
+			}
+		},
+		"RelationEngine": {
+			"aliases": [],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/relation_engine_api",
+			"name": "Relation Engine",
+			"coreService": true,
+			"type": "rest",
+			"version": {
+				"path": "/",
+				"semverNotImplemented": true
+			}
+		},
+		"doc_site": {
+			"url": "http://kbase.us",
+			"name": "Documentation and Support Site"
+		},
+		"narrative": {
+			"url": "{{ .Env.services_narrative_url }}",
+            "name": "Narrative User Interface"
+		},
+		"staging": {
+			"aliases": [
+				"staging_service"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/staging_service"
+		}
+        
+    },
+    "resources": {
+		"docSite": {
+			"base": {
+				"url": "http://kbase.us"
+			}
+		},
+		"documentation": {
+			"loginHelp": {
+				"url": "http://kbase.us/help"
+			},
+			"narrativeGuide": {
+				"url": "http://kbase.us/narrative-guide"
+			},
+			"tutorials": {
+				"url": "http://kbase.us/tutorials"
+			},
+			"apps": {
+				"url": "http://kbase.us/apps"
+			},
+			"troubleshooting": {
+				"signin": "http://kbase.us/troubleshooting/sign-in"
+			},
+			"aboutKbase": {
+				"url": "http://kbase.us/what-is-kbase/"
+			}
+		},
+		"userAccount": {
+			"resetPassword": {
+				"url": "http://kbase.us/reset-password"
+			},
+			"updateProfile": {
+				"url": "https://www.globusid.org/profile"
+			},
+			"update_profile": {
+				"url": "https://www.globusid.org/profile"
+			},
+			"access": {
+				"url": "https://gologin.kbase.us/globus-app/account"
+			},
+			"signUp": {
+				"url": "http://kbase.us/sign-up"
+			}
+		},
+		"contact": {
+			"url": "http://kbase.us/contact-us",
+			"name": "Contact KBase"
+		},
+		"help": {
+			"url": "http://kbase.us/help-board/",
+			"name": "KBase Help Board"
+		},
+		"status_page": "http://kbase.us/internal/status",
+		"submit_jira_ticket": "https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%"
+	}
 }
