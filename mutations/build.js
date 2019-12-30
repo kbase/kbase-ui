@@ -295,7 +295,7 @@ function injectPluginsIntoBower(state) {
 
 function buildPlugin(state, pluginDir) {
     const commands = [
-        ['cd', pluginDir].join(' '), 
+        ['cd', pluginDir].join(' '),
         ['rm', '-f', 'yarn.lock'].join(' '),
         ['rm', '-f', 'react-app/yarn.lock'].join(' '),
         'yarn build-plugin'].join(' && ');
@@ -327,13 +327,13 @@ function fetchPluginsFromGit(state) {
         .then(function () {
             // First generate urls to all the plugin repos.
             const githubPlugins = pluginConfig.plugins
-            .filter(function (plugin) {
-                if (typeof plugin === 'object' && !plugin.internal && plugin.source.git) {
-                    return true;
-                }
-                return false;
-            });
-            return Promise.each(githubPlugins, (plugin) =>{
+                .filter(function (plugin) {
+                    if (typeof plugin === 'object' && !plugin.internal && plugin.source.git) {
+                        return true;
+                    }
+                    return false;
+                });
+            return Promise.each(githubPlugins, (plugin) => {
                 const repoName = plugin.source.git.name || plugin.globalName,
                     version = plugin.version,
                     branch = plugin.source.git.branch || (version ? 'v' + version : null),
@@ -586,9 +586,9 @@ function copyFromBower(state) {
                         return Promise.all(
                             matches.map(function (match) {
                                 var fromPath = state.environment.path
-                                        .concat(copySpec.cwd)
-                                        .concat([match])
-                                        .join('/'),
+                                    .concat(copySpec.cwd)
+                                    .concat([match])
+                                    .join('/'),
                                     toPath = state.environment.path
                                         .concat(copySpec.dest)
                                         .concat([match])
@@ -694,9 +694,9 @@ function copyFromNpm(state) {
                         return Promise.all(
                             matches.map(function (match) {
                                 var fromPath = state.environment.path
-                                        .concat(copySpec.cwd)
-                                        .concat([match])
-                                        .join('/'),
+                                    .concat(copySpec.cwd)
+                                    .concat([match])
+                                    .join('/'),
                                     toPath = state.environment.path
                                         .concat(copySpec.dest)
                                         .concat([match])
@@ -802,9 +802,9 @@ function copyFromNodeNodules(state) {
                         return Promise.all(
                             matches.map(function (match) {
                                 var fromPath = state.environment.path
-                                        .concat(copySpec.cwd)
-                                        .concat([match])
-                                        .join('/'),
+                                    .concat(copySpec.cwd)
+                                    .concat([match])
+                                    .join('/'),
                                     toPath = state.environment.path
                                         .concat(copySpec.dest)
                                         .concat([match])
@@ -1069,33 +1069,23 @@ function installBowerPackages(state) {
  */
 function copyUiConfig(state) {
     var root = state.environment.path,
-        configSource = root.concat(['config', 'app']),
         releaseVersionConfig = root.concat(['config', 'release.yml']),
-        configFiles = ['services.yml']
-            .map(function (file) {
-                return configSource.concat(file);
-            })
-            .concat([releaseVersionConfig]),
-        configDest = root.concat(['build', 'client', 'modules', 'config']),
-        baseUiConfig = root.concat('config', 'app', 'ui.yml');
+        configFiles = [releaseVersionConfig],
+        configDest = root.concat(['build', 'client', 'modules', 'config']);
 
-    return mutant
-        .loadYaml(baseUiConfig)
-        .then(function (baseConfig) {
-            return Promise.all(
-                configFiles.map(function (file) {
-                    return mutant.loadYaml(file);
-                })
-            )
-                .then(function (configs) {
-                    return mutant.mergeObjects([baseConfig].concat(configs));
-                })
-                .then(function (mergedConfigs) {
-                    state.mergedConfig = mergedConfigs;
-                    return mutant.saveYaml(configDest.concat(['ui.yml']), mergedConfigs);
-                });
+    return Promise.all(
+        configFiles.map((file) => {
+            return mutant.loadYaml(file);
         })
-        .then(function () {
+    )
+        .then((configs) => {
+            return mutant.mergeObjects([{}].concat(configs));
+        })
+        .then((mergedConfigs) => {
+            state.mergedConfig = mergedConfigs;
+            return mutant.saveYaml(configDest.concat(['ui.yml']), mergedConfigs);
+        })
+        .then(() => {
             return state;
         });
 }
@@ -1165,10 +1155,10 @@ function verifyVersion(state) {
         } else {
             throw new Error(
                 'Release and git versions are different; release says "' +
-                    releaseVersion +
-                    '", git says "' +
-                    gitVersion +
-                    '"'
+                releaseVersion +
+                '", git says "' +
+                gitVersion +
+                '"'
             );
         }
         return getReleaseNotes(state, releaseVersion).then(function (releaseNotesFile) {
@@ -1225,7 +1215,7 @@ function makeKbConfig(state) {
             // Now merge the configs.
             .then(function () {
                 var configs = [
-                    root.concat(['config', 'services.yml']),
+                    // root.concat(['config', 'services.yml']),
                     root.concat(['build', 'client', 'modules', 'config', 'ui.yml']),
                     root.concat(['build', 'client', 'modules', 'config', 'buildInfo.yml'])
                 ];
@@ -1233,39 +1223,39 @@ function makeKbConfig(state) {
                     .then(function (yamls) {
                         var merged = mutant.mergeObjects(yamls);
                         // Siphon off core services services.
-                        var coreServices = Object.keys(merged.services)
-                            .map((key) => {
-                                return [key, merged.services[key]];
-                            })
-                            .filter(([, serviceConfig]) => {
-                                return serviceConfig.coreService;
-                            })
-                            .map(([module, serviceConfig]) => {
-                                return {
-                                    url: serviceConfig.url,
-                                    module: module,
-                                    type: serviceConfig.type,
-                                    version: serviceConfig.version
-                                };
-                            });
-                        merged.coreServices = coreServices;
+                        // var coreServices = Object.keys(merged.services)
+                        //     .map((key) => {
+                        //         return [key, merged.services[key]];
+                        //     })
+                        //     .filter(([, serviceConfig]) => {
+                        //         return serviceConfig.coreService;
+                        //     })
+                        //     .map(([module, serviceConfig]) => {
+                        //         return {
+                        //             url: serviceConfig.url,
+                        //             module: module,
+                        //             type: serviceConfig.type,
+                        //             version: serviceConfig.version
+                        //         };
+                        //     });
+                        // merged.coreServices = coreServices;
 
                         // expand aliases for services
-                        Object.keys(merged.services).forEach(function (serviceKey) {
-                            var serviceConfig = merged.services[serviceKey];
-                            var aliases = serviceConfig.aliases;
-                            if (serviceConfig.aliases) {
-                                delete serviceConfig.aliases;
-                                aliases.forEach(function (alias) {
-                                    if (merged.services[alias]) {
-                                        throw new Error(
-                                            'Service alias for ' + serviceKey + ' already in used: ' + alias
-                                        );
-                                    }
-                                    merged.services[alias] = serviceConfig;
-                                });
-                            }
-                        });
+                        // Object.keys(merged.services).forEach(function (serviceKey) {
+                        //     var serviceConfig = merged.services[serviceKey];
+                        //     var aliases = serviceConfig.aliases;
+                        //     if (serviceConfig.aliases) {
+                        //         delete serviceConfig.aliases;
+                        //         aliases.forEach(function (alias) {
+                        //             if (merged.services[alias]) {
+                        //                 throw new Error(
+                        //                     'Service alias for ' + serviceKey + ' already in used: ' + alias
+                        //                 );
+                        //             }
+                        //             merged.services[alias] = serviceConfig;
+                        //         });
+                        //     }
+                        // });
                         var dest = root.concat(['build', 'client', 'modules', 'config', 'config.json']);
                         return mutant.saveJson(dest, merged);
                     })
@@ -1587,50 +1577,50 @@ function makeModuleVFS(state, whichBuild) {
                         }
                         return fs.readFileAsync(match, 'utf8').then(function (contents) {
                             switch (ext) {
-                            case 'js':
-                                include(ext);
-                                vfs.scripts[path] = 'function () { ' + contents + ' }';
-                                break;
-                            case 'yaml':
-                            case 'yml':
-                                include(ext);
-                                vfs.resources.json[base] = yaml.safeLoad(contents);
-                                break;
-                            case 'json':
-                                if (vfs.resources.json[base]) {
-                                    throw new Error('duplicate entry for json detected: ' + path);
-                                }
-                                try {
+                                case 'js':
                                     include(ext);
-                                    vfs.resources.json[base] = JSON.parse(contents);
-                                } catch (ex) {
-                                    skip('error');
-                                    console.error('Error parsing json file: ' + path + ':' + ex.message);
-                                    // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
-                                }
-                                break;
-                            case 'text':
-                            case 'txt':
-                                include(ext);
-                                vfs.resources.text[base] = contents;
-                                break;
-                            case 'css':
-                                if (
-                                    cssExceptions.some(function (re) {
-                                        return re.test(contents);
-                                    })
-                                ) {
-                                    skip('css excluded');
-                                } else {
+                                    vfs.scripts[path] = 'function () { ' + contents + ' }';
+                                    break;
+                                case 'yaml':
+                                case 'yml':
                                     include(ext);
-                                    vfs.resources.css[base] = contents;
-                                }
-                                break;
-                            case 'csv':
-                                skip(ext);
-                                break;
-                            default:
-                                skip(ext);
+                                    vfs.resources.json[base] = yaml.safeLoad(contents);
+                                    break;
+                                case 'json':
+                                    if (vfs.resources.json[base]) {
+                                        throw new Error('duplicate entry for json detected: ' + path);
+                                    }
+                                    try {
+                                        include(ext);
+                                        vfs.resources.json[base] = JSON.parse(contents);
+                                    } catch (ex) {
+                                        skip('error');
+                                        console.error('Error parsing json file: ' + path + ':' + ex.message);
+                                        // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
+                                    }
+                                    break;
+                                case 'text':
+                                case 'txt':
+                                    include(ext);
+                                    vfs.resources.text[base] = contents;
+                                    break;
+                                case 'css':
+                                    if (
+                                        cssExceptions.some(function (re) {
+                                            return re.test(contents);
+                                        })
+                                    ) {
+                                        skip('css excluded');
+                                    } else {
+                                        include(ext);
+                                        vfs.resources.css[base] = contents;
+                                    }
+                                    break;
+                                case 'csv':
+                                    skip(ext);
+                                    break;
+                                default:
+                                    skip(ext);
                             }
                         });
                     });
@@ -1708,13 +1698,13 @@ function main(type) {
                 return setupBuild(state);
             })
 
-        // .then(function (state) {
-        //     return mutant.copyState(state);
-        // })
-        // .then(function (state) {
-        //     mutant.log('Fetching bower packages...');
-        //     return fetchPackagesWithBower(state);
-        // })
+            // .then(function (state) {
+            //     return mutant.copyState(state);
+            // })
+            // .then(function (state) {
+            //     mutant.log('Fetching bower packages...');
+            //     return fetchPackagesWithBower(state);
+            // })
 
             .then(function (state) {
                 return mutant.copyState(state);

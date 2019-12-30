@@ -99,37 +99,37 @@ bowerFiles:
     - name: kb_common
       dir: kbase-common-js
       cwd: dist/kb_common
-      src: '**/*'
+      src: "**/*"
       bowerComponent: false
     - name: kb_lib
       dir: kbase-common-es6
       cwd: src
-      src: '**/*'
+      src: "**/*"
       bowerComponent: false
     - name: kb_ko
       dir: kbase-ko-components-js
       cwd: src
-      src: '**/*'
+      src: "**/*"
       bowerComponent: false
     - name: kb_knockout
       dir: kbase-knockout-extensions-es6
       cwd: src
-      src: '**/*'
+      src: "**/*"
       bowerComponent: false
     - name: kb_service
       dir: kbase-service-clients-js
       cwd: dist/kb_service
-      src: '**/*'
+      src: "**/*"
       bowerComponent: false
     - name: kb_widget
       dir: kbase-ui-widget
       cwd: src/kb/widget
-      src: '**/*'
+      src: "**/*"
       bowerComponent: false
     - name: kb_common_ts
       dir: kbase-common-ts
       cwd: dist
-      src: '*.js'
+      src: "*.js"
       bowerComponent: false
     - dir: numeral
       src:
