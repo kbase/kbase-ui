@@ -10,4 +10,4 @@ install:
     - id: kb_login_signin
       module: signinWidget
       css: true
-      type: factory
+      type: es6
