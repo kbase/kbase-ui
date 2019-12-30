@@ -6,10 +6,10 @@ define([
     'css!app/styles/kb-bootstrap',
     'css!app/styles/kb-ui',
     'domReady'
-], function (Promise, html) {
+], (Promise, html) => {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         p = t('p'),
         ul = t('ul'),
@@ -20,19 +20,15 @@ define([
         if (!content) {
             return;
         }
-        var node = document.querySelector('[data-element="' + element + '"]');
+        const node = document.querySelector('[data-element="' + element + '"]');
         if (!node) {
             return;
         }
         node.innerHTML = content;
     }
 
-    // function getElement(element) {
-    //     return document.querySelector('[data-element="' + element + '"]');
-    // }
-
     function showElement(element) {
-        var node = document.querySelector('[data-element="' + element + '"]');
+        const node = document.querySelector('[data-element="' + element + '"]');
         if (!node) {
             return;
         }
@@ -40,7 +36,7 @@ define([
     }
 
     function hideElement(element) {
-        var node = document.querySelector('[data-element="' + element + '"]');
+        const node = document.querySelector('[data-element="' + element + '"]');
         if (!node) {
             return;
         }
@@ -52,7 +48,7 @@ define([
             arg.suggestions = ul(
                 { style: { paddingLeft: '1.2em' } },
                 arg.suggestions
-                    .map(function (suggestion) {
+                    .map((suggestion) => {
                         if (suggestion.url) {
                             return li(a({ href: suggestion.url }, suggestion.label));
                         }
@@ -80,15 +76,15 @@ define([
     }
 
     function getParams() {
-        var href = window.location.href,
+        const href = window.location.href,
             queryPosition = href.indexOf('?'),
             params = {};
         if (queryPosition < 0) {
             return params;
         }
-        var query = href.substring(queryPosition + 1).split('&');
-        query.forEach(function (paramString) {
-            var param = paramString.split('=');
+        const query = href.substring(queryPosition + 1).split('&');
+        query.forEach((paramString) => {
+            const param = paramString.split('=');
             if (param.length === 2) {
                 params[param[0]] = decodeURIComponent(param[1]);
             }
@@ -97,7 +93,7 @@ define([
     }
 
     function updateProgress(currentItem, totalItems) {
-        var width = Math.round((100 * currentItem) / totalItems),
+        const width = Math.round((100 * currentItem) / totalItems),
             content = div({ class: 'progress' }, [
                 div(
                     {
@@ -142,9 +138,8 @@ define([
     // UI Errors are the rich, display able errors thrown to and caught by the
     // top layer.
     function UIError(arg) {
-        var that = this;
-        Object.keys(arg).forEach(function (key) {
-            that[key] = arg[key];
+        Object.keys(arg).forEach((key) => {
+            this[key] = arg[key];
         });
     }
     UIError.prototype = Object.create(Error.prototype);
@@ -160,11 +155,10 @@ define([
     TimeoutError.prototype.name = 'TimeoutError';
 
     function checkNarrative(options) {
-        var startTime = new Date().getTime();
-        return new Promise(function (resolve, reject) {
-            var xhr = new XMLHttpRequest();
-            xhr.onload = function () {
-                var config;
+        const startTime = new Date().getTime();
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = () => {
                 switch (xhr.status) {
                 case 200:
                     // For /narrative/ checks, there is no 201 or 401, so we
@@ -182,17 +176,15 @@ define([
                     // properties.
 
                     try {
-                        config = JSON.parse(xhr.responseText);
+                        var config = JSON.parse(xhr.responseText);
+                        if (config && config.version) {
+                            resolve();
+                        } else {
+                            reject(new LoadingError('Error in Narrative check response', 'check'));
+                        }
                     } catch (ex) {
                         // This is our fake '401'
                         return reject(new UnauthenticatedError());
-                    }
-
-                    // TODO: check the json
-                    if (config && config.version) {
-                        resolve();
-                    } else {
-                        reject(new LoadingError('Error in Narrative check response', 'check'));
                     }
                     break;
                 case 201:
@@ -212,14 +204,14 @@ define([
                 }
             };
 
-            xhr.ontimeout = function () {
-                var elapsed = new Date().getTime() - startTime;
+            xhr.ontimeout = () => {
+                const elapsed = new Date().getTime() - startTime;
                 reject(new TimeoutError(elapsed, options.timeout));
             };
-            xhr.onerror = function () {
+            xhr.onerror = () => {
                 reject(new LoadingError('General request error', 'error'));
             };
-            xhr.onabort = function () {
+            xhr.onabort = () => {
                 reject(new LoadingError('Request was aborted', 'aborted'));
             };
 
@@ -244,16 +236,16 @@ define([
     }
 
     function tryLoading(narrativeId, options) {
-        var tries = 0,
-            narrativeUrl = document.location.origin + '/narrative/' + narrativeId,
-            checkUrl = document.location.origin + '/narrative/static/kbase/config/config.json?check=true';
+        let tries = 0;
+        const narrativeUrl = document.location.origin + '/narrative/' + narrativeId;
+        const checkUrl = document.location.origin + '/narrative/static/kbase/config/config.json?check=true';
 
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             function loop() {
                 tries += 1;
                 updateProgress(tries, options.maxTries);
                 return checkNarrative({ url: checkUrl, timeout: options.timeout })
-                    .then(function (retry) {
+                    .then((retry) => {
                         if (!retry) {
                             updateProgress(options.maxTries, options.maxTries);
                             return resolve(narrativeUrl);
@@ -281,14 +273,14 @@ define([
                                 })
                             );
                         }
-                        return Promise.delay(options.retryPause).then(function () {
+                        return Promise.delay(options.retryPause).then(() => {
                             return loop(checkUrl);
                         });
                     })
-                    .catch(UIError, function (err) {
+                    .catch(UIError, (err) => {
                         reject(err);
                     })
-                    .catch(TimeoutError, function (err) {
+                    .catch(TimeoutError, (err) => {
                         // timeouts should be tried again. Might be due to the container still
                         // spinning up...
                         if (tries > options.maxTries) {
@@ -324,11 +316,11 @@ define([
                                 })
                             );
                         }
-                        return Promise.delay(options.retryPause).then(function () {
+                        return Promise.delay(options.retryPause).then(() => {
                             return loop(checkUrl);
                         });
                     })
-                    .catch(LoadingError, function (err) {
+                    .catch(LoadingError, (err) => {
                         reject(
                             new UIError({
                                 code: 'loading-' + err.type,
@@ -337,7 +329,7 @@ define([
                             })
                         );
                     })
-                    .catch(LoadingHttpError, function (err) {
+                    .catch(LoadingHttpError, (err) => {
                         var nextRequest;
                         switch (err.status) {
                         case 500:
@@ -497,9 +489,9 @@ define([
                             break;
                         }
                     })
-                    .catch(UnauthenticatedError, function () {
+                    .catch(UnauthenticatedError, () => {
                         // Not logged in.
-                        var nextRequest = {
+                        const nextRequest = {
                             path: currentPath(),
                             external: true
                         };
@@ -527,7 +519,7 @@ define([
     }
 
     function load(options) {
-        var params = getParams(),
+        const params = getParams(),
             narrativeId = params.n;
 
         document.body.classList.remove('remove-me-to-show-me');
@@ -574,14 +566,14 @@ define([
         setContent('status', ['Starting a new Narrative session for you.', 'Please wait...'].map(p).join('\n'));
 
         return tryLoading(narrativeId, options)
-            .then(function (narrativeUrl) {
+            .then((narrativeUrl) => {
                 window.location.replace(narrativeUrl);
             })
-            .catch(UIError, function (err) {
+            .catch(UIError, (err) => {
                 hideElement('waiting');
                 showError(err);
             })
-            .catch(function (err) {
+            .catch((err) => {
                 showError({
                     code: 'unexpected-error',
                     message: 'Unexpected error',

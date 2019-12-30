@@ -1189,7 +1189,7 @@ function verifyVersion(state) {
 /*
  * obsolete:
  * The standard kbase deploy config lives in the root, and is named deploy.cfg
- * We pick one of the preconfigured deploy config files based on the deploy
+ * We pick one of the pre-configured deploy config files based on the deploy
  * target key passed in and found on state.config.targets.kbDeployConfig
  */
 function makeKbConfig(state) {
@@ -1222,40 +1222,6 @@ function makeKbConfig(state) {
                 return Promise.all(configs.map(mutant.loadYaml))
                     .then(function (yamls) {
                         var merged = mutant.mergeObjects(yamls);
-                        // Siphon off core services services.
-                        // var coreServices = Object.keys(merged.services)
-                        //     .map((key) => {
-                        //         return [key, merged.services[key]];
-                        //     })
-                        //     .filter(([, serviceConfig]) => {
-                        //         return serviceConfig.coreService;
-                        //     })
-                        //     .map(([module, serviceConfig]) => {
-                        //         return {
-                        //             url: serviceConfig.url,
-                        //             module: module,
-                        //             type: serviceConfig.type,
-                        //             version: serviceConfig.version
-                        //         };
-                        //     });
-                        // merged.coreServices = coreServices;
-
-                        // expand aliases for services
-                        // Object.keys(merged.services).forEach(function (serviceKey) {
-                        //     var serviceConfig = merged.services[serviceKey];
-                        //     var aliases = serviceConfig.aliases;
-                        //     if (serviceConfig.aliases) {
-                        //         delete serviceConfig.aliases;
-                        //         aliases.forEach(function (alias) {
-                        //             if (merged.services[alias]) {
-                        //                 throw new Error(
-                        //                     'Service alias for ' + serviceKey + ' already in used: ' + alias
-                        //                 );
-                        //             }
-                        //             merged.services[alias] = serviceConfig;
-                        //         });
-                        //     }
-                        // });
                         var dest = root.concat(['build', 'client', 'modules', 'config', 'config.json']);
                         return mutant.saveJson(dest, merged);
                     })
@@ -1267,29 +1233,34 @@ function makeKbConfig(state) {
                         );
                     });
             })
-            // Rewrite the main entry point html files to add in cache-busting via the git commit hash
-            .then(function () {
-                Promise.all(
-                    ['index.html', 'load-narrative.html'].map(function (fileName) {
-                        return Promise.all([
-                            fileName,
-                            fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')
-                        ]);
-                    })
-                ).then(function (templates) {
-                    return Promise.all(
-                        templates.map(function (template) {
-                            var dest = root.concat(['build', 'client', template[0]]).join('/');
-                            var out = handlebars.compile(template[1])(state);
-                            return fs.writeFileAsync(dest, out);
-                        })
-                    );
-                });
-            })
             .then(function () {
                 return state;
             })
     );
+}
+
+function addCacheBusting(state) {
+    const root = state.environment.path;
+    return Promise.all(
+        ['index.html', 'load-narrative.html'].map(function (fileName) {
+            return Promise.all([
+                fileName,
+                fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')
+            ]);
+        })
+    )
+        .then(function (templates) {
+            return Promise.all(
+                templates.map(function (template) {
+                    var dest = root.concat(['build', 'client', template[0]]).join('/');
+                    var out = handlebars.compile(template[1])(state);
+                    return fs.writeFileAsync(dest, out);
+                })
+            );
+        })
+        .then(() => {
+            return state;
+        })
 }
 
 function makeDeployConfig(state) {
@@ -1786,6 +1757,14 @@ function main(type) {
             .then(function (state) {
                 mutant.log('Making deploy configs');
                 return makeDeployConfig(state);
+            })
+
+            .then(function (state) {
+                return mutant.copyState(state);
+            })
+            .then(function (state) {
+                mutant.log('Adding cache busting to html templates...');
+                return addCacheBusting(state);
             })
 
             .then(function (state) {
