@@ -36,9 +36,10 @@ define([
 
     function start() {
         // merge the deploy and app config.
+        const mergedConfig = utils.mergeObjects([appConfigBase, deployConfig]);
 
         // Siphon off core services.
-        var coreServices = Object.keys(deployConfig.services)
+        var coreServices = Object.keys(mergedConfig.services)
             .map((key) => {
                 return [key, deployConfig.services[key]];
             })
@@ -53,34 +54,34 @@ define([
                     version: serviceConfig.version
                 };
             });
-        deployConfig.coreServices = coreServices;
+        mergedConfig.coreServices = coreServices;
 
         // Expand aliases
-        Object.keys(deployConfig.services).forEach((serviceKey) => {
-            const serviceConfig = deployConfig.services[serviceKey];
+        Object.keys(mergedConfig.services).forEach((serviceKey) => {
+            const serviceConfig = mergedConfig.services[serviceKey];
             const aliases = serviceConfig.aliases;
             if (serviceConfig.aliases) {
                 delete serviceConfig.aliases;
                 aliases.forEach((alias) => {
-                    if (deployConfig.services[alias]) {
+                    if (mergedConfig.services[alias]) {
                         throw new Error(
                             'Service alias for ' + serviceKey + ' already in used: ' + alias
                         );
                     }
-                    deployConfig.services[alias] = serviceConfig;
+                    mergedConfig.services[alias] = serviceConfig;
                 });
             }
         });
 
         const app = new Hub({
-            appConfig: deployConfig,
+            appConfig: mergedConfig,
             nodes: {
                 root: {
                     selector: '#root'
                 }
             },
             plugins: pluginConfig.plugins,
-            services: deployConfig.ui.services
+            services: mergedConfig.ui.services
         });
         global.setItem('app', app);
         return knockoutLoader.load().then((ko) => {
