@@ -1,9 +1,14 @@
-define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bootstrap'], function (
+define([
+    'bluebird',
+    'kb_lib/html',
+    'kb_common/domEvent2',
+    'kb_plugin_login',
+    'bootstrap'], (
     Promise,
     html,
     DomEvents,
     Plugin
-) {
+) => {
     'use strict';
 
     function cleanText(text) {
@@ -12,44 +17,49 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
         return n.innerHTML;
     }
 
-    function myWidget(config) {
-        const runtime = config.runtime;
-        if (!runtime) {
-            throw {
-                name: 'RuntimeMissing',
-                message: 'The runtime argument is required but is missing',
-                suggestion: 'This is an application error, and no fault of yours.'
-            };
+    const t = html.tag,
+        button = t('button'),
+        div = t('div'),
+        a = t('a'),
+        span = t('span'),
+        ul = t('ul'),
+        li = t('li'),
+        img = t('img');
+
+    class SigninWidget {
+        constructor({ runtime }) {
+            if (!runtime) {
+                throw {
+                    name: 'RuntimeMissing',
+                    message: 'The runtime argument is required but is missing',
+                    suggestion: 'This is an application error, and no fault of yours.'
+                };
+            }
+            this.runtime = runtime;
+            this.hostNode = null;
+            this.container = null;
+            this.isLoginView = null;
         }
 
-        const t = html.tag,
-            button = t('button'),
-            div = t('div'),
-            a = t('a'),
-            span = t('span'),
-            ul = t('ul'),
-            li = t('li'),
-            img = t('img');
-
-        function handleSignout(e) {
+        handleSignout(e) {
             e.preventDefault();
 
-            runtime
+            this.runtime
                 .service('session')
                 .logout()
-                .then(function () {
-                    runtime.send('app', 'navigate', {
+                .then(() => {
+                    this.runtime.send('app', 'navigate', {
                         path: 'auth2/signedout'
                     });
                 })
-                .catch(function (err) {
+                .catch((err) => {
                     console.error('ERROR');
                     console.error(err);
                     alert('Error signing out (check console for details)');
                 });
         }
 
-        function buildAvatarUrl(profile) {
+        buildAvatarUrl(profile) {
             switch (profile.profile.userdata.avatarOption || 'gravatar') {
             case 'gravatar':
                 var gravatarDefault = profile.profile.userdata.gravatarDefault || 'identicon';
@@ -68,12 +78,12 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
             }
         }
 
-        function buildAvatar(profile) {
+        buildAvatar(profile) {
             if (!profile || !profile.profile) {
                 console.warn('no profile?', profile);
                 return '';
             }
-            const avatarUrl = buildAvatarUrl(profile);
+            const avatarUrl = this.buildAvatarUrl(profile);
 
             return img({
                 src: avatarUrl,
@@ -85,13 +95,14 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
             });
         }
 
-        function renderLogin(events) {
-            return Promise.try(function () {
-                if (runtime.service('session').isLoggedIn()) {
-                    return runtime
+        renderLogin(events) {
+            return Promise.try(() => {
+                // TODO: do better!
+                if (this.runtime.service('session').isLoggedIn()) {
+                    return this.runtime
                         .service('userprofile')
                         .getProfile()
-                        .then(function (profile) {
+                        .then((profile) => {
                             if (!profile) {
                                 // Don't bother rendering yet if the profile is not ready
                                 // yet.
@@ -123,7 +134,7 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
                                                     dataKBTesthookButton: 'avatar'
                                                 },
                                                 [
-                                                    buildAvatar(profile),
+                                                    this.buildAvatar(profile),
                                                     span({ class: 'caret', style: 'margin-left: 5px;' })
                                                 ]
                                             ),
@@ -200,7 +211,7 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
                                                             dataKBTesthookButton: 'logout',
                                                             id: events.addEvent({
                                                                 type: 'click',
-                                                                handler: handleSignout
+                                                                handler: this.handleSignout.bind(this)
                                                             }),
                                                             style: {
                                                                 display: 'flex',
@@ -245,9 +256,10 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
                     a(
                         {
                             class: 'btn btn-primary navbar-btn kb-nav-btn',
+                            disabled: this.isLoginView,
                             dataButton: 'signin',
                             dataKBTesthookButton: 'signin',
-                            href: '#login'
+                            href: '/#login'
                         },
                         [
                             div({
@@ -261,58 +273,54 @@ define(['bluebird', 'kb_lib/html', 'kb_common/domEvent2', 'kb_plugin_login', 'bo
             });
         }
 
-        function render() {
+        render() {
             const events = DomEvents.make({
-                node: container
+                node: this.container
             });
-            return renderLogin(events).then(function (loginContent) {
-                container.innerHTML = loginContent;
-                events.attachEvents();
-            });
+            return this.renderLogin(events)
+                .then((loginContent) => {
+                    this.container.innerHTML = loginContent;
+                    events.attachEvents();
+                });
         }
 
         // LIFECYCLE API
 
-        let hostNode, container;
-
-        function attach(node) {
-            hostNode = node;
-            container = hostNode.appendChild(document.createElement('div'));
-            container.classList.add('kb_plugin_login_signin');
-            container.setAttribute('data-k-b-testhook-plugin', 'login');
+        attach(node) {
+            this.hostNode = node;
+            this.container = this.hostNode.appendChild(document.createElement('div'));
+            this.container.classList.add('kb_plugin_login_signin');
+            this.container.setAttribute('data-k-b-testhook-plugin', 'login');
         }
 
-        function start() {
-            runtime.service('userprofile').onChange(
-                function () {
-                    render();
-                }.bind(this)
-            );
+        start() {
+            this.runtime.service('userprofile').onChange(() => {
+                this.render();
+            });
 
-            return render();
+            this.runtime.receive('route', 'routed', (message) => {
+                const path = message.data.request.path.join('/');
+                if (path === 'login') {
+                    this.isLoginView = true;
+                } else {
+                    this.isLoginView = false;
+                }
+                this.render();
+            });
+
+            return this.render();
         }
 
-        function detach() {
-            if (hostNode && container) {
-                hostNode.removeChild(container);
+        detach() {
+            if (this.hostNode && this.container) {
+                this.hostNode.removeChild(this.container);
             }
         }
 
-        function stop() {
+        stop() {
             return null;
         }
-
-        return {
-            attach: attach,
-            start: start,
-            stop: stop,
-            detach: detach
-        };
     }
 
-    return {
-        make: function (config) {
-            return myWidget(config);
-        }
-    };
+    return SigninWidget;
 });

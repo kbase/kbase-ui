@@ -57,6 +57,9 @@ define(['bluebird', 'lib/widget/mount'], function (Promise, mount) {
                                     return this.runtime.sendp('ui', 'clearButtons');
                                 })
                                 .then(() => {
+                                    this.runtime.send('route', 'routed', {
+                                        data: data.routeHandler
+                                    });
                                     return this.widgetMount.mount(
                                         data.routeHandler.route.widget,
                                         data.routeHandler.params
