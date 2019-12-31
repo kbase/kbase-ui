@@ -409,6 +409,8 @@ function bowerInstall(state) {
     });
 }
 
+
+
 function npm(cmd, argv, options) {
     return new Promise(function (resolve, reject) {
         exec('npm ' + cmd + argv.join(' '), options, function (err, stdout, stderr) {
@@ -1062,6 +1064,14 @@ function installBowerPackages(state) {
         });
 }
 
+async function removeSourceMaps(state) {
+    const dir = state.environment.path
+        .concat(['build', 'client']);
+    await mutant.removeSourceMappingCSS(dir);
+    await mutant.removeSourceMappingJS(dir);
+    return state;
+}
+
 /*
  *
  * Copy the ui configuration files into the build.
@@ -1669,14 +1679,6 @@ function main(type) {
                 return setupBuild(state);
             })
 
-            // .then(function (state) {
-            //     return mutant.copyState(state);
-            // })
-            // .then(function (state) {
-            //     mutant.log('Fetching bower packages...');
-            //     return fetchPackagesWithBower(state);
-            // })
-
             .then(function (state) {
                 return mutant.copyState(state);
             })
@@ -1685,18 +1687,25 @@ function main(type) {
                 return installBowerPackages(state);
             })
 
+
             .then(function (state) {
                 return mutant.copyState(state);
             })
-            // .then(function (state) {
-            //     mutant.log('Installing npm packages...');
-            //     return installNpmPackages(state);
-            // })
-
             .then(function (state) {
                 mutant.log('Installing YARN packages...');
                 return installYarnPackages(state);
             })
+
+            // Remove source mapping from the ui - do this before introducing
+            // the plugins in order to simplify omitting those files.
+            .then(function (state) {
+                return mutant.copyState(state);
+            })
+            .then(function (state) {
+                mutant.log('Removing source maps...');
+                return removeSourceMaps(state);
+            })
+
 
             .then(function (state) {
                 return mutant.copyState(state);
@@ -1713,6 +1722,7 @@ function main(type) {
                 mutant.log('Installing Module Packages from Bower...');
                 return installModulePackagesFromBower(state);
             })
+
 
             .then(function (state) {
                 return mutant.copyState(state);

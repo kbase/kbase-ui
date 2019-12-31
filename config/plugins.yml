@@ -17,13 +17,13 @@ plugins:
           bower: {}
     - name: dataview
       globalName: kbase-ui-plugin-dataview
-      version: 4.2.5
-      cwd: src/plugin
+      version: 4.3.1
+      cwd: dist/plugin
       source:
           bower: {}
     - name: dashboard
       globalName: kbase-ui-plugin-dashboard
-      version: 3.0.7
+      version: 3.1.0
       cwd: src/plugin
       source:
           bower: {}
