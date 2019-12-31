@@ -22,12 +22,19 @@ function mergePlugins(root, config, args) {
         }
 
         plugins.forEach((pluginName) => {
-            let pluginDir = root + '/../kbase-ui-plugin-' + pluginName + '/src/plugin';
+            const pluginRoot = root + '/../kbase-ui-plugin-' + pluginName;
+            let pluginDir = pluginRoot + '/dist/plugin';
+
             if (!fs.existsSync(pluginDir)) {
-                pluginDir = root + '/../kbase-ui-plugin-' + pluginName + '/plugin';
-            } else if (!fs.existsSync(pluginDir)) {
-                throw new Error('Plugin directory not found: ' + pluginDir);
+                pluginDir = pluginRoot + '/src/plugin';
+                if (!fs.existsSync(pluginDir)) {
+                    pluginDir = pluginRoot + '/plugin';
+                    if (!fs.existsSync(pluginDir)) {
+                        throw new Error('Plugin directory not found: ' + pluginDir);
+                    }
+                }
             }
+
             config.services['kbase-ui'].volumes.push({
                 type: 'bind',
                 source: pluginDir,
