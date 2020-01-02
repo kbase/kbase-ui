@@ -1,8 +1,4 @@
-define([
-    'bluebird',
-    'kb_lib/router',
-    'kb_lib/lang'
-], function (Promise, routerMod, lang) {
+define(['bluebird', 'lib/router', 'kb_lib/lang'], function (Promise, routerMod, lang) {
     'use strict';
     function factory(config, params) {
         var runtime = params.runtime,
@@ -51,6 +47,8 @@ define([
                     if (handler.request.path) {
                         loginParams.nextrequest = JSON.stringify(handler.request);
                     }
+                    // TODO refactor-expt: here is where SOMETHING needs to listen for the login event.
+                    // This is where we can hook in.
                     runtime.send('app', 'navigate', {
                         path: 'login',
                         // path: runtime.feature('auth', 'paths.login'),
@@ -64,15 +62,19 @@ define([
             // We can also require that the route match at least one role defined in a list.
             if (handler.route.rolesRequired) {
                 var roles = runtime.service('session').getRoles();
-                if (!roles.some(function (role) {
-                    return handler.route.rolesRequired.some(function (requiredRole) {
-                        return requiredRole === role.id;
-                    });
-                })) {
+                if (
+                    !roles.some(function (role) {
+                        return handler.route.rolesRequired.some(function (requiredRole) {
+                            return requiredRole === role.id;
+                        });
+                    })
+                ) {
                     handler = {
                         params: {
                             title: 'Access Error',
-                            error: 'One or more required roles not available in your account: ' + handler.route.rolesRequired.join(', ')
+                            error:
+                                'One or more required roles not available in your account: ' +
+                                handler.route.rolesRequired.join(', ')
                         },
                         route: {
                             authorization: false,
@@ -128,9 +130,11 @@ define([
                 if (!routes) {
                     return;
                 }
-                return Promise.all(routes.map(function (route) {
-                    return installRoute(route);
-                }));
+                return Promise.all(
+                    routes.map(function (route) {
+                        return installRoute(route);
+                    })
+                );
             });
         }
 
@@ -139,11 +143,11 @@ define([
         }
 
         function start() {
-            runtime.recv('app', 'do-route', function () {
+            runtime.receive('app', 'do-route', function () {
                 doRoute();
             });
 
-            runtime.recv('app', 'new-route', function (data) {
+            runtime.receive('app', 'new-route', function (data) {
                 if (data.routeHandler.route.redirect) {
                     runtime.send('app', 'route-redirect', data);
                 } else if (data.routeHandler.route.widget) {
@@ -153,18 +157,18 @@ define([
                 }
             });
 
-            runtime.recv('app', 'route-redirect', function (data) {
+            runtime.receive('app', 'route-redirect', function (data) {
                 runtime.send('app', 'navigate', {
                     path: data.routeHandler.route.redirect.path,
                     params: data.routeHandler.route.redirect.params
                 });
             });
 
-            runtime.recv('app', 'navigate', function (data) {
+            runtime.receive('app', 'navigate', function (data) {
                 router.navigateTo(data);
             });
 
-            runtime.recv('app', 'redirect', function (data) {
+            runtime.receive('app', 'redirect', function (data) {
                 router.redirectTo(data.url, data.new_window || data.newWindow);
             });
 

@@ -37,15 +37,23 @@ export BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # The BUILD variable is passed through to the kbase-ui build script which 
 # uses this to select one of three build configurations: dev, ci, prod.
-# dev is only supported for local development.
+# dev is only supported for local development, and doesn't bundle or minimize
+# ci doesn't insist on a semver tag, but does minimize and bundle.
+# prod is the whole enchilada - it requires a semver tag on the tip of master, it minimizes and bundles
 if [ "${BRANCH}" = "develop" ]
 then
     export BUILD="ci"
 elif  [ "${BRANCH}" = "master" ]
 then
     export BUILD="prod"
+elif [[ "${BRANCH}" =~ ^feature-.+$ ]]
+then
+    # feature branches do a CI build, since they are essentialy 
+    # alternative CIs.
+    export BUILD="ci"
 else 
     echo "Not a supported branch: ${BRANCH}"
+    echo "Supported branches are 'develop', 'master', and 'feature-*'"
     exit 1
 fi
 

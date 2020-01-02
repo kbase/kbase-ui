@@ -1,17 +1,7 @@
-define([
-    'knockout',
-    'kb_knockout/registry',
-    'kb_knockout/lib/generators',
-    'kb_lib/html'
-], function (
-    ko,
-    reg,
-    gen,
-    html
-) {
+define(['knockout', 'kb_knockout/registry', 'kb_knockout/lib/generators', 'kb_lib/html'], function (ko, reg, gen, html) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         span = t('span'),
         a = t('a');
@@ -24,11 +14,14 @@ define([
             this.notificationCount = ko.observable(null);
             this.notificationError = ko.observable(null);
 
-            params.runtime.db().subscribe({
-                path: 'feeds'
-            }, (feeds) => {
-                this.processFeeds(feeds);
-            });
+            params.runtime.db().subscribe(
+                {
+                    path: 'feeds'
+                },
+                (feeds) => {
+                    this.processFeeds(feeds);
+                }
+            );
 
             const feeds = params.runtime.db().get('feeds');
             this.processFeeds(feeds);
@@ -48,7 +41,7 @@ define([
             this.notificationCount(nsCount);
         }
 
-        onNavClick(path, e) {
+        onNavClick(path) {
             const oldHref = window.location.href;
             window.location.href = '/#/' + path;
             if (oldHref === window.location.href) {
@@ -57,7 +50,7 @@ define([
         }
     }
 
-    var styles = html.makeStyles({
+    const styles = html.makeStyles({
         button: {
             css: {
                 backgroundColor: 'transparent',
@@ -113,42 +106,42 @@ define([
     });
 
     function buildPublicSearchIcon() {
-        return div({
-            class: 'fa-stack fa-2x',
-            style: {
-                marginBottom: '-12px'
+        return div(
+            {
+                class: 'fa-stack fa-2x',
+                style: {
+                    marginBottom: '-12px'
+                },
+                ariaHidden: 'true'
             },
-            ariaHidden: 'true'
-        }, [
-            div({
-                class: 'fa fa-stack-2x',
-                style: {
-                    fontSize: '1.6em'
-                },
-                dataBind: {
-                    class: '"fa-search"'
-                }
-            }),
-            div({
-                class: 'fa fa-stack-1x ',
-                style: {
-                    fontSize: '85%',
-                    top: '-7px',
-                    left: '-3px'
-                },
-                dataBind: {
-                    class: '"fa-globe"'
-                }
-            })
-        ]);
+            [
+                div({
+                    class: 'fa fa-stack-2x',
+                    style: {
+                        fontSize: '1.6em'
+                    },
+                    dataBind: {
+                        class: '"fa-search"'
+                    }
+                }),
+                div({
+                    class: 'fa fa-stack-1x ',
+                    style: {
+                        fontSize: '85%',
+                        top: '-7px',
+                        left: '-3px'
+                    },
+                    dataBind: {
+                        class: '"fa-globe"'
+                    }
+                })
+            ]
+        );
     }
 
     function buildIcon() {
         return gen.switch('icon', [
-            [
-                '"public-search"',
-                buildPublicSearchIcon()
-            ],
+            ['"public-search"', buildPublicSearchIcon()],
             [
                 '$default',
                 div({
@@ -162,90 +155,107 @@ define([
     }
 
     function buildBeta() {
-        return div({
-            style: {
-                position: 'absolute',
-                top: '0',
-                right: '0',
-                color: 'rgb(193, 119, 54)',
-                textAlign: 'center',
-                fontWeight: 'bold',
-                fontStyle: 'italic'
-            }
-        }, 'beta');
+        return div(
+            {
+                style: {
+                    position: 'absolute',
+                    top: '0',
+                    right: '0',
+                    color: 'rgb(193, 119, 54)',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontStyle: 'italic'
+                }
+            },
+            'beta'
+        );
     }
 
     function buildBadge() {
-        return gen.if('$data.beta',
+        return gen.if(
+            '$data.beta',
             buildBeta(),
-            gen.if('$data.id === "feeds"',
-                gen.if('$component.notificationCount() || $component.notificationError()',
-                    div({
-                        style: {
-                            position: 'absolute',
-                            top: '0',
-                            right: '0'
-                        }
-                    }, div({
-                        style: {
-                            padding: '4px',
-                            color: 'white',
-                            backgroundColor: 'rgba(255, 0, 0, 0.8)',
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            fontStyle: 'italic',
-                            borderRadius: '3px'
-                        }
-                    }, gen.if('$component.notificationCount()',
-                        span({
-                            dataBind: {
-                                text: '$component.notificationCount'
+            gen.if(
+                '$data.id === "feeds"',
+                gen.if(
+                    '$component.notificationCount() || $component.notificationError()',
+                    div(
+                        {
+                            style: {
+                                position: 'absolute',
+                                top: '0',
+                                right: '0'
                             }
-                        }),
-                        gen.if('$component.notificationError()', span({
-                            class: 'fa fa-ban'
-                        }))
-                    ))))));
+                        },
+                        div(
+                            {
+                                style: {
+                                    padding: '4px',
+                                    color: 'white',
+                                    backgroundColor: 'rgba(255, 0, 0, 0.8)',
+                                    textAlign: 'center',
+                                    fontWeight: 'bold',
+                                    fontStyle: 'italic',
+                                    borderRadius: '3px'
+                                }
+                            },
+                            gen.if(
+                                '$component.notificationCount()',
+                                span({
+                                    dataBind: {
+                                        text: '$component.notificationCount'
+                                    }
+                                }),
+                                gen.if(
+                                    '$component.notificationError()',
+                                    span({
+                                        class: 'fa fa-ban'
+                                    })
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        );
     }
 
     function buildButton() {
-        return a({
-            dataBind: {
-                // attr: {
-                //     href: '"#" + path'
-                // },
-                class: 'active() ? "' + styles.scopes.active + '" : null',
-                event: {
-                    click: '(d,e) => {$component.onNavClick.call($component, path, e)}'
-                }
-            },
-            class: styles.classes.button
-        }, [
-            buildIcon(),
-            div({
+        return a(
+            {
                 dataBind: {
-                    text: 'label'
-                }
-            }),
-            buildBadge()
-        ]);
+                    class: 'active() ? "' + styles.scopes.active + '" : null',
+                    event: {
+                        click: '(d,e) => {$component.onNavClick.call($component, path, e)}'
+                    }
+                },
+                class: styles.classes.button
+            },
+            [
+                buildIcon(),
+                div({
+                    dataBind: {
+                        text: 'label'
+                    }
+                }),
+                buildBadge()
+            ]
+        );
     }
 
     function buildButtons() {
-        return div({
-            dataBind: {
-                foreach: 'buttons'
-            }
-        }, [
-            buildButton()
-        ]);
+        return div(
+            {
+                dataBind: {
+                    foreach: 'buttons'
+                }
+            },
+            [buildButton()]
+        );
     }
 
     function template() {
-        return div([
-            styles.sheet,
-            buildButtons()
-        ]);
+        return div([styles.sheet, buildButtons()]);
     }
 
     function component() {

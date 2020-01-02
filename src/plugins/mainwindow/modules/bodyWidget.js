@@ -1,10 +1,4 @@
-define([
-    'bluebird',
-    'kb_lib/widget/mount'
-], function (
-    Promise,
-    mount
-) {
+define(['bluebird', 'lib/widget/mount'], function (Promise, mount) {
     'use strict';
 
     class BodyWidget {
@@ -15,6 +9,7 @@ define([
             this.hostNode = null;
             this.container = null;
             this.routeListener = null;
+            this.isLoading = false;
         }
 
         attach(node) {
@@ -32,35 +27,69 @@ define([
         }
 
         start() {
-            this.routeListener = this.runtime.recv('app', 'route-widget', (data) => {
-                if (data.routeHandler.route.widget) {
-                    this.widgetMount.unmount()
-                        .then(() => {
-                            return this.runtime.sendp('ui', 'clearButtons');
-                        })
-                        .then(() => {
-                            return this.widgetMount.mount(data.routeHandler.route.widget, data.routeHandler.params);
-                        })
-                        .catch((err) => {
-                            // need a catch-all widget to mount here??
-                            console.error('ERROR mounting widget', err, data);
-                            this.widgetMount.unmount()
+            // Um, this is where a plugin route is handled.
+            this.routeListener = this.runtime.receive('app', 'route-widget', (data) => {
+                // console.log('RECEIVED app:route-widget', data);
+                // if (this.isLoading) {
+                //     console.warn('Already loading, ignoring.');
+                //     return;
+                // }
+                // if (this.isLoading) {
+                //     console.log('will abandon');
+                // }
+
+                this.isLoading = true;
+                Promise.try(() => {
+
+                    if (data.routeHandler.route.widget) {
+                        if (
+                            this.widgetMount.mountedWidget &&
+                            data.routeHandler.route.widget === this.widgetMount.mountedWidget.widgetId &&
+                            data.routeHandler.route.reentrant
+                        ) {
+                            // If widget is already mounted, just do the run method.
+                            // At worst this does nothing.
+                            this.widgetMount.mountedWidget.widget.run(data.routeHandler.params);
+                        } else {
+                            return this.widgetMount
+                                .unmount()
                                 .then(() => {
-                                    // Note that 'error' is a globally defined widget dependency.
-                                    return this.widgetMount.mountWidget('error', {
-                                        title: 'ERROR 😞',
-                                        error: err
-                                    });
+                                    return this.runtime.sendp('ui', 'clearButtons');
                                 })
-                                .catch((err2) => {
-                                    console.error('ERROR mounting error widget!');
-                                    console.error(err2);
-                                    console.error(err);
+                                .then(() => {
+                                    this.runtime.send('route', 'routed', {
+                                        data: data.routeHandler
+                                    });
+                                    return this.widgetMount.mount(
+                                        data.routeHandler.route.widget,
+                                        data.routeHandler.params
+                                    );
+                                })
+                                .catch((err) => {
+                                    // need a catch-all widget to mount here??
+                                    console.error('ERROR mounting widget', err, data);
+                                    return this.widgetMount
+                                        .unmount()
+                                        .then(() => {
+                                            // Note that 'error' is a globally defined widget dependency.
+                                            return this.widgetMount.mountWidget('error', {
+                                                title: 'ERROR 😞',
+                                                error: err
+                                            });
+                                        })
+                                        .catch((err2) => {
+                                            console.error('ERROR mounting error widget!');
+                                            console.error(err2);
+                                            console.error(err);
+                                        });
                                 });
-                        });
-                } else {
-                    console.warn('No widget in route');
-                }
+                        }
+                    } else {
+                        console.warn('No widget in route');
+                    }
+                }).finally(() => {
+                    this.isLoading = false;
+                });
             });
         }
 
@@ -74,5 +103,5 @@ define([
         }
     }
 
-    return {Widget: BodyWidget};
+    return { Widget: BodyWidget };
 });

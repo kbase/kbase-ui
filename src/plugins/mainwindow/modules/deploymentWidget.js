@@ -1,11 +1,11 @@
 define([
-    'kb_common/html'
+    'kb_lib/html'
 ], function (
     html
 ) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         span = t('span');
 
@@ -54,5 +54,5 @@ define([
         }
     }
 
-    return {Widget: DeploymentWidget};
+    return { Widget: DeploymentWidget };
 });

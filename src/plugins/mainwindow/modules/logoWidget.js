@@ -1,12 +1,12 @@
 define([
-    'kb_common/html',
+    'kb_lib/html',
     'kb_plugin_mainWindow'
 ], function (
     html,
     Plugin
 ) {
     'use strict';
-    var t = html.tag,
+    const t = html.tag,
         a = t('a'),
         img = t('img');
 
@@ -44,5 +44,5 @@ define([
         }
     }
 
-    return {Widget: LogoWidget};
+    return { Widget: LogoWidget };
 });

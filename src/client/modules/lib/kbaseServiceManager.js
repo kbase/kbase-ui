@@ -1,16 +1,10 @@
 define([
     'bluebird',
-    'kb_common/jsonRpc/genericClient',
+    'kb_lib/jsonRpc/genericClient',
     'kb_common_ts/HttpClient',
     'kb_lib/props',
     'kb_lib/semver'
-], function (
-    Promise,
-    GenericClient,
-    httpClient,
-    props,
-    semver
-) {
+], function (Promise, GenericClient, httpClient, props, semver) {
     'use strict';
 
     class KBaseServiceManager {
@@ -25,12 +19,18 @@ define([
             const http = new httpClient.HttpClient();
             const header = new httpClient.HttpHeader();
             header.setHeader('accept', 'application/json');
-            return http.request({
-                method: 'GET',
-                url: serviceConfig.url + serviceConfig.version.path,
-                header: header,
-                timeout: this.timeout
-            })
+            // console.log(
+            //     'checking REST service ' + serviceConfig.name,
+            //     serviceConfig.url + serviceConfig.version.path,
+            //     this.timeout
+            // );
+            return http
+                .request({
+                    method: 'GET',
+                    url: serviceConfig.url + serviceConfig.version.path,
+                    header: header,
+                    timeout: this.timeout
+                })
                 .then((result) => {
                     const contentType = result.header.getHeader('content-type');
                     if (contentType !== 'application/json') {
@@ -44,7 +44,8 @@ define([
                     return JSON.parse(result.response);
                 })
                 .catch((err) => {
-                    const errorMessage = 'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
+                    const errorMessage =
+            'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
                     if (this.throwErrors) {
                         throw new Error(errorMessage);
                     } else {
@@ -60,12 +61,19 @@ define([
                 url: serviceConfig.url,
                 timeout: this.timeout
             });
-            return client.callFunc(serviceConfig.version.method, [])
+            // console.log(
+            //     'checking JSONRPC service ' + serviceConfig.name,
+            //     serviceConfig.url + serviceConfig.version.path,
+            //     this.timeout
+            // );
+            return client
+                .callFunc(serviceConfig.version.method, [])
                 .spread((result) => {
                     return result;
                 })
                 .catch((err) => {
-                    const errorMessage = 'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
+                    const errorMessage =
+            'An error was encountered checking the service "' + serviceConfig.module + '": ' + err.message;
                     if (this.throwErrors) {
                         throw new Error(errorMessage);
                     } else {
@@ -77,84 +85,93 @@ define([
 
         check() {
             const disabledServices = this.runtime.config('ui.coreServices.disabled', []);
-            return Promise.all(this.coreServices
-                .filter((serviceConfig) => {
-                    const disabled = disabledServices.includes(serviceConfig.module);
-                    if (disabled) {
-                        console.warn('Check disabled for core service: ' + serviceConfig.module);
-                    }
-                    return !disabled;
-                })
-                .map((serviceConfig) => {
-                    return Promise.try(() => {
-                        switch (serviceConfig.type) {
-                        case 'jsonrpc':
-                            return this.checkJSONRPC(serviceConfig);
-                        case 'rest':
-                            return this.checkREST(serviceConfig);
-                        default:
-                            var errorMessage = 'Unsupported core service type: ' + serviceConfig.type;
-                            if (this.throwErrors) {
-                                throw new Error(errorMessage);
-                            } else {
-                                console.error(errorMessage);
-                                return null;
+            return Promise.all(
+                this.coreServices
+                    .filter((serviceConfig) => {
+                        const disabled = disabledServices.includes(serviceConfig.module);
+                        if (disabled) {
+                            console.warn('Check disabled for core service: ' + serviceConfig.module);
+                        }
+                        return !disabled;
+                    })
+                    .map((serviceConfig) => {
+                        return Promise.try(() => {
+                            switch (serviceConfig.type) {
+                            case 'jsonrpc':
+                                return this.checkJSONRPC(serviceConfig);
+                            case 'rest':
+                                return this.checkREST(serviceConfig);
+                            default:
+                                var errorMessage = 'Unsupported core service type: ' + serviceConfig.type;
+                                if (this.throwErrors) {
+                                    throw new Error(errorMessage);
+                                } else {
+                                    console.error(errorMessage);
+                                    return null;
+                                }
                             }
-                        }
-                    }).then((result) => {
-                        let version;
-                        if (result === null) {
-                            if (!this.throwErrors) {
+                        }).then((result) => {
+                            let version;
+                            if (result === null) {
+                                if (!this.throwErrors) {
+                                    return null;
+                                } else {
+                                    throw new Error('Invalid semver check result: ' + result);
+                                }
+                            }
+                            if (serviceConfig.version.semverNotImplemented) {
+                                return null;
+                            } else if (serviceConfig.version.propertyPath) {
+                                version = props.getProp(result, serviceConfig.version.propertyPath);
+                            } else {
+                                version = result;
+                            }
+                            const semverResult = semver.semverIsAtLeast(version, serviceConfig.version.minimum);
+                            if (semverResult === true) {
                                 return null;
                             } else {
-                                throw new Error('Invalid semver check result: ' + result);
+                                return {
+                                    module: serviceConfig.module,
+                                    minimumVersion: serviceConfig.version.minimum,
+                                    serviceVersion: version,
+                                    code: semverResult
+                                };
                             }
-                        }
-                        if (serviceConfig.version.semverNotImplemented) {
-                            return null;
-                        } else if (serviceConfig.version.propertyPath) {
-                            version = props.getProp(result, serviceConfig.version.propertyPath);
-                        } else {
-                            version = result;
-                        }
-                        const semverResult = semver.semverIsAtLeast(version, serviceConfig.version.minimum);
-                        if (semverResult === true) {
-                            return null;
-                        } else {
-                            return {
-                                module: serviceConfig.module,
-                                minimumVersion: serviceConfig.version.minimum,
-                                serviceVersion: version,
-                                code: semverResult
-                            };
-                        }
-                    });
-                }))
-                .then((result) => {
-                    const mismatches = result.filter((result) => {
-                        return result === null ? false : true;
-                    });
-                    if (mismatches.length > 0) {
-                        const message = mismatches.map((mismatch) => {
-                            return '(' + mismatch.code + ') ' +
-                                    mismatch.module + ' needs to be at least ' +
-                                    mismatch.minimumVersion + ' but is ' + mismatch.serviceVersion;
-                        }).join('; ');
-                        let prefix;
-                        if (mismatches.length === 1) {
-                            prefix = 'Incompatible service';
-                        } else {
-                            prefix = 'Incompatible services';
-                        }
-                        const errorMessage = prefix + ': ' + message;
-                        if (this.throwErrors) {
-                            throw new Error(errorMessage);
-                        } else {
-                            console.error(errorMessage);
-                        }
-
-                    }
+                        });
+                    })
+            ).then((result) => {
+                const mismatches = result.filter((result) => {
+                    return result === null ? false : true;
                 });
+                if (mismatches.length > 0) {
+                    const message = mismatches
+                        .map((mismatch) => {
+                            return (
+                                '(' +
+                mismatch.code +
+                ') ' +
+                mismatch.module +
+                ' needs to be at least ' +
+                mismatch.minimumVersion +
+                ' but is ' +
+                mismatch.serviceVersion
+                            );
+                        })
+                        .join('; ');
+                    let prefix;
+                    if (mismatches.length === 1) {
+                        prefix = 'Incompatible service';
+                    } else {
+                        prefix = 'Incompatible services';
+                    }
+                    const errorMessage = prefix + ': ' + message;
+                    if (this.throwErrors) {
+                        throw new Error(errorMessage);
+                    } else {
+                        console.error(errorMessage);
+                    }
+                }
+            });
         }
     }
 

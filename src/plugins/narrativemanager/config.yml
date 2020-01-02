@@ -4,8 +4,7 @@ package:
     author: Erik Pearson
     name: narrativemanager
     description: The narrative manager
-    date: January 26, 2017
-    version: 0.0.3
+    type: legacy
 source:
     modules:
 install:

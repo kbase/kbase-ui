@@ -1,0 +1,18 @@
+---
+description: Login plugin - unauthorized
+specs:
+- description: ''
+  baseSelector:
+    - type: plugin
+      value: login
+  tasks:
+    - action: navigate
+      title: navigate to dashboard
+      path: dashboard
+    - wait: forElement
+      selector:
+        - type: widget
+          value: signin
+        - type: button
+          value: signin
+

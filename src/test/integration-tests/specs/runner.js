@@ -1,268 +1,440 @@
-/*global describe, it, browser, expect, exports */
+/*global describe, it, browser, expect */
 /*eslint-env node */
 /*eslint strict: ["error", "global"] */
 'use strict';
-var fs = require('fs');
-var yaml = require('js-yaml');
+var utils = require('./utils');
 
-function loadJSONFile(file) {
-    var contents = fs.readFileSync(file, 'utf8');
-    return JSON.parse(contents);
+// a suite is a set of tests
+class Suite {
+    constructor({ testFiles, context, commonSpecs }) {
+        this.context = context;
+        this.commonSpecs = commonSpecs;
+        this.tests = testFiles.map((testFile) => {
+            return new Test({
+                testDef: testFile,
+                suite: this
+            });
+        });
+    }
+
+    run() {
+        this.tests.forEach((test) => {
+            test.run();
+        });
+    }
 }
 
-function loadYAMLFile(file) {
-    var contents = fs.readFileSync(file, 'utf8');
-    return yaml.safeLoad(contents);
+// a test is a set of test specs dedicated to one primary purpose,
+// with variants.
+class Test {
+    constructor({ testDef, suite }) {
+        this.suite = suite;
+        this.testDef = testDef;
+        this.specs = testDef.specs.map((specDef) => {
+            return new Spec({
+                specDef,
+                test: this
+            });
+        });
+    }
+
+    run() {
+        describe(this.testDef.description, () => {
+            if (this.testDef.disabled) {
+                return;
+            }
+            if (this.testDef.disable) {
+                if (this.testDef.disable.envs) {
+                    if (this.testDef.disable.envs.includes(this.suite.context.config.env)) {
+                        utils.info('skipping test because it is disabled for env: ' + this.suite.context.config.env);
+                        return;
+                    }
+                }
+            }
+            // const defaultUrl = this.testDef.defaultUrl || '/';
+            this.specs.forEach((spec) => {
+                spec.run(it);
+            });
+        });
+    }
 }
 
-function buildAttribute(element) {
-    if (element instanceof Array) {
-        return element.map(function (element) {
-            return buildAttribute(element);
-        }).join('');
-    } else {
-        return '[data-k-b-testhook-' + element.type + '="' + element.value + '"]';
+class Spec {
+    constructor({ specDef, test }) {
+        this.specDef = specDef;
+        this.test = test;
+        this.tasks = new TaskList({
+            taskDefs: specDef.tasks,
+            spec: this,
+            context: this.test.suite.context
+        });
     }
-}
-function buildSelector(path) {
-    return path.map(function (element) {
-        return buildAttribute(element);
-    }).join(' ');
-}
-function extend(path, elements) {
-    var newPath = path.map(function (el) {
-        return el;
-    });
-    elements.forEach(function (element) {
-        newPath.push(element);
-    });
-    return newPath;
-}
-function makeSelector(base, selector) {
-    if (selector instanceof Array) {
-        selector = {
-            type: 'relative',
-            path: selector
-        };
-    }
-    var fullPath;
-    switch (selector.type) {
-    case 'relative':
-        fullPath = extend(base, selector.path);
-        break;
-    case 'absolute':
-        fullPath = selector.path;
-        break;
-    }
-    return buildSelector(fullPath);
 
-}
-function info() {
-    const args = Array.prototype.slice.call(arguments);
-    process.stdout.write(args.join(' ') + '\n');
-}
-function interpValue(value, testData) {
-    if (!value) {
-        return value;
+    run(it) {
+        if (this.specDef.disabled) {
+            return;
+        }
+        it(this.specDef.description, () => {
+            if (this.specDef.disabled) {
+                utils.info('skipping spec', this.specDef.description);
+                return;
+            }
+            if (this.specDef.disable) {
+                if (this.specDef.disable.envs) {
+                    if (this.specDef.disable.envs.includes(this.test.suite.context.config.env)) {
+                        utils.info(
+                            'skipping test spec because it is disabled for env: ' + this.test.suite.context.config.env
+                        );
+                        return;
+                    }
+                }
+            }
+            if (this.specDef.enable) {
+                if (this.specDef.enable.envs) {
+                    if (!this.specDef.enable.envs.includes(this.test.suite.context.config.env)) {
+                        utils.info(
+                            'skipping test spec because it is not enabled for env: ' +
+                            this.test.suite.context.config.env
+                        );
+                        return;
+                    }
+                }
+            }
+            const url = this.test.suite.context.config.url;
+            browser.url(url);
+            this.tasks.run();
+            // porque?
+            browser.deleteCookie('kbase_session');
+        });
     }
-    if (typeof value !== 'string') {
-        return value;
-    }
-    return value.replace(/^[$](.*)$/, (m, key) => {
-        return testData[key];
-    });
 }
-function doTask(spec, task, testData) {
-    if (task.selector) {
-        var selector = makeSelector(spec.baseSelector, task.selector);
-        var result = true;
-        if (task.wait) {
-            result = browser.waitForExist(selector, task.wait);
-        } if (task.waitForText) {
-            result = browser.waitForText(selector, interpValue(task.waitForText, testData));
-        } else if (task.waitUntilText) {
-            result = browser.waitUntil(function () {
+
+class TaskList {
+    constructor({ taskDefs, spec, context }) {
+        this.spec = spec;
+        this.context = context;
+
+        this.tasks = taskDefs
+            .map((taskDef) => {
+                if (taskDef.subtask) {
+                    if (typeof taskDef.subtask === 'string') {
+                        return new TaskList({
+                            taskDefs: this.spec.test.suite.commonSpecs[taskDef.subtask].tasks,
+                            spec,
+                            context
+                        });
+                    } else {
+                        if (this.isDisabled(taskDef.subtask)) {
+                            return null;
+                        }
+                        return new TaskList({
+                            taskDefs: taskDef.subtask.tasks,
+                            spec,
+                            context
+                        });
+                    }
+                } else {
+                    return new Task({ taskDef, spec });
+                }
+            })
+            .filter((taskDef) => {
+                return taskDef;
+            });
+    }
+
+    isDisabled(taskDef) {
+        if (taskDef.disable) {
+            if (taskDef.disable.envs) {
+                if (taskDef.disable.envs.includes(this.context.config.env)) {
+                    utils.info('skipping task because it is disabled for env: ' + this.context.config.env);
+                    return true;
+                }
+            }
+        }
+        if (taskDef.enable) {
+            if (taskDef.enable.envs) {
+                if (taskDef.enable.envs.includes(this.context.config.env)) {
+                    return false;
+                } else {
+                    utils.info('skipping task because it is not enabled for env: ' + this.context.config.env);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    isEnabled(taskDef) {
+        if (taskDef.enable) {
+            if (taskDef.enable.envs) {
+                if (taskDef.enable.envs.includes(this.context.config.env)) {
+                    return true;
+                } else {
+                    utils.info('skipping task because it is not enabled for env: ' + this.context.config.env);
+                    return false;
+                }
+            }
+        } else {
+            return null;
+        }
+    }
+
+    run(it) {
+        this.tasks.forEach((task) => {
+            task.run(it);
+        });
+    }
+}
+
+class Task {
+    constructor({ taskDef, spec }) {
+        this.taskDef = taskDef;
+        this.spec = spec;
+        this.context = this.spec.test.suite.context;
+    }
+
+    run() {
+        if (this.taskDef.disabled) {
+            utils.info('-- skipping task', this.taskDef.title);
+            return;
+        }
+        if (this.taskDef.disable) {
+            if (this.taskDef.disable.envs) {
+                if (this.taskDef.disable.envs.includes(this.context.config.env)) {
+                    utils.info('skipping task because it is disabled for env: ' + this.context.config.env);
+                    return;
+                }
+            }
+        }
+        if (this.taskDef.enable) {
+            if (this.taskDef.enable.envs) {
+                if (!this.taskDef.enable.envs.includes(this.context.config.env)) {
+                    utils.info('skipping task because it is not enabled for env: ' + this.context.config.env);
+                    return;
+                }
+            }
+        }
+        try {
+            this.doTask();
+        } catch (ex) {
+            console.error('Error running task: ' + ex.message, this.taskDef);
+            throw ex;
+        }
+    }
+
+    actionFunc() {
+        if (this.taskDef.action) {
+            switch (this.taskDef.action) {
+            case 'setSessionCookie':
+                return () => {
+                    browser.setCookies([
+                        {
+                            name: 'kbase_session',
+                            value: this.context.config.auth.token,
+                            path: '/'
+                        }
+                    ]);
+                    let cookie;
+                    browser.call(() => {
+                        return browser.getCookies(['kbase_session']).then((cookies) => {
+                            cookie = cookies[0];
+                        });
+                    });
+                    expect(cookie.value).toEqual(this.context.config.auth.token);
+                };
+            case 'deleteSessionCookie':
+                return () => {
+                    browser.deleteCookie('kbase_session');
+                    let cookie;
+                    browser.call(() => {
+                        return browser.getCookies(['kbase_session']).then((cookies) => {
+                            cookie = cookies[0];
+                        });
+                    });
+                    expect(cookie).toBeUndefined();
+                };
+            case 'navigate':
+                return () => {
+                    browser.url('#' + this.interpValue(this.taskDef.path));
+                };
+            case 'keys':
+                return () => {
+                    browser.keys(this.taskDef.params.keys);
+                };
+            case 'switchToFrame':
+                return () => {
+                    browser.switchToFrame(0);
+                };
+            case 'switchToParent':
+                return () => {
+                    browser.switchToParentFrame();
+                };
+            case 'baseSelector':
+                return () => {
+                    this.spec.baseSelector = this.taskDef.selector;
+                };
+            case 'click':
+                return () => {
+                    browser.$(this.spec.resolvedSelector).click();
+                };
+            case 'setValue':
+                return () => {
+                    browser.setValue(this.spec.resolvedSelector, this.taskDef.params.value);
+                };
+            case 'log':
+                return () => {
+                    // eslint-disable-next-line no-console
+                    console.log('LOG', this.taskDef.text);
+                };
+            default:
+                throw new Error('Unknown task action: "' + this.taskDef.action + '"');
+            }
+        } else {
+            throw new Error('Missing action in task "' + this.taskDef.title || 'no title' + '"');
+        }
+    }
+
+    waitFunc() {
+        switch (this.taskDef.wait) {
+        case 'forText':
+            return () => {
+                if (!browser.$(this.taskDef.resolvedSelector).isExisting()) {
+                    return false;
+                }
+                const nodeValue = browser.$(this.taskDef.resolvedSelector).getText();
+                const testValue = this.interpValue(this.taskDef.text);
+                return nodeValue === testValue;
+            };
+        case 'forNumber':
+            return () => {
+                if (!browser.$(this.taskDef.resolvedSelector).isExisting()) {
+                    return false;
+                }
+                var text = browser.$(this.taskDef.resolvedSelector).getText();
+                if (!text) {
+                    return false;
+                }
+                const value = Number(text.replace(/,/g, ''));
+                return utils.isValidNumber(value, this.taskDef.number);
+            };
+        case 'forElementCount':
+            return () => {
                 try {
-                    var text = browser.getText(selector);
-                    return (text === interpValue(task.waitUntilText.value, testData));
+                    if (!browser.$(this.taskDef.resolvedSelector).isExisting()) {
+                        return false;
+                    }
+                    const els = browser.$$(this.taskDef.resolvedSelector);
+                    const count = els.length;
+                    return utils.isValidNumber(count, this.taskDef.count);
                 } catch (ex) {
                     return false;
                 }
-            }, task.waitUntilText.wait);
-        } else if (task.exists) {
-            result = browser.isExisting(selector);
-            expect(result).toBe(true);
+            };
+        case 'forElement':
+        default:
+            return () => {
+                return browser.$(this.taskDef.resolvedSelector).isExisting();
+            };
+        }
+    }
+
+    doTask() {
+        // Primary tasks types are
+        // switching to a window
+        // setting a base selector
+        // waiting for appearance, text, or number
+        //
+
+        if (this.taskDef.selector) {
+            // selector based actions
+            this.taskDef.resolvedSelector = this.makeSelector(this.taskDef.selector);
+            this.spec.resolvedSelector = this.taskDef.resolvedSelector;
         }
 
-        if (!result) {
-            return;
+        if (this.taskDef.wait) {
+            const waitFunction = this.waitFunc();
+            const timeout = this.taskDef.timeout || 5000;
+            browser.waitUntil(waitFunction, timeout);
+        } else if (this.taskDef.action) {
+            const actionFunction = this.actionFunc();
+            actionFunction();
+        }
+    }
+
+    interpValue(value) {
+        if (!value) {
+            return value;
+        }
+        if (typeof value !== 'string') {
+            return value;
         }
 
-        // only proceed with a further action if succeeded so far.
-        if (task.text) {
-            const text = browser.getText(selector);
-            expect(text).toEqual(interpValue(task.text, testData));
-        } else if (task.match) {
-            const toMatch = browser.getText(selector);
-            expect(toMatch).toMatch(new RegExp(task.text));
-        } else if (task.number) {
-            const toCompare = browser.getText(selector);
-            expect(toCompare).toBeDefined();
-            const theNumber = Number(toCompare.replace(/,/g, ''));
-
-            Object.keys(task.number).forEach(function (comparison) {
-                var comparisonValue = task.number[comparison];
-                switch (comparison) {
-                case 'greaterThan':
-                    expect(theNumber).toBeGreaterThan(comparisonValue);
-                    break;
-                case 'greaterThanOrEqual':
-                    expect(theNumber).toBeGreaterThanOrEqual(comparisonValue);
-                    break;
-                case 'lessThan':
-                    expect(theNumber).toBeLessThan(comparisonValue);
-                    break;
-                case 'lessThanOrEqual':
-                    expect(theNumber).toBeLessThanOrEqual(comparisonValue);
-                    break;
-                case 'equal':
-                    expect(theNumber).toEqual(comparisonValue);
+        // TODO: SUB SUBSTRING
+        const subRe = /(.*?(?=\${.*}|$))(?:\${(.*?)})?/g;
+        let result = '';
+        let m;
+        while ((m = subRe.exec(value))) {
+            if (m.length === 3) {
+                if (!m[0]) {
                     break;
                 }
-            });
-        } else if (task.count) {
-            // count the elements which matched this selector
-            const toCompare = browser.elements(selector).value.length;
-            expect(toCompare).toBeDefined();
-
-            Object.keys(task.count).forEach(function (comparison) {
-                var comparisonValue = task.count[comparison];
-                switch (comparison) {
-                case 'greaterThan':
-                    expect(toCompare).toBeGreaterThan(comparisonValue);
-                    break;
-                case 'greaterThanOrEqual':
-                    expect(toCompare).toBeGreaterThanOrEqual(comparisonValue);
-                    break;
-                case 'lessThan':
-                    expect(toCompare).toBeLessThan(comparisonValue);
-                    break;
-                case 'lessThanOrEqual':
-                    expect(toCompare).toBeLessThanOrEqual(comparisonValue);
-                    break;
-                case 'equal':
-                    expect(toCompare).toEqual(comparisonValue);
-                    break;
+                result += m[1];
+                if (m[2]) {
+                    result += utils.getProp(this.context, m[2], '');
                 }
-            });
-        }
-
-        // Actions
-        if (task.action) {
-            switch (task.action) {
-            case 'click':
-                browser.click(selector);
-                break;
-            case 'set-session-cookie':
-                browser.setCookie({
-                    name: 'kbase_session',
-                    value: testData.token,
-                    path: '/'
-                });
-                var cookie = browser.getCookie('kbase_session');
-                expect(cookie.value).toEqual(testData.token);
-                break;
-            case 'delete-cookie':
-                browser.deleteCookie();
-                expect(browser.getCookie('kbase_session')).toBeNull();
-                break;
-            case 'navigate':
-                browser.url(task.params.url);
-                break;
-            case 'set-value':
-                browser.setValue(selector, task.params.value);
-                break;
-            case 'keys':
-                browser.keys(task.params.keys);
-                break;
-            default:
-                throw new Error('Unknown task action ' + task.action);
+            } else if (m.length == 2) {
+                result += m[1];
             }
         }
-    } else if (task.navigate) {
-        browser.url('#' + task.navigate.path);
+        return result;
+    }
+
+    buildAttribute(element) {
+        if (element instanceof Array) {
+            return element
+                .map((element) => {
+                    return this.buildAttribute(element);
+                })
+                .join('');
+        }
+        let nth = '';
+        if (element.nth) {
+            nth = ':nth-child(' + this.interpValue(element.nth) + ')';
+        }
+        if (element.type !== 'raw') {
+            return '[data-k-b-testhook-' + element.type + '="' + this.interpValue(element.value) + '"]' + nth;
+        } else {
+            return '[' + element.name + '="' + this.interpValue(element.value) + '"]' + nth;
+        }
+    }
+    buildSelector(path) {
+        return path
+            .map((element) => {
+                return this.buildAttribute(element);
+            })
+            .join(' ');
+    }
+    makeSelector(selector) {
+        if (selector instanceof Array) {
+            selector = {
+                type: 'relative',
+                path: selector
+            };
+        } else if (typeof selector === 'object' && !selector.type) {
+            selector.type = 'relative';
+        }
+        var fullPath;
+        switch (selector.type) {
+        case 'relative':
+            fullPath = utils.extend(this.spec.baseSelector || [], selector.path);
+            break;
+        case 'absolute':
+            fullPath = selector.path;
+            break;
+        }
+        const sel = this.buildSelector(fullPath);
+        return sel;
     }
 }
 
-function doTasks(spec, tasks, testData, common) {
-    tasks.forEach(function (task) {
-        if (task.disabled) {
-            info('-- skipping task', task.title);
-            return;
-        }
-        if (task.disable) {
-            if (task.disable.envs) {
-                if (task.disable.envs.includes(testData.env)) {
-                    info('skipping task because it is disabled for env: ' + testData.env);
-                    return;
-                }
-            }
-        }
-        if (task.subtask) {
-            doTasks(spec, common[task.subtask], testData, common);
-            return;
-        }
-        doTask(spec, task, testData);
-    });
-}
-
-function runTest(test, common, testData) {
-    describe(test.description, function () {
-        if (test.disabled) {
-            return;
-        }
-        if (test.disable) {
-            if (test.disable.envs) {
-                if (test.disable.envs.includes(testData.env)) {
-                    info('skipping test because it is disabled for env: ' + testData.env);
-                    return;
-                }
-            }
-        }
-        var defaultUrl = test.defaultUrl || '/';
-        test.specs.forEach(function (spec) {
-            if (spec.disabled) {
-                return;
-            }
-            it(spec.description, function () {
-                if (spec.disabled) {
-                    info('skipping spec', spec.description);
-                    return;
-                }
-                if (spec.disable) {
-                    if (spec.disable.envs) {
-                        if (spec.disable.envs.includes(testData.env)) {
-                            info('skipping test spec because it is disabled for env: ' + testData.env);
-                            return;
-                        }
-                    }
-                }
-                var url = spec.url || defaultUrl;
-                browser.url(url);
-                doTasks(spec, spec.tasks, testData, common);
-                browser.deleteCookie();
-            });
-        });
-    });
-}
-
-function runTests(tests, common) {
-    const testData = loadJSONFile(__dirname + '/../config.json');
-    tests.forEach(function (test) {
-        runTest(test, common, testData);
-    });
-}
-
-exports.runTests = runTests;
-exports.loadJSONFile = loadJSONFile;
-exports.loadYAMLFile = loadYAMLFile;
+exports.Suite = Suite;

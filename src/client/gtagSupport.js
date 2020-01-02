@@ -8,7 +8,11 @@
      * @param {string} token
      */
     const fetchUserInfo = (token) => {
-        const url = document.location.origin + '/services/auth/api/V2/me';
+        let origin = document.location.origin;
+        if (origin === 'https://narrative.kbase.us') {
+            origin = 'https://kbase.us';
+        }
+        const url = origin + '/services/auth/api/V2/me';
         return fetch(url, {
             method: 'GET',
             mode: 'cors',
@@ -22,8 +26,8 @@
                     console.warn('[gtagSupport] bad auth response, user not available', response);
                     return null;
                 }
-                return response.json().then((result) => {
-                    return result.user;
+                return response.json().then(({user}) => {
+                    return user;
                 });
             })
             .catch((error) => {
@@ -49,43 +53,65 @@
         return null;
     };
 
-    /**
-     * Google Analytics code snippet
-     */
-    window.onpopstate = function () {
-        const location = document.URL;
-        const str = location.toLowerCase();
-        const sliceAt = str.indexOf('kbase.us') + 'kbase.us'.length;
-        const path = str.slice(sliceAt);
-        const regex = /\/#\/|#\/|\/#/gi;
-        const title = path.replace(regex, '');
+    const sendGTag = () => {
+        // The "path" for a view in the ui is determined by
+        // the url hash. This will change one day.
+        const hash = document.location.hash;
+        let path;
+        if (hash) {
+            const m = hash.match(/#[/]?([^?]*)/);
+            if (m) {
+                path = m[1];
+            } else {
+                path = '';
+            }
+        } else {
+            path = '';
+        }
+        path = '/' + path;
+
         window.dataLayer = window.dataLayer || [];
         function gtag() {
             window.dataLayer.push(arguments);
         }
+
+        // See google docs for the api and field definitions.
+        // E.g. https://developers.google.com/analytics/devguides/collection/gtagjs/pages
+
         // if cookies are set, get user name to add to config.
         const token = getToken();
         if (token) {
-            fetchUserInfo(token).then((response) => {
-                const userID = response;
+            fetchUserInfo(token).then((username) => {
                 gtag('js', new Date());
                 gtag('config', 'UA-137652528-1', {
-                    user: userID,
-                    Page_location: location,
+                    user_id: username,
+                    page_location: document.location.href,
                     page_path: path,
-                    page_title: title
+                    page_title: document.title
                 });
-                gtag('set', userID);
+                gtag('set', {
+                    user_id: username
+                });
                 gtag('config', 'AW-753507180');
             });
-            return;
+        } else {
+            gtag('js', new Date());
+            gtag('config', 'UA-137652528-1', {
+                Page_location: document.location.href,
+                page_path: path,
+                page_title: document.title
+            });
+            gtag('config', 'AW-753507180');
+
         }
-        gtag('js', new Date());
-        gtag('config', 'UA-137652528-1', {
-            Page_location: location,
-            page_path: path,
-            page_title: title
-        });
-        gtag('config', 'AW-753507180');
     };
+
+    /**
+     * Google Analytics code snippet
+     */
+    window.onpopstate = () => {
+        sendGTag();
+    };
+
+    sendGTag();
 })();

@@ -1,6 +1,6 @@
 define([
     'knockout',
-    'kb_common/html',
+    'kb_lib/html',
     './components/hamburgerMenu',
     'bootstrap'
 ], function (
@@ -27,11 +27,11 @@ define([
             this.userRoles = ko.observableArray();
 
             // TODO: can this just be a more generic change in session state?
-            this.runtime.recv('session', 'change', () => {
+            this.runtime.receive('session', 'change', () => {
                 this.syncMenu();
             });
 
-            var allowedTags = this.runtime.config('ui.allow', []);
+            const allowedTags = this.runtime.config('ui.allow', []);
 
             this.menu = {
                 main: ko.observableArray(this.menuDefinition.main).filter((item) => {
@@ -89,7 +89,7 @@ define([
 
             this.hostNode = null;
             this.container = null;
-            this.viewModel = new ViewModel({runtime: this.runtime});
+            this.viewModel = new ViewModel({ runtime: this.runtime });
         }
 
         attach(node) {
@@ -120,7 +120,7 @@ define([
         }
     }
 
-    return {Widget: MenuWidget};
+    return { Widget: MenuWidget };
 });
 
 

@@ -1,15 +1,15 @@
 define([
-    'kb_common/html'
+    'kb_lib/html'
 ], function (
     html
 ) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         h1 = t('h1');
 
     function safeContent(content) {
-        var anonDiv = document.createElement('div');
+        const anonDiv = document.createElement('div');
         anonDiv.innerHTML = content;
         return anonDiv.textContent || '';
     }
@@ -34,7 +34,7 @@ define([
             // We use the widget convenience function in order to
             // get automatic event listener cleanup. We could almost
             // as easily do this ourselves.
-            this.runtime.recv('ui', 'setTitle', (newTitle) => {
+            this.runtime.receive('ui', 'setTitle', (newTitle) => {
                 if (typeof newTitle !== 'string') {
                     return;
                 }
@@ -53,5 +53,5 @@ define([
         }
     }
 
-    return {Widget: TitleWidget};
+    return { Widget: TitleWidget };
 });

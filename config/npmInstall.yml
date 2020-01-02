@@ -1,9 +1,5 @@
 # Copy npm amd packages into the main
 npmFiles:
-    - name: ajv
-      cwd: dist
-      src:
-          - ajv.bundle.js
     - name: bluebird
       cwd: js/browser
       src:
@@ -15,6 +11,10 @@ npmFiles:
       cwd: dist
       src:
           - preact.umd.js
+    - name: kbase-ui-lib
+      cwd: lib
+      src:
+          - "**/*"
     # -
     #     name: d3
     #     cwd: build

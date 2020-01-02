@@ -1,6 +1,6 @@
 define([
     'promise',
-    'kb_common/typeManager'
+    '../../lib/typeManager'
 ], function (
     Promise,
     TypeManager

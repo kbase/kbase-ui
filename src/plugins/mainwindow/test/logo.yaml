@@ -1,0 +1,12 @@
+---
+description: Sidebar nav
+specs:
+  - description: It should be there
+    baseSelector:
+      - type: plugin
+        value: mainwindow
+    tasks:
+      - wait: forElement
+        selector:
+          - type: widget
+            value: logo
