@@ -1,0 +1,21 @@
+---
+description: About panel
+specs:
+  - description: View the about panel directly
+    baseSelector:
+      - type: plugin
+        value: about
+    tasks:
+      - action: navigate
+        path: about
+      - wait: forElement
+        timeout: 10000
+        selector:
+          - type: panel
+            value: welcome
+      - action: click
+      - wait: forElement
+        selector:
+          - type: panel
+            value: build-info
+

@@ -1,0 +1,19 @@
+---
+description: Unauthenticated
+specs:
+- description: should get the signin page
+  baseSelector: []
+  tasks:
+    - action: navigate
+      path: biochem-search
+    - subtask: plugin
+    - wait: forText
+      selector:
+        - type: plugin
+          value: auth2-client
+        - type: component
+          value: login-view
+        - type: field
+          value: requested-path
+      text: biochem-search
+

@@ -1,0 +1,65 @@
+---
+description: No search in place
+specs:
+  - description: should show the no-search alert on each tab
+    baseSelector: []
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: search
+      - subtask: plugin
+      - action: baseSelector
+        selector: 
+          - type: plugin
+            value: data-search
+          - type: component
+            value: main
+      - wait: forElement
+        selector:
+          - type: component
+            value: narrative-main
+          - type: component
+            value: results
+          - type: alert
+            value: no-search
+      - wait: forElement
+        selector:
+          - type: component
+            value: tabset
+          - type: tab
+            value: reference-data
+      - action: click
+      - wait: forElement
+        selector:
+          - type: component
+            value: reference-data-main
+          - type: component
+            value: results
+          - type: alert
+            value: no-search
+      - wait: forElement
+        title: select the features data tab
+        # disable:
+        #   envs:
+        #     - next
+        #     - appdev
+        #     - prod
+        selector:
+          - type: component
+            value: tabset
+          - type: tab
+            value: genome-features
+      - action: click
+      - wait: forElement
+        # disable:
+        #   envs:
+        #     - next
+        #     - appdev
+        #     - prod
+        selector:
+          - type: component
+            value: genome-features-main
+          - type: component
+            value: results
+          - type: alert
+            value: no-search

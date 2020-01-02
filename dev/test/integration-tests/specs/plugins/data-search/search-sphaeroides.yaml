@@ -1,0 +1,141 @@
+---
+description: Search for 'sphaeroides''
+disable:
+  envs:
+  - next
+  - appdev
+  - prod
+specs:
+- description: should  should reveal 1 or more hits for each tab
+  baseSelector: []
+  tasks:
+  - subtask: login
+  - action: navigate
+    path: search
+  - subtask: plugin
+  - action: baseSelector
+    selector:
+      - type: plugin
+        value: data-search
+      - type: component
+        value: main
+  - wait: forElement
+    title: Click the search input to focus on it
+    selector:
+      - type: component
+        value: search-bar
+      - type: input
+        value: search-input
+  - action: click
+  - wait: forElement
+    title: Do a search which returns nothing
+    selector:
+      - type: component
+        value: search-bar
+      - type: input
+        value: search-input
+  - action: keys
+    params:
+      keys:
+        - s
+        - p
+        - h
+        - a
+        - e
+        - r
+        - o
+        - i
+        - d
+        - e
+        - s
+        - Enter
+  - wait: forNumber
+    title: Check that the user data tab result count is rendered
+    selector:
+      - type: component
+        value: tabset
+      - type: tab
+        value: user-data
+      - type: component
+        value: tab-total-count
+    number:
+      greaterThan: 0
+  # Check the total search results displayed in the tabs themselves.
+  
+  - wait: forNumber
+    title: Check that the reference data tab result count is rendered
+    selector:
+      - type: component
+        value: tabset
+      - type: tab
+        value: reference-data
+      - type: component
+        value: tab-total-count
+    number:
+      greaterThan: 0
+  - wait: forNumber
+    title: Check that the features tab result count is rendered
+    selector:
+      - type: component
+        value: tabset
+      - type: tab
+        value: genome-features
+      - type: component
+        value: tab-total-count
+    number:
+      greaterThan: 0
+  # Now click through the tabs and inspect the resulting tables, ensuring
+  # that there are at least some rows displaying.
+  - wait: forCount
+    title: Check that user data search results are rendered
+    disabled: false
+    selector:
+      - type: component
+        value: narrative-main
+      - type: component
+        value: results
+      - type: element
+        value: object-row
+    count:
+      greaterThan: 0
+  - wait: forElement
+    title: select the reference data tab
+    selector:
+      - type: component
+        value: tabset
+      - type: tab
+        value: reference-data
+  - action: click
+  - wait: forCount
+    title: Check that user data search results are rendered
+    disabled: false
+    selector:
+      - type: component
+        value: reference-data-main
+      - type: component
+        value: results
+      - type: element
+        value: object-row
+    count:
+      greaterThan: 0
+      
+  - wait: forElement
+    title: select the features data tab
+    selector:
+      - type: component
+        value: tabset
+      - type: tab
+        value: genome-features
+  - action: click
+  - wait: forCount
+    title: Check that features search results are rendered
+    disabled: false
+    selector:
+      - type: component
+        value: genome-features-main
+      - type: component
+        value: results
+      - type: element
+        value: object-row
+    count:
+      greaterThan: 0

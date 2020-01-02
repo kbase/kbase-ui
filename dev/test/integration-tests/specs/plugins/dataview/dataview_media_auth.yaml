@@ -1,0 +1,47 @@
+---
+description: Accessing a media object while authenticated 
+specs:
+  - description: should have main panel framing appear when hit the path
+    baseSelector: []
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: dataview/${plugins.dataview.media.authorized.objectId}
+      - subtask: plugin
+      - wait: forText
+        selector:
+          - type: plugin
+            value: dataview
+          - type: widget
+            value: dataObjectVisualizer
+          - type: tabpane
+            value: overview
+          - type: field
+            value: wsid
+        text: ${plugins.dataview.media.authorized.overview.objectName}
+      - wait: forElement
+        selector:
+          - type: plugin
+            value: dataview
+          - type: widget
+            value: dataObjectVisualizer
+          - type: tab
+            value: mediacompounds
+      - action: click
+      - wait: forText
+        selector:
+          - type: plugin
+            value: dataview
+          - type: widget
+            value: dataObjectVisualizer
+          - type: tabpane
+            value: mediacompounds
+          - type: element
+            value: table
+          - type: raw
+            name: role
+            value: row
+            nth: ${plugins.dataview.media.authorized.mediaCompounds.row}
+          - type: field
+            value: name
+        text: ${plugins.dataview.media.authorized.mediaCompounds.name}

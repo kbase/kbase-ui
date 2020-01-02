@@ -1,0 +1,25 @@
+---
+description: Ensure main view appears
+specs:
+  - description: should have main panel framing appear when hit the path
+    baseSelector: []
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: spec/type/KBaseNarrative.Narrative
+      - subtask: plugin
+      - wait: forText
+        selector:
+          - type: plugin
+            value: typeview
+          - type: field
+            value: name
+        text: Narrative
+      - wait: forText
+        selector:
+          - type: plugin
+            value: typeview
+          - type: field
+            value: module
+        text: KBaseNarrative
+
