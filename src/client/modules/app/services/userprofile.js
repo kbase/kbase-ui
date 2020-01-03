@@ -1,4 +1,11 @@
-define(['bluebird', 'kb_lib/observed', 'kb_lib/jsonRpc/genericClient', 'kb_lib/lang', 'kb_lib/props', 'md5'], (
+define([
+    'bluebird',
+    'kb_lib/observed',
+    'kb_lib/jsonRpc/genericClient',
+    'kb_lib/lang',
+    'kb_lib/props',
+    'md5'
+], (
     Promise,
     Observed,
     GenericClient,

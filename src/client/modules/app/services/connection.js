@@ -1,16 +1,10 @@
 define([
-    'promise',
-    'kb_common/observed',
-    'kb_common/lang',
+    'kb_lib/observed',
     'kb_lib/html',
-    'kb_common/format',
     'kb_common_ts/HttpClient'
 ], (
-    Promise,
-    observed,
-    lang,
+    Observed,
     html,
-    format,
     HttpClient
 ) => {
     'use strict';
@@ -112,7 +106,7 @@ define([
     class ConnectionService {
         constructor({ params: { runtime } }) {
             this.runtime = runtime;
-            this.state = observed.make();
+            this.state = new Observed();
             this.lastCheckAt = 0;
             this.lastConnectionAt = 0;
             this.checking = false;
@@ -156,9 +150,10 @@ define([
                 if (now - this.lastCheckAt > this.interval) {
                     this.checking = true;
                     const httpClient = new HttpClient.HttpClient();
+                    const buster = new Date().getTime();
                     httpClient.request({
                         method: 'GET',
-                        url: document.location.origin + '/ping.txt',
+                        url: `${document.location.origin}/ping.txt?b=${buster}`,
                         timeout: 10000
                     })
                         .then(() => {
@@ -195,7 +190,6 @@ define([
                                 prefix = ' in ';
                             }
                             const elapsedDisplay = prefix + niceDuration(elapsed, { resolution: resolution }) + suffix;
-
                             this.notifyError({
                                 message: 'Error connecting to KBase - last response ' + elapsedDisplay,
                                 description: div([
@@ -245,8 +239,9 @@ define([
         }
 
         stop() {
-            return Promise.try(() => {
+            return Promise.resolve(() => {
                 this.state.setItem('userprofile', null);
+                return null;
             });
         }
 

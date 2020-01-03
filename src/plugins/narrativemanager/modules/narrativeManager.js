@@ -1,35 +1,30 @@
 define([
-    'bluebird',
     'kb_service/utils',
-    'kb_common/jsonRpc/genericClient',
-    'kb_common/jsonRpc/dynamicServiceClient'
+    'kb_lib/jsonRpc/genericClient',
+    'kb_lib/jsonRpc/dynamicServiceClient'
 ], function (
-    Promise,
     serviceUtils,
     GenericClient,
     DynamicServiceClient
 ) {
     'use strict';
 
-    function factory(config) {
-        const runtime = config.runtime,
-            workspaceClient = new GenericClient({
-                module: 'Workspace',
-                url: runtime.config('services.workspace.url'),
-                token: runtime.service('session').getAuthToken()
-            }),
-            narrativeService = new DynamicServiceClient({
-                module: 'NarrativeService',
-                url: runtime.config('services.service_wizard.url'),
-                token: runtime.service('session').getAuthToken()
-            });
+    class NarrativeManager {
+        constructor({ runtime }) {
+            this.runtime = runtime;
+        }
 
-        function getMostRecentNarrative() {
+        getMostRecentNarrative() {
+            const workspaceClient = new GenericClient({
+                module: 'Workspace',
+                url: this.runtime.config('services.workspace.url'),
+                token: this.runtime.service('session').getAuthToken()
+            });
             // get the full list of workspaces
             return workspaceClient.callFunc('list_workspace_info', [{
-                owners: [runtime.service('session').getUsername()]
+                owners: [this.runtime.service('session').getUsername()]
             }])
-                .spread(function (wsList) {
+                .then(function ([wsList]) {
                     const workspaces = wsList
                         .map(function (workspaceInfo) {
                             return serviceUtils.workspaceInfoToObject(workspaceInfo);
@@ -62,7 +57,7 @@ define([
                         includeMetadata: 1,
                         ignoreErrors: 1
                     }])
-                        .spread(function (objList) {
+                        .then(function ([objList]) {
                             return ({
                                 workspaceInfo: workspaceInfo,
                                 narrativeInfo: serviceUtils.objectInfoToObject(objList[0])
@@ -71,23 +66,20 @@ define([
                 });
         }
 
-        function createTempNarrative(params) {
+        createTempNarrative(params) {
+            const narrativeService = new DynamicServiceClient({
+                module: 'NarrativeService',
+                url: this.runtime.config('services.service_wizard.url'),
+                token: this.runtime.service('session').getAuthToken()
+            });
             params.includeIntroCell = 1;
             return narrativeService
                 .callFunc('create_new_narrative', [params])
-                .then(function (result) {
-                    return Promise.try(function () {
-                        return result[0];
-                    });
+                .then(function ([result]) {
+                    return result;
                 });
         }
-
-        return {
-            createTempNarrative: createTempNarrative,
-            getMostRecentNarrative: getMostRecentNarrative
-        };
     }
 
-    // simple factory pattern.
-    return factory;
+    return NarrativeManager;
 });

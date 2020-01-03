@@ -13,27 +13,32 @@ define(['bluebird', 'kb_lib/html'], function (Promise, html) {
     }
 
     class WidgetSet {
-        constructor(config) {
-            if (!config.widgetManager) {
+        constructor({widgetManager, node}) {
+            if (!widgetManager) {
                 throw new Error('Widget manager not available; provide as "widgetManager"');
             }
-            this.widgetManager = config.widgetManager;
+            this.widgetManager = widgetManager;
+
+            if (!node) {
+                throw new Error('The "node" argument is missing; it is required');
+            }
+            this.node - node;
 
             this.widgets = [];
-            this.config = config;
         }
 
         addWidget(widgetId, config) {
             const widgetConfig = config || {};
             const widgetDef = this.widgetManager.getWidget(widgetId);
-            const widgetMaker = this.widgetManager.makeWidget(widgetId, widgetConfig),
-                id = html.genId(),
-                rec = {
-                    id: id,
-                    name: widgetDef.name || widgetDef.id,
-                    title: widgetDef.title,
-                    widgetMaker: widgetMaker
-                };
+
+            const id = html.genId();
+            const rec = {
+                widgetId,
+                id,
+                name: widgetDef.name || widgetDef.id,
+                title: widgetDef.title,
+                config: widgetConfig
+            };
             this.widgets.push(rec);
             return id;
         }
@@ -47,27 +52,33 @@ define(['bluebird', 'kb_lib/html'], function (Promise, html) {
         makeWidgets() {
             return Promise.all(
                 this.widgets.map((rec) => {
-                    return rec.widgetMaker;
+                    const node = document.getElementById(rec.id);
+                    rec.node = node;
+                    rec.config.node = node;
+
+                    return this.widgetManager.makeWidget(rec.widgetId, rec.config);
                 })
-            ).then((results) => {
-                // now we have the widget instance list.
-                eachArrays([this.widgets, results], (recs) => {
-                    recs[0].widget = recs[1];
+            )
+                .then((results) => {
+                    eachArrays([this.widgets, results], (recs) => {
+                        recs[0].widget = recs[1];
+                    });
+                    return null;
                 });
-            });
         }
 
         // LIFECYCLE API
         init(config) {
-            return this.makeWidgets().then(() => {
-                return Promise.all(
-                    this.widgets.map((widgetWrapper) => {
-                        if (widgetWrapper.widget.init) {
-                            return widgetWrapper.widget.init(config);
-                        }
-                    })
-                );
-            });
+            return this.makeWidgets()
+                .then(() => {
+                    return Promise.all(
+                        this.widgets.map((widgetWrapper) => {
+                            if (widgetWrapper.widget.init) {
+                                return widgetWrapper.widget.init(config);
+                            }
+                        })
+                    );
+                });
         }
 
         attach() {
@@ -156,5 +167,5 @@ define(['bluebird', 'kb_lib/html'], function (Promise, html) {
         }
     }
 
-    return { WidgetSet };
+    return WidgetSet;
 });

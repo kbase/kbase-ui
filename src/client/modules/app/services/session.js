@@ -1,4 +1,12 @@
-define(['kb_common_ts/Auth2Session', 'kb_common/observed', 'kb_lib/html'], (M_auth2Session, observed, html) => {
+define([
+    'kb_common_ts/Auth2Session',
+    'kb_lib/observed',
+    'kb_lib/html'
+], (
+    M_auth2Session,
+    Observed,
+    html
+) => {
     'use strict';
 
     const t = html.tag,
@@ -23,7 +31,7 @@ define(['kb_common_ts/Auth2Session', 'kb_common/observed', 'kb_lib/html'], (M_au
                 providers: runtime.config('services.auth2.providers')
             });
 
-            this.state = observed.make();
+            this.state = new Observed();
         }
 
         getAuthToken() {

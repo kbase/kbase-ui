@@ -11,8 +11,8 @@ define([
         }
 
         pluginHandler(serviceConfigs) {
-            return Promise.try(function () {
-                var services = serviceConfigs.map((serviceConfig) => {
+            return Promise.try(() => {
+                const services = serviceConfigs.map((serviceConfig) => {
                     try {
                         this.runtime.addService(serviceConfig.name, {
                             runtime: this.runtime,

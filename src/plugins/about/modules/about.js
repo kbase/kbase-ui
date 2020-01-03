@@ -11,9 +11,6 @@ define(['moment', 'kb_lib/html', 'bootstrap'], function (moment, html) {
         img = t('img'),
         div = t('div');
 
-    /*
-     * The widget factory function implements the widget interface.
-     */
     class About {
         constructor({ runtime }) {
             this.runtime = runtime;

@@ -13,11 +13,11 @@ define([
 
     describe('Instantiate with good and bad values', function () {
         it('Good values, but wouldnt run an app.', function (done) {
-            var rootNode = document.createElement('div');
+            const rootNode = document.createElement('div');
             rootNode.id = 'myrootnode';
             document.body.appendChild(rootNode);
             // console.log('hmm, ', rootNode, document.querySelector('#myrootnode'));
-            var app = App.make({
+            const app = new App({
                 appConfig: {
                     some: 'property'
                 },

@@ -1,139 +1,177 @@
-define(['bluebird'], (Promise) => {
+define(['bluebird', 'uuid'], (Promise, Uuid) => {
     'use strict';
 
     class WidgetMount {
         constructor(config) {
-            if (!config.node) {
+            const { node, widgetManager } = config;
+            if (!node) {
+                console.error('ERR', config);
                 throw new Error('Cannot create widget mount without a parent node; pass it as "node"');
             }
-            this.hostNode = config.node;
+            this.hostNode = node;
 
-            if (!config.widgetManager) {
+            if (!widgetManager) {
                 throw new Error('The widget mounter needs a widget manager; pass it as "widgetManager"');
             }
-            this.widgetManager = config.widgetManager;
-            this.container = this.hostNode;
-            this.mountedWidget = null;
+            this.widgetManager = widgetManager;
+            this.mountedWidgets = {};
+            this.containerID = 0;
+            this.orderID = 0;
+        }
+
+        nextOrderID() {
+            this.orderID += 1;
+            return this.orderID;
         }
 
         makeContainer() {
-            // We only allow a single node on the host node.
-            // We'll issue a warning if we have to zap an existing node, which indicates
-            // overlapping requests to mount. The most recent one wins, though.
-            if (this.hostNode.childNodes.length) {
-                console.warn('[mount] Mounting on top of an existing widget, removing old widget');
-                while (this.hostNode.childNodes.length) {
-                    this.hostNode.removeChild(this.hostNode.firstChild);
-                }
-            }
+            this.containerID += 1;
             const container = this.hostNode.appendChild(document.createElement('div'));
             container.style.display = 'flex';
             container.style.flex = '1 1 0px';
             container.style['flex-direction'] = 'column';
             container.style['overflow-y'] = 'auto';
+            container.setAttribute('data-k-b-testhook-element', 'id_' + this.containerID);
             return container;
         }
 
-        mount(widgetId, params) {
-            if (this.mountedWidget) {
-                if (this.hostNode.childNodes.length) {
-                    console.warn('[mount] Mounting on top of an existing widget, removing old widget');
-                    while (this.hostNode.childNodes.length) {
-                        this.hostNode.removeChild(this.hostNode.firstChild);
-                    }
-                }
-            }
-
+        mount(widgetID, params) {
             // We create the widget mount object first, in order to be
             // able to attach its mounting promise to itself. This is what
             // allows us to interrupt it if the route changes and we need
             // to unmount before it is finished.
-            this.mountedWidget = {
+            const mountedWidget = {
                 widget: null,
                 container: this.makeContainer(),
-                promise: null
+                promise: null,
+                id: new Uuid(4).format(),
+                widgetID,
+                orderID: this.nextOrderID(),
+                isCanceled: false
             };
-            this.mountedWidget.promise = Promise.try(() => {
+            this.mountedWidgets[mountedWidget.id] = mountedWidget;
+            mountedWidget.promise = Promise.try(() => {
                 // Make an instance of the requested widget.
-                return this.widgetManager.makeWidget(widgetId, {});
+                return this.widgetManager.makeWidget(widgetID, {
+                    node: mountedWidget.container
+                });
             })
                 .then((widget) => {
                     // Wrap it in a mount object to help manage it.
                     if (!widget) {
-                        throw new Error('Widget could not be created: ' + widgetId);
+                        throw new Error('Widget could not be created: ' + widgetID);
                     }
-                    this.mountedWidget.widget = widget;
+                    if (mountedWidget.isCanceled) {
+                        throw new Error('Is canceled');
+                    }
+                    mountedWidget.widget = widget;
                     return Promise.all([widget, widget.init && widget.init()]);
                 })
                 .then(([widget]) => {
                     // Give it a container and attach it to it.
-                    return Promise.all([widget, widget.attach && widget.attach(this.mountedWidget.container)]);
+                    if (mountedWidget.isCanceled) {
+                        throw new Error('Is canceled');
+                    }
+                    return Promise.all([widget, widget.attach && widget.attach(mountedWidget.container)]);
                 })
                 .then(([widget]) => {
                     // Start it if applicable.
+                    if (mountedWidget.isCanceled) {
+                        throw new Error('Is canceled');
+                    }
                     return Promise.all([widget, widget.start && widget.start(params)]);
                 })
                 .then(([widget]) => {
                     // Run it if applicable
+                    if (mountedWidget.isCanceled) {
+                        throw new Error('Is canceled');
+                    }
                     return Promise.all([widget, widget.run && widget.run(params)]);
                 })
                 .then(([widget]) => {
+                    if (mountedWidget.isCanceled) {
+                        throw new Error('Is canceled');
+                    }
                     return widget;
+                })
+                .finally(() => {
+                    if (mountedWidget.orderID < this.orderID) {
+                        this.unmount(mountedWidget);
+                    }
                 });
-            return this.mountedWidget.promise;
+            return mountedWidget.promise;
         }
 
-        unmount() {
+        getCurrentMount() {
+            const ids = Object.keys(this.mountedWidgets);
+            if (ids.length === 1) {
+                return this.mountedWidgets[ids[0]];
+            }
+            return null;
+        }
+
+        unmountAll() {
+            // Grabs a snapshot of existing mounted widgets.
+            const mountedWidgets = this.mountedWidgets;
+            this.mountedWidgets = {};
+            const mountedWidgetIDs = Object.keys(mountedWidgets);
+            if (mountedWidgetIDs.length === 0) {
+                return Promise.resolve();
+            }
+            return Promise.all(mountedWidgetIDs.map((id) => {
+                delete this.mountedWidgets[id];
+                return this.unmount(mountedWidgets[id]);
+            }));
+        }
+
+        unmount(mountedWidget) {
+            mountedWidget.isCanceled = true;
             return Promise.try(() => {
-                // TODO make no assumptions about what is mounted, just
-                // unmount anything we find...
-                var widget;
-                const mountedWidget = this.mountedWidget;
-                this.mountedWidget = null;
-                if (mountedWidget) {
-                    // Detach the widget from the container ...
-                    if (mountedWidget.promise) {
-                        mountedWidget.promise.cancel();
-                    }
-
-                    widget = mountedWidget.widget;
-                    // First thing is to ensure that the widget is
-                    // no longer in the DOM.
-                    try {
-                        this.hostNode.removeChild(mountedWidget.container);
-                    } catch (ex) {
-                        // Log error and continue
-                        console.error('Error removing mounted widget', ex);
-                    }
-                    return Promise.try(() => {
-                        return widget && widget.stop && widget.stop();
-                    })
-                        .then(() => {
-                            return widget && widget.detach && widget.detach();
-                        })
-                        .then(() => {
-                            return widget && widget.destroy && widget.destroy();
-                        })
-                        .catch((err) => {
-                            // ignore errors while unmounting widgets.
-                            console.error('ERROR unmounting widget');
-                            console.error(err);
-                            return null;
-                        })
-                        .finally(() => {
-                            this.mountedWidget = null;
-                        });
+                // First give the widget a chance to not continue mounting...?
+                if (mountedWidget.promise) {
+                    mountedWidget.promise.cancel();
                 }
-                return null;
+
+                // Detect if the widget was not even provided to the mount yet.
+                var widget = mountedWidget.widget;
+                if (!mountedWidget.widget) {
+                    if (mountedWidget.container && mountedWidget.container.parentNode) {
+                        mountedWidget.container.parentNode.removeChild(mountedWidget.container);
+                    }
+                    return;
+                }
+
+                return Promise.try(() => {
+                    return widget && widget.stop && widget.stop();
+                })
+                    .then(() => {
+                        return widget && widget.detach && widget.detach();
+                    })
+                    .then(() => {
+                        return widget && widget.destroy && widget.destroy();
+                    })
+                    .then(() => {
+                        // ensure that a misbehaving widget is actually removed from the DOM.
+                        if (mountedWidget.container && mountedWidget.container.parentNode) {
+                            mountedWidget.container.parentNode.removeChild(mountedWidget.container);
+                        }
+                    })
+                    .catch((err) => {
+                        // ignore errors while unmounting widgets.
+                        console.error('[unmount] ERROR unmounting widget');
+                        console.error(err);
+                        return null;
+                    });
             });
         }
 
-        mountWidget(widgetId, params) {
-            return this.unmount().then(() => {
-                return this.mount(widgetId, params);
-            });
+        mountWidget(widgetID, params) {
+            return this.unmountAll()
+                .then(() => {
+                    return this.mount(widgetID, params);
+                });
         }
     }
 
-    return { WidgetMount };
+    return WidgetMount;
 });

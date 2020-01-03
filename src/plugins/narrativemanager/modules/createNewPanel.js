@@ -1,7 +1,14 @@
-define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBuilders', './narrativeManager'], function (
-    Promise,
+define([
+    'bluebird',
+    'kb_lib/html',
+    'kb_lib/htmlBuilders',
+    './widget',
+    './narrativeManager'],
+function (
+    Bluebird,
     html,
     build,
+    Widget,
     NarrativeManagerService
 ) {
     'use strict';
@@ -11,18 +18,18 @@ define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBuilders', './narrativeManager'],
         a = t('a'),
         p = t('p');
 
-    function factory(config) {
-        let mount;
-        let container;
-        const runtime = config.runtime;
-        const narrativeManager = NarrativeManagerService({ runtime: runtime });
-
-        function makeNarrativePath(wsId, objId) {
-            return runtime.getConfig('services.narrative.url') + '/narrative/ws.' + wsId + '.obj.' + objId;
+    class CreateNewPanel extends Widget {
+        constructor(params) {
+            super(params);
+            this.narrativeManager = new NarrativeManagerService({ runtime: this.runtime });
         }
 
-        function createNewNarrative(params) {
-            return Promise.try(function () {
+        makeNarrativePath(wsId) {
+            return this.runtime.getConfig('services.narrative.url') + '/narrative/' + wsId;
+        }
+
+        createNewNarrative(params) {
+            return Bluebird.try(() => {
                 params = params || {};
                 if (params.app && params.method) {
                     throw 'Must provide no more than one of the app or method params';
@@ -63,37 +70,29 @@ define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBuilders', './narrativeManager'],
                     newNarrativeParams.markdown = params.markdown;
                 }
 
-                return narrativeManager.createTempNarrative(newNarrativeParams).then(function (info) {
-                    const wsId = info.narrativeInfo.wsid,
-                        objId = info.narrativeInfo.id,
-                        path = makeNarrativePath(wsId, objId);
-                    return {
-                        redirect: {
-                            url: path,
-                            newWindow: false
-                        }
-                    };
-                });
+                return this.narrativeManager.createTempNarrative(newNarrativeParams)
+                    .then((info) => {
+                        const wsId = info.narrativeInfo.wsid,
+                            objId = info.narrativeInfo.id,
+                            path = this.makeNarrativePath(wsId, objId);
+                        return {
+                            redirect: {
+                                url: path,
+                                newWindow: false
+                            }
+                        };
+                    });
             });
-        }
-
-        function wrapPanel(content) {
-            return div({ class: 'container-fluid' }, [div({ class: 'row' }, [div({ class: 'col-md-12' }, [content])])]);
         }
 
         // API
 
-        function attach(node) {
-            mount = node;
-            container = document.createElement('div');
-            mount.appendChild(container);
-        }
+        start(params) {
+            this.setHTML(this.wrapPanel(build.loading('Creating a new Narrative for you...')));
 
-        function start(params) {
-            container.innerHTML = wrapPanel(build.loading('Creating a new Narrative for you...'));
-            return createNewNarrative(params)
-                .then(function (result) {
-                    container.innerHTML = wrapPanel([
+            return this.createNewNarrative(params)
+                .then((result) => {
+                    this.setHTML(this.wrapPanel([
                         p('Opening your new Narrative.'),
                         p('If the Narrative did not open, use this link'),
                         p(
@@ -102,14 +101,14 @@ define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBuilders', './narrativeManager'],
                                 result.redirect.url
                             ])
                         )
-                    ]);
-                    runtime.send('app', 'redirect', {
+                    ]));
+                    this.runtime.send('app', 'redirect', {
                         url: result.redirect.url,
                         new_window: false
                     });
                 })
-                .catch(function (err) {
-                    container.innerHTML = div(
+                .catch((err) => {
+                    this.setHTML(div(
                         {
                             class: 'alert alert-danger'
                         },
@@ -124,32 +123,15 @@ define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBuilders', './narrativeManager'],
                                 err.message
                             )
                         ]
-                    );
+                    ));
                     console.error('ERROR creating and opening a new narrative', err);
                 });
         }
 
-        function stop() {
+        stop() {
             // nothing to do?
         }
-
-        function detach() {
-            mount.removeChild(container);
-            container.innerHTML = '';
-            container = null;
-        }
-
-        return {
-            attach: attach,
-            start: start,
-            stop: stop,
-            detach: detach
-        };
     }
 
-    return {
-        make: function (config) {
-            return factory(config);
-        }
-    };
+    return CreateNewPanel;
 });
