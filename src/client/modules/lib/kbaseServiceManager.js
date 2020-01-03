@@ -3,8 +3,14 @@ define([
     'kb_lib/jsonRpc/genericClient',
     'kb_common_ts/HttpClient',
     'kb_lib/props',
-    'kb_lib/semver'
-], function (Promise, GenericClient, httpClient, props, semver) {
+    'semver'
+], function (
+    Promise,
+    GenericClient,
+    httpClient,
+    props,
+    semver
+) {
     'use strict';
 
     class KBaseServiceManager {
@@ -19,11 +25,6 @@ define([
             const http = new httpClient.HttpClient();
             const header = new httpClient.HttpHeader();
             header.setHeader('accept', 'application/json');
-            // console.log(
-            //     'checking REST service ' + serviceConfig.name,
-            //     serviceConfig.url + serviceConfig.version.path,
-            //     this.timeout
-            // );
             return http
                 .request({
                     method: 'GET',
@@ -61,11 +62,6 @@ define([
                 url: serviceConfig.url,
                 timeout: this.timeout
             });
-            // console.log(
-            //     'checking JSONRPC service ' + serviceConfig.name,
-            //     serviceConfig.url + serviceConfig.version.path,
-            //     this.timeout
-            // );
             return client
                 .callFunc(serviceConfig.version.method, [])
                 .spread((result) => {
@@ -126,16 +122,18 @@ define([
                             } else {
                                 version = result;
                             }
-                            const semverResult = semver.semverIsAtLeast(version, serviceConfig.version.minimum);
-                            if (semverResult === true) {
-                                return null;
-                            } else {
+
+                            if (serviceConfig.version.required) {
+                                if (semver.intersects(version, serviceConfig.version.required)) {
+                                    return null;
+                                }
                                 return {
                                     module: serviceConfig.module,
-                                    minimumVersion: serviceConfig.version.minimum,
-                                    serviceVersion: version,
-                                    code: semverResult
+                                    requiredVersion: serviceConfig.version.required,
+                                    serviceVersion: version
                                 };
+                            } else {
+                                console.warn(`for service "${serviceConfig.module}", semver check not disabled, but no required version provided`);
                             }
                         });
                     })
@@ -146,16 +144,7 @@ define([
                 if (mismatches.length > 0) {
                     const message = mismatches
                         .map((mismatch) => {
-                            return (
-                                '(' +
-                mismatch.code +
-                ') ' +
-                mismatch.module +
-                ' needs to be at least ' +
-                mismatch.minimumVersion +
-                ' but is ' +
-                mismatch.serviceVersion
-                            );
+                            return `service "${mismatch.module}" version ${mismatch.serviceVersion} incompatible with the required ${mismatch.requiredVersion}`;
                         })
                         .join('; ');
                     let prefix;
@@ -164,7 +153,7 @@ define([
                     } else {
                         prefix = 'Incompatible services';
                     }
-                    const errorMessage = prefix + ': ' + message;
+                    const errorMessage = `${prefix}: ${message}`;
                     if (this.throwErrors) {
                         throw new Error(errorMessage);
                     } else {

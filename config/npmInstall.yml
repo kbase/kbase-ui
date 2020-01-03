@@ -19,31 +19,7 @@ npmFiles:
     cwd: dist
     src:
       - htm.umd.js
-  # -
-  #     name: d3
-  #     cwd: build
-  # -
-  #     dir: d3-sankey
-  #     cwd: build
-  #     src:
-  #         - d3-sankey.js
-  # -
-  #     dir: d3-shape
-  #     cwd: build
-  #     src:
-  #         - d3-shape.js
-  # -
-  #     dir: d3-collection
-  #     cwd: build
-  #     src:
-  #         - d3-collection.js
-  # -
-  #     dir: d3-array
-  #     cwd: build
-  #     src:
-  #         - d3-array.js
-  # -
-  #     dir: d3-path
-  #     cwd: build
-  #     src:
-  #         - d3-path.js
+  - name: semver-umd
+    cwd: lib
+    src:
+      - semver-umd.js
