@@ -1,4 +1,4 @@
-define(['bluebird'], function (Promise) {
+define([], () => {
     'use strict';
 
     function AppServiceError(type, message, suggestion) {
@@ -10,54 +10,52 @@ define(['bluebird'], function (Promise) {
     AppServiceError.prototype.constructor = AppServiceError;
     AppServiceError.prototype.name = 'AppServiceError';
 
-    function factory(config) {
-        var services = {};
-        var moduleBasePath = config.moduleBasePath;
+    class AppServiceManager {
+        constructor({ moduleBasePath }) {
+            if (!moduleBasePath) {
+                throw new TypeError('moduleBasePath not provided');
+            }
+            this.moduleBasePath = moduleBasePath;
+            this.services = {};
 
-        if (!moduleBasePath) {
-            throw new TypeError('moduleBasePath not provided to factory');
         }
 
-        function addService(serviceConfig, serviceDef) {
-            services[serviceConfig.name] = {
+        addService(serviceConfig, serviceDef) {
+            this.services[serviceConfig.name] = {
                 name: serviceConfig.name,
                 module: serviceConfig.module,
                 config: serviceDef
             };
         }
 
-        function loadService(name, params) {
-            return new Promise(function (resolve, reject) {
-                var service = services[name],
-                    moduleName = [moduleBasePath, service.module].join('/');
-                require([moduleName], function (serviceModule) {
+        loadService(name, params) {
+            return new Promise((resolve, reject) => {
+                var service = this.services[name],
+                    moduleName = [this.moduleBasePath, service.module].join('/');
+                require([moduleName], (serviceModule) => {
                     var serviceInstance;
-                    if (serviceModule.make) {
-                        serviceInstance = serviceModule.make(services[name].config, params);
+                    if (serviceModule.ServiceClass) {
+                        serviceInstance = new serviceModule.ServiceClass({
+                            config: this.services[name].config,
+                            params: params
+                        });
                     } else {
-                        if (serviceModule.ServiceClass) {
-                            serviceInstance = new serviceModule.ServiceClass({
-                                config: services[name].config,
-                                params: params
-                            });
-                        } else {
-                            serviceInstance = new serviceModule({
-                                config: services[name].config,
-                                params: params
-                            });
-                        }
+                        serviceInstance = new serviceModule({
+                            config: this.services[name].config,
+                            params: params
+                        });
                     }
                     service.instance = serviceInstance;
                     resolve();
-                }, function (err) {
+                }, (err) => {
                     reject(err);
                 });
             });
         }
 
-        function loadServices(params) {
-            var all = Object.keys(services).map(function (name) {
-                return loadService(name, params)
+        loadServices(params) {
+            const allServices = Object.keys(this.services).map((name) => {
+                return this.loadService(name, params)
                     .then((result) => {
                         return result;
                     })
@@ -66,12 +64,12 @@ define(['bluebird'], function (Promise) {
                         throw err;
                     });
             });
-            return Promise.all(all);
+            return Promise.all(allServices);
         }
 
-        function startServices() {
-            var all = Object.keys(services).map(function (name) {
-                var service = services[name].instance;
+        startServices() {
+            const allServices = Object.keys(this.services).map((name) => {
+                const service = this.services[name].instance;
                 if (!service) {
                     console.warn('Warning: no service started for ' + name);
                     throw new Error('No service started for ' + name);
@@ -82,28 +80,28 @@ define(['bluebird'], function (Promise) {
                 }
                 return service.start();
             });
-            return Promise.all(all);
+            return Promise.all(allServices);
         }
 
-        function stopServices() {
-            var all = Object.keys(services).map(function (name) {
-                var service = services[name];
+        stopServices() {
+            const allServices = Object.keys(this.services).map((name) => {
+                var service = this.services[name];
                 if (service && service.instance && service.instance.stop) {
                     return service.instance.stop();
                 }
             });
-            return Promise.all(all);
+            return Promise.all(allServices);
         }
 
-        function hasService(name) {
-            if (!services[name]) {
+        hasService(name) {
+            if (!this.services[name]) {
                 return false;
             }
             return true;
         }
 
-        function getService(name) {
-            var service = services[name];
+        getService(name) {
+            const service = this.services[name];
             if (!service) {
                 // TODO: throw real exception
                 throw new AppServiceError({
@@ -116,24 +114,9 @@ define(['bluebird'], function (Promise) {
             return service.instance;
         }
 
-        function dumpServices() {
-            return services;
+        dumpServices() {
+            return this.services;
         }
-
-        return {
-            addService: addService,
-            getService: getService,
-            loadService: loadService,
-            hasService: hasService,
-            loadServices: loadServices,
-            startServices: startServices,
-            stopServices: stopServices,
-            dumpServices: dumpServices
-        };
     }
-
-    return {
-        make: factory,
-        AppServiceErrror: AppServiceError
-    };
+    return AppServiceManager;
 });

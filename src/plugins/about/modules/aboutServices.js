@@ -1,5 +1,4 @@
 define([
-    'bluebird',
     'kb_lib/html',
     'kb_lib/htmlBuilders',
     'kb_lib/htmlBootstrapBuilders',
@@ -7,7 +6,7 @@ define([
     'kb_common_ts/HttpClient',
 
     'bootstrap'
-], (Promise, html, build, BS, GenericClient, HttpClient) => {
+], (html, build, BS, GenericClient, HttpClient) => {
     'use strict';
     const t = html.tag,
         div = t('div'),
@@ -17,9 +16,6 @@ define([
         td = t('td'),
         h3 = t('h3');
 
-    /*
-     * The widget factory function implements the widget interface.
-     */
     class AboutServices {
         constructor({ runtime }) {
             this.runtime = runtime;
@@ -126,18 +122,24 @@ define([
             return new Promise((resolve) => {
                 const next = (itersLeft) => {
                     if (itersLeft === 0) {
+                        // console.log('[perf] ', measures);
                         resolve({
                             measures: measures,
                             total: this.sum(measures),
                             average: this.sum(measures) / measures.length
                         });
                     } else {
+                        const start = new Date().getTime();
                         call().then(() => {
-                            const start = new Date().getTime();
                             const elapsed = new Date().getTime() - start;
                             measures.push(elapsed);
+                            // console.log(`[perf] ${elapsed}, ${itersLeft}`);
                             next(itersLeft - 1);
-                        });
+                            return null;
+                        })
+                            .catch((err) => {
+                                console.error('ERROR', err);
+                            });
                     }
                 };
                 next(iters);
@@ -152,13 +154,13 @@ define([
             });
 
             const status = () => {
-                return client.callFunc('status', []).spread((result) => {
+                return client.callFunc('status', []).then(([result]) => {
                     return result;
                 });
             };
 
             const ver = () => {
-                return client.callFunc('ver', []).spread((result) => {
+                return client.callFunc('ver', []).then(([result]) => {
                     return result;
                 });
             };
@@ -166,7 +168,7 @@ define([
             this.vm.nms.node.innerHTML = build.loading();
 
             return Promise.all([status(), ver(), this.perf(ver)])
-                .spread((status, version, perf) => {
+                .then(([status, version, perf]) => {
                     const info = [];
                     // Version info
                     info.push({
@@ -220,6 +222,12 @@ define([
                             })
                         )
                     ]);
+                })
+                .catch((err) => {
+                    this.vm.nms.node.innerHTML = div({}, [
+                        h3('Narrative Method Store'),
+                        div(err.message)
+                    ]);
                 });
         }
 
@@ -235,12 +243,12 @@ define([
             this.vm.workspace.node.innerHTML = build.loading();
 
             return Promise.all([
-                client.callFunc('ver', []).spread((result) => {
+                client.callFunc('ver', []).then(([result]) => {
                     return result;
                 }),
                 this.perf(ver)
             ])
-                .spread((version, perf) => {
+                .then(([version, perf]) => {
                     const info = [];
                     // Version info
                     info.push({
@@ -290,7 +298,7 @@ define([
             const getRoot = () => {
                 const header = new HttpClient.HttpHeader();
                 header.setHeader('accept', 'application/json');
-                return http
+                const p = http
                     .request({
                         method: 'GET',
                         url: this.runtime.config('services.auth2.url'),
@@ -298,16 +306,18 @@ define([
                     })
                     .then((result) => {
                         try {
-                            const data = JSON.parse(result.response);
-                            return data.version;
+                            const {version} = JSON.parse(result.response);
+                            return version;
                         } catch (ex) {
-                            return 'ERROR: ' + ex.message;
+                            console.error('[renderAuth]', ex);
+                            throw new Error(ex);
                         }
                     });
+                return p;
             };
 
             return Promise.all([getRoot(), this.perf(getRoot)])
-                .spread((version, perf) => {
+                .then(([version, perf]) => {
                     const info = [];
                     // Version info
                     info.push({
@@ -323,9 +333,6 @@ define([
                         value: perf.measures.join(', ')
                     });
 
-                    return info;
-                })
-                .then((info) => {
                     this.vm.auth.node.innerHTML = div({}, [
                         h3('Auth'),
                         table(
@@ -346,6 +353,14 @@ define([
                                 ]);
                             })
                         )
+                    ]);
+
+                    return null;
+                })
+                .catch((err) => {
+                    this.vm.auth.node.innerHTML = div({}, [
+                        h3('Auth'),
+                        div(err.message)
                     ]);
                 });
         }
@@ -374,7 +389,7 @@ define([
             };
 
             return Promise.all([getRoot(), this.perf(getRoot)])
-                .spread((version, perf) => {
+                .then(([version, perf]) => {
                     const info = [];
                     // Version info
                     info.push({
@@ -441,7 +456,7 @@ define([
             };
 
             return Promise.all([getRoot(), this.perf(getRoot)])
-                .spread((version, perf) => {
+                .then(([version, perf]) => {
                     const info = [];
                     // Version info
                     info.push({
@@ -498,7 +513,7 @@ define([
             };
 
             return Promise.all([ver(), this.perf(ver)])
-                .spread((version, perf) => {
+                .then(([version, perf]) => {
                     const info = [];
                     // Version info
                     info.push({
@@ -559,13 +574,13 @@ define([
             this.vm.userProfile.node.innerHTML = build.loading();
 
             const theCall = () => {
-                return client.callFunc('status', []).spread((result) => {
+                return client.callFunc('status', []).then(([result]) => {
                     return result;
                 });
             };
 
             return Promise.all([theCall(), this.perf(theCall)])
-                .spread((result, perf) => {
+                .then(([result, perf]) => {
                     const info = [];
                     // Version info
                     info.push({
@@ -615,7 +630,7 @@ define([
                 token: this.runtime.service('session').getAuthToken()
             });
             const version = () => {
-                return client.callFunc('version', []).spread((result) => {
+                return client.callFunc('version', []).then(([result]) => {
                     return result;
                 });
             };
@@ -623,7 +638,7 @@ define([
             this.vm.catalog.node.innerHTML = build.loading();
 
             return Promise.all([version(), this.perf(version)])
-                .spread((version, perf) => {
+                .then(([version, perf]) => {
                     const info = [];
                     // Version info
                     info.push({
@@ -680,7 +695,7 @@ define([
             };
 
             return Promise.all([theCall(), this.perf(theCall)])
-                .spread((result, perf) => {
+                .then(([result, perf]) => {
                     const version = result[0];
                     const info = [];
                     // Version info

@@ -13,16 +13,16 @@ define([
     './runtime',
     'kb_lib/messenger',
     'kb_lib/props',
-    'kb_lib/widget/mount',
+    '../lib/widget/mount',
     'kb_lib/asyncQueue'
 ], (
-    pluginManagerFactory,
+    PluginManager,
     AppServiceManager,
     kbaseServiceManager,
     Runtime,
     Messenger,
     props,
-    widgetMount,
+    WidgetMount,
     AsyncQueue
 ) => {
     'use strict';
@@ -95,7 +95,7 @@ define([
 
             // SERVICES
 
-            this.appServiceManager = AppServiceManager.make({
+            this.appServiceManager = new AppServiceManager({
                 moduleBasePath: 'app/services'
             });
 
@@ -105,7 +105,7 @@ define([
                 serviceManager: this.appServiceManager
             });
 
-            this.pluginManager = pluginManagerFactory.make({
+            this.pluginManager = new PluginManager({
                 runtime: this.api
             });
 
@@ -120,7 +120,7 @@ define([
             this.rootNode.innerHTML = '';
             if (!this.rootMount) {
                 // create the root mount.
-                this.rootMount = new widgetMount.WidgetMount({
+                this.rootMount = new WidgetMount({
                     node: this.rootNode,
                     runtime,
                     widgetManager: runtime.service('widget').widgetManager

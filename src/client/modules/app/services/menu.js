@@ -20,14 +20,14 @@ define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
         }
 
         setupMenus() {
-            var hamburgerMenu = {
+            const hamburgerMenu = {
                 main: [],
                 developer: [],
                 help: []
             };
             this.state.setItem('menu.hamburger', hamburgerMenu);
 
-            var sidebarMenu = {
+            const sidebarMenu = {
                 main: []
             };
             this.state.setItem('menu.sidebar', sidebarMenu);
@@ -48,11 +48,8 @@ define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
          * Add a defined menu item to a menu, according to a menu entry definition.
          */
         addToMenu(menuEntry, menuItemSpec) {
-            var menu,
-                section,
-                position,
-                menuItems = this.state.getItem('menuItems'),
-                menuItemDef = menuItems[menuItemSpec.id];
+            const menuItems = this.state.getItem('menuItems');
+            const menuItemDef = menuItems[menuItemSpec.id];
 
             if (!menuItemDef) {
                 throw {
@@ -62,7 +59,7 @@ define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
                 };
             }
 
-            var path;
+            let path;
             if (menuItemDef.path) {
                 if (typeof menuItemDef.path === 'string') {
                     path = menuItemDef.path;
@@ -72,7 +69,7 @@ define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
                     throw new Error('Invalid path for menu item', menuItemDef);
                 }
             }
-            var menuItem = {
+            const menuItem = {
                 // These are from the plugin's menu item definition
                 id: menuItemDef.id,
                 label: menuItemSpec.label || menuItemDef.label,
@@ -87,9 +84,9 @@ define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
                 authRequired: menuItemSpec.auth ? true : false
             };
 
-            menu = menuEntry.menu;
-            section = menuEntry.section;
-            position = menuEntry.position || 'bottom';
+            const menu = menuEntry.menu;
+            const section = menuEntry.section;
+            const position = menuEntry.position || 'bottom';
 
             this.state.modifyItem('menu.' + menu, (menus) => {
                 if (!menus[section]) {
@@ -107,8 +104,7 @@ define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
 
         getCurrentMenu(menu) {
             menu = menu || 'hamburger';
-            var menus = this.state.getItem('menu.' + menu);
-            return menus;
+            return this.state.getItem('menu.' + menu);
         }
 
         // Plugin interface
@@ -140,7 +136,7 @@ define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
         start() {
             // The hamburger menu.
             Object.keys(this.config.menus).forEach((menu) => {
-                var menuDef = this.config.menus[menu];
+                const menuDef = this.config.menus[menu];
                 // Skip a menu with no sections
                 if (!menuDef.sections) {
                     return;
@@ -153,8 +149,8 @@ define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
                     if (!menuDef.sections[section].items) {
                         return;
                     }
-                    var items = menuDef.sections[section].items;
-                    var disabled = menuDef.disabled || [];
+                    const items = menuDef.sections[section].items;
+                    const disabled = menuDef.disabled || [];
                     items.forEach((menuItem) => {
                         if (menuItem.disabled) {
                             return;

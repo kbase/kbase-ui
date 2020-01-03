@@ -1,66 +1,67 @@
-define(['kb_lib/html', 'kb_lib/htmlBuilders', './narrativeManager'], function (html, build, NarrativeManagerService) {
+define([
+    'kb_lib/html',
+    'kb_lib/htmlBuilders',
+    './widget',
+    './narrativeManager'],
+function (
+    html,
+    build,
+    Widget,
+    NarrativeManagerService)
+{
     'use strict';
 
     const t = html.tag,
-        div = t('div'),
         a = t('a'),
         p = t('p');
 
-    function factory(config) {
-        let mount;
-        let container;
-        const runtime = config.runtime;
-        const narrativeManager = NarrativeManagerService({ runtime: runtime });
-
-        function makeNarrativePath(objectInfo) {
-            return runtime.getConfig('services.narrative.url') + '/narrative/' + objectInfo.obj_id;
+    class StartPanel extends Widget {
+        constructor(params) {
+            super(params);
+            this.narrativeManager = new NarrativeManagerService({ runtime: this.runtime });
         }
 
-        function startOrCreateEmptyNarrative() {
-            return narrativeManager.getMostRecentNarrative().then(function (result) {
-                if (result) {
+        makeNarrativePath(objectInfo) {
+            return this.runtime.getConfig('services.narrative.url') + '/narrative/' + objectInfo.obj_id;
+        }
+
+        startOrCreateEmptyNarrative() {
+            return this.narrativeManager.getMostRecentNarrative()
+                .then((result) => {
+                    if (result) {
                     // we have a last_narrative, so go there
-                    return {
-                        redirect: {
-                            url: makeNarrativePath(result.narrativeInfo),
-                            new_window: false
-                        }
-                    };
-                }
-                //we need to construct a new narrative- we have a first timer
-                return narrativeManager
-                    .createTempNarrative({
-                        cells: [],
-                        parameters: [],
-                        importData: []
-                    })
-                    .then(function (result) {
                         return {
                             redirect: {
-                                url: makeNarrativePath(result.narrativeInfo),
+                                url: this.makeNarrativePath(result.narrativeInfo),
                                 new_window: false
                             }
                         };
-                    });
-            });
-        }
-
-        function wrapPanel(content) {
-            return div({ class: 'container-fluid' }, [div({ class: 'row' }, [div({ class: 'col-md-12' }, [content])])]);
+                    }
+                    //we need to construct a new narrative- we have a first timer
+                    return this.narrativeManager
+                        .createTempNarrative({
+                            cells: [],
+                            parameters: [],
+                            importData: []
+                        })
+                        .then((result) => {
+                            return {
+                                redirect: {
+                                    url: this.makeNarrativePath(result.narrativeInfo),
+                                    new_window: false
+                                }
+                            };
+                        });
+                });
         }
 
         // API
 
-        function attach(node) {
-            mount = node;
-            container = mount.appendChild(document.createElement('div'));
-        }
-
-        function start(params) {
-            container.innerHTML = wrapPanel(build.loading('Starting or creating a Narrative for you...'));
-            return startOrCreateEmptyNarrative(params)
-                .then(function (result) {
-                    container.innerHTML = wrapPanel([
+        start(params) {
+            this.container.innerHTML = this.wrapPanel(build.loading('Starting or creating a Narrative for you...'));
+            return this.startOrCreateEmptyNarrative(params)
+                .then((result) => {
+                    this.container.innerHTML = this.wrapPanel([
                         p('Opening your Narrative.'),
                         p('If the Narrative did not open, use this link:'),
                         p(
@@ -70,37 +71,19 @@ define(['kb_lib/html', 'kb_lib/htmlBuilders', './narrativeManager'], function (h
                             ])
                         )
                     ]);
-                    runtime.send('app', 'redirect', {
+                    this.runtime.send('app', 'redirect', {
                         url: result.redirect.url,
                         new_window: false
                     });
                 })
-                .catch(function (err) {
-                    container.innerHTML = 'ERROR creating and opening a new narrative';
+                .catch((err) => {
+                    this.container.innerHTML = 'ERROR creating and opening a new narrative';
                     console.error('ERROR creating and opening a new narrative');
                     console.error(err);
                     throw err;
                 });
         }
-
-        function detach() {
-            if (mount && container) {
-                mount.removeChild(container);
-            }
-            container.innerHTML = '';
-            container = null;
-        }
-
-        return {
-            attach: attach,
-            start: start,
-            detach: detach
-        };
     }
 
-    return {
-        make: function (config) {
-            return factory(config);
-        }
-    };
+    return StartPanel;
 });

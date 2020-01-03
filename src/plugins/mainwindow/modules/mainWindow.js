@@ -21,13 +21,13 @@
 define([
     'knockout',
     'kb_lib/html',
-    'kb_lib/widget/widgetSet',
+    'lib/widget/widgetSet',
     './components/systemAlertBanner',
     './components/systemAlertToggle'
 ], (
     ko,
     html,
-    widgetSet,
+    WidgetSet,
     SystemAlertBannerComponent,
     SystemAlertToggleComponent
 ) => {
@@ -48,14 +48,26 @@ define([
     }
 
     class MainWindow {
-        constructor({ runtime }) {
+        constructor({ runtime, node }) {
+            if (!runtime) {
+                throw new Error('The "runtime" parameter is required');
+            }
             this.runtime = runtime;
-            this.widgets = new widgetSet.WidgetSet({
-                widgetManager: this.runtime.service('widget').widgetManager
-            });
 
-            this.hostNode = null;
-            this.container = null;
+            if (!node) {
+                throw new Error('The "node" parameter is required');
+            }
+            this.node = node;
+
+            this.hostNode = node;
+            this.container = this.hostNode.appendChild(document.createElement('div'));
+            this.container.classList.add('plugin-mainwindow', 'widget-mainwindow', '-main');
+            this.container.setAttribute('data-k-b-testhook-plugin', 'mainwindow');
+
+            this.widgets = new WidgetSet({
+                widgetManager: this.runtime.service('widget').widgetManager,
+                node: this.container
+            });
 
             this.vm = new ViewModel({
                 runtime: this.runtime
@@ -161,16 +173,17 @@ define([
             ].join('');
         }
 
-        attach(node) {
-            this.hostNode = node;
-            this.container = this.hostNode.appendChild(document.createElement('div'));
-            this.container.classList.add('plugin-mainwindow', 'widget-mainwindow', '-main');
-            this.container.setAttribute('data-k-b-testhook-plugin', 'mainwindow');
-        }
+        // attach(node) {
+        //     this.hostNode = node;
+        //     this.container = this.hostNode.appendChild(document.createElement('div'));
+        //     this.container.classList.add('plugin-mainwindow', 'widget-mainwindow', '-main');
+        //     this.container.setAttribute('data-k-b-testhook-plugin', 'mainwindow');
+        // }
 
         start(params) {
             this.container.innerHTML = this.renderLayout();
-            return this.widgets.init()
+            return this.widgets
+                .init()
                 .then(() => {
                     return this.widgets.attach(this.container);
                 })
