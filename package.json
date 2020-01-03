@@ -75,7 +75,8 @@
         "@kbase/ui-lib": "0.2.1-alpha.2",
         "bluebird": "3.7.2",
         "htm": "2.2.1",
-        "preact": "10.1.1"
+        "preact": "10.1.1",
+        "semver-umd": "5.5.5"
     },
     "scripts": {
         "test": "node test/node/test.js"

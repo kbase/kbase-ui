@@ -62,7 +62,8 @@
             htm: 'node_modules/htm/htm.umd',
             text: 'bower_components/requirejs-text/text',
             uuid: 'bower_components/pure-uuid/uuid',
-            yaml: 'bower_components/requirejs-yaml/yaml'
+            yaml: 'bower_components/requirejs-yaml/yaml',
+            semver: 'node_modules/semver-umd/semver-umd'
         },
         shim: {
             bootstrap: {
