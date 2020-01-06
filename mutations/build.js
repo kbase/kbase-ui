@@ -849,10 +849,29 @@ function installPlugins(state) {
                             return typeof plugin === 'object' && plugin.source.bower;
                         })
                         .map(function (plugin) {
-                            var cwds = plugin.cwd || 'dist/plugin',
-                                cwd = cwds.split('/'),
-                                srcDir = root.concat(['build', 'bower_components', plugin.globalName]).concat(cwd),
-                                destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+                            const pluginDir = root.concat(['build', 'bower_components', plugin.globalName]);
+                            let srcDir;
+                            if (plugin.cwd) {
+                                mutant.info(`${plugin.name}: plugin building from configured cwd: ${plugin.cwd}`)
+                                srcDir = pluginDir.concat([plugin.cwd.split('/')]);
+                            } else {
+                                srcDir = pluginDir.concat(['dist', 'plugin']);
+                                if (!pathExists.sync(srcDir.join('/'))) {
+                                    srcDir = pluginDir.concat(['src', 'plugin']);
+                                    if (!pathExists.sync(srcDir.join('/'))) {
+                                        throw new Error('Cannot find plugin directory: ' + plugin.name);
+                                    } else {
+                                        mutant.info(`${plugin.name}: plugin installing from src by default`)
+                                    }
+                                } else {
+                                    mutant.info(`${plugin.name}: plugin installing from dist by default`)
+                                }
+                            }
+                            // const cwds = plugin.cwd
+                            // const pluginDir =  srcDir = root.concat(['build', 'bower_components', plugin.globalName]).concat(cwd)
+                            // cwd = cwds.split('/'),
+                            // srcDir = root.concat(['build', 'bower_components', plugin.globalName]).concat(cwd),
+                            const destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
                             mutant.ensureDir(destDir);
                             return mutant.copyFiles(srcDir, destDir, '**/*');
                         })
@@ -921,6 +940,7 @@ function installPlugins(state) {
                 var pluginsPath = root.concat(['build', 'client', 'modules', 'plugins']);
                 return dirList(pluginsPath).then(function (pluginDirs) {
                     return Promise.each(pluginDirs, function (pluginDir) {
+                        // Has integration tests?
                         var testDir = pluginDir.path.concat(['test']);
                         return pathExists(testDir.join('/')).then(function (exists) {
                             var justDir = pluginDir.path[pluginDir.path.length - 1];

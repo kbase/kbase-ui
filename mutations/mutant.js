@@ -273,6 +273,10 @@ function timestamp() {
 }
 
 function log(msg) {
+    return info(msg);
+}
+
+function info(msg) {
     var line = "INFO: " + timestamp() + ": " + msg;
     var chalked = chalk.blue(line);
     process.stdout.write(chalked);
@@ -481,6 +485,7 @@ module.exports = {
     loadJson,
     saveJson,
     rtrunc,
+    info,
     log,
     warn,
     success,
