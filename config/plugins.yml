@@ -53,7 +53,7 @@ plugins:
           bower: {}
     - name: data-search
       globalName: kbase-ui-plugin-data-search
-      version: 1.0.2
+      version: 1.0.3
       cwd: src/plugin
       source:
           bower: {}
