@@ -48,7 +48,7 @@ exports.config = {
             // maxInstances can get overwritten per capability. So if you have an in-house Selenium
             // grid with only 5 firefox instances available you can make sure that not more than
             // 5 instances get started at a time.
-            maxInstances: 5,
+            // maxInstances: 5,
             //
             browserName: "chrome",
             acceptInsecureCerts: true
@@ -61,14 +61,14 @@ exports.config = {
             // }
         }
         // {
-        //     maxInstances: 5,
+        //     // maxInstances: 5,
         //     browserName: 'firefox',
         //     acceptInsecureCerts: true
         // }
         // {
-        //     maxInstances: 5,
+        //     // maxInstances: 5,
         //     browserName: 'safari',
-        //     acceptInsecureCerts: true
+        //     // acceptInsecureCerts: true
         // }
     ],
     //
@@ -146,7 +146,7 @@ exports.config = {
         // The Jasmine framework allows interception of each assertion in order to log the state of the application
         // or website depending on the result. For example, it is pretty handy to take a screenshot every time
         // an assertion fails.
-    expectationResultHandler: function (passed, assertion) {
+        expectationResultHandler: function (passed, assertion) {
             // do something
         }
     }

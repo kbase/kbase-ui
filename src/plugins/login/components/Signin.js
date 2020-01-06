@@ -65,7 +65,7 @@ define([
                     <li>
                         <div style="text-align: center;"
                                 data-element="user-label"> 
-                            <div data-k-b-testhodok-label="realname">
+                            <div data-k-b-testhook-label="realname">
                                 ${this.props.profile.user.realname}
                             </div>
                             <div data-k-b-testhook-label="username"

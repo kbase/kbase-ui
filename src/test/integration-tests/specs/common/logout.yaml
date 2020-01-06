@@ -6,4 +6,3 @@ tasks:
     params:
       name: kbase_session
       path: "/"
-      value: "${config.auth.token}"

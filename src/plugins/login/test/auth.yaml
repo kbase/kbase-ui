@@ -9,8 +9,8 @@ specs:
       - subtask: login
         title: login
       - action: navigate
-        title: navigate to dashboard
-        path: dashboard
+        title: navigate to feeds page
+        path: feeds
       - wait: forElement
         title: Ensure the logged-in menu appears, then open the user menu
         selector:
@@ -39,3 +39,5 @@ specs:
           - type: label
             value: realname
         text: ${config.auth.realname}
+      - subtask: logout
+        title: logout
