@@ -86,8 +86,7 @@ module.exports = function (grunt) {
             },
             // note should be called with a base of build/tests/integration-tests
             integration: {
-                configFile: './test/wdio.conf.integration.js',
-                baseUrl: 'https://' + grunt.option('host') + '.kbase.us'
+                configFile: './test/wdio.conf.integration.js'
             },
             sauce: {
                 configFile: './test/wdio.conf.sauce.js'
