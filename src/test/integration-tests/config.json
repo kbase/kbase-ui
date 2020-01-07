@@ -7,21 +7,24 @@
     },
     "envs": [
         {
-            "id": "next",
+            "env": "next",
             "auth": {
                 "token": "LOGIN_TOKEN_HERE"
             }
         },
         {
-            "id": "ci",
+            "env": "ci",
             "auth": {
                 "token": "LOGIN_TOKEN_HERE"
             }
         },
         {
-            "id": "narrative",
+            "env": "prod",
+            "hostPrefix": "narrative",
             "aliases": [
-                "narrative-dev"
+                {
+                    "env": "narrative-dev"
+                }
             ],
             "auth": {
                 "token": "LOGIN_TOKEN_HERE"
