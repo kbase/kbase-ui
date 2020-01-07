@@ -100,6 +100,7 @@ class Spec {
                     }
                 }
             }
+
             const url = this.test.suite.context.config.url;
             browser.url(url);
             this.tasks.run();
@@ -255,7 +256,8 @@ class Task {
                 };
             case 'navigate':
                 return () => {
-                    browser.url('#' + this.interpValue(this.taskDef.path));
+                    const url = '#' + this.interpValue(this.taskDef.path);
+                    browser.url(url);
                 };
             case 'keys':
                 return () => {

@@ -46,14 +46,3 @@ tasks:
           value: avatar
   - action: click
     title: close menu
-  - wait: forText
-    timeout: 10000
-    title: Dashboard should begin to appears
-    text: Dashboard
-    selector:
-      type: absolute
-      path:
-        - type: plugin
-          value: mainwindow
-        - type: label
-          value: title

@@ -182,8 +182,8 @@ unit-tests:
 	$(KARMA) start test/unit-tests/karma.conf.js
 
 integration-tests:
-	@:$(call check_defined, host, first component of hostname)
-	$(GRUNT) integration-tests --host=$(host)
+	@:$(call check_defined, env, first component of hostname and kbase environment)
+	ENV=$(env) $(GRUNT) integration-tests --env=$(env)
 
 travis-tests:
 	$(GRUNT) test-travis
