@@ -23,7 +23,7 @@
 /*eslint strict: ["error", "global"] */
 'use strict';
 
-var Promise = require('bluebird'),
+const Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs-extra')),
     path = require('path'),
     pathExists = require('path-exists'),
@@ -35,7 +35,8 @@ var Promise = require('bluebird'),
     dir = Promise.promisifyAll(require('node-dir')),
     util = require('util'),
     handlebars = require('handlebars'),
-    numeral = require('numeral');
+    numeral = require('numeral'),
+    tar = require('tar');
 
 // running from kbase-ui/mutations/build.js
 // some binaries in kbase-ui/node-modules/.bin
@@ -855,16 +856,27 @@ function installPlugins(state) {
                                 mutant.info(`${plugin.name}: plugin building from configured cwd: ${plugin.cwd}`)
                                 srcDir = pluginDir.concat([plugin.cwd.split('/')]);
                             } else {
-                                srcDir = pluginDir.concat(['dist', 'plugin']);
-                                if (!pathExists.sync(srcDir.join('/'))) {
-                                    srcDir = pluginDir.concat(['src', 'plugin']);
-                                    if (!pathExists.sync(srcDir.join('/'))) {
-                                        throw new Error('Cannot find plugin directory: ' + plugin.name);
-                                    } else {
-                                        mutant.info(`${plugin.name}: plugin installing from src by default`)
-                                    }
+                                const distFile = pluginDir.concat(['dist.tgz']);
+                                if (pathExists.sync(distFile.join('/'))) {
+                                    mutant.info(`${plugin.name}: plugin installing from dist.tgz`);
+                                    tar.extract({
+                                        cwd: pluginDir.join('/'),
+                                        file: distFile.join('/'),
+                                        sync: true
+                                    });
+                                    srcDir = pluginDir.concat(['dist', 'plugin']);
                                 } else {
-                                    mutant.info(`${plugin.name}: plugin installing from dist by default`)
+                                    srcDir = pluginDir.concat(['dist', 'plugin']);
+                                    if (!pathExists.sync(srcDir.join('/'))) {
+                                        srcDir = pluginDir.concat(['src', 'plugin']);
+                                        if (!pathExists.sync(srcDir.join('/'))) {
+                                            throw new Error('Cannot find plugin directory: ' + plugin.name);
+                                        } else {
+                                            mutant.info(`${plugin.name}: plugin installing from src by default`)
+                                        }
+                                    } else {
+                                        mutant.info(`${plugin.name}: plugin installing from dist by default`)
+                                    }
                                 }
                             }
                             // const cwds = plugin.cwd
