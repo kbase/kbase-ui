@@ -42,6 +42,9 @@ build           = dev
 # Used to target the actual deploy config file (see kbase-ini-dir).
 env             = dev
 
+# The browser to test against
+browser      	= chrome
+
 # The custom docker network
 # For local development.
 net 			= kbase-dev
@@ -183,7 +186,8 @@ unit-tests:
 
 integration-tests:
 	@:$(call check_defined, env, first component of hostname and kbase environment)
-	ENV=$(env) $(GRUNT) integration-tests --env=$(env)
+	@:$(call check_defined, browser, the browser to test against)
+	ENV=$(env) BROWSER=$(browser) $(GRUNT) integration-tests --env=$(env)
 
 travis-tests:
 	$(GRUNT) test-travis
