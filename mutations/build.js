@@ -345,9 +345,6 @@ function fetchPluginsFromGit(state) {
                 mutant.log('...gitClone');
                 return gitClone(url, dest, branch).then(() => {
                     mutant.log('...buildPlugin');
-                    if (!plugin.prebuilt) {
-                        return buildPlugin(state, dest);
-                    }
                 });
             });
         });
@@ -895,10 +892,27 @@ function installPlugins(state) {
                                     return typeof plugin === 'object' && plugin.source.git;
                                 })
                                 .map(function (plugin) {
-                                    const cwds = plugin.cwd || 'dist/plugin',
-                                        cwd = cwds.split('/'),
-                                        srcDir = root.concat(['gitDownloads', plugin.globalName]).concat(cwd),
-                                        destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+                                    const pluginDir = root.concat(['gitDownloads', plugin.globalName]);
+                                    const destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+                                    let srcDir;
+                                    if (plugin.cwd) {
+                                        mutant.info(`${plugin.name}: plugin building from configured cwd: ${plugin.cwd}`)
+                                        const cwd = plugin.cwd.split('/');
+                                        srcDir = pluginDir.concat(cwd);
+                                    } else {
+                                        const distFile = pluginDir.concat(['dist.tgz']);
+                                        if (pathExists.sync(distFile.join('/'))) {
+                                            mutant.info(`${plugin.name}: plugin installing from dist.tgz`);
+                                            tar.extract({
+                                                cwd: pluginDir.join('/'),
+                                                file: distFile.join('/'),
+                                                sync: true
+                                            });
+                                            srcDir = pluginDir.concat(['dist', 'plugin']);
+                                        } else {
+                                            throw new Error('git plugin does not have an install method - neither cwd nor dist.tgz');
+                                        }
+                                    }
 
                                     mutant.ensureDir(destDir);
                                     return mutant.copyFiles(srcDir, destDir, '**/*');

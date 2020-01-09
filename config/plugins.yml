@@ -21,12 +21,12 @@ plugins:
       bower: {}
   - name: dashboard
     globalName: kbase-ui-plugin-dashboard
-    version: 3.1.1
+    version: 3.2.0
     source:
       bower: {}
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
-    version: 2.1.1
+    version: 2.1.2
     source:
       bower: {}
   - name: jgi-search
@@ -36,17 +36,17 @@ plugins:
       bower: {}
   - name: feeds
     globalName: kbase-ui-plugin-feeds
-    version: 1.0.1
+    version: 1.1.0
     source:
       bower: {}
   - name: catalog
     globalName: kbase-ui-plugin-catalog
-    version: 2.0.5
+    version: 2.1.0
     source:
       bower: {}
   - name: data-search
     globalName: kbase-ui-plugin-data-search
-    version: 1.0.3
+    version: 1.1.0
     source:
       bower: {}
   - name: organizations
@@ -61,9 +61,7 @@ plugins:
       bower: {}
   - name: job-browser2
     globalName: kbase-ui-plugin-job-browser2
-    version: 1.0.3
-    cwd: plugin
-    prebuilt: true
+    version: 1.1.1
     source:
       git: {}
   - name: react-profile-view
