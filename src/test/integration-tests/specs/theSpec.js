@@ -40,8 +40,8 @@ function main() {
         cwd: __dirname
     });
 
-    const commonSpecs = glob
-        .sync('common/*.yaml', {
+    const subtaskSpecs = glob
+        .sync('subtasks/*.yaml', {
             nodir: true,
             absolute: true,
             cwd: __dirname
@@ -99,7 +99,7 @@ function main() {
 
     const testSuite = new runner.Suite({
         testFiles: pluginTests,
-        commonSpecs,
+        subtaskSpecs,
         context
     });
 

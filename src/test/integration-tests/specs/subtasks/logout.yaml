@@ -1,3 +1,4 @@
+# "Logs out" the browser by removing the KBase session cookie.
 ---
 title: Logout Task
 tasks:
