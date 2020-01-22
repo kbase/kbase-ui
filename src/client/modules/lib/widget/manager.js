@@ -1,4 +1,4 @@
-define(['bluebird', './adapters/objectWidget', 'kb_lib/merge'], function (Promise, objectWidgetAdapter, merge) {
+define(['bluebird'], function (Promise) {
     'use strict';
 
     class WidgetManager {
@@ -26,36 +26,6 @@ define(['bluebird', './adapters/objectWidget', 'kb_lib/merge'], function (Promis
             return this.widgets[widgetId];
         }
 
-        makeFactoryWidget(widget, config) {
-            return new Promise((resolve, reject) => {
-                var required = [widget.module];
-                if (widget.css) {
-                    required.push('css!' + widget.module + '.css');
-                }
-                require(required, (factory) => {
-                    if (typeof factory === 'undefined') {
-                        // TODO: convert to real Error object
-                        reject({
-                            message: 'Factory widget maker is undefined for ' + widget.module,
-                            data: { widget: widget }
-                        });
-                        return;
-                    }
-                    if (factory.make === undefined) {
-                        reject('Factory widget does not have a "make" method: ' + widget.name + ', ' + widget.module);
-                        return;
-                    }
-                    try {
-                        resolve(factory.make(config));
-                    } catch (ex) {
-                        reject(ex);
-                    }
-                }, (error) => {
-                    reject(error);
-                });
-            });
-        }
-
         makeES6Widget(widget, config) {
             return new Promise((resolve, reject) => {
                 var required = [widget.module];
@@ -70,30 +40,19 @@ define(['bluebird', './adapters/objectWidget', 'kb_lib/merge'], function (Promis
                         Widget = module;
                     }
                     if (typeof Widget === 'undefined') {
-                        reject({
-                            message: 'Widget class is undefined for ' + widget.module,
-                            data: { widget: widget }
-                        });
-                        return;
-                    }
-                    try {
-                        resolve(new Widget(config));
-                    } catch (ex) {
-                        reject(ex);
+                        reject(new Error('Widget class is undefined for ' + widget.module));
+                    } else {
+                        try {
+                            resolve(new Widget(config));
+                        } catch (ex) {
+                            console.error('ERROR!!', widget, ex);
+                            reject(ex);
+                        }
                     }
                 }, (error) => {
+                    console.error('ERROR???', error);
                     reject(error);
                 });
-            });
-        }
-
-        makeObjectWidget(widget, config) {
-            return Promise.try(() => {
-                const configCopy = new merge.ShallowMerger({}).mergeIn(config).value();
-                configCopy.widgetDef = widget;
-                configCopy.initConfig = config;
-                const x = new objectWidgetAdapter.ObjectWidgetAdapter(configCopy);
-                return x;
             });
         }
 
@@ -118,22 +77,14 @@ define(['bluebird', './adapters/objectWidget', 'kb_lib/merge'], function (Promis
 
             let widgetPromise;
 
-            const widgetConfig = new merge.DeepMerger({}).mergeIn(config).value();
+            const widgetConfig = Object.assign({}, config);
 
             widgetConfig.runtime = this.runtime;
 
-            config = config || {};
-
             // How we create a widget depends on what type it is.
             switch (widgetDef.type) {
-            case 'factory':
-                widgetPromise = this.makeFactoryWidget(widgetDef, widgetConfig);
-                break;
             case 'es6':
                 widgetPromise = this.makeES6Widget(widgetDef, widgetConfig);
-                break;
-            case 'object':
-                widgetPromise = this.makeObjectWidget(widgetDef, widgetConfig);
                 break;
             default:
                 throw new Error('Unsupported widget type ' + widgetDef.type);

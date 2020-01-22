@@ -1,9 +1,34 @@
 {
-    "auth": {
-        "token": "LOGIN_TOKEN_HERE",
-        "username": "USERNAME_ASSOCIATED_WITH_TOKEN_HERE",
-        "realname": "REALNAME_ASSOCIATED_WITH_TOKEN_HERE"
+    "envDefault": {
+        "auth": {
+            "username": "kbaseuitest",
+            "realname": "KBase UI Test User"
+        }
     },
-    "env": "DEPLOY_ENV_HERE(ci, next, appdev, prod)",
-    "url": "LOCAL_URL_FOR_THE UI: e.g. https://ci.kbase.us"
+    "envs": [
+        {
+            "env": "ci",
+            "auth": {
+                "token": "LOGIN_TOKEN_HERE"
+            }
+        },
+        {
+            "env": "next",
+            "auth": {
+                "token": "LOGIN_TOKEN_HERE"
+            }
+        },
+        {
+            "env": "prod",
+            "hostPrefix": "narrative",
+            "aliases": [
+                {
+                    "env": "narrative-dev"
+                }
+            ],
+            "auth": {
+                "token": "LOGIN_TOKEN_HERE"
+            }
+        }
+    ]
 }

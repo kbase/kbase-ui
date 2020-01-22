@@ -8,9 +8,10 @@ const runner = require('./runner');
 const utils = require('./utils');
 const glob = require('glob');
 const path = require('path');
+const { Merger } = require('./merger');
 
-function loadData() {
-    const dataFiles = glob.sync('plugins/*/data/*.json', {
+function loadData(config) {
+    const dataFiles = glob.sync(`plugins/*/data/${config.env}/*.json`, {
         nodir: true,
         absolute: true,
         cwd: __dirname
@@ -19,8 +20,8 @@ function loadData() {
     const theData = {};
     dataFiles.forEach((file) => {
         const pluginData = utils.loadJSONFile(file);
-        const pluginName = file.split('/').slice(-3)[0];
-        Object.assign(theData, {[pluginName]: pluginData});
+        const pluginName = file.split('/').slice(-4)[0];
+        Object.assign(theData, { [pluginName]: pluginData });
     });
 
     return theData;
@@ -39,15 +40,15 @@ function main() {
         cwd: __dirname
     });
 
-    const commonSpecs = glob
-        .sync('common/*.yaml', {
+    const subTasks = glob
+        .sync('subtasks/*.yaml', {
             nodir: true,
             absolute: true,
             cwd: __dirname
         })
-        .reduce(function (common, match) {
-            common[path.basename(match, '.yaml')] = utils.loadYAMLFile(match);
-            return common;
+        .reduce(function (subTasks, match) {
+            subTasks[path.basename(match, '.yaml')] = utils.loadYAMLFile(match);
+            return subTasks;
         }, {});
 
     const pluginTests = jsonFiles
@@ -60,8 +61,37 @@ function main() {
             })
         );
 
-    const config = utils.loadJSONFile(__dirname + '/../config.json');
-    const plugins = loadData();
+    // Build the configuration.
+    // The configuration is per-deploy-environment.
+    // Each environment is an entry in the env property
+    // THe envDefault config property is applied to all environments.
+    const rawConfig = utils.loadJSONFile(__dirname + '/../config.json');
+    const envConfig = rawConfig.envs.reduce((config, envConfig) => {
+        const theEnvConfig = new Merger(rawConfig.envDefault).mergeIn(envConfig).value();
+        let hostPrefix;
+        if (theEnvConfig.hostPrefix) {
+            hostPrefix = theEnvConfig.hostPrefix;
+        } else {
+            hostPrefix = theEnvConfig.env;
+        }
+        theEnvConfig.url = `https://${hostPrefix}.kbase.us`;
+        config[theEnvConfig.env] = theEnvConfig;
+
+        // Handle other environments which are essential wrappers a canonical one.
+        // E.g. narrative-dev, narrative-refactor, appdev
+        if (envConfig.aliases) {
+            envConfig.aliases.forEach((alias) => {
+                const theEnvConfig = new Merger(rawConfig.envDefault).mergeIn(envConfig).value();
+                theEnvConfig.url = `https://${alias.hostPrefix || alias.env}.kbase.us`;
+                config[alias.env] = theEnvConfig;
+            });
+        }
+
+        return config;
+    }, {})[process.env.ENV];
+    const config = new Merger(rawConfig.envDefault).mergeIn(envConfig).value();
+
+    const plugins = loadData({ env: process.env.ENV });
     const context = {
         config,
         plugins
@@ -69,7 +99,7 @@ function main() {
 
     const testSuite = new runner.Suite({
         testFiles: pluginTests,
-        commonSpecs,
+        subTasks,
         context
     });
 

@@ -1,49 +1,46 @@
-define(['bluebird'], function (Promise) {
+define(['bluebird'], (Promise) => {
     'use strict';
 
     // Note that we use the global require here because we need to
     // update the global confirmation.
-    var prequire = Promise.promisify(window.require);
+    const prequire = Promise.promisify(window.require);
 
-    function factory(config) {
-        var runtime = config.runtime,
-            moduleBase = config.moduleBase || '/modules',
-            services = {};
+    class PluginManager {
+        constructor({ runtime, moduleBase }) {
+            this.runtime = runtime;
+            this.moduleBase = moduleBase || '/modules';
+            this.services = {};
+        }
 
         /*
          * All of these installXXX installers return an array of
          * promises.
          */
 
-        function registerService(serviceNames, serviceDef) {
-            serviceNames.forEach(function (name) {
-                services[name] = serviceDef;
+        registerService(serviceNames, serviceDef) {
+            serviceNames.forEach((name) => {
+                this.services[name] = serviceDef;
             });
         }
 
-        // function getService(name) {
-        //     return services[name];
-        // }
-
-        function arrayExtend(to, from) {
+        arrayExtend(to, from) {
             if (from) {
-                from.forEach(function (item) {
+                from.forEach((item) => {
                     to.push(item);
                 });
             }
             return to;
         }
 
-        function installIntoService(pluralTypeName, def, pluginConfig) {
-            return Promise.try(function () {
-                var typeName;
+        installIntoService(pluralTypeName, def, pluginConfig) {
+            return Promise.try(() => {
                 // weird, perhaps, way to strip off a terminal "s".
-                var nameMatch = pluralTypeName.match(/(.*?)(:?(s)|($))$/);
+                const nameMatch = pluralTypeName.match(/(.*?)(:?(s)|($))$/);
                 if (!nameMatch) {
                     return;
                 }
-                typeName = nameMatch[1];
-                if (!runtime.hasService(typeName)) {
+                const typeName = nameMatch[1];
+                if (!this.runtime.hasService(typeName)) {
                     console.error('missing service', typeName, def, pluginConfig);
                     throw {
                         name: 'MissingService',
@@ -54,7 +51,7 @@ define(['bluebird'], function (Promise) {
                 // NB to avoid an empty call to installIntoService, just omit the
                 // service from the install section.
                 if (def) {
-                    var service = runtime.getService(typeName);
+                    const service = this.runtime.getService(typeName);
                     if (service.pluginHandler) {
                         return service.pluginHandler(def, pluginConfig);
                     }
@@ -62,14 +59,15 @@ define(['bluebird'], function (Promise) {
             });
         }
 
-        function installLegacyPlugin(pluginLocation, pluginDef) {
+        installLegacyPlugin(pluginLocation, pluginDef) {
             // build up a list of modules and add them to the require config.
-            return Promise.try(function () {
-                var paths = {},
-                    shims = {},
-                    sourcePath = pluginLocation.directory,
-                    dependencies = [],
-                    usingSourceModules = false;
+            return Promise.try(() => {
+                const paths = {};
+                const shims = {};
+                const sourcePath = pluginLocation.directory;
+                const dependencies = [];
+
+                let usingSourceModules = false;
 
                 // load any styles.
                 // NB these are styles for the plugin as a whole.
@@ -77,7 +75,7 @@ define(['bluebird'], function (Promise) {
                 // of the panel and widgets. widget css code is below...
                 if (pluginDef.source) {
                     if (pluginDef.source.styles) {
-                        pluginDef.source.styles.forEach(function (style) {
+                        pluginDef.source.styles.forEach((style) => {
                             if (style.file) {
                                 dependencies.push('css!' + sourcePath + '/resources/css/' + style.file);
                             }
@@ -89,17 +87,17 @@ define(['bluebird'], function (Promise) {
                         if (pluginDef.source.modules.length > 0) {
                             usingSourceModules = true;
                         }
-                        pluginDef.source.modules.forEach(function (source) {
-                            var jsSourceFile = source.file,
-                                matched = jsSourceFile.match(/^([\S\s]+?)(?:(?:\.js$)|(?:$))/);
+                        pluginDef.source.modules.forEach((source) => {
+                            let jsSourceFile = source.file;
+                            const matched = jsSourceFile.match(/^([\S\s]+?)(?:(?:\.js$)|(?:$))/);
                             if (matched) {
                                 jsSourceFile = matched[1];
-                                var sourceFile = sourcePath + '/modules/' + jsSourceFile;
+                                const sourceFile = sourcePath + '/modules/' + jsSourceFile;
                                 paths[source.module] = sourceFile;
                                 // A module may also have an accompanying css file, which will
                                 // be added as a dependency via shims.
                                 if (source.css) {
-                                    var styleModule = source.module + '_css';
+                                    const styleModule = source.module + '_css';
                                     paths[styleModule] = sourceFile;
                                     shims[source.module] = { deps: ['css!' + styleModule] };
                                 }
@@ -119,7 +117,7 @@ define(['bluebird'], function (Promise) {
                 // NB: this implies that the plugin package name is unique in
                 // the system. To enforce or at least help developers with this
                 // we should have a plugin registry.
-                define('kb_plugin_' + pluginDef.package.name, [], function () {
+                define('kb_plugin_' + pluginDef.package.name, [], () => {
                     return {
                         plugin: {
                             name: pluginDef.package.name,
@@ -128,51 +126,52 @@ define(['bluebird'], function (Promise) {
                                 // css through requirejs
                                 modulePath: '/' + sourcePath + '/resources',
                                 // to be used for document references, e.g. img, css doc
-                                documentPath: moduleBase + '/' + sourcePath + '/resources'
+                                documentPath: this.moduleBase + '/' + sourcePath + '/resources'
                             },
                             path: '/' + sourcePath + '/resources',
                             modulePath: '/' + sourcePath + '/resources',
-                            fullPath: moduleBase + '/' + sourcePath + '/resources'
+                            fullPath: this.moduleBase + '/' + sourcePath + '/resources'
                         }
                     };
                 });
 
-                var pluginConfig = {
+                const pluginConfig = {
                     usingSourceModules: usingSourceModules,
                     root: sourcePath,
                     moduleRoot: sourcePath + '/modules',
-                    resourcesRoot: moduleBase + '/' + sourcePath + '/resources'
+                    resourcesRoot: this.moduleBase + '/' + sourcePath + '/resources'
                 };
 
                 // Now install any ui service configuration.
                 if (pluginDef.install) {
-                    return prequire(dependencies).then(() => {
-                        var installSteps = [];
+                    return prequire(dependencies)
+                        .then(() => {
+                            const installSteps = [];
 
-                        Object.keys(pluginDef.install).forEach(function (serviceName) {
-                            var installDef = pluginDef.install[serviceName],
-                                intallationPromise = installIntoService(serviceName, installDef, pluginConfig);
-                            if (intallationPromise) {
-                                arrayExtend(installSteps, [intallationPromise]);
-                            }
+                            Object.keys(pluginDef.install).forEach((serviceName) => {
+                                const installDef = pluginDef.install[serviceName];
+                                const intallationPromise = this.installIntoService(serviceName, installDef, pluginConfig);
+                                if (intallationPromise) {
+                                    this.arrayExtend(installSteps, [intallationPromise]);
+                                }
+                            });
+                            // Do all of the install steps.
+                            return Promise.all(installSteps);
                         });
-                        // Do all of the install steps.
-                        return Promise.all(installSteps);
-                    });
                 } else {
                     return null;
                 }
             });
         }
 
-        function installIFramePlugin(pluginLocation, pluginDef) {
+        installIFramePlugin(pluginLocation, pluginDef) {
             // build up a list of modules and add them to the require config.
-            return Promise.try(function () {
-                var sourcePath = pluginLocation.directory,
-                    dependencies = [],
-                    usingSourceModules = false;
+            return Promise.try(() => {
+                const sourcePath = pluginLocation.directory;
+                const dependencies = [];
+                const usingSourceModules = false;
 
-                var pluginConfig = {
+                const pluginConfig = {
                     usingSourceModules: usingSourceModules,
                     root: sourcePath,
                     iframePath: sourcePath + '/iframe_root/index.html'
@@ -181,13 +180,13 @@ define(['bluebird'], function (Promise) {
                 // Now install any ui service configuration.
                 if (pluginDef.install) {
                     return prequire(dependencies).then(() => {
-                        var installSteps = [];
+                        const installSteps = [];
 
-                        Object.keys(pluginDef.install).forEach(function (serviceName) {
-                            var installDef = pluginDef.install[serviceName],
-                                intallationPromise = installIntoService(serviceName, installDef, pluginConfig);
+                        Object.keys(pluginDef.install).forEach((serviceName) => {
+                            const installDef = pluginDef.install[serviceName];
+                            const intallationPromise = this.installIntoService(serviceName, installDef, pluginConfig);
                             if (intallationPromise) {
-                                arrayExtend(installSteps, [intallationPromise]);
+                                this.arrayExtend(installSteps, [intallationPromise]);
                             }
                         });
                         // Do all of the install steps.
@@ -199,40 +198,40 @@ define(['bluebird'], function (Promise) {
             });
         }
 
-        function installPlugin(pluginLocation, pluginDef) {
+        installPlugin(pluginLocation, pluginDef) {
             // build up a list of modules and add them to the require config.
-            return Promise.try(function () {
+            return Promise.try(() => {
                 // Plugin type - legacy or iframe.
                 const pluginType = pluginDef.package.type || 'legacy';
 
                 switch (pluginType) {
                 case 'legacy':
-                    return installLegacyPlugin(pluginLocation, pluginDef);
+                    return this.installLegacyPlugin(pluginLocation, pluginDef);
                 case 'iframe':
-                    return installIFramePlugin(pluginLocation, pluginDef);
+                    return this.installIFramePlugin(pluginLocation, pluginDef);
                 default:
                     throw new Error('Unsupported plugin type: ' + pluginType);
                 }
             });
         }
 
-        function makePromiseIterator(actions) {
-            return new Promise(function (topResolve, topReject) {
+        makePromiseIterator(actions) {
+            return new Promise((topResolve, topReject) => {
                 function promiseIterator(actions) {
                     if (actions === undefined || actions.length === 0) {
                         topResolve('DONE');
                     }
-                    var next = actions[0],
-                        rest = actions.slice(1);
-                    Promise.try(function () {
-                        return new Promise(function (resolve, reject, notify) {
+                    const next = actions[0];
+                    const rest = actions.slice(1);
+                    Promise.try(() => {
+                        return new Promise((resolve, reject, notify) => {
                             next(resolve, reject, notify);
                         });
                     })
-                        .then(function () {
+                        .then(() => {
                             return promiseIterator(rest);
                         })
-                        .catch(function (err) {
+                        .catch((err) => {
                             topReject(err);
                         });
                 }
@@ -245,57 +244,48 @@ define(['bluebird'], function (Promise) {
          * @param {type} pluginDef
          * @returns {Promise}
          */
-        function loadPlugin(pluginDef) {
+        loadPlugin(pluginDef) {
             if (pluginDef.disabled) {
                 return;
             }
-            return new Promise(function (resolve, reject) {
-                require(['yaml!' + pluginDef.directory + '/config.yml'], function (pluginConfig) {
-                    installPlugin(pluginDef, pluginConfig)
-                        .then(function () {
+            return new Promise((resolve, reject) => {
+                require(['yaml!' + pluginDef.directory + '/config.yml'], (pluginConfig) => {
+                    this.installPlugin(pluginDef, pluginConfig)
+                        .then(() => {
                             resolve(pluginDef);
                         })
-                        .catch(function (err) {
+                        .catch((err) => {
                             reject(err);
                         });
                 });
             });
         }
 
-        function installPlugins(pluginDefs) {
-            var loaders = Object.keys(pluginDefs).map(function (pluginName) {
-                return loadPlugin(pluginDefs[pluginName]);
+        installPlugins(pluginDefs) {
+            const loaders = Object.keys(pluginDefs).map((pluginName) => {
+                return this.loadPlugin(pluginDefs[pluginName]);
             });
             return Promise.all(loaders);
         }
 
         // plugins are in an array of arrays. each top level array is processed
         // strictly in sequential order.
-        function installPluginSets(pluginDefs) {
-            var loadSets = pluginDefs.map(function (set) {
-                return function (resolve, reject) {
-                    installPlugins(set)
-                        .then(function () {
+        installPluginSets(pluginDefs) {
+            const loadSets = pluginDefs.map((set) => {
+                return (resolve, reject) => {
+                    this.installPlugins(set)
+                        .then(() => {
                             resolve();
                         })
-                        .catch(function (err) {
+                        .catch((err) => {
                             reject(err);
                         });
                 };
             });
 
-            return makePromiseIterator(loadSets);
+            return this.makePromiseIterator(loadSets);
         }
-
-        return {
-            installPlugins: installPlugins,
-            installPluginSets: installPluginSets,
-            registerService: registerService
-        };
     }
-    return {
-        make: function (config) {
-            return factory(config);
-        }
-    };
+
+    return PluginManager;
 });

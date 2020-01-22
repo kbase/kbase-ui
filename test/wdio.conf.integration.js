@@ -1,3 +1,34 @@
+const env = process.env.ENV;
+let hostPrefix;
+if (env === 'prod') {
+    hostPrefix = 'narrative';
+} else {
+    hostPrefix = env;
+}
+console.log('TEST ENV        : ' + env);
+console.log('TEST HOST PREFIX: ' + hostPrefix);
+
+const browserName = process.env.BROWSER
+// const browserName = 'chrome';
+const browserConfigs = {
+    chrome: {
+        browserName: "chrome",
+        acceptInsecureCerts: true,
+        maxInstances: 1
+    },
+    firefox: {
+        browserName: "firefox",
+        acceptInsecureCerts: true,
+        maxInstances: 1
+    },
+    safari: {
+        browserName: "safari"
+    }
+}
+const browser = browserConfigs[browserName]
+
+console.log('TEST BROWSER    : ' + browserName);
+
 exports.config = {
     //
     // ====================
@@ -37,38 +68,40 @@ exports.config = {
     // and 30 processes will get spawned. The property handles how many capabilities
     // from the same test should run tests.
     //
-    maxInstances: 10,
+    maxInstances: 1,
+    maxInstancesPerCapability: 1,
     //
     // If you have trouble getting all important capabilities together, check out the
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://docs.saucelabs.com/reference/platforms-configurator
     //
     capabilities: [
-        {
-            // maxInstances can get overwritten per capability. So if you have an in-house Selenium
-            // grid with only 5 firefox instances available you can make sure that not more than
-            // 5 instances get started at a time.
-            maxInstances: 5,
-            //
-            browserName: "chrome",
-            acceptInsecureCerts: true
-            // If outputDir is provided WebdriverIO can capture driver session logs
-            // it is possible to configure which logTypes to include/exclude.
-            // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
-            // excludeDriverLogs: ['bugreport', 'server'],
-            // 'goog:chromeOptions': {
-            //     args: ['--headless']
-            // }
-        }
+        browser
         // {
-        //     maxInstances: 5,
+        //     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
+        //     // grid with only 5 firefox instances available you can make sure that not more than
+        //     // 5 instances get started at a time.
+        //     // maxInstances: 5,
+        //     //
+        //     browserName: "chrome",
+        //     acceptInsecureCerts: true
+        //     // If outputDir is provided WebdriverIO can capture driver session logs
+        //     // it is possible to configure which logTypes to include/exclude.
+        //     // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
+        //     // excludeDriverLogs: ['bugreport', 'server'],
+        //     // 'goog:chromeOptions': {
+        //     //     args: ['--headless']
+        //     // }
+        // }
+        // {
+        //     // maxInstances: 5,
         //     browserName: 'firefox',
         //     acceptInsecureCerts: true
         // }
         // {
-        //     maxInstances: 5,
+        //     // maxInstances: 5,
         //     browserName: 'safari',
-        //     acceptInsecureCerts: true
+        //     // acceptInsecureCerts: true
         // }
     ],
     //
@@ -102,7 +135,7 @@ exports.config = {
     // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
     // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
     // gets prepended directly.
-    baseUrl: "https://ci.kbase.us",
+    baseUrl: `https://${hostPrefix}.kbase.us`,
     //
     // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,
@@ -146,7 +179,7 @@ exports.config = {
         // The Jasmine framework allows interception of each assertion in order to log the state of the application
         // or website depending on the result. For example, it is pretty handy to take a screenshot every time
         // an assertion fails.
-    expectationResultHandler: function (passed, assertion) {
+        expectationResultHandler: function (passed, assertion) {
             // do something
         }
     }

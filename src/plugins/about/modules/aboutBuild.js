@@ -6,9 +6,6 @@ define(['bluebird', 'kb_lib/html', 'kb_lib/htmlBootstrapBuilders', 'bootstrap'],
         p = t('p'),
         div = t('div');
 
-    /*
-     * The widget factory function implements the widget interface.
-     */
     class AboutBuild {
         constructor({ runtime }) {
             this.runtime = runtime;

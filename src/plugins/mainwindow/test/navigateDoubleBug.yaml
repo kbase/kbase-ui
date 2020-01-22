@@ -1,0 +1,195 @@
+---
+description: Sidebar Nav Navigation Tests without Authentication
+subtasks:
+  clicks:
+    title: 5 clicks
+    tasks:
+      - action: click
+      - action: pause
+        for:
+          random: [0, 50]
+      - action: click
+      - action: pause
+        for:
+          random: [0, 50]
+      - action: click
+      - action: pause
+        for:
+          random: [0, 50]
+      - action: click
+      - action: pause
+        for:
+          random: [0, 50]
+      - action: click
+
+specs:
+  - description: Navigation between items with multiple clicks should result in just one instance of a plugin
+    baseSelector:
+      # - type: plugin
+      #   value: mainwindow
+    tasks:
+      - subtask: login
+      - wait: forElement
+        selector:
+          - type: plugin
+            value: mainwindow
+          - type: widget
+            value: sidebarNav
+          - type: element
+            value: menu-items
+          - type: element
+            value: menu-item
+        count:
+          equal: 7
+
+      - subtask: navigateToDashboard
+
+      # Now for Orgs
+      # First click the menu button
+      - action: switchToParent
+      - wait: forElement
+        timeout: 1000
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: organizations
+
+      - subtask: clicks
+
+      - action: pause
+        for: 5000
+      - wait: forElementCount
+        timeout: 1000
+        selector:
+          - type: element
+            value: widgetMount:body-widget
+        count:
+          equals: 1
+
+      - subtask: navigateToDashboard
+
+      # Now for Catalog
+      # First click the menu button
+      - action: switchToParent
+      - wait: forElement
+        timeout: 1000
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: catalog
+      - subtask: clicks
+      - action: pause
+        for: 5000
+      - wait: forElementCount
+        timeout: 1000
+        selector:
+          - type: element
+            value: widgetMount:body-widget
+        count:
+          equals: 1
+
+      - subtask: navigateToDashboard
+
+      # Now for Search
+      # First click the menu button
+      - action: switchToParent
+      - wait: forElement
+        timeout: 1000
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: search
+      - subtask: clicks
+      - action: pause
+        for: 5000
+      - wait: forElementCount
+        timeout: 1000
+        selector:
+          - type: element
+            value: widgetMount:body-widget
+        count:
+          equals: 1
+
+      - subtask: navigateToDashboard
+
+      # Now for Jobs
+      # First click the menu button
+      - action: switchToParent
+      - wait: forElement
+        timeout: 1000
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: jobbrowser
+      - subtask: clicks
+      - action: pause
+        for: 5000
+      - wait: forElementCount
+        timeout: 1000
+        selector:
+          - type: element
+            value: widgetMount:body-widget
+        count:
+          equals: 1
+
+      - subtask: navigateToDashboard
+
+      # Now for Account
+      # First click the menu button
+      - action: switchToParent
+      - wait: forElement
+        timeout: 1000
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: account
+      - subtask: clicks
+      - action: pause
+        for: 5000
+      - wait: forElementCount
+        timeout: 1000
+        selector:
+          - type: element
+            value: widgetMount:body-widget
+        count:
+          equals: 1
+
+      - subtask: navigateToDashboard
+
+      # Now for Feed
+      # First click the menu button
+      - action: switchToParent
+      - wait: forElement
+        timeout: 1000
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: feeds
+      - subtask: clicks
+      - action: pause
+        for: 5000
+      - wait: forElementCount
+        timeout: 1000
+        selector:
+          - type: element
+            value: widgetMount:body-widget
+        count:
+          equals: 1

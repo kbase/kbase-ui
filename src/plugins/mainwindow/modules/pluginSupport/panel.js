@@ -1,12 +1,12 @@
-define(['module', './iframer', 'css!./panel.css'], function (module, Iframer) {
-    'use strict';
+define([
+    './iframer',
 
-    // The module url includes the initial / and, so we start after that,
-    // and we also remove this file and the modules directory.
-    // const pluginPath = module.uri
-    //     .split('/')
-    //     .slice(1, -2)
-    //     .join('/');
+    // for effect
+    'css!./panel.css'
+], function (
+    Iframer
+) {
+    'use strict';
 
     class Panel {
         constructor(config) {
@@ -20,6 +20,7 @@ define(['module', './iframer', 'css!./panel.css'], function (module, Iframer) {
         attach(node) {
             this.hostNode = node;
             this.container = node.appendChild(document.createElement('div'));
+            this.container.setAttribute('data-k-b-testhook-widget', 'pluginSupport');
             this.container.classList.add('plugin_panel');
         }
 
@@ -28,6 +29,10 @@ define(['module', './iframer', 'css!./panel.css'], function (module, Iframer) {
 
             if (params.viewParams) {
                 params.viewParams = JSON.parse(params.viewParams);
+            }
+
+            if (typeof params.plugin === 'undefined') {
+                throw new Error('Plugin did not pass the plugin name via params');
             }
 
             const pluginPath = ['modules', 'plugins', params.plugin].join('/');

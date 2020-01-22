@@ -41,7 +41,6 @@
                 },
                 "loginWidget": "kb_login_signin"
             },
-			"type": {},
 			"userprofile": {},
 			"widget": {},
 			"feeds": {},
@@ -211,7 +210,8 @@
 			"version": {
 				"path": "/",
 				"propertyPath": "version",
-				"minimum": "{{ .Env.services_auth2_version_minimum }}"
+				"minimum": "{{ .Env.services_auth2_version_minimum }}",
+                "required": "^0.4.0"
 			},
 			"providers": [{{ range $i, $v := split .Env.services_auth2_providers "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
 		},
@@ -229,7 +229,8 @@
 			"type": "jsonrpc",
 			"version": {
 				"method": "version",
-				"minimum": "2.1.0"
+				"minimum": "2.1.0",
+                "required": "^2.1.0"
 			}
 		},
 		"Feeds": {
@@ -243,7 +244,8 @@
 			"version": {
 				"path": "/",
 				"propertyPath": "version",
-				"minimum": "1.0.1"
+				"minimum": "1.0.1",
+                "required": "^1.0.1"
 			}
 		},
 		"Groups": {
@@ -257,16 +259,9 @@
 			"version": {
 				"path": "/",
 				"propertyPath": "version",
-				"minimum": "0.1.0"
+				"minimum": "0.1.0",
+                "required": "^0.1.0"
 			}
-		},
-		"ftp_service": {
-			"aliases": [
-				"ftp"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/kb-ftp-api/v0",
-			"root": "/data/bulk",
-			"name": "Staging Service"
 		},
 		"NarrativeMethodStore": {
 			"aliases": [
@@ -279,7 +274,8 @@
 			"type": "jsonrpc",
 			"version": {
 				"method": "ver",
-				"minimum": "0.3.6"
+				"minimum": "0.3.6",
+                "required": "^0.3.6"
 			}
 		},
 		"shock": {
@@ -296,7 +292,8 @@
 			"type": "jsonrpc",
 			"version": {
 				"method": "ver",
-				"minimum": "0.2.0"
+				"minimum": "0.2.0",
+				"required": "^0.2.0"
 			}
 		},
 		"UserAndJobState": {
@@ -331,7 +328,8 @@
 			"version": {
 				"method": "status",
 				"propertyPath": "version",
-				"minimum": "0.2.0"
+				"minimum": "0.2.0",
+				"required": "^0.2.0"
 			}
 		},
 		"ServiceWizard": {
@@ -344,7 +342,8 @@
 			"type": "jsonrpc",
 			"version": {
 				"method": "version",
-				"minimum": "0.4.0"
+				"minimum": "0.4.0",
+				"required": "^0.4.0"
 			}
 		},
 		"Workspace": {
@@ -357,7 +356,8 @@
 			"type": "jsonrpc",
 			"version": {
 				"method": "ver",
-				"minimum": "0.9.0"
+				"minimum": "0.9.0",
+                "required": "^0.9.0"
 			}
 		},
 		"RelationEngine": {

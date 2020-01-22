@@ -1,30 +1,18 @@
 define([
-    'bluebird',
-    'kb_lib/html',
-    'kb_common/domEvent2',
     'kb_plugin_login',
-    'bootstrap'], (
-    Promise,
-    html,
-    DomEvents,
-    Plugin
+    'preact',
+    'htm',
+    '../components/Signin'
+], (
+    Plugin,
+    preact,
+    htm,
+    Signin
 ) => {
     'use strict';
 
-    function cleanText(text) {
-        const n = document.createElement('div');
-        n.textContent = text;
-        return n.innerHTML;
-    }
-
-    const t = html.tag,
-        button = t('button'),
-        div = t('div'),
-        a = t('a'),
-        span = t('span'),
-        ul = t('ul'),
-        li = t('li'),
-        img = t('img');
+    const { h, render } = preact;
+    const html = htm.bind(h);
 
     class SigninWidget {
         constructor({ runtime }) {
@@ -39,11 +27,11 @@ define([
             this.hostNode = null;
             this.container = null;
             this.isLoginView = null;
+            this.profile = null;
+            this.imagePath = Plugin.plugin.fullPath + '/images';
         }
 
-        handleSignout(e) {
-            e.preventDefault();
-
+        doSignout() {
             this.runtime
                 .service('session')
                 .logout()
@@ -59,229 +47,33 @@ define([
                 });
         }
 
-        buildAvatarUrl(profile) {
-            switch (profile.profile.userdata.avatarOption || 'gravatar') {
-            case 'gravatar':
-                var gravatarDefault = profile.profile.userdata.gravatarDefault || 'identicon';
-                var gravatarHash = profile.profile.synced.gravatarHash;
-                if (gravatarHash) {
-                    return (
-                        'https://www.gravatar.com/avatar/' + gravatarHash + '?s=32&amp;r=pg&d=' + gravatarDefault
-                    );
-                } else {
-                    return Plugin.plugin.fullPath + '/images/nouserpic.png';
-                }
-            case 'silhouette':
-            case 'mysteryman':
-            default:
-                return Plugin.plugin.fullPath + '/images/nouserpic.png';
+        getProfile() {
+            if (this.runtime.service('session').isLoggedIn()) {
+                return this.runtime
+                    .service('userprofile')
+                    .getProfile()
+                    .then((profile) => {
+                        this.profile = profile;
+                        this.render();
+                    })
+                    .catch((err) => {
+                        // TODO: render error
+                        console.error('ERROR', err);
+                    });
+            } else {
+                this.profile = null;
+                this.render();
             }
-        }
-
-        buildAvatar(profile) {
-            if (!profile || !profile.profile) {
-                console.warn('no profile?', profile);
-                return '';
-            }
-            const avatarUrl = this.buildAvatarUrl(profile);
-
-            return img({
-                src: avatarUrl,
-                style: {
-                    width: '40px;'
-                },
-                class: 'login-button-avatar',
-                dataElement: 'avatar'
-            });
-        }
-
-        renderLogin(events) {
-            return Promise.try(() => {
-                // TODO: do better!
-                if (this.runtime.service('session').isLoggedIn()) {
-                    return this.runtime
-                        .service('userprofile')
-                        .getProfile()
-                        .then((profile) => {
-                            if (!profile) {
-                                // Don't bother rendering yet if the profile is not ready
-                                // yet.
-                                return;
-                            }
-                            const realname = cleanText(profile.user.realname);
-                            const username = cleanText(profile.user.username);
-                            return div(
-                                {
-                                    class: 'navbar container-fluid'
-                                },
-                                div(
-                                    {
-                                        class: 'navbar-right'
-                                    },
-                                    div(
-                                        {
-                                            class: 'dropdown',
-                                            style: 'display:inline-block',
-                                            dataKBTesthookMenu: 'signed-in'
-                                        },
-                                        [
-                                            button(
-                                                {
-                                                    type: 'button',
-                                                    class: 'btn btn-default dropdown-toggle',
-                                                    dataToggle: 'dropdown',
-                                                    ariaExpanded: 'false',
-                                                    dataKBTesthookButton: 'avatar'
-                                                },
-                                                [
-                                                    this.buildAvatar(profile),
-                                                    span({ class: 'caret', style: 'margin-left: 5px;' })
-                                                ]
-                                            ),
-                                            ul({ class: 'dropdown-menu', role: 'menu' }, [
-                                                li({}, [
-                                                    div(
-                                                        {
-                                                            display: 'inline-block',
-                                                            dataElement: 'user-label',
-                                                            style: {
-                                                                textAlign: 'center'
-                                                            }
-                                                        },
-                                                        [
-                                                            div(
-                                                                {
-                                                                    dataKBTesthookLabel: 'realname'
-                                                                },
-                                                                realname
-                                                            ),
-                                                            div(
-                                                                {
-                                                                    style: {
-                                                                        fontStyle: 'italic'
-                                                                    },
-                                                                    dataKBTesthookLabel: 'username'
-                                                                },
-                                                                username
-                                                            )
-                                                        ]
-                                                    )
-                                                ]),
-                                                li({ class: 'divider' }),
-                                                li({}, [
-                                                    a(
-                                                        {
-                                                            href: '/#people',
-                                                            dataMenuItem: 'user-profile',
-                                                            dataKBTesthookButton: 'user-profile',
-                                                            style: {
-                                                                display: 'flex',
-                                                                flexDirection: 'row',
-                                                                alignItems: 'center'
-                                                            }
-
-                                                        },
-                                                        [
-                                                            div(
-                                                                {
-                                                                    style: {
-                                                                        flex: '0 0 34px'
-                                                                    }
-                                                                },
-                                                                span({
-                                                                    class: 'fa fa-user',
-                                                                    style: {
-                                                                        fontSize: '150%',
-                                                                    }
-                                                                })
-                                                            ),
-                                                            div({
-                                                                style: {
-                                                                    flex: '1 1 0px'
-                                                                }
-                                                            }, 'Your Profile')
-                                                        ]
-                                                    )
-                                                ]),
-                                                li({}, [
-                                                    a(
-                                                        {
-                                                            href: '#',
-                                                            dataMenuItem: 'logout',
-                                                            dataKBTesthookButton: 'logout',
-                                                            id: events.addEvent({
-                                                                type: 'click',
-                                                                handler: this.handleSignout.bind(this)
-                                                            }),
-                                                            style: {
-                                                                display: 'flex',
-                                                                flexDirection: 'row',
-                                                                alignItems: 'center'
-                                                            }
-                                                        },
-                                                        [
-                                                            div(
-                                                                {
-                                                                    style: {
-                                                                        flex: '0 0 34px'
-                                                                    }
-                                                                },
-                                                                span({
-                                                                    class: 'fa fa-sign-out',
-                                                                    style: {
-                                                                        fontSize: '150%',
-                                                                        marginRight: '10px'
-                                                                    }
-                                                                })
-                                                            ),
-                                                            div({
-                                                                style: {
-                                                                    flex: '1 1 0px'
-                                                                }
-                                                            }, 'Sign Out')
-                                                        ]
-                                                    )
-                                                ])
-                                            ])
-                                        ]
-                                    )
-                                )
-                            );
-                        });
-                }
-                return span(
-                    {
-                        dataKBTesthookWidget: 'signin'
-                    },
-                    a(
-                        {
-                            class: 'btn btn-primary navbar-btn kb-nav-btn',
-                            disabled: this.isLoginView,
-                            dataButton: 'signin',
-                            dataKBTesthookButton: 'signin',
-                            href: '/#login'
-                        },
-                        [
-                            div({
-                                class: 'fa fa-sign-in  fa-inverse',
-                                style: { marginRight: '5px' }
-                            }),
-                            div({ class: 'kb-nav-btn-txt' }, 'Sign In')
-                        ]
-                    )
-                );
-            });
         }
 
         render() {
-            const events = DomEvents.make({
-                node: this.container
-            });
-            return this.renderLogin(events)
-                .then((loginContent) => {
-                    this.container.innerHTML = loginContent;
-                    events.attachEvents();
-                });
+            const props = {
+                profile: this.profile,
+                signout: this.doSignout.bind(this),
+                isLoginView: this.isLoginView
+            };
+            const component = html`<${Signin} ...${props}/>`;
+            render(component, this.container);
         }
 
         // LIFECYCLE API
@@ -294,10 +86,13 @@ define([
         }
 
         start() {
+            // Refetch the profile (and re-render) if the user profile in the ui has
+            // been changed.
             this.runtime.service('userprofile').onChange(() => {
-                this.render();
+                this.getProfile();
             });
 
+            // Detect whether we should disable the login button.
             this.runtime.receive('route', 'routed', (message) => {
                 const path = message.data.request.path.join('/');
                 if (path === 'login') {
@@ -308,7 +103,8 @@ define([
                 this.render();
             });
 
-            return this.render();
+            // Get the initial user profile (or not)
+            this.getProfile();
         }
 
         detach() {

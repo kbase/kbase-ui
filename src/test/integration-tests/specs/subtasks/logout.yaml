@@ -1,3 +1,4 @@
+# "Logs out" the browser by removing the KBase session cookie.
 ---
 title: Logout Task
 tasks:
@@ -6,4 +7,3 @@ tasks:
     params:
       name: kbase_session
       path: "/"
-      value: "${config.auth.token}"

@@ -1,4 +1,12 @@
-define(['kb_lib/html', './windowChannel', 'kb_lib/httpUtils'], function (html, WindowChannel, httpUtils) {
+define([
+    'kb_lib/html',
+    './windowChannel',
+    'kb_lib/httpUtils'
+], function (
+    html,
+    WindowChannel,
+    httpUtils
+) {
     'use strict';
 
     const t = html.tag,
