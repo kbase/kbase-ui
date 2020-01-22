@@ -345,7 +345,7 @@ define([], () => {
             if (location.params) {
                 queryString = paramsToQuery(location.params);
             }
-            // Oops, may be encoded as query
+            // Oops, may be provided as "query" property
             if (location.query) {
                 queryString = paramsToQuery(location.query);
             }
@@ -367,7 +367,19 @@ define([], () => {
                 if (location.replace) {
                     this.replacePath('#' + finalPath);
                 } else {
-                    window.location.hash = '#' + finalPath;
+                    if (location.urlPath) {
+                        const url = new URL(window.location.toString());
+                        url.hash = '#' + finalPath;
+                        url.pathname = location.urlPath;
+                        window.location.assign(url.toString());
+                    } else {
+
+                        const url = new URL(window.location.toString());
+                        url.hash = '#' + finalPath;
+                        url.pathname = '';
+                        window.location.assign(url.toString());
+                        // window.location.hash = '#' + finalPath;
+                    }
                 }
             }
         }

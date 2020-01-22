@@ -30,7 +30,7 @@ define([
                     a({
                         dataBind: {
                             attr: {
-                                href: '$data.uri ? $data.uri : "#" + $data.path',
+                                href: '$data.uri ? $data.uri : "/#" + $data.path',
                                 target: '$data.newWindow ? "_blank" : null'
                             }
                         }

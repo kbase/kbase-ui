@@ -45,6 +45,7 @@ define([
                     throw ex;
                 }
             }
+
             this.runtime.send('route', 'routing', handler);
             this.currentRouteHandler = handler;
 
