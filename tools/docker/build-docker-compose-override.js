@@ -24,11 +24,11 @@ function mergePlugins(root, config, args) {
         plugins.forEach((pluginName) => {
             const pluginRoot = root + '/../kbase-ui-plugin-' + pluginName;
             let pluginDir = pluginRoot + '/dist/plugin';
-
             if (!fs.existsSync(pluginDir)) {
                 pluginDir = pluginRoot + '/src/plugin';
                 if (!fs.existsSync(pluginDir)) {
                     pluginDir = pluginRoot + '/plugin';
+                    console.log("pluginDir", pluginDir)
                     if (!fs.existsSync(pluginDir)) {
                         throw new Error('Plugin directory not found: ' + pluginDir);
                     }
