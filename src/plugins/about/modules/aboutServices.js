@@ -122,7 +122,6 @@ define([
             return new Promise((resolve) => {
                 const next = (itersLeft) => {
                     if (itersLeft === 0) {
-                        // console.log('[perf] ', measures);
                         resolve({
                             measures: measures,
                             total: this.sum(measures),
@@ -133,7 +132,6 @@ define([
                         call().then(() => {
                             const elapsed = new Date().getTime() - start;
                             measures.push(elapsed);
-                            // console.log(`[perf] ${elapsed}, ${itersLeft}`);
                             next(itersLeft - 1);
                             return null;
                         })
