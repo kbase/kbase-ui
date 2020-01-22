@@ -1,4 +1,3 @@
-/*global exports */
 /*eslint-env node */
 /*eslint strict: ["error", "global"] */
 
@@ -56,14 +55,20 @@ function getProp(obj, propPath, defaultValue) {
 function isValidNumber(theNumber, comparisonSpec) {
     for (const [comparisonName, comparisonValue] of Array.from(Object.entries(comparisonSpec))) {
         switch (comparisonName) {
+        case 'gt':
         case 'greaterThan':
             return theNumber > comparisonValue;
+        case 'gte':
         case 'greaterThanOrEqual':
             return theNumber >= comparisonValue;
+        case 'lt':
         case 'lessThan':
             return theNumber < comparisonValue;
+        case 'lte':
         case 'lessThanOrEqual':
             return theNumber <= comparisonValue;
+        case 'exact':
+        case 'equals':
         case 'equal':
             return theNumber === comparisonValue;
         default:
