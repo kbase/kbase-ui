@@ -43,7 +43,7 @@ define(['knockout', 'kb_knockout/registry', 'kb_knockout/lib/generators', 'kb_li
 
         onNavClick(path) {
             const oldHref = window.location.href;
-            window.location.href = '/#/' + path;
+            window.location.href = '/#' + path;
             if (oldHref === window.location.href) {
                 window.dispatchEvent(new HashChangeEvent('hashchange'));
             }
