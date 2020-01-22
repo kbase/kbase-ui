@@ -1,0 +1,30 @@
+---
+description: Sidebar Nav Navigation Tests without Authentication
+specs:
+  - description: There should be just one sidebar nav item
+    baseSelector:
+      - type: plugin
+        value: mainwindow
+    tasks:
+      - wait: forElement
+        selector:
+          - type: widget
+            value: sidebarNav
+      # should be just one item, Catalog
+      - wait: forElementCount
+        selector:
+          - type: element
+            value: menu-items
+          - type: element
+            value: menu-item
+        count:
+          equal: 1
+      - wait: forElement
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: catalog
+      # Clicking on the Catalog should bring up the catalog

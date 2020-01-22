@@ -7,13 +7,13 @@
     },
     "envs": [
         {
-            "env": "next",
+            "env": "ci",
             "auth": {
                 "token": "LOGIN_TOKEN_HERE"
             }
         },
         {
-            "env": "ci",
+            "env": "next",
             "auth": {
                 "token": "LOGIN_TOKEN_HERE"
             }

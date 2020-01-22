@@ -1,5 +1,5 @@
 ---
-description: Sidebar nav
+description: Sidebar Nav Navigation Tests
 specs:
   - description: It should be there
     baseSelector:
@@ -10,4 +10,3 @@ specs:
         selector:
           - type: widget
             value: sidebarNav
-

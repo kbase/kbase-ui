@@ -6,9 +6,9 @@ var utils = require('./utils');
 
 // a suite is a set of tests
 class Suite {
-    constructor({ testFiles, context, commonSpecs }) {
+    constructor({ testFiles, context, subTasks }) {
         this.context = context;
-        this.commonSpecs = commonSpecs;
+        this.subTasks = subTasks;
         this.tests = testFiles.map((testFile) => {
             return new Test({
                 testDef: testFile,
@@ -30,6 +30,7 @@ class Test {
     constructor({ testDef, suite }) {
         this.suite = suite;
         this.testDef = testDef;
+        this.subtasks = testDef.subtasks || {};
         this.specs = testDef.specs.map((specDef) => {
             return new Spec({
                 specDef,
@@ -119,8 +120,13 @@ class TaskList {
             .map((taskDef) => {
                 if (taskDef.subtask) {
                     if (typeof taskDef.subtask === 'string') {
+                        const subTask = this.spec.test.subtasks[taskDef.subtask] ||
+                            this.spec.test.suite.subTasks[taskDef.subtask];
+                        if (!subTask) {
+                            throw new Error('No subtask named: ' + taskDef.subtask);
+                        }
                         return new TaskList({
-                            taskDefs: this.spec.test.suite.commonSpecs[taskDef.subtask].tasks,
+                            taskDefs: subTask.tasks,
                             spec,
                             context
                         });
@@ -279,6 +285,25 @@ class Task {
                 return () => {
                     browser.$(this.spec.resolvedSelector).click();
                 };
+            case 'pause':
+                return () => {
+                    let pauseFor = this.taskDef.for;
+                    if (pauseFor) {
+                        if (typeof pauseFor === 'object') {
+                            if (pauseFor.random) {
+                                const [from, to] = pauseFor.random;
+                                const r = Math.random();
+                                pauseFor = Math.round(r * (to - from) + from);
+                            } else {
+                                console.warn('Invalid pause.for', pauseFor);
+                                pauseFor = 1000;
+                            }
+                        }
+                    } else {
+                        pauseFor = 1000;
+                    }
+                    browser.pause(pauseFor);
+                };
             case 'setValue':
                 return () => {
                     browser.setValue(this.spec.resolvedSelector, this.taskDef.params.value);
@@ -327,7 +352,11 @@ class Task {
                     }
                     const els = browser.$$(this.taskDef.resolvedSelector);
                     const count = els.length;
-                    return utils.isValidNumber(count, this.taskDef.count);
+                    const result = utils.isValidNumber(count, this.taskDef.count);
+                    if (this.taskDef.reverse) {
+                        return !result;
+                    }
+                    return result;
                 } catch (ex) {
                     return false;
                 }

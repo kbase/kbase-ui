@@ -16,7 +16,8 @@ define([
             this.widgetMount = new WidgetMount({
                 widgetManager: this.runtime.service('widget').widgetManager,
                 runtime: this.runtime,
-                node: this.container
+                node: this.container,
+                name: 'body-widget'
             });
         }
 

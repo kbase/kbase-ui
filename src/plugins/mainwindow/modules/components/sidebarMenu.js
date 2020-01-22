@@ -227,9 +227,13 @@ define(['knockout', 'kb_knockout/registry', 'kb_knockout/lib/generators', 'kb_li
                     class: 'active() ? "' + styles.scopes.active + '" : null',
                     event: {
                         click: '(d,e) => {$component.onNavClick.call($component, path, e)}'
+                    },
+                    attr: {
+                        'data-k-b-testhook-button': 'id'
                     }
                 },
-                class: styles.classes.button
+                class: styles.classes.button,
+                dataKBTesthookElement: 'menu-item'
             },
             [
                 buildIcon(),
@@ -248,7 +252,8 @@ define(['knockout', 'kb_knockout/registry', 'kb_knockout/lib/generators', 'kb_li
             {
                 dataBind: {
                     foreach: 'buttons'
-                }
+                },
+                dataKBTesthookElement: 'menu-items'
             },
             [buildButton()]
         );

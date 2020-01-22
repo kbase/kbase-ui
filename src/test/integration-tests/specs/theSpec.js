@@ -40,15 +40,15 @@ function main() {
         cwd: __dirname
     });
 
-    const subtaskSpecs = glob
+    const subTasks = glob
         .sync('subtasks/*.yaml', {
             nodir: true,
             absolute: true,
             cwd: __dirname
         })
-        .reduce(function (common, match) {
-            common[path.basename(match, '.yaml')] = utils.loadYAMLFile(match);
-            return common;
+        .reduce(function (subTasks, match) {
+            subTasks[path.basename(match, '.yaml')] = utils.loadYAMLFile(match);
+            return subTasks;
         }, {});
 
     const pluginTests = jsonFiles
@@ -99,7 +99,7 @@ function main() {
 
     const testSuite = new runner.Suite({
         testFiles: pluginTests,
-        subtaskSpecs,
+        subTasks,
         context
     });
 

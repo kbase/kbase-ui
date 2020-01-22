@@ -3,12 +3,13 @@ define(['bluebird', 'uuid'], (Promise, Uuid) => {
 
     class WidgetMount {
         constructor(config) {
-            const { node, widgetManager } = config;
+            const { node, widgetManager, name } = config;
             if (!node) {
                 console.error('ERR', config);
                 throw new Error('Cannot create widget mount without a parent node; pass it as "node"');
             }
             this.hostNode = node;
+            this.name = name;
 
             if (!widgetManager) {
                 throw new Error('The widget mounter needs a widget manager; pass it as "widgetManager"');
@@ -31,7 +32,15 @@ define(['bluebird', 'uuid'], (Promise, Uuid) => {
             container.style.flex = '1 1 0px';
             container.style['flex-direction'] = 'column';
             container.style['overflow-y'] = 'auto';
-            container.setAttribute('data-k-b-testhook-element', 'id_' + this.containerID);
+            // container.setAttribute('data-k-b-testhook-element', 'id_' + this.containerID);
+            let testName;
+            if (this.name) {
+                testName = `widgetMount:${this.name}`;
+            } else {
+                testName = 'widgetMount';
+            }
+            container.setAttribute('data-k-b-testhook-element', testName);
+
             return container;
         }
 
