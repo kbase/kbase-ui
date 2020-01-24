@@ -40,7 +40,7 @@ build           = dev
 # dev, ci, next, appdev, prod
 # No default, because one should think about this.
 # Used to target the actual deploy config file (see kbase-ini-dir).
-env             = dev
+env             = ci
 
 # The browser to test against
 browser      	= chrome

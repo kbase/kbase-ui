@@ -2,11 +2,9 @@
 title: Login Task
 tasks:
   - action: setSessionCookie
-    title: Set kbase session cookie (simulate login)
+    title: Set KBase session cookie (simulate login)
     params:
-      name: kbase_session
-      path: "/"
-      value: "${config.auth.token}"
+      token: "${config.auth.token}"
   - wait: forElement
     timeout: 10000
     title: Ensure the logged-in menu appears, then open the user menu
@@ -23,7 +21,7 @@ tasks:
   - wait: forText
     timeout: 10000
     title: Username should be now rendered
-    text: ${config.auth.username}
+    text: "${config.auth.username}"
     selector:
       type: absolute
       path:
