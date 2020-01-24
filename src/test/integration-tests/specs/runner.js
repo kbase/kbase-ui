@@ -31,9 +31,9 @@ class Test {
         this.suite = suite;
         this.testDef = testDef;
         this.subtasks = testDef.subtasks || {};
-        this.specs = testDef.specs.map((specDef) => {
-            return new Spec({
-                specDef,
+        this.cases = testDef.cases.map((testCaseDef) => {
+            return new TestCase({
+                testCaseDef,
                 test: this
             });
         });
@@ -53,48 +53,48 @@ class Test {
                 }
             }
             // const defaultUrl = this.testDef.defaultUrl || '/';
-            this.specs.forEach((spec) => {
-                spec.run(it);
+            this.cases.forEach((testCase) => {
+                testCase.run(it);
             });
         });
     }
 }
 
-class Spec {
-    constructor({ specDef, test }) {
-        this.specDef = specDef;
+class TestCase {
+    constructor({ testCaseDef, test }) {
+        this.testCaseDef = testCaseDef;
         this.test = test;
         this.tasks = new TaskList({
-            taskDefs: specDef.tasks,
-            spec: this,
+            taskDefs: testCaseDef.tasks,
+            testCase: this,
             context: this.test.suite.context
         });
     }
 
     run(it) {
-        if (this.specDef.disabled) {
+        if (this.testCaseDef.disabled) {
             return;
         }
-        it(this.specDef.description, () => {
-            if (this.specDef.disabled) {
-                utils.info('skipping spec', this.specDef.description);
+        it(this.testCaseDef.description, () => {
+            if (this.testCaseDef.disabled) {
+                utils.info('skipping case', this.testCaseDef.description);
                 return;
             }
-            if (this.specDef.disable) {
-                if (this.specDef.disable.envs) {
-                    if (this.specDef.disable.envs.includes(this.test.suite.context.config.env)) {
+            if (this.testCaseDef.disable) {
+                if (this.testCaseDef.disable.envs) {
+                    if (this.testCaseDef.disable.envs.includes(this.test.suite.context.config.env)) {
                         utils.info(
-                            'skipping test spec because it is disabled for env: ' + this.test.suite.context.config.env
+                            'skipping test case because it is disabled for env: ' + this.test.suite.context.config.env
                         );
                         return;
                     }
                 }
             }
-            if (this.specDef.enable) {
-                if (this.specDef.enable.envs) {
-                    if (!this.specDef.enable.envs.includes(this.test.suite.context.config.env)) {
+            if (this.testCaseDef.enable) {
+                if (this.testCaseDef.enable.envs) {
+                    if (!this.testCaseDef.enable.envs.includes(this.test.suite.context.config.env)) {
                         utils.info(
-                            'skipping test spec because it is not enabled for env: ' +
+                            'skipping test case because it is not enabled for env: ' +
                             this.test.suite.context.config.env
                         );
                         return;
@@ -112,22 +112,22 @@ class Spec {
 }
 
 class TaskList {
-    constructor({ taskDefs, spec, context }) {
-        this.spec = spec;
+    constructor({ taskDefs, testCase, context }) {
+        this.testCase = testCase;
         this.context = context;
 
         this.tasks = taskDefs
             .map((taskDef) => {
                 if (taskDef.subtask) {
                     if (typeof taskDef.subtask === 'string') {
-                        const subTask = this.spec.test.subtasks[taskDef.subtask] ||
-                            this.spec.test.suite.subTasks[taskDef.subtask];
+                        const subTask = this.testCase.test.subtasks[taskDef.subtask] ||
+                            this.testCase.test.suite.subTasks[taskDef.subtask];
                         if (!subTask) {
                             throw new Error('No subtask named: ' + taskDef.subtask);
                         }
                         return new TaskList({
                             taskDefs: subTask.tasks,
-                            spec,
+                            testCase,
                             context
                         });
                     } else {
@@ -136,12 +136,12 @@ class TaskList {
                         }
                         return new TaskList({
                             taskDefs: taskDef.subtask.tasks,
-                            spec,
+                            testCase,
                             context
                         });
                     }
                 } else {
-                    return new Task({ taskDef, spec });
+                    return new Task({ taskDef, testCase });
                 }
             })
             .filter((taskDef) => {
@@ -194,50 +194,69 @@ class TaskList {
 }
 
 class Task {
-    constructor({ taskDef, spec }) {
+    constructor({ taskDef, testCase }) {
         this.taskDef = taskDef;
-        this.spec = spec;
-        this.context = this.spec.test.suite.context;
+        this.testCase = testCase;
+        this.context = this.testCase.test.suite.context;
     }
 
     run() {
-        if (this.taskDef.disabled) {
-            utils.info('-- skipping task', this.taskDef.title);
+        const taskDef = this.taskDef;
+        if (taskDef.disabled) {
+            utils.info('-- skipping task', taskDef.title);
             return;
         }
-        if (this.taskDef.disable) {
-            if (this.taskDef.disable.envs) {
-                if (this.taskDef.disable.envs.includes(this.context.config.env)) {
+        if (taskDef.disable) {
+            if (taskDef.disable.envs) {
+                if (taskDef.disable.envs.includes(this.context.config.env)) {
                     utils.info('skipping task because it is disabled for env: ' + this.context.config.env);
                     return;
                 }
             }
         }
-        if (this.taskDef.enable) {
-            if (this.taskDef.enable.envs) {
-                if (!this.taskDef.enable.envs.includes(this.context.config.env)) {
+        if (taskDef.enable) {
+            if (taskDef.enable.envs) {
+                if (!taskDef.enable.envs.includes(this.context.config.env)) {
                     utils.info('skipping task because it is not enabled for env: ' + this.context.config.env);
                     return;
                 }
             }
         }
         try {
-            this.doTask();
+            this.doTask(taskDef);
         } catch (ex) {
-            console.error('Error running task: ' + ex.message, this.taskDef);
+            console.error('Error running task: ' + ex.message, taskDef);
             throw ex;
         }
     }
 
-    actionFunc() {
-        if (this.taskDef.action) {
-            switch (this.taskDef.action) {
+    getParam(taskDef, paramName, defaultValue) {
+        const params = taskDef.params || taskDef;
+        let paramValue = params[paramName];
+        if (typeof paramValue === 'undefined') {
+            if (typeof defaultValue !== 'undefined') {
+                paramValue = defaultValue;
+            } else {
+                throw new Error(`Action task ${taskDef.action} does not have param named "${paramName}"`);
+            }
+        }
+
+        if (typeof paramValue === 'string') {
+            paramValue = this.interpValue(paramValue);
+        }
+        return paramValue;
+    }
+
+    actionFunc(taskDef) {
+        if (taskDef.action) {
+            switch (taskDef.action) {
             case 'setSessionCookie':
                 return () => {
+                    const token = this.getParam(taskDef, 'token');
                     browser.setCookies([
                         {
                             name: 'kbase_session',
-                            value: this.context.config.auth.token,
+                            value: token,
                             path: '/'
                         }
                     ]);
@@ -247,7 +266,7 @@ class Task {
                             cookie = cookies[0];
                         });
                     });
-                    expect(cookie.value).toEqual(this.context.config.auth.token);
+                    expect(cookie.value).toEqual(token);
                 };
             case 'deleteSessionCookie':
                 return () => {
@@ -262,12 +281,13 @@ class Task {
                 };
             case 'navigate':
                 return () => {
-                    const url = '#' + this.interpValue(this.taskDef.path);
+                    const path = this.getParam(taskDef, 'path');
+                    const url = '#' + path;
                     browser.url(url);
                 };
             case 'keys':
                 return () => {
-                    browser.keys(this.taskDef.params.keys);
+                    browser.keys(this.getParam(taskDef, 'keys'));
                 };
             case 'switchToFrame':
                 return () => {
@@ -279,15 +299,15 @@ class Task {
                 };
             case 'baseSelector':
                 return () => {
-                    this.spec.baseSelector = this.taskDef.selector;
+                    this.testCase.baseSelector = this.getParam(taskDef, 'selector');
                 };
             case 'click':
                 return () => {
-                    browser.$(this.spec.resolvedSelector).click();
+                    browser.$(this.testCase.resolvedSelector).click();
                 };
             case 'pause':
                 return () => {
-                    let pauseFor = this.taskDef.for;
+                    let pauseFor = this.getParam(taskDef, 'for', null);
                     if (pauseFor) {
                         if (typeof pauseFor === 'object') {
                             if (pauseFor.random) {
@@ -306,57 +326,53 @@ class Task {
                 };
             case 'setValue':
                 return () => {
-                    browser.setValue(this.spec.resolvedSelector, this.taskDef.params.value);
+                    browser.setValue(this.testCase.resolvedSelector, this.getParam(taskDef, 'value'));
                 };
             case 'log':
                 return () => {
                     // eslint-disable-next-line no-console
-                    console.log('LOG', this.taskDef.text);
+                    console.log('LOG', this.getParam(taskDef, 'text'));
                 };
             default:
-                throw new Error('Unknown task action: "' + this.taskDef.action + '"');
+                throw new Error('Unknown task action: "' + taskDef.action + '"');
             }
         } else {
-            throw new Error('Missing action in task "' + this.taskDef.title || 'no title' + '"');
+            throw new Error('Missing action in task "' + taskDef.title || 'no title' + '"');
         }
     }
 
-    waitFunc() {
-        switch (this.taskDef.wait) {
+    waitFunc(taskDef) {
+        switch (taskDef.wait) {
         case 'forText':
             return () => {
-                if (!browser.$(this.taskDef.resolvedSelector).isExisting()) {
+                if (!browser.$(taskDef.resolvedSelector).isExisting()) {
                     return false;
                 }
-                const nodeValue = browser.$(this.taskDef.resolvedSelector).getText();
-                const testValue = this.interpValue(this.taskDef.text);
+                const nodeValue = browser.$(taskDef.resolvedSelector).getText();
+                const testValue = this.getParam(taskDef, 'text');
                 return nodeValue === testValue;
             };
         case 'forNumber':
             return () => {
-                if (!browser.$(this.taskDef.resolvedSelector).isExisting()) {
+                if (!browser.$(taskDef.resolvedSelector).isExisting()) {
                     return false;
                 }
-                var text = browser.$(this.taskDef.resolvedSelector).getText();
+                var text = browser.$(taskDef.resolvedSelector).getText();
                 if (!text) {
                     return false;
                 }
                 const value = Number(text.replace(/,/g, ''));
-                return utils.isValidNumber(value, this.taskDef.number);
+                return utils.isValidNumber(value, this.getParam(taskDef, 'number'));
             };
         case 'forElementCount':
             return () => {
                 try {
-                    if (!browser.$(this.taskDef.resolvedSelector).isExisting()) {
+                    if (!browser.$(taskDef.resolvedSelector).isExisting()) {
                         return false;
                     }
-                    const els = browser.$$(this.taskDef.resolvedSelector);
+                    const els = browser.$$(taskDef.resolvedSelector);
                     const count = els.length;
-                    const result = utils.isValidNumber(count, this.taskDef.count);
-                    if (this.taskDef.reverse) {
-                        return !result;
-                    }
-                    return result;
+                    return utils.isValidNumber(count, this.getParam(taskDef, 'count'));
                 } catch (ex) {
                     return false;
                 }
@@ -364,30 +380,30 @@ class Task {
         case 'forElement':
         default:
             return () => {
-                return browser.$(this.taskDef.resolvedSelector).isExisting();
+                return browser.$(taskDef.resolvedSelector).isExisting();
             };
         }
     }
 
-    doTask() {
+    doTask(taskDef) {
         // Primary tasks types are
         // switching to a window
         // setting a base selector
         // waiting for appearance, text, or number
         //
 
-        if (this.taskDef.selector) {
+        if (taskDef.selector) {
             // selector based actions
-            this.taskDef.resolvedSelector = this.makeSelector(this.taskDef.selector);
-            this.spec.resolvedSelector = this.taskDef.resolvedSelector;
+            taskDef.resolvedSelector = this.makeSelector(taskDef.selector);
+            this.testCase.resolvedSelector = taskDef.resolvedSelector;
         }
 
-        if (this.taskDef.wait) {
-            const waitFunction = this.waitFunc();
-            const timeout = this.taskDef.timeout || 5000;
+        if (taskDef.wait) {
+            const waitFunction = this.waitFunc(taskDef);
+            const timeout = taskDef.timeout || 5000;
             browser.waitUntil(waitFunction, timeout);
-        } else if (this.taskDef.action) {
-            const actionFunction = this.actionFunc();
+        } else if (taskDef.action) {
+            const actionFunction = this.actionFunc(taskDef);
             actionFunction();
         }
     }
@@ -457,7 +473,7 @@ class Task {
         var fullPath;
         switch (selector.type) {
         case 'relative':
-            fullPath = utils.extend(this.spec.baseSelector || [], selector.path);
+            fullPath = utils.extend(this.testCase.baseSelector || [], selector.path);
             break;
         case 'absolute':
             fullPath = selector.path;
