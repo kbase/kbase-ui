@@ -32,12 +32,12 @@ specs:
               value: signed-in
             - type: label
               value: username
-        text: "${config.auth.username}"
+        text: "{{config.auth.username}}"
       - wait: forText
         title: And the real name too
         selector:
           - type: label
             value: realname
-        text: ${config.auth.realname}
+        text: "{{config.auth.realname}}"
       - subtask: logout
         title: logout

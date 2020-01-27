@@ -342,10 +342,8 @@ function fetchPluginsFromGit(state) {
                     url = plugin.source.git.url || 'https://github.com/' + gitAccount + '/' + repoName;
 
                 const dest = gitDestination.concat([plugin.globalName]).join('/');
-                mutant.log('...gitClone');
-                return gitClone(url, dest, branch).then(() => {
-                    mutant.log('...buildPlugin');
-                });
+                mutant.log(`... cloning plugin repo ${plugin.globalName}, version ${version}`);
+                return gitClone(url, dest, branch);
             });
         });
 }
@@ -1045,15 +1043,15 @@ function setupBuild(state) {
             return fs.rmdirAsync(root.concat(['src']).join('/'));
         })
         .then(function () {
-            mutant.log('injectPluginsIntoBower');
+            mutant.log('Inject Plugins Into Bower');
             return injectPluginsIntoBower(state);
         })
         .then(function () {
-            mutant.log('Fetch plugins from github and build...');
+            mutant.log('Fetch plugins from github');
             return fetchPluginsFromGit(state);
         })
         .then(function () {
-            mutant.log('injectPluginsIntoConfig');
+            mutant.log('Inject Plugins Into Config');
             return injectPluginsIntoConfig(state);
         })
         .then(function () {
