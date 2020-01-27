@@ -16,9 +16,9 @@ plugins:
       bower: {}
   - name: dataview
     globalName: kbase-ui-plugin-dataview
-    version: 4.4.3
+    version: 4.4.6
     source:
-      bower: {}
+      git: {}
   - name: dashboard
     globalName: kbase-ui-plugin-dashboard
     version: 3.2.0

@@ -61,6 +61,14 @@ function main() {
             })
         );
 
+    // Fix up the tests.
+    pluginTests.forEach((test) => {
+        if (test.specs) {
+            test.cases = test.specs;
+            delete test.specs;
+        }
+    });
+
     // Build the configuration.
     // The configuration is per-deploy-environment.
     // Each environment is an entry in the env property

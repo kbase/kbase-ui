@@ -3,6 +3,7 @@
 /*eslint strict: ["error", "global"] */
 'use strict';
 var utils = require('./utils');
+var handlebars = require('handlebars');
 
 // a suite is a set of tests
 class Suite {
@@ -352,6 +353,15 @@ class Task {
                 const testValue = this.getParam(taskDef, 'text');
                 return nodeValue === testValue;
             };
+        case 'forTextRegex':
+            return () => {
+                if (!browser.$(taskDef.resolvedSelector).isExisting()) {
+                    return false;
+                }
+                const nodeValue = browser.$(taskDef.resolvedSelector).getText();
+                const testValue = new RegExp(this.getParam(taskDef, 'regexp'), this.getParam(taskDef, 'flags', ''));
+                return testValue.test(nodeValue);
+            };
         case 'forNumber':
             return () => {
                 if (!browser.$(taskDef.resolvedSelector).isExisting()) {
@@ -362,8 +372,12 @@ class Task {
                     return false;
                 }
                 const value = Number(text.replace(/,/g, ''));
+                if (Number.isNaN(value)) {
+                    return false;
+                }
                 return utils.isValidNumber(value, this.getParam(taskDef, 'number'));
             };
+        case 'forCount':
         case 'forElementCount':
             return () => {
                 try {
@@ -408,7 +422,8 @@ class Task {
         }
     }
 
-    interpValue(value) {
+
+    interpValuex(value) {
         if (!value) {
             return value;
         }
@@ -417,6 +432,7 @@ class Task {
         }
 
         // TODO: SUB SUBSTRING
+        // substitution is based on ${..}
         const subRe = /(.*?(?=\${.*}|$))(?:\${(.*?)})?/g;
         let result = '';
         let m;
@@ -434,6 +450,38 @@ class Task {
             }
         }
         return result;
+    }
+
+    interpValue(value) {
+        if (!value) {
+            return value;
+        }
+        if (typeof value !== 'string') {
+            return value;
+        }
+
+        // TODO: SUB SUBSTRING
+        // substitution is based on ${..}
+        // const subRe = /(.*?(?=\${.*}|$))(?:\${(.*?)})?/g;
+        const template = handlebars.compile(value);
+        const result = template(this.context);
+        return result;
+        // let result = '';
+        // let m;
+        // while ((m = subRe.exec(value))) {
+        //     if (m.length === 3) {
+        //         if (!m[0]) {
+        //             break;
+        //         }
+        //         result += m[1];
+        //         if (m[2]) {
+        //             result += utils.getProp(this.context, m[2], '');
+        //         }
+        //     } else if (m.length == 2) {
+        //         result += m[1];
+        //     }
+        // }
+        // return result;
     }
 
     buildAttribute(element) {
