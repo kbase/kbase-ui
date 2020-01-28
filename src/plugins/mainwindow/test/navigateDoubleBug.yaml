@@ -21,12 +21,8 @@ subtasks:
         for:
           random: [0, 50]
       - action: click
-
-specs:
-  - description: Navigation between items with multiple clicks should result in just one instance of a plugin
-    baseSelector:
-      # - type: plugin
-      #   value: mainwindow
+  setup:
+    title: Setup for these Tests
     tasks:
       - subtask: login
       - wait: forElement
@@ -40,13 +36,14 @@ specs:
           - type: element
             value: menu-item
         count:
-          equal: 7
-
+          equals: 7
       - subtask: navigateToDashboard
-
-      # Now for Orgs
-      # First click the menu button
       - action: switchToParent
+
+  clickToPlugin:
+    title: Click to launch a plugin
+    tasks:
+      - subtask: setup
       - wait: forElement
         timeout: 1000
         selector:
@@ -55,12 +52,13 @@ specs:
             - type: element
               value: menu-items
             - type: button
-              value: organizations
+              value: "{{ local.pluginPath }}"
 
       - subtask: clicks
 
       - action: pause
         for: 5000
+
       - wait: forElementCount
         timeout: 1000
         selector:
@@ -69,127 +67,39 @@ specs:
         count:
           equals: 1
 
-      - subtask: navigateToDashboard
+specs:
+  - description: Navigation to ORGANIZATIONS with multiple clicks should result in just one instance of a plugin.
+    tasks:
+      - subtask: clickToPlugin
+        context:
+          pluginPath: organizations
 
-      # Now for Catalog
-      # First click the menu button
-      - action: switchToParent
-      - wait: forElement
-        timeout: 1000
-        selector:
-          type: absolute
-          path:
-            - type: element
-              value: menu-items
-            - type: button
-              value: catalog
-      - subtask: clicks
-      - action: pause
-        for: 5000
-      - wait: forElementCount
-        timeout: 1000
-        selector:
-          - type: element
-            value: widgetMount:body-widget
-        count:
-          equals: 1
+  - description: Navigation to CATALOG with multiple clicks should result in just one instance of a plugin.
+    tasks:
+      - subtask: clickToPlugin
+        context:
+          pluginPath: catalog
 
-      - subtask: navigateToDashboard
+  - description: Navigation to SEARCH with multiple clicks should result in just one instance of a plugin.
+    tasks:
+      - subtask: clickToPlugin
+        context:
+          pluginPath: search
 
-      # Now for Search
-      # First click the menu button
-      - action: switchToParent
-      - wait: forElement
-        timeout: 1000
-        selector:
-          type: absolute
-          path:
-            - type: element
-              value: menu-items
-            - type: button
-              value: search
-      - subtask: clicks
-      - action: pause
-        for: 5000
-      - wait: forElementCount
-        timeout: 1000
-        selector:
-          - type: element
-            value: widgetMount:body-widget
-        count:
-          equals: 1
+  - description: Navigation to JOB BROWSER with multiple clicks should result in just one instance of a plugin.
+    tasks:
+      - subtask: clickToPlugin
+        context:
+          pluginPath: jobbrowser
 
-      - subtask: navigateToDashboard
+  - description: Navigation to ACCOUNT with multiple clicks should result in just one instance of a plugin.
+    tasks:
+      - subtask: clickToPlugin
+        context:
+          pluginPath: account
 
-      # Now for Jobs
-      # First click the menu button
-      - action: switchToParent
-      - wait: forElement
-        timeout: 1000
-        selector:
-          type: absolute
-          path:
-            - type: element
-              value: menu-items
-            - type: button
-              value: jobbrowser
-      - subtask: clicks
-      - action: pause
-        for: 5000
-      - wait: forElementCount
-        timeout: 1000
-        selector:
-          - type: element
-            value: widgetMount:body-widget
-        count:
-          equals: 1
-
-      - subtask: navigateToDashboard
-
-      # Now for Account
-      # First click the menu button
-      - action: switchToParent
-      - wait: forElement
-        timeout: 1000
-        selector:
-          type: absolute
-          path:
-            - type: element
-              value: menu-items
-            - type: button
-              value: account
-      - subtask: clicks
-      - action: pause
-        for: 5000
-      - wait: forElementCount
-        timeout: 1000
-        selector:
-          - type: element
-            value: widgetMount:body-widget
-        count:
-          equals: 1
-
-      - subtask: navigateToDashboard
-
-      # Now for Feed
-      # First click the menu button
-      - action: switchToParent
-      - wait: forElement
-        timeout: 1000
-        selector:
-          type: absolute
-          path:
-            - type: element
-              value: menu-items
-            - type: button
-              value: feeds
-      - subtask: clicks
-      - action: pause
-        for: 5000
-      - wait: forElementCount
-        timeout: 1000
-        selector:
-          - type: element
-            value: widgetMount:body-widget
-        count:
-          equals: 1
+  - description: Navigation to FEEDS with multiple clicks should result in just one instance of a plugin.
+    tasks:
+      - subtask: clickToPlugin
+        context:
+          pluginPath: feeds

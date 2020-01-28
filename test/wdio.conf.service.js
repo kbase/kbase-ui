@@ -23,13 +23,28 @@ const browserConfigs = {
     },
     safari: {
         browserName: "safari"
+    },
+    safari13Catalina: {
+        'os': 'OS X',
+        'os_version': 'Catalina',
+        'browser': 'Safari',
+        'browser_version': '13.0',
+        'resolution': '1920x1080'
     }
 }
 const browser = browserConfigs[browserName]
 
 console.log('TEST BROWSER    : ' + browserName);
 
-exports.config = {
+const SERVICE_USER = process.env.SERVICE_USER;
+const SERVICE_KEY = process.env.SERVICE_KEY;
+const SERVICE = process.env.SERVICE;
+
+console.log('TEST SERVICE    : ' + SERVICE);
+console.log('SERVICE USER    : ' + SERVICE_USER);
+console.log('SERVICE KEY     : ' + SERVICE_KEY);
+
+let wdioConfig = {
     //
     // ====================
     // Runner Configuration
@@ -38,6 +53,7 @@ exports.config = {
     // WebdriverIO allows it to run your tests in arbitrary locations (e.g. locally or
     // on a remote machine).
     runner: "local",
+
     //
     // ==================
     // Specify Test Files
@@ -47,7 +63,7 @@ exports.config = {
     // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
-    specs: ["./dev/test/integration-tests/specs/**/*.js"],
+    specs: ["./dev/test/integration-tests/specs/theSpec.js"],
     // Patterns to exclude.
     exclude: [
         // 'path/to/excluded/files'
@@ -77,32 +93,6 @@ exports.config = {
     //
     capabilities: [
         browser
-        // {
-        //     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
-        //     // grid with only 5 firefox instances available you can make sure that not more than
-        //     // 5 instances get started at a time.
-        //     // maxInstances: 5,
-        //     //
-        //     browserName: "chrome",
-        //     acceptInsecureCerts: true
-        //     // If outputDir is provided WebdriverIO can capture driver session logs
-        //     // it is possible to configure which logTypes to include/exclude.
-        //     // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
-        //     // excludeDriverLogs: ['bugreport', 'server'],
-        //     // 'goog:chromeOptions': {
-        //     //     args: ['--headless']
-        //     // }
-        // }
-        // {
-        //     // maxInstances: 5,
-        //     browserName: 'firefox',
-        //     acceptInsecureCerts: true
-        // }
-        // {
-        //     // maxInstances: 5,
-        //     browserName: 'safari',
-        //     // acceptInsecureCerts: true
-        // }
     ],
     //
     // ===================
@@ -129,7 +119,7 @@ exports.config = {
     //
     // If you only want to run your tests until a specific amount of tests have failed use
     // bail (default is 0 - don't bail, run all tests).
-    bail: 0,
+    bail: 1,
     //
     // Set a base URL in order to shorten url command calls. If your `url` parameter starts
     // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
@@ -151,7 +141,8 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ["selenium-standalone"],
+    services: [SERVICE],
+
     //
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -304,3 +295,11 @@ exports.config = {
     //onReload: function(oldSessionId, newSessionId) {
     //}
 };
+
+if (SERVICE !== 'selenium-standalone') {
+    wdioConfig.user = SERVICE_USER;
+    wdioConfig.key = SERVICE_KEY;
+}
+
+
+exports.config = wdioConfig;

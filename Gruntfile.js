@@ -75,21 +75,9 @@ module.exports = function (grunt) {
                 ]
             },
         },
-
         webdriver: {
-            test: {
-                configFile: './test/wdio.conf.js'
-            },
-            local: {
-                configFile: './test/wdio.conf.local.js',
-                baseUrl: 'https://' + grunt.option('host') + '.kbase.us'
-            },
-            // note should be called with a base of build/tests/integration-tests
-            integration: {
-                configFile: './test/wdio.conf.integration.js'
-            },
-            sauce: {
-                configFile: './test/wdio.conf.sauce.js'
+            service: {
+                configFile: './test/wdio.conf.service.js'
             },
             travis: {
                 configFile: './test/wdio.conf.travis.js'

@@ -5,6 +5,9 @@
 var utils = require('./utils');
 var handlebars = require('handlebars');
 
+const DEFAULT_TASK_TIMEOUT = process.env.DEFAULT_TASK_TIMEOUT || 10000;
+const DEFAULT_PAUSE_FOR = process.env.DEFAULT_PAUSE_FOR || 1000;
+
 // a suite is a set of tests
 class Suite {
     constructor({ testFiles, context, subTasks }) {
@@ -25,17 +28,18 @@ class Suite {
     }
 }
 
-// a test is a set of test specs dedicated to one primary purpose,
-// with variants.
+// a test is a set of test cases dedicated to one primary purpose.
 class Test {
     constructor({ testDef, suite }) {
         this.suite = suite;
+        this.context = JSON.parse(JSON.stringify(suite.context));
         this.testDef = testDef;
         this.subtasks = testDef.subtasks || {};
         this.cases = testDef.cases.map((testCaseDef) => {
             return new TestCase({
                 testCaseDef,
-                test: this
+                test: this,
+                context: this.context
             });
         });
     }
@@ -47,8 +51,8 @@ class Test {
             }
             if (this.testDef.disable) {
                 if (this.testDef.disable.envs) {
-                    if (this.testDef.disable.envs.includes(this.suite.context.config.env)) {
-                        utils.info('skipping test because it is disabled for env: ' + this.suite.context.config.env);
+                    if (this.testDef.disable.envs.includes(this.context.config.env)) {
+                        utils.info('skipping test because it is disabled for env: ' + this.context.config.env);
                         return;
                     }
                 }
@@ -62,13 +66,14 @@ class Test {
 }
 
 class TestCase {
-    constructor({ testCaseDef, test }) {
+    constructor({ testCaseDef, test, context }) {
         this.testCaseDef = testCaseDef;
         this.test = test;
+        this.context = context;
         this.tasks = new TaskList({
             taskDefs: testCaseDef.tasks,
             testCase: this,
-            context: this.test.suite.context
+            context
         });
     }
 
@@ -83,9 +88,9 @@ class TestCase {
             }
             if (this.testCaseDef.disable) {
                 if (this.testCaseDef.disable.envs) {
-                    if (this.testCaseDef.disable.envs.includes(this.test.suite.context.config.env)) {
+                    if (this.testCaseDef.disable.envs.includes(this.context.config.env)) {
                         utils.info(
-                            'skipping test case because it is disabled for env: ' + this.test.suite.context.config.env
+                            'skipping test case because it is disabled for env: ' + this.context.config.env
                         );
                         return;
                     }
@@ -93,17 +98,17 @@ class TestCase {
             }
             if (this.testCaseDef.enable) {
                 if (this.testCaseDef.enable.envs) {
-                    if (!this.testCaseDef.enable.envs.includes(this.test.suite.context.config.env)) {
+                    if (!this.testCaseDef.enable.envs.includes(this.context.config.env)) {
                         utils.info(
                             'skipping test case because it is not enabled for env: ' +
-                            this.test.suite.context.config.env
+                            this.context.config.env
                         );
                         return;
                     }
                 }
             }
 
-            const url = this.test.suite.context.config.url;
+            const url = this.context.config.url;
             browser.url(url);
             this.tasks.run();
             // porque?
@@ -115,11 +120,13 @@ class TestCase {
 class TaskList {
     constructor({ taskDefs, testCase, context }) {
         this.testCase = testCase;
-        this.context = context;
+        this.context = Object.assign(JSON.parse(JSON.stringify(context)));
 
         this.tasks = taskDefs
             .map((taskDef) => {
                 if (taskDef.subtask) {
+                    context = Object.assign(JSON.parse(JSON.stringify(this.context)));
+                    context.local = taskDef.context || {};
                     if (typeof taskDef.subtask === 'string') {
                         const subTask = this.testCase.test.subtasks[taskDef.subtask] ||
                             this.testCase.test.suite.subTasks[taskDef.subtask];
@@ -142,7 +149,7 @@ class TaskList {
                         });
                     }
                 } else {
-                    return new Task({ taskDef, testCase });
+                    return new Task({ taskDef, testCase, context: this.context });
                 }
             })
             .filter((taskDef) => {
@@ -195,10 +202,10 @@ class TaskList {
 }
 
 class Task {
-    constructor({ taskDef, testCase }) {
+    constructor({ taskDef, testCase, context }) {
         this.taskDef = taskDef;
         this.testCase = testCase;
-        this.context = this.testCase.test.suite.context;
+        this.context = context;
     }
 
     run() {
@@ -317,17 +324,24 @@ class Task {
                                 pauseFor = Math.round(r * (to - from) + from);
                             } else {
                                 console.warn('Invalid pause.for', pauseFor);
-                                pauseFor = 1000;
+                                pauseFor = DEFAULT_PAUSE_FOR;
                             }
                         }
                     } else {
-                        pauseFor = 1000;
+                        pauseFor = DEFAULT_PAUSE_FOR;
                     }
                     browser.pause(pauseFor);
                 };
             case 'setValue':
                 return () => {
                     browser.setValue(this.testCase.resolvedSelector, this.getParam(taskDef, 'value'));
+                };
+            case 'setLocal':
+                return () => {
+                    if (!this.context.local) {
+                        this.context.local = {};
+                    }
+                    this.context.local[this.taskDef.name] = this.taskDef.value;
                 };
             case 'log':
                 return () => {
@@ -386,6 +400,7 @@ class Task {
                     }
                     const els = browser.$$(taskDef.resolvedSelector);
                     const count = els.length;
+                    // console.log('COUNT', count, this.getParam(taskDef, 'count'), utils.isValidNumber(count, this.getParam(taskDef, 'count')));
                     return utils.isValidNumber(count, this.getParam(taskDef, 'count'));
                 } catch (ex) {
                     return false;
@@ -414,42 +429,12 @@ class Task {
 
         if (taskDef.wait) {
             const waitFunction = this.waitFunc(taskDef);
-            const timeout = taskDef.timeout || 5000;
+            const timeout = taskDef.timeout || DEFAULT_TASK_TIMEOUT;
             browser.waitUntil(waitFunction, timeout);
         } else if (taskDef.action) {
             const actionFunction = this.actionFunc(taskDef);
             actionFunction();
         }
-    }
-
-
-    interpValuex(value) {
-        if (!value) {
-            return value;
-        }
-        if (typeof value !== 'string') {
-            return value;
-        }
-
-        // TODO: SUB SUBSTRING
-        // substitution is based on ${..}
-        const subRe = /(.*?(?=\${.*}|$))(?:\${(.*?)})?/g;
-        let result = '';
-        let m;
-        while ((m = subRe.exec(value))) {
-            if (m.length === 3) {
-                if (!m[0]) {
-                    break;
-                }
-                result += m[1];
-                if (m[2]) {
-                    result += utils.getProp(this.context, m[2], '');
-                }
-            } else if (m.length == 2) {
-                result += m[1];
-            }
-        }
-        return result;
     }
 
     interpValue(value) {
@@ -460,28 +445,9 @@ class Task {
             return value;
         }
 
-        // TODO: SUB SUBSTRING
-        // substitution is based on ${..}
-        // const subRe = /(.*?(?=\${.*}|$))(?:\${(.*?)})?/g;
         const template = handlebars.compile(value);
         const result = template(this.context);
         return result;
-        // let result = '';
-        // let m;
-        // while ((m = subRe.exec(value))) {
-        //     if (m.length === 3) {
-        //         if (!m[0]) {
-        //             break;
-        //         }
-        //         result += m[1];
-        //         if (m[2]) {
-        //             result += utils.getProp(this.context, m[2], '');
-        //         }
-        //     } else if (m.length == 2) {
-        //         result += m[1];
-        //     }
-        // }
-        // return result;
     }
 
     buildAttribute(element) {

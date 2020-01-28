@@ -60,6 +60,9 @@ kbase-ini-dir  = /kb/deployment/config
 # ci, next, appdev, prod
 host = ci
 
+# The testing service
+service = selenium-standalone
+
 # functions
 
 # check_defined variable-name message
@@ -187,7 +190,8 @@ unit-tests:
 integration-tests:
 	@:$(call check_defined, env, first component of hostname and kbase environment)
 	@:$(call check_defined, browser, the browser to test against)
-	ENV=$(env) BROWSER=$(browser) $(GRUNT) integration-tests --env=$(env)
+	@:$(call check_defined, service, the testing service )
+	ENV=$(env) BROWSER=$(browser) SERVICE_USER=$(user) SERVICE_KEY=$(key) SERVICE=$(service) $(GRUNT) webdriver:service --env=$(env)
 
 travis-tests:
 	$(GRUNT) test-travis
