@@ -67,7 +67,7 @@ plugins:
       git: {}
   - name: react-profile-view
     globalName: kbase-ui-plugin-react-profile-view
-    version: 0.3.6
+    version: 0.3.7
     cwd: plugin
     prebuilt: true
     source:
