@@ -75,6 +75,7 @@
     },
     "dependencies": {
         "@kbase/ui-lib": "0.2.1-alpha.3",
+        "@kbase/ui-components": "0.2.1-alpha.14",
         "bluebird": "3.7.2",
         "htm": "3.0.2",
         "preact": "10.2.1",
