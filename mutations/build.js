@@ -64,6 +64,7 @@ function run(command, ignoreStdErr = false, verbose = false) {
 
 function gitClone(url, dest, branch = 'master') {
     const commandLine = ['git clone --quiet --depth 1', '--branch', branch, url, dest].join(' ');
+    console.log('git cloning...', commandLine);
     return run(commandLine, true);
 }
 
@@ -342,7 +343,7 @@ function fetchPluginsFromGit(state) {
                     url = plugin.source.git.url || 'https://github.com/' + gitAccount + '/' + repoName;
 
                 const dest = gitDestination.concat([plugin.globalName]).join('/');
-                mutant.log(`... cloning plugin repo ${plugin.globalName}, version ${version}`);
+                mutant.log(`... cloning plugin repo ${plugin.globalName}, version ${version}, branch: ${branch}`);
                 return gitClone(url, dest, branch);
             });
         });

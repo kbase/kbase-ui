@@ -15,6 +15,10 @@ npmFiles:
     cwd: lib
     src:
       - "**/*"
+  - name: kbase-ui-components
+    cwd: lib
+    src:
+      - "**/*"
   - name: htm
     cwd: dist
     src:
