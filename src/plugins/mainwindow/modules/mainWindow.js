@@ -1,5 +1,5 @@
 /*
- * implements the kbase web app main interface
+ * implements the KBase web app main interface
  * The Main Window implements the widget interface, of course. It is controlled
  * by the main entry point program, probably main.js
  * The main window is the controller, manager, coordinator, whatever you want to
@@ -21,24 +21,24 @@
 define([
     'knockout',
     'kb_lib/html',
-    'kb_lib/widget/widgetSet',
+    'lib/widget/widgetSet',
     './components/systemAlertBanner',
     './components/systemAlertToggle'
-], function (
+], (
     ko,
     html,
-    widgetSet,
+    WidgetSet,
     SystemAlertBannerComponent,
     SystemAlertToggleComponent
-) {
+) => {
     'use strict';
 
     const t = html.tag,
         div = t('div');
 
     class ViewModel {
-        constructor(params) {
-            this.runtime = params.runtime;
+        constructor({ runtime }) {
+            this.runtime = runtime;
 
             // The total number of alerts
             this.alertCount = ko.observable(null);
@@ -48,14 +48,26 @@ define([
     }
 
     class MainWindow {
-        constructor(config) {
-            this.runtime = config.runtime;
-            this.widgets = new widgetSet.WidgetSet({
-                widgetManager: this.runtime.service('widget').widgetManager
-            });
+        constructor({ runtime, node }) {
+            if (!runtime) {
+                throw new Error('The "runtime" parameter is required');
+            }
+            this.runtime = runtime;
 
-            this.hostNode = null;
-            this.container = null;
+            if (!node) {
+                throw new Error('The "node" parameter is required');
+            }
+            this.node = node;
+
+            this.hostNode = node;
+            this.container = this.hostNode.appendChild(document.createElement('div'));
+            this.container.classList.add('plugin-mainwindow', 'widget-mainwindow', '-main');
+            this.container.setAttribute('data-k-b-testhook-plugin', 'mainwindow');
+
+            this.widgets = new WidgetSet({
+                widgetManager: this.runtime.service('widget').widgetManager,
+                node: this.container
+            });
 
             this.vm = new ViewModel({
                 runtime: this.runtime
@@ -161,16 +173,17 @@ define([
             ].join('');
         }
 
-        attach(node) {
-            this.hostNode = node;
-            this.container = this.hostNode.appendChild(document.createElement('div'));
-            this.container.classList.add('plugin-mainwindow', 'widget-mainwindow', '-main');
-            this.container.setAttribute('data-k-b-testhook-plugin', 'mainwindow');
-        }
+        // attach(node) {
+        //     this.hostNode = node;
+        //     this.container = this.hostNode.appendChild(document.createElement('div'));
+        //     this.container.classList.add('plugin-mainwindow', 'widget-mainwindow', '-main');
+        //     this.container.setAttribute('data-k-b-testhook-plugin', 'mainwindow');
+        // }
 
         start(params) {
             this.container.innerHTML = this.renderLayout();
-            return this.widgets.init()
+            return this.widgets
+                .init()
                 .then(() => {
                     return this.widgets.attach(this.container);
                 })

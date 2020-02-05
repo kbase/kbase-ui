@@ -9,7 +9,7 @@ define([
 ) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         span = t('span'),
         button = t('button'),
@@ -30,7 +30,7 @@ define([
                     a({
                         dataBind: {
                             attr: {
-                                href: '$data.uri ? $data.uri : "#" + $data.path',
+                                href: '$data.uri ? $data.uri : "/#" + $data.path',
                                 target: '$data.newWindow ? "_blank" : null'
                             }
                         }
@@ -86,12 +86,14 @@ define([
                 }
             }, [
                 buildMenuItems('main'),
-                gen.if('$data.developer && $data.developer().length > 0', [
-                    buildDivider(),
+                gen.if('$data.developer().length > 0', [
+                    gen.if('$data.main().length > 0',
+                        buildDivider()),
                     buildMenuItems('developer')
                 ]),
-                gen.if('$data.help && $data.help().length > 0', [
-                    buildDivider(),
+                gen.if('$data.help().length > 0', [
+                    gen.if('($data.main().length > 0 || $data.developer().length > 0)',
+                        buildDivider()),
                     buildMenuItems('help')
                 ])
             ])

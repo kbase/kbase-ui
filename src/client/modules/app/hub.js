@@ -3,23 +3,18 @@ hub - the kbase ui web app
 This module wraps the simple kbase ui app, adding plugins and services from the config, some default behavior, and launching the initial widget.
 It incorporates much of what used to be encoded into app.js, but in order to have app be itself testable, much needed to be stripped out and placed into an app-specific module like this.
 */
-define([
-    './App'
-], function (
-    App
-) {
+define(['./App'], function (App) {
     'use strict';
 
-    function factory(config) {
-        var app = App.make(config);
+    return class Hub {
+        constructor(params) {
+            this.app = new App(params);
+        }
 
-        function start() {
-            return app.start()
+        start() {
+            return this.app.start()
                 .then((runtime) => {
-                    // kick off handling of the current route.
-                    // api.service('analytics').pageView('/index');
-                    // remove the loading status.
-
+                // kick off handling of the current route.
                     runtime.send('app', 'do-route');
 
                     // TODO: detect if already on signedout page.
@@ -30,11 +25,9 @@ define([
                     // We'll have to update those or add a new plugin flag indicating that the
                     // plugin handles auth change events itself.
 
-                    runtime.receive('session', 'loggedin', function () {
+                    runtime.receive('session', 'loggedin', () => {});
 
-                    });
-
-                    runtime.receive('session', 'loggedout', function () {
+                    runtime.receive('session', 'loggedout', () => {
                         const authRequired = runtime.service('route').isAuthRequired();
                         // If the current route specifies that authorization is required,
                         // we just unceremoniously bounce to the signedout page.
@@ -50,17 +43,8 @@ define([
                 });
         }
 
-        function stop() {
-            return app.stop();
+        stop() {
+            return this.app.stop();
         }
-
-        return {
-            start: start,
-            stop: stop
-        };
-    }
-
-    return {
-        make: factory
     };
 });

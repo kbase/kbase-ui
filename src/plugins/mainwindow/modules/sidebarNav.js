@@ -1,25 +1,18 @@
-define([
-    'bluebird',
-    'knockout',
-    'kb_common/html',
-    './components/sidebarMenu'
-], function (
-    Promise,
+define(['knockout', 'kb_lib/html', './components/sidebarMenu'], function (
     ko,
     html,
     SidebarMenuComponent
 ) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div');
 
     function routeToPath(route) {
-        var path = [];
-        var i;
+        const path = [];
         if (route.route.path) {
-            for (i = 0; i < route.route.path.length; i += 1) {
-                var pathElement = route.route.path[i];
+            for (let i = 0; i < route.route.path.length; i += 1) {
+                const pathElement = route.route.path[i];
                 if (pathElement.type !== 'literal') {
                     break;
                 }
@@ -42,7 +35,7 @@ define([
 
             // A session state change may signal that the session has been logged
             // out.
-            this.runtime.recv('session', 'change', () => {
+            this.runtime.receive('session', 'change', () => {
                 this.isLoggedIn(this.runtime.service('session').isLoggedIn());
             });
 
@@ -53,7 +46,7 @@ define([
             this.buttonsPathMap = {};
 
             params.buttons.forEach((button) => {
-                var viewButton = {
+                const viewButton = {
                     id: button.id,
                     label: button.label,
                     icon: button.icon,
@@ -86,11 +79,11 @@ define([
             this.isAuthorized = ko.observable(this.runtime.service('session').isLoggedIn());
 
             // TODO: rethink this!!!
-            this.runtime.recv('session', 'change', () => {
+            this.runtime.receive('session', 'change', () => {
                 this.isAuthorized(this.runtime.service('session').isLoggedIn());
             });
 
-            this.runtime.recv('route', 'routing', (route) => {
+            this.runtime.receive('route', 'routing', (route) => {
                 this.selectButton(route);
             });
         }
@@ -107,7 +100,6 @@ define([
             button.active(true);
         }
     }
-
 
     class SidebarNav {
         constructor(config) {

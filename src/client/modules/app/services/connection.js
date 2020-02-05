@@ -1,26 +1,20 @@
 define([
-    'promise',
-    'kb_common/observed',
-    'kb_common/lang',
-    'kb_common/html',
-    'kb_common/format',
+    'kb_lib/observed',
+    'kb_lib/html',
     'kb_common_ts/HttpClient'
-], function (
-    Promise,
-    observed,
-    lang,
+], (
+    Observed,
     html,
-    format,
     HttpClient
-) {
+) => {
     'use strict';
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         p = t('p');
 
     function niceDuration(value, options) {
-        var minimized = [];
-        var units = [{
+        const minimized = [];
+        const units = [{
             unit: 'millisecond',
             short: 'ms',
             single: 'm',
@@ -46,13 +40,13 @@ define([
             single: 'd',
             size: 30
         }];
-        var temp = Math.abs(value);
-        var parts = units
-            .map(function (unit) {
+        let temp = Math.abs(value);
+        const parts = units
+            .map((unit) => {
                 // Get the remainder of the current value
                 // sans unit size of it composing the next
                 // measure.
-                var unitValue = temp % unit.size;
+                const unitValue = temp % unit.size;
                 // Recompute the measure in terms of the next unit size.
                 temp = (temp - unitValue) / unit.size;
                 return {
@@ -68,8 +62,8 @@ define([
         // hit the first unit with value. This effectively trims off
         // zeros from the end.
         // We also can limit the resolution with options.resolution
-        var keep = false;
-        for (var i = 0; i < parts.length; i += 1) {
+        let keep = false;
+        for (let i = 0; i < parts.length; i += 1) {
             if (!keep) {
                 if (parts[i].value > 0) {
                     keep = true;
@@ -92,38 +86,42 @@ define([
             // if (minimized.length > 2) {
             //     minimized.pop();
             // }
-            return minimized.map(function (item) {
+            return minimized.map((item) => {
                 return String(item.value) + item.name;
             })
                 .join(' ');
         }
     }
 
-    function factory(config, params) {
-        var runtime = params.runtime,
-            state = observed.make(),
-            lastCheckAt = 0,
-            lastConnectionAt = 0,
-            checking = false,
-            lastStatus = null,
-            interval = 15000,
-            intervals = {
-                normal: 15000,
-                disconnect1: 1000,
-                disconnect2: 5000,
-                disconnect3: 15000
+    const INTERVAL_NORMAL = 15000;
+    const INTERVAL_DEFAULT = INTERVAL_NORMAL;
+    const INTERVAL_DISCONNECT1 = 1000;
+    const INTERVAL_DISCONNECT2 = 5000;
+    const INTERVAL_DISCONNECT3 = 15000;
+    const INTERVAL_OK_AUTODISMISS = 5000;
+
+    const DISCONNECT_TIMEOUT = 60000;
+    const DISCONNECT1_TIMEOUT = 300000;
+
+    class ConnectionService {
+        constructor({ params: { runtime } }) {
+            this.runtime = runtime;
+            this.state = new Observed();
+            this.lastCheckAt = 0;
+            this.lastConnectionAt = 0;
+            this.checking = false;
+            this.lastStatus = null;
+            this.interval = INTERVAL_NORMAL;
+            this.intervals = {
+                normal: INTERVAL_DEFAULT,
+                disconnect1: INTERVAL_DISCONNECT1,
+                disconnect2: INTERVAL_DISCONNECT2,
+                disconnect3: INTERVAL_DISCONNECT3
             };
+        }
 
-        // function checkConnection() {
-
-        // }
-
-        // function showDisconnected() {
-        //     // alert('disconnected');
-        // }
-
-        function notifyError(message) {
-            runtime.send('notification', 'notify', {
+        notifyError(message) {
+            this.runtime.send('notification', 'notify', {
                 type: 'warning',
                 id: 'connection',
                 icon: 'exclamation-triangle',
@@ -132,83 +130,67 @@ define([
             });
         }
 
-        function notifyOk(message) {
-            runtime.send('notification', 'notify', {
+        notifyOk(message) {
+            this.runtime.send('notification', 'notify', {
                 type: 'success',
                 id: 'connection',
                 icon: 'check',
                 message: message.message,
                 description: message.description,
-                autodismiss: 5000
+                autodismiss: INTERVAL_OK_AUTODISMISS
             });
         }
 
-        // list for request fetch the user profile
-        function start() {
-
-            // listen for disconnection events.
-            // runtime.recv('connection', 'disconnected', function() {
-            //     console.warn('disconnected!!!');
-            //     // alert('disconnected');
-            //     // verify this is true
-
-            //     // show the disconnected dialog
-            //     // which starts listening back to home base to see if we are
-            //     // connected yet. Allow the user to bail to a default "closer"
-            //     // page which is just a simple view which destroys the current view
-            //     // and allows the user to just kill the tab.
-            // });
-
-
-            runtime.recv('app', 'heartbeat', function () {
-                if (checking) {
+        start() {
+            this.runtime.receive('app', 'heartbeat', () => {
+                if (this.checking) {
                     return;
                 }
                 const now = new Date().getTime();
-                if (now - lastCheckAt > interval) {
-                    checking = true;
-                    var httpClient = new HttpClient.HttpClient();
+                if (now - this.lastCheckAt > this.interval) {
+                    this.checking = true;
+                    const httpClient = new HttpClient.HttpClient();
+                    const buster = new Date().getTime();
                     httpClient.request({
                         method: 'GET',
-                        url: document.location.origin + '/ping.txt',
+                        url: `${document.location.origin}/ping.txt?b=${buster}`,
                         timeout: 10000
                     })
-                        .then(function () {
-                            lastConnectionAt = new Date().getTime();
-                            if (lastStatus === 'error') {
-                                notifyOk({
+                        .then(() => {
+                            this.lastConnectionAt = new Date().getTime();
+                            if (this.lastStatus === 'error') {
+                                this.notifyOk({
                                     message: 'Connection Restored (connection to server had been lost)',
                                     description: ''
                                 });
-                                interval = intervals.normal;
+                                this.interval = this.intervals.normal;
                             }
-                            lastStatus = 'ok';
+                            this.lastStatus = 'ok';
                         })
-                        .catch(HttpClient.GeneralError, function () {
-                            lastStatus = 'error';
-                            var currentTime = new Date().getTime();
-                            var elapsed = currentTime - lastConnectionAt;
-                            var resolution;
-                            if (elapsed < 60000) {
-                                interval = intervals.disconnect1;
+                        .catch(HttpClient.GeneralError, () => {
+                            this.lastStatus = 'error';
+                            const currentTime = new Date().getTime();
+                            const elapsed = currentTime - this.lastConnectionAt;
+                            let resolution;
+                            if (elapsed < DISCONNECT_TIMEOUT) {
+                                this.interval = this.intervals.disconnect1;
                                 resolution = 'second';
-                            } else if (elapsed < 300000) {
-                                interval = intervals.disconnect2;
+                            } else if (elapsed < DISCONNECT1_TIMEOUT) {
+                                this.interval = this.intervals.disconnect2;
                                 resolution = 'second';
                             } else {
-                                interval = intervals.disconnect3;
+                                this.interval = this.intervals.disconnect3;
                                 resolution = 'minute';
                             }
-                            var prefix = '';
-                            var suffix = '';
+                            let prefix = '';
+                            let suffix = '';
                             if (elapsed > 0) {
                                 suffix = ' ago';
                             } else {
                                 prefix = ' in ';
                             }
-                            var elapsedDisplay = prefix + niceDuration(elapsed, { resolution: resolution }) + suffix;
-
-                            notifyError({
+                            const elapsedDisplay = prefix + niceDuration(elapsed, { resolution: resolution }) + suffix;
+                            this.notifyError({
                                 message: 'Error connecting to KBase - last response ' + elapsedDisplay,
                                 description: div([
                                     p('There was a problem connecting to KBase services.'),
@@ -220,9 +202,9 @@ define([
                                 ])
                             });
                         })
-                        .catch(HttpClient.TimeoutError, function () {
-                            lastStatus = 'error';
-                            notifyError({
+                        .catch(HttpClient.TimeoutError, () => {
+                            this.lastStatus = 'error';
+                            this.notifyError({
                                 message: 'Timeout connecting to KBase',
                                 description: [
                                     p('The attempt to connect KBase services timed out.'),
@@ -234,21 +216,21 @@ define([
                                 ]
                             });
                         })
-                        .catch(HttpClient.AbortError, function (err) {
-                            lastStatus = 'error';
-                            notifyError({
+                        .catch(HttpClient.AbortError, (err) => {
+                            this.lastStatus = 'error';
+                            this.notifyError({
                                 message: 'Connection aborted connecting to KBase: ' + err.message
                             });
                         })
-                        .catch(function (err) {
-                            lastStatus = 'error';
-                            notifyError({
+                        .catch((err) => {
+                            this.lastStatus = 'error';
+                            this.notifyError({
                                 message: 'Unknown error connecting to KBase: ' + err.message
                             });
                         })
-                        .finally(function () {
-                            checking = false;
-                            lastCheckAt = new Date().getTime();
+                        .finally(() => {
+                            this.checking = false;
+                            this.lastCheckAt = new Date().getTime();
                         });
                 }
             });
@@ -256,15 +238,16 @@ define([
             // also, monitor the kbase-ui server to ensure we are connected
         }
 
-        function stop() {
-            return Promise.try(function () {
-                state.setItem('userprofile', null);
+        stop() {
+            return Promise.resolve(() => {
+                this.state.setItem('userprofile', null);
+                return null;
             });
         }
 
         // Send out notifications when there is a change in connection state.
         // function onChange(fun, errFun) {
-        function onChange() {
+        onChange() {
             // state.listen('userprofile', {
             //     onSet: function(value) {
             //         fun(value);
@@ -279,20 +262,10 @@ define([
             // });
         }
 
-        function whenChange() {
+        whenChange() {
             // return state.whenItem('userprofile')
         }
-
-        return {
-            // lifecycle api
-            start: start,
-            stop: stop,
-            // useful api
-            onChange: onChange,
-            whenChange: whenChange
-        };
     }
-    return {
-        make: factory
-    };
+
+    return { ServiceClass: ConnectionService };
 });

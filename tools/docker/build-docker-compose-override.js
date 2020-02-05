@@ -20,10 +20,24 @@ function mergePlugins(root, config, args) {
         } else {
             plugins = args.plugin;
         }
+
         plugins.forEach((pluginName) => {
+            const pluginRoot = root + '/../kbase-ui-plugin-' + pluginName;
+            let pluginDir = pluginRoot + '/dist/plugin';
+
+            if (!fs.existsSync(pluginDir)) {
+                pluginDir = pluginRoot + '/src/plugin';
+                if (!fs.existsSync(pluginDir)) {
+                    pluginDir = pluginRoot + '/plugin';
+                    if (!fs.existsSync(pluginDir)) {
+                        throw new Error('Plugin directory not found: ' + pluginDir);
+                    }
+                }
+            }
+
             config.services['kbase-ui'].volumes.push({
                 type: 'bind',
-                source: root + '/../kbase-ui-plugin-' + pluginName + '/src/plugin',
+                source: pluginDir,
                 target: '/kb/deployment/services/kbase-ui/dist/modules/plugins/' + pluginName
             });
         });
@@ -124,6 +138,23 @@ function mergeLocalNarrative(root, config, args) {
     }
 }
 
+function mergeLocalTests(root, config, args) {
+    config.services['kbase-ui'].volumes.push({
+        type: 'volume',
+        source: 'integration-tests',
+        target: '/kb/deployment/services/kbase-ui/test'
+    });
+    const integrationTestsHostDirectory = [root, 'dev', 'test'].join('/');
+    config.volumes['integration-tests'] = {
+        driver: 'local',
+        driver_opts: {
+            type: 'none',
+            o: 'bind',
+            device: integrationTestsHostDirectory
+        }
+    };
+}
+
 function main(args) {
     const root = getRoot();
 
@@ -138,7 +169,8 @@ function main(args) {
             'kbase-ui-proxy': {
                 environment: []
             }
-        }
+        },
+        volumes: {}
     };
 
     mergePlugins(root, config, args);
@@ -154,6 +186,8 @@ function main(args) {
     mergeLocalNarrative(root, config, args);
 
     mergeConfig(root, config, args);
+
+    mergeLocalTests(root, config, args);
 
     const outputPath = [root, 'dev', 'docker-compose.override.yml'].join('/');
     fs.writeFileSync(outputPath, yaml.safeDump(config));

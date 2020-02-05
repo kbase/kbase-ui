@@ -1,36 +1,40 @@
 define([
     'bluebird',
-    'kb_common/html',
-    'kb_common/dom',
-    './narrativeManager'
-], function (
-    Promise,
+    'kb_lib/html',
+    'kb_lib/htmlBuilders',
+    './widget',
+    './narrativeManager'],
+function (
+    Bluebird,
     html,
-    dom,
+    build,
+    Widget,
     NarrativeManagerService
 ) {
     'use strict';
 
-    var t = html.tag,
+    const t = html.tag,
         div = t('div'),
         a = t('a'),
         p = t('p');
 
-    function factory(config) {
-        var mount, container, runtime = config.runtime,
-            narrativeManager = NarrativeManagerService({ runtime: runtime });
-
-        function makeNarrativePath(wsId, objId) {
-            return runtime.getConfig('services.narrative.url') + '/narrative/ws.' + wsId + '.obj.' + objId;
+    class CreateNewPanel extends Widget {
+        constructor(params) {
+            super(params);
+            this.narrativeManager = new NarrativeManagerService({ runtime: this.runtime });
         }
 
-        function createNewNarrative(params) {
-            return Promise.try(function () {
+        makeNarrativePath(wsId) {
+            return this.runtime.getConfig('services.narrative.url') + '/narrative/' + wsId;
+        }
+
+        createNewNarrative(params) {
+            return Bluebird.try(() => {
                 params = params || {};
                 if (params.app && params.method) {
                     throw 'Must provide no more than one of the app or method params';
                 }
-                var appData, tmp, i;
+                let appData, tmp, i;
                 const newNarrativeParams = {};
                 if (params.copydata) {
                     newNarrativeParams.importData = params.copydata.split(';');
@@ -46,12 +50,16 @@ define([
                         for (i = 0; i < tmp.length; i += 1) {
                             appData[i] = tmp[i].split(',');
                             if (appData[i].length !== 3) {
-                                throw new Error('Illegal app parameter set, expected 3 parameters separated by commas: ' + tmp[i]);
+                                throw new Error(
+                                    'Illegal app parameter set, expected 3 parameters separated by commas: ' + tmp[i]
+                                );
                             }
                             /* TODO: use standard lib for math and string->number conversions) */
                             appData[i][0] = parseInt(appData[i][0], 10);
                             if (isNaN(appData[i][0]) || appData[i][0] < 1) {
-                                throw new Error('Illegal app parameter set, first item in set must be an integer > 0: ' + tmp[i]);
+                                throw new Error(
+                                    'Illegal app parameter set, first item in set must be an integer > 0: ' + tmp[i]
+                                );
                             }
                         }
                         newNarrativeParams.appData = appData;
@@ -62,11 +70,11 @@ define([
                     newNarrativeParams.markdown = params.markdown;
                 }
 
-                return narrativeManager.createTempNarrative(newNarrativeParams)
-                    .then(function (info) {
-                        var wsId = info.narrativeInfo.wsid,
+                return this.narrativeManager.createTempNarrative(newNarrativeParams)
+                    .then((info) => {
+                        const wsId = info.narrativeInfo.wsid,
                             objId = info.narrativeInfo.id,
-                            path = makeNarrativePath(wsId, objId);
+                            path = this.makeNarrativePath(wsId, objId);
                         return {
                             redirect: {
                                 url: path,
@@ -77,78 +85,53 @@ define([
             });
         }
 
-        function wrapPanel(content) {
-            return div({ class: 'container-fluid' }, [
-                div({ class: 'row' }, [
-                    div({ class: 'col-md-12' }, [
-                        content
-                    ])
-                ])
-            ]);
-        }
-
         // API
 
-        function attach(node) {
-            mount = node;
-            container = dom.createElement('div');
-            mount.appendChild(container);
-        }
+        start(params) {
+            this.setHTML(this.wrapPanel(build.loading('Creating a new Narrative for you...')));
 
-        function start(params) {
-            container.innerHTML = wrapPanel(html.loading('Creating a new Narrative for you...'));
-            return createNewNarrative(params)
-                .then(function (result) {
-                    container.innerHTML = wrapPanel([
+            return this.createNewNarrative(params)
+                .then((result) => {
+                    this.setHTML(this.wrapPanel([
                         p('Opening your new Narrative.'),
                         p('If the Narrative did not open, use this link'),
-                        p(a({ href: result.redirect.url, target: '_blank' }, [
-                            'Open your new Narrative: ',
-                            result.redirect.url
-                        ]))
-                    ]);
-                    runtime.send('app', 'redirect', {
+                        p(
+                            a({ href: result.redirect.url, target: '_blank' }, [
+                                'Open your new Narrative: ',
+                                result.redirect.url
+                            ])
+                        )
+                    ]));
+                    this.runtime.send('app', 'redirect', {
                         url: result.redirect.url,
                         new_window: false
                     });
                 })
-                .catch(function (err) {
-                    container.innerHTML = div({
-                        class: 'alert alert-danger'
-                    }, [
-                        div('ERROR creating and opening a new narrative'),
-                        div({
-                            style: {
-                                fontFamily: 'monospace'
-                            }
-                        }, err.message)
-                    ]);
+                .catch((err) => {
+                    this.setHTML(div(
+                        {
+                            class: 'alert alert-danger'
+                        },
+                        [
+                            div('ERROR creating and opening a new narrative'),
+                            div(
+                                {
+                                    style: {
+                                        fontFamily: 'monospace'
+                                    }
+                                },
+                                err.message
+                            )
+                        ]
+                    ));
                     console.error('ERROR creating and opening a new narrative', err);
                 });
         }
 
-        function stop() {
+        stop() {
             // nothing to do?
         }
-
-        function detach() {
-            mount.removeChild(container);
-            container.innerHTML = '';
-            container = null;
-        }
-
-        return {
-            attach: attach,
-            start: start,
-            stop: stop,
-            detach: detach
-        };
     }
 
-    return {
-        make: function (config) {
-            return factory(config);
-        }
-    };
-
+    return CreateNewPanel;
 });

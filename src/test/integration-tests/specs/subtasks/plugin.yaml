@@ -1,0 +1,11 @@
+# A subtask to navigate to the iframe containing an external plugin.
+---
+title: Plugin Task
+tasks:
+  - wait: forElement
+    selector:
+      type: absolute
+      path:
+        - type: iframe
+          value: plugin-iframe
+  - action: switchToFrame

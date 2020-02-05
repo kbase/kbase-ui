@@ -1,0 +1,43 @@
+---
+description: Login plugin - authorized
+specs:
+  - description: ""
+    baseSelector:
+      - type: plugin
+        value: login
+    tasks:
+      - subtask: login
+        title: login
+      - action: navigate
+        title: navigate to feeds page
+        path: feeds
+      - wait: forElement
+        title: Ensure the logged-in menu appears, then open the user menu
+        selector:
+          type: absolute
+          path:
+            - type: plugin
+              value: login
+            - type: menu
+              value: signed-in
+            - type: button
+              value: avatar
+      - action: click
+      - wait: forText
+        title: Username should be now rendered
+        selector:
+          type: relative
+          path:
+            - type: menu
+              value: signed-in
+            - type: label
+              value: username
+        text: "{{config.auth.username}}"
+      - wait: forText
+        title: And the real name too
+        selector:
+          - type: label
+            value: realname
+        text: "{{config.auth.realname}}"
+      - subtask: logout
+        title: logout

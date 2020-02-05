@@ -1,81 +1,63 @@
 ## YAML Template.
 ---
 package:
-    author: Erik Pearson
-    name: mainWindow
-    description: A package containing the main kbase ui!
-    date: September 8, 2015
-    version: 0.0.1
+  author: Erik Pearson
+  name: mainWindow
+  description: A package containing the main kbase ui!
+  type: legacy
 source:
-    ## sources are relative to build/plugins/PACKAGE/source/javascript
-    ## NB: need to quote file names, otherwise
-    modules:
-    styles:
+  ## sources are relative to build/plugins/PACKAGE/source/javascript
+  ## NB: need to quote file names, otherwise
+  modules:
+  styles:
 install:
-    # NEW - a plugin may now specify a boot widget. This widget will be
-    # installed on the window root upon app startup (boot)
-    widgets:
-        -
-            module: mainWindow
-            css: true
-            id: root
-            type: es6
-        # -
-        #     module: hamburgerMenu
-        #     id: hamburgerMenu
-        #     type: factory
-        -
-            module: titleWidget
-            css: true
-            id: title
-            type: es6
-        -
-            module: buttonbarWidget
-            css: true
-            id: buttonbar
-            type: es6
-        -
-            module: logoWidget
-            css: true
-            id: logo
-            type: es6
-        -
-            module: menuWidget
-            css: true
-            id: menu
-            type: es6
-        -
-            module: deploymentWidget
-            css: false
-            id: deployment
-            type: es6
-        -
-            module: bodyWidget
-            id: body
-            type: es6
-        -
-            module: notificationWidget
-            css: true
-            id: notification
-            type: es6
-        -
-            module: widgets/error
-            id: error
-            type: es6
-        -
-            module: widgets/alert
-            id: kb_mainWindow_alert
-            type: factory
-        -
-            module: sidebarNav
-            id: kb_mainWindow_sidebarNav
-            type: es6
-            css: true
-        -
-            module: widgets/notFound
-            id: notFound
-            type: es6
-        -
-            module: systemAlertBanner
-            id: kb_mainWindow_systemAlertBanner
-            type: es6
+  # NEW - a plugin may now specify a boot widget. This widget will be
+  # installed on the window root upon app startup (boot)
+  widgets:
+    - module: mainWindow
+      css: true
+      id: root
+      type: es6
+    - module: titleWidget
+      css: true
+      id: title
+      type: es6
+    - module: buttonbarWidget
+      css: true
+      id: buttonbar
+      type: es6
+    - module: logoWidget
+      css: true
+      id: logo
+      type: es6
+    - module: menuWidget
+      css: true
+      id: menu
+      type: es6
+    - module: deploymentWidget
+      css: false
+      id: deployment
+      type: es6
+    - module: bodyWidget
+      id: body
+      type: es6
+    - module: notificationWidget
+      css: true
+      id: notification
+      type: es6
+    - module: widgets/error
+      id: error
+      type: es6
+    - module: sidebarNav
+      id: kb_mainWindow_sidebarNav
+      type: es6
+      css: true
+    - module: widgets/notFound
+      id: notFound
+      type: es6
+    - module: systemAlertBanner
+      id: kb_mainWindow_systemAlertBanner
+      type: es6
+    - module: pluginSupport/panel
+      id: kb_iframe_loader
+      type: es6

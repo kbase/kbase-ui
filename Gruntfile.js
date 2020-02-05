@@ -10,15 +10,13 @@ module.exports = function (grunt) {
     // Load External Tasks
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-mkdir');
-    grunt.loadNpmTasks('grunt-shell');
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-coveralls');
     grunt.loadNpmTasks('grunt-webdriver');
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-       
+
         // Testing with Karma!
         karma: {
             unit: {
@@ -77,22 +75,9 @@ module.exports = function (grunt) {
                 ]
             },
         },
-
         webdriver: {
-            test: {
-                configFile: './test/wdio.conf.js'
-            },
-            local: {
-                configFile: './test/wdio.conf.local.js',
-                baseUrl: 'https://' + grunt.option('host') + '.kbase.us'
-            },
-            // note should be called with a base of build/tests/integration-tests
-            integration: {
-                configFile: './test/wdio.conf.integration.js',
-                baseUrl: 'https://' + grunt.option('host') + '.kbase.us'
-            },
-            sauce: {
-                configFile: './test/wdio.conf.sauce.js'
+            service: {
+                configFile: './test/wdio.conf.service.js'
             },
             travis: {
                 configFile: './test/wdio.conf.travis.js'

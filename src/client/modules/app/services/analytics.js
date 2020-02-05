@@ -125,7 +125,7 @@ define([
                     dailyClientId: dailyClientId,
                     ip: null // this.runtime.service('ui').publicIPAddress()
                 });
-                this.routeListener = this.runtime.recv('route', 'routing', (route) => {
+                this.routeListener = this.runtime.receive('route', 'routing', (route) => {
                     this.pageView(route.request.original || '/');
                 });
             });

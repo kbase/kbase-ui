@@ -1,0 +1,88 @@
+---
+description: Sidebar Nav Navigation Tests without Authentication
+specs:
+  - description: There should be 7 sidebar items after login
+    baseSelector:
+      # - type: plugin
+      #   value: mainwindow
+    tasks:
+      - subtask: login
+      - wait: forElement
+        selector:
+          - type: plugin
+            value: mainwindow
+          - type: widget
+            value: sidebarNav
+          - type: element
+            value: menu-items
+          - type: element
+            value: menu-item
+        count:
+          equal: 7
+      # Dashboard
+      - wait: forElement
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: dashboard
+      # Orgs
+      - wait: forElement
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: organizations
+
+      # Catalog
+      - wait: forElement
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: catalog
+      # Search
+      - wait: forElement
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: search
+
+      # Jobs
+      - wait: forElement
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: jobbrowser
+
+      # Account
+      - wait: forElement
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: account
+
+      # Feeds
+      - wait: forElement
+        selector:
+          type: absolute
+          path:
+            - type: element
+              value: menu-items
+            - type: button
+              value: feeds

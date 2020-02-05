@@ -9,7 +9,7 @@
 
     // ES6!
     // Prior to ES6, const is not a keyword, and in strict mode,
-    // using it throws an execption. (works for Safari < 10)
+    // using it throws an exception. (works for Safari < 10)
     // In FF class is a reserved word but not implemented (FF < 45)
 
     function isES6() {

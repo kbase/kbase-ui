@@ -355,3 +355,8 @@
 .bs-border-danger {
     border: 1px solid #a94442;
 }
+
+/* tabs */
+.kbase-ui .nav-tabs>li:hover {
+    cursor: pointer;
+}

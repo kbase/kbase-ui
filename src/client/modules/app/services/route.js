@@ -1,22 +1,31 @@
 define([
     'bluebird',
-    'kb_lib/router',
+    'lib/router',
     'kb_lib/lang'
-], function (Promise, routerMod, lang) {
+], function (
+    Promise,
+    routerMod,
+    lang
+) {
     'use strict';
-    function factory(config, params) {
-        var runtime = params.runtime,
-            router = new routerMod.Router(config),
-            currentRouteHandler = null,
-            receivers = [],
-            eventListeners = [];
 
-        function doRoute() {
-            var handler;
+    class RouteService {
+        constructor(p) {
+            const { config, params } = p;
+
+            this.runtime = params.runtime;
+            this.router = new routerMod.Router(config);
+            this.currentRouteHandler = null;
+            this.receivers = [];
+            this.eventListeners = [];
+        }
+
+        doRoute() {
+            let handler;
             try {
-                handler = router.findCurrentRoute();
+                handler = this.router.findCurrentRoute();
             } catch (ex) {
-                console.error(ex);
+                // console.error(ex);
                 if (ex instanceof routerMod.NotFoundException) {
                     handler = {
                         request: ex.request,
@@ -36,22 +45,25 @@ define([
                     throw ex;
                 }
             }
-            runtime.send('route', 'routing', handler);
-            currentRouteHandler = handler;
+
+            this.runtime.send('route', 'routing', handler);
+            this.currentRouteHandler = handler;
 
             // Ensure that if authorization is enabled for this route, that we have it.
             // If not, route to the login path with the current path encoded as
             // "nextrequest". This ensures that we can close the loop for accessing
             // auth-required endpoints.
             if (handler.route.authorization) {
-                if (!runtime.service('session').isLoggedIn()) {
-                    var loginParams = {
+                if (!this.runtime.service('session').isLoggedIn()) {
+                    const loginParams = {
                         source: 'authorization'
                     };
                     if (handler.request.path) {
                         loginParams.nextrequest = JSON.stringify(handler.request);
                     }
-                    runtime.send('app', 'navigate', {
+                    // TODO refactor-expt: here is where SOMETHING needs to listen for the login event.
+                    // This is where we can hook in.
+                    this.runtime.send('app', 'navigate', {
                         path: 'login',
                         // path: runtime.feature('auth', 'paths.login'),
                         // TODO: path needs to be the path + params
@@ -63,16 +75,20 @@ define([
 
             // We can also require that the route match at least one role defined in a list.
             if (handler.route.rolesRequired) {
-                var roles = runtime.service('session').getRoles();
-                if (!roles.some(function (role) {
-                    return handler.route.rolesRequired.some(function (requiredRole) {
-                        return requiredRole === role.id;
-                    });
-                })) {
+                const roles = this.runtime.service('session').getRoles();
+                if (
+                    !roles.some((role) => {
+                        return handler.route.rolesRequired.some((requiredRole) => {
+                            return requiredRole === role.id;
+                        });
+                    })
+                ) {
                     handler = {
                         params: {
                             title: 'Access Error',
-                            error: 'One or more required roles not available in your account: ' + handler.route.rolesRequired.join(', ')
+                            error:
+                                'One or more required roles not available in your account: ' +
+                                handler.route.rolesRequired.join(', ')
                         },
                         route: {
                             authorization: false,
@@ -90,125 +106,118 @@ define([
                     // });
                 }
             }
-            var route = {
+            const route = {
                 routeHandler: handler
             };
             if (handler.route.redirect) {
-                runtime.send('app', 'route-redirect', route);
+                this.runtime.send('app', 'route-redirect', route);
             } else if (handler.route.widget) {
-                runtime.send('app', 'route-widget', route);
+                this.runtime.send('app', 'route-widget', route);
             } else if (handler.route.handler) {
-                runtime.send('app', 'route-handler', route);
+                this.runtime.send('app', 'route-handler', route);
             }
         }
 
-        function installRoute(route) {
-            return Promise.try(function () {
-                if (route.widget) {
-                    router.addRoute(route);
-                    return true;
-                } else if (route.redirectHandler) {
-                    router.addRoute(route);
-                    return true;
-                } else {
-                    throw new lang.UIError({
-                        type: 'ConfiguratonError',
-                        name: 'RouterConfigurationError',
-                        source: 'installRoute',
-                        message: 'invalid route',
-                        suggestion: 'Fix the plugin which specified this route.',
-                        data: route
-                    });
+        installRoute(route) {
+            if (route.widget) {
+                this.router.addRoute(route);
+            } else if (route.redirectHandler) {
+                this.router.addRoute(route);
+            } else {
+                throw new lang.UIError({
+                    type: 'ConfigurationError',
+                    name: 'RouterConfigurationError',
+                    source: 'installRoute',
+                    message: 'invalid route',
+                    suggestion: 'Fix the plugin which specified this route.',
+                    data: route
+                });
+            }
+        }
+
+        installRoutes(routes) {
+            if (!routes) {
+                return;
+            }
+            routes.map((route) => {
+                return this.installRoute(route);
+            });
+        }
+
+        pluginHandler(pluginConfig) {
+            return new Promise((resolve, reject) => {
+                try {
+                    this.installRoutes(pluginConfig);
+                    resolve();
+                } catch (ex) {
+                    reject(ex);
                 }
             });
         }
 
-        function installRoutes(routes) {
-            return Promise.try(() => {
-                if (!routes) {
-                    return;
-                }
-                return Promise.all(routes.map(function (route) {
-                    return installRoute(route);
-                }));
-            });
-        }
-
-        function pluginHandler(pluginConfig) {
-            return installRoutes(pluginConfig);
-        }
-
-        function start() {
-            runtime.recv('app', 'do-route', function () {
-                doRoute();
+        start() {
+            this.runtime.receive('app', 'do-route', () => {
+                this.doRoute();
             });
 
-            runtime.recv('app', 'new-route', function (data) {
+            this.runtime.receive('app', 'new-route', (data) => {
                 if (data.routeHandler.route.redirect) {
-                    runtime.send('app', 'route-redirect', data);
+                    this.runtime.send('app', 'route-redirect', data);
                 } else if (data.routeHandler.route.widget) {
-                    runtime.send('app', 'route-widget', data);
+                    this.runtime.send('app', 'route-widget', data);
                 } else if (data.routeHandler.route.handler) {
-                    runtime.send('app', 'route-handler', data);
+                    this.runtime.send('app', 'route-handler', data);
                 }
             });
 
-            runtime.recv('app', 'route-redirect', function (data) {
-                runtime.send('app', 'navigate', {
+            this.runtime.receive('app', 'route-redirect', (data) => {
+                this.runtime.send('app', 'navigate', {
                     path: data.routeHandler.route.redirect.path,
                     params: data.routeHandler.route.redirect.params
                 });
             });
 
-            runtime.recv('app', 'navigate', function (data) {
-                router.navigateTo(data);
+            this.runtime.receive('app', 'navigate', (data) => {
+                this.router.navigateTo(data);
             });
 
-            runtime.recv('app', 'redirect', function (data) {
-                router.redirectTo(data.url, data.new_window || data.newWindow);
+            this.runtime.receive('app', 'redirect', (data) => {
+                this.router.redirectTo(data.url, data.new_window || data.newWindow);
             });
 
-            eventListeners.push({
+            this.eventListeners.push({
                 target: window,
                 type: 'hashchange',
-                listener: function () {
+                listener: () => {
                     // $(window).on('hashchange', function () {
                     // NB this is called AFTER it has changed. The browser will do nothing by
                     // default
-                    doRoute();
+                    this.doRoute();
                 }
             });
-            eventListeners.forEach(function (listener) {
+            this.eventListeners.forEach((listener) => {
                 listener.target.addEventListener(listener.type, listener.listener);
             });
         }
 
-        function stop() {
-            receivers.forEach(function (receiver) {
+        stop() {
+            this.receivers.forEach((receiver) => {
                 if (receiver) {
-                    runtime.drop(receiver);
+                    this.runtime.drop(receiver);
                 }
             });
-            eventListeners.forEach(function (listener) {
+            this.eventListeners.forEach((listener) => {
                 listener.target.removeEventListener(listener.type, listener.listener);
             });
         }
 
-        function isAuthRequired() {
-            if (!currentRouteHandler) {
+        isAuthRequired() {
+            if (!this.currentRouteHandler) {
                 return false;
             }
-            return currentRouteHandler.route.authorization;
+            return this.currentRouteHandler.route.authorization;
         }
-
-        return {
-            pluginHandler: pluginHandler,
-            start: start,
-            stop: stop,
-            isAuthRequired: isAuthRequired
-        };
     }
-    return {
-        make: factory
-    };
+
+    return RouteService;
 });
