@@ -80,7 +80,7 @@ plugins:
         account: kbaseIncubator
   - name: dashboard4
     globalName: kbase-ui-plugin-dashboard4
-    version: 0.1.3
+    version: 0.1.4
     source:
       git:
         account: eapearson
