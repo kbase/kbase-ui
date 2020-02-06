@@ -15,7 +15,7 @@ plugins:
       bower: {}
   - name: dataview
     globalName: kbase-ui-plugin-dataview
-    version: 4.4.6
+    version: 4.4.8
     source:
       git: {}
   - name: dashboard
@@ -61,12 +61,12 @@ plugins:
       git: {}
   - name: job-browser2
     globalName: kbase-ui-plugin-job-browser2
-    version: 1.1.1
+    version: 1.1.2
     source:
       git: {}
   - name: react-profile-view
     globalName: kbase-ui-plugin-react-profile-view
-    version: 0.3.8
+    version: 1.0.0
     cwd: plugin
     prebuilt: true
     source:
