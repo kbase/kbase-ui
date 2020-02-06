@@ -202,7 +202,7 @@
 				"auth",
 				"Auth"
 			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/auth",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_auth2_path "services/auth" }}",
 			"cookieName": "kbase_session",
 			"name": "Authorization Version 2",
 			"coreService": true,
@@ -215,15 +215,11 @@
 			},
 			"providers": [{{ range $i, $v := split .Env.services_auth2_providers "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
 		},
-		"awe": {
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/awe-api",
-			"name": "AWE"
-		},
 		"Catalog": {
 			"aliases": [
 				"catalog"
 			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/catalog",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_catalog_path "services/catalog" }}",
 			"name": "Catalog",
 			"coreService": true,
 			"type": "jsonrpc",
@@ -237,7 +233,7 @@
 			"aliases": [
 				"feeds"
 			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/feeds",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_feeds_path "services/feeds" }}",
 			"name": "Feeds",
 			"coreService": true,
 			"type": "rest",
@@ -252,7 +248,7 @@
 			"aliases": [
 				"groups"
 			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/groups",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_groups_path "services/groups" }}",
 			"name": "Groups",
 			"coreService": true,
 			"type": "rest",
@@ -267,7 +263,7 @@
 			"aliases": [
 				"narrative_method_store"
 			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/narrative_method_store/rpc",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_narrativemethodstore_path "services/narrative_method_store/rpc" }}",
 			"image_url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/narrative_method_store/",
 			"name": "Narrative Method Store",
 			"coreService": true,
@@ -279,14 +275,14 @@
 			}
 		},
 		"shock": {
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/shock-api",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_shock_path "services/shock-api" }}",
 			"name": "Shock"
 		},
 		"UserProfile": {
 			"aliases": [
 				"user_profile"
 			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/user_profile/rpc",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_userprofile_path "services/user_profile/rpc" }}",
 			"name": "User Profile",
 			"coreService": true,
 			"type": "jsonrpc",
@@ -300,28 +296,28 @@
 			"aliases": [
 				"user_job_state"
 			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/userandjobstate",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_userandjobstate_path "services/userandjobstate" }}",
 			"name": "User and Job State"
 		},
 		"NarrativeJobService": {
 			"aliases": [
 				"narrative_job_service"
 			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/njs_wrapper",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_narrativejobservice_path "services/njs_wrapper" }}",
 			"name": "Narrative Job Service"
 		},
 		"KBaseDataImport": {
 			"aliases": [
 				"data_import_export"
 			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/data_import_export",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_kbasedataimport_path "services/data_import_export" }}",
 			"name": "Data Import Export"
 		},
 		"KBaseSearchEngine": {
 			"aliases": [
 				"search"
 			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/searchapi",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_kbasesearchengine_path "services/searchapi" }}",
 			"name": "KBase Search Engine",
 			"coreService": true,
 			"type": "jsonrpc",
@@ -336,7 +332,7 @@
 			"aliases": [
 				"service_wizard"
 			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/service_wizard",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_servicewizard_path "services/service_wizard" }}",
 			"name": "Service Wizard",
 			"coreService": true,
 			"type": "jsonrpc",
@@ -350,7 +346,7 @@
 			"aliases": [
 				"workspace"
 			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/ws",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_workspace_path "services/ws" }}",
 			"name": "Workspace",
 			"coreService": true,
 			"type": "jsonrpc",
@@ -362,7 +358,7 @@
 		},
 		"RelationEngine": {
 			"aliases": [],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/relation_engine_api",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_relationengine_path "services/relation_engine_api" }}",
 			"name": "Relation Engine",
 			"coreService": true,
 			"type": "rest",
@@ -383,7 +379,7 @@
 			"aliases": [
 				"staging_service"
 			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/staging_service"
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_staging_path "services/staging_service" }}"
 		}
         
     },
