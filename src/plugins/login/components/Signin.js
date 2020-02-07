@@ -90,6 +90,21 @@ define([
                         </a>
                     </li>
                     <li>
+                        <a href="/#account"
+                           data-menu-item="user-account"
+                           data-k-b-testhook-button="user-account"
+                           style="display: flex; flex-direction: row; align-items: center;">
+                            <div style="flex: 0 0 34px;">
+                                <span class="fa fa-drivers-license"
+                                      style="font-size: 150%;"></span>
+                            </div>
+                            <div style="flex: 1 1 0px;">
+                                Your Account
+                            </div>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
                         <a href="#"
                            data-menu-item="logout"
                            data-k-b-testhook-button="logout"
