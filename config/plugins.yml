@@ -66,9 +66,7 @@ plugins:
       git: {}
   - name: react-profile-view
     globalName: kbase-ui-plugin-react-profile-view
-    version: 1.1.1
-    cwd: plugin
-    prebuilt: true
+    version: 1.1.2
     source:
       git:
         account: kbaseIncubator
