@@ -105,6 +105,10 @@ define([
 
             // Get the initial user profile (or not)
             this.getProfile();
+
+            this.runtime.receive('profile', 'reload', () => {
+                this.getProfile();
+            });
         }
 
         detach() {
