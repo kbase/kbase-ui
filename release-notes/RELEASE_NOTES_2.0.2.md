@@ -19,14 +19,14 @@ none
 
 ### IMPROVEMENTS
 
-none
+- job browser: ui refinements
 
 ### FIXES
 
 - user-profile: fix gravatar
-
 - feeds: fixed a narrative link
-
+- login widget reloaded when account updates saved.
+ 
 ## Dependency Changes
 
 none
