@@ -97,6 +97,9 @@ define([
                                 return this.checkJSONRPC(serviceConfig);
                             case 'rest':
                                 return this.checkREST(serviceConfig);
+                            case 'jsonrpc2':
+                                console.warn('Ignoring jsonrpc core service for now', serviceConfig);
+                                return null;
                             default:
                                 var errorMessage = 'Unsupported core service type: ' + serviceConfig.type;
                                 if (this.throwErrors) {
