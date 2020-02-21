@@ -20,7 +20,7 @@ plugins:
       git: {}
   - name: dashboard
     globalName: kbase-ui-plugin-dashboard
-    version: 3.2.0
+    version: 3.2.1
     source:
       bower: {}
   - name: auth2-client
