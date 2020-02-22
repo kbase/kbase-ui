@@ -367,6 +367,15 @@
 				"semverNotImplemented": true
 			}
 		},
+        "SearchAPI2": {
+            "aliases": [],
+            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi_path "services/searchapi2/rpc" }}",
+            "legacyUrl": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi_path "services/searchapi2/legacy" }}",
+			"name": "Search Engine",
+			"coreService": true,
+			"type": "jsonrpc2",
+			"version": false
+        },
 		"doc_site": {
 			"url": "http://kbase.us",
 			"name": "Documentation and Support Site"

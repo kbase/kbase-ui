@@ -20,7 +20,7 @@ plugins:
       git: {}
   - name: dashboard
     globalName: kbase-ui-plugin-dashboard
-    version: 3.2.0
+    version: 3.2.1
     source:
       bower: {}
   - name: auth2-client
@@ -40,7 +40,7 @@ plugins:
       bower: {}
   - name: catalog
     globalName: kbase-ui-plugin-catalog
-    version: 2.1.0
+    version: 2.1.1
     source:
       bower: {}
   - name: data-search
@@ -61,18 +61,18 @@ plugins:
       git: {}
   - name: job-browser2
     globalName: kbase-ui-plugin-job-browser2
-    version: 1.1.3
+    version: 1.1.4
     source:
       git: {}
   - name: react-profile-view
     globalName: kbase-ui-plugin-react-profile-view
-    version: 1.1.2
+    version: 1.1.3
     source:
       git:
         account: kbaseIncubator
   - name: re-landing-pages
     globalName: kbase-ui-plugin-re-landing-pages
-    version: 0.6.0
+    version: 0.6.2
     source:
       git:
         account: kbaseIncubator
