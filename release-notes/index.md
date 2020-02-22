@@ -6,6 +6,7 @@
 
 | Version                           | Date       | Notes               |
 | --------------------------------- | ---------- | ------------------- |
+| [2.0.5](RELEASE_NOTES_2.0.4.md)   | 2020-02-22 |                     |
 | [2.0.4](RELEASE_NOTES_2.0.4.md)   | 2020-02-13 |                     |
 | [2.0.3](RELEASE_NOTES_2.0.3.md)   | 2020-02-13 |                     |
 | [2.0.2](RELEASE_NOTES_2.0.2.md)   | 2020-02-13 |                     |
@@ -39,7 +40,6 @@
 | [1.5.4](RELEASE_NOTES_1.5.4.md)   | 2018-02-01 |                     |
 | [1.5.3](RELEASE_NOTES_1.5.3.md)   | 2018-02-01 |                     |
 | [1.5.2](RELEASE_NOTES_1.5.2.md)   | 2018-01-25 |                     |
-| [1.5.0](RELEASE_NOTES_1.5.0.md)   | 2018-01-25 | First release notes |
 | [1.5.1](RELEASE_NOTES_1.5.1.md)   | 2018-01-25 |                     |
 | [1.5.0](RELEASE_NOTES_1.5.0.md)   | 2018-01-25 | First release notes |
 | 1.4.6                             | 2017-06-22 |                     |
