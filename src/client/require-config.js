@@ -5,22 +5,20 @@
     // bust the cache.)
     // For production we should use the commit hash or
     // semver
-    var build = global.__kbase__build__;
-    var buildKey;
-    switch (build.target) {
-    case 'dev':
-        buildKey = new Date().getTime();
-        break;
-    case 'ci':
-    case 'prod':
-        buildKey = build.gitCommitHash;
-        break;
-    default:
-        throw new Error('Unsupported build target: ' + build.target);
+
+    function cacheBusterKey(buildInfo, developMode) {
+        // NB developMode not implemented yet, so always defaults
+        // to the gitCommitHash
+        if (developMode) {
+            return String(new Date().getTime());
+        } else {
+            return buildInfo.gitCommitHash;
+        }
     }
+
     global.require = {
         baseUrl: '/modules',
-        urlArgs: 'cb=' + buildKey,
+        urlArgs: 'cb=' + cacheBusterKey(global.__kbase__build__, false),
         catchError: true,
         waitSeconds: 60,
         paths: {
