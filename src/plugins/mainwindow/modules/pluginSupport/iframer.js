@@ -19,27 +19,26 @@ define([
             // this plugin somewhere else.
             this.origin = config.origin;
             this.pathRoot = config.pathRoot;
+            this.runtime = config.runtime;
 
             // So we can deterministically find the iframe
             this.id = 'frame_' + html.genId();
 
-            // this.useChannel = config.channelId ? true : false;
-
             const params = {
                 frameId: this.id,
                 parentHost: document.location.origin,
+                buildInfo: this.runtime.config('buildInfo'),
+                developMode: false,
                 params: config.params,
                 channelId: config.channelId
             };
-
-            // this.channelId = 'channel_' + html.genId();
 
             // All plugins need to follow this pattern for the index for now (but that
             // could be part of the constructor...)
             const indexPath = this.pathRoot + '/iframe_root/index.html';
 
             // Make an absolute url to this.
-            this.url = this.origin + '/' + indexPath;
+            this.url = this.origin + '/' + indexPath + this.cacheBuster();
 
             // The iframe framework, designed to give a full height and width responsive
             // window with the content area of the ui.
@@ -73,6 +72,21 @@ define([
             this.node = null;
         }
 
+        cacheBusterKey(buildInfo, developMode) {
+            // NB developMode not implemented yet, so always defaults
+            // to the gitCommitHash
+            if (developMode) {
+                return String(new Date().getTime());
+            } else {
+                return buildInfo.gitCommitHash;
+            }
+        }
+
+        cacheBuster() {
+            // TODO: get develop mode from runtime
+            return '?cb=' + this.cacheBusterKey(this.runtime.config('buildInfo', false));
+        }
+
         attach(node) {
             this.node = node;
             this.node.innerHTML = this.content;
@@ -89,17 +103,6 @@ define([
             this.params = config.params;
 
             this.id = 'host_' + html.genId();
-
-            // this.hostOrigin = document.location.origin;
-            // this.iframeOrigin = document.location.origin;
-
-            // this.channel = new WindowChannel.Channel({
-            //     window: window,
-            //     host: document.location.origin,
-            //     // recieveFor: [this.id],
-            //     // clientId: this.iframe.id,
-            //     // hostId: this.id
-            // });
 
             // This is the channel for talking to the iframe app.
 
@@ -124,7 +127,8 @@ define([
                 pathRoot: this.pluginPath,
                 channelId: this.channel.channelId,
                 hostId: this.id,
-                params: this.params
+                params: this.params,
+                runtime: this.runtime
             });
 
             this.iframe.attach(this.container);
