@@ -78,13 +78,13 @@ define([
             if (developMode) {
                 return String(new Date().getTime());
             } else {
-                return buildInfo.gitCommitHash;
+                return buildInfo.git.commitHash;
             }
         }
 
         cacheBuster() {
             // TODO: get develop mode from runtime
-            return '?cb=' + this.cacheBusterKey(this.runtime.config('buildInfo', false));
+            return '?cb=' + this.cacheBusterKey(this.runtime.config('buildInfo'), false);
         }
 
         attach(node) {

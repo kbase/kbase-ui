@@ -40,7 +40,7 @@ plugins:
       bower: {}
   - name: catalog
     globalName: kbase-ui-plugin-catalog
-    version: 2.1.1
+    version: 2.1.4
     source:
       bower: {}
   - name: data-search
