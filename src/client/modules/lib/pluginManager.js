@@ -32,7 +32,7 @@ define(['bluebird'], (Promise) => {
             return to;
         }
 
-        installIntoService(pluralTypeName, def, pluginConfig) {
+        installIntoService(pluralTypeName, def, pluginConfig, pluginDef) {
             return Promise.try(() => {
                 // weird, perhaps, way to strip off a terminal "s".
                 const nameMatch = pluralTypeName.match(/(.*?)(:?(s)|($))$/);
@@ -53,7 +53,7 @@ define(['bluebird'], (Promise) => {
                 if (def) {
                     const service = this.runtime.getService(typeName);
                     if (service.pluginHandler) {
-                        return service.pluginHandler(def, pluginConfig);
+                        return service.pluginHandler(def, pluginConfig, pluginDef);
                     }
                 }
             });
@@ -150,9 +150,9 @@ define(['bluebird'], (Promise) => {
 
                             Object.keys(pluginDef.install).forEach((serviceName) => {
                                 const installDef = pluginDef.install[serviceName];
-                                const intallationPromise = this.installIntoService(serviceName, installDef, pluginConfig);
-                                if (intallationPromise) {
-                                    this.arrayExtend(installSteps, [intallationPromise]);
+                                const installationPromise = this.installIntoService(serviceName, installDef, pluginConfig, pluginDef);
+                                if (installationPromise) {
+                                    this.arrayExtend(installSteps, [installationPromise]);
                                 }
                             });
                             // Do all of the install steps.
@@ -184,7 +184,7 @@ define(['bluebird'], (Promise) => {
 
                         Object.keys(pluginDef.install).forEach((serviceName) => {
                             const installDef = pluginDef.install[serviceName];
-                            const intallationPromise = this.installIntoService(serviceName, installDef, pluginConfig);
+                            const intallationPromise = this.installIntoService(serviceName, installDef, pluginConfig, pluginDef);
                             if (intallationPromise) {
                                 this.arrayExtend(installSteps, [intallationPromise]);
                             }
