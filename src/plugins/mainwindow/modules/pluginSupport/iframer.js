@@ -78,13 +78,13 @@ define([
             if (developMode) {
                 return String(new Date().getTime());
             } else {
-                return buildInfo.gitCommitHash;
+                return buildInfo.git.commitHash;
             }
         }
 
         cacheBuster() {
             // TODO: get develop mode from runtime
-            return '?cb=' + this.cacheBusterKey(this.runtime.config('buildInfo', false));
+            return '?cb=' + this.cacheBusterKey(this.runtime.config('buildInfo'), false);
         }
 
         attach(node) {
@@ -103,6 +103,8 @@ define([
             this.params = config.params;
 
             this.id = 'host_' + html.genId();
+
+            this.receivers = [];
 
             // This is the channel for talking to the iframe app.
 
@@ -233,6 +235,14 @@ define([
                 this.runtime.send('ui', 'setTitle', config.title);
             });
 
+            this.channel.on('ui-auth-navigate', ({ nextRequest, tokenInfo }) => {
+                const authSession = this.runtime.service('session').getClient();
+                authSession.setSessionCookie(tokenInfo.token, tokenInfo.expires);
+                return authSession.evaluateSession().then(() => {
+                    this.runtime.send('app', 'navigate', nextRequest);
+                });
+            });
+
             /*
             examples:
             {
@@ -302,17 +312,17 @@ define([
         }
 
         setupChannelSends() {
-            this.runtime.receive('session', 'loggedin', () => {
+            this.receivers.push(this.runtime.receive('session', 'loggedin', () => {
                 this.channel.send('loggedin', {
                     token: this.runtime.service('session').getAuthToken(),
                     username: this.runtime.service('session').getUsername(),
                     realname: this.runtime.service('session').getRealname(),
                     email: this.runtime.service('session').getEmail()
                 });
-            });
-            this.runtime.receive('session', 'loggedout', () => {
+            }));
+            this.receivers.push(this.runtime.receive('session', 'loggedout', () => {
                 this.channel.send('loggedout', {});
-            });
+            }));
         }
 
         start() {
@@ -363,6 +373,10 @@ define([
             const currentURL = new URL(currentLocation);
             currentURL.search = '';
             history.replaceState(null, '', currentURL.toString());
+
+            this.receivers.forEach((receiver) => {
+                this.runtime.drop(receiver);
+            });
 
             if (this.channel) {
                 this.channel.stop();

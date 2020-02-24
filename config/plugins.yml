@@ -25,7 +25,7 @@ plugins:
       bower: {}
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
-    version: 2.2.2
+    version: 2.2.3
     source:
       bower: {}
   - name: jgi-search
@@ -40,7 +40,7 @@ plugins:
       bower: {}
   - name: catalog
     globalName: kbase-ui-plugin-catalog
-    version: 2.1.1
+    version: 2.1.4
     source:
       bower: {}
   - name: data-search
