@@ -118,7 +118,14 @@ define([
             }
         }
 
-        installRoute(route) {
+        installRoute(route, pluginName) {
+            if (typeof route.params === 'undefined') {
+                route.params = {};
+            }
+            if (!route.params.plugin) {
+                route.params.plugin = pluginName;
+            }
+
             if (route.widget) {
                 this.router.addRoute(route);
             } else if (route.redirectHandler) {
@@ -135,19 +142,19 @@ define([
             }
         }
 
-        installRoutes(routes) {
+        installRoutes(routes, pluginName) {
             if (!routes) {
                 return;
             }
             routes.map((route) => {
-                return this.installRoute(route);
+                return this.installRoute(route, pluginName);
             });
         }
 
-        pluginHandler(pluginConfig) {
+        pluginHandler(serviceConfig, pluginConfig, pluginDef) {
             return new Promise((resolve, reject) => {
                 try {
-                    this.installRoutes(pluginConfig);
+                    this.installRoutes(serviceConfig, pluginDef.package.name);
                     resolve();
                 } catch (ex) {
                     reject(ex);
