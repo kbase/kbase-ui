@@ -1,17 +1,23 @@
 define([
     'kb_lib/html',
+    'kb_lib/htmlBuilders',
     './windowChannel',
     'kb_lib/httpUtils'
-], function (
+], (
     html,
+    build,
     WindowChannel,
     httpUtils
-) {
+) => {
     'use strict';
 
     const t = html.tag,
         div = t('div'),
+        span = t('span'),
         iframe = t('iframe');
+
+    const SHOW_LOADING_AFTER = 100;
+    const SHOW_WARNING_AFTER = 5000;
 
     class Iframe {
         constructor(config) {
@@ -23,6 +29,7 @@ define([
 
             // So we can deterministically find the iframe
             this.id = 'frame_' + html.genId();
+            this.coverId = 'cover_' + html.genId();
 
             const params = {
                 frameId: this.id,
@@ -47,10 +54,34 @@ define([
                     style: {
                         flex: '1 1 0px',
                         display: 'flex',
-                        flexDirection: 'column'
+                        flexDirection: 'column',
+                        position: 'relative'
                     }
                 },
                 [
+                    div({
+                        id: this.coverId,
+                        style: {
+                            position: 'absolute',
+                            top: '0',
+                            bottom: '0',
+                            left: '0',
+                            right: '0',
+                            backgroundColor: 'rgba(200, 200, 200, 0.3)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            visibility: 'hidden'
+                        }
+                    }, [
+                        div([
+                            span({
+                                dataElement: 'message'
+                            }),
+                            span(build.loading())
+                        ])
+                    ]),
                     iframe({
                         id: this.id,
                         name: this.id,
@@ -85,6 +116,34 @@ define([
         cacheBuster() {
             // TODO: get develop mode from runtime
             return '?cb=' + this.cacheBusterKey(this.runtime.config('buildInfo'), false);
+        }
+
+        showCover(message) {
+            const cover = document.getElementById(this.coverId);
+            if (!cover) {
+                console.warn('cover not found, cannot show it');
+                return;
+            }
+            cover.style.visibility = 'visible';
+            cover.querySelector('[data-element="message"]').innerText = message;
+        }
+
+        hideCover() {
+            const cover = document.getElementById(this.coverId);
+            if (!cover) {
+                console.warn('cover not found, cannot show it');
+                return;
+            }
+            cover.style.visibility = 'hidden';
+        }
+
+        removeCover() {
+            const cover = document.getElementById(this.coverId);
+            if (!cover) {
+                console.warn('No cover found!');
+                return;
+            }
+            cover.parentElement.removeChild(cover);
         }
 
         attach(node) {
@@ -123,6 +182,8 @@ define([
             this.channel = new WindowChannel.BidirectionalWindowChannel({
                 host: document.location.origin
             });
+
+
 
             this.iframe = new Iframe({
                 origin: document.location.origin,
@@ -269,22 +330,10 @@ define([
         }
 
         formPost({ action, params }) {
-            // var state = JSON.stringify(config.state);
-            // let query = {
-            //     provider: config.provider,
-            //     redirecturl: url,
-            //     stayloggedin: config.stayLoggedIn ? 'true' : 'false'
-            // };
-            // let search = new HttpQuery({
-            //     state: JSON.stringify(config.state)
-            // }).toString();
-            // action = this.makePath(endpoints.loginStart)
-
             // Punt over to the auth service
             const t = html.tag;
             const form = t('form');
             const input = t('input');
-            // const url = document.location.origin + '?' + search;
             const formId = html.genId();
             const paramsInputs = Array.from(Object.entries(params)).map(([name, value]) => {
                 return input({
@@ -326,10 +375,43 @@ define([
         }
 
         start() {
+            let isReady = false;
+            let isSlow = false;
+            let isVerySlow = false;
+            let loadingTimer = window.setTimeout(() => {
+                console.log('in slow timer?');
+                if (!isReady) {
+                    isSlow = true;
+                    this.iframe.showCover('Loading Plugin...');
+                }
+                loadingTimer = null;
+            }, SHOW_LOADING_AFTER);
+            let warningTimer = window.setTimeout(() => {
+                console.log('in warning timer?');
+                if (!isReady) {
+                    isVerySlow = true;
+                    this.iframe.showCover('Your connection appears to be slow, still loading...');
+                }
+                warningTimer = null;
+            }, SHOW_WARNING_AFTER);
+            const ready = () => {
+                console.log('[iframer] ready, removing timers and cover');
+                isReady = true;
+                if (loadingTimer) {
+                    window.clearTimeout(loadingTimer);
+                }
+                if (warningTimer) {
+                    window.clearTimeout(warningTimer);
+                }
+                this.iframe.removeCover();
+            };
+
             return new Promise((resolve, reject) => {
                 this.setupAndStartChannel();
                 this.channel.setWindow(this.iframe.window);
                 this.channel.once('ready', ({ channelId }) => {
+                    console.log('[iframer] received ready message', channelId);
+                    ready();
                     this.channel.partnerId = channelId;
                     // TODO: narrow and improve the config support for plugins
                     // const config = this.runtime.rawConfig();
