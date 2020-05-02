@@ -16,7 +16,7 @@ define([
         span = t('span'),
         iframe = t('iframe');
 
-    const SHOW_LOADING_AFTER = 100;
+    const SHOW_LOADING_AFTER = 300;
     const SHOW_WARNING_AFTER = 5000;
 
     class Iframe {
