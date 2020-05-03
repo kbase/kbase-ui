@@ -25,7 +25,7 @@ plugins:
       bower: {}
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
-    version: 2.3.8
+    version: 2.3.9
     source:
       bower: {}
   - name: jgi-search
