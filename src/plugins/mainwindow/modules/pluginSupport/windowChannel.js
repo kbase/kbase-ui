@@ -1,6 +1,9 @@
 define([], function () {
     'use strict';
 
+    // Default period with which to poll for stale listeners.
+    const DEFAULT_MONITOR_FREQUENCY = 100;
+
     // copy pasta: https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
     function uuidv4() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -59,7 +62,7 @@ define([], function () {
         constructor(config) {
             super(config);
             this.started = new Date();
-            this.timeout = config.timeout || 5000;
+            this.timeout = config.timeout;
         }
     }
 
@@ -156,6 +159,7 @@ define([], function () {
             // We can also have awaiting responses without an originating request.
             // These are useful for, e.g., a promise which awaits a message to be sent
             // within some window...
+
             if (message.envelope.id && this.awaitingResponse[message.envelope.id]) {
                 try {
                     const response = this.awaitingResponse[message.envelope.id];
@@ -291,7 +295,7 @@ define([], function () {
                 ) {
                     this.startMonitor();
                 }
-            }, 100);
+            }, DEFAULT_MONITOR_FREQUENCY);
         }
 
         listenOnce(listener) {
@@ -304,12 +308,13 @@ define([], function () {
             }
         }
 
-        once(name, success, error) {
+        once(name, onSuccess, onError, timeout) {
             this.listenOnce(
                 new WaitingListener({
-                    name: name,
-                    onSuccess: success,
-                    onError: error
+                    name,
+                    onSuccess,
+                    onError,
+                    timeout
                 })
             );
         }
@@ -568,7 +573,7 @@ define([], function () {
                             if (elapsed > listener.timeout) {
                                 try {
                                     if (listener.onError) {
-                                        listener.onError(new Error('timout after ' + elapsed));
+                                        listener.onError(new Error('timed out after ' + elapsed));
                                     }
                                 } catch (ex) {
                                     console.error('Error calling error handler', key, ex);
@@ -594,7 +599,7 @@ define([], function () {
                 ) {
                     this.startMonitor();
                 }
-            }, 100);
+            }, DEFAULT_MONITOR_FREQUENCE);
         }
 
         listenOnce(listener) {
