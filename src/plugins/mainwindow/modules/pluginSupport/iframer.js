@@ -16,8 +16,9 @@ define([
         span = t('span'),
         iframe = t('iframe');
 
-    const SHOW_LOADING_AFTER = 300;
+    const SHOW_LOADING_AFTER = 1000;
     const SHOW_WARNING_AFTER = 5000;
+    const SHOW_DIRE_WARNING_AFTER = 30000;
 
     class Iframe {
         constructor(config) {
@@ -67,19 +68,30 @@ define([
                             bottom: '0',
                             left: '0',
                             right: '0',
-                            backgroundColor: 'rgba(200, 200, 200, 0.3)',
+                            // backgroundColor: 'rgba(200, 200, 200, 0.2)',
                             display: 'flex',
                             flexDirection: 'column',
-                            justifyContent: 'center',
+                            // justifyContent: 'center',
                             alignItems: 'center',
                             visibility: 'hidden'
                         }
                     }, [
-                        div([
+                        div({
+                            class: 'well',
+                            style: {
+                                marginTop: '20px',
+                                minHeight: '4em'
+                            }
+                        }, [
                             span({
                                 dataElement: 'message'
                             }),
-                            span(build.loading())
+                            span({
+                                dataElement: 'icon',
+                                style: {
+                                    marginLeft: '8px'
+                                }
+                            })
                         ])
                     ]),
                     iframe({
@@ -118,7 +130,7 @@ define([
             return '?cb=' + this.cacheBusterKey(this.runtime.config('buildInfo'), false);
         }
 
-        showCover(message) {
+        showCover(message, icon, color) {
             const cover = document.getElementById(this.coverId);
             if (!cover) {
                 console.warn('cover not found, cannot show it');
@@ -126,6 +138,14 @@ define([
             }
             cover.style.visibility = 'visible';
             cover.querySelector('[data-element="message"]').innerText = message;
+            if (icon) {
+                cover.querySelector('[data-element="icon"]').classList = ['fa', 'fa-2x', 'fa-' + icon, 'fa-spin'].join(' ')
+            }
+            if (color) {
+                cover.querySelector('[data-element="icon"]').style.color = color;
+            } else {
+                delete cover.querySelector('[data-element="icon"]').style['color'];
+            }
         }
 
         hideCover() {
@@ -154,6 +174,44 @@ define([
         }
     }
 
+    class ProcessMonitor {
+        constructor({steps, iframe}) {
+            this.isReady = false;
+            this.currentTimer = null;
+            this.steps = steps;
+            this.currentStep = 0;
+            this.iframe = iframe;
+        }
+
+        monitor() {
+            const step = this.steps[this.currentStep];
+            const start = new Date().getTime();
+            this.currentTimer = window.setTimeout(() => {
+                if (!this.isReady) {
+                    this.iframe.showCover(step.message, step.icon, step.color);
+                    this.currentStep += 1;
+                    if (this.currentStep < this.steps.length) {
+                        this.currentTimer = this.monitor();
+                    }
+                } else {
+                    this.currentTimer = null;
+                }
+            }, step.time);
+        }
+
+        start() {
+            this.monitor();
+        }
+
+        stop() {
+            this.isReady = true;
+            if (this.currentTimer) {
+                window.clearTimeout(this.currentTimer);
+            }
+            this.iframe.hideCover();
+        }
+    }
+
     class Iframer {
         constructor(config) {
             this.container = config.node;
@@ -165,25 +223,9 @@ define([
 
             this.receivers = [];
 
-            // This is the channel for talking to the iframe app.
-
-            // We do a dance here. Creating the channel also creates a unique channel id.
-            // The channel will only process messages which contain the message
-            // envelope property "to" set to the channel id.
-            // So we need to tell the iframe about this through the data-params
-            // property.
-            // But the channel needs the iframe window reference in order to set up a
-            // postMessage listener.
-            // Fortunately, the attach method is synchronous, and thus the window object
-            // is available immediately after attach().
-            // TODO: could instead use a one-time uuid which would be sent in the 'ready'
-            // message and matched. Would allow a cleaner logic I suppose.
-
             this.channel = new WindowChannel.BidirectionalWindowChannel({
                 host: document.location.origin
             });
-
-
 
             this.iframe = new Iframe({
                 origin: document.location.origin,
@@ -374,78 +416,82 @@ define([
             }));
         }
 
+        renderWarning(content) {
+        }
+
         start() {
-            let isReady = false;
-            let isSlow = false;
-            let isVerySlow = false;
-            let loadingTimer = window.setTimeout(() => {
-                console.log('in slow timer?');
-                if (!isReady) {
-                    isSlow = true;
-                    this.iframe.showCover('Loading Plugin...');
-                }
-                loadingTimer = null;
-            }, SHOW_LOADING_AFTER);
-            let warningTimer = window.setTimeout(() => {
-                console.log('in warning timer?');
-                if (!isReady) {
-                    isVerySlow = true;
-                    this.iframe.showCover('Your connection appears to be slow, still loading...');
-                }
-                warningTimer = null;
-            }, SHOW_WARNING_AFTER);
+            const monitor = new ProcessMonitor({
+                iframe: this.iframe,
+                steps: [
+                    {
+                        message: 'Loading Plugin...', 
+                        icon: 'plug',
+                        time: SHOW_LOADING_AFTER
+                    },
+                    {
+                        message: 'Loading Plugin - still loading ...',
+                        icon: 'plug',
+                        color: '#8a6d3b',
+                        time: SHOW_WARNING_AFTER
+                    },
+                    {
+                        message: 'Loading Plugin - your connection appears to be slow, still loading ...',
+                        icon: 'plug',
+                        color: '#a94442',
+                        time: SHOW_DIRE_WARNING_AFTER
+                    }
+                ]
+            });
+            monitor.start();
+
             const ready = () => {
-                console.log('[iframer] ready, removing timers and cover');
-                isReady = true;
-                if (loadingTimer) {
-                    window.clearTimeout(loadingTimer);
-                }
-                if (warningTimer) {
-                    window.clearTimeout(warningTimer);
-                }
-                this.iframe.removeCover();
+                monitor.stop();
             };
 
             return new Promise((resolve, reject) => {
                 this.setupAndStartChannel();
                 this.channel.setWindow(this.iframe.window);
-                this.channel.once('ready', ({ channelId }) => {
-                    console.log('[iframer] received ready message', channelId);
-                    ready();
-                    this.channel.partnerId = channelId;
-                    // TODO: narrow and improve the config support for plugins
-                    // const config = this.runtime.rawConfig();
-                    // const pluginConfig = {
-                    //     baseURL: config.deploy.services.urlBase,
-                    //     services: config.services
-                    // };
-                    this.channel.send('start', {
-                        authorization: {
-                            token: this.runtime.service('session').getAuthToken(),
-                            username: this.runtime.service('session').getUsername(),
-                            realname: this.runtime.service('session').getRealname(),
-                            roles: this.runtime.service('session').getRoles().map(({ id }) => {
-                                return id;
-                            })
-                        },
-                        config: this.runtime.rawConfig(),
-                        params: this.params.routeParams
+                this.channel.once('ready', 
+                    ({ channelId }) => {
+                        ready();
+                        this.channel.partnerId = channelId;
+                        // TODO: narrow and improve the config support for plugins
+                        // const config = this.runtime.rawConfig();
+                        // const pluginConfig = {
+                        //     baseURL: config.deploy.services.urlBase,
+                        //     services: config.services
+                        // };
+                        this.channel.send('start', {
+                            authorization: {
+                                token: this.runtime.service('session').getAuthToken(),
+                                username: this.runtime.service('session').getUsername(),
+                                realname: this.runtime.service('session').getRealname(),
+                                roles: this.runtime.service('session').getRoles().map(({ id }) => {
+                                    return id;
+                                })
+                            },
+                            config: this.runtime.rawConfig(),
+                            params: this.params.routeParams
+                        });
+                        // Any sends to the channel should only be enabled after the
+                        // start message is received.
+                        this.setupChannelSends();
+                    }, );
+                    // forward clicks to the parent, to enable closing dropdowns,
+                    // etc.
+
+                    this.channel.once('started', () => {
+                        resolve();
                     });
-                    // Any sends to the channel should only be enabled after the
-                    // start message is received.
-                    this.setupChannelSends();
-                });
-                // forward clicks to the parent, to enable closing dropdowns,
-                // etc.
 
-                this.channel.once('started', () => {
-                    resolve();
-                });
-
-                this.channel.once('start-error', (config) => {
-                    reject(new Error(config.message));
-                });
-            });
+                    this.channel.once('start-error', (config) => {
+                        reject(new Error(config.message));
+                    });
+                },
+                (error) => {
+                    console.error('ERROR!', error.message);
+                }, 
+                60000);
         }
 
         stop() {
