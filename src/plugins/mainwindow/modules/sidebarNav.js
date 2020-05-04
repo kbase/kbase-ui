@@ -1,9 +1,20 @@
-define(['knockout', 'kb_lib/html', './components/sidebarMenu'], function (
+define([
+    'knockout',
+    'preact',
+    'htm',
+    'kb_lib/html',
+    './components/sidebarMenu'
+], function (
     ko,
+    preact,
+    htm,
     html,
     SidebarMenuComponent
 ) {
     'use strict';
+
+    const { h, render, Component } = preact;
+    const phtml = htm.bind(h);
 
     const t = html.tag,
         div = t('div');
@@ -26,6 +37,19 @@ define(['knockout', 'kb_lib/html', './components/sidebarMenu'], function (
         return a1.some(function (a) {
             return a2.indexOf(a) >= 0;
         });
+    }
+
+    class SidebarNav2 extends Component {
+
+        render() {
+            return phtml`
+                <div
+                  data-k-b-testhook-widget="sidebarNav"
+                  >
+                  <${SidebarMenuComponent} />
+                </div>
+            `;
+        }
     }
 
     class ViewModel {
