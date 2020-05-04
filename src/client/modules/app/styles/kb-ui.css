@@ -798,3 +798,13 @@ div::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background: #666;
 }
+
+/* Font awesome help */
+
+.fa-rotate-225 {
+    -webkit-transform: rotate(225deg);
+    -moz-transform: rotate(225deg);
+    -ms-transform: rotate(225deg);
+    -o-transform: rotate(225deg);
+    transform: rotate(225deg);
+}

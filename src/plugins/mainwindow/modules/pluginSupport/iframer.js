@@ -80,14 +80,25 @@ define([
                             class: 'well',
                             style: {
                                 marginTop: '20px',
-                                minHeight: '4em'
+                                minHeight: '4em',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignItems: 'center'
                             }
                         }, [
+                            span({
+                                dataElement: 'icon',
+                                style: {
+                                    marginRight: '8px'
+                                }
+                            }),
                             span({
                                 dataElement: 'message'
                             }),
                             span({
-                                dataElement: 'icon',
+                                // dataElement: 'icon',
+                                class: 'fa fa-2x fa-spinner fa-pulse',
                                 style: {
                                     marginLeft: '8px'
                                 }
@@ -139,7 +150,9 @@ define([
             cover.style.visibility = 'visible';
             cover.querySelector('[data-element="message"]').innerText = message;
             if (icon) {
-                cover.querySelector('[data-element="icon"]').classList = ['fa', 'fa-2x', 'fa-' + icon, 'fa-spin'].join(' ')
+                // cover.querySelector('[data-element="icon"]').classList = ['fa', 'fa-2x', 'fa-' + icon, 'fa-spin'].join(' ')
+                cover.querySelector('[data-element="icon"]').classList = ['fa', 'fa-rotate-225', 'fa-2x', 'fa-' + icon].join(' ');
+                
             }
             if (color) {
                 cover.querySelector('[data-element="icon"]').style.color = color;
