@@ -3,7 +3,8 @@ define([
     'htm',
 
     // for effect
-    'bootstrap'
+    'bootstrap',
+    './SidebarMenu.css'
 ], (
     preact,
     htm
@@ -33,37 +34,95 @@ define([
                     </div>
                     <div className="fa fa-stack-1x fa-globe"
                         style=${{fontSize: '85%',
-                                 top: '-7px',
-                                 left: '-3px'}}>
+        top: '-7px',
+        left: '-3px'}}>
                     </div>
                 </div>
-            `
+            `;
         }
 
         renderIcon(button) {
             switch (button.icon) {
-                case 'public-search':
-                    return this.renderPublicSearchIcon()
-                default:
-                    return html`
-                      <div className=${"fa fa-3x fa-" + button.icon}></div>
-                    `
+            case 'public-search':
+                return this.renderPublicSearchIcon();
+            default:
+                return html`
+                      <div className=${'fa fa-3x fa-' + button.icon}></div>
+                    `;
             }
         }
 
-        renderBadge() {
+        renderBeta(button) {
+            if (!button.beta) {
+                return;
+            }
+            return html`
+                <div style=${{
+        position: 'absolute',
+        top: '0',
+        right: '0',
+        color: 'rgb(193, 119, 54)',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontStyle: 'italic'
+    }}>
+                    beta
+                </div>
+            `;
+        }
 
+        renderBadge(button) {
+            if (!button.id !== 'feeds') {
+                return;
+            }
+            const notificationCount = 1;
+            const notificationError = false;
+            let content;
+            if (notificationCount > 0) {
+                content = html`
+                    <span>
+                        ${notificationCount}
+                    </span>
+                `;
+            } else if (notificationError) {
+                content = html`
+                    <span className="fa fa-ban"
+                `;
+            } else {
+                return;
+            }
+
+            return html`
+                <div style=${{
+        position: 'absolute',
+        top: '0',
+        right: '0'
+    }}>
+                    <div style=${{
+        padding: '4px',
+        color: 'white',
+        backgroundColor: 'rgba(255, 0, 0, 0.8)',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontStyle: 'italic',
+        borderRadius: '3px'
+    }}>
+                    ${content}
+                    </div>
+                </div>
+            `;
         }
 
         renderButton(button) {
-            const activeClass = this.props.active ? "-active" : "";
+            const activeClass = this.props.active ? '-active' : '';
             return html`
-                <a className=${"SidebarMenu-button" + activeClass}}
+                <a className=${'SidebarMenu-button' + activeClass}}
                    data-k-b-testhook-element="menu-item"
                    data-k-b-testhook-button=${button.id}
-                   onClick=${() => {this.onNavClick(button.path)}}>
+                   onClick=${() => {this.onNavClick(button.path);}}>
                    ${this.renderIcon(button)}
                    <div>${button.label}</div>
+                   ${this.renderBeta(button)}
                    ${this.renderBadge(button)}
                 </a>
             `;
@@ -72,7 +131,7 @@ define([
         render() {
             const buttons = this.props.buttons.map((button) => {
                 return this.renderButton(button);
-            })
+            });
             return html`
                 <div>
                     ${buttons}
@@ -81,5 +140,5 @@ define([
         }
     }
 
-    return SidebarMenu
-}
+    return SidebarMenu;
+});
