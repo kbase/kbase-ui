@@ -1,9 +1,9 @@
 define([
-    'kb_service/utils',
+    'kb_lib/workspaceUtils',
     'kb_lib/jsonRpc/genericClient',
     'kb_lib/jsonRpc/dynamicServiceClient'
 ], function (
-    serviceUtils,
+    wsUtils,
     GenericClient,
     DynamicServiceClient
 ) {
@@ -27,7 +27,7 @@ define([
                 .then(function ([wsList]) {
                     const workspaces = wsList
                         .map(function (workspaceInfo) {
-                            return serviceUtils.workspaceInfoToObject(workspaceInfo);
+                            return wsUtils.workspaceInfoToObject(workspaceInfo);
                         })
                         .filter(function (workspaceInfo) {
                             if (workspaceInfo.metadata && workspaceInfo.metadata.narrative) {
@@ -60,7 +60,7 @@ define([
                         .then(function ([objList]) {
                             return ({
                                 workspaceInfo: workspaceInfo,
-                                narrativeInfo: serviceUtils.objectInfoToObject(objList[0])
+                                narrativeInfo: wsUtils.objectInfoToObject(objList[0])
                             });
                         });
                 });
