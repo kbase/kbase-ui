@@ -1,4 +1,5 @@
-.plugin-mainwindow .widget-title {
+.plugin-mainwindow .TitleWidget {
+    padding-left: 10px;
     height: 46px;
     display: flex;
     align-items: flex-end;
@@ -6,7 +7,7 @@
     min-width: 0;
 }
 
-.plugin-mainwindow .widget-title h1 {
+.plugin-mainwindow .TitleWidget h1 {
     margin: 0;
     padding: 0;
     overflow: hidden;

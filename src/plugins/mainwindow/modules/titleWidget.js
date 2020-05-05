@@ -25,7 +25,7 @@ define([
         attach(node) {
             this.hostNode = node;
             this.container = this.hostNode.appendChild(document.createElement('div'));
-            this.container.classList.add('widget-title');
+            this.container.classList.add('TitleWidget');
             this.container.setAttribute('data-k-b-testhook-widget', 'title');
         }
 
