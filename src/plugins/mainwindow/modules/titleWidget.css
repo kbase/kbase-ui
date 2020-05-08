@@ -1,6 +1,5 @@
 .plugin-mainwindow .TitleWidget {
     padding-left: 10px;
-    height: 46px;
     display: flex;
     align-items: flex-end;
     flex: 1 1 0px;
