@@ -6,4 +6,4 @@
 ---
 # Note that this file is merged into the master config in the release namespace.
 release:
-  version: 2.1.0
+  version: 2.1.1
