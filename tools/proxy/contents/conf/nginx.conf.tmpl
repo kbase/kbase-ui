@@ -122,6 +122,53 @@ http {
     ssl_certificate /kb/deployment/ssl/test.crt;
     ssl_certificate_key /kb/deployment/ssl/test.key;
 
+     # Service proxying
+    # specified as a list of service modules
+    # note should put the service module name in /etc/hosts and map to localhost
+    {{ if .Env.service_proxies }}
+    {{ range split .Env.service_proxies " " }}
+    
+    {{ if eq . "searchapi2" }}
+    location /services/searchapi2/legacy {
+        {{ if $.Env.deploy_ui_hostname }}
+        include /etc/nginx/cors.conf;
+        {{ end }}
+        # set $upstream http://searchapi2:5000/legacy;
+        # proxy_pass $upstream;
+        proxy_pass http://searchapi2:5000/legacy;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        client_max_body_size 300M;
+    }
+
+    location /services/searchapi2/rpc {
+        {{ if $.Env.deploy_ui_hostname }}
+        include /etc/nginx/cors.conf;
+        {{ end }}
+        # set $upstream http://searchapi2:5000/rpc;
+        # proxy_pass $upstream;
+        proxy_pass http://searchapi2:5000/rpc;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        client_max_body_size 300M;
+    }
+    {{ else }}
+    location /services/{{ . }} {
+        {{ if $.Env.deploy_ui_hostname }}
+        include /etc/nginx/cors.conf;
+        {{ end }}
+        set $upstream http://{{ . }}:5000;
+        proxy_pass $upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        client_max_body_size 300M;
+    }
+    {{ end }}
+
+    {{ end }}
+    {{ end }}
+
+
     # Proxy all service calls, including auth2, to the real CI
     location /services {
       # The cookie path rewriting is just for auth2

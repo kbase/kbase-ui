@@ -15,7 +15,7 @@ plugins:
       bower: {}
   - name: dataview
     globalName: kbase-ui-plugin-dataview
-    version: 4.4.8
+    version: 4.5.2
     source:
       git: {}
   - name: dashboard
@@ -25,7 +25,7 @@ plugins:
       bower: {}
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
-    version: 2.2.3
+    version: 2.3.15
     source:
       bower: {}
   - name: jgi-search
@@ -40,7 +40,7 @@ plugins:
       bower: {}
   - name: catalog
     globalName: kbase-ui-plugin-catalog
-    version: 2.1.4
+    version: 2.1.5
     source:
       bower: {}
   - name: data-search
@@ -56,23 +56,25 @@ plugins:
       git: {}
   - name: biochem-search
     globalName: kbase-ui-plugin-biochem-search
-    version: 2.0.1
+    version: 2.0.4
     source:
       git: {}
   - name: job-browser2
     globalName: kbase-ui-plugin-job-browser2
+    # revert to current version after next release
+    # version: 1.5.0
     version: 1.1.4
     source:
       git: {}
   - name: react-profile-view
     globalName: kbase-ui-plugin-react-profile-view
-    version: 1.1.4
+    version: 1.2.6
     source:
       git:
         account: kbaseIncubator
   - name: re-landing-pages
     globalName: kbase-ui-plugin-re-landing-pages
-    version: 0.6.2
+    version: 0.8.2
     source:
       git:
         account: kbaseIncubator
@@ -82,6 +84,12 @@ plugins:
     source:
       git:
         account: eapearson
+  - name: sampleview
+    globalName: kbase-ui-plugin-sampleview
+    version: 0.3.4
+    source:
+      git:
+        account: kbaseIncubator
   # Unreleased
   # - name: public-search
   #   globalName: kbase-ui-plugin-public-search

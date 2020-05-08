@@ -152,9 +152,6 @@ define([], () => {
 
                 const captureExtraPath = route.captureExtraPath;
 
-                // We can use a route which is longer than the path if the route has
-                // optional params at the end.
-
                 if (route.path.length > req.path.length) {
                     const isAllOptional = route.path.slice(req.path.length).every((routePathElement) => {
                         return routePathElement.optional;
@@ -173,6 +170,8 @@ define([], () => {
                     }
                 }
 
+                // We can use a route which is longer than the path if the route has
+                // optional params at the end.
                 reqloop: for (j = 0; j < req.path.length; j += 1) {
                     routePathElement = route.path[j];
                     requestPathElement = req.path[j];
@@ -183,6 +182,7 @@ define([], () => {
                             break;
                         }
                     }
+
                     switch (routePathElement.type) {
                     case 'literal':
                         // current path element must match current route element

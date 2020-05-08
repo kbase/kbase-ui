@@ -132,6 +132,20 @@ function mergeDynamicServices(root, config, args) {
     }
 }
 
+function mergeServices(root, config, args) {
+    if (args.services) {
+        let services;
+        if (typeof args.services === 'string') {
+            services = [args.services];
+        } else {
+            services = args.services;
+        }
+        const proxy_env = 'service_proxies=' + services.join(' ');
+        config.services['kbase-ui'].environment.push(proxy_env);
+        config.services['kbase-ui-proxy'].environment.push(proxy_env);
+    }
+}
+
 function mergeLocalNarrative(root, config, args) {
     if (args.local_narrative) {
         config.services['kbase-ui-proxy'].environment.push('local_narrative=true');
@@ -182,6 +196,8 @@ function main(args) {
     mergePaths(root, config, args);
 
     mergeDynamicServices(root, config, args);
+
+    mergeServices(root, config, args);
 
     mergeLocalNarrative(root, config, args);
 

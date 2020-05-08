@@ -275,8 +275,6 @@ Although the sidebar is partially positioned with part of the navbar.
 The content area is normal flow and just needs to have a matching top margin.
 */
 
-.navbar-kbase {}
-
 /* Top bar nav buttons
    --------------------------
 */
@@ -285,24 +283,6 @@ The content area is normal flow and just needs to have a matching top margin.
     /* don't add shadows here */
     box-shadow: none;
 }
-
-#kb-ipy-menu {
-    /* restore rounded corners */
-    border-radius: 4px !important;
-    margin-right: 0;
-}
-
-/*.xbtn-xs {
-    border: 0;
-    box-shadow: none;
-    -webkit-box-shadow: none;
-    moz-box-shadow: none;
-    font-size: 18px;
-}
-
-.xbtn-xs .glyphicon-user {
-    padding: 14px 5px 14px 5px;
-}*/
 
 .fa-color-warning::before {
     /* color: rgb(143, 127, 97); */

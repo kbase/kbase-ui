@@ -27,6 +27,9 @@ define([
 ) => {
     'use strict';
 
+    // TODO: make this configurable.
+    const CHECK_CORE_SERVICES = false;
+
     /*
     App
     The app is the primary runtime for the entire system. It provides a
@@ -59,7 +62,6 @@ define([
     }
 
     */
-
 
     return class App {
         constructor(params) {
@@ -207,7 +209,9 @@ define([
                     return this.pluginManager.installPlugins(this.plugins);
                 })
                 .then(() => {
-                    return this.checkCoreServices();
+                    if (CHECK_CORE_SERVICES) {
+                        return this.checkCoreServices();
+                    }
                 })
                 .then(() => {
                     return this.appServiceManager.startServices();

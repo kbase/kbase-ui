@@ -14,9 +14,7 @@ define([
     'bootstrap',
     'css!font_awesome',
     'css!app/styles/kb-bootstrap',
-    'css!app/styles/kb-icons',
-    'css!app/styles/kb-ui',
-    'css!app/styles/kb-datatables'
+    'css!app/styles/kb-ui'
 ], function (Promise, Uuid, Hub, props, knockoutLoader, utils, pluginConfig, appConfigBase, deployConfig) {
     'use strict';
 

@@ -43,8 +43,6 @@
             'jquery-ui': 'bower_components/jquery-ui/jquery-ui',
             json: 'bower_components/requirejs-json/json',
             kb_bootstrap: 'css/kb-bootstrap',
-            kb_datatables: 'css/kb-datatables',
-            kb_icons: 'css/kb-icons',
             kb_ui: 'css/kb-ui',
             knockout: 'bower_components/knockout/knockout',
             'knockout-arraytransforms': 'bower_components/knockout-arraytransforms/knockout-arraytransforms',

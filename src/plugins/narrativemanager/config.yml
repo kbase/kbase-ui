@@ -22,6 +22,12 @@ install:
         newWindow: true
         label: Narrative Interface
         icon: file
+    - name: new-narrative
+      definition:
+        path: narrativemanager/new
+        newWindow: true
+        label: New Narrative
+        icon: plus
   routes:
     - path: [narrativemanager, start]
       authorization: true

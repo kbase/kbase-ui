@@ -1,17 +1,24 @@
 define([
     'kb_lib/html',
+    'kb_lib/htmlBuilders',
     './windowChannel',
     'kb_lib/httpUtils'
-], function (
+], (
     html,
+    build,
     WindowChannel,
     httpUtils
-) {
+) => {
     'use strict';
 
     const t = html.tag,
         div = t('div'),
+        span = t('span'),
         iframe = t('iframe');
+
+    const SHOW_LOADING_AFTER = 1000;
+    const SHOW_WARNING_AFTER = 5000;
+    const SHOW_DIRE_WARNING_AFTER = 30000;
 
     class Iframe {
         constructor(config) {
@@ -23,6 +30,7 @@ define([
 
             // So we can deterministically find the iframe
             this.id = 'frame_' + html.genId();
+            this.coverId = 'cover_' + html.genId();
 
             const params = {
                 frameId: this.id,
@@ -47,10 +55,56 @@ define([
                     style: {
                         flex: '1 1 0px',
                         display: 'flex',
-                        flexDirection: 'column'
+                        flexDirection: 'column',
+                        position: 'relative'
                     }
                 },
                 [
+                    div({
+                        id: this.coverId,
+                        style: {
+                            position: 'absolute',
+                            top: '0',
+                            bottom: '0',
+                            left: '0',
+                            right: '0',
+                            // backgroundColor: 'rgba(200, 200, 200, 0.2)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            // justifyContent: 'center',
+                            alignItems: 'center',
+                            visibility: 'hidden'
+                        }
+                    }, [
+                        div({
+                            class: 'well',
+                            style: {
+                                marginTop: '20px',
+                                minHeight: '4em',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }
+                        }, [
+                            span({
+                                dataElement: 'icon',
+                                style: {
+                                    marginRight: '8px'
+                                }
+                            }),
+                            span({
+                                dataElement: 'message'
+                            }),
+                            span({
+                                // dataElement: 'icon',
+                                class: 'fa fa-2x fa-spinner fa-pulse',
+                                style: {
+                                    marginLeft: '8px'
+                                }
+                            })
+                        ])
+                    ]),
                     iframe({
                         id: this.id,
                         name: this.id,
@@ -87,11 +141,87 @@ define([
             return '?cb=' + this.cacheBusterKey(this.runtime.config('buildInfo'), false);
         }
 
+        showCover(message, icon, color) {
+            const cover = document.getElementById(this.coverId);
+            if (!cover) {
+                console.warn('cover not found, cannot show it');
+                return;
+            }
+            cover.style.visibility = 'visible';
+            cover.querySelector('[data-element="message"]').innerText = message;
+            if (icon) {
+                // cover.querySelector('[data-element="icon"]').classList = ['fa', 'fa-2x', 'fa-' + icon, 'fa-spin'].join(' ')
+                cover.querySelector('[data-element="icon"]').classList = ['fa', 'fa-rotate-225', 'fa-2x', 'fa-' + icon].join(' ');
+                
+            }
+            if (color) {
+                cover.querySelector('[data-element="icon"]').style.color = color;
+            } else {
+                delete cover.querySelector('[data-element="icon"]').style['color'];
+            }
+        }
+
+        hideCover() {
+            const cover = document.getElementById(this.coverId);
+            if (!cover) {
+                console.warn('cover not found, cannot show it');
+                return;
+            }
+            cover.style.visibility = 'hidden';
+        }
+
+        removeCover() {
+            const cover = document.getElementById(this.coverId);
+            if (!cover) {
+                console.warn('No cover found!');
+                return;
+            }
+            cover.parentElement.removeChild(cover);
+        }
+
         attach(node) {
             this.node = node;
             this.node.innerHTML = this.content;
             this.iframe = document.getElementById(this.id);
             this.window = this.iframe.contentWindow;
+        }
+    }
+
+    class ProcessMonitor {
+        constructor({steps, iframe}) {
+            this.isReady = false;
+            this.currentTimer = null;
+            this.steps = steps;
+            this.currentStep = 0;
+            this.iframe = iframe;
+        }
+
+        monitor() {
+            const step = this.steps[this.currentStep];
+            const start = new Date().getTime();
+            this.currentTimer = window.setTimeout(() => {
+                if (!this.isReady) {
+                    this.iframe.showCover(step.message, step.icon, step.color);
+                    this.currentStep += 1;
+                    if (this.currentStep < this.steps.length) {
+                        this.currentTimer = this.monitor();
+                    }
+                } else {
+                    this.currentTimer = null;
+                }
+            }, step.time);
+        }
+
+        start() {
+            this.monitor();
+        }
+
+        stop() {
+            this.isReady = true;
+            if (this.currentTimer) {
+                window.clearTimeout(this.currentTimer);
+            }
+            this.iframe.hideCover();
         }
     }
 
@@ -105,20 +235,6 @@ define([
             this.id = 'host_' + html.genId();
 
             this.receivers = [];
-
-            // This is the channel for talking to the iframe app.
-
-            // We do a dance here. Creating the channel also creates a unique channel id.
-            // The channel will only process messages which contain the message
-            // envelope property "to" set to the channel id.
-            // So we need to tell the iframe about this through the data-params
-            // property.
-            // But the channel needs the iframe window reference in order to set up a
-            // postMessage listener.
-            // Fortunately, the attach method is synchronous, and thus the window object
-            // is available immediately after attach().
-            // TODO: could instead use a one-time uuid which would be sent in the 'ready'
-            // message and matched. Would allow a cleaner logic I suppose.
 
             this.channel = new WindowChannel.BidirectionalWindowChannel({
                 host: document.location.origin
@@ -269,22 +385,10 @@ define([
         }
 
         formPost({ action, params }) {
-            // var state = JSON.stringify(config.state);
-            // let query = {
-            //     provider: config.provider,
-            //     redirecturl: url,
-            //     stayloggedin: config.stayLoggedIn ? 'true' : 'false'
-            // };
-            // let search = new HttpQuery({
-            //     state: JSON.stringify(config.state)
-            // }).toString();
-            // action = this.makePath(endpoints.loginStart)
-
             // Punt over to the auth service
             const t = html.tag;
             const form = t('form');
             const input = t('input');
-            // const url = document.location.origin + '?' + search;
             const formId = html.genId();
             const paramsInputs = Array.from(Object.entries(params)).map(([name, value]) => {
                 return input({
@@ -325,45 +429,82 @@ define([
             }));
         }
 
+        renderWarning(content) {
+        }
+
         start() {
+            const monitor = new ProcessMonitor({
+                iframe: this.iframe,
+                steps: [
+                    {
+                        message: 'Loading Plugin...', 
+                        icon: 'plug',
+                        time: SHOW_LOADING_AFTER
+                    },
+                    {
+                        message: 'Loading Plugin - still loading ...',
+                        icon: 'plug',
+                        color: '#8a6d3b',
+                        time: SHOW_WARNING_AFTER
+                    },
+                    {
+                        message: 'Loading Plugin - your connection appears to be slow, still loading ...',
+                        icon: 'plug',
+                        color: '#a94442',
+                        time: SHOW_DIRE_WARNING_AFTER
+                    }
+                ]
+            });
+            monitor.start();
+
+            const ready = () => {
+                monitor.stop();
+            };
+
             return new Promise((resolve, reject) => {
                 this.setupAndStartChannel();
                 this.channel.setWindow(this.iframe.window);
-                this.channel.once('ready', ({ channelId }) => {
-                    this.channel.partnerId = channelId;
-                    // TODO: narrow and improve the config support for plugins
-                    // const config = this.runtime.rawConfig();
-                    // const pluginConfig = {
-                    //     baseURL: config.deploy.services.urlBase,
-                    //     services: config.services
-                    // };
-                    this.channel.send('start', {
-                        authorization: {
-                            token: this.runtime.service('session').getAuthToken(),
-                            username: this.runtime.service('session').getUsername(),
-                            realname: this.runtime.service('session').getRealname(),
-                            roles: this.runtime.service('session').getRoles().map(({ id }) => {
-                                return id;
-                            })
-                        },
-                        config: this.runtime.rawConfig(),
-                        params: this.params.routeParams
+                this.channel.once('ready', 
+                    ({ channelId }) => {
+                        ready();
+                        this.channel.partnerId = channelId;
+                        // TODO: narrow and improve the config support for plugins
+                        // const config = this.runtime.rawConfig();
+                        // const pluginConfig = {
+                        //     baseURL: config.deploy.services.urlBase,
+                        //     services: config.services
+                        // };
+                        this.channel.send('start', {
+                            authorization: {
+                                token: this.runtime.service('session').getAuthToken(),
+                                username: this.runtime.service('session').getUsername(),
+                                realname: this.runtime.service('session').getRealname(),
+                                roles: this.runtime.service('session').getRoles().map(({ id }) => {
+                                    return id;
+                                })
+                            },
+                            config: this.runtime.rawConfig(),
+                            params: this.params.routeParams
+                        });
+                        // Any sends to the channel should only be enabled after the
+                        // start message is received.
+                        this.setupChannelSends();
+                    }, );
+                    // forward clicks to the parent, to enable closing dropdowns,
+                    // etc.
+
+                    this.channel.once('started', () => {
+                        resolve();
                     });
-                    // Any sends to the channel should only be enabled after the
-                    // start message is received.
-                    this.setupChannelSends();
-                });
-                // forward clicks to the parent, to enable closing dropdowns,
-                // etc.
 
-                this.channel.once('started', () => {
-                    resolve();
-                });
-
-                this.channel.once('start-error', (config) => {
-                    reject(new Error(config.message));
-                });
-            });
+                    this.channel.once('start-error', (config) => {
+                        reject(new Error(config.message));
+                    });
+                },
+                (error) => {
+                    console.error('ERROR!', error.message);
+                }, 
+                60000);
         }
 
         stop() {
