@@ -360,3 +360,9 @@
 .kbase-ui .nav-tabs>li:hover {
     cursor: pointer;
 }
+
+/* More bootstrap overrides */
+.kbase-ui h1 {
+    /* Default of 1.1 cuts off bottom of some fonts */
+    line-height: 1.2;
+}
