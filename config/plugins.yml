@@ -25,7 +25,7 @@ plugins:
       bower: {}
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
-    version: 2.3.16
+    version: 2.3.17
     source:
       bower: {}
   - name: jgi-search
@@ -74,7 +74,7 @@ plugins:
         account: kbaseIncubator
   - name: re-landing-pages
     globalName: kbase-ui-plugin-re-landing-pages
-    version: 0.8.2
+    version: 0.9.1
     source:
       git:
         account: kbaseIncubator

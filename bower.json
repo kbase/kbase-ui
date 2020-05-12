@@ -25,7 +25,7 @@
         "js-yaml": "3.13.1",
         "kbase-ko-components-js": "0.6.2",
         "kbase-knockout-extensions-es6": "0.6.16",
-        "kbase-common-ts": "0.19.0",
+        "kbase-common-ts": "0.19.3",
         "kbase-common-js": "2.18.1",
         "kbase-common-es6": "0.10.23",
         "kbase-service-clients-js": "3.3.5",
