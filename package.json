@@ -65,19 +65,19 @@
         "selenium-standalone": "6.17.0",
         "selenium-webdriver": "4.0.0-alpha.7",
         "simple-git": "1.132.0",
-        "tar": "6.0.1",
+        "tar": "6.0.2",
         "uglify-es": "3.3.9",
         "uuid": "7.0.3",
         "webdriverio": "6.0.14",
         "yargs": "15.3.1"
     },
     "dependencies": {
-        "@kbase/ui-components": "0.2.1-alpha.16",
+        "@kbase/ui-components": "0.2.1-alpha.17",
         "@kbase/ui-lib": "0.2.1-alpha.3",
         "bluebird": "3.7.2",
         "htm": "3.0.3",
-        "preact": "10.4.0",
-        "semver-umd": "5.5.5"
+        "preact": "10.4.1",
+        "semver-umd": "5.5.6"
     },
     "scripts": {
         "test": "node test/node/test.js"
