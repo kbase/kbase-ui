@@ -41,9 +41,14 @@ define([
                 return this.widgetMount
                     .unmountAll()
                     .then(() => {
+                        // Clean up any buttons for the next widget.
+                        // NOTE: buttons are deprecated, I don't think any plugins use them any longer.
                         return this.runtime.sendp('ui', 'clearButtons');
                     })
                     .then(() => {
+                        // Some things are interested in the fact that a new route has been mounted.
+                        // E.g. the login widget (upper right corner) becomes disabled if the current
+                        // route is #login.
                         this.runtime.send('route', 'routed', {
                             data: data.routeHandler
                         });

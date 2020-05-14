@@ -48,7 +48,7 @@ define(['bluebird', 'uuid'], (Promise, Uuid) => {
             // We create the widget mount object first, in order to be
             // able to attach its mounting promise to itself. This is what
             // allows us to interrupt it if the route changes and we need
-            // to unmount before it is finished.
+            // to un-mount before it is finished.
             const mountedWidget = {
                 widget: null,
                 container: this.makeContainer(),
@@ -104,6 +104,8 @@ define(['bluebird', 'uuid'], (Promise, Uuid) => {
                     return widget;
                 })
                 .finally(() => {
+                    // Ensure that in the case another widget has been mounted after this one,
+                    // that this one is simply removed.
                     if (mountedWidget.orderID < this.orderID) {
                         this.unmount(mountedWidget);
                     }
@@ -159,17 +161,16 @@ define(['bluebird', 'uuid'], (Promise, Uuid) => {
                     .then(() => {
                         return widget && widget.destroy && widget.destroy();
                     })
-                    .then(() => {
+                    .catch((err) => {
+                        // ignore errors while un-mounting widgets.
+                        console.error('[unmount] ERROR un-mounting widget', err);
+                        return null;
+                    })
+                    .finally(() => {
                         // ensure that a misbehaving widget is actually removed from the DOM.
                         if (mountedWidget.container && mountedWidget.container.parentNode) {
                             mountedWidget.container.parentNode.removeChild(mountedWidget.container);
                         }
-                    })
-                    .catch((err) => {
-                        // ignore errors while unmounting widgets.
-                        console.error('[unmount] ERROR unmounting widget');
-                        console.error(err);
-                        return null;
                     });
             });
         }
