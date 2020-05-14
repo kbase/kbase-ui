@@ -112,7 +112,7 @@ define([
                 relNotesUrl = [repoUrl, 'blob', hash, 'release-notes', 'index.md'].join('/');
                 githubUrl = [repoUrl, 'tree', hash].join('/');
                 return [html`
-                    <p>This build is not currently located at a tagged commit. 
+                    <p>This build is not located at a tagged commit. 
                     The current commit is ${' '}
                     <a href=${[repoUrl, 'commit', hash].join('/')}>
                     ${commitHash}
