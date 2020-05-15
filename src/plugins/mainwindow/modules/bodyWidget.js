@@ -22,22 +22,32 @@ define([
         }
 
         start() {
-            // Um, this is where a plugin route is handled.
+            // The main, heck, only, job of the body widget is to respond to requests
+            // to route to a given widget.
             this.routeListener = this.runtime.receive('app', 'route-widget', (data) => {
                 if (!data.routeHandler.route.widget) {
                     console.warn('No widget in route');
                     return;
                 }
+
+                // If widget is already mounted, just do the run method.
+                // At worst this does nothing.
                 const mounted = this.widgetMount.getCurrentMount();
                 if (
                     mounted && mounted.widget &&
                         data.routeHandler.route.widget === mounted.widgetID &&
                         data.routeHandler.route.reentrant
                 ) {
-                    // If widget is already mounted, just do the run method.
-                    // At worst this does nothing.
                     return this.widgetMount.mountedWidget.widget.run(data.routeHandler.params);
                 }
+
+                // This is a tricky async process.
+                // First, we ensure that any mounted widgets are removed.
+                // Note that mountWidget first removes a mounted widget, then mounts the
+                // specified one. In the promise chain below, we use a separate
+                // unmountAll followed by a mount, which is exactly what mountWidget does.
+                // However, we want to slip some additional behavior in between -
+                // to clear any buttons
                 return this.widgetMount
                     .unmountAll()
                     .then(() => {

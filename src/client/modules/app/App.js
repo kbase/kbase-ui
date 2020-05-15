@@ -120,15 +120,13 @@ define([
             }
             // remove anything on the root mount, such as a waiter.
             this.rootNode.innerHTML = '';
-            if (!this.rootMount) {
-                // create the root mount.
-                this.rootMount = new WidgetMount({
-                    node: this.rootNode,
-                    runtime,
-                    widgetManager: runtime.service('widget').widgetManager
-                });
-            }
-            // ask it to load a widget.
+
+            this.rootMount = new WidgetMount({
+                node: this.rootNode,
+                runtime,
+                widgetManager: runtime.service('widget').widgetManager
+            });
+
             return this.rootMount.mountWidget(widgetId);
         }
 
