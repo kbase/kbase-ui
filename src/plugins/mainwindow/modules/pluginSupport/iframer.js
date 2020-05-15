@@ -50,77 +50,74 @@ define([
 
             // The iframe framework, designed to give a full height and width responsive
             // window with the content area of the ui.
-            this.content = div(
-                {
+            this.content = div({
+                style: {
+                    flex: '1 1 0px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'relative'
+                }
+            }, [
+                // The "cover" provides a layer, implemented as an absolutely positioned div,
+                // which can be used to show a spinner while the iframe content is loading.
+                div({
+                    id: this.coverId,
                     style: {
-                        flex: '1 1 0px',
+                        position: 'absolute',
+                        top: '0',
+                        bottom: '0',
+                        left: '0',
+                        right: '0',
                         display: 'flex',
                         flexDirection: 'column',
-                        position: 'relative'
+                        alignItems: 'center',
+                        visibility: 'hidden'
                     }
-                },
-                [
+                }, [
                     div({
-                        id: this.coverId,
+                        class: 'well',
                         style: {
-                            position: 'absolute',
-                            top: '0',
-                            bottom: '0',
-                            left: '0',
-                            right: '0',
-                            // backgroundColor: 'rgba(200, 200, 200, 0.2)',
+                            marginTop: '20px',
+                            minHeight: '4em',
                             display: 'flex',
-                            flexDirection: 'column',
-                            // justifyContent: 'center',
-                            alignItems: 'center',
-                            visibility: 'hidden'
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            alignItems: 'center'
                         }
                     }, [
-                        div({
-                            class: 'well',
+                        span({
+                            dataElement: 'icon',
                             style: {
-                                marginTop: '20px',
-                                minHeight: '4em',
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                                alignItems: 'center'
+                                marginRight: '8px'
                             }
-                        }, [
-                            span({
-                                dataElement: 'icon',
-                                style: {
-                                    marginRight: '8px'
-                                }
-                            }),
-                            span({
-                                dataElement: 'message'
-                            }),
-                            span({
-                                // dataElement: 'icon',
-                                class: 'fa fa-2x fa-spinner fa-pulse',
-                                style: {
-                                    marginLeft: '8px'
-                                }
-                            })
-                        ])
-                    ]),
-                    iframe({
-                        id: this.id,
-                        name: this.id,
-                        dataKBTesthookIframe: 'plugin-iframe',
-                        dataParams: encodeURIComponent(JSON.stringify(params)),
-                        style: {
-                            width: '100%',
-                            flex: '1 1 0px',
-                            display: 'flex',
-                            flexDirection: 'column'
-                        },
-                        frameborder: '0',
-                        scrolling: 'no',
-                        src: this.url
-                    })
-                ]
+                        }),
+                        span({
+                            dataElement: 'message'
+                        }),
+                        span({
+                            class: 'fa fa-2x fa-spinner fa-pulse',
+                            style: {
+                                marginLeft: '8px'
+                            }
+                        })
+                    ])
+                ]),
+                iframe({
+                    id: this.id,
+                    name: this.id,
+                    dataKBTesthookIframe: 'plugin-iframe',
+                    dataParams: encodeURIComponent(JSON.stringify(params)),
+                    style: {
+                        width: '100%',
+                        flex: '1 1 0px',
+                        display: 'flex',
+                        flexDirection: 'column'
+                    },
+                    frameborder: '0',
+                    scrolling: 'no',
+                    src: this.url
+                })
+            ]
             );
 
             this.node = null;
@@ -152,7 +149,7 @@ define([
             if (icon) {
                 // cover.querySelector('[data-element="icon"]').classList = ['fa', 'fa-2x', 'fa-' + icon, 'fa-spin'].join(' ')
                 cover.querySelector('[data-element="icon"]').classList = ['fa', 'fa-rotate-225', 'fa-2x', 'fa-' + icon].join(' ');
-                
+
             }
             if (color) {
                 cover.querySelector('[data-element="icon"]').style.color = color;
@@ -163,6 +160,7 @@ define([
 
         hideCover() {
             const cover = document.getElementById(this.coverId);
+            // This can occur if the iframe is abandoned
             if (!cover) {
                 console.warn('cover not found, cannot show it');
                 return;
@@ -198,7 +196,6 @@ define([
 
         monitor() {
             const step = this.steps[this.currentStep];
-            const start = new Date().getTime();
             this.currentTimer = window.setTimeout(() => {
                 if (!this.isReady) {
                     this.iframe.showCover(step.message, step.icon, step.color);
@@ -429,15 +426,12 @@ define([
             }));
         }
 
-        renderWarning(content) {
-        }
-
         start() {
             const monitor = new ProcessMonitor({
                 iframe: this.iframe,
                 steps: [
                     {
-                        message: 'Loading Plugin...', 
+                        message: 'Loading Plugin...',
                         icon: 'plug',
                         time: SHOW_LOADING_AFTER
                     },
@@ -464,11 +458,12 @@ define([
             return new Promise((resolve, reject) => {
                 this.setupAndStartChannel();
                 this.channel.setWindow(this.iframe.window);
-                this.channel.once('ready', 
+                this.channel.once('ready',
                     ({ channelId }) => {
                         ready();
                         this.channel.partnerId = channelId;
                         // TODO: narrow and improve the config support for plugins
+                        // E.g.
                         // const config = this.runtime.rawConfig();
                         // const pluginConfig = {
                         //     baseURL: config.deploy.services.urlBase,
@@ -489,22 +484,22 @@ define([
                         // Any sends to the channel should only be enabled after the
                         // start message is received.
                         this.setupChannelSends();
-                    }, );
-                    // forward clicks to the parent, to enable closing dropdowns,
-                    // etc.
-
-                    this.channel.once('started', () => {
-                        resolve();
                     });
 
-                    this.channel.once('start-error', (config) => {
-                        reject(new Error(config.message));
-                    });
-                },
-                (error) => {
-                    console.error('ERROR!', error.message);
-                }, 
-                60000);
+                // Sent by the plugin to indicate that the plugin has finished loading.
+                this.channel.once('started', () => {
+                    resolve();
+                });
+
+                // Sent by a plugin if it encounters an error and doesn't want to display it
+                // itself, or it occurs before it is able to render anything.
+                this.channel.once('start-error', (config) => {
+                    reject(new Error(config.message));
+                });
+            },
+            (error) => {
+                console.error('ERROR!', error.message);
+            });
         }
 
         stop() {

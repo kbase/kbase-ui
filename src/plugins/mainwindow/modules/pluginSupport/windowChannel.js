@@ -1,20 +1,12 @@
-define([], function () {
+define([
+    'uuid'
+], function (
+    Uuid
+) {
     'use strict';
 
     // Default period with which to poll for stale listeners.
     const DEFAULT_MONITOR_FREQUENCY = 100;
-
-    // copy pasta: https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
-    function uuidv4() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-            const r = (Math.random() * 16) | 0;
-            if (c === 'x') {
-                return r.toString(16);
-            } else {
-                return ((r & 0x3) | 0x8).toString(16);
-            }
-        });
-    }
 
     class Listener {
         constructor(config) {
@@ -28,7 +20,7 @@ define([], function () {
         constructor({ from, to }) {
             this.from = from;
             this.to = to;
-            this.id = uuidv4();
+            this.id = new Uuid(4).format();
             this.created = new Date();
         }
 
@@ -69,14 +61,14 @@ define([], function () {
     class BidirectionalWindowChannel {
         constructor({ on, host, to }) {
             // The given window upon which we will listen for messages.
-            this.window = on;
+            this.global = on;
 
             // The host for the window; required for postmessage
             this.host = host || document.location.origin;
 
             // The channel id. Used to filter all messages received to
             // this channel.
-            this.channelId = uuidv4();
+            this.channelId = new Uuid(4).format();
 
             this.partnerId = to;
 
@@ -101,8 +93,8 @@ define([], function () {
             this.partnerId = partnerChannelId;
         }
 
-        setWindow(window) {
-            this.window = window;
+        setWindow(global) {
+            this.global = global;
         }
 
         genId() {
@@ -227,7 +219,7 @@ define([], function () {
         }
 
         sendMessage(message) {
-            this.window.postMessage(message.toJSON(), this.host);
+            this.global.postMessage(message.toJSON(), this.host);
         }
 
         send(name, payload) {
@@ -343,20 +335,24 @@ define([], function () {
             };
         }
 
-        attach(window) {
-            this.window = window;
+        attach(global) {
+            this.global = global;
         }
 
         start() {
             this.currentListener = (message) => {
                 this.receiveMessage(message);
             };
-            this.window.addEventListener('message', this.currentListener, false);
+            this.global.addEventListener('message', this.currentListener, false);
         }
 
         stop() {
-            if (this.currentListener) {
-                this.window.removeEventListener('message', this.currentListener, false);
+            if (this.currentListener && this.global) {
+                if (!this.global.removeEventListener) {
+                    console.warn('HUH?', this.global);
+                } else {
+                    this.global.removeEventListener('message', this.currentListener, false);
+                }
             }
         }
     }
@@ -364,11 +360,11 @@ define([], function () {
     class SendOnlyWindowChannel {
         constructor({ on, host, to }) {
             // The given window upon which we will listen for messages.
-            this.window = on;
+            this.global = on;
 
             // The host for the window; required for postmessage
             this.host = host || document.location.origin;
-            this.channelId = uuidv4();
+            this.channelId = new Uuid(4).format();
             this.partnerId = to;
             this.lastId = 0;
             this.sentCount = 0;
@@ -378,8 +374,8 @@ define([], function () {
             this.partnerId = partnerChannelId;
         }
 
-        setWindow(window) {
-            this.window = window;
+        setWindow(global) {
+            this.global = global;
         }
 
         genId() {
@@ -388,7 +384,7 @@ define([], function () {
         }
 
         sendMessage(message) {
-            this.window.postMessage(message.toJSON(), this.host);
+            this.global.postMessage(message.toJSON(), this.host);
         }
 
         send(name, payload) {
@@ -402,8 +398,8 @@ define([], function () {
             };
         }
 
-        attach(window) {
-            this.window = window;
+        attach(global) {
+            this.global = global;
         }
 
         start() {}
@@ -414,14 +410,14 @@ define([], function () {
     class ReceiveOnlyWindowChannel {
         constructor({ on, host, to }) {
             // The given window upon which we will listen for messages.
-            this.window = on;
+            this.global = on;
 
             // The host for the window; required for postmessage
             this.host = host || document.location.origin;
 
             // The channel id. Used to filter all messages received to
             // this channel.
-            this.channelId = uuidv4();
+            this.channelId = new Uuid(4).format();
 
             this.partnerId = to;
 
@@ -446,8 +442,8 @@ define([], function () {
             this.partnerId = partnerChannelId;
         }
 
-        setWindow(window) {
-            this.window = window;
+        setWindow(global) {
+            this.global = global;
         }
 
         genId() {
@@ -599,7 +595,7 @@ define([], function () {
                 ) {
                     this.startMonitor();
                 }
-            }, DEFAULT_MONITOR_FREQUENCE);
+            }, DEFAULT_MONITOR_FREQUENCY);
         }
 
         listenOnce(listener) {
@@ -646,20 +642,20 @@ define([], function () {
             };
         }
 
-        attach(window) {
-            this.window = window;
+        attach(global) {
+            this.global = global;
         }
 
         start() {
             this.currentListener = (message) => {
                 this.receiveMessage(message);
             };
-            this.window.addEventListener('message', this.currentListener, false);
+            this.global.addEventListener('message', this.currentListener, false);
         }
 
         stop() {
             if (this.currentListener) {
-                this.window.removeEventListener('message', this.currentListener, false);
+                this.global.removeEventListener('message', this.currentListener, false);
             }
         }
     }

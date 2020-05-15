@@ -1,17 +1,16 @@
 define([
-    'knockout',
-    'kb_lib/html',
-    './components/hamburgerMenu',
-    'bootstrap'
+    'preact',
+    'htm',
+    './reactComponents/HamburgerMenu/HamburgerMenu'
 ], function (
-    ko,
-    html,
+    preact,
+    htm,
     HamburgerMenuComponent
 ) {
     'use strict';
 
-    const t = html.tag,
-        div = t('div');
+    const {h, render} = preact;
+    const html = htm.bind(h);
 
     function intersect(a1, a2) {
         return a1.some(function (a) {
@@ -19,67 +18,67 @@ define([
         });
     }
 
-    class ViewModel {
+    class DataSource {
         constructor(params) {
             this.runtime = params.runtime;
             this.menuDefinition = this.runtime.service('menu').getCurrentMenu('hamburger');
-            this.isLoggedIn = ko.observable();
-            this.userRoles = ko.observableArray();
+            this.onUpdate = params.onUpdate;
 
             // TODO: can this just be a more generic change in session state?
             this.runtime.receive('session', 'change', () => {
-                this.syncMenu();
+                this.update();
+            });
+        }
+
+        update() {
+            this.onUpdate(this.computeMenu());
+        }
+
+        computeMenu() {
+            const allowedTags = this.runtime.config('ui.allow', []);
+            const isLoggedIn = this.runtime.service('session').isLoggedIn();
+            const userRoles = this.runtime.service('session').getRoles().map((role) => {
+                return role.id;
             });
 
-            const allowedTags = this.runtime.config('ui.allow', []);
-
-            this.menu = {
-                main: ko.observableArray(this.menuDefinition.main).filter((item) => {
-                    if (!this.isLoggedIn() && item.authRequired) {
+            return {
+                main: this.menuDefinition.main.filter((item) => {
+                    if (!isLoggedIn && item.authRequired) {
                         return false;
                     }
                     if (item.allow) {
                         return intersect(item.allow, allowedTags);
                     }
                     if (item.allowRoles) {
-                        return intersect(item.allowRoles, this.userRoles);
+                        return intersect(item.allowRoles, userRoles);
                     }
                     return true;
                 }),
-                developer: ko.observableArray(this.menuDefinition.developer).filter((item) => {
-                    if (!this.isLoggedIn() && item.authRequired) {
+                developer: this.menuDefinition.developer.filter((item) => {
+                    if (!isLoggedIn && item.authRequired) {
                         return false;
                     }
                     if (item.allow) {
                         return intersect(item.allow, allowedTags);
                     }
                     if (item.allowRoles) {
-                        return intersect(item.allowRoles, this.userRoles);
+                        return intersect(item.allowRoles, userRoles);
                     }
                     return true;
                 }),
-                help: ko.observableArray(this.menuDefinition.help).filter((item) => {
-                    if (!this.isLoggedIn() && item.authRequired) {
+                help: this.menuDefinition.help.filter((item) => {
+                    if (!isLoggedIn && item.authRequired) {
                         return false;
                     }
                     if (item.allow) {
                         return intersect(item.allow, allowedTags);
                     }
                     if (item.allowRoles) {
-                        return intersect(item.allowRoles, this.userRoles);
+                        return intersect(item.allowRoles, userRoles);
                     }
                     return true;
                 })
             };
-
-            this.syncMenu();
-        }
-
-        syncMenu() {
-            this.isLoggedIn(this.runtime.service('session').isLoggedIn());
-            this.userRoles(this.runtime.service('session').getRoles().map((role) => {
-                return role.id;
-            }));
         }
     }
 
@@ -89,7 +88,9 @@ define([
 
             this.hostNode = null;
             this.container = null;
-            this.viewModel = new ViewModel({ runtime: this.runtime });
+            this.dataSource = new DataSource({
+                runtime: this.runtime,
+                onUpdate: this.renderMenu.bind(this)});
         }
 
         attach(node) {
@@ -98,19 +99,16 @@ define([
             this.container.classList.add('widget-menu');
         }
 
-        start() {
-            this.container.innerHTML = div({
-                dataBind: {
-                    component: {
-                        name: HamburgerMenuComponent.quotedName(),
-                        params: {
-                            menu: 'menu'
-                        }
-                    }
-                }
-            });
+        renderMenu(menu) {
+            const params = {
+                menu
+            };
+            const content = html`<${HamburgerMenuComponent} ...${params} />`;
+            render(content, this.container);
+        }
 
-            ko.applyBindings(this.viewModel, this.container);
+        start() {
+            this.dataSource.update();
         }
 
         detach() {
@@ -122,7 +120,3 @@ define([
 
     return { Widget: MenuWidget };
 });
-
-
-
-
