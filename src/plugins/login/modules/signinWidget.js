@@ -2,7 +2,7 @@ define([
     'kb_plugin_login',
     'preact',
     'htm',
-    '../components/Signin'
+    './reactComponents/Signin'
 ], (
     Plugin,
     preact,
