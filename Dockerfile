@@ -16,14 +16,8 @@ COPY . /kb
 
 ARG BUILD
 
-# This actually builds the ui codebase. Note that the build-arg BUILD is passed along
-# as an environment variabl 'build'.
-RUN make setup && make build config=$BUILD
-#  && make docs
-
-# Run unit tests.
-# disable just during testing
-# RUN make unit-tests
+# Build kbase-ui
+RUN make build config=$BUILD
 
 LABEL stage=intermediate
 
@@ -57,16 +51,8 @@ COPY --from=builder /kb/build/dist/client /kb/deployment/services/kbase-ui/dist/
 # Config templates
 COPY --from=builder /kb/deployment/templates /kb/deployment/templates
 
-# Config files for each deployment environment. 
-# TODO: hopefully kbase/dockerize will be updated to pull configs from 
-#       the deploy environment not the image itself.
-COPY --from=builder /kb/deployment/config /kb/deployment/config
-
 # Deployment-time scripts
 COPY --from=builder /kb/deployment/scripts /kb/deployment/scripts
-
-# Generated documentation is copied into the distribution.
-# COPY --from=builder /kb/docs/book/_book /kb/deployment/services/kbase-ui/dist/_book
 
 # Need to include the integration tests since otherwise we need a local build 
 # to pick them up.
@@ -82,6 +68,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     us.kbase.vcs-tag=$TAG \ 
     maintainer="Steve Chan sychan@lbl.gov"
 
+# Run as a regular user, not root.
 RUN addgroup --system kbmodule && \
     adduser --system --ingroup kbmodule kbmodule && \
     chown -R kbmodule:kbmodule /kb
