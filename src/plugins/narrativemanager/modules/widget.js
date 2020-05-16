@@ -1,30 +1,20 @@
-define([
-    'kb_lib/html'],
-function (
-    html
-) {
+define([], function () {
     'use strict';
 
-    const t = html.tag,
-        div = t('div');
-
     class Widget {
-        constructor({ runtime }) {
+        constructor({ runtime, node }) {
             this.runtime = runtime;
-            this.mount = null;
             this.container = null;
-        }
-
-        wrapPanel(content) {
-            return div({ class: 'container-fluid' }, [div({ class: 'row' }, [div({ class: 'col-md-12' }, [content])])]);
+            if (node) {
+                this.attach(node);
+            }
         }
 
         // API
 
         attach(node) {
-            this.mount = node;
             this.container = document.createElement('div');
-            this.mount.appendChild(this.container);
+            node.appendChild(this.container);
         }
 
         setHTML(html) {
@@ -34,8 +24,8 @@ function (
         detach() {
             if (this.container) {
                 this.container.innerHTML = '';
-                if (this.mount) {
-                    this.mount.removeChild(this.container);
+                if (this.container.parentNode) {
+                    this.container.parentNode.removeChild(this.container);
                 }
                 this.container = null;
             }
