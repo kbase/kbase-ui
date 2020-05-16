@@ -24,7 +24,6 @@ requirejs.config({
         bootstrap_css: 'bower_components/bootstrap/css/bootstrap',
         bootstrap: 'bower_components/bootstrap/js/bootstrap',
         css: 'bower_components/require-css/css',
-        csv: 'lib/requirejs-csv',
         d3_sankey_css: 'bower_components/d3-plugins-sankey/sankey',
         d3_sankey: 'bower_components/d3-plugins-sankey/sankey',
         d3: 'bower_components/d3/d3',
@@ -74,7 +73,8 @@ requirejs.config({
         text: 'bower_components/requirejs-text/text',
         underscore: 'bower_components/underscore/underscore',
         uuid: 'bower_components/pure-uuid/uuid',
-        yaml: 'bower_components/requirejs-yaml/yaml' 
+        yaml: 'bower_components/requirejs-yaml/yaml',
+        semver: 'node_modules/semver-umd/semver-umd' 
     },
     shim: {
         bootstrap: {
