@@ -3,7 +3,6 @@ define([
     'uuid',
     './hub',
     'kb_lib/props',
-    'kb_knockout/load',
     '../lib/utils',
 
     'yaml!config/plugin.yml',
@@ -15,7 +14,7 @@ define([
     'css!font_awesome',
     'css!app/styles/kb-bootstrap',
     'css!app/styles/kb-ui'
-], function (Promise, Uuid, Hub, props, knockoutLoader, utils, pluginConfig, appConfigBase, deployConfig) {
+], function (Promise, Uuid, Hub, props, utils, pluginConfig, appConfigBase, deployConfig) {
     'use strict';
 
     // Set up global configuration of bluebird promises library.
@@ -82,12 +81,7 @@ define([
             services: mergedConfig.ui.services
         });
         global.setItem('app', app);
-        return knockoutLoader.load().then((ko) => {
-            // Knockout Defaults
-            ko.options.deferUpdates = true;
-
-            return app.start();
-        });
+        return app.start();
     }
 
     return { start };

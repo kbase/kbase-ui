@@ -1,7 +1,7 @@
 define([
-    'kb_common/jsonRpc/dynamicServiceClient',
-    'kb_common/jsonRpc/genericClient',
-    'kb_common/jsonRpc/exceptions'
+    'kb_lib/jsonRpc/dynamicServiceClient',
+    'kb_lib/jsonRpc/genericClient',
+    'kb_lib/jsonRpc/exceptions'
 ], function (
     DynamicService,
     GenericClient,

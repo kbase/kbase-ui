@@ -22,7 +22,6 @@
         catchError: true,
         waitSeconds: 60,
         paths: {
-            ajv: 'node_modules/ajv/ajv.bundle',
             bluebird: 'node_modules/bluebird/bluebird',
             bootstrap_css: 'bower_components/bootstrap/css/bootstrap',
             bootstrap: 'bower_components/bootstrap/js/bootstrap',
@@ -32,25 +31,13 @@
             datatables_css: 'bower_components/datatables/css/jquery.dataTables',
             datatables: 'bower_components/datatables/js/jquery.dataTables',
             domReady: 'bower_components/requirejs-domready/domReady',
-            'bootstrap-datetimepicker': 'bower_components/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker',
-            'bootstrap-datetimepicker-css':
-                'bower_components/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker',
             font_awesome: 'bower_components/font-awesome/css/font-awesome',
-            handlebars: 'bower_components/handlebars/handlebars',
             highlight_css: 'bower_components/highlightjs/styles/tomorrow',
             'js-yaml': 'bower_components/js-yaml/js-yaml',
             jquery: 'bower_components/jquery/jquery',
-            'jquery-ui': 'bower_components/jquery-ui/jquery-ui',
             json: 'bower_components/requirejs-json/json',
             kb_bootstrap: 'css/kb-bootstrap',
             kb_ui: 'css/kb-ui',
-            knockout: 'bower_components/knockout/knockout',
-            'knockout-arraytransforms': 'bower_components/knockout-arraytransforms/knockout-arraytransforms',
-            'knockout-projections': 'bower_components/knockout-projections/knockout-projections',
-            'knockout-switch-case': 'bower_components/knockout-switch-case/knockout-switch-case',
-            'knockout-mapping': 'bower_components/bower-knockout-mapping/knockout.mapping',
-            'knockout-validation': 'bower_components/knockout-validation/knockout.validation',
-            marked: 'bower_components/marked/marked',
             md5: 'bower_components/spark-md5/spark-md5',
             moment: 'bower_components/moment/moment',
             numeral: 'bower_components/numeral/numeral',
@@ -65,9 +52,6 @@
             bootstrap: {
                 deps: ['jquery', 'css!bootstrap_css']
             },
-            'bootstrap-datetimepicker': {
-                deps: ['bootstrap', 'css!bootstrap-datetimepicker-css']
-            }
         },
         map: {
             '*': {

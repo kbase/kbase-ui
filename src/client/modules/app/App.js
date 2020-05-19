@@ -11,7 +11,7 @@ define([
     'lib/appServiceManager',
     'lib/kbaseServiceManager',
     './runtime',
-    'kb_lib/messenger',
+    'lib/messenger',
     'kb_lib/props',
     '../lib/widget/mount',
     'kb_lib/asyncQueue'

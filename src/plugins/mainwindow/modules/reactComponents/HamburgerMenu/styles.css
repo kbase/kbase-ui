@@ -1,3 +1,5 @@
-.HamburgerMenu {
-    border: 1px red solid;
+.HamburgerMenu {}
+
+.HamburgerMenu.navbar {
+    margin: 0;
 }

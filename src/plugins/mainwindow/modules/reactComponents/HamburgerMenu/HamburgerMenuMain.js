@@ -1,16 +1,17 @@
 define([
     'preact',
     'htm',
-    './reactComponents/HamburgerMenu/HamburgerMenu'
-], function (
+    './HamburgerMenu'
+], (
     preact,
     htm,
-    HamburgerMenuComponent
-) {
+    HamburgerMenu
+) => {
     'use strict';
 
-    const {h, render} = preact;
+    const {h, Component } = preact;
     const html = htm.bind(h);
+
 
     function intersect(a1, a2) {
         return a1.some(function (a) {
@@ -82,41 +83,41 @@ define([
         }
     }
 
-    class MenuWidget {
-        constructor(config) {
-            this.runtime = config.runtime;
-
-            this.hostNode = null;
-            this.container = null;
-            this.dataSource = new DataSource({
-                runtime: this.runtime,
-                onUpdate: this.renderMenu.bind(this)});
-        }
-
-        attach(node) {
-            this.hostNode = node;
-            this.container = this.hostNode.appendChild(document.createElement('div'));
-            this.container.classList.add('widget-menu');
-        }
-
-        renderMenu(menu) {
-            const params = {
-                menu
+    class Menu extends Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+                isLoaded: false,
+                data: null
             };
-            const content = html`<${HamburgerMenuComponent} ...${params} />`;
-            render(content, this.container);
+            this.dataSource = new DataSource({
+                runtime: this.props.runtime,
+                onUpdate: this.onMenuUpdate.bind(this)
+            });
         }
 
-        start() {
+        componentDidMount() {
             this.dataSource.update();
         }
 
-        detach() {
-            if (this.hostNode && this.container) {
-                this.container.removeChild(this.hostNode);
+        onMenuUpdate(menu) {
+            this.setState({
+                isLoaded: true,
+                data: {
+                    menu
+                }
+            });
+        }
+
+        render() {
+            if (this.state.isLoaded) {
+                return html`
+                    <${HamburgerMenu} ...${this.state.data} />
+                `;
             }
+            return;
         }
     }
 
-    return { Widget: MenuWidget };
+    return Menu;
 });

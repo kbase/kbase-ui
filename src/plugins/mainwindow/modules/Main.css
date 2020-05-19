@@ -23,18 +23,18 @@
     /* line-height: 65px; */
 }
 
-.plugin-mainwindow.widget-mainwindow.-main>.-body {
+.plugin-mainwindow.widget-mainwindow.-main .-body {
     flex: 1 1 0px;
     display: flex;
     flex-direction: row;
     min-height: 0;
 }
 
-.plugin-mainwindow.widget-mainwindow.-main>.-body>.-nav {
+.plugin-mainwindow.widget-mainwindow.-main .-body>.-nav {
     flex: 0 0 75px;
 }
 
-.plugin-mainwindow.widget-mainwindow.-main>.-body>.-content {
+.plugin-mainwindow.widget-mainwindow.-main .-body>.-content {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
@@ -42,7 +42,7 @@
     padding-top: 1em;
 }
 
-.plugin-mainwindow.widget-mainwindow.-main>.-body>.-content-area {
+.plugin-mainwindow.widget-mainwindow.-main .-body>.-content-area {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
@@ -50,11 +50,11 @@
     /* padding-top: 1em; */
 }
 
-.plugin-mainwindow.widget-mainwindow.-main>.-body>.-content-area>.-notification-banner {
+.plugin-mainwindow.widget-mainwindow.-main .-body>.-content-area>.-notification-banner {
     flex: 0 0 0px;
 }
 
-.plugin-mainwindow.widget-mainwindow.-main>.-body>.-content-area>.-plugin-content {
+.plugin-mainwindow.widget-mainwindow.-main .-body>.-content-area>.-plugin-content {
     flex: 1 1 0px;
     overflow: auto;
     display: flex;
@@ -295,4 +295,117 @@ The content area is normal flow and just needs to have a matching top margin.
 
 .fa-color-success::before {
     color: green;
+}
+
+/* button bar */
+
+.kb-widget-buttonbar {
+    padding-top: 4px;
+}
+
+/* logo */
+
+
+.plugin-mainwindow .widget-logo {
+    display: flex;
+    align-items: flex-end;
+}
+
+.plugin-mainwindow .widget-logo .-logo {
+    flex: 1;
+}
+
+.plugin-mainwindow .widget-logo .-label {
+    font-size: 26px;
+    white-space: nowrap;
+    flex: 1;
+    margin-left: 3px;
+}
+
+.plugin-mainwindow .widget-logo .-label .-icon {
+    font-size: 80%;
+}
+
+/* menu */
+
+.plugin-mainwindow .widget-menu {
+    /* margin-top: 12px; */
+    /* margin-left: 4px; */
+    flex: 1;
+}
+
+.plugin-mainwindow .widget-menu .navbar {
+    margin: 0;
+    min-height: 0;
+}
+
+.plugin-mainwindow .widget-menu .dropdown-menu .navbar-icon {
+    display: inline-block;
+    width: 26px;
+    text-align: center;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.plugin-mainwindow .widget-menu .dropdown-menu .navbar-icon .fa {
+    font-size: 150%;
+}
+
+.plugin-mainwindow .widget-menu .dropdown-menu li a {
+    vertical-align: middle;
+}
+
+/* notification */
+
+
+/* sidebar! */
+.kb-mainWindow-sidebarNav {
+    /*xposition: fixed;*/
+}
+
+.kb-mainWindow-sidebarNav .-nav-button {
+    background-color: transparent;
+}
+
+.kb-mainWindow-sidebarNav .-nav-button:hover,
+.kb-mainWindow-sidebarNav .-nav-button.-active {
+    background-color: rgba(200, 200, 200, 0.5);
+}
+
+.kb-mainWindow-sidebarNav .-status-indicator {
+    position: absolute;
+    left: 2px;
+    top: 0;
+    background-color: rgba(191, 26, 26, 0.5);
+    color: white;
+    padding: 2px
+}
+
+.kb-mainWindow-sidebarNav .-nav-button:hover .-status-indicator {
+    background-color: rgba(191, 26, 26, 1);
+}
+
+/* title */
+.plugin-mainwindow .TitleWidget {
+    padding-left: 10px;
+    display: flex;
+    align-items: flex-end;
+    flex: 1 1 0px;
+    min-width: 0;
+}
+
+.plugin-mainwindow .TitleWidget h1 {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* MainWindow component */
+.MainWindow {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }

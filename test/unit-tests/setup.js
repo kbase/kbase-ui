@@ -54,12 +54,6 @@ requirejs.config({
         json: 'bower_components/requirejs-json/json',
         kb_bootstrap: 'css/kb-bootstrap',
         kb_ui: 'css/kb-ui',
-        knockout: 'bower_components/knockout/knockout',
-        'knockout-arraytransforms': 'bower_components/knockout-arraytransforms/knockout-arraytransforms',
-        'knockout-switch-case': 'bower_components/knockout-switch-case/knockout-switch-case',
-        'knockout-mapping': 'bower_components/bower-knockout-mapping/knockout.mapping',
-        'knockout-plus': 'lib/knockout-plus',
-        'knockout-validation': 'bower_components/knockout-validation/knockout.validation',
         lodash: 'node_modules/lodash/lodash',
         marked: 'bower_components/marked/marked',
         md5: 'bower_components/spark-md5/spark-md5',
@@ -89,10 +83,7 @@ requirejs.config({
         },
         highlight: {
             deps: ['css!highlight_css']
-        },
-        'knockout-plus': {
-            deps: ['knockout']
-        },
+        }
         // Activate this if using js-yaml with a need for these modules.
         // At the moment, requirejs global handler catches errors loading
         // this within js-yaml and allows js-yaml to detect that they are
