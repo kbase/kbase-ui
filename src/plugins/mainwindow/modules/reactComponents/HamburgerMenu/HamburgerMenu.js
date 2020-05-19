@@ -3,7 +3,8 @@ define([
     'htm',
 
     // for effect
-    'bootstrap'
+    'bootstrap',
+    'css!./styles.css'
 ], (
     preact,
     htm

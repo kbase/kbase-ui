@@ -4,7 +4,7 @@ define([
 
     // for effect
     'bootstrap',
-    './SidebarMenu.css'
+    'css!./SidebarMenu.css'
 ], (
     preact,
     htm
@@ -20,7 +20,11 @@ define([
         }
 
         onNavClick(path) {
-            console.log('clicked!', path);
+            const oldHref = window.location.href;
+            window.location.href = '/#' + path;
+            if (oldHref === window.location.href) {
+                window.dispatchEvent(new HashChangeEvent('hashchange'));
+            }
         }
 
         renderPublicSearchIcon() {
@@ -47,8 +51,8 @@ define([
                 return this.renderPublicSearchIcon();
             default:
                 return html`
-                      <div className=${'fa fa-3x fa-' + button.icon}></div>
-                    `;
+                    <div className=${'fa fa-3x fa-' + button.icon}></div>
+                `;
             }
         }
 
@@ -86,7 +90,7 @@ define([
                 `;
             } else if (notificationError) {
                 content = html`
-                    <span className="fa fa-ban"
+                    <span className="fa fa-ban"></span>
                 `;
             } else {
                 return;
@@ -113,24 +117,24 @@ define([
             `;
         }
 
-        renderButton(button) {
-            const activeClass = this.props.active ? '-active' : '';
+        renderButton(menuItem) {
+            const activeClass = menuItem.isActive ? ' -active' : '';
             return html`
-                <a className=${'SidebarMenu-button' + activeClass}}
+                <a className=${'SidebarMenu -button' + activeClass}
                    data-k-b-testhook-element="menu-item"
-                   data-k-b-testhook-button=${button.id}
-                   onClick=${() => {this.onNavClick(button.path);}}>
-                   ${this.renderIcon(button)}
-                   <div>${button.label}</div>
-                   ${this.renderBeta(button)}
-                   ${this.renderBadge(button)}
+                   data-k-b-testhook-button=${menuItem.id}
+                   onClick=${() => {this.onNavClick(menuItem.path);}}>
+                   ${this.renderIcon(menuItem)}
+                   <div>${menuItem.label}</div>
+                   ${this.renderBeta(menuItem)}
+                   ${this.renderBadge(menuItem)}
                 </a>
             `;
         }
 
         render() {
-            const buttons = this.props.buttons.map((button) => {
-                return this.renderButton(button);
+            const buttons = this.props.menu.map((menuItem) => {
+                return this.renderButton(menuItem);
             });
             return html`
                 <div>

@@ -1,49 +1,49 @@
 .SidebarMenu .statusIndicator {
-    position: 'absolute';
-    left: '2px';
-    top: '0';
-    background-color: 'rgba(191, 26, 26, 0.5)';
-    color: '#FFF';
-    padding: '2px';
+    position: absolute;
+    left: 2px;
+    top: 0;
+    background-color: rgba(191, 26, 26, 0.5);
+    color: #FFF;
+    padding: 2px;
 }
 
-.SidebarMenu .button {
-    background-color: 'transparent';
-    width: '75px';
-    text-align: 'center';
-    padding: '3px';
-    margin: '6px 0';
-    display: 'block';
-    color: '#000';
-    text-decoration: 'none';
-    position: 'relative';
+.SidebarMenu.-button {
+    background-color: transparent;
+    width: 75px;
+    text-align: center;
+    padding: 3px;
+    margin: 6px 0;
+    display: block;
+    color: #000;
+    text-decoration: none;
+    position: relative;
 }
 
-.SidebarMenu .button:hover {
-    color: '#000';
-    background-color: 'rgba(200, 200, 200, 0.7)';
+.SidebarMenu.-button:hover {
+    color: #000;
+    background-color: rgba(200, 200, 200, 0.7);
 }
 
-.SidebarMenu .button:focus {
-    color: '#000';
-    background-color: 'rgba(200, 200, 200, 0.7)';
+.SidebarMenu.-button:focus {
+    color: #000;
+    background-color: rgba(200, 200, 200, 0.7);
 }
 
-.SidebarMenu .button:active {
-    color: 'rgba(150, 150, 150, 1)';
-    background-color: 'rgba(200, 200, 200, 0.7)';
+.SidebarMenu.-button:active {
+    color: rgba(150, 150, 150, 1);
+    background-color: rgba(200, 200, 200, 0.7);
 }
 
-.SidebarMenu .button.active {
-    background-color: 'rgba(200, 200, 200, 0.5)';
+.SidebarMenu.-button.-active {
+    background-color: rgba(200, 200, 200, 0.5);
 }
 
-.SidebarMenu .button.active:hover {
-    color: '#000';
-    background-color: 'rgba(200, 200, 200, 0.7)';
+.SidebarMenu.-button.-active:hover {
+    color: #000;
+    background-color: rgba(200, 200, 200, 0.7);
 }
 
-.SidebarMenu .button.active:active {
-    color: 'rgba(150, 150, 150, 1)';
-    background-color: 'rgba(200, 200, 200, 0.7)';
+.SidebarMenu.-button.-active:active {
+    color: rgba(150, 150, 150, 1);
+    background-color: rgba(200, 200, 200, 0.7);
 }

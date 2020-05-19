@@ -51,8 +51,6 @@ module.exports = function(config) {
       {pattern: 'build/client/bower_components/datatables/media/css/jquery.dataTables.css', included: false},
       {pattern: 'build/client/bower_components/datatables-bootstrap3-plugin/media/js/datatables-bootstrap3.js', included: false},
       {pattern: 'build/client/bower_components/datatables-bootstrap3-plugin/media/css/datatables-bootstrap3.css', included: false},
-      {pattern: 'build/client/bower_components/knockout/dist/knockout.js', included: false},
-      {pattern: 'build/client/bower_components/knockout-mapping/knockout.mapping.js', included: false},
       {pattern: 'build/client/bower_components/blockUI/jquery.blockUI.js', included: false},
       {pattern: 'build/client/bower_components/d3/d3.js', included: false},
       {pattern: 'build/client/bower_components/d3-plugins-sankey/sankey.js', included: false},

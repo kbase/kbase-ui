@@ -1,30 +1,38 @@
 define([
+    'preact',
+    'htm',
     'lib/widget/mount',
-    './widgets/widgetFlexContainer'
-], function (
-    WidgetMount,
-    WidgetFlexContainer)
-{
+    'css!./Body.css'
+], (
+    preact,
+    htm,
+    WidgetMount
+) => {
     'use strict';
 
-    class BodyWidget extends WidgetFlexContainer {
-        constructor(config) {
-            super(config);
+    const {h, Component, createRef } = preact;
+    const html = htm.bind(h);
+
+    class Body extends Component {
+        constructor(props) {
+            super(props);
 
             this.widgetMount = null;
             this.routeListener = null;
-            this.widgetMount = new WidgetMount({
-                widgetManager: this.runtime.service('widget').widgetManager,
-                runtime: this.runtime,
-                node: this.container,
-                name: 'body-widget'
-            });
+            this.widgetMount = null;
+            this.nodeRef = createRef();
         }
 
-        start() {
+        componentDidMount() {
+            this.widgetMount = new WidgetMount({
+                widgetManager: this.props.runtime.service('widget').widgetManager,
+                runtime: this.props.runtime,
+                node: this.nodeRef.current,
+                name: 'body-widget'
+            });
             // The main, heck, only, job of the body widget is to respond to requests
             // to route to a given widget.
-            this.routeListener = this.runtime.receive('app', 'route-widget', (data) => {
+            this.routeListener = this.props.runtime.receive('app', 'route-widget', (data) => {
                 if (!data.routeHandler.route.widget) {
                     console.warn('No widget in route');
                     return;
@@ -53,13 +61,13 @@ define([
                     .then(() => {
                         // Clean up any buttons for the next widget.
                         // NOTE: buttons are deprecated, I don't think any plugins use them any longer.
-                        return this.runtime.sendp('ui', 'clearButtons');
+                        return this.props.runtime.sendp('ui', 'clearButtons');
                     })
                     .then(() => {
                         // Some things are interested in the fact that a new route has been mounted.
                         // E.g. the login widget (upper right corner) becomes disabled if the current
                         // route is #login.
-                        this.runtime.send('route', 'routed', {
+                        this.props.runtime.send('route', 'routed', {
                             data: data.routeHandler
                         });
                         return this.widgetMount.mount(
@@ -88,15 +96,21 @@ define([
             });
         }
 
-        stop() {
+        componentWillUnmount() {
             if (this.routeListener) {
-                this.runtime.drop(this.routeListener);
+                this.props.runtime.drop(this.routeListener);
             }
-            if (this.hostNode && this.container) {
-                this.hostNode.removeChild(this.container);
-            }
+        }
+
+        render() {
+            return html`
+                <div className="Body"
+                    ref=${this.nodeRef}
+                     data-k-b-testhook-component="logo">
+                </div>
+            `;
         }
     }
 
-    return { Widget: BodyWidget };
+    return Body;
 });
