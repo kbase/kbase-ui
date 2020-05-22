@@ -38,7 +38,6 @@ build           = dev
 
 # The deploy environment; used by dev-time image runners
 # dev, ci, next, appdev, prod
-# No default, because one should think about this.
 env             = ci
 
 # The browser to test against

@@ -54,10 +54,6 @@ bowerFiles:
   - dir: spark-md5
     name: spark-md5
     bowerComponent: true
-  - name: underscore
-    bowerComponent: true
-  - name: handlebars
-    bowerComponent: true
   - name: marked
     bowerComponent: true
     cwd: lib
