@@ -39,7 +39,6 @@
             kb_bootstrap: 'css/kb-bootstrap',
             kb_ui: 'css/kb-ui',
             md5: 'bower_components/spark-md5/spark-md5',
-            moment: 'bower_components/moment/moment',
             numeral: 'bower_components/numeral/numeral',
             preact: 'node_modules/preact/preact.umd',
             htm: 'node_modules/htm/htm.umd',

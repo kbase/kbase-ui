@@ -57,10 +57,6 @@ bowerFiles:
   - name: marked
     bowerComponent: true
     cwd: lib
-  - dir: moment
-    src:
-      - moment.js
-    bowerComponent: true
   - name: kb_lib
     dir: kbase-common-es6
     cwd: src

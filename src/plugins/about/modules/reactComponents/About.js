@@ -1,13 +1,11 @@
 define([
     'preact',
     'htm',
-    'moment',
 
     'bootstrap'
 ], (
     preact,
-    htm,
-    moment
+    htm
 ) => {
     'use strict';
 
@@ -123,9 +121,20 @@ define([
 
         renderVersionInfo() {
             const buildInfo = this.props.runtime.config('buildInfo');
-            const builtAt = moment(new Date(buildInfo.builtAt));
-            const buildDate = builtAt.format('dddd MMMM D, YYYY');
-            const buildTime = builtAt.format('h:mm:ss a');
+            const buildDate = Intl.DateTimeFormat('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }).format(new Date(buildInfo.builtAt));
+            const buildTime = Intl.DateTimeFormat('en-US', {
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                timeZoneName: 'short'
+            }).format(new Date(buildInfo.builtAt));
+            // const builtAt = moment(new Date(buildInfo.builtAt));
+            // const buildDate = builtAt.format('dddd MMMM D, YYYY');
+            // const buildTime = builtAt.format('h:mm:ss a');
             const contactUrl = this.props.runtime.config('resources.contact.url');
             const helpUrl = this.props.runtime.config('resources.help.url');
             const aboutKbase = this.props.runtime.config('resources.documentation.aboutKbase.url');

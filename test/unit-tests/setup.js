@@ -35,7 +35,6 @@ requirejs.config({
         kb_ui: 'css/kb-ui',
         marked: 'bower_components/marked/marked',
         md5: 'bower_components/spark-md5/spark-md5',
-        moment: 'bower_components/moment/moment',
         numeral: 'bower_components/numeral/numeral',
         text: 'bower_components/requirejs-text/text',
         uuid: 'bower_components/pure-uuid/uuid',
