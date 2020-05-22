@@ -54,8 +54,6 @@ body.kbase-ui {
     font-size: 17px;
 }
 
-
-
 a:hover,
 .pointer {
     cursor: hand;
@@ -73,7 +71,6 @@ table {
 
 hr.ws-hr {
     margin: 5px -20px 10px -40px;
-    /*border: 1px solid #eee;*/
 }
 
 #logo {
@@ -135,8 +132,6 @@ hr.ws-hr {
 .overflow-y {
     overflow-y: scroll;
 }
-
-
 
 .sidebar .nav-tabs>li.active>a {
     background: #f9f9f9;

@@ -38,8 +38,6 @@ module.exports = function(config) {
        */
       {pattern: 'build/client/bower_components/jquery/dist/jquery.js', included: false},
       {pattern: 'build/client/bower_components/q/q.js', included: false},
-      {pattern: 'build/client/bower_components/underscore/underscore.js', included: false},
-      {pattern: 'build/client/bower_components/jquery-ui/jquery-ui.js', included: false},
       {pattern: 'build/client/bower_components/jquery-ui/themes/ui-lightness/jquery-ui.css', included: false},
       {pattern: 'build/client/bower_components/bootstrap/dist/js/bootstrap.js', included: false},
       {pattern: 'build/client/bower_components/bootstrap/dist/css/bootstrap.css', included: false},

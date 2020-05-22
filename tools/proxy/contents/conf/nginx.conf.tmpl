@@ -79,17 +79,6 @@ http {
     ssl_certificate /kb/deployment/ssl/test.crt;
     ssl_certificate_key /kb/deployment/ssl/test.key;
 
-    # An experiment in proxying google analytics calls through kbase.
-    # location /google-analytics-collect {
-    #   include /etc/nginx/cors.conf;
-    #   proxy_set_header Host $host;
-    #   proxy_set_header X-Real-IP $remote_addr;
-    #   proxy_set_header X-Forwared-For $proxy_add_x_forwarded_for;
-    #   proxy_pass https://www.google-analytics.com/collect;
-    #   proxy_http_version 1.1;
-    #   proxy_set_header Connection "";
-    # }
-
     location / {
       client_max_body_size 300M;
       proxy_pass http://kbase_ui;
@@ -226,12 +215,6 @@ http {
     # Repeat the ui proxying for the case in which they reside on the same
     # host name as services.
     {{ if not .Env.deploy_ui_hostname }}
-
-    # location /google-analytics-collect {
-    #   proxy_pass https://www.google-analytics.com/collect;
-    #   proxy_http_version 1.1;
-    #   proxy_set_header Connection "";
-    # }
 
     location / {
       proxy_pass http://kbase_ui;
