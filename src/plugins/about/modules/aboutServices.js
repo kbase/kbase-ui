@@ -43,6 +43,12 @@ function (
                         versionMethod: 'version'
                     },
                     {
+                        title: 'Execution Engine 2',
+                        type: 'jsonrpc11',
+                        module: 'execution_engine2',
+                        versionMethod: 'ver'
+                    },
+                    {
                         title: 'Feeds',
                         type: 'rest',
                         module: 'feeds',
