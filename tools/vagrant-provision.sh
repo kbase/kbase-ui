@@ -1,6 +1,0 @@
-add-apt-repository ppa:nginx/stable -y
-apt-get update
-apt-get upgrade -y
-apt-get dist-upgrade -y
-apt-get autoremove -y
-apt-get install nginx-extras -y

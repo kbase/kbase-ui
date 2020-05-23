@@ -2,10 +2,10 @@
 
 ## Current Status
 
-| Branch   | Build  || Coverage ||
-|----------|--------|---|----------|---|
-| master   | ![travis](https://travis-ci.org/kbase/kbase-ui.svg?branch=master) | [details](https://travis-ci.org/kbase/kbase-ui?branch=master) | ![coveralls](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master) | [details](https://coveralls.io/r/kbase/kbase-ui?branch=master)  |
-| develop   | ![travis](https://travis-ci.org/kbase/kbase-ui.svg?branch=develop) | [details](https://travis-ci.org/kbase/kbase-ui?branch=develop) | ![coveralls](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=develop) | [details](https://coveralls.io/r/kbase/kbase-ui?branch=develop)  |
+| Branch  | Build                                                              |                                                                | Coverage                                                                         |                                                                 |
+| ------- | ------------------------------------------------------------------ | -------------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| master  | ![travis](https://travis-ci.org/kbase/kbase-ui.svg?branch=master)  | [details](https://travis-ci.org/kbase/kbase-ui?branch=master)  | ![coveralls](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master)  | [details](https://coveralls.io/r/kbase/kbase-ui?branch=master)  |
+| develop | ![travis](https://travis-ci.org/kbase/kbase-ui.svg?branch=develop) | [details](https://travis-ci.org/kbase/kbase-ui?branch=develop) | ![coveralls](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=develop) | [details](https://coveralls.io/r/kbase/kbase-ui?branch=develop) |
 
 ## About
 
@@ -31,8 +31,7 @@ Most KBase users will be exposed to the KBase UI by ... [using KBase](https://na
 
 ## Documentation
 
-- [develop](https://ci.kbase.us/_book/index.html) - Documentation available in the current develop branch of kbase-ui
-- [release](https://narrative.kbase.us/_book/index.html) - Documentation available in the current production release (will be available after the 1.7.0 is released)
+- The previous documentation is now out of date; new [documentation](https://kbaseincubator.github.io/kbase-ui-docs) but incomplete, and in progress.
 
 ## Contributing
 
@@ -40,7 +39,7 @@ The KBase UI is an open source project, managed through github. As such, contrib
 
 ## Release Notes
 
-The current released version is [1.7.0](release-notes/RELEASE_NOTES_1.7.0.md).
+The current released version is [2.0.7](release-notes/RELEASE_NOTES_2.0.7.md).
 
 ## Reporting Bugs
 

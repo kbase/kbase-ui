@@ -3,7 +3,8 @@
         // git rev-parse HEAD
         // dev, ci, or prod
         target: '{{ target }}',
-        gitCommitHash: '{{ git.commitAbbreviatedHash }}',
-        builtAt: {{ stats.start }},
+        gitCommitHash: '{{ git.commitHash }}',
+        gitCommitAbbreviatedHash: '{{ git.commitAbbreviatedHash }}',
+        builtAt: {{ stats.start }}
     };
 }(window));

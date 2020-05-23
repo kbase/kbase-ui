@@ -37,46 +37,34 @@ Subscriptions are via our mini-pub-sub system since it is included in the runtim
 define([], function () {
     'use strict';
 
-    function factory(config, params) {
-        var runtime = params.runtime;
-        var queued = [];
-        var recipientChannel = null;
-
-
-        // Called whenever a plugin is loaded and the config includes an install
-        // property named "notification".
-        function pluginHandler() {
-            // There is no plugin config for this yet.
+    class NotificationService {
+        constructor({ params }) {
+            this.runtime = params.runtime;
+            this.queued = [];
+            this.recipientChannel = null;
         }
 
-        function start() {
+        start() {
             // Listen for notifications to come in.
-            runtime.recv('notification', 'ready', function (message) {
-                recipientChannel = message.channel;
-                var toSend = queued;
-                queued = [];
-                toSend.forEach(function (message) {
-                    runtime.send(recipientChannel, 'new', message);
+            this.runtime.receive('notification', 'ready', (message) => {
+                this.recipientChannel = message.channel;
+                const toSend = this.queued;
+                this.queued = [];
+                toSend.forEach((message) => {
+                    this.runtime.send(this.recipientChannel, 'new', message);
                 });
             });
-            runtime.recv('notification', 'notify', function (message) {
-                if (!recipientChannel) {
-                    queued.push(message);
+            this.runtime.receive('notification', 'notify', (message) => {
+                if (!this.recipientChannel) {
+                    this.queued.push(message);
+                } else {
+                    this.runtime.send(this.recipientChannel, 'new', message);
                 }
-                runtime.send(recipientChannel, 'new', message);
             });
         }
 
-        function stop() { }
-
-        return {
-            pluginHandler: pluginHandler,
-            start: start,
-            stop: stop
-        };
+        stop() { }
     }
 
-    return {
-        make: factory
-    };
+    return { ServiceClass: NotificationService };
 });

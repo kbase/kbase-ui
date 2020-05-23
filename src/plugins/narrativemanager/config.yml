@@ -1,47 +1,48 @@
 ## YAML Template.
 ---
 package:
-    author: Erik Pearson
-    name: narrativemanager
-    description: The narrative manager
-    date: January 26, 2017
-    version: 0.0.3
+  author: Erik Pearson
+  name: narrativemanager
+  description: The narrative manager
+  type: legacy
 source:
-    modules:
+  modules:
 install:
-    widgets:
-        -
-            module: ./startPanel
-            id: narrativeManager_start
-            type: factory
-        -
-            module: ./createNewPanel
-            id: narrativeManager_createNew
-            type: factory
-    menu:
-        -
-            name: narrative
-            definition:
-                path: narrativemanager/start
-                label: Narrative Interface
-                icon: file
-    routes:
-        -
-            path: [narrativemanager, start]
-            authorization: true
-            queryParams:
-                app: {}
-                method: {}
-                copydata: {}
-                appparam: {}
-            widget: narrativeManager_start
-        -
-            path: [narrativemanager, new]
-            authorization: true
-            queryParams:
-                app: {}
-                method: {}
-                markdown: {}
-                copydata: {}
-                appparam: {}
-            widget: narrativeManager_createNew
+  widgets:
+    - module: ./startPanel
+      id: narrativeManager_start
+      type: es6
+    - module: ./createNewPanel
+      id: narrativeManager_createNew
+      type: es6
+  menu:
+    - name: narrative
+      definition:
+        path: narrativemanager/start
+        newWindow: true
+        label: Narrative Interface
+        icon: file
+    - name: new-narrative
+      definition:
+        path: narrativemanager/new
+        newWindow: true
+        label: New Narrative
+        icon: plus
+  routes:
+    - path: [narrativemanager, start]
+      authorization: true
+      queryParams:
+        app: {}
+        method: {}
+        copydata: {}
+        appparam: {}
+      widget: narrativeManager_start
+    - path: [narrativemanager, new]
+      authorization: true
+      queryParams:
+        app: {}
+        method: {}
+        markdown: {}
+        copydata: {}
+        appparam: {}
+      widget: narrativeManager_createNew

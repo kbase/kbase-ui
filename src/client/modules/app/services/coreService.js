@@ -34,7 +34,7 @@ define([
 
         }
 
-        addCoreServiceDepenency() {
+        addCoreServiceDependency() {
 
         }
     }

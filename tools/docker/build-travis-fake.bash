@@ -1,3 +1,5 @@
+# Creates a fake travis environment so that we may test the travis build 
+# without pushing up to github.
 
 root=$(git rev-parse --show-toplevel)
 
@@ -29,7 +31,7 @@ function git_commit() {
 }
 
 export TRAVIS="true"
-export TRAVIS_TAG=$(get_tag)
+export TRAVIS_TAG=$(git_tag)
 export TRAVIS_BRANCH=$(git_branch)
 export REAL_BRANCH=$(git_branch)
 export TRAVIS_COMMIT=$(git_commit)

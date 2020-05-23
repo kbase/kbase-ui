@@ -1,4 +1,4 @@
-FROM alpine:3.9
+FROM alpine:3.11
 # Container designed to serve up static KBase UI contents
 
 # These ARGs values are passed in via the docker build command
@@ -7,18 +7,18 @@ ARG VCS_REF
 ARG BRANCH=develop
 ARG TAG
 
-# Python and friends installed to get jinja2-cli, a jinja2 template cmd line tool
 # used for processing the config file templates
 ENV DOCKERIZE_VERSION v0.6.1
 RUN apk --update upgrade && \
     apk add --no-cache bash bash-completion ca-certificates nginx openssl && \
     mkdir -p /kb/deployment && \
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /kb/deployment/test.key -out /kb/deployment/test.crt -subj "/C=US/ST=California/L=Berkeley/O=LBNL/OU=KBase/CN=ci.kbase.us" && \
     wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
     tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
     rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 COPY contents /kb/deployment
+
+RUN /kb/deployment/maybe-install-self-signed-cert.sh
 
 # The BUILD_DATE value seem to bust the docker cache when the timestamp changes, move to
 # the end

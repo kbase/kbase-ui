@@ -1,1 +1,0 @@
-This directory contains data files used by the dashboard metrics widget.

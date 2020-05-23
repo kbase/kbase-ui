@@ -38,8 +38,6 @@ module.exports = function(config) {
        */
       {pattern: 'build/client/bower_components/jquery/dist/jquery.js', included: false},
       {pattern: 'build/client/bower_components/q/q.js', included: false},
-      {pattern: 'build/client/bower_components/underscore/underscore.js', included: false},
-      {pattern: 'build/client/bower_components/jquery-ui/jquery-ui.js', included: false},
       {pattern: 'build/client/bower_components/jquery-ui/themes/ui-lightness/jquery-ui.css', included: false},
       {pattern: 'build/client/bower_components/bootstrap/dist/js/bootstrap.js', included: false},
       {pattern: 'build/client/bower_components/bootstrap/dist/css/bootstrap.css', included: false},
@@ -51,8 +49,6 @@ module.exports = function(config) {
       {pattern: 'build/client/bower_components/datatables/media/css/jquery.dataTables.css', included: false},
       {pattern: 'build/client/bower_components/datatables-bootstrap3-plugin/media/js/datatables-bootstrap3.js', included: false},
       {pattern: 'build/client/bower_components/datatables-bootstrap3-plugin/media/css/datatables-bootstrap3.css', included: false},
-      {pattern: 'build/client/bower_components/knockout/dist/knockout.js', included: false},
-      {pattern: 'build/client/bower_components/knockout-mapping/knockout.mapping.js', included: false},
       {pattern: 'build/client/bower_components/blockUI/jquery.blockUI.js', included: false},
       {pattern: 'build/client/bower_components/d3/d3.js', included: false},
       {pattern: 'build/client/bower_components/d3-plugins-sankey/sankey.js', included: false},

@@ -4,7 +4,6 @@
 */
 
 .btn.btn-flat {
-    /* background: none; */
     border: none;
 }
 
@@ -21,15 +20,6 @@
     border-radius: 1px;
     border: none;
     box-shadow: 1px 1px 3px #aaa;
-}
-
-.btn-kbase:hover {
-    xbackground-color: #1E88E5;
-}
-
-.btn-group-kbase {
-    xbox-shadow: 1px 1px 3px #aaa;
-    xmargin-bottom: 4px;
 }
 
 .btn-group .btn-kbase {
@@ -146,7 +136,6 @@
     border-bottom: none;
 }
 
-
 /* Help panels */
 
 .kbase-ui .panel.kb-panel-help {
@@ -183,8 +172,6 @@
 .kbase-ui .panel.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
     font-size: 130%;
     width: 30px;
-    /*content: "\f13a";*/
-    /*content: "\f0a7";*/
     content: "\25BD";
     vertical-align: middle;
 }
@@ -192,12 +179,9 @@
 .kbase-ui .panel.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
     font-size: 130%;
     width: 30px;
-    /*content: "\f138";*/
-    /*content: "\f0a4";*/
     content: "\25B7";
     vertical-align: middle;
 }
-
 
 /* Bootrap semantic colors ... */
 
@@ -249,9 +233,7 @@
     color: blue;
 }
 
-
 /* remove the padding from first and last columns for edge-to-edge rows */
-
 
 /* nb nasty child div selector because no generic column class */
 
@@ -268,9 +250,7 @@
     padding-right: 0;
 }
 
-
 /* Bootstrap callout style, not really part of bootstrap but in the docs. People have extracted them... */
-
 
 /* Base styles (regardless of theme) */
 
@@ -292,7 +272,6 @@
 .bs-callout .highlight {
     background-color: #fff;
 }
-
 
 /* Themes for different contexts */
 
@@ -354,4 +333,15 @@
 
 .bs-border-danger {
     border: 1px solid #a94442;
+}
+
+/* tabs */
+.kbase-ui .nav-tabs>li:hover {
+    cursor: pointer;
+}
+
+/* More bootstrap overrides */
+.kbase-ui h1 {
+    /* Default of 1.1 cuts off bottom of some fonts */
+    line-height: 1.2;
 }

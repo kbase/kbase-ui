@@ -4,15 +4,14 @@ node_modules
 
 # Any trash directories
 _trash
+_attic
 
 # IDEs
 # put your ide here
-nbproject
-
-# Editor and OS artifacts
-.DS_Store
-.vscode
 .idea
+
+# OS artifacts
+.DS_Store
 
 # Build artifacts
 /build/dist
@@ -21,17 +20,29 @@ nbproject
 /build/test
 /build/deploy
 /mutations/mutantfiles
+report.*.json
 
 # Doc artifacts
-_book
+/docs/_site
 
 # Developer artifacts
 /dev/docker-compose.override.yml
 /dev/gitlab-config
+/dev/test-config.json
+/dev/temp
+/dev/test
 node_modules
+yarn.lock
 
 # General purpose temp directory
 /temp/*
 !/temp/README.md
 
 docker-compose.override.yml
+
+/tools/proxy/contents/ssl/*
+!/tools/proxy/contents/ssl/README.md
+
+# can be left over with a manual npm install with --no-cache (I think)
+/false
+

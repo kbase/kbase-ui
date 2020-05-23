@@ -38,20 +38,21 @@ build           = dev
 
 # The deploy environment; used by dev-time image runners
 # dev, ci, next, appdev, prod
-# No default, because one should think about this.
-# Used to target the actual deploy config file (see kbase-ini-dir).
-env             = dev
+env             = ci
+
+# The browser to test against
+browser      	= chrome
 
 # The custom docker network
 # For local development.
 net 			= kbase-dev
 
-# The source of deployment configuration files.
-# The value can be a filesystem path or a url; note that the actual config (ini) file is 
-# applied to the path based on the "env" 
-# This is for development only - deployment uses it's own script to launch the image.
-# TODO: for the sake of completeness, https with self-signed certs should be supported.
-kbase-ini-dir  = /kb/deployment/config
+# Host is the kbase deployment host to utilize for integration tests
+# ci, next, appdev, prod
+host = ci
+
+# The testing service
+service = selenium-standalone
 
 # functions
 
@@ -71,12 +72,12 @@ __check_defined = \
 
 # Standard 'all' target = just do the standard build
 all:
-	@echo Use "make init && make config=TARGET build"
+	@echo Use "make init && make build config=TARGET build"
 	@echo see docs/quick-deploy.md
 
 # See above for 'all' - just running 'make' should locally build
 default:
-	@echo Use "make init && make config=TARGET build"
+	@echo Use "make init && make build config=TARGET build"
 	@echo see docs/quick-deploy.md
 
 # Initialization here pulls in all dependencies from Bower and NPM.
@@ -87,10 +88,11 @@ default:
 setup-dirs:
 	@echo "> Setting up directories."
 	mkdir -p temp/files
+	mkdir -p dev/test
 
 node_modules:
 	@echo "> Installing build and test tools."
-	npm install
+	yarn install --no-lockfile
 
 setup: setup-dirs
 
@@ -101,12 +103,6 @@ init: setup node_modules
 build: clean-build 
 	@echo "> Building."
 	cd mutations; node build $(config)
-
-build-deploy-configs:
-	@echo "> Building Deploy Configs..."
-	@mkdir -p $(TOPDIR)/build/deploy/configs
-	@cd mutations; node build-deploy-configs $(TOPDIR)/deployment/ci/docker/kb-deployment/conf/config.json.tmpl $(TOPDIR)/config/deploy $(TOPDIR)/build/deploy/configs
-	@echo "> ... deploy configs built in $(TOPDIR)/build/deploy/configs"
 
 docker-network:
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
@@ -132,18 +128,20 @@ fake-travis-build:
 docker-compose-override: 
 	@echo "> Creating docker compose override..."
 	@echo "> With options:"
-	@echo "> plugins $(plugins)"
-	@echo "> internal $(internal-plugins)"
-	@echo "> libraries $(libraries)"
-	@echo "> paths $(paths)"
-	@echo "> local narrative $(local-narrative)"
-	@echo "> dynamic service proxies $(dynamic-services)"
+	@echo "> plugins: $(plugins)"
+	@echo "> internal: $(internal-plugins)"
+	@echo "> libraries: $(libraries)"
+	@echo "> paths: $(paths)"
+	@echo "> local-narrative: $(local-narrative)"
+	@echo "> dynamic-services: $(dynamic-services)"
 	$(eval cmd = node $(TOPDIR)/tools/docker/build-docker-compose-override.js $(env) \
 	  $(foreach p,$(plugins),--plugin $(p)) \
+	  $(foreach p,$(plugin),--plugin $(p)) \
 	  $(foreach i,$(internal-plugins),--internal $i) \
 	  $(foreach l,$(libraries),--lib $l) \
 	  $(foreach f,$(paths),---path $f) \
 	  $(foreach d,$(dynamic-services),--dynamic_services $d) \
+	  $(foreach s,$(services),--services $s) \
 	  $(if $(findstring t,$(local-narrative)),--local_narrative))
 	@echo "> Issuing: $(cmd)"
 	$(cmd)
@@ -182,8 +180,10 @@ unit-tests:
 	$(KARMA) start test/unit-tests/karma.conf.js
 
 integration-tests:
-	@:$(call check_defined, host, first component of hostname)
-	$(GRUNT) integration-tests --host=$(host)
+	@:$(call check_defined, env, first component of hostname and kbase environment)
+	@:$(call check_defined, browser, the browser to test against)
+	@:$(call check_defined, service, the testing service )
+	ENV=$(env) BROWSER=$(browser) SERVICE_USER=$(user) SERVICE_KEY=$(key) SERVICE=$(service) $(GRUNT) webdriver:service --env=$(env)
 
 travis-tests:
 	$(GRUNT) test-travis
@@ -212,7 +212,7 @@ clean-docs:
 
 docs:
 	cd docs; \
-	npm install; \
+	yarn install --no-lockfile; \
 	./node_modules/.bin/gitbook build ./book
 
 docs-viewer: docs
@@ -223,9 +223,14 @@ docs-viewer: docs
 # git -c http.sslVerify=false clone https://oauth2:s5TDQnKk4kpHXCVdUNfh@gitlab.kbase.lbl.gov:1443/devops/kbase_ui_config.git
 get-gitlab-config:
 	mkdir -p dev/gitlab-config; \
-	git clone -b develop ssh://git@gitlab.kbase.lbl.gov/devops/kbase_ui_config.git dev/gitlab-config
+	git clone -b master ssh://git@gitlab.kbase.lbl.gov/devops/kbase_ui_config.git dev/gitlab-config
 
 clean-gitlab-config:
 	rm -rf dev/gitlab-config
 	
+dev-cert:
+	bash tools/make-dev-cert.sh
+
+rm-dev-cert:
+	rm tools/proxy/contents/ssl/*
 
