@@ -1,7 +1,7 @@
 define([
     'preact',
     'htm',
-    './components/About',
+    './reactComponents/About',
     'bootstrap'],
 function (
     preact,
@@ -27,18 +27,8 @@ function (
             this.container = this.mount.appendChild(document.createElement('div'));
         }
 
-        detach() {
-            if (this.mount && this.container) {
-                this.mount.removeChild(this.container);
-                this.container = null;
-            }
-        }
-
         start() {
             this.runtime.send('ui', 'setTitle', 'About');
-            // render(h(About, {
-            //     runtime: this.runtime
-            // }), this.container);
             const params = {
                 runtime: this.runtime
             };
@@ -48,6 +38,13 @@ function (
 
         stop() {
             return null;
+        }
+
+        detach() {
+            if (this.container && this.container.parentNode) {
+                this.container.parentNode.removeChild(this.container);
+                this.container = null;
+            }
         }
     }
     return AboutPanel;

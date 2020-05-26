@@ -38,8 +38,6 @@ build           = dev
 
 # The deploy environment; used by dev-time image runners
 # dev, ci, next, appdev, prod
-# No default, because one should think about this.
-# Used to target the actual deploy config file (see kbase-ini-dir).
 env             = ci
 
 # The browser to test against
@@ -48,13 +46,6 @@ browser      	= chrome
 # The custom docker network
 # For local development.
 net 			= kbase-dev
-
-# The source of deployment configuration files.
-# The value can be a filesystem path or a url; note that the actual config (ini) file is 
-# applied to the path based on the "env" 
-# This is for development only - deployment uses it's own script to launch the image.
-# TODO: for the sake of completeness, https with self-signed certs should be supported.
-kbase-ini-dir  = /kb/deployment/config
 
 # Host is the kbase deployment host to utilize for integration tests
 # ci, next, appdev, prod
@@ -232,7 +223,7 @@ docs-viewer: docs
 # git -c http.sslVerify=false clone https://oauth2:s5TDQnKk4kpHXCVdUNfh@gitlab.kbase.lbl.gov:1443/devops/kbase_ui_config.git
 get-gitlab-config:
 	mkdir -p dev/gitlab-config; \
-	git clone -b develop ssh://git@gitlab.kbase.lbl.gov/devops/kbase_ui_config.git dev/gitlab-config
+	git clone -b master ssh://git@gitlab.kbase.lbl.gov/devops/kbase_ui_config.git dev/gitlab-config
 
 clean-gitlab-config:
 	rm -rf dev/gitlab-config

@@ -68,8 +68,12 @@ define([
         }
 
         stop() {
-            if (this.hostNode && this.container) {
-                this.hostNode.removeChild(this.container);
+            try {
+                if (this.container && this.container.parentNode) {
+                    this.container.parentNode.removeChild(this.container);
+                }
+            } catch (ex) {
+                console.error('ERROR removing self', this.hostNode, this.container, this.container.parentNode, this.container.parentNode === this.hostNode);
             }
             if (this.iframer) {
                 return this.iframer.stop();

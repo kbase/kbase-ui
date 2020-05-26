@@ -1,0 +1,12 @@
+.SystemAlertToggle {}
+
+.SystemAlertToggle .-button {
+    border: 1px silver solid;
+    padding: 3px;
+    margin: 2px;
+    cursor: pointer
+}
+
+.SystemAlertToggle .-button:hover {
+    background-color: rgba(200, 200, 200, 0.5);
+}

@@ -16,17 +16,26 @@ define(['bluebird', 'uuid'], (Promise, Uuid) => {
             }
             this.widgetManager = widgetManager;
             this.mountedWidgets = {};
-            this.containerID = 0;
             this.orderID = 0;
         }
 
+        /*
+            Generates the next ordering id.
+        */
         nextOrderID() {
             this.orderID += 1;
             return this.orderID;
         }
 
+        /*
+            Create a new container node for usage by a new mount.
+            Each mount gets it's own parent node, freshly created just of it.
+            This helps protect the app from widgets which might erroneously append
+            or otherwise modify it's own parent.
+            The container node is a full-height flexbox, which is compliant with the
+            overall ui design.
+        */
         makeContainer() {
-            this.containerID += 1;
             const container = this.hostNode.appendChild(document.createElement('div'));
             container.style.display = 'flex';
             container.style.flex = '1 1 0px';
@@ -44,11 +53,15 @@ define(['bluebird', 'uuid'], (Promise, Uuid) => {
             return container;
         }
 
+        /*
+            Mounts a widget given by its ID with a set of parameters, as provided by the
+            navigation path, which is ultimately guided by the path config for a plugin.
+        */
         mount(widgetID, params) {
             // We create the widget mount object first, in order to be
             // able to attach its mounting promise to itself. This is what
             // allows us to interrupt it if the route changes and we need
-            // to unmount before it is finished.
+            // to un-mount before it is finished.
             const mountedWidget = {
                 widget: null,
                 container: this.makeContainer(),
@@ -58,7 +71,17 @@ define(['bluebird', 'uuid'], (Promise, Uuid) => {
                 orderID: this.nextOrderID(),
                 isCanceled: false
             };
+
+            // Mounted widgets are stored in a hash. This allows multiple concurrent
+            // mounting, although in the end only the most recent one will be rendered.
             this.mountedWidgets[mountedWidget.id] = mountedWidget;
+
+            // This promise sequence walks a widget through it's lifecycle events, feeding
+            // whatever arguments are required.
+            // It is because this process is asynchronous that we need to accommodate multiple
+            // mount requests being active.
+            // E.g. during this sequence, a user may click on another nav item.
+            // In that case, this
             mountedWidget.promise = Promise.try(() => {
                 // Make an instance of the requested widget.
                 return this.widgetManager.makeWidget(widgetID, {
@@ -104,8 +127,10 @@ define(['bluebird', 'uuid'], (Promise, Uuid) => {
                     return widget;
                 })
                 .finally(() => {
+                    // Ensure that in the case another widget has been mounted after this one,
+                    // that this one is simply removed.
                     if (mountedWidget.orderID < this.orderID) {
-                        this.unmount(mountedWidget);
+                        return this.unmount(mountedWidget);
                     }
                 });
             return mountedWidget.promise;
@@ -136,7 +161,10 @@ define(['bluebird', 'uuid'], (Promise, Uuid) => {
         unmount(mountedWidget) {
             mountedWidget.isCanceled = true;
             return Promise.try(() => {
-                // First give the widget a chance to not continue mounting...?
+                // First give the widget a chance to stop mounting.
+                // Note that this is enabled by the Bluebird promise
+                // cancellation capability, which is not available for
+                // standard promises.
                 if (mountedWidget.promise) {
                     mountedWidget.promise.cancel();
                 }
@@ -159,17 +187,16 @@ define(['bluebird', 'uuid'], (Promise, Uuid) => {
                     .then(() => {
                         return widget && widget.destroy && widget.destroy();
                     })
-                    .then(() => {
+                    .catch((err) => {
+                        // ignore errors while un-mounting widgets.
+                        console.error('[unmount] ERROR un-mounting widget', err);
+                        return null;
+                    })
+                    .finally(() => {
                         // ensure that a misbehaving widget is actually removed from the DOM.
                         if (mountedWidget.container && mountedWidget.container.parentNode) {
                             mountedWidget.container.parentNode.removeChild(mountedWidget.container);
                         }
-                    })
-                    .catch((err) => {
-                        // ignore errors while unmounting widgets.
-                        console.error('[unmount] ERROR unmounting widget');
-                        console.error(err);
-                        return null;
                     });
             });
         }

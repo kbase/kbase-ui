@@ -4,7 +4,9 @@ This directory contains example configuration files for each environment, in doc
 
 In KBase deployments, similar files are supplied directly to dockerize via the kbase-specific "-env" option which supports http/https download of the env files.
 
-> Note: The kbase dockerize extension, at present, uses an INI library to parse the env file content. This has unfortunate side effects, since the INI format and the library specifically have parsing rules beyond those supported by the very simple docker env file format. 
+These files are only used for local development. They are superseded if the official configs are found in `dev/gitlab-config`. (Which can be installed with `make get-gitlab-config`.)
+
+> Note: The kbase dockerize extension, at present, uses an INI library to parse the env file content. This has unfortunate side effects, since the INI format and the library specifically have parsing rules beyond those supported by the very simple docker env file format.
 
 ## File format caveats
 
