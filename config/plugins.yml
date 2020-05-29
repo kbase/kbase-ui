@@ -7,6 +7,7 @@ plugins:
   - narrativemanager
   - about
   - login
+  - developer
   # external:
   - name: typeview
     globalName: kbase-ui-plugin-typeview
@@ -62,7 +63,7 @@ plugins:
   - name: job-browser2
     globalName: kbase-ui-plugin-job-browser2
     # revert to current version after next release
-    version: 1.5.10
+    version: 1.5.11
     # version: 1.1.4
     source:
       git: {}
