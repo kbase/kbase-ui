@@ -172,7 +172,6 @@ define([
         }
 
         renderAlerts() {
-            console.log('alerts', this.props.alerts);
             if (!(this.props.alerts.some((alert) => {
                 return !alert.read;
             }))) {
