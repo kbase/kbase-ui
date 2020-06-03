@@ -11,11 +11,11 @@ install:
       id: developer
       type: es6
   routes:
-    - path: ["developer"]
+    - path: ["developer", {type: rest, name: path}]
       widget: developer
       queryParams: {}
   menu:
     - name: developer
-      path: developer
+      path: developer/main
       label: Developer
       icon: cogs

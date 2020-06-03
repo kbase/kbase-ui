@@ -29,6 +29,10 @@ define([
             return this.configProps.hasItem(prop);
         }
 
+        setConfig(prop, value) {
+            this.configProps.setItem(prop, value);
+        }
+
         rawConfig() {
             return this.configProps.getRaw();
         }
