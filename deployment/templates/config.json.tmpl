@@ -74,6 +74,12 @@
 									"allowRoles": [
 										"DevToken"
 									]
+								}, {
+									"id": "developer",
+									"auth": true,
+									"allowRoles": [
+										"DevToken"
+									]
 								}]
 							},
 							"help": {
@@ -403,6 +409,20 @@
 			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_staging_path "services/staging_service" }}"
 		}
         
+    },
+    "dynamicServices": {
+        "JobBrowserBFF": {
+            "version": "{{default .Env.dynamicServices_JobBrowserBFF_version "auto"}}"
+        },
+        "SampleService": {
+            "version": "{{default .Env.dynamicServices_SampleService_version "auto"}}"
+        },
+        "OntologyAPI": {
+            "version": "{{default .Env.dynamicServices_OntologyAPI_version "auto"}}"
+        },
+        "TaxonomyAPI": {
+            "version": "{{default .Env.dynamicServices_TaxonomyAPI_version "auto"}}"
+        }
     },
     "resources": {
 		"docSite": {

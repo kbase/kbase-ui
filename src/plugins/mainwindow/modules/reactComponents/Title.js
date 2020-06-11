@@ -36,10 +36,12 @@ define([
         }
 
         render() {
+            // Note that this allows html to be set in the title. This allows plugins to set
+            // html.
             return html`
                 <div className="Title"
                      data-k-b-testhook-component="title">
-                    ${this.state.title}
+                     <span dangerouslySetInnerHTML=${{ __html: this.state.title }}></span>
                 </div>
             `;
         }

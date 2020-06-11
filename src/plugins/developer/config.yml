@@ -1,0 +1,21 @@
+## Welcome Panel
+---
+package:
+  name: developer
+  description: A developer tool
+  author: Erik Pearson
+  type: legacy
+install:
+  widgets:
+    - module: developer
+      id: developer
+      type: es6
+  routes:
+    - path: ["developer", {type: rest, name: path}]
+      widget: developer
+      queryParams: {}
+  menu:
+    - name: developer
+      path: developer/main
+      label: Developer
+      icon: cogs
