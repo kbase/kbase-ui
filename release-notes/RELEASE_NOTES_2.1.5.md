@@ -9,7 +9,7 @@ none
 
 ### NEW
 
-none
+added (crude) config editor to developer plugin
 
 ### REMOVED
 
