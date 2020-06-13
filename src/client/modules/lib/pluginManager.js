@@ -141,13 +141,14 @@ define(['bluebird'], (Promise) => {
                 };
 
                 // Now install any ui service configuration.
-                if (pluginDef.install) {
+                const serviceConfigs = pluginDef.services || pluginDef.install;
+                if (serviceConfigs) {
                     return prequire(dependencies)
                         .then(() => {
                             const installSteps = [];
 
-                            Object.keys(pluginDef.install).forEach((serviceName) => {
-                                const installDef = pluginDef.install[serviceName];
+                            Object.keys(serviceConfigs).forEach((serviceName) => {
+                                const installDef = serviceConfigs[serviceName];
                                 const installationPromise = this.installIntoService(serviceName, installDef, pluginConfig, pluginDef);
                                 if (installationPromise) {
                                     this.arrayExtend(installSteps, [installationPromise]);
@@ -176,15 +177,16 @@ define(['bluebird'], (Promise) => {
                 };
 
                 // Now install any ui service configuration.
-                if (pluginDef.install) {
+                const serviceConfigs = pluginDef.services || pluginDef.install;
+                if (serviceConfigs) {
                     return prequire(dependencies).then(() => {
                         const installSteps = [];
 
-                        Object.keys(pluginDef.install).forEach((serviceName) => {
-                            const installDef = pluginDef.install[serviceName];
-                            const intallationPromise = this.installIntoService(serviceName, installDef, pluginConfig, pluginDef);
-                            if (intallationPromise) {
-                                this.arrayExtend(installSteps, [intallationPromise]);
+                        Object.keys(serviceConfigs).forEach((serviceName) => {
+                            const installDef = serviceConfigs[serviceName];
+                            const installationPromise = this.installIntoService(serviceName, installDef, pluginConfig, pluginDef);
+                            if (installationPromise) {
+                                this.arrayExtend(installSteps, [installationPromise]);
                             }
                         });
                         // Do all of the install steps.

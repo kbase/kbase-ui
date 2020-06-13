@@ -2,11 +2,14 @@ define([
     'preact',
     'htm',
     'lib/DataPipe',
+    'uuid',
+
     'css!./Body.css'
 ], (
     preact,
     htm,
-    DataPipe
+    DataPipe,
+    Uuid
 ) => {
     'use strict';
 
@@ -40,14 +43,12 @@ define([
                 }
                 const rootNode = this.nodeRef.current;
 
-                console.log('route-component', routed, this.pluginComponent && this.pluginComponent.pluginName, params.plugin);
-
                 // We don't remount if it is the same plugin and component.
-
-
+                // But we do if the plugin says so!
                 if (this.pluginComponent !== null &&
                     this.pluginComponent.pluginName === params.plugin &&
-                    this.pluginComponent.component == route.component) {
+                    this.pluginComponent.component == route.component &&
+                    !route.forceMount) {
                     this.pluginComponent.pipe.put(params);
                     return;
                 }
@@ -73,7 +74,7 @@ define([
                         runtime: this.props.runtime,
                         pipe: this.pluginComponent.pipe,
                         params,
-                        key: params.plugin
+                        key: new Uuid(4).format()
                     };
                     // console.log('mounting?', Component, props, this.nodeRef.current);
                     // ensure the root node is empty.

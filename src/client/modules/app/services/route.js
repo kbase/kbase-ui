@@ -117,13 +117,19 @@ define([
             }
         }
 
-        installRoute(route, pluginName) {
+        installRoute(route, pluginName, defaults) {
             if (typeof route.params === 'undefined') {
                 route.params = {};
             }
             if (!route.params.plugin) {
                 route.params.plugin = pluginName;
             }
+
+            Object.keys(defaults).forEach((defaultKey) => {
+                if (!route[defaultKey]) {
+                    route[defaultKey] = defaults[defaultKey];
+                }
+            });
 
             if (route.widget) {
                 if (route.widget === 'kb_iframe_loader') {
@@ -153,19 +159,23 @@ define([
             }
         }
 
-        installRoutes(routes, pluginName) {
+        installRoutes(routes, pluginName, defaults) {
             if (!routes) {
                 return;
             }
             routes.map((route) => {
-                return this.installRoute(route, pluginName);
+                return this.installRoute(route, pluginName, defaults);
             });
         }
 
         pluginHandler(serviceConfig, pluginConfig, pluginDef) {
             return new Promise((resolve, reject) => {
                 try {
-                    this.installRoutes(serviceConfig, pluginDef.package.name);
+                    // We now have service config defaults, at least for routes.
+                    const defaults = serviceConfig.defaults || {};
+
+                    // Install all the routes
+                    this.installRoutes(serviceConfig.routes || serviceConfig, pluginDef.package.name, defaults);
                     resolve();
                 } catch (ex) {
                     reject(ex);

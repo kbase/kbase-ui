@@ -15,7 +15,6 @@ define([
     './runtime',
     'lib/messenger',
     'kb_lib/props',
-    'kb_lib/asyncQueue',
     'reactComponents/MainWindow/view'
 ], (
     preact,
@@ -26,7 +25,6 @@ define([
     Runtime,
     Messenger,
     props,
-    AsyncQueue,
     MainWindow
 ) => {
     'use strict';
@@ -97,24 +95,19 @@ define([
 
             this.rootMount = null;
 
-            // RENDER QUEUE - GET RID OF THIS
-
-            this.renderQueue = new AsyncQueue();
-
             // SERVICES
-
             this.appServiceManager = new AppServiceManager({
                 moduleBasePath: 'app/services'
             });
 
-            this.api = new Runtime({
+            this.runtime = new Runtime({
                 config: this.appConfig,
                 messenger: this.messenger,
                 serviceManager: this.appServiceManager
             });
 
             this.pluginManager = new PluginManager({
-                runtime: this.api
+                runtime: this.runtime
             });
 
             this.addServices(this.services);
@@ -122,7 +115,7 @@ define([
 
         mountRootComponent() {
             const props = {
-                runtime: this.api
+                runtime: this.runtime
             };
             const content = html`
                 <${MainWindow} ...${props} />
@@ -140,14 +133,13 @@ define([
                 };
                 service.module = serviceName;
 
-                // serviceConfig.runtime = api;
                 this.appServiceManager.addService(service, serviceConfig);
             });
         }
 
         checkCoreServices() {
             const manager = new kbaseServiceManager.KBaseServiceManager({
-                runtime: this.api
+                runtime: this.runtime
             });
             return manager.check();
         }
@@ -171,29 +163,9 @@ define([
                 }
             });
 
-            // UI should be a service...
-            // NB this was never developed beyond this stage, and should
-            // probably be hunted down and removed.
-            this.messenger.receive({
-                channel: 'ui',
-                message: 'render',
-                handler: (arg) => {
-                    this.renderQueue.addItem({
-                        onRun: () => {
-                            if (arg.node) {
-                                arg.node.innerHTML = arg.content;
-                            } else {
-                                console.error('ERROR');
-                                console.error('Invalid node for ui/render');
-                            }
-                        }
-                    });
-                }
-            });
-
             return this.appServiceManager
                 .loadServices({
-                    runtime: this.api
+                    runtime: this.runtime
                 })
                 .then(() => {
                     return this.pluginManager.installPlugins(this.plugins);
@@ -210,7 +182,7 @@ define([
                     return this.mountRootComponent();
                 })
                 .then(() => {
-                    return this.api;
+                    return this.runtime;
                 });
         }
 

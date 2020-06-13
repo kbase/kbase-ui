@@ -69,7 +69,7 @@ define([], () => {
                 path = [path];
             }
             if (!path) {
-                console.log('missing path??', routeSpec);
+                console.warn('missing path??', routeSpec);
             }
             routeSpec.path = path.map((pathElement) => {
                 // The default path element, represented by a simple string,
