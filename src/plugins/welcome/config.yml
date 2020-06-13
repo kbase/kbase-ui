@@ -1,40 +1,29 @@
 ## Welcome Panel
 ---
 package:
-    name: welcome
-    description: A welcome page
-    author: Erik Pearson
-    type: legacy
+  name: welcome
+  title: Various UI Routes
+  description: A welcome page
+  type: legacy
 install:
-    # Register the welcome widget
-    widgets:
-        -
-            id: kb_welcome_deprecated-bulk-ui
-            module: ./deprecatedBulkUi
-            type: es6
-    # Set up a route to install that widget in the main body view
-    routes:
-        -
-            path: ['bulk-ui']
-            widget: kb_welcome_deprecated-bulk-ui
-    # Set up a menu item to invoke the path above
-    menu:
-        -
-            name: about-kbase
-            uri: https://kbase.us/about
-            newWindow: true
-            label: About KBase
-            icon: info-circle
-        -
-            name: contact-kbase
-            uri: https://kbase.us/contact-us
-            newWindow: true
-            label: Contact KBase
-            icon: envelope-o
-        -
-            name: help
-            uri: https://kbase.us/narrative-guide/
-            newWindow: true
-            label: Help
-            icon: question
-                   
+  # Set up a route to install that widget in the main body view
+  routes:
+    - path: ["bulk-ui"]
+      component: views/DeprecatedBulkUI
+  # Set up a menu item to invoke the path above
+  menu:
+    - name: about-kbase
+      uri: https://kbase.us/about
+      newWindow: true
+      label: About KBase
+      icon: info-circle
+    - name: contact-kbase
+      uri: https://kbase.us/contact-us
+      newWindow: true
+      label: Contact KBase
+      icon: envelope-o
+    - name: help
+      uri: https://kbase.us/narrative-guide/
+      newWindow: true
+      label: Help
+      icon: question

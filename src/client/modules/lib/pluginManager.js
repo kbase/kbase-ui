@@ -71,8 +71,6 @@ define(['bluebird'], (Promise) => {
 
                 // load any styles.
                 // NB these are styles for the plugin as a whole.
-                // TODO: do away with this. the styles should be dependencies
-                // of the panel and widgets. widget css code is below...
                 if (pluginDef.source) {
                     if (pluginDef.source.styles) {
                         pluginDef.source.styles.forEach((style) => {

@@ -51,7 +51,7 @@ define([], () => {
             this.defaultRoute = config.defaultRoute;
         }
 
-        addRoute(pathSpec) {
+        addRoute(routeSpec) {
             /*
              * The path spec is an array of elements. Each element is either a
              * string, in which case it is a literal path component,
@@ -64,11 +64,14 @@ define([], () => {
 
             // fix up the path. This business is to make it easier to have
             // compact path specifications.
-            let path = pathSpec.path;
+            let path = routeSpec.path;
             if (typeof path === 'string') {
                 path = [path];
             }
-            pathSpec.path = path.map((pathElement) => {
+            if (!path) {
+                console.log('missing path??', routeSpec);
+            }
+            routeSpec.path = path.map((pathElement) => {
                 // The default path element, represented by a simple string,
                 // is a literal, matched by its value.
                 if (typeof pathElement === 'string') {
@@ -94,7 +97,7 @@ define([], () => {
                 }
                 throw new Error('Unsupported route path element');
             });
-            this.routes.push(pathSpec);
+            this.routes.push(routeSpec);
         }
 
         getCurrentRequest() {
@@ -289,7 +292,7 @@ define([], () => {
                     });
                 }
                 // Now we handle fixed params; this operate a bit like props. They are specified
-                // in the route config, and simply ammend the props passed to the widget.
+                // in the route config, and simply amend the props passed to the widget.
                 // This provides a mechanism for the plugin to directly pass params to the route's
                 // widget.
                 if (foundRoute.route.params) {

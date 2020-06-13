@@ -2,71 +2,90 @@
 ---
 plugins:
   # Plugins which come-with kbase-ui
-  - mainwindow
+  # - mainwindow
   - welcome
   - narrativemanager
   - about
-  - login
+  # - login
   - developer
   # external:
   - name: typeview
     globalName: kbase-ui-plugin-typeview
     version: 2.0.0
     source:
-      bower: {}
+      git:
+        account: eapearson
+        branch: master
   - name: dataview
     globalName: kbase-ui-plugin-dataview
     version: 4.5.4
     source:
-      git: {}
+      git:
+        account: eapearson
+        branch: master
   - name: dashboard
     globalName: kbase-ui-plugin-dashboard
     version: 3.2.1
     source:
-      bower: {}
+      git:
+        account: eapearson
+        branch: master
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
     version: 2.3.17
     source:
-      bower: {}
+      git: {}
   - name: jgi-search
     globalName: kbase-ui-plugin-jgi-search
     version: 1.0.0
     source:
-      bower: {}
+      git:
+        account: eapearson
+        branch: master
   - name: feeds
     globalName: kbase-ui-plugin-feeds
     version: 1.1.1
     source:
-      bower: {}
+      git:
+        account: eapearson
+        branch: master
   - name: catalog
     globalName: kbase-ui-plugin-catalog
     version: 2.1.5
     source:
-      bower: {}
+      git:
+        account: eapearson
+        branch: master
   - name: data-search
     globalName: kbase-ui-plugin-data-search
     version: 1.1.0
     source:
-      bower: {}
+      git:
+        account: eapearson
+        branch: master
   - name: organizations
     globalName: kbase-ui-plugin-organizations
     version: 1.0.0
-    cwd: src/plugin
     source:
-      git: {}
+      git:
+        account: eapearson
+        branch: master
   - name: biochem-search
     globalName: kbase-ui-plugin-biochem-search
     version: 2.0.5
     source:
-      git: {}
+      git:
+        account: eapearson
+        branch: master
   - name: job-browser2
     globalName: kbase-ui-plugin-job-browser2
     # revert to current version after next release
     version: 1.5.13
     # version: 1.1.4
     source:
-      git: {}
+      git:
+        account: eapearson
+        branch: master
   - name: react-profile-view
     globalName: kbase-ui-plugin-react-profile-view
     version: 1.2.6

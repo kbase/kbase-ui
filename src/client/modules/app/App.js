@@ -7,25 +7,31 @@
     - provide runtime api for config, services, and comm
 */
 define([
+    'preact',
+    'htm',
     'lib/pluginManager',
     'lib/appServiceManager',
     'lib/kbaseServiceManager',
     './runtime',
     'lib/messenger',
     'kb_lib/props',
-    '../lib/widget/mount',
-    'kb_lib/asyncQueue'
+    'kb_lib/asyncQueue',
+    'reactComponents/MainWindow/view'
 ], (
+    preact,
+    htm,
     PluginManager,
     AppServiceManager,
     kbaseServiceManager,
     Runtime,
     Messenger,
     props,
-    WidgetMount,
-    AsyncQueue
+    AsyncQueue,
+    MainWindow
 ) => {
     'use strict';
+
+    const html = htm.bind(preact.h);
 
     // TODO: make this configurable.
     const CHECK_CORE_SERVICES = false;
@@ -114,20 +120,14 @@ define([
             this.addServices(this.services);
         }
 
-        mountRootWidget(widgetId, runtime) {
-            if (!this.rootNode) {
-                throw new Error('Cannot set root widget without a root node');
-            }
-            // remove anything on the root mount, such as a waiter.
-            this.rootNode.innerHTML = '';
-
-            this.rootMount = new WidgetMount({
-                node: this.rootNode,
-                runtime,
-                widgetManager: runtime.service('widget').widgetManager
-            });
-
-            return this.rootMount.mountWidget(widgetId);
+        mountRootComponent() {
+            const props = {
+                runtime: this.api
+            };
+            const content = html`
+                <${MainWindow} ...${props} />
+            `;
+            preact.render(content, this.rootNode);
         }
 
         addServices(services) {
@@ -153,14 +153,6 @@ define([
         }
 
         start() {
-            // Behavior
-            // There are not too many global behaviors, and perhaps there should
-            // even fewer or none. Most behavior is within services or
-            // active widgets themselves.
-
-            // TODO: replace this with call to mount a page not found panel
-            // rather than routing... This will preserve the url and ease the life
-            // of developers around the world.
             this.messenger.receive({
                 channel: 'app',
                 message: 'route-not-found',
@@ -215,7 +207,7 @@ define([
                     return this.appServiceManager.startServices();
                 })
                 .then(() => {
-                    return this.mountRootWidget('root', this.api);
+                    return this.mountRootComponent();
                 })
                 .then(() => {
                     return this.api;
