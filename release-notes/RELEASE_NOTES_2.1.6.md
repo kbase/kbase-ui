@@ -16,7 +16,7 @@ none
 
 ### UNRELEASED
 
-none
+sampleView: add access tab and improvements in response to feedback
 
 ### IMPROVEMENTS
 
