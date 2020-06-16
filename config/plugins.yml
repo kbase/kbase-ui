@@ -78,7 +78,7 @@ plugins:
   - name: job-browser2
     globalName: kbase-ui-plugin-job-browser2
     # revert to current version after next release
-    version: 1.5.13
+    version: 1.5.14
     # version: 1.1.4
     source:
       git:
