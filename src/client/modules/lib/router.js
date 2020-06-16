@@ -137,176 +137,214 @@ define([], () => {
             };
         }
 
-        findRoute(req) {
-            let foundRoute, j, route, params, requestPathElement, routePathElement;
+        matchPath(path, route) {
+            // Match the path.
+            // Walk through the path, for each path element:
+            // - if no more route path elements, and "captureExtraPath" is set,
+            //   and the last path element is of type "rest", put the rest of
+            //   the request path into the special "rest" parameter.
+            // - process parameter based on the type.
+            const params = {};
+            matchloop: for (let j = 0; j < path.length; j += 1) {
+                const routePathElement = route.path[j];
+                const requestPathElement = path[j];
+                if (!routePathElement) {
+                    // end of the route path.
+                    if (route.captureExtraPath) {
+                        params['rest'] = path.slice(j - 1);
+                        break;
+                    }
+                }
 
+                switch (routePathElement.type) {
+                case 'literal':
+                    // current path element must match current route element
+                    if (routePathElement.value !== requestPathElement) {
+                        return;
+                    }
+                    break;
+                case 'options':
+                    // current path element must match at least one of the
+                    // route elements in the "value" property (array).
+                    if (
+                        !routePathElement.value.some((option) => {
+                            if (requestPathElement === option) {
+                                return true;
+                            }
+                        })
+                    ) {
+                        return;
+                    }
+                    break;
+                case 'param':
+                    // current path element is not compared, it is considered
+                    // a positive match, and is stored in the params  map
+                    // under the name of the route elements 'name' property.
+                    params[routePathElement.name] = requestPathElement;
+                    break;
+                case 'regexp':
+                    // current path element is matched against a regular expression
+                    // defined by the current route element.
+                    try {
+                        const regexp = new RegExp(routePathElement.regexp);
+                        if (!regexp.test(requestPathElement)) {
+                            return;
+                        }
+                    } catch (ex) {
+                        console.warn('invalid route with regexp element', ex);
+                        return;
+                    }
+                    break;
+                case 'rest':
+                    // unconditionally matches the rest of the request path, storing it
+                    // as an array in a parameter named  by the 'name' property, or
+                    // if this is missing or falsy, 'rest'.
+                    var name = routePathElement.name || 'rest';
+                    if (j < route.path.length - 1) {
+                        console.warn('rest parameter used before final route element');
+                        console.warn('  being treated as regular param');
+                        params[name] = requestPathElement;
+                        continue;
+                    }
+
+                    if (routePathElement.joinWith) {
+                        params[name] = path.slice(j).join(routePathElement.joinWith);
+                    } else {
+                        params[name] = path.slice(j);
+                    }
+
+                    break matchloop;
+                default:
+                    // If the path element is not well formed (not a recognized type)
+                    // just skip it with a warning.
+                    console.warn('invalid route: type not recognized', routePathElement);
+                    return;
+                }
+            }
+            return params;
+        }
+
+        processPath(path) {
+            let route;
+            for (let i = 0; i < this.routes.length; i += 1) {
+                route = this.routes[i];
+
+                const isRest = route.path[route.path.length - 1].type === 'rest';
+                if (route.path.length > path.length) {
+                    // We can only match on a path shorter than the route path if:
+                    // - all params after the route path after the end of the current path are optional
+                    // - the route has the flag "captureExtraPath"
+                    // - the route has a final path element defined as type "rest"
+                    const isAllOptional = route.path.slice(path.length).every((routePathElement) => {
+                        return routePathElement.optional;
+                    });
+                    if (!(isAllOptional || route.captureExtraPath || isRest)) {
+                        continue;
+                    }
+                } else if (route.path.length < path.length) {
+                    // A longer path may match if either the route can automatically
+                    // capture the rest of the path or the last component is of type 'rest'
+                    // TODO: use one or the other, not both!
+                    if (!(route.captureExtraPath || isRest)) {
+                        continue;
+                    }
+                }
+
+                const params = this.matchPath(path, route);
+
+                if (params) {
+                    return { route, params };
+                }
+            }
+            return null;
+        }
+
+        processQuery(route, query) {
+            // Now process any query parameters.
+            // Query params are not used for route selection, but are used
+            // to populate the params object.
+            // Only query params provided in the route will be extracted and
+            // placed into the params.
+
+            const params = {};
+
+            // The total params is the path params and query params
+            const searchParamKeys = Object.keys(query);
+            const queryParamsSpec = route.route.queryParams || {};
+
+            // Use the query params spec in the route first. This picks up
+            // literals, and also enables the strict query param protocol in
+            // which only defined query params are recognized.
+            // The captureExtraSearch route flag disables the latter behavior.
+            // All undefined query params are simply copied to the req.query.
+            Object.keys(queryParamsSpec).forEach((key) => {
+                const paramSpec = queryParamsSpec[key];
+                // This allows for supplying a param
+                // from the config.
+                // TODO: improve this, and add support for query param specs
+                //       e.g. type coercion.
+                if (paramSpec === true) {
+                    // Simply setting the query param spec to "true" will cause
+                    // it to be used, even if it is not provided.
+                    params[key] = query[key];
+                } else if (paramSpec.literal) {
+                    // A query param can also be specified as a
+                    // literal value, in which case the value from the spec
+                    // is placed into the params.
+                    params[key] = paramSpec.literal;
+                } else if (typeof query[key] !== 'undefined') {
+                    // Defaults to simply using the query value if it is found.
+                    params[key] = query[key];
+                } else {
+                    return;
+                }
+                delete searchParamKeys[key];
+            });
+            if (route.route.captureExtraSearch) {
+                searchParamKeys.forEach((key) => {
+                    params[key] = query[key];
+                });
+            }
+            return params;
+        }
+
+        findRoute(request) {
             // No route at all? Return the default route.
-            if (req.path.length === 0 && Object.keys(req.query).length === 0) {
+            if (request.path.length === 0 && Object.keys(request.query).length === 0) {
                 return {
-                    request: req,
+                    request,
                     params: {},
                     route: this.defaultRoute
                 };
             }
 
-            routeloop: for (let i = 0; i < this.routes.length; i += 1) {
-                route = this.routes[i];
-                params = {};
+            const foundRoute = this.processPath(request.path);
 
-                const captureExtraPath = route.captureExtraPath;
-
-                if (route.path.length > req.path.length) {
-                    const isAllOptional = route.path.slice(req.path.length).every((routePathElement) => {
-                        return routePathElement.optional;
-                    });
-                    const isCaptureExtraPath = captureExtraPath;
-                    const isRest = route.path[route.path.length - 1].type === 'rest';
-                    if (!(isAllOptional || isCaptureExtraPath || isRest)) {
-                        continue routeloop;
-                    }
-                } else if (route.path.length < req.path.length) {
-                    // A longer path may match if either the route can automatically
-                    // capture the rest of the path or the last component is of type 'rest'
-                    // TODO: use one or the other, not both!
-                    if (!(captureExtraPath || route.path[route.path.length - 1].type === 'rest')) {
-                        continue routeloop;
-                    }
-                }
-
-                // We can use a route which is longer than the path if the route has
-                // optional params at the end.
-                reqloop: for (j = 0; j < req.path.length; j += 1) {
-                    routePathElement = route.path[j];
-                    requestPathElement = req.path[j];
-                    if (!routePathElement) {
-                        // end of the route path.
-                        if (captureExtraPath) {
-                            params['rest'] = req.path.slice(j - 1);
-                            break;
-                        }
-                    }
-
-                    switch (routePathElement.type) {
-                    case 'literal':
-                        // current path element must match current route element
-                        if (routePathElement.value !== requestPathElement) {
-                            continue routeloop;
-                        }
-                        break;
-                    case 'options':
-                        // current path element must match at least one of the
-                        // route elements in the "value" property (array).
-                        if (
-                            !routePathElement.value.some((option) => {
-                                if (requestPathElement === option) {
-                                    return true;
-                                }
-                            })
-                        ) {
-                            continue routeloop;
-                        }
-                        break;
-                    case 'param':
-                        // current path element is not compared, it is considered
-                        // a positive match, and is stored in the params  map
-                        // under the name of the route elements 'name' property.
-                        params[routePathElement.name] = requestPathElement;
-                        break;
-                    case 'regexp':
-                        // current path element is matched against a regular expression
-                        // defined by the current route element.
-                        try {
-                            const regexp = new RegExp(routePathElement.regexp);
-                            if (!regexp.test(requestPathElement)) {
-                                continue routeloop;
-                            }
-                        } catch (ex) {
-                            console.warn('invalid route with regexp element', ex);
-                            continue routeloop;
-                        }
-                        break;
-                    case 'rest':
-                        // unconditionally matches the rest of the request path, storing it
-                        // as an array in a parameter named  by the 'name' property, or
-                        // if this is missing or falsy, 'rest'.
-                        var name = routePathElement.name || 'rest';
-                        if (j < route.path.length - 1) {
-                            console.warn('rest parameter used before final route element');
-                            console.warn('  being treated as regular param');
-                            params[name] = requestPathElement;
-                            continue;
-                        }
-
-                        if (routePathElement.joinWith) {
-                            params[name] = req.path.slice(j).join(routePathElement.joinWith);
-                        } else {
-                            params[name] = req.path.slice(j);
-                        }
-
-                        break reqloop;
-                    default:
-                        // If the path element is not well formed (not a recognized type)
-                        // just skip it with a warning.
-                        console.warn('invalid route: type not recognized', routePathElement);
-                        continue routeloop;
-                    }
-                }
-
-                // First found route wins
-                // TODO: fix this?
-                foundRoute = {
-                    request: req,
-                    params: params,
-                    route: route
-                };
-                break routeloop;
-            }
-            // The total params is the path params and query params
-            if (foundRoute) {
-                const searchParamKeys = Object.keys(req.query);
-                const queryParamsSpec = foundRoute.route.queryParams || {};
-
-                // Use the query params spec in the route first. This picks up
-                // literals, and also enables the strict query param protocol in
-                // which only defined query params are recognized.
-                // The captureExtraSearch route flag disables the latter behavior.
-                // All undefined query params are simply copied to the req.query.
-                Object.keys(queryParamsSpec).forEach((key) => {
-                    const param = queryParamsSpec[key];
-                    // This allows for supplying a param
-                    // from the config.
-                    if (param === true) {
-                        foundRoute.params[key] = req.query[key];
-                    } else if (param.literal) {
-                        foundRoute.params[key] = param.literal;
-                    } else if (req.query[key] !== undefined) {
-                        foundRoute.params[key] = req.query[key];
-                    } else {
-                        return;
-                    }
-                    delete searchParamKeys[key];
-                });
-                if (foundRoute.route.captureExtraSearch) {
-                    searchParamKeys.forEach((key) => {
-                        foundRoute.params[key] = req.query[key];
-                    });
-                }
-                // Now we handle fixed params; this operate a bit like props. They are specified
-                // in the route config, and simply amend the props passed to the widget.
-                // This provides a mechanism for the plugin to directly pass params to the route's
-                // widget.
-                if (foundRoute.route.params) {
-                    Object.assign(foundRoute.params, foundRoute.route.params);
-                }
-            } else {
+            if (!foundRoute) {
                 throw new NotFoundException({
-                    request: req,
-                    params: params,
+                    request,
+                    params: {},
                     route: null,
-                    original: req.original,
-                    path: req.path
+                    original: request.original,
+                    path: request.path
                 });
             }
+
+            const queryParams = this.processQuery(foundRoute, request.query);
+            if (queryParams) {
+                Object.assign(foundRoute.params, queryParams);
+            }
+
+            // Now we handle fixed params; this operate a bit like props. They are specified
+            // in the route config, and simply amend the props passed to the widget.
+            // This provides a mechanism for the plugin to directly pass params to the route's
+            // widget.
+            if (foundRoute.route.params) {
+                Object.assign(foundRoute.params, foundRoute.route.params);
+            }
+
+            foundRoute.request = request;
+
             return foundRoute;
         }
 

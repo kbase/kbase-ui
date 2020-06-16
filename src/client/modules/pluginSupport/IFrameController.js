@@ -41,7 +41,7 @@ define([
 
             this.receivers = [];
 
-            this.channel = new WindowChannel.BidirectionalWindowChannel({
+            this.channel = new WindowChannel({
                 host: document.location.origin
             });
 
@@ -53,11 +53,12 @@ define([
         }
 
         componentDidMount() {
-            this.props.pipe.tap((params) => {
+            this.props.pipe.tap(({view, params}) => {
                 const path = params.path || [];
                 const message = {
-                    path, params
+                    to: view, path, params
                 };
+                // console.log('!! SENDING', message);
                 this.channel.send('navigate', message);
             });
             this.props.pipe.start();
@@ -312,6 +313,7 @@ define([
                     const message = {
                         path, params
                     };
+                    // console.log('?? SENDING 2', message);
                     this.channel.send('navigate', message);
                 });
         }

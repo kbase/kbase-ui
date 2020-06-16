@@ -49,7 +49,11 @@ define([
                     this.pluginComponent.pluginName === params.plugin &&
                     this.pluginComponent.component == route.component &&
                     !route.forceMount) {
-                    this.pluginComponent.pipe.put(params);
+
+                    this.pluginComponent.pipe.put({
+                        view: route.view,
+                        params
+                    });
                     return;
                 }
 

@@ -131,31 +131,13 @@ define([
                 }
             });
 
-            if (route.widget) {
-                if (route.widget === 'kb_iframe_loader') {
-                    console.warn('DEPRECATION - kb_iframe_loader patch should be refactored to a component', route.params.plugin);
-                    delete route.widget;
-                    route.component = '/pluginSupport/Plugin';
-                    this.router.addRoute(route);
-                } else {
-                    console.error('widget routes no longer supported', route);
-                }
-            } else if (route.redirectHandler) {
+            if (route.component) {
                 this.router.addRoute(route);
-            } else if (route.component) {
+            } else if (route.redirectHandler) {
                 this.router.addRoute(route);
             } else {
                 route.component = '/pluginSupport/Plugin';
                 this.router.addRoute(route);
-                // console.error('invalid route', route);
-                // throw new lang.UIError({
-                //     type: 'ConfigurationError',
-                //     name: 'RouterConfigurationError',
-                //     source: 'installRoute',
-                //     message: 'invalid route',
-                //     suggestion: 'Fix the plugin which specified this route.',
-                //     data: route
-                // });
             }
         }
 
@@ -217,9 +199,6 @@ define([
                 target: window,
                 type: 'hashchange',
                 listener: () => {
-                    // $(window).on('hashchange', function () {
-                    // NB this is called AFTER it has changed. The browser will do nothing by
-                    // default
                     this.doRoute();
                 }
             });

@@ -11,11 +11,9 @@ plugins:
   # external:
   - name: typeview
     globalName: kbase-ui-plugin-typeview
-    version: 2.0.0
+    version: 3.0.0
     source:
-      git:
-        account: eapearson
-        branch: master
+      git: {}
   - name: dataview
     globalName: kbase-ui-plugin-dataview
     version: 4.5.4
@@ -109,7 +107,9 @@ plugins:
     version: 0.6.4
     source:
       git:
-        account: kbaseIncubator
+        # account: kbaseIncubator
+        account: eapearson
+        branch: master
   # Unreleased
   # - name: public-search
   #   globalName: kbase-ui-plugin-public-search

@@ -11,6 +11,7 @@ define([
         }
 
         pluginHandler(serviceConfigs) {
+            console.warn('some plugin using service service!!', serviceConfigs);
             return Promise.try(() => {
                 const services = serviceConfigs.map((serviceConfig) => {
                     try {
