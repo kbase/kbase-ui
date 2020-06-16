@@ -2,17 +2,13 @@
 ---
 package:
   name: developer
+  title: Developer Tools
   description: A developer tool
-  author: Erik Pearson
   type: legacy
 install:
-  widgets:
-    - module: developer
-      id: developer
-      type: es6
   routes:
     - path: ["developer", {type: rest, name: path}]
-      widget: developer
+      component: views/Developer
       queryParams: {}
   menu:
     - name: developer

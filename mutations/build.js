@@ -68,6 +68,14 @@ function gitClone(url, dest, branch = 'master') {
     return run(commandLine, true);
 }
 
+function fetchPlugin(url, dest) {
+    // https://github.com/kbase/kbase-ui-plugin-dashboard/raw/v3.2.1/dist.tgz
+    
+    const commandLine = ['wget', '--no-check-certificate', '-P', dest, url].join(' ');
+    console.log('feching plugoin', url, dest);
+    return run(commandLine, true);
+}
+
 function gitInfo(state) {
     // fatal: no tag exactly matches 'bf5efa0810d9f097b7c6ba8390f97c008d98d80e'
     return Promise.all([
@@ -345,6 +353,48 @@ function fetchPluginsFromGit(state) {
                 const dest = gitDestination.concat([plugin.globalName]).join('/');
                 mutant.log(`... cloning plugin repo ${plugin.globalName}, version ${version}, branch: ${branch}`);
                 return gitClone(url, dest, branch);
+            });
+        });
+}
+
+function fetchPluginsFromGithub(state) {
+    // Load plugin config
+    var root = state.environment.path,
+        pluginConfig,
+        pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/'),
+        gitDestination = root.concat(['gitDownloads']);
+
+    return fs
+        .mkdirsAsync(gitDestination.join('/'))
+        .then(() => {
+            return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8')]);
+        })
+        .spread(function (pluginFile) {
+            pluginConfig = yaml.safeLoad(pluginFile);
+        })
+        .then(function () {
+            // First generate urls to all the plugin repos.
+            const githubPlugins = pluginConfig.plugins
+                .filter(function (plugin) {
+                    if (typeof plugin === 'object' && !plugin.internal && plugin.source.git) {
+                        return true;
+                    }
+                    return false;
+                });
+            return Promise.each(githubPlugins, (plugin) => {
+                const repoName = plugin.source.git.name || plugin.globalName,
+                    version = plugin.version,
+                    branch = plugin.source.git.branch || (version ? 'v' + version : null),
+                    gitAccount = plugin.source.git.account || 'kbase',
+
+                    url = plugin.source.git.url || `https://github.com/${gitAccount}/${repoName}/raw/${branch}/dist.tgz`;
+
+                    // // https://github.com/kbase/kbase-ui-plugin-dashboard/blob/v3.2.1/dist.tgz
+                    // https://github.com/kbase/kbase-ui-plugin-typeview/raw/v3.2.1/dist.tgz
+                    // https://github.com/kbase/kbase-ui-plugin-typeview/raw/v2.0.0/dist.tgz
+                const dest = gitDestination.concat([plugin.globalName]).join('/');
+                mutant.log(`... fetching plugin repo ${plugin.globalName}, version ${version}, branch: ${branch}`);
+                return fetchPlugin(url, dest);
             });
         });
 }
@@ -909,7 +959,7 @@ function installPlugins(state) {
                                             });
                                             srcDir = pluginDir.concat(['dist', 'plugin']);
                                         } else {
-                                            throw new Error('git plugin does not have an install method - neither cwd nor dist.tgz');
+                                            throw new Error(`git plugin ${plugin.name} does not have an install method - neither cwd nor dist.tgz`);
                                         }
                                     }
 
