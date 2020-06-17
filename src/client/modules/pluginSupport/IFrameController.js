@@ -4,7 +4,6 @@ define([
     'uuid',
     './windowChannel',
     'kb_lib/httpUtils',
-    'kb_lib/lang',
     './AutoPostForm',
     './IFrame',
 
@@ -15,7 +14,6 @@ define([
     Uuid,
     WindowChannel,
     httpUtils,
-    lang,
     AutoPostForm,
     IFrame
 ) => {
