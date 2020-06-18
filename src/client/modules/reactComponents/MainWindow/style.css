@@ -15,7 +15,6 @@
 
 .MainWindow .-header {
     flex: 0 0 70px;
-    /* line-height: 65px; */
 }
 
 .MainWindow .-body {
@@ -42,7 +41,6 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    /* padding-top: 1em; */
 }
 
 .MainWindow .-body>.-content-area>.-notification-banner {
@@ -78,17 +76,7 @@
     border-right: 2px solid #e0e0e0;
 }
 
-.kb-mainWindow-sidebarNav .-navbar .-cell {
-    /* padding: 4px;
-    display: inline-block;
-    height: 100%;
-    vertical-align: top;
-     */
-    flex: 0 1 0px;
-}
-
 .MainWindow .-navbar .-cell.-menu {
-    /* flex: auto; */
     align-items: center;
     justify-content: center;
     display: flex;
@@ -96,7 +84,6 @@
 }
 
 .MainWindow .-navbar .-cell.-logo {
-    /* flex: auto; */
     align-items: center;
     justify-content: center;
     display: flex;
@@ -158,12 +145,7 @@
     flex-direction: row;
     background-color: #fff;
     border-bottom: 5px solid #E0E0E0 !important;
-    /* padding: 8px; */
-    /* z-index: 3; */
     height: 70px;
-    /* -webkit-box-shadow: none;
-    box-shadow: none;
-    -moz-box-shadow: none; */
 }
 
 .navbar-fixed-top {
@@ -200,12 +182,10 @@
 
 .MainWindow .-navbar .btn.kb-nav-btn {
     background-color: #FFF;
-    /* padding: 1px 7px; */
     font-size: 24px;
     border: none;
     text-shadow: none !important;
     margin: 0;
-    /* margin-right: 5px; */
 }
 
 .MainWindow .-navbar .btn.kb-nav-btn>div {
@@ -274,13 +254,12 @@ The content area is normal flow and just needs to have a matching top margin.
    --------------------------
 */
 
-#kb-nav-menu {
+.kb-nav-button {
     /* don't add shadows here */
     box-shadow: none;
 }
 
 .fa-color-warning::before {
-    /* color: rgb(143, 127, 97); */
     color: orange;
 }
 
@@ -324,8 +303,6 @@ The content area is normal flow and just needs to have a matching top margin.
 /* menu */
 
 .MainWindow .widget-menu {
-    /* margin-top: 12px; */
-    /* margin-left: 4px; */
     flex: 1;
 }
 
@@ -348,36 +325,6 @@ The content area is normal flow and just needs to have a matching top margin.
 
 .MainWindow .widget-menu .dropdown-menu li a {
     vertical-align: middle;
-}
-
-/* notification */
-
-
-/* sidebar! */
-.kb-mainWindow-sidebarNav {
-    /*xposition: fixed;*/
-}
-
-.kb-mainWindow-sidebarNav .-nav-button {
-    background-color: transparent;
-}
-
-.kb-mainWindow-sidebarNav .-nav-button:hover,
-.kb-mainWindow-sidebarNav .-nav-button.-active {
-    background-color: rgba(200, 200, 200, 0.5);
-}
-
-.kb-mainWindow-sidebarNav .-status-indicator {
-    position: absolute;
-    left: 2px;
-    top: 0;
-    background-color: rgba(191, 26, 26, 0.5);
-    color: white;
-    padding: 2px
-}
-
-.kb-mainWindow-sidebarNav .-nav-button:hover .-status-indicator {
-    background-color: rgba(191, 26, 26, 1);
 }
 
 /* title */
