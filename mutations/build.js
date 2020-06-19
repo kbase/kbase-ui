@@ -68,14 +68,6 @@ function gitClone(url, dest, branch = 'master') {
     return run(commandLine, true);
 }
 
-function fetchPlugin(url, dest) {
-    // https://github.com/kbase/kbase-ui-plugin-dashboard/raw/v3.2.1/dist.tgz
-    
-    const commandLine = ['wget', '--no-check-certificate', '-P', dest, url].join(' ');
-    console.log('feching plugoin', url, dest);
-    return run(commandLine, true);
-}
-
 function gitInfo(state) {
     // fatal: no tag exactly matches 'bf5efa0810d9f097b7c6ba8390f97c008d98d80e'
     return Promise.all([
@@ -319,44 +311,6 @@ function buildPlugin(state, pluginDir) {
         });
 }
 
-function fetchPluginsFromGit(state) {
-    // Load plugin config
-    var root = state.environment.path,
-        pluginConfig,
-        pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/'),
-        gitDestination = root.concat(['gitDownloads']);
-
-    return fs
-        .mkdirsAsync(gitDestination.join('/'))
-        .then(() => {
-            return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8')]);
-        })
-        .spread(function (pluginFile) {
-            pluginConfig = yaml.safeLoad(pluginFile);
-        })
-        .then(function () {
-            // First generate urls to all the plugin repos.
-            const githubPlugins = pluginConfig.plugins
-                .filter(function (plugin) {
-                    if (typeof plugin === 'object' && !plugin.internal && plugin.source.git) {
-                        return true;
-                    }
-                    return false;
-                });
-            return Promise.each(githubPlugins, (plugin) => {
-                const repoName = plugin.source.git.name || plugin.globalName,
-                    version = plugin.version,
-                    branch = plugin.source.git.branch || (version ? 'v' + version : null),
-                    gitAccount = plugin.source.git.account || 'kbase',
-                    url = plugin.source.git.url || 'https://github.com/' + gitAccount + '/' + repoName;
-
-                const dest = gitDestination.concat([plugin.globalName]).join('/');
-                mutant.log(`... cloning plugin repo ${plugin.globalName}, version ${version}, branch: ${branch}`);
-                return gitClone(url, dest, branch);
-            });
-        });
-}
-
 function fetchPluginsFromGithub(state) {
     // Load plugin config
     var root = state.environment.path,
@@ -376,25 +330,21 @@ function fetchPluginsFromGithub(state) {
             // First generate urls to all the plugin repos.
             const githubPlugins = pluginConfig.plugins
                 .filter(function (plugin) {
-                    if (typeof plugin === 'object' && !plugin.internal && plugin.source.git) {
+                    if (typeof plugin === 'object' && !plugin.internal && plugin.source.github) {
                         return true;
                     }
                     return false;
                 });
             return Promise.each(githubPlugins, (plugin) => {
-                const repoName = plugin.source.git.name || plugin.globalName,
+                const repoName = plugin.source.github.name || plugin.globalName,
                     version = plugin.version,
-                    branch = plugin.source.git.branch || (version ? 'v' + version : null),
-                    gitAccount = plugin.source.git.account || 'kbase',
+                    branch = plugin.source.github.branch || (version ? 'v' + version : null),
+                    gitAccount = plugin.source.github.account || 'kbase',
+                    url = plugin.source.github.url || 'https://github.com/' + gitAccount + '/' + repoName;
 
-                    url = plugin.source.git.url || `https://github.com/${gitAccount}/${repoName}/raw/${branch}/dist.tgz`;
-
-                    // // https://github.com/kbase/kbase-ui-plugin-dashboard/blob/v3.2.1/dist.tgz
-                    // https://github.com/kbase/kbase-ui-plugin-typeview/raw/v3.2.1/dist.tgz
-                    // https://github.com/kbase/kbase-ui-plugin-typeview/raw/v2.0.0/dist.tgz
                 const dest = gitDestination.concat([plugin.globalName]).join('/');
-                mutant.log(`... fetching plugin repo ${plugin.globalName}, version ${version}, branch: ${branch}`);
-                return fetchPlugin(url, dest);
+                mutant.log(`... cloning plugin repo ${plugin.globalName}, version ${version}, branch: ${branch}`);
+                return gitClone(url, dest, branch);
             });
         });
 }
@@ -849,8 +799,8 @@ function copyFromNodeNodules(state) {
                     .then(function (matches) {
                         // Do the copy!
                         return Promise.all(
-                            matches.map(function (match) {
-                                var fromPath = state.environment.path
+                            matches.map((match) => {
+                                const fromPath = state.environment.path
                                     .concat(copySpec.cwd)
                                     .concat([match])
                                     .join('/'),
@@ -889,85 +839,39 @@ function installPlugins(state) {
             .readFileAsync(pluginConfigFile, 'utf8')
             .then(function (pluginFile) {
                 pluginConfig = yaml.safeLoad(pluginFile);
-                var plugins = pluginConfig.plugins;
+                const plugins = pluginConfig.plugins;
                 return Promise.all(
-                    plugins
-                        .filter(function (plugin) {
-                            return typeof plugin === 'object' && plugin.source.bower;
-                        })
-                        .map(function (plugin) {
-                            const pluginDir = root.concat(['build', 'bower_components', plugin.globalName]);
-                            let srcDir;
-                            if (plugin.cwd) {
-                                mutant.info(`${plugin.name}: plugin building from configured cwd: ${plugin.cwd}`)
-                                srcDir = pluginDir.concat([plugin.cwd.split('/')]);
-                            } else {
-                                const distFile = pluginDir.concat(['dist.tgz']);
-                                if (pathExists.sync(distFile.join('/'))) {
-                                    mutant.info(`${plugin.name}: plugin installing from dist.tgz`);
-                                    tar.extract({
-                                        cwd: pluginDir.join('/'),
-                                        file: distFile.join('/'),
-                                        sync: true
-                                    });
-                                    srcDir = pluginDir.concat(['dist', 'plugin']);
+                        plugins
+                            .filter(function (plugin) {
+                                return typeof plugin === 'object' && plugin.source.github;
+                            })
+                            .map(function (plugin) {
+                                const pluginDir = root.concat(['gitDownloads', plugin.globalName]);
+                                const destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+                                let srcDir;
+                                if (plugin.cwd) {
+                                    mutant.info(`${plugin.name}: plugin building from configured cwd: ${plugin.cwd}`)
+                                    const cwd = plugin.cwd.split('/');
+                                    srcDir = pluginDir.concat(cwd);
                                 } else {
-                                    srcDir = pluginDir.concat(['dist', 'plugin']);
-                                    if (!pathExists.sync(srcDir.join('/'))) {
-                                        srcDir = pluginDir.concat(['src', 'plugin']);
-                                        if (!pathExists.sync(srcDir.join('/'))) {
-                                            throw new Error('Cannot find plugin directory: ' + plugin.name);
-                                        } else {
-                                            mutant.info(`${plugin.name}: plugin installing from src by default`)
-                                        }
+                                    const distFile = pluginDir.concat(['dist.tgz']);
+                                    if (pathExists.sync(distFile.join('/'))) {
+                                        mutant.info(`${plugin.name}: plugin installing from dist.tgz`);
+                                        tar.extract({
+                                            cwd: pluginDir.join('/'),
+                                            file: distFile.join('/'),
+                                            sync: true
+                                        });
+                                        srcDir = pluginDir.concat(['dist', 'plugin']);
                                     } else {
-                                        mutant.info(`${plugin.name}: plugin installing from dist by default`)
+                                        throw new Error('git plugin ${plugin.name} does not have an install method - neither cwd nor dist.tgz');
                                     }
                                 }
-                            }
-                            // const cwds = plugin.cwd
-                            // const pluginDir =  srcDir = root.concat(['build', 'bower_components', plugin.globalName]).concat(cwd)
-                            // cwd = cwds.split('/'),
-                            // srcDir = root.concat(['build', 'bower_components', plugin.globalName]).concat(cwd),
-                            const destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
-                            mutant.ensureDir(destDir);
-                            return mutant.copyFiles(srcDir, destDir, '**/*');
-                        })
-                )
-                    .then(function () {
-                        return Promise.all(
-                            plugins
-                                .filter(function (plugin) {
-                                    return typeof plugin === 'object' && plugin.source.git;
-                                })
-                                .map(function (plugin) {
-                                    const pluginDir = root.concat(['gitDownloads', plugin.globalName]);
-                                    const destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
-                                    let srcDir;
-                                    if (plugin.cwd) {
-                                        mutant.info(`${plugin.name}: plugin building from configured cwd: ${plugin.cwd}`)
-                                        const cwd = plugin.cwd.split('/');
-                                        srcDir = pluginDir.concat(cwd);
-                                    } else {
-                                        const distFile = pluginDir.concat(['dist.tgz']);
-                                        if (pathExists.sync(distFile.join('/'))) {
-                                            mutant.info(`${plugin.name}: plugin installing from dist.tgz`);
-                                            tar.extract({
-                                                cwd: pluginDir.join('/'),
-                                                file: distFile.join('/'),
-                                                sync: true
-                                            });
-                                            srcDir = pluginDir.concat(['dist', 'plugin']);
-                                        } else {
-                                            throw new Error(`git plugin ${plugin.name} does not have an install method - neither cwd nor dist.tgz`);
-                                        }
-                                    }
 
-                                    mutant.ensureDir(destDir);
-                                    return mutant.copyFiles(srcDir, destDir, '**/*');
-                                })
-                        );
-                    })
+                                mutant.ensureDir(destDir);
+                                return mutant.copyFiles(srcDir, destDir, '**/*');
+                            })
+                    )
                     .then(function () {
                         return Promise.all(
                             plugins
@@ -975,7 +879,7 @@ function installPlugins(state) {
                                     return typeof plugin === 'object' && plugin.source.directory;
                                 })
                                 .map(function (plugin) {
-                                    var cwds = plugin.cwd || 'dist/plugin',
+                                    const cwds = plugin.cwd || 'dist/plugin',
                                         cwd = cwds.split('/'),
                                         // Our actual cwd is mutations, so we need to escape one up to the
                                         // project root.
@@ -1001,7 +905,7 @@ function installPlugins(state) {
                                     return typeof plugin === 'string';
                                 })
                                 .map(function (plugin) {
-                                    var source = root.concat(['plugins', plugin]),
+                                    const source = root.concat(['plugins', plugin]),
                                         destination = root.concat(['build', 'client', 'modules', 'plugins', plugin]);
                                     mutant.ensureDir(destination);
                                     return mutant.copyFiles(source, destination, '**/*');
@@ -1012,18 +916,18 @@ function installPlugins(state) {
             // now move the test files into the test dir
             .then(function () {
                 // dir list of all plugins
-                var pluginsPath = root.concat(['build', 'client', 'modules', 'plugins']);
+                const pluginsPath = root.concat(['build', 'client', 'modules', 'plugins']);
                 return dirList(pluginsPath).then(function (pluginDirs) {
                     return Promise.each(pluginDirs, function (pluginDir) {
                         // Has integration tests?
-                        var testDir = pluginDir.path.concat(['test']);
+                        const testDir = pluginDir.path.concat(['test']);
                         return pathExists(testDir.join('/')).then(function (exists) {
-                            var justDir = pluginDir.path[pluginDir.path.length - 1];
+                            const justDir = pluginDir.path[pluginDir.path.length - 1];
                             if (!exists) {
                                 mutant.warn('plugin without tests: ' + justDir);
                             } else {
                                 mutant.success('plugin with tests!  : ' + justDir);
-                                var dest = root.concat(['test', 'integration-tests', 'specs', 'plugins', justDir]);
+                                const dest = root.concat(['test', 'integration-tests', 'specs', 'plugins', justDir]);
                                 return fs.moveAsync(testDir.join('/'), dest.join('/'));
                             }
                         });
@@ -1059,25 +963,25 @@ function installPlugins(state) {
  * @returns {Array}
  */
 function setupBuild(state) {
-    var root = state.environment.path;
+    const root = state.environment.path;
     state.steps = [];
     return mutant
         .deleteMatchingFiles(root.join('/'), /.*\.DS_Store$/)
         .then(function () {
             // the client really now becomes the build!
-            var from = root.concat(['src', 'client']),
+            const from = root.concat(['src', 'client']),
                 to = root.concat(['build', 'client']);
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
         .then(function () {
             // the client really now becomes the build!
-            var from = root.concat(['src', 'test']),
+            const from = root.concat(['src', 'test']),
                 to = root.concat(['test']);
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
         .then(function () {
             // the client really now becomes the build!
-            var from = root.concat(['src', 'plugins']),
+            const from = root.concat(['src', 'plugins']),
                 to = root.concat(['plugins']);
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
@@ -1099,7 +1003,7 @@ function setupBuild(state) {
         })
         .then(function () {
             mutant.log('Fetch plugins from github');
-            return fetchPluginsFromGit(state);
+            return fetchPluginsFromGithub(state);
         })
         .then(function () {
             mutant.log('Inject Plugins Into Config');
@@ -1109,16 +1013,6 @@ function setupBuild(state) {
             return state;
         });
 }
-
-// function fetchPackagesWithBower(state) {
-//     return bowerInstall(state)
-//         .then(function () {
-//             return fs.remove(state.environment.root.concat(['build', 'bower.json']).join('/'));
-//         })
-//         .then(function () {
-//             return state;
-//         });
-// }
 
 function installNpmPackages(state) {
     return npmInstall(state)
@@ -1173,7 +1067,7 @@ async function removeSourceMaps(state) {
  * settings.yml
  */
 function copyUiConfig(state) {
-    var root = state.environment.path,
+    const root = state.environment.path,
         releaseVersionConfig = root.concat(['config', 'release.yml']),
         configFiles = [releaseVersionConfig],
         configDest = root.concat(['build', 'client', 'modules', 'config']);
@@ -1197,7 +1091,7 @@ function copyUiConfig(state) {
 
 function createBuildInfo(state) {
     return gitInfo(state).then(function (gitInfo) {
-        var root = state.environment.path,
+        const root = state.environment.path,
             configDest = root.concat(['build', 'client', 'modules', 'config', 'buildInfo.yml']),
             buildInfo = {
                 target: state.buildConfig.target,
@@ -1216,8 +1110,8 @@ function createBuildInfo(state) {
 
 function getReleaseNotes(state, version) {
     // lives in release-notes/RELEASE_NOTES_#.#.#.md
-    var root = state.environment.path;
-    var releaseNotesPath = root.concat(['release-notes', 'RELEASE_NOTES_' + version + '.md']);
+    const root = state.environment.path;
+    const releaseNotesPath = root.concat(['release-notes', 'RELEASE_NOTES_' + version + '.md']);
     return fs.readFileAsync(releaseNotesPath.join('/'), 'utf8').catch(function (err) {
         mutant.warn('release notes file not found: ' + releaseNotesPath.join('/'), err);
         return null;
@@ -1231,15 +1125,15 @@ function verifyVersion(state) {
             return;
         }
 
-        var releaseVersion = state.mergedConfig.release.version;
-        var gitVersion = state.buildInfo.git.version;
+        const releaseVersion = state.mergedConfig.release.version;
+        const gitVersion = state.buildInfo.git.version;
 
         if (!releaseVersion) {
             throw new Error('this is a release build, and the release version is missing.');
         }
 
-        var semverRe = /\d+\.\d+\.\d+$/;
-        var gitSemverRe = /^v\d+\.\d+\.\d+$/;
+        const semverRe = /\d+\.\d+\.\d+$/;
+        const gitSemverRe = /^v\d+\.\d+\.\d+$/;
 
         if (!semverRe.test(releaseVersion)) {
             throw new Error(
@@ -1298,7 +1192,7 @@ function verifyVersion(state) {
  * target key passed in and found on state.config.targets.kbDeployConfig
  */
 function makeKbConfig(state) {
-    var root = state.environment.path,
+    const root = state.environment.path,
         // fileName = state.buildConfig.target + '.yml',
         deployModules = root.concat(['build', 'client', 'modules', 'deploy']);
 
@@ -1309,8 +1203,8 @@ function makeKbConfig(state) {
                 return fs
                     .readFileAsync(root.concat(['build', 'client', 'build-info.js.txt']).join('/'), 'utf8')
                     .then(function (template) {
-                        var dest = root.concat(['build', 'client', 'build-info.js']).join('/');
-                        var out = handlebars.compile(template)(state.buildInfo);
+                        const dest = root.concat(['build', 'client', 'build-info.js']).join('/');
+                        const out = handlebars.compile(template)(state.buildInfo);
                         return fs.writeFileAsync(dest, out);
                     })
                     .then(function () {
@@ -1319,15 +1213,15 @@ function makeKbConfig(state) {
             })
             // Now merge the configs.
             .then(function () {
-                var configs = [
+                const configs = [
                     // root.concat(['config', 'services.yml']),
                     root.concat(['build', 'client', 'modules', 'config', 'ui.yml']),
                     root.concat(['build', 'client', 'modules', 'config', 'buildInfo.yml'])
                 ];
                 return Promise.all(configs.map(mutant.loadYaml))
                     .then(function (yamls) {
-                        var merged = mutant.mergeObjects(yamls);
-                        var dest = root.concat(['build', 'client', 'modules', 'config', 'config.json']);
+                        const merged = mutant.mergeObjects(yamls);
+                        const dest = root.concat(['build', 'client', 'modules', 'config', 'config.json']);
                         return mutant.saveJson(dest, merged);
                     })
                     .then(function () {
@@ -1357,8 +1251,8 @@ function addCacheBusting(state) {
         .then(function (templates) {
             return Promise.all(
                 templates.map(function (template) {
-                    var dest = root.concat(['build', 'client', template[0]]).join('/');
-                    var out = handlebars.compile(template[1])(state);
+                    const dest = root.concat(['build', 'client', template[0]]).join('/');
+                    const out = handlebars.compile(template[1])(state);
                     return fs.writeFileAsync(dest, out);
                 })
             );
@@ -1369,9 +1263,9 @@ function addCacheBusting(state) {
 }
 
 function makeDeployConfig(state) {
-    var root = state.environment.path;
-    var cfgDir = root.concat(['build', 'deploy', 'cfg']);
-    var sourceDir = root.concat(['config', 'deploy']);
+    const root = state.environment.path;
+    const cfgDir = root.concat(['build', 'deploy', 'cfg']);
+    const sourceDir = root.concat(['config', 'deploy']);
 
     // make deploy dir
     return fs
@@ -1385,7 +1279,7 @@ function makeDeployConfig(state) {
         .then(function (matches) {
             return Promise.all(
                 matches.map(function (match) {
-                    var baseName = path.basename(match);
+                    const baseName = path.basename(match);
                     return mutant.loadYaml(match.split('/')).then(function (config) {
                         mutant.saveJson(cfgDir.concat([baseName + '.json']), config);
                     });
@@ -1400,7 +1294,7 @@ function makeDeployConfig(state) {
 }
 
 function cleanup(state) {
-    var root = state.environment.path;
+    const root = state.environment.path;
     return fs
         .removeAsync(root.concat(['build', 'bower_components']).join('/'))
         .then(function () {
@@ -1415,7 +1309,7 @@ function cleanup(state) {
 }
 
 function makeBaseBuild(state) {
-    var root = state.environment.path,
+    const root = state.environment.path,
         buildPath = ['..', 'build'];
 
     return fs
@@ -1438,7 +1332,7 @@ function makeBaseBuild(state) {
 }
 
 function fixupBaseBuild(state) {
-    var root = state.environment.path,
+    const root = state.environment.path,
         mapRe = /\/\*#\s*sourceMappingURL.*\*\//m;
 
     // remove mapping from css files.
@@ -1463,7 +1357,7 @@ function fixupBaseBuild(state) {
                         mutant.warn('Fixing up css file to remove mapping');
                         mutant.warn(match);
 
-                        var fixed = contents.replace(mapRe, '');
+                        const fixed = contents.replace(mapRe, '');
                         return fs.writeFileAsync(match, fixed);
                     });
                 })
@@ -1482,7 +1376,7 @@ function fixupBaseBuild(state) {
     dev uses dist as well.
 */
 function copyToDistBuild(state) {
-    var root = state.environment.path,
+    const root = state.environment.path,
         buildPath = ['..', 'build'];
 
     return fs.copyAsync(root.concat(['build']).join('/'), buildPath.concat(['dist']).join('/')).then(function () {
@@ -1491,7 +1385,7 @@ function copyToDistBuild(state) {
 }
 
 function makeDistBuild(state) {
-    var root = state.environment.path,
+    const root = state.environment.path,
         buildPath = ['..', 'build'],
         uglify = require('uglify-es');
 
@@ -1505,15 +1399,15 @@ function makeDistBuild(state) {
                 // directories from alteration.
                 // FORNOW: we need to protect iframe-based plugins from having
                 // their plugin code altered.
-                var reProtected = /\/modules\/plugins\/.*?\/iframe_root\//;
-                var files = matches.filter(function (match) {
+                const reProtected = /\/modules\/plugins\/.*?\/iframe_root\//;
+                const files = matches.filter(function (match) {
                     return !reProtected.test(match);
                 });
                 return Promise.all(files).mapSeries(function (match) {
                     return fs.readFileAsync(match, 'utf8').then(function (contents) {
                         // see https://github.com/mishoo/UglifyJS2 for options
                         // just overriding defaults here
-                        var result = uglify.minify(contents, {
+                        const result = uglify.minify(contents, {
                             output: {
                                 beautify: false,
                                 max_line_len: 80,
@@ -1554,7 +1448,7 @@ function makeDistBuild(state) {
 }
 
 function makeModuleVFS(state, whichBuild) {
-    var root = state.environment.path,
+    const root = state.environment.path,
         buildPath = ['..', 'build'];
 
     return glob(root.concat([whichBuild, 'client', 'modules', '**', '*']).join('/'), {
@@ -1563,7 +1457,7 @@ function makeModuleVFS(state, whichBuild) {
     })
         .then(function (matches) {
             // just read in file and build a giant map...
-            var vfs = {
+            const vfs = {
                 scripts: {},
                 resources: {
                     json: {},
@@ -1572,8 +1466,8 @@ function makeModuleVFS(state, whichBuild) {
                     css: {}
                 }
             };
-            var vfsDest = buildPath.concat([whichBuild, 'client', 'moduleVfs.js']);
-            var skipped = {};
+            const vfsDest = buildPath.concat([whichBuild, 'client', 'moduleVfs.js']);
+            const skipped = {};
 
             function skip(ext) {
                 if (!skipped[ext]) {
@@ -1582,7 +1476,7 @@ function makeModuleVFS(state, whichBuild) {
                     skipped[ext] += 1;
                 }
             }
-            var included = {};
+            const included = {};
 
             function include(ext) {
                 if (!included[ext]) {
@@ -1607,13 +1501,13 @@ function makeModuleVFS(state, whichBuild) {
                         mutant.log(item.key + ':' + item.count);
                     });
             }
-            var exceptions = [/\/modules\/plugins\/.*?\/iframe_root\//];
-            var cssExceptions = [/@import/, /@font-face/];
-            var supportedExtensions = ['js', 'yaml', 'yml', 'json', 'text', 'txt', 'css'];
+            const exceptions = [/\/modules\/plugins\/.*?\/iframe_root\//];
+            const cssExceptions = [/@import/, /@font-face/];
+            const supportedExtensions = ['js', 'yaml', 'yml', 'json', 'text', 'txt', 'css'];
             return Promise.all(matches)
                 .mapSeries(function (match) {
-                    var relativePath = match.split('/').slice(root.length + 2);
-                    var path = '/' + relativePath.join('/');
+                    const relativePath = match.split('/').slice(root.length + 2);
+                    const path = '/' + relativePath.join('/');
 
                     // exclusion based on path pattern
                     if (
@@ -1625,15 +1519,15 @@ function makeModuleVFS(state, whichBuild) {
                         return;
                     }
 
-                    var m = /^(.*)\.([^.]+)$/.exec(path);
+                    const m = /^(.*)\.([^.]+)$/.exec(path);
 
                     // bare files we don't support
                     if (!m) {
                         skip('no extension');
                         mutant.warn('module vfs cannot include file without extension: ' + path);
                     }
-                    var base = m[1];
-                    var ext = m[2];
+                    const base = m[1];
+                    const ext = m[2];
 
                     // skip if in unsupported extensions
                     if (supportedExtensions.indexOf(ext) === -1) {
@@ -1707,7 +1601,7 @@ function makeModuleVFS(state, whichBuild) {
                     showStats(skipped);
                     mutant.log('included:');
                     showStats(included);
-                    var modules =
+                    const modules =
                         '{' +
                         Object.keys(vfs.scripts)
                             .map(function (path) {
@@ -1715,7 +1609,7 @@ function makeModuleVFS(state, whichBuild) {
                             })
                             .join(', \n') +
                         '}';
-                    var script = [
+                    const script = [
                         'window.require_modules = ' + modules,
                         'window.require_resources = ' + JSON.stringify(vfs.resources, null, 4)
                     ].join(';\n');
@@ -1738,7 +1632,7 @@ function main(type) {
     return (
         Promise.try(function () {
             mutant.log('Creating initial state for build: ' + type);
-            var initialFilesystem = [
+            const initialFilesystem = [
                 {
                     cwd: ['..'],
                     path: ['src']
@@ -1756,9 +1650,9 @@ function main(type) {
                     path: ['config']
                 }
             ];
-            var buildControlConfigPath = ['..', 'config', 'build', 'configs', type + '.yml'];
-            var buildControlDefaultsPath = ['..', 'config', 'build', 'defaults.yml'];
-            var config = {
+            const buildControlConfigPath = ['..', 'config', 'build', 'configs', type + '.yml'];
+            const buildControlDefaultsPath = ['..', 'config', 'build', 'defaults.yml'];
+            const config = {
                 initialFilesystem: initialFilesystem,
                 buildControlConfigPath: buildControlConfigPath,
                 buildControlDefaultsPath: buildControlDefaultsPath
@@ -1915,7 +1809,7 @@ function main(type) {
                 return mutant.copyState(state);
             })
             .then(function (state) {
-                var vfs = [];
+                const vfs = [];
                 if (state.buildConfig.vfs && state.buildConfig.dist) {
                     vfs.push(makeModuleVFS(state, 'dist'));
                 }
@@ -1933,7 +1827,7 @@ function usage() {
     console.error('usage: node build <config>');
 }
 
-var type = process.argv[2];
+const type = process.argv[2];
 
 if (type === undefined) {
     console.error('Build config not specified');
