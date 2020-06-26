@@ -35,7 +35,7 @@ define([
                         },
                         route: {
                             authorization: false,
-                            component: 'reactComponents/NotFound'
+                            component: '/reactComponents/NotFound'
                         }
                     };
                 } else {
