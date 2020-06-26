@@ -15,7 +15,7 @@ plugins:
         account: kbase
   - name: dataview
     globalName: kbase-ui-plugin-dataview
-    version: 4.6.1
+    version: 4.6.2
     source:
       github:
         account: kbase
