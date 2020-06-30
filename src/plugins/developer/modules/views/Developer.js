@@ -43,7 +43,8 @@ define([
         }
         render() {
             return html`
-                <div className="Developer">
+                <div className="Developer"
+                data-k-b-testhook-plugin="developer">
                     ${this.renderTabs()}
                 </div>
             `;
