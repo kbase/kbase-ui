@@ -76,7 +76,7 @@ plugins:
         account: kbase
   - name: react-profile-view
     globalName: kbase-ui-plugin-react-profile-view
-    version: 1.2.6
+    version: 1.2.7
     source:
       github:
         account: kbaseIncubator
@@ -95,6 +95,12 @@ plugins:
   - name: sampleview
     globalName: kbase-ui-plugin-sampleview
     version: 0.7.7
+    source:
+      github:
+        account: kbaseIncubator
+  - name: ontology
+    globalName: kbase-ui-plugin-ontology
+    version: 0.1.2
     source:
       github:
         account: kbaseIncubator

@@ -58,6 +58,10 @@ define([
                 }
 
                 this.pluginComponent = new PluginComponent(params.plugin, route.component);
+                this.pluginComponent.pipe.put({
+                    view: route.view,
+                    params
+                });
 
                 // console.log('route', route);
                 const module = (() => {
@@ -77,6 +81,7 @@ define([
                     const props = {
                         runtime: this.props.runtime,
                         pipe: this.pluginComponent.pipe,
+                        view: route.view,
                         params,
                         key: new Uuid(4).format()
                     };

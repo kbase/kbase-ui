@@ -54,9 +54,8 @@ define([
             this.props.pipe.tap(({view, params}) => {
                 const path = params.path || [];
                 const message = {
-                    to: view, path, params
+                    view, to: view, path, params
                 };
-                // console.log('!! SENDING', message);
                 this.channel.send('navigate', message);
             });
             this.props.pipe.start();
@@ -256,6 +255,7 @@ define([
                                 })
                             },
                             config: this.runtime.rawConfig(),
+                            view: this.props.params.view,
                             params: this.props.params.routeParams
                         };
                         this.channel.send('start', startMessage);
