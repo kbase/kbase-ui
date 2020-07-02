@@ -38,8 +38,8 @@ define([], function () {
     'use strict';
 
     class NotificationService {
-        constructor({ params }) {
-            this.runtime = params.runtime;
+        constructor({ params: {runtime} }) {
+            this.runtime = runtime;
             this.queued = [];
             this.recipientChannel = null;
         }

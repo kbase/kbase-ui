@@ -1,18 +1,15 @@
 define([
     'bluebird',
-    'lib/router',
-    'kb_lib/lang'
+    'lib/router'
 ], function (
     Promise,
-    routerMod,
-    lang
+    routerMod
 ) {
     'use strict';
 
     class RouteService {
         constructor(p) {
             const { config, params } = p;
-
             this.runtime = params.runtime;
             this.router = new routerMod.Router(config);
             this.currentRouteHandler = null;
@@ -38,7 +35,7 @@ define([
                         },
                         route: {
                             authorization: false,
-                            widget: 'notFound'
+                            component: '/reactComponents/NotFound'
                         }
                     };
                 } else {
@@ -86,13 +83,13 @@ define([
                     handler = {
                         params: {
                             title: 'Access Error',
-                            error:
+                            message:
                                 'One or more required roles not available in your account: ' +
                                 handler.route.rolesRequired.join(', ')
                         },
                         route: {
                             authorization: false,
-                            widget: 'error'
+                            component: 'reactComponents/Error'
                         }
                     };
                     // throw new Error('One or more required roles not available in your account: ' + handler.route.requiredRoles.join(', '));
@@ -111,14 +108,16 @@ define([
             };
             if (handler.route.redirect) {
                 this.runtime.send('app', 'route-redirect', route);
-            } else if (handler.route.widget) {
-                this.runtime.send('app', 'route-widget', route);
             } else if (handler.route.handler) {
                 this.runtime.send('app', 'route-handler', route);
+            } else if (handler.route.component) {
+                this.runtime.send('app', 'route-component', route);
+            } else {
+                throw new Error('Not a valid route request');
             }
         }
 
-        installRoute(route, pluginName) {
+        installRoute(route, pluginName, defaults) {
             if (typeof route.params === 'undefined') {
                 route.params = {};
             }
@@ -126,35 +125,39 @@ define([
                 route.params.plugin = pluginName;
             }
 
-            if (route.widget) {
+            Object.keys(defaults).forEach((defaultKey) => {
+                if (!route[defaultKey]) {
+                    route[defaultKey] = defaults[defaultKey];
+                }
+            });
+
+            if (route.component) {
                 this.router.addRoute(route);
             } else if (route.redirectHandler) {
                 this.router.addRoute(route);
             } else {
-                throw new lang.UIError({
-                    type: 'ConfigurationError',
-                    name: 'RouterConfigurationError',
-                    source: 'installRoute',
-                    message: 'invalid route',
-                    suggestion: 'Fix the plugin which specified this route.',
-                    data: route
-                });
+                route.component = '/pluginSupport/Plugin';
+                this.router.addRoute(route);
             }
         }
 
-        installRoutes(routes, pluginName) {
+        installRoutes(routes, pluginName, defaults) {
             if (!routes) {
                 return;
             }
             routes.map((route) => {
-                return this.installRoute(route, pluginName);
+                return this.installRoute(route, pluginName, defaults);
             });
         }
 
         pluginHandler(serviceConfig, pluginConfig, pluginDef) {
             return new Promise((resolve, reject) => {
                 try {
-                    this.installRoutes(serviceConfig, pluginDef.package.name);
+                    // We now have service config defaults, at least for routes.
+                    const defaults = serviceConfig.defaults || {};
+
+                    // Install all the routes
+                    this.installRoutes(serviceConfig.routes || serviceConfig, pluginDef.package.name, defaults);
                     resolve();
                 } catch (ex) {
                     reject(ex);
@@ -170,8 +173,8 @@ define([
             this.runtime.receive('app', 'new-route', (data) => {
                 if (data.routeHandler.route.redirect) {
                     this.runtime.send('app', 'route-redirect', data);
-                } else if (data.routeHandler.route.widget) {
-                    this.runtime.send('app', 'route-widget', data);
+                } else if (data.routeHandler.route.component) {
+                    this.runtime.send('app', 'route-component', data);
                 } else if (data.routeHandler.route.handler) {
                     this.runtime.send('app', 'route-handler', data);
                 }
@@ -196,9 +199,6 @@ define([
                 target: window,
                 type: 'hashchange',
                 listener: () => {
-                    // $(window).on('hashchange', function () {
-                    // NB this is called AFTER it has changed. The browser will do nothing by
-                    // default
                     this.doRoute();
                 }
             });

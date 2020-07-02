@@ -240,7 +240,26 @@ class Task {
 
     getParam(taskDef, paramName, defaultValue) {
         const params = taskDef.params || taskDef;
-        let paramValue = params[paramName];
+        let paramValue;
+        if (typeof paramName === 'string') {
+            paramValue = params[paramName];
+        } else if (Array.isArray(paramName)) {
+            paramValue = paramName.map((name) => {
+                return params[name];
+            })
+                .filter((value) => {
+                    return typeof value === 'undefined' ? false : true;
+                });
+            if (paramValue.length <= 1) {
+                paramValue = paramValue[0];
+            } else {
+                throw new Error(`For action task ${taskDef.action}, too many params matching ${paramName.join(',')}`);
+            }
+
+        } else {
+            throw new Error(`Action task ${taskDef.action} param needs to be a string or array`);
+        }
+
         if (typeof paramValue === 'undefined') {
             if (typeof defaultValue !== 'undefined') {
                 paramValue = defaultValue;
@@ -373,7 +392,7 @@ class Task {
                     return false;
                 }
                 const nodeValue = browser.$(taskDef.resolvedSelector).getText();
-                const testValue = new RegExp(this.getParam(taskDef, 'regexp'), this.getParam(taskDef, 'flags', ''));
+                const testValue = new RegExp(this.getParam(taskDef, ['value', 'regexp']), this.getParam(taskDef, 'flags', ''));
                 return testValue.test(nodeValue);
             };
         case 'forNumber':

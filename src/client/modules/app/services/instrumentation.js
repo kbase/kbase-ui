@@ -4,27 +4,23 @@ define([
     'use strict';
 
     class InstrumentationService {
-        constructor(config, params) {
-
+        constructor() {
         }
 
         // METHODS
         send(instrumentation) {
-            // console.log('SENDING', instrumentation);
+            console.warn('[instrumentation]', instrumentation);
         }
 
         // API
 
         start() {
-
         }
 
         stop() {
-
         }
 
-        pluginHandler(config) {
-
+        pluginHandler() {
         }
     }
 

@@ -1,20 +1,29 @@
 ## YAML Template.
 ---
 package:
-  author: Erik Pearson
   name: narrativemanager
+  title: Narrative Opener Tool
   description: The narrative manager
   type: legacy
-source:
-  modules:
 install:
-  widgets:
-    - module: ./startPanel
-      id: narrativeManager_start
-      type: es6
-    - module: ./createNewPanel
-      id: narrativeManager_createNew
-      type: es6
+  routes:
+    - path: [narrativemanager, start]
+      authorization: true
+      queryParams:
+        app: {}
+        method: {}
+        copydata: {}
+        appparam: {}
+      component: views/RecentNarrative
+    - path: [narrativemanager, new]
+      authorization: true
+      queryParams:
+        app: {}
+        method: {}
+        markdown: {}
+        copydata: {}
+        appparam: {}
+      component: views/NewNarrative
   menu:
     - name: narrative
       definition:
@@ -28,21 +37,3 @@ install:
         newWindow: true
         label: New Narrative
         icon: plus
-  routes:
-    - path: [narrativemanager, start]
-      authorization: true
-      queryParams:
-        app: {}
-        method: {}
-        copydata: {}
-        appparam: {}
-      widget: narrativeManager_start
-    - path: [narrativemanager, new]
-      authorization: true
-      queryParams:
-        app: {}
-        method: {}
-        markdown: {}
-        copydata: {}
-        appparam: {}
-      widget: narrativeManager_createNew

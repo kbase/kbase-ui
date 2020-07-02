@@ -5,12 +5,14 @@ define([
 ) => {
     'use strict';
 
+    const MONITORING_INTERVAL = 10000;
+
     class FeedsService {
-        constructor({ params }) {
-            this.runtime = params.runtime;
+        constructor({ params: {runtime} }) {
+            this.runtime = runtime;
 
             // TODO: move to service config.
-            this.monitoringInterval = 10000;
+            this.monitoringInterval = MONITORING_INTERVAL;
 
             this.monitorRunning = false;
             this.monitoringRunCount = 0;
@@ -114,13 +116,12 @@ define([
         }
 
         stopFeedsMonitoring() {
-            this.monitorRunning = true;
+            this.monitorRunning = false;
             window.clearTimeout(this.monitoringTimer);
             this.monitoringTimer = null;
         }
 
         pluginHandler() {
-
         }
     }
 

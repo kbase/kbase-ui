@@ -1,53 +1,31 @@
 ## About the UI, build, services
 ---
 package:
-    author: Erik Pearson
-    name: About Panel
-    description: A package containing the about panel
-    # the plugin type may be legacy or iframe
-    type: legacy
-source:
-    modules:
+  name: about
+  title: About Panel
+  description: A package containing the about panel
+  type: legacy
 install:
-    widgets:
-        - 
-            module: aboutBuild
-            id: about_build
-            type: es6
-        - 
-            module: about
-            id: about
-            type: es6
-        -
-            module: aboutServices
-            id: about_services
-            type: es6
-    routes:
-        -
-            path: ['about']
-            widget: about
-            queryParams: {}
-        -
-            path: ['about', 'build']
-            widget: about_build
-            queryParams: {}
-        -
-            path: ['about', 'services']
-            widget: about_services
-            queryParams: {}
-    menu:
-        -
-            name: about
-            path: about
-            label: About
-            icon: info-circle
-        -
-            name: about-build
-            path: ['about', 'build']
-            label: About the UI Build
-            icon: building-o
-        -
-            name: about-services
-            path: ['about', 'services']
-            label: KBase Services Status
-            icon: server
+  routes:
+    - path: ["about"]
+      queryParams: {}
+      component: views/About
+    - path: ["about", "build"]
+      queryParams: {}
+      component: views/AboutBuild
+    - path: ["about", "services"]
+      queryParams: {}
+      component: views/AboutServices
+  menu:
+    - name: about
+      path: about
+      label: About
+      icon: info-circle
+    - name: about-build
+      path: ["about", "build"]
+      label: About the UI Build
+      icon: building-o
+    - name: about-services
+      path: ["about", "services"]
+      label: KBase Services Status
+      icon: server

@@ -60,19 +60,6 @@ a:hover,
     cursor: pointer;
 }
 
-table {
-    font-size: 14px !important;
-}
-
-.hr {
-    /* line with smaller margin */
-    margin: 5px 0;
-}
-
-hr.ws-hr {
-    margin: 5px -20px 10px -40px;
-}
-
 #logo {
     margin: 2px 10px 0 10px;
 }
@@ -122,15 +109,6 @@ hr.ws-hr {
 #notification.error {
     color: #fff;
     background: #a93c3c;
-}
-
-
-.overflow-x {
-    overflow-x: scroll;
-}
-
-.overflow-y {
-    overflow-y: scroll;
 }
 
 .sidebar .nav-tabs>li.active>a {

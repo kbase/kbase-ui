@@ -13,6 +13,9 @@ define([
     const html = htm.bind(h);
 
     class AboutBuild extends Component {
+        componentDidMount() {
+            this.props.runtime.send('ui', 'setTitle', 'About the kbase-ui build');
+        }
         renderCommit(gitInfo) {
             return html`
                 <table className="table">
@@ -112,39 +115,21 @@ define([
 
         render() {
             return html`
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="col-sm-6"
-                             data-k-b-testhook-panel="welcome">
-                            <h2>
-                                About this KBase User Interface Build
-                            </h2>
-                        </div>
-                        <div className="col-sm-6">
-                            
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-12"
-                             data-k-b-testhook-panel="welcome">
-                            <h2>
-                                Build
-                            </h2>
-                            ${this.renderBuildInfo()}
-                        </div>
-                        
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-12"
-                             data-k-b-testhook-panel="welcome">
-                            <h2>
-                                Dependencies
-                            </h2>
-                           ...not yet...
-                        </div>
-                        
-                    </div>
+            <div  className="AboutBuild">
+                <div data-k-b-testhook-panel="build">
+                    <h2>
+                        Build
+                    </h2>
+                    ${this.renderBuildInfo()}
                 </div>
+                
+                <div data-k-b-testhook-panel="dependencies">
+                    <h2>
+                        Dependencies
+                    </h2>
+                    ...not yet...
+                </div>
+            </div>
             `;
         }
     }

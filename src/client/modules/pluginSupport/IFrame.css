@@ -1,0 +1,13 @@
+.IFrame {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.IFrame .-iframe {
+    flex: 1 1 0px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
