@@ -7,6 +7,7 @@ define([], function () {
         constructor() {
             this.pipe = [];
             this.taps = [];
+            this.started = false;
         }
 
         tap(tap) {
@@ -14,6 +15,7 @@ define([], function () {
         }
 
         start() {
+            this.started = true;
             this.processPipe();
         }
 
@@ -60,7 +62,9 @@ define([], function () {
 
         put(payload) {
             this.pipe.push(payload);
-            this.schedule();
+            if (this.started) {
+                this.schedule();
+            }
         }
 
         // take(count = 1) {
