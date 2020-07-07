@@ -94,7 +94,7 @@ plugins:
         account: eapearson
   - name: sampleview
     globalName: kbase-ui-plugin-sampleview
-    version: 0.7.8
+    version: 0.7.9
     source:
       github:
         account: kbaseIncubator
