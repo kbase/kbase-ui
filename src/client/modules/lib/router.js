@@ -51,7 +51,94 @@ define([], () => {
             this.defaultRoute = config.defaultRoute;
         }
 
-        addRoute(routeSpec) {
+        transformPathSpec(path) {
+            // split on query
+            const [pathPart, queryPart] = path.split('?');
+
+            // split path
+            const pathElements = pathPart.split('/');
+
+            // create path spec
+            const pathSpec = pathElements.map((pathElement) => {
+                if (pathElement.charAt(0) === ':') {
+                    if (pathElement.charAt(1) === '-') {
+                        return {
+                            type: 'param',
+                            name: pathElement.slice(2),
+                            optional: true
+                        };
+                    }
+                    return {
+                        type: 'param',
+                        name: pathElement.slice(1),
+                        optional: false
+                    };
+                }
+                return {
+                    type: 'literal',
+                    value: pathElement.slice(0)
+                };
+            });
+
+            if (!queryPart) {
+                return [pathSpec, {}];
+            }
+
+            // create query spec
+            const querySpec = queryPart.split('&').reduce((querySpec, queryField) => {
+                const [queryName, paramName] = queryField.split('=');
+                if (!queryName) {
+                    throw new Error('Query name not provided in path spec');
+                }
+                // destructuring arrays from Array<string> may result in
+                // undefined variables; split will always produce a string element for the
+                // first position, even if the string being split is empty.
+                if (typeof paramName === 'undefined') {
+                    throw new Error('Param name not provided in path spec');
+                }
+                if (paramName.charAt(0) === ':') {
+                    if (paramName.charAt(1) === '-') {
+                        querySpec[queryName] = {
+                            type: 'param',
+                            name: paramName.slice(2),
+                            optional: true
+                        };
+                    } else {
+                        querySpec[queryName] = {
+                            type: 'param',
+                            name: paramName.slice(1),
+                            optional: false
+                        };
+                    }
+                } else {
+                    querySpec[queryName] = {
+                        type: 'literal',
+                        name: paramName.slice(0),
+                        value: paramName
+                    };
+                }
+                return querySpec;
+            }, {});
+
+            return [pathSpec, querySpec];
+        }
+
+        addRoute(routeSpec, pluginName, defaults) {
+            if (typeof routeSpec.params === 'undefined') {
+                routeSpec.params = {};
+            }
+            if (!routeSpec.params.plugin) {
+                routeSpec.params.plugin = pluginName;
+            }
+
+            if (defaults) {
+                Object.keys(defaults).forEach((defaultKey) => {
+                    if (!routeSpec[defaultKey]) {
+                        routeSpec[defaultKey] = defaults[defaultKey];
+                    }
+                });
+            }
+
             /*
              * The path spec is an array of elements. Each element is either a
              * string, in which case it is a literal path component,
@@ -64,14 +151,22 @@ define([], () => {
 
             // fix up the path. This business is to make it easier to have
             // compact path specifications.
-            let path = routeSpec.path;
-            if (typeof path === 'string') {
-                path = [path];
+            const pathConfig = routeSpec.path;
+            if (!pathConfig) {
+                console.error('Missing path in plugin config', routeSpec);
+                throw new Error('Missing path in plugin config.');
             }
-            if (!path) {
-                console.warn('missing path??', routeSpec);
+            if (typeof pathConfig === 'string') {
+                const [path, pathQueryParams] = this.transformPathSpec(pathConfig);
+                const route = Object.assign({}, routeSpec);
+                route.path = path;
+                const queryParams = Object.assign(routeSpec.queryParas || {}, pathQueryParams);
+                route.queryParams = queryParams;
+                this.routes.push(route);
+                return;
             }
-            routeSpec.path = path.map((pathElement) => {
+
+            const path = pathConfig.map((pathElement) => {
                 // The default path element, represented by a simple string,
                 // is a literal, matched by its value.
                 if (typeof pathElement === 'string') {
@@ -97,7 +192,9 @@ define([], () => {
                 }
                 throw new Error('Unsupported route path element');
             });
-            this.routes.push(routeSpec);
+            const route = Object.assign({}, routeSpec);
+            route.path = path;
+            this.routes.push(route);
         }
 
         getCurrentRequest() {

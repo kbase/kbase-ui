@@ -258,6 +258,7 @@ define([
                             view: this.props.params.view,
                             params: this.props.params.routeParams
                         };
+
                         this.channel.send('start', startMessage);
                         // Any sends to the channel should only be enabled after the
                         // start message is received.
@@ -306,12 +307,15 @@ define([
         iframeMounted(w) {
             this.setupCommunication(w)
                 .then(() => {
+                    // TODO: remove because this duplicates start behaviour
+                    // In order to do that, plugins which don't route on 'start'
+                    // need to be updated.
                     const params = this.props.params.routeParams;
                     const path = params.path || [];
+                    const view = this.props.params.view;
                     const message = {
-                        path, params
+                        path, params, view, to: view
                     };
-                    // console.log('?? SENDING 2', message);
                     this.channel.send('navigate', message);
                 });
         }

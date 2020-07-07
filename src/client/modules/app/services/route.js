@@ -22,7 +22,6 @@ define([
             try {
                 handler = this.router.findCurrentRoute();
             } catch (ex) {
-                // console.error(ex);
                 if (ex instanceof routerMod.NotFoundException) {
                     handler = {
                         request: ex.request,
@@ -118,26 +117,13 @@ define([
         }
 
         installRoute(route, pluginName, defaults) {
-            if (typeof route.params === 'undefined') {
-                route.params = {};
-            }
-            if (!route.params.plugin) {
-                route.params.plugin = pluginName;
-            }
-
-            Object.keys(defaults).forEach((defaultKey) => {
-                if (!route[defaultKey]) {
-                    route[defaultKey] = defaults[defaultKey];
-                }
-            });
-
             if (route.component) {
-                this.router.addRoute(route);
+                this.router.addRoute(route, pluginName, defaults);
             } else if (route.redirectHandler) {
-                this.router.addRoute(route);
+                this.router.addRoute(route, pluginName, defaults);
             } else {
                 route.component = '/pluginSupport/Plugin';
-                this.router.addRoute(route);
+                this.router.addRoute(route, pluginName, defaults);
             }
         }
 
