@@ -3,8 +3,8 @@ bower_components
 node_modules
 
 # Any trash directories
-_trash
-_attic
+_trash/
+_attic/
 
 # IDEs
 # put your ide here
