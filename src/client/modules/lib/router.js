@@ -139,6 +139,11 @@ define([], () => {
                 });
             }
 
+            // Handle old view spec.
+            if (!routeSpec.view && routeSpec.params && routeSpec.params.view) {
+                routeSpec.view = routeSpec.params.view;
+            }
+
             /*
              * The path spec is an array of elements. Each element is either a
              * string, in which case it is a literal path component,
@@ -160,8 +165,9 @@ define([], () => {
                 const [path, pathQueryParams] = this.transformPathSpec(pathConfig);
                 const route = Object.assign({}, routeSpec);
                 route.path = path;
-                const queryParams = Object.assign(routeSpec.queryParas || {}, pathQueryParams);
+                const queryParams = Object.assign(routeSpec.queryParams || {}, pathQueryParams);
                 route.queryParams = queryParams;
+
                 this.routes.push(route);
                 return;
             }
@@ -192,8 +198,10 @@ define([], () => {
                 }
                 throw new Error('Unsupported route path element');
             });
+
             const route = Object.assign({}, routeSpec);
             route.path = path;
+
             this.routes.push(route);
         }
 
@@ -402,6 +410,7 @@ define([], () => {
                     params[key] = query[key];
                 });
             }
+
             return params;
         }
 
