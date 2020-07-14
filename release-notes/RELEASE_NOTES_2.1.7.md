@@ -25,6 +25,7 @@ none
 
 - Many widgets refactored to (p)react. This resulted in a more uniform, smaller, and standardized codebase. This is part of the march toward refactoring to a compiled react version.
 - dataview: SampleSet landing page improved
+- dashboard: narrative search now filters by narrative (workspace) id
 
 ### FIXES
 
