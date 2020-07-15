@@ -60,7 +60,7 @@ define([
 
         renderMenu() {
             return html`
-                <ul class="dropdown-menu"
+                <ul class="dropdown-menu dropdown-menu-right"
                     role="menu">
                     <li>
                         <div style="text-align: center;"
@@ -125,25 +125,21 @@ define([
 
         renderLoggedIn() {
             return html`
-                <div class="navbar container-fluid">
-                    <div class="navbar-right">
-                        <div class="dropdown"
-                            style="display: inline-block" 
-                            data-k-b-testhook-menu="signed-in">
-                            <button
-                                type="button"
-                                class="btn btn-default dropdown-toggle"
-                                data-toggle="dropdown"
-                                aria-expanded="false"
-                                data-k-b-testhook-button="avatar">
-                                ${this.renderAvatar()}
-                                <span
-                                    class="caret"
-                                    style="margin-left: 5px;"></span>
-                            </button>
-                            ${this.renderMenu()}
-                        </div>
-                    </div>
+                <div class="dropdown"
+                    style="display: inline-block" 
+                    data-k-b-testhook-menu="signed-in">
+                    <button
+                        type="button"
+                        class="btn btn-default dropdown-toggle"
+                        data-toggle="dropdown"
+                        aria-expanded="false"
+                        data-k-b-testhook-button="avatar">
+                        ${this.renderAvatar()}
+                        <span
+                            class="caret"
+                            style="margin-left: 5px;"></span>
+                    </button>
+                    ${this.renderMenu()}
                 </div>
             `;
         }

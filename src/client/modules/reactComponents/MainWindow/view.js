@@ -87,7 +87,7 @@ define([
                     <div className="-deploymnent">
                         <${Deployment} ...${props} />
                     </div>
-                    <div className="-login">
+                    <div className="-login -cell">
                         <${Signin} ...${props} />
                     </div>
                 </div>
