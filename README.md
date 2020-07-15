@@ -9,7 +9,9 @@
 
 ## About
 
-The KBase User Interface (*kbase-ui*) is a web browser Single Page App (SPA) providing tools for [KBase](http://kbase.us) users. It is a partner to the [KBase Narrative Interface](https://github.com/kbase/narrative), with which it shares code yet runs as a separate web app. Current user features include:
+The KBase User Interface (*kbase-ui*) is a web browser Single Page App (SPA) providing tools for [KBase](http://kbase.us) users. It is a partner to the [KBase Narrative Interface](https://github.com/kbase/narrative), with which it shares code yet runs as a separate web app.
+
+Current user features include:
 
 - *Dashboard*, for an overview of a user's narratives and activities, and those of their colleagues
 - *User Profile*, for viewing any user profile and editing their own, 
@@ -21,7 +23,7 @@ The KBase User Interface (*kbase-ui*) is a web browser Single Page App (SPA) pro
 > If you have stumbled up on this project, you may first want to [find out about KBase](http://kbase.us). 
 > The *KBase UI* is not a general purpose tool -- it is designed to work inside the KBase ecosystem. 
 
-The primary audience for this project is 
+The primary audience for this project is:
 
 - *KBase Developers and Staff* - who need access to the kbase-ui for development, testing, deployment
 - *KBase Advanced Users* - who are developing services and plugins for kbase-ui,
