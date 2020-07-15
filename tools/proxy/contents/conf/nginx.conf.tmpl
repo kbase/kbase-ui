@@ -103,6 +103,13 @@ http {
             proxy_set_header Host {{ .Env.deploy_ui_hostname }};
         }
 
+        location /ui-assets/ {
+            proxy_pass https://{{ .Env.deploy_ui_hostname }}:443;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;         
+        }
+
          location / {
             client_max_body_size 300M;
             proxy_pass http://kbase_ui;
@@ -249,7 +256,14 @@ http {
             proxy_set_header Host {{ .Env.deploy_hostname }};
         }
 
-         location / {
+        location /ui-assets/ {
+            proxy_pass https://{{ .Env.deploy_hostname }}:443;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;         
+        }
+
+        location / {
             proxy_pass http://kbase_ui;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
