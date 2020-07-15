@@ -74,7 +74,7 @@
     "dependencies": {
         "bluebird": "3.7.2",
         "htm": "3.0.4",
-        "preact": "10.4.5",
+        "preact": "10.4.6",
         "semver-umd": "5.5.7"
     },
     "scripts": {
