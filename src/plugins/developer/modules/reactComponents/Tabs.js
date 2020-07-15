@@ -35,7 +35,8 @@ define([
                     className.push('-inactive');
                 }
                 return html`
-                    <div className=${className.join(' ')} data-tab=${id} onClick=${() => {
+                    <div className=${className.join(' ')} 
+                        data-tab=${id} onClick=${() => {
     this.onSelectTab(id);
 }}>
                         ${title}
@@ -46,7 +47,7 @@ define([
 
         renderTabBody() {
             return html`
-                <div className="-body">
+                <div className="-body" data-k-b-testhook-element="tab-pane">
                     ${this.renderTabContent()}
                 </div>
             `;
@@ -69,7 +70,7 @@ define([
                 `;
             }
             return html`
-                <${selectedTab.component} ...${this.props.tabProps} />
+                <${selectedTab.component} ...${this.props.tabProps} data-tab-pane=${selectedTab.id} />
             `;
         }
 

@@ -1,6 +1,16 @@
 (function (root) {
     'use strict';
-    function handleGlobalError(err) {
+
+    /*
+    This function is attached to requirejs as the global error handler.
+    It is called in the case of a require or define throwing an error,
+    including module load errors, which are identified by the presence of the
+    "requireType" property of the error object.
+    Some of the libraries we use throw harmless errors under certain conditions.
+    By catching them here we can ignore them.
+    All other cases result in the fallback error ui being invoked.
+    */
+    require.onError = (err) => {
         switch (err.requireType) {
         case 'notloaded':
             if (/esprima/.test(err.message)) {
@@ -65,12 +75,6 @@
             break;
         }
 
-        //        console.error('AMD Error');
-        //        console.error('Type', err.requireType);
-        //        console.error('Modules', err.requireModules);
-        //        console.error('Message', err.message);
-        //        console.error(err);
-
         root.KBaseFallback.showError({
             title: 'AMD Error',
             content: [
@@ -86,40 +90,9 @@
         });
 
         throw err;
-    }
+    };
 
     function handleStartupError(err) {
-        switch (err.requireType) {
-        case 'notloaded':
-            if (/xesprima/.test(err.message)) {
-                // ignore esprima for now. The loading is attempted within the
-                // yaml library ...
-                console.warn('esprima require test detected');
-                return;
-            }
-            break;
-        case 'scripterror':
-            if (err.requireModules) {
-                if (err.requireModules.some(function (moduleName) {
-                    return (moduleName === 'app/googleAnalytics');
-                })) {
-                    // KBaseFallback.redirect('/pages/gablocked.html');
-                    root.KBaseFallback.showError({
-                        title: 'Analytics Blocked',
-                        content: [
-                            'A browser setting, plugin, or other constraint has prevented the Analytics module from loading. KBase uses this module to measure usage of the Narrative Interface (NI). The Narrative Interface will not operate with this constraint in place.'
-                        ],
-                        references: [{
-                            title: 'Incompatible Plugins',
-                            url: 'http://kbase.us/incompatible-plugins'
-                        }]
-                    });
-                    return;
-                }
-            }
-            break;
-        }
-
         root.KBaseFallback.showError({
             title: 'AMD Error',
             content: [
@@ -133,18 +106,15 @@
                 url: 'http://kbase.us/contact-us'
             }]
         });
-
         throw err;
     }
 
-    require.onError = handleGlobalError;
-
-    require(['app/main'], function (main) {
+    require(['app/main'], (main) => {
         if (root.KBaseFallback.getErrorState()) {
             return;
         }
         main.start()
-            .catch(function (err) {
+            .catch((err) => {
                 console.error('Startup Error', err);
                 root.KBaseFallback.showError({
                     title: 'KBase UI Startup Error',
@@ -158,7 +128,5 @@
                     }]
                 });
             });
-    }, function (err) {
-        handleStartupError(err);
-    });
+    }, handleStartupError);
 }(window));

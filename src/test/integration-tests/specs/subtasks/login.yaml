@@ -11,8 +11,6 @@ tasks:
     selector:
       type: absolute
       path:
-        - type: plugin
-          value: login
         - type: menu
           value: signed-in
         - type: button
@@ -25,8 +23,6 @@ tasks:
     selector:
       type: absolute
       path:
-        - type: plugin
-          value: login
         - type: menu
           value: signed-in
         - type: label
@@ -36,8 +32,6 @@ tasks:
     selector:
       type: absolute
       path:
-        - type: plugin
-          value: login
         - type: menu
           value: signed-in
         - type: button

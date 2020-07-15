@@ -2,8 +2,8 @@ define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
     'use strict';
 
     return class Menu {
-        constructor({config}) {
-            this.config = config;
+        constructor({config: {menus}}) {
+            this.menus = menus;
             this.state = new Observed();
 
             this.state.setItem('menuItems', {
@@ -135,41 +135,42 @@ define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
 
         start() {
             // The hamburger menu.
-            Object.keys(this.config.menus).forEach((menu) => {
-                const menuDef = this.config.menus[menu];
-                // Skip a menu with no sections
-                if (!menuDef.sections) {
-                    return;
-                }
-                Object.keys(menuDef.sections).forEach((section) => {
-                    // Skip sections with no items.
-                    if (!menuDef.sections[section]) {
+            Object.entries(this.menus)
+                .forEach(([menu, menuDef]) => {
+                    // Skip a menu with no sections
+                    if (!menuDef.sections) {
                         return;
                     }
-                    if (!menuDef.sections[section].items) {
-                        return;
-                    }
-                    const items = menuDef.sections[section].items;
-                    const disabled = menuDef.disabled || [];
-                    items.forEach((menuItem) => {
-                        if (menuItem.disabled) {
-                            return;
-                        }
-                        if (disabled.indexOf(menuItem.id) >= 0) {
-                            return;
-                        }
-                        this.addToMenu(
-                            {
-                                menu: menu,
-                                section: section,
-                                position: 'bottom',
-                                allow: menuItem.allow
-                            },
-                            menuItem
-                        );
-                    });
+                    Object.entries(menuDef.sections)
+                        .forEach(([section, sectionDef]) => {
+                            // Skip sections with no items.
+                            if (!sectionDef) {
+                                return;
+                            }
+                            if (!sectionDef.items) {
+                                return;
+                            }
+                            const items = sectionDef.items;
+                            const disabled = menuDef.disabled || [];
+                            items.forEach((menuItem) => {
+                                if (menuItem.disabled) {
+                                    return;
+                                }
+                                if (disabled.indexOf(menuItem.id) >= 0) {
+                                    return;
+                                }
+                                this.addToMenu(
+                                    {
+                                        menu: menu,
+                                        section: section,
+                                        position: 'bottom',
+                                        allow: menuItem.allow
+                                    },
+                                    menuItem
+                                );
+                            });
+                        });
                 });
-            });
         }
 
         stop() {}

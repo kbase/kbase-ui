@@ -1,12 +1,12 @@
 (function (root) {
     'use strict';
 
-    var errorCount = 0;
+    let errorCount = 0;
 
     function parseQuery(queryString) {
-        var query = {};
+        const query = {};
         queryString.split('&').forEach(function (field) {
-            var parts = field.split('=');
+            const parts = field.split('=');
             query[parts[0]] = root.decodeURIComponent(parts[1]);
         });
         return query;
@@ -16,31 +16,8 @@
         return parseQuery(window.location.search.slice(1));
     }
 
-    // function cancelAMD() {
-    //     var req = root.requirejs;
-    //     if (req && req.s) {
-    //         var waiting = req.s.contexts._.registry;
-    //         Object.keys(waiting).forEach(function (id) {
-    //             delete waiting[id];
-    //         });
-    //     }
-    // }
-
-    // function clearStylesheets() {
-    //     var children = root.document.head.children,
-    //         i, child;
-    //     for (i = 0; i < children.length; i += 1) {
-    //         child = children[i];
-    //         if (child.tagName === 'LINK' && child.rel === 'stylesheet') {
-    //             root.document.head.removeChild(child);
-    //         }
-    //     }
-    // }
-
     function cleanBrowser() {
         root.document.body.className = '';
-        // clearStylesheets();
-        // cancelAMD();
     }
 
     function renderLayout() {
@@ -71,13 +48,13 @@
 
     function renderError(title, content, references) {
         cleanBrowser();
-        var referencesSection;
+        let referencesSection;
         if (references) {
             referencesSection = '<h2>References</h2>' + references;
         } else {
             referencesSection = '';
         }
-        var errorBody =
+        const errorBody =
             '<div style="border: 1px #E04343 solid; padding: 4px; margin: 4px;">' +
             '  <div style="font-weight: bold; color: #E04343; padding: 4px; margin-bottom: 1em;">Error # ' + String(errorCount) + '</div>' +
             '  <h2>' + title + '</h2>' +
@@ -90,13 +67,14 @@
     }
 
     function makeUrl(path, query) {
-        var queryString;
+        let queryString;
         if (query) {
-            queryString = Object.keys(query).map(function (key) {
-                return [key, encodeURIComponent(query[key])].join('=');
-            }).join('&');
+            queryString = Object.keys(query)
+                .map((key) => {
+                    return [key, encodeURIComponent(query[key])].join('=');
+                }).join('&');
         }
-        return [path, queryString].filter(function (el) {
+        return [path, queryString].filter((el) => {
             return el ? true : false;
         }).join('?');
     }
@@ -114,35 +92,36 @@
             renderLayout();
         }
         errorCount += 1;
-        var title = arg.title;
-        var content = arg.content
-                .filter(function (paragraph) {
-                    if (paragraph) {
-                        return true;
-                    }
-                    return false;
-                })
-                .map(function (paragraph) {
-                    return '<p>' + paragraph + '</p>';
-                }).join('\n'),
-            references = (function () {
-                if (arg.references) {
-                    return '<ul>' + arg.references.map(function (reference) {
-                        return '<li><a href="' + reference.url + '" target="_blank">' +
-                            reference.title + '</a></li>';
-                    }).join('\n') + '</ul>';
-                }
-            }());
 
-        renderError(title, content, references);
+        const content = arg.content
+            .filter((paragraph) => {
+                if (paragraph) {
+                    return true;
+                }
+                return false;
+            })
+            .map((paragraph) => {
+                return '<p>' + paragraph + '</p>';
+            }).join('\n');
+
+        const references = (() => {
+            if (arg.references) {
+                return '<ul>' + arg.references.map((reference) => {
+                    return '<li><a href="' + reference.url + '" target="_blank">' +
+                            reference.title + '</a></li>';
+                }).join('\n') + '</ul>';
+            }
+        })();
+
+        renderError(arg.title, content, references);
     }
 
     root.KBaseFallback = {
-        getQuery: getQuery,
-        makeUrl: makeUrl,
-        redirect: redirect,
-        showError: showError,
-        getErrorState: getErrorState
+        getQuery,
+        makeUrl,
+        redirect,
+        showError,
+        getErrorState
     };
 
 }(window));

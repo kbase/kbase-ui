@@ -1,21 +1,26 @@
-define(['bluebird', 'kb_common_ts/HttpClient'], function (Promise, HttpClient) {
+define([
+    'bluebird',
+    'kb_common_ts/HttpClient'],
+function (
+    Promise,
+    HttpClient
+) {
     'use strict';
 
     return class Data {
         constructor() {
-
         }
 
         start() {
             // nothing to do?
-            return Promise.try(function () {
+            return Promise.try(() => {
                 return true;
             });
         }
 
         stop() {
             // nothing to do?
-            return Promise.try(function () {
+            return Promise.try(() => {
                 return true;
             });
         }
