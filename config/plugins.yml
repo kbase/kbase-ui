@@ -104,6 +104,12 @@ plugins:
     source:
       github:
         account: kbaseIncubator
+  - name: taxonomy
+    globalName: kbase-ui-plugin-taxonomy
+    version: 0.1.1
+    source:
+      github:
+        account: kbaseIncubator
   # Unreleased
   # - name: public-search
   #   globalName: kbase-ui-plugin-public-search
