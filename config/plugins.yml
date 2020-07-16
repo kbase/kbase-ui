@@ -100,7 +100,7 @@ plugins:
         account: kbaseIncubator
   - name: ontology
     globalName: kbase-ui-plugin-ontology
-    version: 0.1.3
+    version: 0.1.4
     source:
       github:
         account: kbaseIncubator
