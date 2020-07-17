@@ -69,7 +69,6 @@ plugins:
         account: kbase
   - name: job-browser2
     globalName: kbase-ui-plugin-job-browser2
-    # revert to current version after next release
     version: 1.5.16
     source:
       github:
@@ -100,7 +99,7 @@ plugins:
         account: kbaseIncubator
   - name: ontology
     globalName: kbase-ui-plugin-ontology
-    version: 0.1.6
+    version: 0.1.7
     source:
       github:
         account: kbaseIncubator
