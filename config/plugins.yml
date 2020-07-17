@@ -109,6 +109,7 @@ plugins:
     source:
       github:
         account: kbaseIncubator
+  # The following have not been ported (yet if ever)
   # Unreleased
   # - name: public-search
   #   globalName: kbase-ui-plugin-public-search
