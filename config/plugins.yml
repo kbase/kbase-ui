@@ -27,7 +27,7 @@ plugins:
         account: kbase
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
-    version: 2.3.19
+    version: 2.3.20
     source:
       github:
         account: kbase
@@ -69,7 +69,6 @@ plugins:
         account: kbase
   - name: job-browser2
     globalName: kbase-ui-plugin-job-browser2
-    # revert to current version after next release
     version: 1.5.16
     source:
       github:
@@ -100,10 +99,17 @@ plugins:
         account: kbaseIncubator
   - name: ontology
     globalName: kbase-ui-plugin-ontology
-    version: 0.1.3
+    version: 0.1.8
     source:
       github:
         account: kbaseIncubator
+  - name: taxonomy
+    globalName: kbase-ui-plugin-taxonomy
+    version: 0.1.1
+    source:
+      github:
+        account: kbaseIncubator
+  # The following have not been ported (yet if ever)
   # Unreleased
   # - name: public-search
   #   globalName: kbase-ui-plugin-public-search
