@@ -12,7 +12,6 @@ define([
     const {h, render} = preact;
     const html = htm.bind(h);
 
-
     class DeprecatedBulkUI {
         constructor({ runtime }) {
             this.runtime = runtime;
@@ -20,21 +19,19 @@ define([
             this.container = null;
         }
 
-        render() {
-            const content = html`
-                <${DeprecatedBulkUIComponent} />
-            `;
-            render(content, this.container);
-        }
-
         attach(node) {
             this.hostNode = node;
             this.container = this.hostNode.appendChild(document.createElement('div'));
-            this.render();
         }
 
         start() {
-            this.runtime.send('ui', 'setTitle', 'Bulk Import - DEPRECATED');
+            const props = {
+                runtime: this.runtime
+            };
+            const content = html`
+                <${DeprecatedBulkUIComponent} ...${props}/>
+            `;
+            render(content, this.container);
         }
 
         stop() {

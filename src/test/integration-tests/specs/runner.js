@@ -120,13 +120,20 @@ class TestCase {
 class TaskList {
     constructor({ taskDefs, testCase, context }) {
         this.testCase = testCase;
-        this.context = Object.assign(JSON.parse(JSON.stringify(context)));
+        try {
+            // console.log('[task list]', context);
+            this.context = Object.assign(JSON.parse(JSON.stringify(context)));
+        } catch (ex) {
+            console.error('Error parsing context', ex, context, testCase);
+            throw new Error('Error parsing context: ' + ex.message);
+        }
 
         this.tasks = taskDefs
             .map((taskDef) => {
                 if (taskDef.subtask) {
-                    context = Object.assign(JSON.parse(JSON.stringify(this.context)));
-                    context.local = taskDef.context || {};
+                    // makes a copy of the context
+                    const contextCopy = Object.assign(JSON.parse(JSON.stringify(this.context)));
+                    contextCopy.local = taskDef.context || {};
                     if (typeof taskDef.subtask === 'string') {
                         const subTask = this.testCase.test.subtasks[taskDef.subtask] ||
                             this.testCase.test.suite.subTasks[taskDef.subtask];
@@ -136,7 +143,7 @@ class TaskList {
                         return new TaskList({
                             taskDefs: subTask.tasks,
                             testCase,
-                            context
+                            context: contextCopy
                         });
                     } else {
                         if (this.isDisabled(taskDef.subtask)) {
@@ -145,7 +152,7 @@ class TaskList {
                         return new TaskList({
                             taskDefs: taskDef.subtask.tasks,
                             testCase,
-                            context
+                            context: contextCopy
                         });
                     }
                 } else {
@@ -240,7 +247,26 @@ class Task {
 
     getParam(taskDef, paramName, defaultValue) {
         const params = taskDef.params || taskDef;
-        let paramValue = params[paramName];
+        let paramValue;
+        if (typeof paramName === 'string') {
+            paramValue = params[paramName];
+        } else if (Array.isArray(paramName)) {
+            paramValue = paramName.map((name) => {
+                return params[name];
+            })
+                .filter((value) => {
+                    return typeof value === 'undefined' ? false : true;
+                });
+            if (paramValue.length <= 1) {
+                paramValue = paramValue[0];
+            } else {
+                throw new Error(`For action task ${taskDef.action}, too many params matching ${paramName.join(',')}`);
+            }
+
+        } else {
+            throw new Error(`Action task ${taskDef.action} param needs to be a string or array`);
+        }
+
         if (typeof paramValue === 'undefined') {
             if (typeof defaultValue !== 'undefined') {
                 paramValue = defaultValue;
@@ -295,15 +321,23 @@ class Task {
                 };
             case 'keys':
                 return () => {
-                    browser.keys(this.getParam(taskDef, 'keys'));
+                    const keys = this.getParam(taskDef, 'keys');
+                    keys.forEach((key) => {
+                        browser.keys(key);
+                    });
                 };
             case 'switchToFrame':
+            case 'switchToPluginIFrame':
                 return () => {
-                    browser.switchToFrame(0);
+                    browser.switchToFrame(browser.$('[data-k-b-testhook-iframe="plugin-iframe"]'));
                 };
             case 'switchToParent':
                 return () => {
                     browser.switchToParentFrame();
+                };
+            case 'switchToTop':
+                return () => {
+                    browser.switchToFrame(null);
                 };
             case 'baseSelector':
                 return () => {
@@ -373,7 +407,7 @@ class Task {
                     return false;
                 }
                 const nodeValue = browser.$(taskDef.resolvedSelector).getText();
-                const testValue = new RegExp(this.getParam(taskDef, 'regexp'), this.getParam(taskDef, 'flags', ''));
+                const testValue = new RegExp(this.getParam(taskDef, ['value', 'regexp']), this.getParam(taskDef, 'flags', ''));
                 return testValue.test(nodeValue);
             };
         case 'forNumber':
@@ -406,9 +440,24 @@ class Task {
                     return false;
                 }
             };
+        case 'forPlugin':
+            return () => {
+                try {
+                    browser.switchToFrame(null);
+                    browser.switchToFrame(browser.$('[data-k-b-testhook-iframe="plugin-iframe"]'));
+                    // console.log('[forPlugin]', taskDef, taskDef.resolvedSelector, browser.$(taskDef.resolvedSelector).isExisting());
+                    if (!browser.$(taskDef.resolvedSelector).isExisting()) {
+                        return false;
+                    }
+                    return true;
+                } catch (ex) {
+                    return false;
+                }
+            };
         case 'forElement':
         default:
             return () => {
+                // console.log('[forElement]', taskDef.resolvedSelector,  browser.$(taskDef.resolvedSelector).isExisting());
                 return browser.$(taskDef.resolvedSelector).isExisting();
             };
         }

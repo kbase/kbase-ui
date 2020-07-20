@@ -2,9 +2,9 @@ define([], function () {
     'use strict';
 
     class HeartbeatService {
-        constructor({ config, params }) {
-            this.runtime = params.runtime;
-            this.interval = config.interval;
+        constructor({ config: {interval}, params: {runtime} }) {
+            this.runtime = runtime;
+            this.interval = interval;
             this.heartbeat = 0;
             this.heartbeatTimer = null;
         }

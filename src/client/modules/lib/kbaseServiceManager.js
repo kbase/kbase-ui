@@ -139,31 +139,31 @@ define([
                                 console.warn(`for service "${serviceConfig.module}", semver check not disabled, but no required version provided`);
                             }
                         });
-                    })
-            ).then((result) => {
-                const mismatches = result.filter((result) => {
-                    return result === null ? false : true;
+                    }))
+                .then((result) => {
+                    const mismatches = result.filter((result) => {
+                        return result === null ? false : true;
+                    });
+                    if (mismatches.length > 0) {
+                        const message = mismatches
+                            .map((mismatch) => {
+                                return `service "${mismatch.module}" version ${mismatch.serviceVersion} incompatible with the required ${mismatch.requiredVersion}`;
+                            })
+                            .join('; ');
+                        let prefix;
+                        if (mismatches.length === 1) {
+                            prefix = 'Incompatible service';
+                        } else {
+                            prefix = 'Incompatible services';
+                        }
+                        const errorMessage = `${prefix}: ${message}`;
+                        if (this.throwErrors) {
+                            throw new Error(errorMessage);
+                        } else {
+                            console.error(errorMessage);
+                        }
+                    }
                 });
-                if (mismatches.length > 0) {
-                    const message = mismatches
-                        .map((mismatch) => {
-                            return `service "${mismatch.module}" version ${mismatch.serviceVersion} incompatible with the required ${mismatch.requiredVersion}`;
-                        })
-                        .join('; ');
-                    let prefix;
-                    if (mismatches.length === 1) {
-                        prefix = 'Incompatible service';
-                    } else {
-                        prefix = 'Incompatible services';
-                    }
-                    const errorMessage = `${prefix}: ${message}`;
-                    if (this.throwErrors) {
-                        throw new Error(errorMessage);
-                    } else {
-                        console.error(errorMessage);
-                    }
-                }
-            });
         }
     }
 

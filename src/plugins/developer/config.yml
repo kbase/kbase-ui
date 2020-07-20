@@ -1,0 +1,17 @@
+## Welcome Panel
+---
+package:
+  name: developer
+  title: Developer Tools
+  description: A developer tool
+  type: legacy
+install:
+  routes:
+    - path: ["developer", {type: rest, name: path}]
+      component: views/Developer
+      queryParams: {}
+  menu:
+    - name: developer
+      path: developer/main
+      label: Developer
+      icon: cogs

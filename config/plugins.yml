@@ -2,94 +2,114 @@
 ---
 plugins:
   # Plugins which come-with kbase-ui
-  - mainwindow
   - welcome
   - narrativemanager
   - about
-  - login
+  - developer
   # external:
   - name: typeview
     globalName: kbase-ui-plugin-typeview
-    version: 2.0.0
+    version: 3.0.0
     source:
-      bower: {}
+      github:
+        account: kbase
   - name: dataview
     globalName: kbase-ui-plugin-dataview
-    version: 4.5.3
+    version: 4.7.7
     source:
-      git: {}
+      github:
+        account: kbase
   - name: dashboard
     globalName: kbase-ui-plugin-dashboard
-    version: 3.2.1
+    version: 4.0.2
     source:
-      bower: {}
+      github:
+        account: kbase
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
-    version: 2.3.17
+    version: 2.3.19
     source:
-      bower: {}
+      github:
+        account: kbase
   - name: jgi-search
     globalName: kbase-ui-plugin-jgi-search
-    version: 1.0.0
+    version: 2.0.0
     source:
-      bower: {}
+      github:
+        account: kbase
   - name: feeds
     globalName: kbase-ui-plugin-feeds
-    version: 1.1.1
+    version: 2.0.0
     source:
-      bower: {}
+      github:
+        account: kbase
   - name: catalog
     globalName: kbase-ui-plugin-catalog
-    version: 2.1.5
+    version: 2.2.0
     source:
-      bower: {}
+      github:
+        account: kbase
   - name: data-search
     globalName: kbase-ui-plugin-data-search
-    version: 1.1.0
+    version: 2.0.0
     source:
-      bower: {}
+      github:
+        account: kbase
   - name: organizations
     globalName: kbase-ui-plugin-organizations
-    version: 1.0.0
-    cwd: src/plugin
+    version: 2.1.0
     source:
-      git: {}
+      github:
+        account: kbase
   - name: biochem-search
     globalName: kbase-ui-plugin-biochem-search
-    version: 2.0.5
+    version: 2.1.0
     source:
-      git: {}
+      github:
+        account: kbase
   - name: job-browser2
     globalName: kbase-ui-plugin-job-browser2
-    # revert to current version after next release
-    version: 1.5.6
-    # version: 1.1.4
+    version: 1.5.16
     source:
-      git: {}
+      github:
+        account: kbase
   - name: react-profile-view
     globalName: kbase-ui-plugin-react-profile-view
-    version: 1.2.6
+    version: 1.2.8
     source:
-      git:
+      github:
         account: kbaseIncubator
   - name: re-landing-pages
     globalName: kbase-ui-plugin-re-landing-pages
-    version: 0.9.4
+    version: 0.10.1
     source:
-      git:
+      github:
         account: kbaseIncubator
   - name: dashboard4
     globalName: kbase-ui-plugin-dashboard4
-    version: 0.1.4
+    version: 0.2.0
     source:
-      git:
+      github:
         account: eapearson
   - name: sampleview
     globalName: kbase-ui-plugin-sampleview
-    version: 0.4.6
+    version: 0.7.10
     source:
-      git:
+      github:
         account: kbaseIncubator
+  - name: ontology
+    globalName: kbase-ui-plugin-ontology
+    version: 0.1.8
+    source:
+      github:
+        account: kbaseIncubator
+  - name: taxonomy
+    globalName: kbase-ui-plugin-taxonomy
+    version: 0.1.1
+    source:
+      github:
+        account: kbaseIncubator
+  # The following have not been ported (yet if ever)
   # Unreleased
   # - name: public-search
   #   globalName: kbase-ui-plugin-public-search
@@ -121,7 +141,7 @@ plugins:
   #   version: 0.1.5
   #   cwd: plugin
   #   source:
-  #       git:
+  #       github:
   #           account: kbaseIncubator
   # - name: narrative-info
   #   globalName: kbase-ui-plugin-narrative-info

@@ -1,7 +1,5 @@
 define([
-
 ], function (
-
 ) {
     'use strict';
 
@@ -16,29 +14,23 @@ define([
     // }
 
     class CoreServicesMonitor {
-        constructor({ params }) {
-            this.runtime = params.runtime;
-
+        constructor({ params: {runtime} }) {
+            this.runtime = runtime;
             this.services = {};
         }
 
         start() {
-
         }
 
         stop() {
-
         }
 
         pluginHandler() {
-
         }
 
         addCoreServiceDependency() {
-
         }
     }
-
 
     return { ServiceClass: CoreServicesMonitor };
 });
