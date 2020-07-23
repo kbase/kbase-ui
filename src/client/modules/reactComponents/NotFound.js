@@ -61,6 +61,8 @@ define([
             const path = this.props.params.request.realPath.join('/');
 
             try {
+
+                // Try homepage/marketing
                 await this.setState2({
                     messages: [...this.state.messages, 'Looking on Homepage...']
                 });
@@ -74,7 +76,23 @@ define([
                 await this.setState2({
                     messages: [...this.state.messages.slice(0, -1), this.state.messages[this.state.messages.length -1] + 'nope']
                 });
+
+                // Try docs
+                await this.setState2({
+                    messages: [...this.state.messages, 'Looking on Docs...']
+                });
+                if (await this.findOn('docs', path)) {
+                    this.setState({
+                        status: 'found-on-docs',
+                        path
+                    });
+                    return;
+                } 
+                await this.setState2({
+                    messages: [...this.state.messages.slice(0, -1), this.state.messages[this.state.messages.length -1] + 'nope']
+                });
                 
+                // Try outreach
                 await this.setState2({
                     messages: [...this.state.messages, 'Looking on Outreach...']
                 });
@@ -89,19 +107,7 @@ define([
                     messages: [...this.state.messages.slice(0, -1), this.state.messages[this.state.messages.length -1] + 'nope']
                 });
                 
-                await this.setState2({
-                    messages: [...this.state.messages, 'Looking on Docs...']
-                });
-                if (await this.findOn('docs', path)) {
-                    this.setState({
-                        status: 'found-on-docs',
-                        path
-                    });
-                    return;
-                } 
-                await this.setState2({
-                    messages: [...this.state.messages.slice(0, -1), this.state.messages[this.state.messages.length -1] + 'nope']
-                });
+                
 
                 this.setState({
                     status: 'does-not-exist',
