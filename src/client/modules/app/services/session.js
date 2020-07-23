@@ -74,6 +74,10 @@ define([
             return this.auth2Session.isAuthorized();
         }
 
+        isAuthenticated() {
+            return this.auth2Session.isAuthorized();
+        }
+
         getKbaseSession() {
             return this.auth2Session.getKbaseSession();
         }

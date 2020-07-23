@@ -1,15 +1,26 @@
 define([], () => {
     'use strict';
 
-    function NotFoundException(request) {
-        this.name = 'NotFoundException';
-        this.original = request.original;
-        this.path = request.path;
-        this.params = request.params;
-        this.request = request.request;
+    class NotFoundException extends Error {
+        constructor({original, path, params, request, message}) {
+            super(message);
+            this.original = original;
+            this.path = path;
+            this.params = params;
+            this.request = request;
+            this.name = 'NotFoundException';
+        }
     }
-    NotFoundException.prototype = Object.create(Error.prototype);
-    NotFoundException.prototype.constructor = NotFoundException;
+
+    // function NotFoundException(request) {
+    //     this.name = 'NotFoundException';
+    //     this.original = request.original;
+    //     this.path = request.path;
+    //     this.params = request.params;
+    //     this.request = request.request;
+    // }
+    // NotFoundException.prototype = Object.create(Error.prototype);
+    // NotFoundException.prototype.constructor = NotFoundException;
 
     function parseQueryString(s) {
         const fields = s.split(/[?&]/);
@@ -49,6 +60,7 @@ define([], () => {
             // Routing
             this.routes = [];
             this.defaultRoute = config.defaultRoute;
+            this.runtime = config.runtime;
         }
 
         transformPathSpec(path) {
@@ -235,10 +247,13 @@ define([], () => {
                     });
             }
 
+            const realPath = window.location.pathname.substr(1).split('/');
+
             return {
                 original: hash,
-                path: path,
-                query: query
+                realPath,
+                path,
+                query
             };
         }
 
@@ -415,14 +430,67 @@ define([], () => {
         }
 
         findRoute(request) {
-            // No route at all? Return the default route.
-            if (request.path.length === 0 && Object.keys(request.query).length === 0) {
-                return {
+            // // No route at all? Return the default route.
+            // if (request.path.length === 0 && Object.keys(request.query).length === 0) {
+            //     return {
+            //         request,
+            //         params: {},
+            //         route: this.defaultRoute
+            //     };
+            // }
+
+            if (request.realPath.length > 0 && request.realPath[0] !== '') {
+                // If we have a path other than /, we are probably on an errant doc site request.
+                throw new NotFoundException({
                     request,
                     params: {},
-                    route: this.defaultRoute
-                };
+                    route: null,
+                    original: request.original,
+                    path: request.path
+                });
+            } else {
+                if (request.path.length === 0) {
+                    if (this.runtime.service('session').isAuthenticated()) {
+                        return {
+                            request,
+                            params: {},
+                            route: this.defaultRoute
+                        };
+                    } else {
+                        throw new NotFoundException({
+                            request,
+                            params: {},
+                            route: null,
+                            original: request.original,
+                            path: request.path
+                        });
+                    }
+                } else {
+                    // The normal case, just let pass through.
+                }
             }
+
+            // // If we have no real path, no hash path, and no authentication, we want to
+            // // redirect to the marketing site, but maybe we'll let the NotFound page do that.
+            // if (request.realPath.length === 0 && request.path.length === 0 && !this.runtime.service('session').getAuthToken()) {
+            //     throw new NotFoundException({
+            //         request,
+            //         params: {},
+            //         route: null,
+            //         original: request.original,
+            //         path: request.path
+            //     });
+            // }
+
+            // // If we have no real path, no hash path, have authentication, we go to the
+            // // default route
+            // if (request.path.length === 0 && !this.runtime.service('session').getAuthToken()) {
+            //     return {
+            //         request,
+            //         params: {},
+            //         route: this.defaultRoute
+            //     };
+            // }
 
             const foundRoute = this.processPath(request.path);
 
