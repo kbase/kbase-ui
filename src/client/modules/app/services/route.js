@@ -11,7 +11,7 @@ define([
         constructor(p) {
             const { config, params } = p;
             this.runtime = params.runtime;
-            this.router = new routerMod.Router(config);
+            this.router = new routerMod.Router({...config, runtime: params.runtime});
             this.currentRouteHandler = null;
             this.receivers = [];
             this.eventListeners = [];

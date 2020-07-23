@@ -3,6 +3,8 @@ env:
   amd: true
   es6: true
 extends: "eslint:recommended"
+parser-options:
+  ecma-version: 2017
 rules:
   strict:
     - error
