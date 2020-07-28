@@ -51,8 +51,10 @@ define([
         }
 
         async componentDidMount() {
+            console.log('request', this.props.params.request);
             if (this.props.params.request.realPath.length === 1 &&
                 this.props.params.request.realPath[0] === '' &&
+                this.props.params.request.path.length === 0 &&
                 !this.props.runtime.service('session').isAuthenticated()) {
                 this.props.runtime.send('ui', 'setTitle', 'Redirecting to Homepage...');
                 this.redirect(`https://${MARKETING_HOST}`);
@@ -61,6 +63,14 @@ define([
             const path = this.props.params.request.realPath.join('/');
 
             try {
+
+                if (path.length === 0) {
+                    this.setState({
+                        status: 'path-does-not-exist',
+                        path: this.props.params.request.path.join('/')
+                    });
+                    return;
+                }
 
                 // Try homepage/marketing
                 await this.setState2({
@@ -107,8 +117,6 @@ define([
                     messages: [...this.state.messages.slice(0, -1), this.state.messages[this.state.messages.length -1] + 'nope']
                 });
                 
-                
-
                 this.setState({
                     status: 'does-not-exist',
                     path
@@ -148,6 +156,44 @@ define([
                                 <li><a href="/#narrativemanager/start">Narrative</a></li>
                                 <li><a href="/#dashboard">Dashboard</a></li>
                             </ul>
+
+                            <p>
+                                Or you may wish to <a href="http://kbase.us/help-board/" target="_blank">use the KBase Help Board</a> for further assistance.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        renderPathNotFound() {
+            this.props.runtime.send('ui', 'setTitle', `Path Not Found - ${this.state.path}`);
+            return html`
+                <div className="well" >
+                    <div style=${{display: 'flex', flexDirection: 'row'}}>
+                        <div style=${{flex: '0 0 auto', marginRight: '30px'}}>
+                            <img src="/images/flapjack.png" />
+                        </div>
+                        <div style=${{flex: '1 1 0px'}}>
+                           
+                            <p className="text-danger" style=${{fontSize: '140%', marginTop: '10px'}}>
+                                Sorry, "#${this.state.path}" was not found.
+                            </p>
+
+                            <p>
+                                You may find what you are looking for on one of the following KBase sites:
+                            </p>
+
+                            <ul>
+                                <li><a href="https://www.kbase.us">Homepage</a></li>
+                                <li><a href="https://docs.kbase.us">Documentation</a></li>
+                                <li><a href="/#narrativemanager/start">Narrative</a></li>
+                                <li><a href="/#dashboard">Dashboard</a></li>
+                            </ul>
+
+                            <p>
+                                Or you may wish to <a href="http://kbase.us/help-board/" target="_blank">use the KBase Help Board</a> for further assistance.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -303,6 +349,8 @@ define([
                     return this.renderLoading();
                 case 'does-not-exist':
                     return this.renderNotFound();
+                case 'path-does-not-exist':
+                    return this.renderPathNotFound();
                 case 'found-on-marketing':
                     return this.renderExistsOnMarketingSite();
                 case 'found-on-outreach':
