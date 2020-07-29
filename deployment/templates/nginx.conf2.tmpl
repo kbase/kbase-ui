@@ -1,0 +1,209 @@
+daemon off;
+error_log /dev/stdout info;
+worker_processes auto;
+pid /var/run/nginx.pid;
+user kbmodule;
+
+events {
+    worker_connections 256;
+    # multi_accept on;
+}
+
+http {
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    ##
+    # Logging Settings
+    ##
+
+    # Always log to the logfiles, and default errors to stderr, with access logs to syslog and stdout
+    # as optional
+
+    # If the template is passed an nginx syslog path via nginx_log_syslog env var, log to there
+    {{ if .Env.nginx_log_syslog }}
+    access_log {{ .Env.nginx_log_syslog }} combined;
+    {{ end }}
+    # If nginx_log_stdout env var isn't false or empty, log to stdout
+    {{ if isTrue (default .Env.nginx_log_stdout "true") }}
+    access_log /dev/stdout;
+    {{ end }}
+    access_log /var/log/nginx/access.log;
+
+    {{ if isTrue (default .Env.nginx_log_stderr "true") }}
+    error_log /dev/stderr {{ default .Env.nginx_loglevel "error" }};
+    {{ end }}
+    error_log /var/log/nginx/error.log {{ default .Env.nginx_loglevel "error" }};
+
+    ##
+    # Gzip settings
+    ##
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 10240;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types text/plain text/css text/xml text/javascript application/json application/x-javascript application/xml;
+    gzip_disable "MSIE [1-6]\.";
+
+    upstream docs {
+        server docs.kbase.us:443;
+    }
+
+    upstream marketing {
+        server  kbs.comradeserver.com:443;
+    }
+
+    upstream outreach {
+        server www.kbase.us:443;
+    }
+
+        upstream outreach2 {
+        server kbase.us:443;
+    }
+
+    server {
+        listen      {{ default .Env.nginx_listen "80"}};
+        server_name {{ default .Env.nginx_server_name "localhost" }};
+
+        location / {
+            # Ensure that index.html is invoked even if a path is
+            # specified and doesn't exist.
+            try_files $uri /$uri /index.html;
+            #   index index.html;
+            ssi_silent_errors off;
+            allow all;
+            # this ensures that a downstream cache service will revalidate.
+            add_header Cache-Control 'no-cache';
+
+            root /kb/deployment/services/kbase-ui/dist;
+        }
+
+        # Format is /__poke/https://www.example.com/some/path
+        location ~* ^/__poke/docs/(.*)$ {
+            # return 200 "Match found  Capture Groups 1: $1 2: $2\n";
+            proxy_hide_header Content-Security-Policy;
+            proxy_hide_header X-Content-Security-Policy;
+            proxy_hide_header X-Webkit-Csp;
+            proxy_pass https://docs/$1;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;
+            proxy_buffer_size 128k;
+            proxy_buffers 4 256k;
+            proxy_busy_buffers_size 256k;
+            proxy_set_header Host docs.kbase.us; 
+            proxy_intercept_errors on;
+            recursive_error_pages on;
+            error_page 301 302 307 = @handle_redirect_docs;
+        }
+
+        location @handle_redirect_docs {
+            set $saved_redirect_location  '$upstream_http_location';
+            # return 200 "Redirected $upstream_http_location\n";
+            # These header fields are massive in gitbook.
+            proxy_hide_header Content-Security-Policy;
+            proxy_hide_header X-Content-Security-Policy;
+            proxy_hide_header X-Webkit-Csp;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;
+            proxy_buffer_size 128k;
+            proxy_buffers 4 256k;
+            proxy_busy_buffers_size 256k;
+            proxy_set_header Host docs.kbase.us; 
+            proxy_pass $saved_redirect_location;
+            proxy_intercept_errors on;
+            recursive_error_pages on;
+            error_page 301 302 307 = @handle_redirect_docs;
+        }
+
+        location ~* ^/__poke/outreach/(.*)$ {
+            # return 200 "Match found  Capture Groups 1: $1 2: $2\n";
+
+            proxy_pass https://outreach/$1;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;
+            proxy_set_header Host www.kbase.us;  
+            proxy_intercept_errors on;
+            recursive_error_pages on;
+            error_page 301 302 307 = @handle_redirect_outreach;
+        }
+
+        location @handle_redirect_outreach {
+            # return 200 "Redirected $upstream_http_location\n";
+            # resolver 8.8.8.8;
+            set $saved_redirect_location  '$upstream_http_location';
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;
+            proxy_set_header Host www.kbase.us;
+            if ($saved_redirect_location ~* ^/) {
+                proxy_pass https://outreach$saved_redirect_location;
+            }
+            if ($saved_redirect_location ~* ^https://www.kbase.us/(.*)$) {
+                proxy_pass https://outreach/$1;
+            }
+            if ($saved_redirect_location ~* ^https://kbase.us/(.*)$) {
+                proxy_pass https://outreach2/$1;
+            }
+            # if ($saved_redirect_location ~* ^https) {
+            #     proxy_pass $saved_redirect_location;
+            # }
+            proxy_intercept_errors on;
+            recursive_error_pages on;
+            error_page 301 302 307 = @handle_redirect_outreach;
+        }
+
+        location ~* ^/__poke/marketing/(.*)$ {
+            # return 200 "Match found  Capture Groups 1: $1 2: $2\n";
+            proxy_pass https://marketing/$1;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;
+            proxy_set_header Host kbs.comradeserver.com;  
+            proxy_intercept_errors on;
+            recursive_error_pages on;
+            error_page 301 302 307 = @handle_redirect_marketing;
+        }
+
+        location @handle_redirect_marketing {
+            # resolver 8.8.8.8;
+            set $saved_redirect_location  '$upstream_http_location';
+            set $path $saved_redirect_location;
+
+            if ($saved_redirect_location ~* ^https://kbs.comradeserver.com/(.*)$) {
+                set $path $1;
+            }
+            
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;
+            proxy_set_header Host kbs.comradeserver.com;  
+            # proxy_pass $saved_redirect_location;
+            proxy_pass https://marketing/$path;
+            proxy_intercept_errors on;
+            recursive_error_pages on;
+            error_page 301 302 307 = @handle_redirect_marketing;
+        }
+
+        # location /_track_/ {
+        #   index index.html;
+        #   ssi_silent_errors off;
+        #   allow all;
+        #   # this ensures that a downstream cache service will revalidate.
+        #   add_header Cache-Control 'no-cache';
+
+        #   # rewrite .* / redirect;
+        #   rewrite .* /;
+
+        #   root /kb/deployment/services/kbase-ui/dist;
+        # }
+    }
+}
