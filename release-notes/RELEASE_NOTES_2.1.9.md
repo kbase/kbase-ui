@@ -18,7 +18,7 @@ none
 
 ### IMPROVEMENTS
 
-none
+- dataview: refactor to newest pangenome viewer from Narrative (another change coming after this to fix the table)
 
 ### FIXES
 
