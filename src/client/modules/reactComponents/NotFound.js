@@ -17,6 +17,8 @@ define([
     const DOCS_HOST = 'docs.kbase.us';
     const MARKETING_HOST = 'kbs.comradeserver.com';
 
+    const TRY_UPSTREAM_SITES = false;
+
     class NotFound extends Component {
         constructor(props) {
             super(props);
@@ -51,23 +53,49 @@ define([
         }
 
         async componentDidMount() {
-            console.log('request', this.props.params.request);
-            if (this.props.params.request.realPath.length === 1 &&
-                this.props.params.request.realPath[0] === '' &&
-                this.props.params.request.path.length === 0 &&
+            
+            const request = this.props.params.request;
+            if (!TRY_UPSTREAM_SITES) {
+                
+                console.log('not trying upstream sites', request);
+                if (request.realPath.length === 1 &&
+                    request.realPath[0] === '' &&
+                    request.path.length === 0) {
+                    // if we got here with no paths, go to the dashboard
+                    window.location.hash = '#dashboard';
+                    return
+                } 
+
+                if (request.path.length > 0) { 
+                    this.setState({
+                        status: 'path-does-not-exist',
+                        path: request.path.join('/')
+                    });
+                } else {
+                    this.setState({
+                        status: 'does-not-exist',
+                        path: request.realPath.join('/')
+                    });
+                }
+                return;
+            }
+
+            
+            if (request.realPath.length === 1 &&
+                request.realPath[0] === '' &&
+                request.path.length === 0 &&
                 !this.props.runtime.service('session').isAuthenticated()) {
                 this.props.runtime.send('ui', 'setTitle', 'Redirecting to Homepage...');
                 this.redirect(`https://${MARKETING_HOST}`);
                 return;
             }
-            const path = this.props.params.request.realPath.join('/');
-
+            
+            const path = request.realPath.join('/');
             try {
-
                 if (path.length === 0) {
                     this.setState({
                         status: 'path-does-not-exist',
-                        path: this.props.params.request.path.join('/')
+                        path: request.path.join('/')
                     });
                     return;
                 }
@@ -151,8 +179,8 @@ define([
                             </p>
 
                             <ul>
-                                <li><a href="https://www.kbase.us">Homepage</a></li>
-                                <li><a href="https://docs.kbase.us">Documentation</a></li>
+                                <li><a href="https://kbase.us">Homepage</a></li>
+                                <!-- <li><a href="https://docs.kbase.us">Documentation</a></li> -->
                                 <li><a href="/#narrativemanager/start">Narrative</a></li>
                                 <li><a href="/#dashboard">Dashboard</a></li>
                             </ul>
@@ -185,8 +213,8 @@ define([
                             </p>
 
                             <ul>
-                                <li><a href="https://www.kbase.us">Homepage</a></li>
-                                <li><a href="https://docs.kbase.us">Documentation</a></li>
+                                <li><a href="https://kbase.us">Homepage</a></li>
+                                <!-- <li><a href="https://docs.kbase.us">Documentation</a></li> -->
                                 <li><a href="/#narrativemanager/start">Narrative</a></li>
                                 <li><a href="/#dashboard">Dashboard</a></li>
                             </ul>
