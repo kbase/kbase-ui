@@ -4,6 +4,7 @@ define([
     './AboutService',
     'kb_lib/jsonRpc/genericClient',
     'kb_common_ts/HttpClient',
+    'reactComponents/Loading',
 
     'bootstrap'
 ], (
@@ -11,7 +12,8 @@ define([
     htm,
     AboutService,
     GenericClient,
-    HttpClient
+    HttpClient,
+    Loading
 ) => {
     'use strict';
 
@@ -22,8 +24,9 @@ define([
         constructor(props) {
             super(props);
             this.state = {
-                loaded: false,
-                data: null
+                status: 'none',
+                data: null,
+                error: null
             };
         }
 
@@ -103,6 +106,9 @@ define([
                         header
                     })
                     .then((result) => {
+                        if (result.status >= 300) {
+                            throw new Error(`Error in response: ${result.status}`)
+                        }
                         try {
                             return JSON.parse(result.response);
                         } catch (ex) {
@@ -124,6 +130,9 @@ define([
 
         componentDidMount() {
             const ver = this.getAPICall();
+            this.setState({
+                status: 'loading'
+            });
             return Promise.all([
                 ver(),
                 this.perf(ver)
@@ -138,31 +147,51 @@ define([
                     }
 
                     this.setState({
-                        loaded: true,
+                        status: 'loaded',
                         data: {
                             version,
                             average: perf.average,
                             measures: perf.measures
                         }
                     });
+                })
+                .catch((err) => {
+                    this.setState({
+                        status: 'error',
+                        error: {
+                            message: err.message
+                        }
+                    })
                 });
         }
 
         renderLoading() {
             return html`
-                <div>
-                    Loading...
+                <${Loading} message="Measuring service..." />
+            `;
+        }
+
+        renderError() {
+            return html`
+                <div className="alert alert-danger">
+                    <em>Error!</em><p>${this.state.error.message}</p>
                 </div>
             `;
         }
 
         render() {
-            if (this.state.loaded) {
+            switch (this.state.status) {
+            case 'none':
+                return this.renderLoading();
+            case 'loading':
+                return this.renderLoading();
+            case 'loaded': 
                 return html`
                     <${AboutService} ...${this.state.data} />
                 `;
+            case 'error':
+                return this.renderError()
             }
-            return this.renderLoading();
         }
     }
 
