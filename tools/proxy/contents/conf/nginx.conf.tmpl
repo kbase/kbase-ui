@@ -167,6 +167,7 @@ http {
                 proxy_http_version 1.1;
                 proxy_set_header Connection "";
                 client_max_body_size 300M;
+                proxy_read_timeout 10m;
             }
         {{ end }}
 
@@ -186,6 +187,7 @@ http {
             proxy_http_version 1.1;
             proxy_set_header Connection "";
             client_max_body_size 300M;
+            proxy_read_timeout 10m;
         }
 
         # Dynamic Service proxying
@@ -213,6 +215,7 @@ http {
             # This handles calls into the dynamic service, presumably GET, so the path is propagated.
             rewrite ^/dynserv/[^.]+[.]{{ . }}(.*)$ $1 break;
             proxy_pass http://{{ . }}:5000;
+            proxy_read_timeout 10m;
         }
         {{ end }}
         {{ end }}
@@ -227,6 +230,7 @@ http {
             proxy_http_version 1.1;
             proxy_set_header Connection "";
             client_max_body_size 300M;
+            proxy_read_timeout 10m;
         }
 
         # Repeat the ui proxying for the case in which they reside on the same
