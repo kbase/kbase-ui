@@ -27,16 +27,16 @@ define([
                         To import data to your KBase account, please use the new Import tab, 
                         which you can find in the Data Slideout in any Narrative. See 
                         ${' '}
-                        <a href="http://kbase.us/narrative-guide/add-data-to-your-narrative-2" target="_blank">
-                            http://kbase.us/narrative-guide/add-data-to-your-narrative-2
+                        <a href="https://docs.kbase.us/getting-started/narrative/add-data" target="_blank">
+                            https://docs.kbase.us/getting-started/narrative/add-data
                         </a>
                     </p>
                     <p>
                     The new Import tab also has a link to let you transfer data from your Globus 
                     account to your Narrative -- See 
-                    <a href="http://kbase.us/transfer-data-from-globus-to-kbase"
+                    <a href="https://docs.kbase.us/data/globus"
                     target="_blank">
-                    http://kbase.us/transfer-data-from-globus-to-kbase
+                    https://docs.kbase.us/data/globus
                     </a> 
                     ${' '}
                     for more information

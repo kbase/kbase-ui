@@ -47,7 +47,8 @@ http {
         {{ end }}
     }
 
-    log_format upstream_log '[$time_local] $remote_addr - $remote_user - $server_name to: $upstream_addr: $request upstream_response_time $upstream_response_time proxy_host $proxy_host upstream_status $upstream_status upstream_response_length $upstream_response_length msec $msec request_time $request_time';
+    log_format upstream_log '[$time_local] $remote_addr - $remote_user - $server_name to: $upstream_addr: $request upstream_response_time $upstream_response_time proxy_host $proxy_host upstream_status $upstream_status upstream_response_length $upstream_response_length upstream_http_location $upstream_http_location msec $msec request_time $request_time';
+
 
 	# Logging Settings
 	access_log /var/log/nginx/access.log;
@@ -69,6 +70,56 @@ http {
         return 301 https://{{ default .Env.deploy_ui_hostname  .Env.deploy_hostname }}$request_uri;
     }
 
+    # If there is a separate ui hostname provided in the configuration,
+    # we need to listen for this separately.
+    # The only real usage of this is for production, in which kbase-ui and
+    # the narrative operate at narrative.kbase.us, but services at kbase.us.
+    {{ if .Env.deploy_ui_hostname }}
+
+    server {
+        listen 443 ssl;
+        server_name {{ .Env.deploy_ui_hostname }};
+        ssl_certificate /kb/deployment/ssl/test.crt;
+        ssl_certificate_key /kb/deployment/ssl/test.key;
+        ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
+
+        # Needed for running narratives
+        location /narrative/ {
+            access_log /var/log/nginx/narrative.log upstream_log;
+            
+            include /etc/nginx/cors.conf;
+            {{ if .Env.local_narrative }}
+                proxy_pass http://narrative/narrative/;
+            {{ else }}
+                proxy_pass https://narrative/narrative/;
+            {{ end }}
+
+            proxy_connect_timeout 10s;
+            # proxy_hide_header 'Host';
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_http_version 1.1;
+            proxy_set_header Origin https://{{ .Env.deploy_ui_hostname }};
+            proxy_set_header Host {{ .Env.deploy_ui_hostname }};
+        }
+
+        location /ui-assets/ {
+            proxy_pass https://{{ .Env.deploy_ui_hostname }}:443;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;         
+        }
+
+         location / {
+            client_max_body_size 300M;
+            proxy_pass http://kbase_ui;
+            proxy_http_version 1.1;       
+            proxy_set_header Connection "";
+        }
+    }
+
+    {{ end }}
+
     server {
         listen 443 ssl;
         server_name {{ .Env.deploy_hostname }};
@@ -84,6 +135,11 @@ http {
         
         {{ if eq . "searchapi2" }}
         location /services/searchapi2/legacy {
+            {{ if $.Env.deploy_ui_hostname }}
+            include /etc/nginx/cors.conf;
+            {{ end }}
+            # set $upstream http://searchapi2:5000/legacy;
+            # proxy_pass $upstream;
             proxy_pass http://searchapi2:5000/legacy;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
@@ -91,6 +147,11 @@ http {
         }
 
         location /services/searchapi2/rpc {
+            {{ if $.Env.deploy_ui_hostname }}
+             include /etc/nginx/cors.conf;
+            {{ end }}
+            # set $upstream http://searchapi2:5000/rpc;
+            # proxy_pass $upstream;
             proxy_pass http://searchapi2:5000/rpc;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
@@ -106,6 +167,7 @@ http {
                 proxy_http_version 1.1;
                 proxy_set_header Connection "";
                 client_max_body_size 300M;
+                proxy_read_timeout 10m;
             }
         {{ end }}
 
@@ -116,12 +178,16 @@ http {
         # Proxy all service calls, including auth2, to the real CI
         location /services {
             # The cookie path rewriting is just for auth2
+            {{ if .Env.deploy_ui_hostname }}
+            include /etc/nginx/cors.conf;
+            {{ end }}
             proxy_cookie_path /login /services/auth/login;
             proxy_cookie_path /link /services/auth/link;
             proxy_pass https://services/services;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
             client_max_body_size 300M;
+            proxy_read_timeout 10m;
         }
 
         # Dynamic Service proxying
@@ -139,12 +205,17 @@ http {
         # SO this means that probably service entries which are more complicated than simple strings
         #    without punctuation will work, but if they contain a / or something, maybe not.
         location ~ ^/dynserv/[^.]+[.]{{ . }}.*$ {
+            {{ if $.Env.deploy_ui_hostname }}
+                include /etc/nginx/cors.conf;
+            {{ end }}
+
             # This handles plain dynamic service calls, which don't have any path following the module name
             rewrite ^/dynserv/[^.]+[.]{{ . }}$ / break;
 
             # This handles calls into the dynamic service, presumably GET, so the path is propagated.
             rewrite ^/dynserv/[^.]+[.]{{ . }}(.*)$ $1 break;
             proxy_pass http://{{ . }}:5000;
+            proxy_read_timeout 10m;
         }
         {{ end }}
         {{ end }}
@@ -152,23 +223,32 @@ http {
         # Un-trapped dynamic service calls are routed to the real dynamic service
         # endpoints.
         location /dynserv {
+            {{ if .Env.deploy_ui_hostname }}
+                include /etc/nginx/cors.conf;
+            {{ end }}
             proxy_pass https://dynamic_services/dynserv;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
             client_max_body_size 300M;
+            proxy_read_timeout 10m;
         }
 
         # Repeat the ui proxying for the case in which they reside on the same
         # host name as services.
+        {{ if not .Env.deploy_ui_hostname }}
+
         location /narrative/ {
             {{ if .Env.local_narrative }}
                 proxy_pass http://narrative/narrative/;
-            {{ else if eq .Env.deploy_hostname "kbase.us"}} 
-                proxy_pass https://narrative.{{ .Env.deploy_hostname }}/narrative/;
-                # proxy_pass https://narrative/narrative/;
             {{ else }}
                 proxy_pass https://narrative/narrative/;
             {{ end }}
+
+            # proxy_ssl_protocols TLSv1.2;
+            # proxy_ssl_ciphers   HIGH:!aNULL:!MD5;
+            # proxy_ssl_verify        off;
+            # proxy_ssl_verify_depth  2;
+            # proxy_ssl_session_reuse on;
 
             access_log /var/log/nginx/narrative.log upstream_log;
             
@@ -193,5 +273,7 @@ http {
             proxy_set_header Connection "";
             client_max_body_size 300M;         
         }
+        
+        {{ end }}
     }
 }
