@@ -53,8 +53,7 @@ define([
         }
 
         makeNarrativePath(workspaceID) {
-            const baseURL = this.props.runtime.config('services.narrative.url');
-            return `${baseURL}/narrative/${workspaceID}`;
+            return `https://${window.location.host}/narrative/${workspaceID}`;
         }
 
         startOrCreateEmptyNarrative() {
