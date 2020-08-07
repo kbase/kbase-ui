@@ -283,8 +283,8 @@ define([
                     </p>
 
                     <ul>
-                        <li><a href="https://${MARKETING_HOST}">Homepage</a></li>
-                        <li><a href="https://${DOCS_HOST}">Documentation</a></li>
+                        <li><a href="https://${MARKETING_HOST}" target="_blank">Homepage</a></li>
+                        <li><a href="https://${DOCS_HOST}" target="_blank">Documentation</a></li>
                         <li><a href="/#narrativemanager/start">Narrative</a></li>
                         <li><a href="/#dashboard">Dashboard</a></li>
                     </ul>
