@@ -28,14 +28,14 @@
             // header with kbase icon, title, and menu
             '  <div style="position: relative; height: 50px; width: 100%; background-color: #F0ADAD; line-height: 50px">' +
             '    <div style="position: absolute; top: 2px; left: 2px; width: 46px; height: 46px;">' +
-            '      <a href="http://kbase.us"><img src="/images/kbase_logo.png" style="display: block;"></a>' +
+            '      <a href="https://www.kbase.us"><img src="/images/kbase_logo.png" style="display: block;"></a>' +
             '    </div>' +
             '    <div style="display: inline-block; font-weight: bold; font-size: 150%; margin-left: 70px; vertical-align: middle;">' +
             '      Application Error' +
             '    </div>' +
             '    <div style="float: right; height: 100%;">' +
             '      <div style="display: inline-block; font-weight: bold; margin: 0 6px; vertical-align: middle;">' +
-            '        <a href="http://kbase.us/contact-us">Contact Us</a>' +
+            '        <a href="https://kbase.us/support">Support</a>' +
             '     </div>' +
             '    </div>' +
             '  </div>' +

@@ -36,7 +36,7 @@
                         ],
                         references: [{
                             title: 'Incompatible Plugins',
-                            url: 'http://kbase.us/incompatible-plugins'
+                            url: 'https://docs.kbase.us/incompatible-plugins'
                         }]
                     });
                 }
@@ -59,7 +59,7 @@
                         ],
                         references: [{
                             title: 'Incompatible Plugins',
-                            url: 'http://kbase.us/incompatible-plugins'
+                            url: 'https://docs.kbase.us/incompatible-plugins'
                         }]
                     });
                     return;
@@ -85,7 +85,7 @@
             ],
             references: [{
                 title: 'Reporting Application Errors',
-                url: 'http://kbase.us/contact-us'
+                url: 'https://www.kbase.us/support'
             }]
         });
 
@@ -103,7 +103,7 @@
             ],
             references: [{
                 title: 'Reporting Application Errors',
-                url: 'http://kbase.us/contact-us'
+                url: 'https://www.kbase.us/support'
             }]
         });
         throw err;
@@ -124,7 +124,7 @@
                     ],
                     references: [{
                         title: 'Reporting Errors',
-                        url: 'http://kbase.us/contact-us'
+                        url: 'https://www.kbase.us/support'
                     }]
                 });
             });
