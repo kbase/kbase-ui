@@ -60,7 +60,7 @@ define([
         }
 
         makeNarrativePath(workspaceID) {
-            return this.props.runtime.config('services.narrative.url') + '/narrative/' + workspaceID;
+            return `https://${window.location.host}/narrative/${ workspaceID}`
         }
 
         createNewNarrative() {

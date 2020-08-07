@@ -30,7 +30,6 @@ define([
         }
 
         renderWelcome() {
-            const narrativeUrl = this.props.runtime.config('services.narrative.url');
             const docSiteUrl = this.props.runtime.config('resources.docSite.base.url');
             return html`
             <div>
