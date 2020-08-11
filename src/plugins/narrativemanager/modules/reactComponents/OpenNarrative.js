@@ -21,7 +21,7 @@ define([
         }
         render() {
             return html`
-                <div>
+                <div className="well">
                     <p>
                     Opening your Narrative.
                     </p>
