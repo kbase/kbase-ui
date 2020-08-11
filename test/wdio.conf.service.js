@@ -1,12 +1,11 @@
-const env = process.env.ENV;
-let hostPrefix;
-if (env === 'prod') {
-    hostPrefix = 'narrative';
+let baseUrl
+if (process.env.ENV === 'prod') {
+    baseUrl = 'https://kbase.us';
 } else {
-    hostPrefix = env;
+    baseUrl = `https://${env}.kbase.us`
 }
-console.log('TEST ENV        : ' + env);
-console.log('TEST HOST PREFIX: ' + hostPrefix);
+console.log('TEST ENV        : ' + process.env.ENV);
+console.log('TEST BASE URL: ' + baseUrl);
 
 const browserName = process.env.BROWSER
 // const browserName = 'chrome';
@@ -125,7 +124,7 @@ let wdioConfig = {
     // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
     // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
     // gets prepended directly.
-    baseUrl: `https://${hostPrefix}.kbase.us`,
+    baseUrl,
     //
     // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,
