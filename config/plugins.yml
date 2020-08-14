@@ -87,12 +87,12 @@ plugins:
         account: kbaseIncubator
   - name: dashboard4
     globalName: kbase-ui-plugin-dashboard4
-    version: 0.2.0
+    version: 0.2.1
     source:
       github:
         account: eapearson
-  - name: sampleview
-    globalName: kbase-ui-plugin-sampleview
+  - name: samples
+    globalName: kbase-ui-plugin-samples
     version: 0.7.11
     source:
       github:

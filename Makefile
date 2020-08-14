@@ -142,6 +142,7 @@ docker-compose-override:
 	  $(foreach f,$(paths),---path $f) \
 	  $(foreach d,$(dynamic-services),--dynamic_services $d) \
 	  $(foreach s,$(services),--services $s) \
+	  $(if $(findstring t,$(local-docs)),--local_docs) \
 	  $(if $(findstring t,$(local-narrative)),--local_narrative))
 	@echo "> Issuing: $(cmd)"
 	$(cmd)
