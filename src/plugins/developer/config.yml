@@ -12,6 +12,14 @@ install:
       queryParams: {}
   menu:
     - name: developer
+      section: developer
+      allowedRoles: DevToken
       path: developer/main
       label: Developer
       icon: cogs
+#    - name: developer-docs
+#      section: developer
+#      allowedRoles: DevToken
+#      uri: /docs/index.html
+#      label: Dev Docs
+#      icon: file-text-o

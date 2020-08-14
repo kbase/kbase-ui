@@ -99,7 +99,7 @@ function mergeLibs(root, config, args) {
     }
 }
 
-function mergeConfig(root, config, args) {
+function mergeConfig(root, config) {
     const gitlabConfigDir = root + '/dev/gitlab-config';
     if (fs.existsSync(gitlabConfigDir)) {
         console.log('using gitlab configs');
@@ -152,7 +152,7 @@ function mergeLocalNarrative(root, config, args) {
     }
 }
 
-function mergeLocalTests(root, config, args) {
+function mergeLocalTests(root, config) {
     config.services['kbase-ui'].volumes.push({
         type: 'volume',
         source: 'integration-tests',
@@ -165,6 +165,23 @@ function mergeLocalTests(root, config, args) {
             type: 'none',
             o: 'bind',
             device: integrationTestsHostDirectory
+        }
+    };
+}
+
+function mergeLocalDocs(root, config) {
+    config.services['kbase-ui'].volumes.push({
+        type: 'volume',
+        source: 'developer-docs',
+        target: '/kb/deployment/services/kbase-ui/dist/docs'
+    });
+    const docsHostDirectory = [root, 'docs'].join('/');
+    config.volumes['developer-docs'] = {
+        driver: 'local',
+        driver_opts: {
+            type: 'none',
+            o: 'bind',
+            device: docsHostDirectory
         }
     };
 }
@@ -204,6 +221,8 @@ function main(args) {
     mergeConfig(root, config, args);
 
     mergeLocalTests(root, config, args);
+
+    mergeLocalDocs(root, config, args);
 
     const outputPath = [root, 'dev', 'docker-compose.override.yml'].join('/');
     fs.writeFileSync(outputPath, yaml.safeDump(config));
