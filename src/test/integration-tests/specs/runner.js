@@ -8,14 +8,35 @@ var handlebars = require('handlebars');
 const DEFAULT_TASK_TIMEOUT = process.env.DEFAULT_TASK_TIMEOUT || 10000;
 const DEFAULT_PAUSE_FOR = process.env.DEFAULT_PAUSE_FOR || 1000;
 
+
+function getProp(obj, propPath, defaultValue) {
+    if (typeof propPath === 'string') {
+        propPath = propPath.split('.');
+    } else if (!(propPath instanceof Array)) {
+        throw new TypeError('Invalid type for key: ' + typeof propPath);
+    }
+    const propStack = [];
+    for (let i = 0; i < propPath.length; i += 1) {
+        if (obj === undefined || typeof obj !== 'object' || obj === null) {
+            return defaultValue;
+        }
+        propStack.push(propPath[i]);
+        obj = obj[propPath[i]];
+    }
+    if (obj === undefined) {
+        return defaultValue;
+    }
+    return obj;
+}
+
 // a suite is a set of tests
 class Suite {
     constructor({ testFiles, context, subTasks }) {
         this.context = context;
         this.subTasks = subTasks;
-        this.tests = testFiles.map((testFile) => {
+        this.tests = testFiles.map((testDef) => {
             return new Test({
-                testDef: testFile,
+                testDef,
                 suite: this
             });
         });
@@ -109,10 +130,12 @@ class TestCase {
             }
 
             const url = this.context.config.url;
-            browser.url(url);
+            // must go to a hash path, not root, which redirects to the kbase home page.
+            browser.url(url + '#about');
             this.tasks.run();
             // porque?
             browser.deleteCookie('kbase_session');
+            browser.reloadSession();
         });
     }
 }
@@ -121,7 +144,6 @@ class TaskList {
     constructor({ taskDefs, testCase, context }) {
         this.testCase = testCase;
         try {
-            // console.log('[task list]', context);
             this.context = Object.assign(JSON.parse(JSON.stringify(context)));
         } catch (ex) {
             console.error('Error parsing context', ex, context, testCase);
@@ -281,6 +303,31 @@ class Task {
         return paramValue;
     }
 
+    loopFunc(taskDef) {
+        const loopPropertyName = taskDef.as || 'loop';
+        const contextArray = getProp(this.context, taskDef.loop);
+        if (typeof contextArray === 'undefined') {
+            console.error('Loop context is undefined!', JSON.stringify(contextArray), JSON.stringify(this.context));
+            throw new Error('Loop context undefined: ' + taskDef.loop);
+        }
+        if (!Array.isArray(contextArray)) {
+
+            throw new Error('Sorry, context is not an array!');
+        }
+
+        contextArray.forEach((loopValue) => {
+            const context = {
+                [loopPropertyName]: loopValue
+            };
+            return new TaskList({
+                taskDefs: taskDef.tasks,
+                testCase: this.testCase,
+                context
+            }).run();
+        });
+
+    }
+
     actionFunc(taskDef) {
         if (taskDef.action) {
             switch (taskDef.action) {
@@ -347,6 +394,15 @@ class Task {
                 return () => {
                     browser.$(this.testCase.resolvedSelector).click();
                 };
+            case 'scrollIntoView':
+            case 'scroll-into-view':
+                return () => {
+                    browser.$(this.testCase.resolvedSelector).scrollIntoView();
+                };
+            case 'scroll-to-top':
+                return () => {
+                    browser.$(this.testCase.resolvedSelector).scrollIntoView({inline: 'start', block: 'start'});
+                };
             case 'pause':
                 return () => {
                     let pauseFor = this.getParam(taskDef, 'for', null);
@@ -377,6 +433,7 @@ class Task {
                     }
                     this.context.local[this.taskDef.name] = this.taskDef.value;
                 };
+            case 'echo':
             case 'log':
                 return () => {
                     // eslint-disable-next-line no-console
@@ -401,13 +458,15 @@ class Task {
                 const testValue = this.getParam(taskDef, 'text');
                 return nodeValue === testValue;
             };
+        case 'forTextMatch':
         case 'forTextRegex':
             return () => {
                 if (!browser.$(taskDef.resolvedSelector).isExisting()) {
                     return false;
                 }
                 const nodeValue = browser.$(taskDef.resolvedSelector).getText();
-                const testValue = new RegExp(this.getParam(taskDef, ['value', 'regexp']), this.getParam(taskDef, 'flags', ''));
+                const regexpString = this.getParam(taskDef, ['value', 'text', 'regexp']);
+                const testValue = new RegExp(regexpString, this.getParam(taskDef, 'flags', ''));
                 return testValue.test(nodeValue);
             };
         case 'forNumber':
@@ -434,7 +493,6 @@ class Task {
                     }
                     const els = browser.$$(taskDef.resolvedSelector);
                     const count = els.length;
-                    // console.log('COUNT', count, this.getParam(taskDef, 'count'), utils.isValidNumber(count, this.getParam(taskDef, 'count')));
                     return utils.isValidNumber(count, this.getParam(taskDef, 'count'));
                 } catch (ex) {
                     return false;
@@ -445,7 +503,6 @@ class Task {
                 try {
                     browser.switchToFrame(null);
                     browser.switchToFrame(browser.$('[data-k-b-testhook-iframe="plugin-iframe"]'));
-                    // console.log('[forPlugin]', taskDef, taskDef.resolvedSelector, browser.$(taskDef.resolvedSelector).isExisting());
                     if (!browser.$(taskDef.resolvedSelector).isExisting()) {
                         return false;
                     }
@@ -457,7 +514,6 @@ class Task {
         case 'forElement':
         default:
             return () => {
-                // console.log('[forElement]', taskDef.resolvedSelector,  browser.$(taskDef.resolvedSelector).isExisting());
                 return browser.$(taskDef.resolvedSelector).isExisting();
             };
         }
@@ -483,6 +539,8 @@ class Task {
         } else if (taskDef.action) {
             const actionFunction = this.actionFunc(taskDef);
             actionFunction();
+        } else if (taskDef.loop) {
+            this.loopFunc(taskDef);
         }
     }
 
@@ -507,22 +565,45 @@ class Task {
                 })
                 .join('');
         }
-        let nth = '';
-        if (element.nth) {
-            nth = ':nth-child(' + this.interpValue(element.nth) + ')';
-        }
-        if (element.type !== 'raw') {
-            return '[data-k-b-testhook-' + element.type + '="' + this.interpValue(element.value) + '"]' + nth;
+
+        const nth = (() => {
+            if (!element.nth) {
+                return '';
+            }
+            const theNth = this.interpValue(element.nth);
+            if (isNaN(theNth)) {
+                console.error('Value provided for "nth" is not a number: ', element.nth, (typeof theNth), theNth);
+                throw new Error('Value provided for "nth" is not a number: ' + (typeof theNth));
+            }
+
+            return `:nth-child(${this.interpValue(element.nth)})`;
+        })();
+
+        const elementType = element.elementType || '';
+
+        if (element.type) {
+            if (element.type === 'raw') {
+                return `${elementType}[${element.name}="${this.interpValue(element.value)}"]${nth}`;
+            } else {
+                return `${elementType}[data-k-b-testhook-${element.type}="${this.interpValue(element.value)}"]${nth}`;
+            }
+        } else if (elementType) {
+            return `${elementType}${nth}`;
+        } else if (element.echo) {
+            console.warn('ECHO', element.echo, this.interpValue(element.echo));
         } else {
-            return '[' + element.name + '="' + this.interpValue(element.value) + '"]' + nth;
+            console.error('Not enough info in this path element', element);
+            throw new Error('Not enough info in this path element');
         }
     }
+
     buildSelector(path) {
-        return path
+        const selector = path
             .map((element) => {
                 return this.buildAttribute(element);
             })
             .join(' ');
+        return selector;
     }
     makeSelector(selector) {
         if (selector instanceof Array) {

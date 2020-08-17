@@ -17,14 +17,19 @@ function loadData(config) {
         cwd: __dirname
     });
 
-    const theData = {};
+    // merge all the configs in this dir.
+    const someData = {};
     dataFiles.forEach((file) => {
         const pluginData = utils.loadJSONFile(file);
+        Object.assign(someData, pluginData);
         const pluginName = file.split('/').slice(-4)[0];
-        Object.assign(theData, { [pluginName]: pluginData });
+        if (!someData[pluginName]) {
+            someData[pluginName] = {};
+        }
+        Object.assign(someData[pluginName], pluginData);
     });
 
-    return theData;
+    return someData;
 }
 
 function main() {
