@@ -2,7 +2,7 @@ let baseUrl
 if (process.env.ENV === 'prod') {
     baseUrl = 'https://kbase.us';
 } else {
-    baseUrl = `https://${env}.kbase.us`
+    baseUrl = `https://${process.env.ENV}.kbase.us`
 }
 console.log('TEST ENV        : ' + process.env.ENV);
 console.log('TEST BASE URL: ' + baseUrl);
