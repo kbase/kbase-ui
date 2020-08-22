@@ -109,14 +109,16 @@ plugins:
     source:
       github:
         account: kbaseIncubator
+  - name: public-search
+    globalName: kbase-ui-plugin-public-search
+    version: 0.14.1
+    source:
+      github:
+        account: eapearson
+        branch: master
   # The following have not been ported (yet if ever)
   # Unreleased
-  # - name: public-search
-  #   globalName: kbase-ui-plugin-public-search
-  #   version: 0.13.6
-  #   cwd: src/plugin
-  #   source:
-  #     bower: {}
+
   # Experimental or Dev Only
   # - name: ui-service
   #   globalName: kbase-ui-plugin-ui-service
