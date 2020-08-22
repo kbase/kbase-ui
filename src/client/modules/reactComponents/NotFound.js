@@ -35,7 +35,7 @@ define([
             });
             if (response.status >=200 && response.status <= 300) {
                 return true;
-            }   
+            }
             return false;
         }
 
@@ -51,8 +51,7 @@ define([
             });
         }
 
-        async componentDidMount() {
-            
+        async checkSites() {
             const request = this.props.params.request;
             if (!TRY_UPSTREAM_SITES) {
                 console.warn('not trying upstream sites', request);
@@ -61,10 +60,10 @@ define([
                     request.path.length === 0) {
                     // if we got here with no paths, go to the dashboard
                     window.location.hash = '#dashboard';
-                    return
-                } 
+                    return;
+                }
 
-                if (request.path.length > 0) { 
+                if (request.path.length > 0) {
                     this.setState({
                         status: 'path-does-not-exist',
                         path: request.path.join('/')
@@ -78,7 +77,6 @@ define([
                 return;
             }
 
-            
             if (request.realPath.length === 1 &&
                 request.realPath[0] === '' &&
                 request.path.length === 0 &&
@@ -87,7 +85,7 @@ define([
                 this.redirect(`https://${MARKETING_HOST}`);
                 return;
             }
-            
+
             const path = request.realPath.join('/');
             try {
                 if (path.length === 0) {
@@ -108,7 +106,7 @@ define([
                         path
                     });
                     return;
-                } 
+                }
                 await this.setState2({
                     messages: [...this.state.messages.slice(0, -1), this.state.messages[this.state.messages.length -1] + 'nope']
                 });
@@ -123,11 +121,11 @@ define([
                         path
                     });
                     return;
-                } 
+                }
                 await this.setState2({
                     messages: [...this.state.messages.slice(0, -1), this.state.messages[this.state.messages.length -1] + 'nope']
                 });
-                
+
                 this.setState({
                     status: 'does-not-exist',
                     path
@@ -141,6 +139,21 @@ define([
                     path
                 });
             }
+        }
+
+        onPageShow(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        }
+
+        componentWillUnmout() {
+            window.removeEventListener('pageshow', this.onPageShow.bind(this));
+        }
+
+        componentDidMount() {
+            window.addEventListener('pageshow', this.onPageShow.bind(this));
+            this.checkSites();
         }
 
         renderNotFound() {
@@ -199,7 +212,7 @@ define([
             }
 
             this.props.runtime.send('ui', 'setTitle', 'Path Not Found');
-            
+
             return html`
                 <div className="well">
                     <div className="text-danger"  style=${{fontSize: '140%'}}>
@@ -229,7 +242,7 @@ define([
             }
 
             this.props.runtime.send('ui', 'setTitle', 'Path Not Found');
-            
+
             return html`
                 <div className="well">
                     <div className="text-danger"  style=${{fontSize: '140%'}}>
@@ -259,7 +272,7 @@ define([
             }
 
             this.props.runtime.send('ui', 'setTitle', 'Path Not Found');
-            
+
             return html`
                 <div className="well">
                     <div className="text-danger"  style=${{fontSize: '140%'}}>
@@ -328,33 +341,32 @@ define([
                 return html`
                 <p>${message}</p>
                 `;
-            })
+            });
             return html`
                 <div className="alert alert-warning">
                     <p>Analyzing request... <span className="fa fa-spinner fa-pulse fa-fw"></span></p>
                     ${messages}
                 </div>
             `;
-            return;
         }
 
         renderSwitch() {
             switch (this.state.status) {
-                case 'none':
-                    return this.renderLoading();
-                case 'does-not-exist':
-                    return this.renderNotFound();
-                case 'path-does-not-exist':
-                    return this.renderPathNotFound();
-                case 'found-on-marketing':
-                    return this.renderExistsOnMarketingSite();
-                case 'found-on-outreach':
-                    return this.renderExistsOnOutreachSite();
-                case 'found-on-docs':
-                    return this.renderExistsOnDocsSite();
-                case 'error':
-                    return this.renderError();
-                }
+            case 'none':
+                return this.renderLoading();
+            case 'does-not-exist':
+                return this.renderNotFound();
+            case 'path-does-not-exist':
+                return this.renderPathNotFound();
+            case 'found-on-marketing':
+                return this.renderExistsOnMarketingSite();
+            case 'found-on-outreach':
+                return this.renderExistsOnOutreachSite();
+            case 'found-on-docs':
+                return this.renderExistsOnDocsSite();
+            case 'error':
+                return this.renderError();
+            }
         }
 
         render() {
