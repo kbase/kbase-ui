@@ -59,16 +59,8 @@ http {
         server  www.kbase.us:443;
     }
 
-    # upstream outreach {
-    #     server www.kbase.us:443;
-    # }
-
-    #     upstream outreach2 {
-    #     server kbase.us:443;
-    # }
-
     server {
-        listen      {{ default .Env.nginx_listen "80"}};
+        listen      {{ default .Env.nginx_listen "80"}} default_server;
         server_name {{ default .Env.nginx_server_name "localhost" }};
 
         location / {
@@ -86,7 +78,6 @@ http {
 
         # Format is /__poke/https://www.example.com/some/path
         location ~* ^/__poke/docs/(.*)$ {
-            # return 200 "Match found  Capture Groups 1: $1 2: $2\n";
             proxy_hide_header Content-Security-Policy;
             proxy_hide_header X-Content-Security-Policy;
             proxy_hide_header X-Webkit-Csp;
@@ -105,7 +96,7 @@ http {
 
         location @handle_redirect_docs {
             set $saved_redirect_location  '$upstream_http_location';
-            # return 200 "Redirected $upstream_http_location\n";
+
             # These header fields are massive in gitbook.
             proxy_hide_header Content-Security-Policy;
             proxy_hide_header X-Content-Security-Policy;
@@ -123,46 +114,7 @@ http {
             error_page 301 302 307 = @handle_redirect_docs;
         }
 
-        # location ~* ^/__poke/outreach/(.*)$ {
-        #     # return 200 "Match found  Capture Groups 1: $1 2: $2\n";
-
-        #     proxy_pass https://outreach/$1;
-        #     proxy_http_version 1.1;
-        #     proxy_set_header Connection "";
-        #     client_max_body_size 300M;
-        #     proxy_set_header Host www.kbase.us;  
-        #     proxy_intercept_errors on;
-        #     recursive_error_pages on;
-        #     error_page 301 302 307 = @handle_redirect_outreach;
-        # }
-
-        # location @handle_redirect_outreach {
-        #     # return 200 "Redirected $upstream_http_location\n";
-        #     # resolver 8.8.8.8;
-        #     set $saved_redirect_location  '$upstream_http_location';
-        #     proxy_http_version 1.1;
-        #     proxy_set_header Connection "";
-        #     client_max_body_size 300M;
-        #     proxy_set_header Host www.kbase.us;
-        #     if ($saved_redirect_location ~* ^/) {
-        #         proxy_pass https://outreach$saved_redirect_location;
-        #     }
-        #     if ($saved_redirect_location ~* ^https://www.kbase.us/(.*)$) {
-        #         proxy_pass https://outreach/$1;
-        #     }
-        #     if ($saved_redirect_location ~* ^https://kbase.us/(.*)$) {
-        #         proxy_pass https://outreach2/$1;
-        #     }
-        #     # if ($saved_redirect_location ~* ^https) {
-        #     #     proxy_pass $saved_redirect_location;
-        #     # }
-        #     proxy_intercept_errors on;
-        #     recursive_error_pages on;
-        #     error_page 301 302 307 = @handle_redirect_outreach;
-        # }
-
         location ~* ^/__poke/marketing/(.*)$ {
-            # return 200 "Match found  Capture Groups 1: $1 2: $2\n";
             proxy_pass https://marketing/$1;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
@@ -174,7 +126,6 @@ http {
         }
 
         location @handle_redirect_marketing {
-            # resolver 8.8.8.8;
             set $saved_redirect_location  '$upstream_http_location';
             set $path $saved_redirect_location;
 
@@ -186,7 +137,6 @@ http {
             proxy_set_header Connection "";
             client_max_body_size 300M;
             proxy_set_header Host www.kbase.us;  
-            # proxy_pass $saved_redirect_location;
             proxy_pass https://marketing/$path;
             proxy_intercept_errors on;
             recursive_error_pages on;

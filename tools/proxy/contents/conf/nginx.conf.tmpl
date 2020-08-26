@@ -20,7 +20,7 @@ http {
 	default_type application/octet-stream;
 
     # Define upstream servers, for convenience.
-    upstream kbase_ui {
+    upstream kbase_ui_server {
         server {{ .Env.kbase_ui_host }}:80;
         keepalive 16;
     }
@@ -39,12 +39,13 @@ http {
         {{ if .Env.local_narrative }}
             server narrative:8888;
         {{ else }}
-            {{ if .Env.deploy_ui_hostname }}
-                server {{ .Env.deploy_ui_hostname }}:443;
-            {{ else }}
-                server {{ .Env.deploy_hostname }}:443;
-            {{ end }}
+            server {{ .Env.deploy_hostname }}:443;
         {{ end }}
+    }
+
+    upstream narrative2 {
+        server narrative.kbase.us:443;
+        keepalive 16;
     }
 
     log_format upstream_log '[$time_local] $remote_addr - $remote_user - $server_name to: $upstream_addr: $request upstream_response_time $upstream_response_time proxy_host $proxy_host upstream_status $upstream_status upstream_response_length $upstream_response_length msec $msec request_time $request_time';
@@ -63,14 +64,47 @@ http {
 
     # Route insecure requests to secure.
     server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
-        server_name {{ default .Env.deploy_ui_hostname .Env.deploy_hostname }};
-        return 301 https://{{ default .Env.deploy_ui_hostname  .Env.deploy_hostname }}$request_uri;
+        listen 80 ;
+        listen [::]:80 ;
+        return 301 https://$host$request_uri;
     }
 
+    # Redirect narrative.kbase.us to kbase.us
+    # Uncomment to test this behavior; note that this breaks
+    # proxying to narrative.kbase.us/narrative.
+    # Preserves hash routes.
+    # server {
+    #     listen 443 ssl;
+    #     server_name narrative.kbase.us;
+    #     ssl_certificate /kb/deployment/ssl/test.crt;
+    #     ssl_certificate_key /kb/deployment/ssl/test.key;
+    #     ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
+
+    #     # location /narrative {
+    #     #     resolver 8.8.8.8;
+    #     #     proxy_set_header Host narrative.kbase.us;
+    #     #     # proxy_set_header X-Forwarded-Host narrative.kbase.us:443;
+    #     #     # proxy_set_header X-Forwarded-Server narrative.kbase.us;
+    #     #     proxy_pass https://narrative2/narrative/;
+    #     #     access_log /var/log/nginx/narrative.log upstream_log;
+            
+    #     #     proxy_connect_timeout 10s;
+    #     #     proxy_set_header Upgrade $http_upgrade;
+    #     #     proxy_set_header Connection "upgrade";
+    #     #     proxy_http_version 1.1;
+    #     #     proxy_set_header Origin  https://narrative.kbase.us;
+    #     #     # proxy_set_header Host {{ .Env.deploy_hostname }};
+    #     #     proxy_set_header Cookie $http_cookie;
+    #     # }
+
+    #     location / {
+    #         return 302 https://kbase.us$request_uri;
+    #     }
+    # }
+    
+    # Primary proxying server
     server {
-        listen 443 ssl;
+        listen 443 ssl default_server;
         server_name {{ .Env.deploy_hostname }};
         ssl_certificate /kb/deployment/ssl/test.crt;
         ssl_certificate_key /kb/deployment/ssl/test.key;
@@ -83,19 +117,19 @@ http {
         {{ range split .Env.service_proxies " " }}
         
         {{ if eq . "searchapi2" }}
-        location /services/searchapi2/legacy {
-            proxy_pass http://searchapi2:5000/legacy;
-            proxy_http_version 1.1;
-            proxy_set_header Connection "";
-            client_max_body_size 300M;
-        }
+            location /services/searchapi2/legacy {
+                proxy_pass http://searchapi2:5000/legacy;
+                proxy_http_version 1.1;
+                proxy_set_header Connection "";
+                client_max_body_size 300M;
+            }
 
-        location /services/searchapi2/rpc {
-            proxy_pass http://searchapi2:5000/rpc;
-            proxy_http_version 1.1;
-            proxy_set_header Connection "";
-            client_max_body_size 300M;
-        }
+            location /services/searchapi2/rpc {
+                proxy_pass http://searchapi2:5000/rpc;
+                proxy_http_version 1.1;
+                proxy_set_header Connection "";
+                client_max_body_size 300M;
+            }
         {{ else }}
             location /services/{{ . }} {
                 {{ if $.Env.deploy_ui_hostname }}
@@ -161,12 +195,20 @@ http {
         # Repeat the ui proxying for the case in which they reside on the same
         # host name as services.
         location /narrative/ {
+           
             {{ if .Env.local_narrative }}
+                # the local_narrative switch causes a reverse proxy to 
+                # an upstream narrative defined above, which will be 
+                # on the docker network, on a host named "narrative", on
+                # port 8888. But again, see above...
                 proxy_pass http://narrative/narrative/;
             {{ else if eq .Env.deploy_hostname "kbase.us"}} 
+                # special handling for prod ... while the narrative still lives on 
+                # narrative.kbase.us, we can use the new kbase.us-only config but proxy
+                # to narrative.kbase.us/narrative ...
                 proxy_pass https://narrative.{{ .Env.deploy_hostname }}/narrative/;
-                # proxy_pass https://narrative/narrative/;
             {{ else }}
+                # otherwise, we just proxy to the upstream narrative.
                 proxy_pass https://narrative/narrative/;
             {{ end }}
 
@@ -176,20 +218,13 @@ http {
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
             proxy_http_version 1.1;
-            
-            {{ if .Env.deploy_ui_hostname}} 
-                proxy_set_header Origin  https://{{ .Env.deploy_ui_hostname }};
-            {{ else }}
-                proxy_set_header Origin  https://{{ .Env.deploy_hostname }};
-            {{ end }}
-            {{ if .Env.deploy_ui_hostname}} 
-                 proxy_set_header Host {{ .Env.deploy_ui_hostname }};
-            {{ else }}
-                proxy_set_header Host {{ .Env.deploy_hostname }};
-            {{ end }}
+            proxy_set_header Origin  https://{{ .Env.deploy_hostname }};
+            proxy_set_header Host {{ .Env.deploy_hostname }};
             proxy_set_header Cookie $http_cookie;
         }
 
+        # The ui-assets server is just a plain http server with 
+        # some files on it that all front ends can use.
         location /ui-assets/ {
             proxy_pass https://{{ .Env.deploy_hostname }}:443;
             proxy_http_version 1.1;
@@ -197,11 +232,13 @@ http {
             client_max_body_size 300M;         
         }
 
+        # Proxy all other requests to the ui, running at kbase_ui_server.
         location / {
-            proxy_pass http://kbase_ui;
+            proxy_pass http://kbase_ui_server;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
-            client_max_body_size 300M;         
+            client_max_body_size 300M;      
+            proxy_set_header Host {{ .Env.deploy_hostname }};
         }
     }
 }
