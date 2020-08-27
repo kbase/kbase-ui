@@ -17,6 +17,38 @@ define([
     class SidebarMenu extends Component {
         constructor(props) {
             super(props);
+
+            props.runtime.db().subscribe(
+                {
+                    path: 'feeds'
+                },
+                (feeds) => {
+                    this.processFeeds(feeds);
+                }
+            );
+
+            this.state = {
+                feedsNotificationCount: null,
+                feedsError: null
+            };
+        }
+
+        componentDidMount() {
+            const feeds = this.props.runtime.db().get('feeds');
+            this.processFeeds(feeds);
+        }
+
+        processFeeds(feeds) {
+            if (feeds.error) {
+                // this.notificationError(feeds.error);
+                console.error('Feeds Error', feeds.error);
+                return;
+            }
+            // this.notificationError(null);
+            this.setState({
+                feedsNotificationCount: feeds.unseenNotificationsCount,
+                feedsError: feeds.error
+            });
         }
 
         onNavClick(path) {
@@ -60,27 +92,28 @@ define([
             if (!button.beta) {
                 return;
             }
+            const style = {
+                position: 'absolute',
+                top: '0',
+                right: '0',
+                color: 'rgb(193, 119, 54)',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                fontStyle: 'italic'
+            };
             return html`
-                <div style=${{
-        position: 'absolute',
-        top: '0',
-        right: '0',
-        color: 'rgb(193, 119, 54)',
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontStyle: 'italic'
-    }}>
+                <div style=${style}>
                     beta
                 </div>
             `;
         }
 
-        renderBadge(button) {
-            if (!button.id !== 'feeds') {
+        renderBadge(menuItem) {
+            if (menuItem.id !== 'feeds') {
                 return;
             }
-            const notificationCount = 1;
-            const notificationError = false;
+            const notificationCount = this.state.feedsNotificationCount;
+            const notificationError = this.state.feedsError;
             let content;
             if (notificationCount > 0) {
                 content = html`

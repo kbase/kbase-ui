@@ -63,7 +63,6 @@ define([
                     params
                 });
 
-                // console.log('route', route);
                 const module = (() => {
                     if (route.component.startsWith('/')) {
                         return route.component.slice(1);
@@ -85,7 +84,7 @@ define([
                         params,
                         key: new Uuid(4).format()
                     };
-                    // console.log('mounting?', Component, props, this.nodeRef.current);
+
                     // ensure the root node is empty.
                     while (rootNode.firstChild) {
                         rootNode.removeChild(rootNode.firstChild);
