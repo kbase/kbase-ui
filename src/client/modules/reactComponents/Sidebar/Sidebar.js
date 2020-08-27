@@ -68,8 +68,6 @@ define([
             const isLoggedIn = this.props.runtime.service('session').isLoggedIn();
             const sidebarMenu =  this.props.runtime.service('menu').getCurrentMenu('sidebar');
 
-            // console.log('SIDEBAR MENU?', this.props.runtime.service('menu').getCurrentMenu('sidebar'));
-
             return sidebarMenu.main
                 .filter((item) => {
                     if (!isLoggedIn && item.authRequired) {
@@ -102,7 +100,8 @@ define([
                 return;
             }
             const props = {
-                menu: this.state.data.menu
+                menu: this.state.data.menu,
+                runtime: this.props.runtime
             };
             return html`
                 <div className="Sidebar"

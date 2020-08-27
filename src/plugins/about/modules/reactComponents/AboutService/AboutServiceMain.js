@@ -107,7 +107,7 @@ define([
                     })
                     .then((result) => {
                         if (result.status >= 300) {
-                            throw new Error(`Error in response: ${result.status}`)
+                            throw new Error(`Error in response: ${result.status}`);
                         }
                         try {
                             return JSON.parse(result.response);
@@ -138,7 +138,6 @@ define([
                 this.perf(ver)
             ])
                 .then(([result, perf]) => {
-                    // console.log('RESULT', result);
                     let version;
                     if (this.props.service.versionKey) {
                         version = result[this.props.service.versionKey];
@@ -161,7 +160,7 @@ define([
                         error: {
                             message: err.message
                         }
-                    })
+                    });
                 });
         }
 
@@ -185,12 +184,12 @@ define([
                 return this.renderLoading();
             case 'loading':
                 return this.renderLoading();
-            case 'loaded': 
+            case 'loaded':
                 return html`
                     <${AboutService} ...${this.state.data} />
                 `;
             case 'error':
-                return this.renderError()
+                return this.renderError();
             }
         }
     }
