@@ -383,10 +383,22 @@
 				"semverNotImplemented": true
 			}
 		},
+        "KBaseSearchEnginex": {
+			"aliases": [
+				"searchx"
+			],
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_kbasesearchengine_path "services/searchapi2/legacy" }}",
+			"name": "KBase Search Engine",
+			"coreService": true,
+			"type": "jsonrpc",
+			"version": {
+				"semverNotImplemented": true
+			}
+		},
         "SearchAPI2": {
             "aliases": [],
-            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi_path "services/searchapi2/rpc" }}",
-            "legacyUrl": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi_path "services/searchapi2/legacy" }}",
+            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_path "services/searchapi2/rpc" }}",
+            "legacyUrl": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_path "services/searchapi2/legacy" }}",
 			"name": "Search Engine",
 			"coreService": true,
 			"type": "jsonrpc2",
@@ -394,7 +406,7 @@
         },
         "execution_engine2": {
             "aliases": ["ee2", "ExecutionEngine2"],
-            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi_path "services/ee2" }}",
+            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_ee2_path "services/ee2" }}",
 			"name": "Execution Engine2",
 			"coreService": true,
 			"type": "jsonrpc",

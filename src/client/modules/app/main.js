@@ -84,7 +84,7 @@ define([
                     serviceConfig.aliases.forEach((alias) => {
                         if (mergedConfig.services[alias]) {
                             throw new Error(
-                                'Service alias for ' + serviceKey + ' already in used: ' + alias
+                                'Service alias for ' + serviceKey + ' already in use: ' + alias
                             );
                         }
                         mergedConfig.services[alias] = serviceConfig;
