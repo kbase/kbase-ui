@@ -86,6 +86,18 @@
 									"allowRoles": [
 										"DevToken"
 									]
+								}, {
+									"id": "dashboard4",
+									"auth": true,
+									"allowRoles": [
+										"DevToken"
+									]
+								}, {
+									"id": "public-search",
+									"auth": true,
+									"allowRoles": [
+										"DevToken"
+									]
 								}]
 							},
 							"help": {
@@ -383,22 +395,20 @@
 				"semverNotImplemented": true
 			}
 		},
-        "KBaseSearchEnginex": {
-			"aliases": [
-				"searchx"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_kbasesearchengine_path "services/searchapi2/legacy" }}",
-			"name": "KBase Search Engine",
-			"coreService": true,
-			"type": "jsonrpc",
-			"version": {
-				"semverNotImplemented": true
-			}
-		},
+       
         "SearchAPI2": {
             "aliases": [],
             "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_path "services/searchapi2/rpc" }}",
             "legacyUrl": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_path "services/searchapi2/legacy" }}",
+			"name": "Search Engine",
+			"coreService": true,
+			"type": "jsonrpc2",
+			"version": false
+        },
+         "SearchAPI2Legacy": {
+            "aliases": [],
+            "module": "KBaseSearchEngine",
+            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_path "services/searchapi2/legacy" }}",
 			"name": "Search Engine",
 			"coreService": true,
 			"type": "jsonrpc2",
