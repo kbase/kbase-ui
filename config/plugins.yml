@@ -111,7 +111,7 @@ plugins:
         account: kbaseIncubator
   - name: public-search
     globalName: kbase-ui-plugin-public-search
-    version: 0.15.0
+    version: 0.15.1
     source:
       github:
         account: eapearson
