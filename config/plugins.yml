@@ -51,7 +51,13 @@ plugins:
         account: kbase
   - name: data-search
     globalName: kbase-ui-plugin-data-search
-    version: 2.1.1
+    version: 2.0.0
+    source:
+      github:
+        account: kbase
+  - name: data-search2
+    globalName: kbase-ui-plugin-data-search
+    version: 2.1.2
     source:
       github:
         account: kbase
@@ -111,7 +117,7 @@ plugins:
         account: kbaseIncubator
   - name: public-search
     globalName: kbase-ui-plugin-public-search
-    version: 0.15.1
+    version: 0.15.3
     source:
       github:
         account: eapearson

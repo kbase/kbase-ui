@@ -44,7 +44,7 @@ define([
                 <ul>
                     <li>
                         The ${' '}
-                        <a href="#narrativemanager/start" target="_blank"
+                        <a href="/#narrativemanager/start" target="_blank"
                            style=${{fontWeight: 'bold'}}>
                            Narrative Interface
                         </a>,
@@ -141,7 +141,7 @@ define([
             const aboutKBase = this.props.runtime.config('resources.documentation.aboutKBase.url');
 
             const uiDocumentationUrl = 'http://kbaseincubator.github.io/kbase-ui-docs';
-            const documentationURL = 'https://docs.kbase.us'
+            const documentationURL = 'https://docs.kbase.us';
 
             const [githubContent, githubUrl, relNotesUrl] = this.renderGitInfo();
 

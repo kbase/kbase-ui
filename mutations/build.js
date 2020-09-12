@@ -257,35 +257,6 @@ function installModulePackagesFromBower(state) {
         });
 }
 
-function injectPluginsIntoBower(state) {
-    // Load plugin config
-    var root = state.environment.path,
-        pluginConfig,
-        pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/'),
-        bowerConfig,
-        bowerConfigFile = root.concat(['build', 'bower.json']).join('/');
-    return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8'), fs.readFileAsync(bowerConfigFile, 'utf8')])
-        .spread(function (pluginFile, bowerFile) {
-            pluginConfig = yaml.safeLoad(pluginFile);
-            bowerConfig = JSON.parse(bowerFile);
-        })
-        .then(function () {
-            // First ensure all plugin packages are installed via bower.
-            pluginConfig.plugins
-                .filter(function (plugin) {
-                    return (typeof plugin === 'object' && !plugin.internal && plugin.source.bower);
-                })
-                .forEach(function (plugin) {
-                    const name = plugin.source.bower.name || plugin.globalName;
-                    bowerConfig.dependencies[name] = plugin.source.bower.version || plugin.version;
-                });
-
-            return fs.writeFileAsync(
-                root.concat(['build', 'bower.json']).join('/'),
-                JSON.stringify(bowerConfig, null, 4)
-            );
-        });
-}
 
 // function buildPlugin(state, pluginDir) {
 //     const commands = [
@@ -331,7 +302,7 @@ function fetchPluginsFromGithub(state) {
                     gitAccount = plugin.source.github.account || 'kbase',
                     url = plugin.source.github.url || 'https://github.com/' + gitAccount + '/' + repoName;
 
-                const dest = gitDestination.concat([plugin.globalName]).join('/');
+                const dest = gitDestination.concat([plugin.name]).join('/');
                 mutant.log(`... cloning plugin repo ${plugin.globalName}, version ${version}, branch: ${branch}`);
                 return gitClone(url, dest, branch);
             });
@@ -830,12 +801,13 @@ function installPlugins(state) {
                 pluginConfig = yaml.safeLoad(pluginFile);
                 const plugins = pluginConfig.plugins;
                 return Promise.all(
+                        // Supports installing from gitDownloads (which are downloaded prior to this)
                         plugins
                             .filter(function (plugin) {
                                 return typeof plugin === 'object' && plugin.source.github;
                             })
                             .map(function (plugin) {
-                                const pluginDir = root.concat(['gitDownloads', plugin.globalName]);
+                                const pluginDir = root.concat(['gitDownloads', plugin.name]);
                                 const destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
                                 let srcDir;
                                 if (plugin.cwd) {
@@ -862,6 +834,7 @@ function installPlugins(state) {
                             })
                     )
                     .then(function () {
+                        // Supports installing from a directory
                         return Promise.all(
                             plugins
                                 .filter(function (plugin) {
@@ -874,7 +847,7 @@ function installPlugins(state) {
                                         // project root.
                                         repoRoot = (plugin.source.directory.root &&
                                             plugin.source.directory.root.split('/')) || ['', 'kb', 'plugins'],
-                                        source = repoRoot.concat([plugin.globalName]).concat(cwd),
+                                        source = repoRoot.concat([plugin.name]).concat(cwd),
                                         destination = root.concat([
                                             'build',
                                             'client',
@@ -888,6 +861,7 @@ function installPlugins(state) {
                         );
                     })
                     .then(function () {
+                        // Supports internal plugins.
                         return Promise.all(
                             plugins
                                 .filter(function (plugin) {
@@ -906,11 +880,11 @@ function installPlugins(state) {
             .then(function () {
                 // dir list of all plugins
                 const pluginsPath = root.concat(['build', 'client', 'modules', 'plugins']);
-                return dirList(pluginsPath).then(function (pluginDirs) {
-                    return Promise.each(pluginDirs, function (pluginDir) {
+                return dirList(pluginsPath).then((pluginDirs) => {
+                    return Promise.each(pluginDirs, (pluginDir) => {
                         // Has integration tests?
                         const testDir = pluginDir.path.concat(['test']);
-                        return pathExists(testDir.join('/')).then(function (exists) {
+                        return pathExists(testDir.join('/')).then((exists) => {
                             const justDir = pluginDir.path[pluginDir.path.length - 1];
                             if (!exists) {
                                 mutant.warn('plugin without tests: ' + justDir);
@@ -991,10 +965,6 @@ function setupBuild(state) {
         })
         .then(function () {
             return fs.rmdirAsync(root.concat(['src']).join('/'));
-        })
-        .then(function () {
-            mutant.log('Inject Plugins Into Bower');
-            return injectPluginsIntoBower(state);
         })
         .then(function () {
             mutant.log('Fetch plugins from github');

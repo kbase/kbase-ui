@@ -14,15 +14,29 @@ function getRoot() {
 
 function mergePlugins(root, config, args) {
     if (args.plugin) {
-        let plugins;
+        let pluginSpecs;
         if (typeof args.plugin === 'string') {
-            plugins = [args.plugin];
+            pluginSpecs = [args.plugin];
         } else {
-            plugins = args.plugin;
+            pluginSpecs = args.plugin;
         }
 
-        plugins.forEach((pluginName) => {
-            const pluginRoot = root + '/../kbase-ui-plugin-' + pluginName;
+        const plugins = pluginSpecs.map((pluginSpec) => {
+            const parts = pluginSpec.split(':');
+            if (parts.length === 1) {
+                return {
+                    pluginName: parts[0],
+                    repoSuffix: parts[0]
+                }
+            }
+            return {
+                pluginName: parts[0],
+                repoSuffix: parts[1]                
+            }
+        });
+
+        plugins.forEach(({pluginName, repoSuffix}) => {
+            const pluginRoot = root + '/../kbase-ui-plugin-' + repoSuffix;
             let pluginDir = pluginRoot + '/dist/plugin';
 
             if (!fs.existsSync(pluginDir)) {

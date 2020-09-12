@@ -163,7 +163,7 @@ define(['bluebird'], (Promise) => {
             });
         }
 
-        installIFramePlugin(pluginLocation, pluginDef) {
+        installIFramePlugin(pluginLocation, pluginDef, options) {
             // build up a list of modules and add them to the require config.
             return Promise.try(() => {
                 const sourcePath = pluginLocation.directory;
@@ -175,6 +175,9 @@ define(['bluebird'], (Promise) => {
                     root: sourcePath,
                     iframePath: sourcePath + '/iframe_root/index.html'
                 };
+
+                // hmm, hack this... for now ...
+                pluginDef.package.name = options.pluginName;
 
                 // Now install any ui service configuration.
                 const serviceConfigs = pluginDef.services || pluginDef.install;
@@ -198,17 +201,17 @@ define(['bluebird'], (Promise) => {
             });
         }
 
-        installPlugin(pluginLocation, pluginDef) {
+        installPlugin(pluginLocation, pluginDef, options) {
             // build up a list of modules and add them to the require config.
             return Promise.try(() => {
                 // Plugin type - legacy or iframe.
-                const pluginType = pluginDef.package.type || 'legacy';
+                const pluginType = pluginDef.package.type || 'iframe';
 
                 switch (pluginType) {
                 case 'legacy':
                     return this.installLegacyPlugin(pluginLocation, pluginDef);
                 case 'iframe':
-                    return this.installIFramePlugin(pluginLocation, pluginDef);
+                    return this.installIFramePlugin(pluginLocation, pluginDef, options);
                 default:
                     throw new Error('Unsupported plugin type: ' + pluginType);
                 }
@@ -244,13 +247,13 @@ define(['bluebird'], (Promise) => {
          * @param {type} pluginDef
          * @returns {Promise}
          */
-        loadPlugin(pluginDef) {
+        loadPlugin(pluginDef, options) {
             if (pluginDef.disabled) {
                 return;
             }
             return new Promise((resolve, reject) => {
                 require(['yaml!' + pluginDef.directory + '/config.yml'], (pluginConfig) => {
-                    this.installPlugin(pluginDef, pluginConfig)
+                    this.installPlugin(pluginDef, pluginConfig, options)
                         .then(() => {
                             resolve(pluginDef);
                         })
@@ -263,7 +266,7 @@ define(['bluebird'], (Promise) => {
 
         installPlugins(pluginDefs) {
             const loaders = Object.keys(pluginDefs).map((pluginName) => {
-                return this.loadPlugin(pluginDefs[pluginName]);
+                return this.loadPlugin(pluginDefs[pluginName], {pluginName});
             });
             return Promise.all(loaders);
         }
