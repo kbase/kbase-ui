@@ -142,18 +142,5 @@ http {
             recursive_error_pages on;
             error_page 301 302 307 = @handle_redirect_marketing;
         }
-
-        # location /_track_/ {
-        #   index index.html;
-        #   ssi_silent_errors off;
-        #   allow all;
-        #   # this ensures that a downstream cache service will revalidate.
-        #   add_header Cache-Control 'no-cache';
-
-        #   # rewrite .* / redirect;
-        #   rewrite .* /;
-
-        #   root /kb/deployment/services/kbase-ui/dist;
-        # }
     }
 }

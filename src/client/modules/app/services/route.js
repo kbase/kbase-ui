@@ -116,34 +116,41 @@ define([
             }
         }
 
-        installRoute(route, pluginName, defaults) {
+        installRoute(route, options) {
+            
             if (route.component) {
-                this.router.addRoute(route, pluginName, defaults);
+                this.router.addRoute(route, options);
             } else if (route.redirectHandler) {
-                this.router.addRoute(route, pluginName, defaults);
+                this.router.addRoute(route, options);
             } else {
                 route.component = '/pluginSupport/Plugin';
-                this.router.addRoute(route, pluginName, defaults);
+                this.router.addRoute(route, options);
             }
         }
 
-        installRoutes(routes, pluginName, defaults) {
+        installRoutes(routes, options) {
             if (!routes) {
                 return;
             }
             routes.map((route) => {
-                return this.installRoute(route, pluginName, defaults);
+                return this.installRoute(route, options);
             });
         }
 
         pluginHandler(serviceConfig, pluginConfig, pluginDef) {
+            // console.log('plugin handler', serviceConfig, pluginDef);
+           
             return new Promise((resolve, reject) => {
                 try {
                     // We now have service config defaults, at least for routes.
                     const defaults = serviceConfig.defaults || {};
 
                     // Install all the routes
-                    this.installRoutes(serviceConfig.routes || serviceConfig, pluginDef.package.name, defaults);
+                    this.installRoutes(serviceConfig.routes || serviceConfig, {
+                        pluginName: pluginDef.package.name, 
+                        defaults,
+                        mode: serviceConfig.mode
+                    });
                     resolve();
                 } catch (ex) {
                     reject(ex);

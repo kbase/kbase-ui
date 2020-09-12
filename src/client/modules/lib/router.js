@@ -68,7 +68,12 @@ define([], () => {
             const [pathPart, queryPart] = path.split('?');
 
             // split path
-            const pathElements = pathPart.split('/');
+            const pathElements = pathPart.split('/').filter((pathElement) => {
+                if (pathElement.trim().length === 0) {
+                    return false;
+                }
+                return true;
+            });
 
             // create path spec
             const pathSpec = pathElements.map((pathElement) => {
@@ -135,7 +140,7 @@ define([], () => {
             return [pathSpec, querySpec];
         }
 
-        addRoute(routeSpec, pluginName, defaults) {
+        addRoute(routeSpec, {pluginName, defaults, mode}) {
             if (typeof routeSpec.params === 'undefined') {
                 routeSpec.params = {};
             }
@@ -176,6 +181,17 @@ define([], () => {
             if (typeof pathConfig === 'string') {
                 const [path, pathQueryParams] = this.transformPathSpec(pathConfig);
                 const route = Object.assign({}, routeSpec);
+                switch (mode) {
+                case 'auto':
+                    // In auto mode, the plugin name becomes the first path component.
+                    path.unshift({
+                        type: 'literal',
+                        value: pluginName
+                    });
+                }
+                if (pluginName === 'data-search2') {
+                    console.log('adding route', route, path);
+                }
                 route.path = path;
                 const queryParams = Object.assign(routeSpec.queryParams || {}, pathQueryParams);
                 route.queryParams = queryParams;
@@ -210,6 +226,15 @@ define([], () => {
                 }
                 throw new Error('Unsupported route path element');
             });
+
+            switch (mode) {
+            case 'auto':
+                // In auto mode, the plugin name becomes the first path component.
+                path.unshift({
+                    type: 'literal',
+                    value: pluginName
+                });
+            }
 
             const route = Object.assign({}, routeSpec);
             route.path = path;
