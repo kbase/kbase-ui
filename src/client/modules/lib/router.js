@@ -189,9 +189,6 @@ define([], () => {
                         value: pluginName
                     });
                 }
-                if (pluginName === 'data-search2') {
-                    console.log('adding route', route, path);
-                }
                 route.path = path;
                 const queryParams = Object.assign(routeSpec.queryParams || {}, pathQueryParams);
                 route.queryParams = queryParams;
