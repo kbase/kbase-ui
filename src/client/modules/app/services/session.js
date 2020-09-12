@@ -147,7 +147,7 @@ define([
                                 'You may patiently await it\'s recovery or ',
                                 a(
                                     {
-                                        href: '#signout'
+                                        href: '/#signout'
                                     },
                                     'signout'
                                 ),
