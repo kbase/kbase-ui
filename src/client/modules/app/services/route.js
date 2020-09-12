@@ -138,8 +138,6 @@ define([
         }
 
         pluginHandler(serviceConfig, pluginConfig, pluginDef) {
-            // console.log('plugin handler', serviceConfig, pluginDef);
-           
             return new Promise((resolve, reject) => {
                 try {
                     // We now have service config defaults, at least for routes.
