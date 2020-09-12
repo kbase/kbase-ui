@@ -1,8 +1,6 @@
 define([
-    'bluebird',
     'lib/rpc'
 ], function (
-    Promise,
     rpc
 ) {
     'use strict';
@@ -11,7 +9,6 @@ define([
         constructor({runtime}) {
             this.runtime = runtime;
         }
-
         start() {
             return true;
         }
@@ -19,22 +16,18 @@ define([
             return true;
         }
         pluginHandler() {
-            return Promise.try(function () {
-            });
+            return Promise.resolve(null);
         }
-        makeClient({authenticated, module, timeout}) {
-            if (authenticated === undefined) {
+        newClient({authenticated, module, timeout}) {
+            if (typeof authenticated === 'undefined') {
                 authenticated = true;
             } else {
                 authenticated = authenticated ? true : false;
             }
-            const client = new rpc.RPCClient({
+            return new rpc.RPCClient({
                 runtime: this.runtime,
-                module: module,
-                timeout: timeout,
-                authenticated: authenticated
+                module, timeout, authenticated
             });
-            return client;
         }
     };
 });

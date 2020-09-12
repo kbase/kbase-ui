@@ -99,7 +99,7 @@ define([
                     read: false
                 }
             ]);
-            // const client = this.props.runtime.service('rpc').makeClient({
+            // const client = this.props.runtime.service('rpc').newClient({
             //     module: 'UIService'
             // });
 
