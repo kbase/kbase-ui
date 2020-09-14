@@ -84,7 +84,7 @@ function main() {
         if (theEnvConfig.noHostPrefix) {
             theEnvConfig.url = 'https://kbase.us';
         } else {
-            theEnvConfig.url = `https://${theEnvConfig.env}.kbase.us`;
+            theEnvConfig.url = `https://${theEnvConfig.hostPrefix || theEnvConfig.env}.kbase.us`;
         }
         // theEnvConfig.url = `https://${hostPrefix}.kbase.us`;
         config[theEnvConfig.env] = theEnvConfig;
@@ -102,6 +102,8 @@ function main() {
         return config;
     }, {})[process.env.ENV];
     const config = new Merger(rawConfig.envDefault).mergeIn(envConfig).value();
+
+    console.log('CONFIG', config);
 
     const plugins = loadData({ env: process.env.ENV });
     const context = {
