@@ -1,11 +1,11 @@
 let baseUrl
 if (process.env.ENV === 'prod') {
-    baseUrl = 'https://kbase.us';
+    baseUrl = 'https://narrative.kbase.us';
 } else {
     baseUrl = `https://${process.env.ENV}.kbase.us`
 }
 console.log('TEST ENV        : ' + process.env.ENV);
-console.log('TEST BASE URL: ' + baseUrl);
+console.log('TEST BASE URL   : ' + baseUrl);
 
 const browserName = process.env.BROWSER
 // const browserName = 'chrome';

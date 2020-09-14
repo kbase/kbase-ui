@@ -111,7 +111,7 @@
 }
 
 .kbase-ui .panel-info.kb-panel-light .panel-title {
-    color: blue;
+    color: #337ab7;
 }
 
 .kbase-ui .panel.kb-panel-light>.panel-heading {
@@ -198,7 +198,7 @@
 }
 
 .kbase-ui .panel-info.kb-panel-help .panel-title {
-    color: blue;
+    color: #337ab7;
 }
 
 .kbase-ui .panel.panel-danger.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
@@ -214,7 +214,7 @@
 }
 
 .kbase-ui .panel.panel-info.kb-panel-help .panel-title>[data-toggle="collapse"]::before {
-    color: blue;
+    color: #337ab7;
 }
 
 .kbase-ui .panel.panel-danger.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
@@ -230,7 +230,7 @@
 }
 
 .kbase-ui .panel.panel-info.kb-panel-help .panel-title>[data-toggle="collapse"].collapsed::before {
-    color: blue;
+    color: #337ab7;
 }
 
 /* remove the padding from first and last columns for edge-to-edge rows */
