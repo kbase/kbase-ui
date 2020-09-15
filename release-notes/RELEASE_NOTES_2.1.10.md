@@ -25,11 +25,13 @@ none
 ### IMPROVEMENTS
 
 - support installing a plugin more than once
+- integration test improvements
 
 ### FIXES
 
-- dataview: pangenome viewer removes sorting from two columns which crash when sorted
-- orgs: fix link handling for invitations to private orgs; fix display of > 100 orgs.
+- dataview: [PTV-1527, PUBLIC-1207, PUBLIC-1208] pangenome viewer - remove sorting from two columns which crash when sorted
+- orgs: [PTV-1537, PUBLIC-1353] fix link handling for invitations to private orgs; fix display of > 100 orgs.
+- user profile: [PTV-1519, PUBLIC-1242] fix editor bugs: affiliation, position, state fields had problems - these and related issues were fixed.
 
 ### DEPENDENCIES
 
