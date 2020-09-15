@@ -9,7 +9,7 @@
 
 ## About
 
-The KBase User Interface (*kbase-ui*) is a web browser Single Page App (SPA) providing tools for [KBase](http://kbase.us) users. It is a partner to the [KBase Narrative Interface](https://github.com/kbase/narrative), with which it shares code yet runs as a separate web app.
+The KBase User Interface (*kbase-ui*) is a web browser Single Page App (SPA) providing tools for [KBase](http://www.base.us) users. It is a partner to the [KBase Narrative Interface](https://github.com/kbase/narrative), with which it shares code yet runs as a separate web app.
 
 Current user features include:
 
@@ -20,7 +20,7 @@ Current user features include:
 - *Authenticator*, for logging into and out of user's KBase Account and granting authorization to the web app,
 - *Catalog*, for browsing, searching and (for developers) managing KBase Narrative Apps.
 
-> If you have stumbled up on this project, you may first want to [find out about KBase](http://kbase.us).
+> If you have stumbled up on this project, you may first want to [find out about KBase](http://www.kbase.us).
 > The *KBase UI* is not a general purpose tool -- it is designed to work inside the KBase ecosystem.
 
 The primary audience for this project is:
@@ -41,11 +41,11 @@ The KBase UI is an open source project, managed through github. As such, contrib
 
 ## Release Notes
 
-The current released version is [2.1.9](release-notes/RELEASE_NOTES_2.1.9.md).
+The current released version is [2.1.10](release-notes/RELEASE_NOTES_2.1.10.md).
 
 ## Reporting Bugs
 
-We do not currently use github issues for bug reports. Please send any bug reports, comments, or requests via our [public help board](http://kbase.us/contact).
+We do not currently use github issues for bug reports. Please visit [Kbase Support](http://www.kbase.us/support) for bug reports, questions or feature requests.
 
 ## License
 
