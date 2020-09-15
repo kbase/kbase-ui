@@ -31,7 +31,6 @@ report.*.json
 /dev/test-config.json
 /dev/temp
 /dev/test
-node_modules
 yarn.lock
 
 # General purpose temp directory
@@ -45,4 +44,3 @@ docker-compose.override.yml
 
 # can be left over with a manual npm install with --no-cache (I think)
 /false
-

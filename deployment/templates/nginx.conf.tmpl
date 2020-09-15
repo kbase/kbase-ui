@@ -51,31 +51,96 @@ http {
     gzip_types text/plain text/css text/xml text/javascript application/json application/x-javascript application/xml;
     gzip_disable "MSIE [1-6]\.";
 
+    upstream docs {
+        server docs.kbase.us:443;
+    }
+
+    upstream marketing {
+        server  www.kbase.us:443;
+    }
+
     server {
-        listen      {{ default .Env.nginx_listen "80"}};
+        listen      {{ default .Env.nginx_listen "80"}} default_server;
         server_name {{ default .Env.nginx_server_name "localhost" }};
 
         location / {
-          index index.html;
-          ssi_silent_errors off;
-          allow all;
-          # this ensures that a downstream cache service will revalidate.
-          add_header Cache-Control 'no-cache';
+            # Ensure that index.html is invoked even if a path is
+            # specified and doesn't exist.
+            try_files $uri /$uri /index.html;
+            #   index index.html;
+            ssi_silent_errors off;
+            allow all;
+            # this ensures that a downstream cache service will revalidate.
+            add_header Cache-Control 'no-cache';
 
-          root /kb/deployment/services/kbase-ui/dist;
+            root /kb/deployment/services/kbase-ui/dist;
         }
 
-        # location /_track_/ {
-        #   index index.html;
-        #   ssi_silent_errors off;
-        #   allow all;
-        #   # this ensures that a downstream cache service will revalidate.
-        #   add_header Cache-Control 'no-cache';
+        # Format is /__poke/https://www.example.com/some/path
+        location ~* ^/__poke/docs/(.*)$ {
+            proxy_hide_header Content-Security-Policy;
+            proxy_hide_header X-Content-Security-Policy;
+            proxy_hide_header X-Webkit-Csp;
+            proxy_pass https://docs/$1;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;
+            proxy_buffer_size 128k;
+            proxy_buffers 4 256k;
+            proxy_busy_buffers_size 256k;
+            proxy_set_header Host docs.kbase.us; 
+            proxy_intercept_errors on;
+            recursive_error_pages on;
+            error_page 301 302 307 = @handle_redirect_docs;
+        }
 
-        #   # rewrite .* / redirect;
-        #   rewrite .* /;
+        location @handle_redirect_docs {
+            set $saved_redirect_location  '$upstream_http_location';
 
-        #   root /kb/deployment/services/kbase-ui/dist;
-        # }
+            # These header fields are massive in gitbook.
+            proxy_hide_header Content-Security-Policy;
+            proxy_hide_header X-Content-Security-Policy;
+            proxy_hide_header X-Webkit-Csp;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;
+            proxy_buffer_size 128k;
+            proxy_buffers 4 256k;
+            proxy_busy_buffers_size 256k;
+            proxy_set_header Host docs.kbase.us; 
+            proxy_pass $saved_redirect_location;
+            proxy_intercept_errors on;
+            recursive_error_pages on;
+            error_page 301 302 307 = @handle_redirect_docs;
+        }
+
+        location ~* ^/__poke/marketing/(.*)$ {
+            proxy_pass https://marketing/$1;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;
+            proxy_set_header Host www.kbase.us;  
+            proxy_intercept_errors on;
+            recursive_error_pages on;
+            error_page 301 302 307 = @handle_redirect_marketing;
+        }
+
+        location @handle_redirect_marketing {
+            set $saved_redirect_location  '$upstream_http_location';
+            set $path $saved_redirect_location;
+
+            if ($saved_redirect_location ~* ^https://www.kbase.us/(.*)$) {
+                set $path $1;
+            }
+            
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;
+            proxy_set_header Host www.kbase.us;  
+            proxy_pass https://marketing/$path;
+            proxy_intercept_errors on;
+            recursive_error_pages on;
+            error_page 301 302 307 = @handle_redirect_marketing;
+        }
     }
 }

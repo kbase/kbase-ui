@@ -250,6 +250,7 @@ define([
                                 token: this.runtime.service('session').getAuthToken(),
                                 username: this.runtime.service('session').getUsername(),
                                 realname: this.runtime.service('session').getRealname(),
+                                email: this.runtime.service('session').getEmail(),
                                 roles: this.runtime.service('session').getRoles().map(({ id }) => {
                                     return id;
                                 })

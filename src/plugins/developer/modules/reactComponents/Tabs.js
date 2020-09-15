@@ -59,7 +59,7 @@ define([
                     No Body
                 `;
             }
-            // console.log('props??', this.props.tabs, );
+
             const selectedTab = this.props.tabs.filter((tab) => {
                 return tab.id === this.state.selectedTab;
             })[0];
@@ -73,14 +73,6 @@ define([
                 <${selectedTab.component} ...${this.props.tabProps} data-tab-pane=${selectedTab.id} />
             `;
         }
-
-        // render() {
-        //     return html`
-        //         <div className='Tab'>
-        //             TABS
-        //         </div>
-        //     `;
-        // }
 
         render() {
             return html`

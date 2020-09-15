@@ -15,7 +15,7 @@ plugins:
         account: kbase
   - name: dataview
     globalName: kbase-ui-plugin-dataview
-    version: 4.7.7
+    version: 4.7.28
     source:
       github:
         account: kbase
@@ -27,13 +27,13 @@ plugins:
         account: kbase
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
-    version: 2.3.20
+    version: 2.3.22
     source:
       github:
         account: kbase
   - name: jgi-search
     globalName: kbase-ui-plugin-jgi-search
-    version: 2.0.0
+    version: 2.0.1
     source:
       github:
         account: kbase
@@ -55,9 +55,15 @@ plugins:
     source:
       github:
         account: kbase
+  - name: data-search2
+    globalName: kbase-ui-plugin-data-search
+    version: 2.1.2
+    source:
+      github:
+        account: kbase
   - name: organizations
     globalName: kbase-ui-plugin-organizations
-    version: 2.1.2
+    version: 2.1.5
     source:
       github:
         account: kbase
@@ -75,7 +81,7 @@ plugins:
         account: kbase
   - name: react-profile-view
     globalName: kbase-ui-plugin-react-profile-view
-    version: 1.2.8
+    version: 1.2.10
     source:
       github:
         account: kbaseIncubator
@@ -87,13 +93,13 @@ plugins:
         account: kbaseIncubator
   - name: dashboard4
     globalName: kbase-ui-plugin-dashboard4
-    version: 0.2.0
+    version: 0.2.3
     source:
       github:
         account: eapearson
-  - name: sampleview
-    globalName: kbase-ui-plugin-sampleview
-    version: 0.7.10
+  - name: samples
+    globalName: kbase-ui-plugin-samples
+    version: 0.7.16
     source:
       github:
         account: kbaseIncubator
@@ -109,14 +115,16 @@ plugins:
     source:
       github:
         account: kbaseIncubator
+  - name: public-search
+    globalName: kbase-ui-plugin-public-search
+    version: 0.15.3
+    source:
+      github:
+        account: eapearson
+        branch: master
   # The following have not been ported (yet if ever)
   # Unreleased
-  # - name: public-search
-  #   globalName: kbase-ui-plugin-public-search
-  #   version: 0.13.6
-  #   cwd: src/plugin
-  #   source:
-  #     bower: {}
+
   # Experimental or Dev Only
   # - name: ui-service
   #   globalName: kbase-ui-plugin-ui-service

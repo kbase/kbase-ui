@@ -17,14 +17,19 @@ function loadData(config) {
         cwd: __dirname
     });
 
-    const theData = {};
+    // merge all the configs in this dir.
+    const someData = {};
     dataFiles.forEach((file) => {
         const pluginData = utils.loadJSONFile(file);
+        Object.assign(someData, pluginData);
         const pluginName = file.split('/').slice(-4)[0];
-        Object.assign(theData, { [pluginName]: pluginData });
+        if (!someData[pluginName]) {
+            someData[pluginName] = {};
+        }
+        Object.assign(someData[pluginName], pluginData);
     });
 
-    return theData;
+    return someData;
 }
 
 function main() {
@@ -76,21 +81,20 @@ function main() {
     const rawConfig = utils.loadJSONFile(__dirname + '/../config.json');
     const envConfig = rawConfig.envs.reduce((config, envConfig) => {
         const theEnvConfig = new Merger(rawConfig.envDefault).mergeIn(envConfig).value();
-        let hostPrefix;
-        if (theEnvConfig.hostPrefix) {
-            hostPrefix = theEnvConfig.hostPrefix;
+        if (theEnvConfig.noHostPrefix) {
+            theEnvConfig.url = 'https://kbase.us';
         } else {
-            hostPrefix = theEnvConfig.env;
+            theEnvConfig.url = `https://${theEnvConfig.hostPrefix || theEnvConfig.env}.kbase.us`;
         }
-        theEnvConfig.url = `https://${hostPrefix}.kbase.us`;
+        // theEnvConfig.url = `https://${hostPrefix}.kbase.us`;
         config[theEnvConfig.env] = theEnvConfig;
 
-        // Handle other environments which are essential wrappers a canonical one.
+        // Handle other environments which are essential wrappers around a canonical one.
         // E.g. narrative-dev, narrative-refactor, appdev
         if (envConfig.aliases) {
             envConfig.aliases.forEach((alias) => {
                 const theEnvConfig = new Merger(rawConfig.envDefault).mergeIn(envConfig).value();
-                theEnvConfig.url = `https://${alias.hostPrefix || alias.env}.kbase.us`;
+                theEnvConfig.url = `https://${alias.env}.kbase.us`;
                 config[alias.env] = theEnvConfig;
             });
         }
@@ -98,6 +102,8 @@ function main() {
         return config;
     }, {})[process.env.ENV];
     const config = new Merger(rawConfig.envDefault).mergeIn(envConfig).value();
+
+    console.log('CONFIG', config);
 
     const plugins = loadData({ env: process.env.ENV });
     const context = {

@@ -14,15 +14,29 @@ function getRoot() {
 
 function mergePlugins(root, config, args) {
     if (args.plugin) {
-        let plugins;
+        let pluginSpecs;
         if (typeof args.plugin === 'string') {
-            plugins = [args.plugin];
+            pluginSpecs = [args.plugin];
         } else {
-            plugins = args.plugin;
+            pluginSpecs = args.plugin;
         }
 
-        plugins.forEach((pluginName) => {
-            const pluginRoot = root + '/../kbase-ui-plugin-' + pluginName;
+        const plugins = pluginSpecs.map((pluginSpec) => {
+            const parts = pluginSpec.split(':');
+            if (parts.length === 1) {
+                return {
+                    pluginName: parts[0],
+                    repoSuffix: parts[0]
+                }
+            }
+            return {
+                pluginName: parts[0],
+                repoSuffix: parts[1]                
+            }
+        });
+
+        plugins.forEach(({pluginName, repoSuffix}) => {
+            const pluginRoot = root + '/../kbase-ui-plugin-' + repoSuffix;
             let pluginDir = pluginRoot + '/dist/plugin';
 
             if (!fs.existsSync(pluginDir)) {
@@ -99,7 +113,7 @@ function mergeLibs(root, config, args) {
     }
 }
 
-function mergeConfig(root, config, args) {
+function mergeConfig(root, config) {
     const gitlabConfigDir = root + '/dev/gitlab-config';
     if (fs.existsSync(gitlabConfigDir)) {
         console.log('using gitlab configs');
@@ -152,7 +166,7 @@ function mergeLocalNarrative(root, config, args) {
     }
 }
 
-function mergeLocalTests(root, config, args) {
+function mergeLocalTests(root, config) {
     config.services['kbase-ui'].volumes.push({
         type: 'volume',
         source: 'integration-tests',
@@ -165,6 +179,23 @@ function mergeLocalTests(root, config, args) {
             type: 'none',
             o: 'bind',
             device: integrationTestsHostDirectory
+        }
+    };
+}
+
+function mergeLocalDocs(root, config) {
+    config.services['kbase-ui'].volumes.push({
+        type: 'volume',
+        source: 'developer-docs',
+        target: '/kb/deployment/services/kbase-ui/dist/docs'
+    });
+    const docsHostDirectory = [root, 'docs'].join('/');
+    config.volumes['developer-docs'] = {
+        driver: 'local',
+        driver_opts: {
+            type: 'none',
+            o: 'bind',
+            device: docsHostDirectory
         }
     };
 }
@@ -204,6 +235,8 @@ function main(args) {
     mergeConfig(root, config, args);
 
     mergeLocalTests(root, config, args);
+
+    mergeLocalDocs(root, config, args);
 
     const outputPath = [root, 'dev', 'docker-compose.override.yml'].join('/');
     fs.writeFileSync(outputPath, yaml.safeDump(config));

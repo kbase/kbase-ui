@@ -30,7 +30,6 @@ define([
         }
 
         renderWelcome() {
-            const narrativeUrl = this.props.runtime.config('services.narrative.url');
             const docSiteUrl = this.props.runtime.config('resources.docSite.base.url');
             return html`
             <div>
@@ -45,14 +44,14 @@ define([
                 <ul>
                     <li>
                         The ${' '}
-                        <a href=${narrativeUrl} target="_blank"
+                        <a href="/#narrativemanager/start" target="_blank"
                            style=${{fontWeight: 'bold'}}>
                            Narrative Interface
                         </a>,
                         a tool for creating, editing, running and publishing active 
                         scientific documents called Narratives. New to the Narrative? 
                         Perhaps you would like to check out the ${' '}
-                        <a href="http://kbase.us/narrative-guide"
+                        <a href="https://docs.kbase.us/getting-started/narrative"
                            target="_blank"
                            style=${{fontWeight: 'bold'}}>
                            Narrative Interface User Guide
@@ -117,7 +116,7 @@ define([
                 return [html`
                     <p>This build is not located at a tagged commit. 
                     The current commit is ${' '}
-                    <a href=${[repoUrl, 'commit', hash].join('/')}>
+                    <a href=${[repoUrl, 'commit', hash].join('/')} target="_blank">
                     ${commitHash}
                     </a>.</p>
                 `, githubUrl, relNotesUrl];
@@ -137,16 +136,16 @@ define([
                 second: 'numeric',
                 timeZoneName: 'short'
             }).format(new Date(buildInfo.builtAt));
-            // const builtAt = moment(new Date(buildInfo.builtAt));
-            // const buildDate = builtAt.format('dddd MMMM D, YYYY');
-            // const buildTime = builtAt.format('h:mm:ss a');
             const contactUrl = this.props.runtime.config('resources.contact.url');
             const helpUrl = this.props.runtime.config('resources.help.url');
-            const aboutKbase = this.props.runtime.config('resources.documentation.aboutKbase.url');
+            const aboutKBase = this.props.runtime.config('resources.documentation.aboutKBase.url');
 
-            const documentationUrl = 'http://kbaseincubator.github.io/kbase-ui-docs';
+            const uiDocumentationUrl = 'http://kbaseincubator.github.io/kbase-ui-docs';
+            const documentationURL = 'https://docs.kbase.us';
 
             const [githubContent, githubUrl, relNotesUrl] = this.renderGitInfo();
+
+            const kbaseGithubOrgURL = 'https://github.com/kbase';
 
             return html`
             <div>
@@ -154,35 +153,48 @@ define([
                 <p>It was built on ${buildDate} at ${buildTime}.</p>
                 <h3>You may also be interested in:</h3>
                 <ul>
-                    <li>
-                        <a href=${aboutKbase} target="_blank">
-                            About KBase
-                        </a>
+                    <li> KBase
+                        <ul>
+                            <li>
+                                <a href=${aboutKBase} target="_blank">
+                                    About KBase
+                                </a>
+                            </li>
+                            <li>
+                                <a href=${contactUrl} target="_blank">
+                                    Support
+                                </a>
+                            </li>
+                            <li>
+                                <a href=${documentationURL} target="_blank">
+                                    Documentation
+                                </a>
+                            </li>
+                            <li>
+                                <a href=${kbaseGithubOrgURL} target="_blank">
+                                    KBase Github Organization
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li>
-                        <a href=${contactUrl} target="_blank">
-                            Contact KBase
-                        </a>
-                    </li>
-                    <li>
-                        <a href=${documentationUrl} target="_blank">
-                            Documentation
-                        </a>
-                    </li>
-                    <li>
-                        <a href=${githubUrl} target="_blank">
-                            Github Repo
-                        </a>
-                    </li>
-                    <li>
-                        <a href=${helpUrl} target="_blank">
-                            Public Help Board
-                        </a>
-                    </li>
-                    <li>
-                        <a href=${relNotesUrl} target="_blank">
-                            Release Notes
-                        </a>
+                    <li> KBase UI (this web app)
+                        <ul>
+                            <li>
+                                <a href=${uiDocumentationUrl} target="_blank">
+                                    Documentation
+                                </a>
+                            </li>
+                            <li>
+                                <a href=${githubUrl} target="_blank">
+                                    KBase UI Github Repo
+                                </a>
+                            </li>
+                            <li>
+                                <a href=${relNotesUrl} target="_blank">
+                                    Release Notes
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>`;

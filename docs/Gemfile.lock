@@ -1,8 +1,8 @@
 GIT
-  remote: https://github.com/eapearson/kbase-github-pages-theme
-  revision: cfbc87e75a26530be1c4008b7c091af1e495196e
+  remote: https://github.com/kbaseIncubator/kbase-github-pages-theme
+  revision: c8ed041523f1ab0f1953ba6cf5f815fe5d99bbf9
   specs:
-    kbase-github-pages-theme (0.2.8)
+    kbase-github-pages-theme (0.3.1)
       jekyll (~> 3.8.5)
       jekyll-seo-tag (~> 2.0)
       rake (~> 12.3.1)
@@ -221,7 +221,7 @@ GEM
     pathutil (0.16.2)
       forwardable-extended (~> 2.6)
     public_suffix (3.1.1)
-    rake (12.3.2)
+    rake (12.3.3)
     rb-fsevent (0.10.3)
     rb-inotify (0.10.0)
       ffi (~> 1.0)
@@ -256,4 +256,4 @@ DEPENDENCIES
   kbase-github-pages-theme!
 
 BUNDLED WITH
-   2.0.2
+   2.1.4

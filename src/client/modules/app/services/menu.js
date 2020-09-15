@@ -108,16 +108,24 @@ define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
         }
 
         // Plugin interface
-        pluginHandler(newMenus) {
-            if (!newMenus) {
+        pluginHandler(serviceConfig, pluginConfig, pluginDef) {
+            if (!serviceConfig) {
                 return;
             }
+            if (Array.isArray(serviceConfig)) {
+                serviceConfig = {
+                    items: serviceConfig
+                };
+            }
             return Promise.try(() => {
-                newMenus.forEach((menu) => {
+                serviceConfig.items.forEach((menu) => {
                     // quick patch to the definition to add the id.
                     // TODO: maybe just store the whole menu from
                     // the plugin config?
                     menu.id = menu.name;
+                    if (serviceConfig.mode === 'auto') {
+                        menu.path.unshift(pluginDef.package.name);
+                    }
                     this.addMenuItem(menu.name, menu.definition || menu);
                 });
             });

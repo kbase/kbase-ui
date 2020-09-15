@@ -38,10 +38,6 @@ const Promise = require('bluebird'),
     numeral = require('numeral'),
     tar = require('tar');
 
-// running from kbase-ui/mutations/build.js
-// some binaries in kbase-ui/node-modules/.bin
-const NODE_BIN = __dirname + '/../node_modules/.bin/';
-
 // UTILS
 function run(command, ignoreStdErr = false, verbose = false) {
     return new Promise(function (resolve, reject) {
@@ -261,55 +257,22 @@ function installModulePackagesFromBower(state) {
         });
 }
 
-function injectPluginsIntoBower(state) {
-    // Load plugin config
-    var root = state.environment.path,
-        pluginConfig,
-        pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/'),
-        bowerConfig,
-        bowerConfigFile = root.concat(['build', 'bower.json']).join('/');
-    return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8'), fs.readFileAsync(bowerConfigFile, 'utf8')])
-        .spread(function (pluginFile, bowerFile) {
-            pluginConfig = yaml.safeLoad(pluginFile);
-            bowerConfig = JSON.parse(bowerFile);
-        })
-        .then(function () {
-            // First ensure all plugin packages are installed via bower.
-            pluginConfig.plugins
-                .filter(function (plugin) {
-                    if (typeof plugin === 'object' && !plugin.internal && plugin.source.bower) {
-                        return true;
-                    }
-                    return false;
-                })
-                .forEach(function (plugin) {
-                    var name = plugin.source.bower.name || plugin.globalName,
-                        version = plugin.source.bower.version || plugin.version;
-                    bowerConfig.dependencies[name] = version;
-                });
 
-            return fs.writeFileAsync(
-                root.concat(['build', 'bower.json']).join('/'),
-                JSON.stringify(bowerConfig, null, 4)
-            );
-        });
-}
-
-function buildPlugin(state, pluginDir) {
-    const commands = [
-        ['cd', pluginDir].join(' '),
-        ['rm', '-f', 'yarn.lock'].join(' '),
-        ['rm', '-f', 'react-app/yarn.lock'].join(' '),
-        'yarn build-plugin'].join(' && ');
-    return run(commands, true, true)
-        .then((out) => {
-            console.log(out);
-        })
-        .catch((err) => {
-            console.log('Error building plugin', pluginDir, err.message);
-            throw err;
-        });
-}
+// function buildPlugin(state, pluginDir) {
+//     const commands = [
+//         ['cd', pluginDir].join(' '),
+//         ['rm', '-f', 'yarn.lock'].join(' '),
+//         ['rm', '-f', 'react-app/yarn.lock'].join(' '),
+//         'yarn build-plugin'].join(' && ');
+//     return run(commands, true, true)
+//         .then((out) => {
+//             console.log(out);
+//         })
+//         .catch((err) => {
+//             console.log('Error building plugin', pluginDir, err.message);
+//             throw err;
+//         });
+// }
 
 function fetchPluginsFromGithub(state) {
     // Load plugin config
@@ -330,10 +293,7 @@ function fetchPluginsFromGithub(state) {
             // First generate urls to all the plugin repos.
             const githubPlugins = pluginConfig.plugins
                 .filter(function (plugin) {
-                    if (typeof plugin === 'object' && !plugin.internal && plugin.source.github) {
-                        return true;
-                    }
-                    return false;
+                    return (typeof plugin === 'object' && !plugin.internal && plugin.source.github);
                 });
             return Promise.each(githubPlugins, (plugin) => {
                 const repoName = plugin.source.github.name || plugin.globalName,
@@ -342,7 +302,7 @@ function fetchPluginsFromGithub(state) {
                     gitAccount = plugin.source.github.account || 'kbase',
                     url = plugin.source.github.url || 'https://github.com/' + gitAccount + '/' + repoName;
 
-                const dest = gitDestination.concat([plugin.globalName]).join('/');
+                const dest = gitDestination.concat([plugin.name]).join('/');
                 mutant.log(`... cloning plugin repo ${plugin.globalName}, version ${version}, branch: ${branch}`);
                 return gitClone(url, dest, branch);
             });
@@ -408,24 +368,24 @@ function bowerInstall(state) {
 
 
 
-function npm(cmd, argv, options) {
-    return new Promise(function (resolve, reject) {
-        exec('npm ' + cmd + argv.join(' '), options, function (err, stdout, stderr) {
-            if (err) {
-                reject(err);
-            }
-            if (stderr) {
-                // reject(new Error(stderr));
-                resolve({
-                    warnings: stderr
-                });
-            }
-            resolve({
-                result: stdout
-            });
-        });
-    });
-}
+// function npm(cmd, argv, options) {
+//     return new Promise(function (resolve, reject) {
+//         exec('npm ' + cmd + argv.join(' '), options, function (err, stdout, stderr) {
+//             if (err) {
+//                 reject(err);
+//             }
+//             if (stderr) {
+//                 // reject(new Error(stderr));
+//                 resolve({
+//                     warnings: stderr
+//                 });
+//             }
+//             resolve({
+//                 result: stdout
+//             });
+//         });
+//     });
+// }
 
 function yarn(cmd, argv, options) {
     return new Promise(function (resolve, reject) {
@@ -463,22 +423,22 @@ function yarnInstall(state) {
         });
 }
 
-function npmInstall(state) {
-    var base = state.environment.path.concat(['build']);
-    var packagePath = base.concat(['package.json']);
-    return mutant
-        .loadJson(packagePath)
-        .then(function (packageConfig) {
-            delete packageConfig.devDependencies;
-            return mutant.saveJson(packagePath, packageConfig);
-        })
-        .then(function () {
-            return npm('install', [], {
-                cwd: base.join('/'),
-                timeout: 300000
-            });
-        });
-}
+// function npmInstall(state) {
+//     var base = state.environment.path.concat(['build']);
+//     var packagePath = base.concat(['package.json']);
+//     return mutant
+//         .loadJson(packagePath)
+//         .then(function (packageConfig) {
+//             delete packageConfig.devDependencies;
+//             return mutant.saveJson(packagePath, packageConfig);
+//         })
+//         .then(function () {
+//             return npm('install', [], {
+//                 cwd: base.join('/'),
+//                 timeout: 300000
+//             });
+//         });
+// }
 
 function copyFromBower(state) {
     var root = state.environment.path;
@@ -604,113 +564,113 @@ function copyFromBower(state) {
     });
 }
 
-function copyFromNpm(state) {
-    var root = state.environment.path;
-
-    return mutant.loadYaml(root.concat(['config', 'npmInstall.yml'])).then(function (config) {
-        var copyJobs = [];
-
-        config.npmFiles.forEach(function (cfg) {
-            /*
-                 The top level bower directory name is usually the name of the
-                 package (which also is often also base of the sole json file name)
-                 but since this is not always the case, we allow the dir setting
-                 to override this.
-                 */
-            var dir = cfg.dir || cfg.name,
-                sources,
-                cwd,
-                dest;
-            if (!dir) {
-                throw new Error(
-                    'Either the name or dir property must be provided to establish the top level directory'
-                );
-            }
-
-            /*
-                 The source defaults to the package name with .js, unless the
-                 src property is provided, in which case it must be either a single
-                 or set of glob-compatible strings.*/
-            if (cfg.src) {
-                if (typeof cfg.src === 'string') {
-                    sources = [cfg.src];
-                } else {
-                    sources = cfg.src;
-                }
-            } else if (cfg.name) {
-                sources = [cfg.name + '.js'];
-            } else {
-                throw new Error('Either the src or name must be provided in order to have something to copy');
-            }
-
-            /*
-                 Finally, the cwd serves as a way to dig into a subdirectory and use it as the
-                 basis for copying. This allows us to "bring up" files to the top level of
-                 the destination. Since we are relative to the root of this process, we
-                 need to jigger that here.
-                 */
-            if (cfg.cwd) {
-                if (typeof cfg.cwd === 'string') {
-                    cfg.cwd = cfg.cwd.split(/,/);
-                }
-                cwd = ['build', 'node_modules', dir].concat(cfg.cwd);
-            } else {
-                cwd = ['build', 'node_modules', dir];
-            }
-
-            /*
-                 The destination will be composed of 'node_modules' at the top
-                 level, then the package name or dir (as specified above).
-                 This is the core of our "thinning and flattening", which is part of the
-                 point of this bower copy process.
-                 In addition, if the spec includes a dest property, we will use that
-                 */
-            if (cfg.standalone) {
-                dest = ['build', 'client', 'modules'].concat([cfg.name]);
-            } else {
-                dest = ['build', 'client', 'modules', 'node_modules'].concat([cfg.dir || cfg.name]);
-            }
-
-            sources.forEach(function (source) {
-                copyJobs.push({
-                    cwd: cwd,
-                    src: source,
-                    dest: dest
-                });
-            });
-        });
-
-        // Create and execute a set of promises to fetch and operate on the files found
-        // in the above spec.
-        return Promise.all(
-            copyJobs.map(function (copySpec) {
-                return glob(copySpec.src, {
-                    cwd: state.environment.path.concat(copySpec.cwd).join('/'),
-                    nodir: true
-                })
-                    .then(function (matches) {
-                        // Do the copy!
-                        return Promise.all(
-                            matches.map(function (match) {
-                                var fromPath = state.environment.path
-                                    .concat(copySpec.cwd)
-                                    .concat([match])
-                                    .join('/'),
-                                    toPath = state.environment.path
-                                        .concat(copySpec.dest)
-                                        .concat([match])
-                                        .join('/');
-                                return fs.copy(fromPath, toPath, {});
-                            })
-                        );
-                    })
-                    .then(function () {
-                        return state;
-                    });
-            })
-        );
-    });
-}
+// function copyFromNpm(state) {
+//     var root = state.environment.path;
+//
+//     return mutant.loadYaml(root.concat(['config', 'npmInstall.yml'])).then(function (config) {
+//         var copyJobs = [];
+//
+//         config.npmFiles.forEach(function (cfg) {
+//             /*
+//                  The top level bower directory name is usually the name of the
+//                  package (which also is often also base of the sole json file name)
+//                  but since this is not always the case, we allow the dir setting
+//                  to override this.
+//                  */
+//             var dir = cfg.dir || cfg.name,
+//                 sources,
+//                 cwd,
+//                 dest;
+//             if (!dir) {
+//                 throw new Error(
+//                     'Either the name or dir property must be provided to establish the top level directory'
+//                 );
+//             }
+//
+//             /*
+//                  The source defaults to the package name with .js, unless the
+//                  src property is provided, in which case it must be either a single
+//                  or set of glob-compatible strings.*/
+//             if (cfg.src) {
+//                 if (typeof cfg.src === 'string') {
+//                     sources = [cfg.src];
+//                 } else {
+//                     sources = cfg.src;
+//                 }
+//             } else if (cfg.name) {
+//                 sources = [cfg.name + '.js'];
+//             } else {
+//                 throw new Error('Either the src or name must be provided in order to have something to copy');
+//             }
+//
+//             /*
+//                  Finally, the cwd serves as a way to dig into a subdirectory and use it as the
+//                  basis for copying. This allows us to "bring up" files to the top level of
+//                  the destination. Since we are relative to the root of this process, we
+//                  need to jigger that here.
+//                  */
+//             if (cfg.cwd) {
+//                 if (typeof cfg.cwd === 'string') {
+//                     cfg.cwd = cfg.cwd.split(/,/);
+//                 }
+//                 cwd = ['build', 'node_modules', dir].concat(cfg.cwd);
+//             } else {
+//                 cwd = ['build', 'node_modules', dir];
+//             }
+//
+//             /*
+//                  The destination will be composed of 'node_modules' at the top
+//                  level, then the package name or dir (as specified above).
+//                  This is the core of our "thinning and flattening", which is part of the
+//                  point of this bower copy process.
+//                  In addition, if the spec includes a dest property, we will use that
+//                  */
+//             if (cfg.standalone) {
+//                 dest = ['build', 'client', 'modules'].concat([cfg.name]);
+//             } else {
+//                 dest = ['build', 'client', 'modules', 'node_modules'].concat([cfg.dir || cfg.name]);
+//             }
+//
+//             sources.forEach(function (source) {
+//                 copyJobs.push({
+//                     cwd: cwd,
+//                     src: source,
+//                     dest: dest
+//                 });
+//             });
+//         });
+//
+//         // Create and execute a set of promises to fetch and operate on the files found
+//         // in the above spec.
+//         return Promise.all(
+//             copyJobs.map(function (copySpec) {
+//                 return glob(copySpec.src, {
+//                     cwd: state.environment.path.concat(copySpec.cwd).join('/'),
+//                     nodir: true
+//                 })
+//                     .then(function (matches) {
+//                         // Do the copy!
+//                         return Promise.all(
+//                             matches.map(function (match) {
+//                                 var fromPath = state.environment.path
+//                                     .concat(copySpec.cwd)
+//                                     .concat([match])
+//                                     .join('/'),
+//                                     toPath = state.environment.path
+//                                         .concat(copySpec.dest)
+//                                         .concat([match])
+//                                         .join('/');
+//                                 return fs.copy(fromPath, toPath, {});
+//                             })
+//                         );
+//                     })
+//                     .then(function () {
+//                         return state;
+//                     });
+//             })
+//         );
+//     });
+// }
 
 function copyFromNodeNodules(state) {
     var root = state.environment.path;
@@ -841,12 +801,13 @@ function installPlugins(state) {
                 pluginConfig = yaml.safeLoad(pluginFile);
                 const plugins = pluginConfig.plugins;
                 return Promise.all(
+                        // Supports installing from gitDownloads (which are downloaded prior to this)
                         plugins
                             .filter(function (plugin) {
                                 return typeof plugin === 'object' && plugin.source.github;
                             })
                             .map(function (plugin) {
-                                const pluginDir = root.concat(['gitDownloads', plugin.globalName]);
+                                const pluginDir = root.concat(['gitDownloads', plugin.name]);
                                 const destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
                                 let srcDir;
                                 if (plugin.cwd) {
@@ -873,6 +834,7 @@ function installPlugins(state) {
                             })
                     )
                     .then(function () {
+                        // Supports installing from a directory
                         return Promise.all(
                             plugins
                                 .filter(function (plugin) {
@@ -885,7 +847,7 @@ function installPlugins(state) {
                                         // project root.
                                         repoRoot = (plugin.source.directory.root &&
                                             plugin.source.directory.root.split('/')) || ['', 'kb', 'plugins'],
-                                        source = repoRoot.concat([plugin.globalName]).concat(cwd),
+                                        source = repoRoot.concat([plugin.name]).concat(cwd),
                                         destination = root.concat([
                                             'build',
                                             'client',
@@ -899,6 +861,7 @@ function installPlugins(state) {
                         );
                     })
                     .then(function () {
+                        // Supports internal plugins.
                         return Promise.all(
                             plugins
                                 .filter(function (plugin) {
@@ -917,11 +880,11 @@ function installPlugins(state) {
             .then(function () {
                 // dir list of all plugins
                 const pluginsPath = root.concat(['build', 'client', 'modules', 'plugins']);
-                return dirList(pluginsPath).then(function (pluginDirs) {
-                    return Promise.each(pluginDirs, function (pluginDir) {
+                return dirList(pluginsPath).then((pluginDirs) => {
+                    return Promise.each(pluginDirs, (pluginDir) => {
                         // Has integration tests?
                         const testDir = pluginDir.path.concat(['test']);
-                        return pathExists(testDir.join('/')).then(function (exists) {
+                        return pathExists(testDir.join('/')).then((exists) => {
                             const justDir = pluginDir.path[pluginDir.path.length - 1];
                             if (!exists) {
                                 mutant.warn('plugin without tests: ' + justDir);
@@ -979,6 +942,12 @@ function setupBuild(state) {
                 to = root.concat(['test']);
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
+        // .then(function () {
+        //     // the client really now becomes the build!
+        //     const from = root.concat(['docs']),
+        //         to = root.concat(['build', 'client', 'docs']);
+        //     return fs.moveAsync(from.join('/'), to.join('/'));
+        // })
         .then(function () {
             // the client really now becomes the build!
             const from = root.concat(['src', 'plugins']),
@@ -998,10 +967,6 @@ function setupBuild(state) {
             return fs.rmdirAsync(root.concat(['src']).join('/'));
         })
         .then(function () {
-            mutant.log('Inject Plugins Into Bower');
-            return injectPluginsIntoBower(state);
-        })
-        .then(function () {
             mutant.log('Fetch plugins from github');
             return fetchPluginsFromGithub(state);
         })
@@ -1014,18 +979,18 @@ function setupBuild(state) {
         });
 }
 
-function installNpmPackages(state) {
-    return npmInstall(state)
-        .then(function () {
-            return fs.remove(state.environment.path.concat(['build', 'package.json']).join('/'));
-        })
-        .then(function () {
-            return copyFromNpm(state);
-        })
-        .then(function () {
-            return state;
-        });
-}
+// function installNpmPackages(state) {
+//     return npmInstall(state)
+//         .then(function () {
+//             return fs.remove(state.environment.path.concat(['build', 'package.json']).join('/'));
+//         })
+//         .then(function () {
+//             return copyFromNpm(state);
+//         })
+//         .then(function () {
+//             return state;
+//         });
+// }
 
 function installYarnPackages(state) {
     return yarnInstall(state)
@@ -1635,7 +1600,19 @@ function main(type) {
             const initialFilesystem = [
                 {
                     cwd: ['..'],
-                    path: ['src']
+                    path: ['src', 'client']
+                },
+                {
+                    cwd: ['..'],
+                    path: ['src', 'plugins']
+                },
+                // {
+                //     cwd: ['..'],
+                //     path: ['docs']
+                // },
+                {
+                    cwd: ['..'],
+                    path: ['src', 'test']
                 },
                 {
                     cwd: ['..'],
@@ -1802,7 +1779,6 @@ function main(type) {
                 } else {
                     return copyToDistBuild(state);
                 }
-                return state;
             })
 
             .then(function (state) {

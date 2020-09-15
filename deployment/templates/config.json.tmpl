@@ -15,7 +15,6 @@
         "services": {
 			"connection": {},
 			"coreService": {},
-			"data": {},
 			"heartbeat": {
                 "interval": 500
             },
@@ -79,15 +78,29 @@
 									"allowRoles": [
 										"DevToken"
 									]
+								}, {
+									"id": "dashboard4",
+									"auth": true,
+									"allowRoles": [
+										"DevToken"
+									]
+								}, {
+                                    "id": "public-search",
+                                    "auth": true,
+                                    "allowRoles": [
+                                        "DevToken"
+                                    ]
+                                }, {
+									"id": "search2",
+									"auth": true,
+									"allowRoles": [
+										"DevToken"
+									]
 								}]
 							},
 							"help": {
 								"items": [{
 										"id": "about",
-										"auth": false
-									},
-									{
-										"id": "contact-kbase",
 										"auth": false
 									},
 									{
@@ -201,12 +214,12 @@
         }
     },
     "docsite": {
-		"base_url": "http://kbase.us",
+		"base_url": "http://www.kbase.us",
 		"host": "kbase.us",
 		"paths": {
-			"about": "/what-is-kbase",
-			"contact": "/contact-us",
-			"browser_support": "/supported-browsers"
+			"about": "/about",
+			"contact": "/support",
+			"browser_support": "/support"
 		}
 	},
     "services": {
@@ -380,10 +393,20 @@
 				"semverNotImplemented": true
 			}
 		},
+       
         "SearchAPI2": {
             "aliases": [],
-            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi_path "services/searchapi2/rpc" }}",
-            "legacyUrl": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi_path "services/searchapi2/legacy" }}",
+            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_path "services/searchapi2/rpc" }}",
+            "legacyUrl": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_path "services/searchapi2/legacy" }}",
+			"name": "Search Engine",
+			"coreService": true,
+			"type": "jsonrpc2",
+			"version": false
+        },
+         "SearchAPI2Legacy": {
+            "aliases": [],
+            "module": "KBaseSearchEngine",
+            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_path "services/searchapi2/legacy" }}",
 			"name": "Search Engine",
 			"coreService": true,
 			"type": "jsonrpc2",
@@ -391,7 +414,7 @@
         },
         "execution_engine2": {
             "aliases": ["ee2", "ExecutionEngine2"],
-            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi_path "services/ee2" }}",
+            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_ee2_path "services/ee2" }}",
 			"name": "Execution Engine2",
 			"coreService": true,
 			"type": "jsonrpc",
@@ -430,53 +453,41 @@
     "resources": {
 		"docSite": {
 			"base": {
-				"url": "http://kbase.us"
+				"url": "https://docs.kbase.us"
 			}
 		},
+        "marketingSite": {
+            "base": {
+                "url": "https://www.kbase.us"
+            }
+        },
 		"documentation": {
 			"loginHelp": {
-				"url": "http://kbase.us/help"
+				"url": "https://www.kbase.us/support"
 			},
 			"narrativeGuide": {
-				"url": "http://kbase.us/narrative-guide"
+				"url": "https://docs.kbase.us/getting-started/narrative"
 			},
 			"tutorials": {
-				"url": "http://kbase.us/tutorials"
+				"url": "https://docs.kbase.us/workflows"
 			},
 			"apps": {
-				"url": "http://kbase.us/apps"
+				"url": "https://kbase.us/applist"
 			},
 			"troubleshooting": {
-				"signin": "http://kbase.us/troubleshooting/sign-in"
+				"signin": "https://docs.kbase.us/troubleshooting"
 			},
-			"aboutKbase": {
-				"url": "http://kbase.us/what-is-kbase/"
-			}
-		},
-		"userAccount": {
-			"resetPassword": {
-				"url": "http://kbase.us/reset-password"
-			},
-			"updateProfile": {
-				"url": "https://www.globusid.org/profile"
-			},
-			"update_profile": {
-				"url": "https://www.globusid.org/profile"
-			},
-			"access": {
-				"url": "https://gologin.kbase.us/globus-app/account"
-			},
-			"signUp": {
-				"url": "http://kbase.us/sign-up"
+			"aboutKBase": {
+				"url": "https://www.kbase.us/about/"
 			}
 		},
 		"contact": {
-			"url": "http://kbase.us/contact-us",
-			"name": "Contact KBase"
+			"url": "https://www.kbase.us/support",
+			"name": "Support"
 		},
 		"help": {
-			"url": "http://kbase.us/help-board/",
-			"name": "KBase Help Board"
+			"url": "https://www.kbase.us/support/",
+			"name": "Support"
 		},
 		"status_page": "http://kbase.us/internal/status",
 		"submit_jira_ticket": "https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%"

@@ -9,15 +9,14 @@ define([
 ) => {
     'use strict';
 
-    const {h, Component } = preact;
+    const {h, Component, Fragment } = preact;
     const html = htm.bind(h);
 
     const REDIRECT_IF_FOUND = true;
-    const OUTREACH_HOST = 'www.kbase.us';
     const DOCS_HOST = 'docs.kbase.us';
-    const MARKETING_HOST = 'kbs.comradeserver.com';
+    const MARKETING_HOST = 'www.kbase.us';
 
-    const TRY_UPSTREAM_SITES = false;
+    const TRY_UPSTREAM_SITES = true;
 
     class NotFound extends Component {
         constructor(props) {
@@ -29,14 +28,14 @@ define([
         }
 
         async findOn(site, path) {
-            const tryURI = `https://ci.kbase.us/__poke/${site}/${path}`;
+            const tryURI = `/__poke/${site}/${path}`;
             const response = await fetch(tryURI, {
                 method: 'HEAD',
                 mode: 'cors'
             });
             if (response.status >=200 && response.status <= 300) {
                 return true;
-            }   
+            }
             return false;
         }
 
@@ -52,21 +51,19 @@ define([
             });
         }
 
-        async componentDidMount() {
-            
+        async checkSites() {
             const request = this.props.params.request;
             if (!TRY_UPSTREAM_SITES) {
-                
-                console.log('not trying upstream sites', request);
+                console.warn('not trying upstream sites', request);
                 if (request.realPath.length === 1 &&
                     request.realPath[0] === '' &&
                     request.path.length === 0) {
                     // if we got here with no paths, go to the dashboard
                     window.location.hash = '#dashboard';
-                    return
-                } 
+                    return;
+                }
 
-                if (request.path.length > 0) { 
+                if (request.path.length > 0) {
                     this.setState({
                         status: 'path-does-not-exist',
                         path: request.path.join('/')
@@ -80,7 +77,6 @@ define([
                 return;
             }
 
-            
             if (request.realPath.length === 1 &&
                 request.realPath[0] === '' &&
                 request.path.length === 0 &&
@@ -89,7 +85,7 @@ define([
                 this.redirect(`https://${MARKETING_HOST}`);
                 return;
             }
-            
+
             const path = request.realPath.join('/');
             try {
                 if (path.length === 0) {
@@ -110,7 +106,7 @@ define([
                         path
                     });
                     return;
-                } 
+                }
                 await this.setState2({
                     messages: [...this.state.messages.slice(0, -1), this.state.messages[this.state.messages.length -1] + 'nope']
                 });
@@ -125,26 +121,11 @@ define([
                         path
                     });
                     return;
-                } 
+                }
                 await this.setState2({
                     messages: [...this.state.messages.slice(0, -1), this.state.messages[this.state.messages.length -1] + 'nope']
                 });
-                
-                // Try outreach
-                await this.setState2({
-                    messages: [...this.state.messages, 'Looking on Outreach...']
-                });
-                if (await this.findOn('outreach', path)) {
-                    this.setState({
-                        status: 'found-on-outreach',
-                        path
-                    });
-                    return;
-                } 
-                await this.setState2({
-                    messages: [...this.state.messages.slice(0, -1), this.state.messages[this.state.messages.length -1] + 'nope']
-                });
-                
+
                 this.setState({
                     status: 'does-not-exist',
                     path
@@ -158,6 +139,21 @@ define([
                     path
                 });
             }
+        }
+
+        onPageShow(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        }
+
+        componentWillUnmout() {
+            window.removeEventListener('pageshow', this.onPageShow.bind(this));
+        }
+
+        componentDidMount() {
+            window.addEventListener('pageshow', this.onPageShow.bind(this));
+            this.checkSites();
         }
 
         renderNotFound() {
@@ -174,20 +170,7 @@ define([
                                 Sorry, "${this.state.path}" was not found.
                             </p>
 
-                            <p>
-                                You may find what you are looking for on one of the following KBase sites:
-                            </p>
-
-                            <ul>
-                                <li><a href="https://kbase.us">Homepage</a></li>
-                                <!-- <li><a href="https://docs.kbase.us">Documentation</a></li> -->
-                                <li><a href="/#narrativemanager/start">Narrative</a></li>
-                                <li><a href="/#dashboard">Dashboard</a></li>
-                            </ul>
-
-                            <p>
-                                Or you may wish to <a href="http://kbase.us/help-board/" target="_blank">use the KBase Help Board</a> for further assistance.
-                            </p>
+                            ${this.renderKBaseLinks()}
                         </div>
                     </div>
                 </div>
@@ -208,20 +191,7 @@ define([
                                 Sorry, "#${this.state.path}" was not found.
                             </p>
 
-                            <p>
-                                You may find what you are looking for on one of the following KBase sites:
-                            </p>
-
-                            <ul>
-                                <li><a href="https://kbase.us">Homepage</a></li>
-                                <!-- <li><a href="https://docs.kbase.us">Documentation</a></li> -->
-                                <li><a href="/#narrativemanager/start">Narrative</a></li>
-                                <li><a href="/#dashboard">Dashboard</a></li>
-                            </ul>
-
-                            <p>
-                                Or you may wish to <a href="http://kbase.us/help-board/" target="_blank">use the KBase Help Board</a> for further assistance.
-                            </p>
+                            ${this.renderKBaseLinks()}
                         </div>
                     </div>
                 </div>
@@ -229,7 +199,7 @@ define([
         }
 
         renderExistsOnMarketingSite() {
-            const marketingURL = new URL(`https://kbs.comradeserver.com/${this.state.path}`);
+            const marketingURL = new URL(`https://${MARKETING_HOST}/${this.state.path}`);
             const query = marketingURL.searchParams;
             Object.entries(this.props.params.request.query).forEach(([key, value]) => {
                 query.set(key, value);
@@ -242,8 +212,7 @@ define([
             }
 
             this.props.runtime.send('ui', 'setTitle', 'Path Not Found');
-            
-            // const marketingPath = `https://www.kbase.us/${this.state.path}`;
+
             return html`
                 <div className="well">
                     <div className="text-danger"  style=${{fontSize: '140%'}}>
@@ -260,7 +229,7 @@ define([
         }
 
         renderExistsOnOutreachSite() {
-            const marketingURL = new URL(`https://www.kbase.us/${this.state.path}`);
+            const marketingURL = new URL(`https://${MARKETING_HOST}/${this.state.path}`);
             const query = marketingURL.searchParams;
             Object.entries(this.props.params.request.query).forEach(([key, value]) => {
                 query.set(key, value);
@@ -273,8 +242,7 @@ define([
             }
 
             this.props.runtime.send('ui', 'setTitle', 'Path Not Found');
-            
-            // const marketingPath = `https://www.kbase.us/${this.state.path}`;
+
             return html`
                 <div className="well">
                     <div className="text-danger"  style=${{fontSize: '140%'}}>
@@ -291,20 +259,20 @@ define([
         }
 
         renderExistsOnDocsSite() {
-            const marketingURL = new URL(`https://docs.kbase.us/${this.state.path}`);
-            const query = marketingURL.searchParams;
+            const docsURL = new URL(`https://${DOCS_HOST}/${this.state.path}`);
+            const query = docsURL.searchParams;
             Object.entries(this.props.params.request.query).forEach(([key, value]) => {
                 query.set(key, value);
             });
 
             if (REDIRECT_IF_FOUND) {
-                this.props.runtime.send('ui', 'setTitle', `Redirecting to ${marketingURL}`);
-                this.redirect(marketingURL.toString());
+                this.props.runtime.send('ui', 'setTitle', `Redirecting to ${docsURL}`);
+                this.redirect(docsURL.toString());
                 return;
             }
 
             this.props.runtime.send('ui', 'setTitle', 'Path Not Found');
-            
+
             return html`
                 <div className="well">
                     <div className="text-danger"  style=${{fontSize: '140%'}}>
@@ -314,9 +282,30 @@ define([
                         The path you requested, <em>"${this.state.path}"</em>, was not found on this site.
                     </p>
                     <p style=${{fontSize: '140%', marginTop: '10px'}}>
-                        However, it does exist on <a href="${marketingURL.toString()}">the KBase Documentation Site</a>.
+                        However, it does exist on <a href="${docsURL.toString()}">the KBase Documentation Site</a>.
                     </p>
                 </div>
+            `;
+        }
+
+        renderKBaseLinks() {
+            return html`
+                <${Fragment}>
+                    <p>
+                        You may find what you are looking for on one of the following KBase sites:
+                    </p>
+
+                    <ul>
+                        <li><a href="https://${MARKETING_HOST}" target="_blank">Homepage</a></li>
+                        <li><a href="https://${DOCS_HOST}" target="_blank">Documentation</a></li>
+                        <li><a href="/#narrativemanager/start">Narrative</a></li>
+                        <li><a href="/#dashboard">Dashboard</a></li>
+                    </ul>
+
+                    <p>
+                        Or you may wish to <a href="https://${MARKETING_HOST}/support/" target="_blank">reach out the KBase</a> for further assistance.
+                    </p>
+                <//>
             `;
         }
 
@@ -334,16 +323,7 @@ define([
                                 Sorry, "${this.state.path}" was not found. *
                             </p>
 
-                            <p>
-                                You may find what you are looking for on one of the following KBase sites:
-                            </p>
-
-                            <ul>
-                                <li><a href="https://www.kbase.us">Homepage</a></li>
-                                <li><a href="https://docs.kbase.us">Documentation</a></li>
-                                <li><a href="/#narrativemanager/start">Narrative</a></li>
-                                <li><a href="/#dashboard">Dashboard</a></li>
-                            </ul>
+                            ${this.renderKBaseLinks()}
 
                             <p className="text-danger" style=${{marginTop: '30px'}}>
                                 * Actually, an error was encountered checking for this path: "${this.state.error.message}"
@@ -361,33 +341,32 @@ define([
                 return html`
                 <p>${message}</p>
                 `;
-            })
+            });
             return html`
                 <div className="alert alert-warning">
                     <p>Analyzing request... <span className="fa fa-spinner fa-pulse fa-fw"></span></p>
                     ${messages}
                 </div>
             `;
-            return;
         }
 
         renderSwitch() {
             switch (this.state.status) {
-                case 'none':
-                    return this.renderLoading();
-                case 'does-not-exist':
-                    return this.renderNotFound();
-                case 'path-does-not-exist':
-                    return this.renderPathNotFound();
-                case 'found-on-marketing':
-                    return this.renderExistsOnMarketingSite();
-                case 'found-on-outreach':
-                    return this.renderExistsOnOutreachSite();
-                case 'found-on-docs':
-                    return this.renderExistsOnDocsSite();
-                case 'error':
-                    return this.renderError();
-                }
+            case 'none':
+                return this.renderLoading();
+            case 'does-not-exist':
+                return this.renderNotFound();
+            case 'path-does-not-exist':
+                return this.renderPathNotFound();
+            case 'found-on-marketing':
+                return this.renderExistsOnMarketingSite();
+            case 'found-on-outreach':
+                return this.renderExistsOnOutreachSite();
+            case 'found-on-docs':
+                return this.renderExistsOnDocsSite();
+            case 'error':
+                return this.renderError();
+            }
         }
 
         render() {

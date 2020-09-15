@@ -2,4 +2,4 @@
 ---
 # Overview
 
-This is an example plugin: Hello!
+This is kbase-ui

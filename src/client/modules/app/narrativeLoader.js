@@ -267,7 +267,7 @@ define([
                                         },
                                         {
                                             label: 'Report this to KBase',
-                                            url: '//kbase.us/user-support/report-issue/'
+                                            url: 'https://www.kbase.us/support'
                                         }
                                     ]
                                 })
@@ -309,7 +309,7 @@ define([
                                             description: [
                                                 'Since this indicates a problem with KBase services, ',
                                                 'you may wish to open our service monitoring page, ',
-                                                'which shoudl show any ongoing issues'
+                                                'which should show any ongoing issues'
                                             ]
                                         }
                                     ]
@@ -377,7 +377,7 @@ define([
                                         },
                                         {
                                             label: 'Report issue to KBase',
-                                            url: '//kbase.us/user-support/report-issue/'
+                                            url: 'https://www.kbase.us/support'
                                         }
                                     ]
                                 })
@@ -404,7 +404,7 @@ define([
                                         },
                                         {
                                             label: 'Sign up for KBase',
-                                            url: '//kbase.us/sign-up'
+                                            url: '/#sign-up'
                                         }
                                     ]
                                 })
@@ -428,7 +428,7 @@ define([
                                         },
                                         {
                                             label: 'Contact KBase, referencing narrative ' + narrativeId,
-                                            url: '//kbase.us/user-support/report-issue/'
+                                            url: 'https://www.kbase.us/support'
                                         }
                                     ]
                                 })
@@ -447,7 +447,7 @@ define([
                                     suggestions: [
                                         {
                                             label: 'Contact KBase referencing this Narrative',
-                                            url: '//kbase.us/user-support/report-issue/'
+                                            url: 'https://www.kbase.us/support'
                                         }
                                     ]
                                 })
@@ -554,7 +554,7 @@ define([
                 suggestions: [
                     {
                         label: 'Contact KBase referencing this Narrative',
-                        url: '//kbase.us/user-support/report-issue/'
+                        url: 'https://www.kbase.us/support'
                     }
                 ]
             });

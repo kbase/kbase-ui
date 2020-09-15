@@ -21,7 +21,7 @@
         }
     }
     function redirect(failed) {
-        var url = '/pages/unsupported.html?failed=' + failed;
+        var url = '/unsupported.html?failed=' + failed;
         window.location.href = url;
     }
     var failed = '';

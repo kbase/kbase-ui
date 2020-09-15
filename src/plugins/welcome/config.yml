@@ -13,17 +13,13 @@ install:
   # Set up a menu item to invoke the path above
   menu:
     - name: about-kbase
-      uri: https://kbase.us/about
+      uri: https://www.kbase.us/about
       newWindow: true
       label: About KBase
       icon: info-circle
-    - name: contact-kbase
-      uri: https://kbase.us/contact-us
-      newWindow: true
-      label: Contact KBase
-      icon: envelope-o
     - name: help
-      uri: https://kbase.us/narrative-guide/
+      uri: https://www.kbase.us/support
       newWindow: true
-      label: Help
+      label: Support
       icon: question
+

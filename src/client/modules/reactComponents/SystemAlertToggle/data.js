@@ -75,7 +75,7 @@ define([
                     endAt: new Date(Date.now() + 1000 * 60 * 60 * 2)
                 }
             ]);
-            // const client = this.props.runtime.service('rpc').makeClient({
+            // const client = this.props.runtime.service('rpc').newClient({
             //     module: 'UIService'
             // });
 
