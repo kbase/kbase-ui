@@ -63,7 +63,7 @@ plugins:
         account: kbase
   - name: organizations
     globalName: kbase-ui-plugin-organizations
-    version: 2.1.4
+    version: 2.1.5
     source:
       github:
         account: kbase
