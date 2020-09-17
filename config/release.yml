@@ -9,4 +9,4 @@
 # For dev builds (dev and ci) the version will not be checked.
 ---
 release:
-  version: 2.1.10
+  version: 2.1.11

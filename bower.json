@@ -16,7 +16,6 @@
         "url": "git://github.com/kbase/kbase-ui"
     },
     "dependencies": {
-        "bluebird": "3.7.2",
         "bootstrap": "3.4.1",
         "font-awesome": "4.7.0",
         "jquery": "2.2.4",
