@@ -14,7 +14,7 @@ none
 
 ### UNRELEASED
 
-none
+- dataview sampleset: fix integration tests
 
 ### IMPROVEMENTS
 
