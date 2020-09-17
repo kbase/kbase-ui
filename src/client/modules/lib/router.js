@@ -12,16 +12,6 @@ define([], () => {
         }
     }
 
-    // function NotFoundException(request) {
-    //     this.name = 'NotFoundException';
-    //     this.original = request.original;
-    //     this.path = request.path;
-    //     this.params = request.params;
-    //     this.request = request.request;
-    // }
-    // NotFoundException.prototype = Object.create(Error.prototype);
-    // NotFoundException.prototype.constructor = NotFoundException;
-
     function parseQueryString(s) {
         const fields = s.split(/[?&]/);
         const params = {};
@@ -61,6 +51,7 @@ define([], () => {
             this.routes = [];
             this.defaultRoute = config.defaultRoute;
             this.runtime = config.runtime;
+            this.urls = config.urls;
         }
 
         transformPathSpec(path) {
@@ -451,6 +442,10 @@ define([], () => {
             return params;
         }
 
+        redirect(url) {
+            window.location.assign(url);
+        }
+
         findRoute(request) {
             // // No route at all? Return the default route.
             // if (request.path.length === 0 && Object.keys(request.query).length === 0) {
@@ -471,48 +466,24 @@ define([], () => {
                     path: request.path
                 });
             } else {
+                // If there is also no hash path, and the redirect-to-www feature is enabled,
+                // do the redirect.
                 if (request.path.length === 0) {
-                    if (this.runtime.service('session').isAuthenticated()) {
-                        return {
-                            request,
-                            params: {},
-                            route: this.defaultRoute
-                        };
-                    } else {
-                        throw new NotFoundException({
-                            request,
-                            params: {},
-                            route: null,
-                            original: request.original,
-                            path: request.path
-                        });
+                    if (!this.runtime.service('session').isAuthenticated() &&
+                        this.runtime.featureEnabled('redirect-to-www')) {
+                        this.runtime.send('ui', 'setTitle', 'Redirecting to Homepage...');
+                        this.redirect(`https://${this.urls.marketing}`);
+                        return;
                     }
+                    return {
+                        request,
+                        params: {},
+                        route: this.defaultRoute
+                    };
                 } else {
                     // The normal case, just let pass through.
                 }
             }
-
-            // // If we have no real path, no hash path, and no authentication, we want to
-            // // redirect to the marketing site, but maybe we'll let the NotFound page do that.
-            // if (request.realPath.length === 0 && request.path.length === 0 && !this.runtime.service('session').getAuthToken()) {
-            //     throw new NotFoundException({
-            //         request,
-            //         params: {},
-            //         route: null,
-            //         original: request.original,
-            //         path: request.path
-            //     });
-            // }
-
-            // // If we have no real path, no hash path, have authentication, we go to the
-            // // default route
-            // if (request.path.length === 0 && !this.runtime.service('session').getAuthToken()) {
-            //     return {
-            //         request,
-            //         params: {},
-            //         route: this.defaultRoute
-            //     };
-            // }
 
             const foundRoute = this.processPath(request.path);
 
@@ -615,16 +586,12 @@ define([], () => {
                         url.hash = '#' + finalPath;
                         url.pathname = '';
                         window.location.assign(url.toString());
-                        // window.location.hash = '#' + finalPath;
                     }
                 }
             }
         }
 
         navigateTo(location) {
-            //if (window.history.pushState) {
-            //    window.history.pushState(null, '', '#' + location);
-            //} else {
             if (!location) {
                 location = this.defaultRoute;
             }
