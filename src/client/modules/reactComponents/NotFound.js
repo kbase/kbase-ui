@@ -13,9 +13,6 @@ define([
     const html = htm.bind(h);
 
     const REDIRECT_IF_FOUND = true;
-    const DOCS_HOST = 'docs.kbase.us';
-    const MARKETING_HOST = 'www.kbase.us';
-
     const TRY_UPSTREAM_SITES = true;
 
     class NotFound extends Component {
@@ -77,12 +74,19 @@ define([
                 return;
             }
 
+            // Redirect to marketing site (www.kbase.us) if we have no physical path,
+            // no ui path, and no token.
+            // Oh, and only do this if enabled for the env!
             if (request.realPath.length === 1 &&
                 request.realPath[0] === '' &&
                 request.path.length === 0 &&
                 !this.props.runtime.service('session').isAuthenticated()) {
+                if (!this.props.runtime.featureEnabled('redirect-to-www')) {
+                    this.redirect('/#login');
+                    return;
+                }
                 this.props.runtime.send('ui', 'setTitle', 'Redirecting to Homepage...');
-                this.redirect(`https://${MARKETING_HOST}`);
+                this.redirect(`https://${this.props.runtime.config('ui.services.route.urls.marketing')}`);
                 return;
             }
 
@@ -199,7 +203,7 @@ define([
         }
 
         renderExistsOnMarketingSite() {
-            const marketingURL = new URL(`https://${MARKETING_HOST}/${this.state.path}`);
+            const marketingURL = new URL(`https://${this.props.runtime.config('ui.services.route.urls.marketing')}/${this.state.path}`);
             const query = marketingURL.searchParams;
             Object.entries(this.props.params.request.query).forEach(([key, value]) => {
                 query.set(key, value);
@@ -229,7 +233,7 @@ define([
         }
 
         renderExistsOnOutreachSite() {
-            const marketingURL = new URL(`https://${MARKETING_HOST}/${this.state.path}`);
+            const marketingURL = new URL(`https://${this.props.runtime.config('ui.services.route.urls.marketing')}/${this.state.path}`);
             const query = marketingURL.searchParams;
             Object.entries(this.props.params.request.query).forEach(([key, value]) => {
                 query.set(key, value);
@@ -259,7 +263,7 @@ define([
         }
 
         renderExistsOnDocsSite() {
-            const docsURL = new URL(`https://${DOCS_HOST}/${this.state.path}`);
+            const docsURL = new URL(`https://${this.props.runtime.config('ui.services.route.urls.documentation')}/${this.state.path}`);
             const query = docsURL.searchParams;
             Object.entries(this.props.params.request.query).forEach(([key, value]) => {
                 query.set(key, value);
@@ -296,14 +300,14 @@ define([
                     </p>
 
                     <ul>
-                        <li><a href="https://${MARKETING_HOST}" target="_blank">Homepage</a></li>
-                        <li><a href="https://${DOCS_HOST}" target="_blank">Documentation</a></li>
+                        <li><a href="https://${this.props.runtime.config('ui.services.route.urls.marketing')}" target="_blank">Homepage</a></li>
+                        <li><a href="https://${this.props.runtime.config('ui.services.route.urls.documentation')}" target="_blank">Documentation</a></li>
                         <li><a href="/#narrativemanager/start">Narrative</a></li>
                         <li><a href="/#dashboard">Dashboard</a></li>
                     </ul>
 
                     <p>
-                        Or you may wish to <a href="https://${MARKETING_HOST}/support/" target="_blank">reach out the KBase</a> for further assistance.
+                        Or you may wish to <a href="https://${this.props.runtime.config('ui.services.route.urls.marketing')}/support/" target="_blank">reach out the KBase</a> for further assistance.
                     </p>
                 <//>
             `;
