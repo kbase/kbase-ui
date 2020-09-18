@@ -1,7 +1,6 @@
 define([
 ], function (
 ) {
-    'use strict';
 
     // class CoreService {
     //     constructor({moduleName, minimumVersion, url, versionMethod, versionPath}) {
@@ -20,9 +19,11 @@ define([
         }
 
         start() {
+            return Promise.resolve();
         }
 
         stop() {
+            return Promise.resolve();
         }
 
         pluginHandler() {

@@ -3,7 +3,6 @@ define([
 ], function (
     Uuid
 ) {
-    'use strict';
 
     // Default period with which to poll for stale listeners.
     const DEFAULT_MONITOR_FREQUENCY = 100;

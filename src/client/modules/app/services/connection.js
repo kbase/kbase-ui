@@ -1,13 +1,12 @@
 define([
     'kb_lib/observed',
     'kb_lib/html',
-    'kb_common_ts/HttpClient'
+    'kb_ts/HttpClient'
 ], (
     Observed,
     html,
-    HttpClient
+    {HttpClient, GeneralError, TimeoutError, AbortError}
 ) => {
-    'use strict';
     const t = html.tag,
         div = t('div'),
         p = t('p');
@@ -149,7 +148,7 @@ define([
                 const now = new Date().getTime();
                 if (now - this.lastCheckAt > this.interval) {
                     this.checking = true;
-                    const httpClient = new HttpClient.HttpClient();
+                    const httpClient = new HttpClient();
                     const buster = new Date().getTime();
                     httpClient.request({
                         method: 'GET',
@@ -167,7 +166,7 @@ define([
                             }
                             this.lastStatus = 'ok';
                         })
-                        .catch(HttpClient.GeneralError, () => {
+                        .catch(GeneralError, () => {
                             this.lastStatus = 'error';
                             const currentTime = new Date().getTime();
                             const elapsed = currentTime - this.lastConnectionAt;
@@ -202,7 +201,7 @@ define([
                                 ])
                             });
                         })
-                        .catch(HttpClient.TimeoutError, () => {
+                        .catch(TimeoutError, () => {
                             this.lastStatus = 'error';
                             this.notifyError({
                                 message: 'Timeout connecting to KBase',
@@ -216,7 +215,7 @@ define([
                                 ]
                             });
                         })
-                        .catch(HttpClient.AbortError, (err) => {
+                        .catch(AbortError, (err) => {
                             this.lastStatus = 'error';
                             this.notifyError({
                                 message: 'Connection aborted connecting to KBase: ' + err.message
@@ -236,6 +235,7 @@ define([
             });
 
             // also, monitor the kbase-ui server to ensure we are connected
+            return Promise.resolve();
         }
 
         stop() {

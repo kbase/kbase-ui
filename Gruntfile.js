@@ -5,7 +5,6 @@
  */
 
 module.exports = function (grunt) {
-    'use strict';
 
     // Load External Tasks
     grunt.loadNpmTasks('grunt-contrib-copy');
@@ -71,7 +70,7 @@ module.exports = function (grunt) {
             },
             deps: {
                 src: [
-                    'node_modules', 'bower_components'
+                    'node_modules'
                 ]
             },
         },

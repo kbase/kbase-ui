@@ -1,5 +1,4 @@
 define([], () => {
-    'use strict';
 
     class NotFoundException extends Error {
         constructor({original, path, params, request, message}) {

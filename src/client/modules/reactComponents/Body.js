@@ -11,7 +11,6 @@ define([
     DataPipe,
     Uuid
 ) => {
-    'use strict';
 
     const {h, Component, createRef, render } = preact;
     const html = htm.bind(h);

@@ -29,7 +29,6 @@ const Promise = require('bluebird'),
     pathExists = require('path-exists'),
     mutant = require('./mutant'),
     yaml = require('js-yaml'),
-    bower = require('bower'),
     glob = Promise.promisify(require('glob').Glob),
     exec = require('child_process').exec,
     dir = Promise.promisifyAll(require('node-dir')),
@@ -224,55 +223,7 @@ function installModule(state, source) {
     });
 }
 
-function installModulePackagesFromBower(state) {
-    // iterate through all of the bower packages in root/bower_components
-    var root = state.environment.path;
 
-    return dirList(root.concat(['build', 'bower_components']))
-        .then(function (dirs) {
-            return Promise.all(
-                dirs.map(function (dir) {
-                    return Promise.all([dir, pathExists(dir.path.concat('install.yml').join('/'))]);
-                })
-            );
-        })
-        .then(function (dirs) {
-            return dirs
-                .filter(function (dir) {
-                    return dir[1];
-                })
-                .map(function (dir) {
-                    return dir[0];
-                });
-        })
-        .then(function (installDirs) {
-            return Promise.all(
-                installDirs.map(function (installDir) {
-                    return installModule(state, installDir.path);
-                })
-            );
-        })
-        .then(function () {
-            return state;
-        });
-}
-
-
-// function buildPlugin(state, pluginDir) {
-//     const commands = [
-//         ['cd', pluginDir].join(' '),
-//         ['rm', '-f', 'yarn.lock'].join(' '),
-//         ['rm', '-f', 'react-app/yarn.lock'].join(' '),
-//         'yarn build-plugin'].join(' && ');
-//     return run(commands, true, true)
-//         .then((out) => {
-//             console.log(out);
-//         })
-//         .catch((err) => {
-//             console.log('Error building plugin', pluginDir, err.message);
-//             throw err;
-//         });
-// }
 
 function fetchPluginsFromGithub(state) {
     // Load plugin config
@@ -349,43 +300,6 @@ function injectPluginsIntoConfig(state) {
         });
 }
 
-function bowerInstall(state) {
-    return new Promise(function (resolve, reject) {
-        var base = state.environment.path.concat(['build']).join('/');
-        bower.commands
-            .install(undefined, undefined, {
-                cwd: base,
-                timeout: 300000
-            })
-            .on('end', function (installed) {
-                resolve(installed);
-            })
-            .on('error', function (err) {
-                reject(err);
-            });
-    });
-}
-
-
-
-// function npm(cmd, argv, options) {
-//     return new Promise(function (resolve, reject) {
-//         exec('npm ' + cmd + argv.join(' '), options, function (err, stdout, stderr) {
-//             if (err) {
-//                 reject(err);
-//             }
-//             if (stderr) {
-//                 // reject(new Error(stderr));
-//                 resolve({
-//                     warnings: stderr
-//                 });
-//             }
-//             resolve({
-//                 result: stdout
-//             });
-//         });
-//     });
-// }
 
 function yarn(cmd, argv, options) {
     return new Promise(function (resolve, reject) {
@@ -423,254 +337,7 @@ function yarnInstall(state) {
         });
 }
 
-// function npmInstall(state) {
-//     var base = state.environment.path.concat(['build']);
-//     var packagePath = base.concat(['package.json']);
-//     return mutant
-//         .loadJson(packagePath)
-//         .then(function (packageConfig) {
-//             delete packageConfig.devDependencies;
-//             return mutant.saveJson(packagePath, packageConfig);
-//         })
-//         .then(function () {
-//             return npm('install', [], {
-//                 cwd: base.join('/'),
-//                 timeout: 300000
-//             });
-//         });
-// }
 
-function copyFromBower(state) {
-    var root = state.environment.path;
-
-    return mutant.loadYaml(root.concat(['config', 'bowerInstall.yml'])).then(function (config) {
-        var copyJobs = [];
-
-        config.bowerFiles.forEach(function (cfg) {
-            /*
-                 The top level bower directory name is usually the name of the
-                 package (which also is often also base of the sole json file name)
-                 but since this is not always the case, we allow the dir setting
-                 to override this.
-                 */
-            var dir = cfg.dir || cfg.name,
-                sources,
-                cwd,
-                dest;
-            if (!dir) {
-                throw new Error(
-                    'Either the name or dir property must be provided to establish the top level directory'
-                );
-            }
-
-            /*
-                 The source defaults to the package name with .js, unless the
-                 src property is provided, in which case it must be either a single
-                 or set of glob-compatible strings.*/
-            if (cfg.src) {
-                if (typeof cfg.src === 'string') {
-                    sources = [cfg.src];
-                } else {
-                    sources = cfg.src;
-                }
-            } else if (cfg.name) {
-                sources = [cfg.name + '.js'];
-            } else {
-                throw new Error('Either the src or name must be provided in order to have something to copy');
-            }
-
-            /*
-                 Finally, the cwd serves as a way to dig into a subdirectory and use it as the
-                 basis for copying. This allows us to "bring up" files to the top level of
-                 the destination. Since we are relative to the root of this process, we
-                 need to jigger that here.
-                 */
-            if (cfg.cwd) {
-                if (typeof cfg.cwd === 'string') {
-                    cfg.cwd = cfg.cwd.split(/,/);
-                }
-                cwd = ['build', 'bower_components', dir].concat(cfg.cwd);
-            } else {
-                cwd = ['build', 'bower_components', dir];
-            }
-
-            /*
-                 The destination will be composed of 'bower_components' at the top
-                 level, then the package name or dir (as specified above).
-                 This is the core of our "thinning and flattening", which is part of the
-                 point of this bower copy process.
-                 In addition, if the spec includes a dest property, we will use that
-                 */
-            if (cfg.bowerComponent) {
-                dest = ['build', 'client', 'modules', 'bower_components'].concat([cfg.dir || cfg.name]);
-            } else {
-                dest = ['build', 'client', 'modules'].concat([cfg.name]);
-            }
-
-            sources.forEach(function (source) {
-                if (typeof source === 'string') {
-                    copyJobs.push({
-                        cwd: cwd,
-                        src: source,
-                        dest: dest
-                    });
-                } else {
-                    let cwd2;
-                    if (source.cwd) {
-                        cwd2 = ['build', 'bower_components', dir].concat(source.cwd);
-                    } else {
-                        cwd2 = cwd;
-                    }
-                    const copyJob = {
-                        cwd: cwd2,
-                        src: source.path,
-                        dest: dest,
-                        debug: true
-                    };
-                    copyJobs.push(copyJob);
-                }
-            });
-        });
-
-        // Create and execute a set of promises to fetch and operate on the files found
-        // in the above spec.
-        return Promise.all(
-            copyJobs.map(function (copySpec) {
-                return glob(copySpec.src, {
-                    cwd: state.environment.path.concat(copySpec.cwd).join('/'),
-                    nodir: true
-                })
-                    .then(function (matches) {
-                        // Do the copy!
-                        return Promise.all(
-                            matches.map(function (match) {
-                                var fromPath = state.environment.path
-                                    .concat(copySpec.cwd)
-                                    .concat([match])
-                                    .join('/'),
-                                    toPath = state.environment.path
-                                        .concat(copySpec.dest)
-                                        .concat([match])
-                                        .join('/');
-                                return fs.copy(fromPath, toPath, {});
-                            })
-                        );
-                    })
-                    .then(function () {
-                        return state;
-                    });
-            })
-        );
-    });
-}
-
-// function copyFromNpm(state) {
-//     var root = state.environment.path;
-//
-//     return mutant.loadYaml(root.concat(['config', 'npmInstall.yml'])).then(function (config) {
-//         var copyJobs = [];
-//
-//         config.npmFiles.forEach(function (cfg) {
-//             /*
-//                  The top level bower directory name is usually the name of the
-//                  package (which also is often also base of the sole json file name)
-//                  but since this is not always the case, we allow the dir setting
-//                  to override this.
-//                  */
-//             var dir = cfg.dir || cfg.name,
-//                 sources,
-//                 cwd,
-//                 dest;
-//             if (!dir) {
-//                 throw new Error(
-//                     'Either the name or dir property must be provided to establish the top level directory'
-//                 );
-//             }
-//
-//             /*
-//                  The source defaults to the package name with .js, unless the
-//                  src property is provided, in which case it must be either a single
-//                  or set of glob-compatible strings.*/
-//             if (cfg.src) {
-//                 if (typeof cfg.src === 'string') {
-//                     sources = [cfg.src];
-//                 } else {
-//                     sources = cfg.src;
-//                 }
-//             } else if (cfg.name) {
-//                 sources = [cfg.name + '.js'];
-//             } else {
-//                 throw new Error('Either the src or name must be provided in order to have something to copy');
-//             }
-//
-//             /*
-//                  Finally, the cwd serves as a way to dig into a subdirectory and use it as the
-//                  basis for copying. This allows us to "bring up" files to the top level of
-//                  the destination. Since we are relative to the root of this process, we
-//                  need to jigger that here.
-//                  */
-//             if (cfg.cwd) {
-//                 if (typeof cfg.cwd === 'string') {
-//                     cfg.cwd = cfg.cwd.split(/,/);
-//                 }
-//                 cwd = ['build', 'node_modules', dir].concat(cfg.cwd);
-//             } else {
-//                 cwd = ['build', 'node_modules', dir];
-//             }
-//
-//             /*
-//                  The destination will be composed of 'node_modules' at the top
-//                  level, then the package name or dir (as specified above).
-//                  This is the core of our "thinning and flattening", which is part of the
-//                  point of this bower copy process.
-//                  In addition, if the spec includes a dest property, we will use that
-//                  */
-//             if (cfg.standalone) {
-//                 dest = ['build', 'client', 'modules'].concat([cfg.name]);
-//             } else {
-//                 dest = ['build', 'client', 'modules', 'node_modules'].concat([cfg.dir || cfg.name]);
-//             }
-//
-//             sources.forEach(function (source) {
-//                 copyJobs.push({
-//                     cwd: cwd,
-//                     src: source,
-//                     dest: dest
-//                 });
-//             });
-//         });
-//
-//         // Create and execute a set of promises to fetch and operate on the files found
-//         // in the above spec.
-//         return Promise.all(
-//             copyJobs.map(function (copySpec) {
-//                 return glob(copySpec.src, {
-//                     cwd: state.environment.path.concat(copySpec.cwd).join('/'),
-//                     nodir: true
-//                 })
-//                     .then(function (matches) {
-//                         // Do the copy!
-//                         return Promise.all(
-//                             matches.map(function (match) {
-//                                 var fromPath = state.environment.path
-//                                     .concat(copySpec.cwd)
-//                                     .concat([match])
-//                                     .join('/'),
-//                                     toPath = state.environment.path
-//                                         .concat(copySpec.dest)
-//                                         .concat([match])
-//                                         .join('/');
-//                                 return fs.copy(fromPath, toPath, {});
-//                             })
-//                         );
-//                     })
-//                     .then(function () {
-//                         return state;
-//                     });
-//             })
-//         );
-//     });
-// }
 
 function copyFromNodeNodules(state) {
     var root = state.environment.path;
@@ -955,9 +622,6 @@ function setupBuild(state) {
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
         .then(function () {
-            return fs.moveAsync(root.concat(['bower.json']).join('/'), root.concat(['build', 'bower.json']).join('/'));
-        })
-        .then(function () {
             return fs.moveAsync(
                 root.concat(['package.json']).join('/'),
                 root.concat(['build', 'package.json']).join('/')
@@ -999,19 +663,6 @@ function installYarnPackages(state) {
         })
         .then(function () {
             return copyFromNodeNodules(state);
-        })
-        .then(function () {
-            return state;
-        });
-}
-
-function installBowerPackages(state) {
-    return bowerInstall(state)
-        .then(function () {
-            return fs.remove(state.environment.path.concat(['build', 'bower.json']).join('/'));
-        })
-        .then(function () {
-            return copyFromBower(state);
         })
         .then(function () {
             return state;
@@ -1260,14 +911,7 @@ function makeDeployConfig(state) {
 
 function cleanup(state) {
     const root = state.environment.path;
-    return fs
-        .removeAsync(root.concat(['build', 'bower_components']).join('/'))
-        .then(function () {
-            return fs.removeAsync(root.concat(['build', 'node_modules']).join('/'));
-        })
-        .then(function () {
-            return fs.removeAsync(root.concat(['bower.json']).join('/'));
-        })
+    return fs.removeAsync(root.concat(['build', 'node_modules']).join('/'))
         .then(function () {
             return state;
         });
@@ -1616,7 +1260,7 @@ function main(type) {
                 },
                 {
                     cwd: ['..'],
-                    files: ['bower.json', 'package.json']
+                    files: ['package.json']
                 },
                 {
                     cwd: ['..'],
@@ -1649,15 +1293,6 @@ function main(type) {
                 return mutant.copyState(state);
             })
             .then(function (state) {
-                mutant.log('Installing bower packages...');
-                return installBowerPackages(state);
-            })
-
-
-            .then(function (state) {
-                return mutant.copyState(state);
-            })
-            .then(function (state) {
                 mutant.log('Installing YARN packages...');
                 return installYarnPackages(state);
             })
@@ -1680,15 +1315,6 @@ function main(type) {
                 mutant.log('Installing Plugins...');
                 return installPlugins(state);
             })
-
-            .then(function (state) {
-                return mutant.copyState(state);
-            })
-            .then(function (state) {
-                mutant.log('Installing Module Packages from Bower...');
-                return installModulePackagesFromBower(state);
-            })
-
 
             .then(function (state) {
                 return mutant.copyState(state);

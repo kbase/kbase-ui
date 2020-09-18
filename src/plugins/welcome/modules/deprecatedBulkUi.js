@@ -7,7 +7,6 @@ define([
     htm,
     DeprecatedBulkUIComponent
 ) {
-    'use strict';
 
     const {h, render} = preact;
     const html = htm.bind(h);

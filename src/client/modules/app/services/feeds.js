@@ -3,7 +3,6 @@ define([
 ], (
     feeds
 ) => {
-    'use strict';
 
     const MONITORING_INTERVAL = 10000;
 
@@ -45,10 +44,12 @@ define([
             this.runtime.receive('session', 'loggedout', () => {
                 this.stopFeedsMonitoring();
             });
+
+            return Promise.resolve();
         }
 
         stop() {
-            return;
+            return Promise.resolve();
         }
 
         startFeedsMonitoring() {

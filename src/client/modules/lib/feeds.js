@@ -1,5 +1,4 @@
 define([], () => {
-    'use strict';
 
     class FeedsError extends Error {
         constructor(...args) {

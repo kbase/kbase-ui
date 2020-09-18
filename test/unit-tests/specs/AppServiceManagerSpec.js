@@ -2,7 +2,6 @@
 define([
     'lib/appServiceManager'
 ], function (App) {
-    'use strict';
 
     describe('Check out the AppServiceManager module exists', function () {
         it('module loads', function (done) {

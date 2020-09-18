@@ -1,5 +1,4 @@
 (function (root) {
-    'use strict';
 
     let errorCount = 0;
 

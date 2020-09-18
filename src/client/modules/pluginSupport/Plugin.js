@@ -9,7 +9,6 @@ define([
     htm,
     IFrameController
 ) => {
-    'use strict';
 
     const {h, Component } = preact;
     const html = htm.bind(h);

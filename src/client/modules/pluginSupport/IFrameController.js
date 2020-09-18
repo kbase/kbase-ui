@@ -17,7 +17,6 @@ define([
     AutoPostForm,
     IFrame
 ) => {
-    'use strict';
 
     const {h, Component, render } = preact;
     const html = htm.bind(h);

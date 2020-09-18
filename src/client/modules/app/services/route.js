@@ -5,7 +5,6 @@ define([
     Promise,
     routerMod
 ) {
-    'use strict';
 
     class RouteService {
         constructor(p) {
@@ -196,6 +195,7 @@ define([
             this.eventListeners.forEach((listener) => {
                 listener.target.addEventListener(listener.type, listener.listener);
             });
+            return Promise.resolve();
         }
 
         stop() {
@@ -207,6 +207,7 @@ define([
             this.eventListeners.forEach((listener) => {
                 listener.target.removeEventListener(listener.type, listener.listener);
             });
+            return Promise.resolve();
         }
 
         isAuthRequired() {

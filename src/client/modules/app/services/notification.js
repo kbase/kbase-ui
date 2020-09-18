@@ -11,7 +11,6 @@ message. This will switch set the comm channel for the notifications component, 
 will send any pending notifications.
 */
 define([], function () {
-    'use strict';
 
     class NotificationService {
         constructor({ params: {runtime} }) {
@@ -37,9 +36,12 @@ define([], function () {
                     this.runtime.send(this.recipientChannel, 'new', message);
                 }
             });
+            return Promise.resolve();
         }
 
-        stop() { }
+        stop() {
+            return Promise.resolve();
+        }
     }
 
     return { ServiceClass: NotificationService };

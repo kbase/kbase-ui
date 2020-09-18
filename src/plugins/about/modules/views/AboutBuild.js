@@ -8,7 +8,6 @@ define([
     htm,
     AboutBuild
 ) => {
-    'use strict';
 
     const {h, Component } = preact;
     const html = htm.bind(h);

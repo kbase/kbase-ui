@@ -8,7 +8,7 @@ parserOptions:
 rules:
   strict:
     - error
-    - function
+    - never
   indent:
     - error
     - 4

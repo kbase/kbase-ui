@@ -1,18 +1,16 @@
 define([
     'bluebird',
     'kb_lib/jsonRpc/genericClient',
-    'kb_common_ts/HttpClient',
+    'kb_ts/HttpClient',
     'kb_lib/props',
     'semver'
 ], function (
     Promise,
     GenericClient,
-    httpClient,
+    {HttpClient, HttpHeader },
     props,
     semver
 ) {
-    'use strict';
-
     class KBaseServiceManager {
         constructor({ runtime, throwErrors }) {
             this.runtime = runtime;
@@ -22,8 +20,8 @@ define([
         }
 
         checkREST(serviceConfig) {
-            const http = new httpClient.HttpClient();
-            const header = new httpClient.HttpHeader();
+            const http = new HttpClient();
+            const header = new HttpHeader();
             header.setHeader('accept', 'application/json');
             return http
                 .request({

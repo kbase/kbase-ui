@@ -1,5 +1,4 @@
 define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
-    'use strict';
 
     return class Menu {
         constructor({config: {menus}}) {
@@ -179,8 +178,11 @@ define(['bluebird', 'kb_lib/observed'], (Promise, Observed) => {
                             });
                         });
                 });
+            return Promise.resolve();
         }
 
-        stop() {}
+        stop() {
+            return Promise.resolve();
+        }
     };
 });
