@@ -1,14 +1,12 @@
 define([
-    'kb_common_ts/Auth2Session',
+    'kb_ts/Auth2Session',
     'kb_lib/observed',
     'kb_lib/html'
 ], (
-    M_auth2Session,
+    {Auth2Session},
     Observed,
     html
 ) => {
-    'use strict';
-
     const t = html.tag,
         div = t('div'),
         p = t('p'),
@@ -24,7 +22,7 @@ define([
                     domain: config.cookie.backup.domain
                 });
             }
-            this.auth2Session = new M_auth2Session.Auth2Session({
+            this.auth2Session = new Auth2Session({
                 cookieName: runtime.config('ui.services.session.cookie.name'),
                 extraCookies: this.extraCookies,
                 baseUrl: runtime.config('services.auth2.url'),
@@ -125,57 +123,58 @@ define([
         }
 
         start() {
-            return this.auth2Session.start().then(() => {
-                if (this.auth2Session.isAuthorized()) {
-                    this.state.setItem('loggedin', true);
-                    this.runtime.send('session', 'loggedin');
-                } else {
-                    this.state.setItem('loggedin', false);
-                    this.runtime.send('session', 'loggedout');
-                }
-                this.auth2Session.onChange((change) => {
-                    this.runtime.send('session', 'change', {
-                        state: change
-                    });
-                    switch (change) {
-                    case 'interrupted':
-                        var description = div([
-                            p(
-                                'Your session cannot be verified because the authorization service is currently inaccessible'
-                            ),
-                            p([
-                                'You may patiently await it\'s recovery or ',
-                                a(
-                                    {
-                                        href: '/#signout'
-                                    },
-                                    'signout'
-                                ),
-                                ' and try again later'
-                            ])
-                        ]);
-                        this.notifyError({
-                            message: 'Session cannot be verified',
-                            description: description
-                        });
-                        return;
-                    case 'restored':
-                        this.notifyOk({
-                            message: 'Communication restored -- session has been verified',
-                            description: ''
-                        });
-                    }
-
+            return this.auth2Session.start()
+                .then(() => {
                     if (this.auth2Session.isAuthorized()) {
-                        if (change === 'newuser') {
-                            // TODO: do something special...
-                        }
-
                         this.state.setItem('loggedin', true);
                         this.runtime.send('session', 'loggedin');
                     } else {
                         this.state.setItem('loggedin', false);
                         this.runtime.send('session', 'loggedout');
+                    }
+                    this.auth2Session.onChange((change) => {
+                        this.runtime.send('session', 'change', {
+                            state: change
+                        });
+                        switch (change) {
+                        case 'interrupted':
+                            var description = div([
+                                p(
+                                    'Your session cannot be verified because the authorization service is currently inaccessible'
+                                ),
+                                p([
+                                    'You may patiently await it\'s recovery or ',
+                                    a(
+                                        {
+                                            href: '/#signout'
+                                        },
+                                        'signout'
+                                    ),
+                                    ' and try again later'
+                                ])
+                            ]);
+                            this.notifyError({
+                                message: 'Session cannot be verified',
+                                description: description
+                            });
+                            return;
+                        case 'restored':
+                            this.notifyOk({
+                                message: 'Communication restored -- session has been verified',
+                                description: ''
+                            });
+                        }
+
+                        if (this.auth2Session.isAuthorized()) {
+                            if (change === 'newuser') {
+                            // TODO: do something special...
+                            }
+
+                            this.state.setItem('loggedin', true);
+                            this.runtime.send('session', 'loggedin');
+                        } else {
+                            this.state.setItem('loggedin', false);
+                            this.runtime.send('session', 'loggedout');
                         // TODO: detect if already on signedout page.
                         // TODO: this behavior should be defined in the main app
                         // TODO: there this behavior should look at the current plugin route,
@@ -186,13 +185,13 @@ define([
                         // runtime.send('app', 'navigate', {
                         //     path: 'auth2/signedout'
                         // });
-                    }
+                        }
+                    });
                 });
-            });
         }
 
         stop() {
-            this.auth2Session.stop().then(() => {
+            return this.auth2Session.stop().then(() => {
                 // session = null;
             });
         }

@@ -2,7 +2,6 @@
  * Google Analytics Code snippet and supporting logic.
  */
 (function () {
-    'use strict';
     /**
      * fetch user info.
      * @param {string} token

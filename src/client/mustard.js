@@ -1,11 +1,4 @@
 (function () {
-    'use strict';
-    function supportsStrictMode() {
-        if (typeof this === 'undefined') {
-            return true;
-        }
-        return false;
-    }
 
     // ES6!
     // Prior to ES6, const is not a keyword, and in strict mode,
@@ -17,6 +10,7 @@
             eval('(function() {"use strict"; const x=true; class X{};}())');
             return true;
         } catch (ex) {
+            console.error('IE6 TEST', ex.message);
             return false;
         }
     }
@@ -29,9 +23,7 @@
         failed = 'q';
     } else if (typeof window['addEventListener'] === 'undefined') {
         failed = 'a';
-    } else if (!supportsStrictMode()) {
-        // IE9 <
-        failed = 's';
+
     } else if (typeof window['location']['origin'] === 'undefined') {
         // IE11 <
         failed = 'o';

@@ -1,5 +1,4 @@
 define([], function () {
-    'use strict';
 
     const SCHEDULE_WAIT = 100;
 

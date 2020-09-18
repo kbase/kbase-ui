@@ -27,8 +27,6 @@ define([
     props,
     MainWindow
 ) => {
-    'use strict';
-
     const html = htm.bind(preact.h);
 
     // TODO: make this configurable.

@@ -1,5 +1,4 @@
 # package caches wherever they may be installed
-bower_components
 node_modules
 
 # Any trash directories

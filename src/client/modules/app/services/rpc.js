@@ -3,17 +3,16 @@ define([
 ], function (
     rpc
 ) {
-    'use strict';
 
     return class RPC {
         constructor({runtime}) {
             this.runtime = runtime;
         }
         start() {
-            return true;
+            return Promise.resolve();
         }
         stop() {
-            return true;
+            return Promise.resolve();
         }
         pluginHandler() {
             return Promise.resolve(null);

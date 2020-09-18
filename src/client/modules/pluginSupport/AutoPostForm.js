@@ -7,7 +7,6 @@ define([
     htm,
     Uuid
 ) => {
-    'use strict';
 
     const { h, Component, createRef } = preact;
     const html = htm.bind(h);

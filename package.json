@@ -28,7 +28,6 @@
         "@wdio/sync": "6.4.7",
         "@wdio/testingbot-service": "6.4.7",
         "bluebird": "3.7.2",
-        "bower": "1.8.8",
         "chalk": "4.1.0",
         "dockerignore": "0.2.0",
         "eslint": "7.8.1",
@@ -72,10 +71,21 @@
         "yargs": "16.0.3"
     },
     "dependencies": {
+        "@kbase/common-es6": "0.12.3",
         "bluebird": "3.7.2",
+        "bootstrap": "3.4.1",
+        "font-awesome": "4.7.0",
         "htm": "3.0.4",
+        "jquery": "2.2.4",
+        "js-yaml": "3.14.0",
         "preact": "10.4.8",
-        "semver-umd": "5.5.7"
+        "pure-uuid": "1.6.0",
+        "require-css": "0.1.10",
+        "requirejs-domready": "2.0.3",
+        "requirejs-json": "0.0.3",
+        "requirejs-text": "2.0.15",
+        "semver-umd": "5.5.7",
+        "spark-md5": "3.0.1"
     },
     "scripts": {
         "test": "node test/node/test.js"

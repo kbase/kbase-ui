@@ -15,7 +15,6 @@ define([
     Loading,
     Error
 ) => {
-    'use strict';
 
     const {h, Component } = preact;
     const html = htm.bind(h);
@@ -60,7 +59,7 @@ define([
         }
 
         makeNarrativePath(workspaceID) {
-            return `https://${window.location.host}/narrative/${ workspaceID}`
+            return `https://${window.location.host}/narrative/${ workspaceID}`;
         }
 
         createNewNarrative() {

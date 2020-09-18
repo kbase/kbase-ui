@@ -173,7 +173,6 @@ I start every new file with this skeleton:
 define([
     
 ], function () {
-    'use strict';
 });
 ```
 
@@ -192,7 +191,6 @@ We'll first create a widget using the core widget api.
 /*jslint white: true, browser: true*/
 define([    
 ], function () {
-    'use strict';
     
     function factory(config) {
         var root, container;
@@ -579,7 +577,6 @@ So, withot further ado, let us jump into the *dataWidget*.
 /*jslint white:true,browser:true*/
 define([
 ], function () {
-    'use strict';
 });
 ```
 
@@ -589,7 +586,6 @@ define([
 define([
     'kb_widget_dataWdiget'
 ], function (DataWidget) {
-    'use strict';
     
     function factory(config) {
         return DataWidget({

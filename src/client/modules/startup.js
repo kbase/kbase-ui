@@ -1,5 +1,4 @@
 (function (root) {
-    'use strict';
 
     /*
     This function is attached to requirejs as the global error handler.

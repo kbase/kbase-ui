@@ -1,5 +1,4 @@
 define(['bluebird'], (Promise) => {
-    'use strict';
 
     // Note that we use the global require here because we need to
     // update the global confirmation.

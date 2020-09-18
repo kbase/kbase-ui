@@ -1,7 +1,6 @@
 define([
 ], function (
 ) {
-    'use strict';
 
     class InstrumentationService {
         constructor() {
@@ -15,9 +14,11 @@ define([
         // API
 
         start() {
+            return Promise.resolve();
         }
 
         stop() {
+            return Promise.resolve();
         }
 
         pluginHandler() {

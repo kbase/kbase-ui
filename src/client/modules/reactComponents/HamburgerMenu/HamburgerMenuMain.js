@@ -7,7 +7,6 @@ define([
     htm,
     HamburgerMenu
 ) => {
-    'use strict';
 
     const {h, Component } = preact;
     const html = htm.bind(h);

@@ -24,7 +24,6 @@ define([
     appConfigBase,
     deployConfig
 ) {
-    'use strict';
 
     // Set up global configuration of bluebird promises library.
     // This is the first invocation of bluebird.

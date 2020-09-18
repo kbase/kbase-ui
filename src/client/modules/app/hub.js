@@ -9,7 +9,6 @@ app be itself testable, much needed to be stripped out and placed into an app-sp
  module like this.
 */
 define(['./App'], function (App) {
-    'use strict';
 
     return class Hub {
         constructor(params) {

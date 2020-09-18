@@ -7,7 +7,6 @@ define([
     GenericClient,
     DynamicServiceClient
 ) {
-    'use strict';
 
     class NarrativeManager {
         constructor({ runtime }) {

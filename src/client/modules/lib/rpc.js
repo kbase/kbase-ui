@@ -7,7 +7,6 @@ define([
     GenericClient,
     exceptions
 ) {
-    'use strict';
 
     class RPCError extends Error {
         constructor(source, code, message, detail, info) {

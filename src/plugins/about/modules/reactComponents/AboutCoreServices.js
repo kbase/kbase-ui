@@ -7,7 +7,6 @@ define([
     htm,
     AboutService
 ) => {
-    'use strict';
 
     const {h, Component } = preact;
     const html = htm.bind(h);

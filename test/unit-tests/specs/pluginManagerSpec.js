@@ -2,7 +2,6 @@
 define([
     'lib/pluginManager'
 ], function (pluginManager) {
-    'use strict';
 
     describe('Check out the KBaseServiceManager module exists', function () {
         it('module loads', function (done) {

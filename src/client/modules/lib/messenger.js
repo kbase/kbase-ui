@@ -7,7 +7,6 @@ define([
     AsyncQueue,
     lang
 ) => {
-    'use strict';
 
     class Messenger {
         constructor() {

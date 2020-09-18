@@ -1,5 +1,4 @@
 define([], () => {
-    'use strict';
 
     function AppServiceError(type, message, suggestion) {
         this.type = type;
@@ -78,7 +77,10 @@ define([], () => {
                     console.warn('Warning: no start method for ' + name);
                     return;
                 }
-                return service.start();
+                return service.start()
+                    .then((result) => {
+                        return result;
+                    });
             });
             return Promise.all(allServices);
         }

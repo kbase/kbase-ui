@@ -1,6 +1,5 @@
 define([
 ], function () {
-    'use strict';
 
     function isSimpleObject(obj) {
         if (typeof obj !== 'object' || obj === null) {

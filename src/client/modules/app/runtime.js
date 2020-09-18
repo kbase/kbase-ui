@@ -3,7 +3,6 @@ define([
 ], (
     reactiveDb
 ) => {
-    'use strict';
 
     return class Runtime {
         constructor({config, messenger, serviceManager}) {

@@ -3,7 +3,6 @@ define([
 ], function (
     Promise
 ) {
-    'use strict';
 
     return class Service {
         constructor({runtime}) {
@@ -30,11 +29,11 @@ define([
         }
 
         start() {
-            return true;
+            return Promise.resolve();
         }
 
         stop() {
-            return true;
+            return Promise.resolve();
         }
     };
 });
