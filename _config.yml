@@ -13,12 +13,31 @@ navigation:
       - label: Getting Started
         menu:
           - label: Prerequisites
-          - label: Developer Setup
           - label: Quick Start
-          - label: Developer Setup
+      - label: Workflows
+        menu:
+          - label: Updating kbase-ui 
+          - label: Updating a Plugin
+          - label: Using a KBase Environment
+          - label: Releasing to CI
       - label: Testing
         menu:
           - label: Unit Testing
           - label: Integration Testing
           - label: Image Testing
+      - label: Plugin Development
+      - label: Deployment
+      - label: Architecture
+        menu:
+            - label: Status
+            - label: Build
+            - label: Internal Design
+            - label: Plugin Support
+            - label: History
+            - label: Legacy Plugins
       - label: Notes
+      - label: Tasks
+        menu:
+            - label: Local KBase Cert
+        
+          

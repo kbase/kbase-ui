@@ -82,7 +82,7 @@ If all goes well, after several tens of seconds you should see a summary of the 
 - `dev/test` - placeholder directory for integration test scripts, code, and configuration; this directory is populated when the ui is built; the files are overlaid from the container via a volume mount.
 - `test/wdio.conf.integration.js` - webdriver io test configuration file
 - `src/test` - location of script runner files, which are copied into the kbase-ui image and subsequently made available locally through a volume mount at `/dev/test`.
-- `tools/proxy/contents/ssl` - empty directory which is populated with `test.crt` and `test.key` when `make dev-cert` is run (and emptyed by `make rm-dev-cert`).
+- `tools/proxy/contents/ssl` - empty directory which is populated with `test.crt` and `test.key` when `make dev-cert` is run (and emptied by `make rm-dev-cert`).
 - `src/client/plugins/PLUGIN/test` - location of internal plugin integration test scripts
 - `kbase-ui-plugin-PLUGIN/src/plugin/test` - location of external plugin integration test scripts.
 

@@ -1,5 +1,6 @@
 ---
 ---
+# Notes
 
 ### An aside: How plugins are built into kbase-ui
 

@@ -3,15 +3,29 @@
 
 # Prerequisites
 
-The kbase-ui is a web app, composed of html, javascript, css, data files, image files, and many other assets. As a web app it can be used behind just about any type of web server. In order to use the web app, it must operate on a supported KBase host. Practically this means that it should operate behind a proxy server which itself operates on the KBase host. (These hosts are https://X.kbase.host, where X is ci, next, appdev, and narrative).
+kbase-ui development utilizes many of the development tools commonly associated with web browser Javascript development
 
-In deployments, KBase uses an nginx proxy front end and rancher to orchestrate kbase-ui and other services which operate to form a connected set of services.
+- a good editor or IDE
+- npm and/or yarn
+- make
+- git
+- docker
 
-For basic kbase-ui usage and local development, a special docker-compose configuration provides a proxy container as well as kbase-ui container to simulate this service configuration.
+Most kbase-ui developers have used MacOS, but the tools above can be used with Linux, BSD, or Windows.
 
-The requirements for them are simple: make, git, and docker.
+Additional applications may be required for optional tasks.
 
-For certain development tasks, or to run specific phases of the development process, additional tools are required, but nothing out of the ordinary Javascript development toolkit. These are described in the [developer documentation](../development/README.md)
+Although you may build kbase-ui directly in your development host environment, the normal, and most stable, practice is to build within docker containers.
+
+The development host is used primarily for:
+
+- editing code with the editor or IDE of your choice
+- managing the codebase with git
+- automating build and other tasks with make
+- running integration and unit tests
+- managing this documentation
+
+For certain development tasks, or to run specific phases of the development process, additional tools may be required, but nothing out of the ordinary Javascript development toolkit. 
 
 ## Basic Requirements
 
@@ -28,15 +42,19 @@ You will need to ensure that you have a basic set of the following tools on your
 
 The reason for the relaxed version requirements is that kbase-ui is built inside of a Docker build process, using specific software package versions which are installed into a Docker image. The software requirements specified above are for local development tools only.
 
-## macOS
+## OS-Specific pre-prerequisites
 
-### Apple xCode
+Some OSes may require specific tools to bootstrap the process of installing kbase-ui development prerequisites.
+
+### macOS
+
+#### Apple xCode
 
 xCode may be installed from the Apple App Store for free, and is highly recommended for any developer workstation. Not only does it provide some of the required tools, but some macOS developer tools require xCode be installed.
 
 xCode includes both git and make, which are required for building kbase-ui, as well as a compilers which may be required to install other developer tools via installers from macports, npm, and the like.
 
-### MacPorts
+#### MacPorts
 
 MacPorts is a package manager for macOS. It differs from another popular macOS package manager, HomeBrew, in that it requires root access (sudo) to install packages.
 
@@ -48,7 +66,7 @@ Download and follow the instructions at [https://www.macports.org/install.php](h
 
 > xCode may be required by Macports to install certain packages (some are distributed as binary, some need to be compiled.)
 
-### brew
+#### brew
 
 [ to be done ]
 
@@ -72,7 +90,7 @@ Note that the make installed with xCode is GNU make, which is good, because it i
 
 ## git
 
-git is used to fetch kbase-ui and any other repos that may be involved in a given development effort. Of course, if you are making source code changes it is a critical tool in the development process.
+git is used to fetch kbase-ui and any other repos involved in a given development effort. Of course, if you are making source code changes it is a critical tool in the development process.
 
 ### MacOS
 
@@ -114,6 +132,6 @@ sudo apt-get install git
 
 ## docker
 
-Distribution of Docker changes from time to time. Currently it is best to consule the [Docker Store](https://store.docker.com/search?type=edition&offering=community), which should list a distribution for macOS, Windows, and various Linux distributions.
+Distribution of Docker changes from time to time. Currently it is best to consult the [Docker Store](https://store.docker.com/search?type=edition&offering=community), which should list a distribution for macOS, Windows, and various Linux distributions.
 
 That failing, just explore [Docker](https://docker.com).
