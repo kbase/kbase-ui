@@ -1,0 +1,20 @@
+---
+description: Accessing profile view without authentication
+specs:
+  - description: profile view should appear when the route is navigated to
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: people
+      - wait: forElement
+        timeout: 10000
+        selector:
+          - type: iframe
+            value: plugin-iframe
+      - action: switchToFrame
+      - wait: forText
+        timeout: 10000
+        text: "{{config.auth.username}}"
+        selector:
+          - type: element
+            value: username

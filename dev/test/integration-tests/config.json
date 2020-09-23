@@ -1,0 +1,34 @@
+{
+    "envDefault": {
+        "auth": {
+            "username": "kbaseuitest",
+            "realname": "KBase UI Test User"
+        }
+    },
+    "envs": [
+        {
+            "env": "ci",
+            "auth": {
+                "token": "VPAYSGQUCK237MDJQG7B5P6TILWDXPQJ"
+            }
+        },
+        {
+            "env": "next",
+            "auth": {
+                "token": "LOGIN_TOKEN_HERE"
+            }
+        },
+        {
+            "env": "prod",
+            "hostPrefix": "narrative",
+            "aliases": [
+                {
+                    "env": "narrative-dev"
+                }
+            ],
+            "auth": {
+                "token": "LOGIN_TOKEN_HERE"
+            }
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+---
+description: Ensure main view appears
+specs:
+  - description: should have main panel framing appear when hit the path
+    baseSelector: []
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: biochem-search
+      - subtask: plugin
+      - wait: forElement
+        selector:
+          - type: plugin
+            value: biochem-search
+

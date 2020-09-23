@@ -1,0 +1,63 @@
+---
+description: Accessing a media object while authenticated
+specs:
+  - description: "case 1: media object should be displayed"
+    baseSelector: []
+    enable:
+      envs:
+        - ci
+        - next
+        - narrative-dev
+        - prod
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: dataview/{{plugins.dataview.media.case1.objectId}}
+      - subtask: plugin
+      # - wait: forElement
+      #   selector:
+      #     - type: plugin
+      #       value: dataview
+      #     - type: tabpane
+      #       value: main
+      #     - type: tabpane
+      #       value: overview
+      #     - type: field
+      #       value: wsid
+      - wait: forText
+        selector:
+          - type: plugin
+            value: dataview
+          - type: tabpane
+            value: main
+          - type: tabpane
+            value: overview
+          - type: field
+            value: wsid
+        text: "{{plugins.dataview.media.case1.overview.objectName}}"
+      - wait: forElement
+        selector:
+          - type: plugin
+            value: dataview
+          - type: tabpane
+            value: main
+          - type: tab
+            value: mediacompounds
+      - action: click
+      - wait: forText
+        selector:
+          - type: plugin
+            value: dataview
+          - type: tabpane
+            value: main
+          - type: tabpane
+            value: mediacompounds
+          - type: element
+            value: table
+          - type: raw
+            name: role
+            value: row
+            nth: "{{plugins.dataview.media.case1.mediaCompounds.row}}"
+          - type: field
+            value: name
+        text: "{{plugins.dataview.media.case1.mediaCompounds.name}}"

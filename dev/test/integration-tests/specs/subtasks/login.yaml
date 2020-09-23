@@ -1,0 +1,40 @@
+---
+title: Login Task
+tasks:
+  - action: setSessionCookie
+    title: Set KBase session cookie (simulate login)
+    params:
+      token: "{{config.auth.token}}"
+  - wait: forElement
+    timeout: 10000
+    title: Ensure the logged-in menu appears, then open the user menu
+    selector:
+      type: absolute
+      path:
+        - type: menu
+          value: signed-in
+        - type: button
+          value: avatar
+  - action: click
+  - wait: forText
+    timeout: 10000
+    title: Username should be now rendered
+    text: "{{config.auth.username}}"
+    selector:
+      type: absolute
+      path:
+        - type: menu
+          value: signed-in
+        - type: label
+          value: username
+  - wait: forElement
+    title: select button
+    selector:
+      type: absolute
+      path:
+        - type: menu
+          value: signed-in
+        - type: button
+          value: avatar
+  - action: click
+    title: close menu

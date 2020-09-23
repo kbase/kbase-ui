@@ -1,0 +1,15 @@
+# access without cookie
+---
+description: Unauthenticated
+specs:
+  - description: should get the main view even without auth
+    tasks:
+      - action: navigate
+        path: appcatalog
+      - subtask: plugin
+      - wait: forElement
+        selector: 
+          type: absolute
+          path:
+            - type: plugin
+              value: catalog

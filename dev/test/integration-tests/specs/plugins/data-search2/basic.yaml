@@ -1,0 +1,14 @@
+---
+description: Ensure main view appears
+specs:
+  - description: Should have main panel framing appear when hit the path
+    baseSelector: []
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: search
+      - subtask: plugin
+      - wait: forElement
+        selector:
+          - type: plugin
+            value: data-search

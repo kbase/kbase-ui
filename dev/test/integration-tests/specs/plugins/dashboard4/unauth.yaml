@@ -1,0 +1,17 @@
+---
+description: Accessing Dashboard 4th Edition without authentication
+cases:
+  - description: should get the signin page with the path displayed
+    tasks:
+      - action: navigate
+        path: dashboard4
+      - subtask: plugin
+      - wait: forText
+        selector:
+          - type: plugin
+            value: auth2-client
+          - type: component
+            value: login-view
+          - type: field
+            value: requested-path
+        text: dashboard4

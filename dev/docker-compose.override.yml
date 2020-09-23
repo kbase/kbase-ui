@@ -1,0 +1,34 @@
+version: '3.6'
+services:
+  kbase-ui:
+    volumes:
+      - type: bind
+        source: >-
+          /Users/erikpearson/work/kbase/sprints/2020Q3/kbase-ui/../kbase-ui-plugin-dataview/dist/plugin
+        target: /kb/deployment/services/kbase-ui/dist/modules/plugins/dataview
+      - type: bind
+        source: >-
+          /Users/erikpearson/work/kbase/sprints/2020Q3/kbase-ui/dev/gitlab-config
+        target: /kb/deployment/config
+      - type: volume
+        source: integration-tests
+        target: /kb/deployment/services/kbase-ui/test
+      - type: volume
+        source: developer-docs
+        target: /kb/deployment/services/kbase-ui/dist/docs
+    environment: []
+  kbase-ui-proxy:
+    environment: []
+volumes:
+  integration-tests:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Users/erikpearson/work/kbase/sprints/2020Q3/kbase-ui/dev/test
+  developer-docs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Users/erikpearson/work/kbase/sprints/2020Q3/kbase-ui/docs

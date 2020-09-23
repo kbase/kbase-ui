@@ -1,0 +1,193 @@
+---
+description: Accessing a sampleset object while authenticated
+disable:
+  envs:
+    - next
+    - appdev
+    - prod
+    - narrative-dev
+specs:
+  - description: "case 1: sampleset object should be displayed"
+    baseSelector: []
+    enable:
+      envs:
+        - ci
+        - next
+        - narrative-dev
+        - prod
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: dataview/{{plugins.dataview.sampleset.case1.objectId}}
+      - subtask: plugin
+      # - wait: forText
+      #   selector:
+      #     - type: plugin
+      #       value: dataview
+      #     - type: tabpane
+      #       value: main
+      #     - type: tabpane
+      #       value: over
+      #     - type: field
+      #       value: wsid
+      #   text: "{{plugins.dataview.sampleset.case1.overview.objectName}}"
+      # # open the sampleset tab
+      # - wait: forElement
+      #   selector:
+      #     - type: plugin
+      #       value: dataview
+      #     - type: tabpane
+      #       value: main
+      #     - type: tab
+      #       value: sampleset
+      # - action: click
+      - loop: "plugins.dataview.sampleset.case1.sampleset.cols"
+        as: col
+        tasks:
+          - wait: forText
+            selector:
+              - type: plugin
+                value: dataview
+              - type: tabpane
+                value: main
+              - type: tabpane
+                value: sampleset
+              - type: raw
+                name: role
+                value: row
+                nth: "{{col.row}}"
+              - type: raw
+                name: role
+                value: cell
+                nth: "{{col.col}}"
+            text: "{{col.text}}"
+      # description tab
+      - wait: forElement
+        selector:
+          - type: plugin
+            value: dataview
+          - type: tabpane
+            value: main
+          - type: tab
+            value: description
+      - action: click
+      - wait: forText
+        selector:
+          - type: plugin
+            value: dataview
+          - type: tabpane
+            value: main
+          - type: tabpane
+            value: description
+          - type: element
+            value: description
+        text: "{{plugins.dataview.sampleset.case1.description.text}}"
+
+      # Map tab
+      - wait: forElement
+        selector:
+          - type: plugin
+            value: dataview
+          - type: tabpane
+            value: main
+          - type: tab
+            value: map
+      - action: click
+
+      # Have the correct # of rows
+      - wait: forCount
+        selector:
+          - type: plugin
+            value: dataview
+          - type: tabpane
+            value: main
+          - type: tabpane
+            value: map
+          - type: raw
+            name: role
+            value: row
+        count:
+          equals: 3
+
+      - loop: "plugins.dataview.sampleset.case1.map.table.cells"
+        as: cell
+        tasks:
+          # Make sure the first row has the correct values displayed
+          - wait: forText
+            selector:
+              - type: plugin
+                value: dataview
+              - type: tabpane
+                value: main
+              - type: tabpane
+                value: map
+              - type: raw
+                name: role
+                value: row
+                nth: "{{cell.row}}"
+              - type: cell
+                value: "{{cell.cell}}"
+            text: "{{{cell.text}}}"
+
+      # Spreadsheet tab
+      - wait: forElement
+        selector:
+          - type: plugin
+            value: dataview
+          - type: tabpane
+            value: main
+          - type: tab
+            value: spreadsheet
+      - action: click
+
+      # Have the correct # of rows
+      - wait: forCount
+        selector:
+          - type: plugin
+            value: dataview
+          - type: tabpane
+            value: main
+          - type: tabpane
+            value: spreadsheet
+          - type: raw
+            name: role
+            value: row
+        count:
+          equals: 3
+
+      - loop: "plugins.dataview.sampleset.case1.spreadsheet.table.cells"
+        as: cell
+        tasks:
+          # Make sure the element is in view.
+          # it won't be rendered unless it is visible!
+          - wait: forElement
+            selector:
+              - type: plugin
+                value: dataview
+              - type: tabpane
+                value: main
+              - type: tabpane
+                value: spreadsheet
+              - type: raw
+                name: role
+                value: row
+                nth: "{{cell.row}}"
+              - type: cell
+                value: "{{cell.cell}}"
+          - action: scroll-to-top
+          # Make sure the first row has the correct values displayed
+          - wait: forText
+            selector:
+              - type: plugin
+                value: dataview
+              - type: tabpane
+                value: main
+              - type: tabpane
+                value: spreadsheet
+              - type: raw
+                name: role
+                value: row
+                nth: "{{cell.row}}"
+              - type: cell
+                value: "{{cell.cell}}"
+            text: "{{{cell.text}}}"

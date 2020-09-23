@@ -13,8 +13,9 @@ You will need to ensure that you have a basic set of development tools on your h
 
 | app       | version | notes                                                                                                      |
 | --------- | ------- | ---------------------------------------------------------------------------------------------------------- |
-| nodejs    | 6 (LTS) | The V8 javascript system, required for building kbase-ui and running tests; we are currently on version 8. |
+| nodejs    | 10 (LTS) | The V8 javascript system, required for building kbase-ui and running tests; we are currently on version 10. |
 | npm       | 6       |                                                                                                            |
+| yarn      | \*      | yarn is an alternative package manager, compatible by and large with npm. |
 | git       | \*      | the source revision management tool with integration into github                                           |
 | docker    | \*      | the linux container manager you will use to run kbase-ui                                                   |
 | dockerize | \*      | a utility to make running docker containers more sane                                                      |
@@ -22,13 +23,12 @@ You will need to ensure that you have a basic set of development tools on your h
 
 > \* we haven't documented any substantial differences between these tools regarding the kbase-ui development process. However, it is best to keep them always at the most recent version by updating your tool stack periodically
 
-_kbase-ui_ is built not just on your local development workstation, but int the following places:
+_kbase-ui_ is built not just on your local development workstation, but but also in _Travis CI_. Travis CI provides its own virtual host for running the kbase-ui build. Travis can place specific limitations on the build tools. The 
 
-- in Travis CI, as part of the github workflow
-- in the KBase Jenkins instance, as part of the CI deployment
-- in a KBase VM (??) as part of the next/appdev/production deployment process
 
 As such, we need to ensure that each part of the build toolchain is consistent in each environment. Thus, even though a different version of the above tools may work for you (and of course no-one is watching you to make sure you aren't!) please be advised that it is possible that you can introduce dependencies upon a version of a tool which will break in one of the other KBase build environments.
+
+
 
 ### nodejs
 

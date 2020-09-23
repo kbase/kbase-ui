@@ -1,0 +1,15 @@
+# Basic test
+--- 
+description: Ensure the main view loads
+specs: 
+  - baseSelector: []
+    description: Navigate to catalog main view
+    tasks: 
+      - subtask: login
+      - action: navigate
+        path: appcatalog
+      - subtask: plugin
+      - wait: forElement
+        selector: 
+          - type: plugin
+            value: catalog

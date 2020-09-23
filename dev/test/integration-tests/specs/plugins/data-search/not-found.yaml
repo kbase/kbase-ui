@@ -1,0 +1,103 @@
+---
+description: Searching for something which doesn't exist
+specs:
+  - description: should show a not-found message
+    baseSelector: []
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: search
+      - subtask: plugin
+      - action: baseSelector
+        selector:
+          - type: plugin
+            value: data-search
+          - type: component
+            value: main
+      - wait: forElement
+        title: Click the search input to focus on it
+        selector:
+          - type: component
+            value: search-bar
+          - type: input
+            value: search-input
+      - action: click
+      - wait: forElement
+        title: Do a search which returns nothing
+        selector:
+          - type: component
+            value: search-bar
+          - type: input
+            value: search-input
+      - action: keys
+        params:
+          keys:
+            - a
+            - b
+            - c
+            - d
+            - e
+            - "1"
+            - "2"
+            - "3"
+            - "4"
+            - "5"
+            - Enter
+      - wait: forElement
+        selector:
+          - type: component
+            value: narrative-main
+          - type: component
+            value: results
+          - type: alert
+            value: not-found
+      - subtask:
+          title: Check the reference tab
+          tasks:
+            - wait: forElement
+              title: select the reference data tab
+              selector:
+                - type: component
+                  value: tabset
+                - type: tab
+                  value: reference-data
+            - action: click
+            - wait: forElement
+              selector:
+                - type: component
+                  value: reference-data-main
+                - type: component
+                  value: results
+                - type: alert
+                  value: not-found
+      - subtask:
+          enable:
+            envs: ci
+          title: Check the features tab
+          tasks:
+            - wait: forElement
+              title: select the features data tab
+              # disable:
+              #   envs:
+              #   - next
+              #   - appdev
+              #   - prod
+              selector:
+                - type: component
+                  value: tabset
+                - type: tab
+                  value: genome-features
+            - action: click
+            - wait: forElement
+              # disable:
+              #   envs:
+              #   - next
+              #   - appdev
+              #   - prod
+              selector:
+                - type: component
+                  value: genome-features-main
+                - type: component
+                  value: results
+                - type: alert
+                  value: not-found

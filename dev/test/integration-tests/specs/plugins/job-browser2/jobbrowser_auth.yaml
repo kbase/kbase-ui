@@ -1,0 +1,14 @@
+---
+description: Accessing the job browser with authentication
+specs:
+  - description: should show the primary widget
+    baseSelector: []
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: jobbrowser
+      - subtask: plugin
+      - wait: forElement
+        selector:
+          - type: plugin
+            value: job-browser2

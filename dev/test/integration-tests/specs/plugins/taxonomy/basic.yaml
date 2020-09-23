@@ -1,0 +1,13 @@
+---
+description: Accessing Taxonomy Plugin
+cases:
+  - description: should load the taxonomy plugin
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: taxonomy/about
+      - subtask: plugin
+      - wait: forElement
+        selector:
+          - type: plugin
+            value: taxonomy

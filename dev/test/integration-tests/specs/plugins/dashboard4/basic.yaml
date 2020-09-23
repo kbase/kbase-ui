@@ -1,0 +1,13 @@
+---
+description: Accessing Dashboard 4th Edition with authentication
+cases:
+  - description: should load the dashboard4 plugin
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: dashboard4
+      - subtask: plugin
+      - wait: forElement
+        selector:
+          - type: plugin
+            value: dashboard4

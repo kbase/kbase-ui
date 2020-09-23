@@ -1,5 +1,7 @@
-title: KBase UI
-remote_theme: eapearson/just-the-docs
+title: KBase UI Docs
+plugins:
+  - jekyll-redirect-from
+remote_theme: kbaseIncubator/kbase-github-pages-theme
 search_enabled: false
 aux_links: 
     "KBase UI on Github":
@@ -8,20 +10,15 @@ aux_links:
         - "//kbase.us/about"
 navigation:
     menu:
-        - label: Master
-          menu:
-            - label: Getting Started
-              menu:
-                - label: Prerequisites
-                - label: Developer Setup
-                - label: Quick Start
-                - label: Local Dev Prerequisites
-                - label: Developer Setup
-            - label: Testing
-              menu:
-                - label: Unit Testing
-                - label: Integration Testing
-                - label: Image Testing
-            - label: Notes
-        - label: Develop
-        - label: Feature Refactor to CRATS
+      - label: Getting Started
+        menu:
+          - label: Prerequisites
+          - label: Developer Setup
+          - label: Quick Start
+          - label: Developer Setup
+      - label: Testing
+        menu:
+          - label: Unit Testing
+          - label: Integration Testing
+          - label: Image Testing
+      - label: Notes

@@ -1,0 +1,44 @@
+---
+description: Unauthenticated
+specs:
+  - description: should find the Compounds tab by default
+    baseSelector: []
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: biochem-search
+      - subtask: plugin
+      - wait: forText
+        selector:
+          - type: plugin
+            value: biochem-search
+          - type: component
+            value: biochemistry-table
+          - type: element
+            value: render-no-data
+        text: Please search for Compounds above
+  - description: should be able to switch tabs
+    baseSelector: []
+    tasks:
+      - subtask: login
+      - action: navigate
+        path: biochem-search
+      - subtask: plugin
+      - wait: forElement
+        selector:
+          - type: component
+            value: tabs
+          - - type: component
+              value: tab
+            - type: tab
+              value: Reactions
+      - action: click
+      - wait: forText
+        selector:
+          - type: plugin
+            value: biochem-search
+          - type: component
+            value: biochemistry-table
+          - type: element
+            value: render-no-data
+        text: Please search for Reactions above

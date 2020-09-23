@@ -1,0 +1,206 @@
+{
+    "sampleset": {
+        "case1": {
+            "objectId": "53116/2/1",
+            "sampleset": {
+                "cols": [
+                    {
+                        "row": 1,
+                        "col": 1,
+                        "text": "SRS.BR.T3"
+                    },
+                    {
+                        "row": 1,
+                        "col": 2,
+                        "text": "Soil"
+                    },
+                    {
+                        "row": 1,
+                        "col": 3,
+                        "text": "SESAR"
+                    },
+                    {
+                        "row": 1,
+                        "col": 4,
+                        "text": "IEAWH006A.3"
+                    },
+                    {
+                        "row": 1,
+                        "col": 5,
+                        "text": "08/14/2020, 02:20 PM"
+                    },
+                    {
+                        "row": 1,
+                        "col": 6,
+                        "text": "kbaseuitest"
+                    },
+                    {
+                        "row": 1,
+                        "col": 7,
+                        "text": "1"
+                    }
+                ]
+            },
+            "description": {
+                "text": "sample1"
+            },
+            "map": {
+                "table": {
+                    "cells": [
+                        {
+                            "row": 1,
+                            "cell": "name",
+                            "text": "SRS.BR.T3"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "material",
+                            "text": "Soil"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "description",
+                            "text": "Savannah River Site"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "latitude",
+                            "text": "33.3236"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "longitude",
+                            "text": "-81.7181"
+                        }
+                    ]
+                }
+            },
+            "spreadsheet": {
+                "table": {
+                    "cells": [
+                        {
+                            "row": 1,
+                            "cell": "id",
+                            "text": "IEAWH006A.3"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "parent",
+                            "text": "∅"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "release_date",
+                            "text": "∅"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "material",
+                            "text": "Soil"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "field_name_informal_classification",
+                            "text": "∅"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "location_description",
+                            "text": "Savannah River Site"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "location_description",
+                            "text": "Savannah River Site"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "locality_description",
+                            "text": "Max's landing"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "collection_method",
+                            "text": "Coring"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "purpose",
+                            "text": "U redox characterization"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "latitude",
+                            "text": "33.323609999999995 degrees"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "longitude",
+                            "text": "-81.71806 degrees"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "coordinate_precision?",
+                            "text": "30"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "elevation_start",
+                            "text": "∅"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "elevation_unit",
+                            "text": "∅"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "primary_physiographic_feature",
+                            "text": "creek bank"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "name_of_physiographic_feature",
+                            "text": "Tims Branch watershed"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "field_program_cruise",
+                            "text": "Argonne Wetlands Hydrobiogeochemistry SFA"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "collector_chief_scientist",
+                            "text": "Dan Kaplan"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "collection_date",
+                            "text": "10/D/YYYY month"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "collection_date_precision",
+                            "text": "month"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "current_archive_contact",
+                            "text": "pweisenhorn@anl.gov"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "related_identifiers",
+                            "text": "∅"
+                        },
+                        {
+                            "row": 1,
+                            "cell": "relation_type",
+                            "text": "∅"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

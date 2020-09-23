@@ -1,0 +1,14 @@
+---
+description: Accessing public search without authentication should be ok
+specs:
+  - description: should get the signin page
+    baseSelector: []
+    tasks:
+      - action: navigate
+        path: public-search
+      - subtask: plugin
+      - wait: forElement
+        selector:
+        - type: plugin
+          value: public-search
+
