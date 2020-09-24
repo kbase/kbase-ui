@@ -43,3 +43,6 @@ docker-compose.override.yml
 
 # can be left over with a manual npm install with --no-cache (I think)
 /false
+
+# working files when doing gh-pages and develop development
+/_site

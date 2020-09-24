@@ -87,8 +87,8 @@ function mergePaths(root, config, args) {
         paths.forEach((path) => {
             config.services['kbase-ui'].volumes.push({
                 type: 'bind',
-                source: [root, 'src/client/modules', path].join('/'),
-                target: '/kb/deployment/services/kbase-ui/dist/modules/' + path
+                source: `${root}/src/client/${path}`,
+                target: `/kb/deployment/services/kbase-ui/dist/${path}`
             });
         });
     }
