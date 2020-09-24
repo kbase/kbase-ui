@@ -18,6 +18,12 @@ navigation:
         menu:
           - label: Updating kbase-ui 
           - label: Updating a Plugin
+            menu:
+              - label: Setting Up
+              - label: Testing
+              - label: Releasing Plugin
+              - label: Releasing with kbase-ui to CI
+              - label: Releasing with kbase-ui to Prod
           - label: Using a KBase Environment
           - label: Releasing to CI
       - label: Testing
