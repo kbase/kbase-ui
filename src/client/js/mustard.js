@@ -1,5 +1,4 @@
 (function () {
-
     // ES6!
     // Prior to ES6, const is not a keyword, and in strict mode,
     // using it throws an exception. (works for Safari < 10)
@@ -18,6 +17,7 @@
         var url = '/unsupported.html?failed=' + failed;
         window.location.href = url;
     }
+
     var failed = '';
     if (typeof document['querySelector'] === 'undefined') {
         failed = 'q';
