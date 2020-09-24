@@ -33,7 +33,12 @@ Most KBase users will be exposed to the KBase UI by ... [using KBase](https://na
 
 ## Documentation
 
-- The previous documentation is now out of date; new [documentation](https://kbaseincubator.github.io/kbase-ui-docs) but incomplete, and in progress.
+
+`kbase-ui` documentation is available at [https://kbase.github.io/kbase-ui](https://kbase.github.io/kbase-ui).
+
+General "ui at kbase" documentation is available at [https://kbaseincubator.github.io/kbase-ui-docs](https://kbaseincubator.github.io/kbase-ui-docs).
+
+> Note that all of the documentation is incomplete and in progress.
 
 ## Contributing
 
