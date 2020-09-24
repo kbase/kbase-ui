@@ -4,15 +4,19 @@
 
 ## Usage
 
-HOW TO GET STARTED and USE IT
+This documentation is designed to be accessed at its home on Github, located at (https://kbase.github.io/kbase-ui).
+
+For developers, see below.
 
 ## Install
 
-This documentation is designed to be accessed at its home on Github, located at (https://kbaseIncubator.github.io/kbase-ui-docs).
+This documentation is based on the standalone version of gitbook. A such, it is based on Jekyll, a website generation tool written in Ruby.
 
-You can view it locally as well:
+The instructions below describe how to set up a macOS
 
-### macOS Native
+### MacOS
+
+#### Native
 
 macOS ships with Ruby. However, since it is at the system level it may require root access to install gems. It should prompt you for your password (assuming you have admin access), but that doesn't always work. A good solution is documented here: https://guides.cocoapods.org/using/getting-started.html#sudo-less-installation.
 
@@ -23,13 +27,13 @@ export GEM_HOME=$HOME/.gem
 export PATH=$GEM_HOME/bin:$PATH
 ```
 
-## macOS with `rbenv`
+#### With `rbenv`
 
-`rbenv` is a simple tool which allows you to install multiple versions of Ruby, with associated dependencies. It offers a couple of advantages over the system Ruby:
+`rbenv` is a simple tool that allows you to install multiple versions of Ruby, with associated dependencies. It offers some advantages over the system Ruby:
 
 - We can use a specific version of Ruby
 - Ruby dependencies (Gems) are installed separate from the system
-- Admin privileges not required.
+- Admin privileges not required
 
 Using `macports`:
 
@@ -106,22 +110,22 @@ Although `bundler` may be installed with Ruby with rbenv, it is best to just ins
 gem install bundler
 ```
 
-#### Using rvm
+#### With `rvm`
 
 Another tool for installing and managing multiple Rubys is `rvm`. Some consider it more complex than it needs to be, and it is more intrusive into your shell startup scripts, but it is simple to use.
 
-Install rvm from https://rvm.io
+Install `rvm` from https://rvm.io
 
 ##### Install rvm
 
-This will install rvm into your own home directory.
+This will install `rvm` into your own home directory.
 
 ```zsh
 gpg2 --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
 \curl -sSL https://get.rvm.io | bash -s stable
 ```
 
-##### Install ruby
+###### Install ruby
 
 ```zsh
 rvm install 2.7.0
@@ -140,6 +144,16 @@ Open a terminal into this repo's top level directory
     ```
 
     > Note that this and other Ruby related commands will probably ask you to authorize installation. This is because the packages (gems) are being installed at the system level. Just go ahead and authorize - do not try to run these commands with `sudo`, as they are designed to be run as a regular user and only prompt for authorization when they need to.
+
+
+
+### Linux
+ 
+> TODO
+
+### Windows
+
+> TODO
 
 ### Setup and Start Local Development Server
 
@@ -190,18 +204,21 @@ To change a menu's label, simply edit the associated label in this file.
 
 Autoloading does not work for changes to the config file, nor does manual reloading of the page - so you'll need to stop and start the development server.
 
-
-
-
 #### Adding a new file
+
+> TODO
 
 #### Removing a file
 
-
+> TODO
 
 #### Updating or adding an image
 
+> TODO
+
 #### Adding a "quicklink"
+
+> TODO
 
 ### Current Issues
 
@@ -209,14 +226,17 @@ Autoloading does not work for changes to the config file, nor does manual reload
 
 If you see messages like `ERROR '/search-data.json' not found.` in the terminal in which you started `jekyll serve`, the search index needs to be built. Unfortunately, our theme's support for search is broken in several respects, and generating the search index will not help. Since search is not exposed, it is currently a harmless error.
 
+#### readme needs completion
+
+> TODO :)
+
 ### The theme
 
-
-
+The document look, feel, and operation is determined by the Jekyll theme used. In this case, it is our own theme (based on another) [KBase Github Pages Theme](https://github.com/kbase/kbase-github-pages-theme).
 
 ## Background 
 
-HOW THIS FITS INTO KBASE
+This documentation set should provide instructions for building and deploying kbase-ui, and also background information on it's design and operation.
 
 ## See Also
 
