@@ -1,3 +1,6 @@
 {
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
+    "eslint.format.enable": true,
+    "eslint.lintTask.enable": true,
+    "editor.formatOnSave": true
 }
