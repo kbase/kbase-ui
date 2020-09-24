@@ -2,3 +2,7 @@ _site
 node_modules
 _attic
 .idea
+
+# dev artifactcs from regular branches.
+/dev
+/tools
