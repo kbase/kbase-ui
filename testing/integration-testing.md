@@ -9,13 +9,47 @@ To get the most out of this document, you should be famliar with setting up kbas
 
 ## Overview
 
-At present, the focus of all testing in kbase-ui is integration testing. It gives the most bang for the buck, exercising not only multiple libraries, but plugins, configuration, and building too.
+At present, the focus of testing in kbase-ui is integration testing. It gives the most bang for the buck, exercising not only multiple libraries, but plugins, configuration, and building too.
 
 The integration tests require that an instance of kbase-ui be available at at a X.kbase.us host (where X is typically ci, next, appdev, narrative). The tests work by controlling a browser to invoke urls, click on buttons, fill in inputs, and watches to make sure "the right thing happens". For example, the tests select menu items, conduct searches, log in, and log out. The tests can ensure that the right thing appears when a menu is selected, that the kbase session cookies is available after signin, that a given search resulted in the expected items.
 
 ## Status
 
 The integration testing tools are under active development. They do indeed work, and should be conducted prior to any release.
+
+## For the impatient
+
+So you just want to run the tests?
+
+1. build kbase-ui
+2. run kbase-ui against the target environment
+    1. typically `ci`, but could be next, narrative-dev, or prod.
+    2. edit /etc/hosts to point that environment to the localhost
+      ```text
+      sudo vi /etc/hosts
+      127.0.0.1 ci.kbase.us
+      ```
+    3. run kbase-ui:
+    ``` bash
+    make dev-start build-image=t env=ci
+    ```
+    > note that `ci` is the default env
+3. add a token for the same environment
+    1. log into that environment from the browser 
+        1. you'll need to log in as the user "kbaseuitest"; contact a kbase-ui dev for the account info.
+    2. copy a kbase token out of the browser.
+        1. e.g. open the javascript console and enter:
+        ```javascript
+        document.cookie
+        ```
+        and then look for the value of `kbase_session`
+    3. paste the token into the config file `dev/test/integration-tests/config.json`. It should be clear where to paste the token in the placeholder `KBASE_TOKEN_HERE`.
+4. run the tests
+    ```bash
+    make integration-tests env=ci
+    ```
+    > Note that `ci` is the default 
+    
 
 ## Testing Stack
 
@@ -25,11 +59,9 @@ The integration testing utilizes Selenium, WebdriverIO, Firefox and Chrome brows
 
 During the kbase-ui build, all of the plugin testing scripts are placed into a single location `dev/test/integration-tests/specs/plugins`. Also during the build, during the "init" phase specifically, all of the tools required for integration testing are installed locally.
 
-> kbase-ui generally tries hard to follow the principle, encouraged by npm, to install all tools locally. The only global dependencies are those described in [Getting Started](../dev/getting-started.md).
+> kbase-ui generally tries hard to follow the principle, encouraged by npm, to install all tools locally.
 
 Upon invoking the integration tests, all of the test scripts found in `src/plugin/test` are run, and the results printed to the console. The integration tests may be run against multiple environments (ci, next, appdev, prod) and browsers (Chrome headless is currently supported)
-
-> Note that that test configuration can be set up to run tests against Chrome, Firefox, or Safari, but there is no automation for this; it would require tweaking the config file.
 
 It is even possible to run the tests against a testing service like Sauce Labs which may test against multiple browser models and versions and on multiple operating systems.
 

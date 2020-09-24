@@ -8,7 +8,7 @@ This documentation is designed to be accessed at its home on Github, located at 
 
 For developers, see below.
 
-## Install
+## Installation
 
 This documentation is based on the standalone version of gitbook. A such, it is based on Jekyll, a website generation tool written in Ruby.
 
@@ -155,7 +155,7 @@ Open a terminal into this repo's top level directory
 
 > TODO
 
-### Setup and Start Local Development Server
+### Local Development Server
 
 Now you are ready to start up a local copy of the documentation site. This is accomplish by running a built-in server provided by Jekyll.
 

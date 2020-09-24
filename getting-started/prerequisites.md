@@ -31,30 +31,35 @@ For certain development tasks, or to run specific phases of the development proc
 
 You will need to ensure that you have a basic set of the following tools on your host desktop machine. These tools are available on Mac, Linux, and Windows.
 
-| app    | version | notes                                                              |
-| ------ | ------- | ------------------------------------------------------------------ |
-| docker | 18.x.x  | the linux container manager you will use to build and run kbase-ui |
-| git    | \*      | the source revision management tool with integration into github   |
-| make   | >= 3.8  | any relatively recent make should work                             |
-| node   | >= 8    | any recent version should work                                     |
+| app    | version | notes                                                                     |
+| ------ | ------- | ------------------------------------------------------------------        |
+| docker | 18.x.x  | the linux container manager you will use to build and run kbase-ui        |
+| git    | \*      | the source revision management tool with integration into github          |
+| make   | >= 3.8  | any relatively recent make should work                                    |
+| node   | >= 8    | any recent version should work                                            |
+| npm    | 6       | although yarn is preferred, npm is useful in some edge cases              |
+| yarn   | \*      | yarn is compatible by and large with npm, but simpler and faster, and required into the kbase-ui tools |
 
 > \* we haven't documented any substantial differences between these tools regarding the kbase-ui development process. However, it is best to keep them always at the most recent version by updating your tool stack periodically.
 
 The reason for the relaxed version requirements is that kbase-ui is built inside of a Docker build process, using specific software package versions which are installed into a Docker image. The software requirements specified above are for local development tools only.
 
-## OS-Specific pre-prerequisites
+## macOS
 
-Some OSes may require specific tools to bootstrap the process of installing kbase-ui development prerequisites.
+In a nutshell, here is my standard install:
 
-### macOS
+1. Install Apple xCode
+2. Install macports (some prefer homebrew)
+3. Install prerequisites with macports (or homebrew)
+4. Install Docker Desktop
 
-#### Apple xCode
+### Apple xCode
 
 xCode may be installed from the Apple App Store for free, and is highly recommended for any developer workstation. Not only does it provide some of the required tools, but some macOS developer tools require xCode be installed.
 
 xCode includes both git and make, which are required for building kbase-ui, as well as a compilers which may be required to install other developer tools via installers from macports, npm, and the like.
 
-#### MacPorts
+### MacPorts
 
 MacPorts is a package manager for macOS. It differs from another popular macOS package manager, HomeBrew, in that it requires root access (sudo) to install packages.
 
@@ -66,72 +71,49 @@ Download and follow the instructions at [https://www.macports.org/install.php](h
 
 > xCode may be required by Macports to install certain packages (some are distributed as binary, some need to be compiled.)
 
-#### brew
+### brew
 
-[ to be done ]
+I don't use brew, so can't provide instructions or experience reports.
 
-## make
+[ TODO ]
 
-The ubiquitous and venerable "make" program is used to automate just about all of the tasks for development and deployment.
+### Installing prerequisites
 
-### MacOS
+#### Native
 
-The make program is installed with xCode, and that version seems adequate.
+##### Docker
 
-Note that the make installed with xCode is GNU make, which is good, because it is compatible with Linux. This may be true of xCode tools, but generally macOS distributes BSD versions of other unixy tools like sed and grep.
+Docker is best installed using it's native install tool. This distribution of Docker is Docker Desktop, and is available for MacOS and Windows. Docker also be be installed as a pure command-line tool via macports or brew. The Docker Desktop version, though, is very useful for inspecting running containers, including opening terminals into them. Not that this can't be accomplished from the command line, but 
 
-### Windows
+[https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)
 
-[ to be done ]
+##### git, make
 
-### Linux
+Git and make are installed with xCode and may be used as is.
 
-[ to be done ]
+They tend to run a bit behind their respective releases, so you may have a need to install the macports or homebrew versions as well.
 
-## git
+E.g. I use the macports `git`, but the xCode `make`.
 
-git is used to fetch kbase-ui and any other repos involved in a given development effort. Of course, if you are making source code changes it is a critical tool in the development process.
-
-### MacOS
-
-On MacOS, git is available through xCode, macports, brew, and an installer from git.
-
-#### Apple xCode
-
-Although xCode includes git, make and other developer tools, you may also opt to install these or similar (e.g. gmake) tools separately.
-
-#### Native Package from git
-
-Installation of native Mac packages should put you in good stead. Just follow the links below and instructions therein.
-
-[http://git-scm.com/download/mac](http://git-scm.com/download/mac)
-
-#### Macports
-
-Open Terminal and issue the following commands:
-
-```
-sudo port install git
-```
-
-> Note: Although xCode installs git, the one available through macports is probably more up-to-date.
-
-#### Linux
-
-As a Linux user, you should be familiar with the package management tools for the distribution you use. Without a version constraint, you should just install the most recent version available.
-
-E.g. for Ubuntu
+#### macPorts
 
 ```bash
-sudo apt-get install git
+sudo port install nodejs10 git yarn
 ```
 
-### Windows
+> Note that npm should be installed with nodejs.
 
-[ to be done ]
+> You may install any version of nodejs which works for you; see the [available macports nodejs packages](https://ports.macports.org/?search=nodejs&search_by=name).
 
-## docker
+#### homebrew
 
-Distribution of Docker changes from time to time. Currently it is best to consult the [Docker Store](https://store.docker.com/search?type=edition&offering=community), which should list a distribution for macOS, Windows, and various Linux distributions.
+[ TODO ]
 
-That failing, just explore [Docker](https://docker.com).
+
+## Linux
+
+[ TODO ]
+
+## Windows
+
+[ TODO ]
