@@ -1,0 +1,10 @@
+.Loading-message {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* justify-content: center; */
+}
+
+.Loading-message .fa {
+    margin-right: 4px;
+}

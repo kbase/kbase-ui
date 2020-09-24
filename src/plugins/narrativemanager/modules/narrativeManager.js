@@ -72,9 +72,12 @@ define([
                 token: this.runtime.service('session').getAuthToken()
             });
             params.includeIntroCell = 1;
+            // return new Promise((resolve, reject) => {
+            //     reject(new Error('Yikes!'));
+            // });
             return narrativeService
                 .callFunc('create_new_narrative', [params])
-                .then(function ([result]) {
+                .then(([result]) => {
                     return result;
                 });
         }

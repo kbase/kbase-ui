@@ -4,7 +4,7 @@ define([
     '../reactComponents/OpenNarrative',
     '../narrativeManager',
     '../reactComponents/Loading',
-    '../reactComponents/Error',
+    '../reactComponents/ErrorAlert',
 
     'bootstrap'
 ], (
@@ -13,18 +13,17 @@ define([
     OpenNarrative,
     NarrativeManagerService,
     Loading,
-    Error
+    ErrorAlert
 ) => {
 
-    const {h, Component } = preact;
+    const { h, Component } = preact;
     const html = htm.bind(h);
 
     class OpenNarrativeMain extends Component {
         constructor(props) {
             super(props);
             this.state = {
-                isReady: false,
-                isError: false,
+                status: null,
                 data: null,
                 error: null
             };
@@ -32,18 +31,19 @@ define([
 
         componentDidMount() {
             this.props.runtime.send('ui', 'setTitle', 'Loading Narrative...');
+            this.setState({
+                status: 'creating'
+            });
             this.startOrCreateEmptyNarrative()
                 .then((result) => {
                     this.setState({
-                        isReady: true,
-                        isError: false,
+                        status: 'success',
                         data: result
                     });
                 })
                 .catch((ex) => {
                     this.setState({
-                        isReady: false,
-                        isError: true,
+                        status: 'error',
                         error: {
                             message: ex.message
                         }
@@ -81,19 +81,34 @@ define([
         }
 
         render() {
-            if (!this.state.isReady) {
-                return html`<${Loading} message="Loading narrative..." />`;
+            switch (this.state.status) {
+                case 'creating':
+                    return html`
+                        <${Loading} message="Loading most recently opened narrative..." detectSlow=${true} />
+                    `;
+                case 'error':
+                    return html`
+                        <${ErrorAlert} title="Error">
+                            <p>
+                                Sorry, there was an error creating or opening a new narrative:
+                            </p>
+                            <p>
+                                ${this.state.error.message}
+                            </p>
+                        <//>
+                    `;
+                case 'success':
+                    var props = {
+                        runtime: this.props.runtime,
+                        url: this.state.data.url
+                    };
+                    return html`<${OpenNarrative} ...${props} />`;
+                default:
+                    return html`
+                <${ErrorAlert}>
+                    Unexpected status: ${this.state.status}
+                <//>`;
             }
-            if (this.state.isError) {
-                return html`<${Error} message=${this.state.error.message} />`;
-            }
-
-            const props = {
-                runtime: this.props.runtime,
-                url: this.state.data.url
-            };
-
-            return html`<${OpenNarrative} ...${props} />`;
         }
     }
 

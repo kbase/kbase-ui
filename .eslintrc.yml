@@ -51,3 +51,4 @@ rules:
     - error
   arrow-parens:
     - error
+  indent: [error, 4, SwitchCase]
