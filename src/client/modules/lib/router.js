@@ -385,7 +385,7 @@ define([], () => {
                 const params = this.matchPath(path, route);
 
                 if (params) {
-                    return { route, params };
+                    return {route, params};
                 }
             }
             return null;
@@ -595,7 +595,7 @@ define([], () => {
                 location = this.defaultRoute;
             }
             if (typeof location === 'string') {
-                location = { path: location };
+                location = {path: location};
             }
 
             if (location.path !== undefined) {
