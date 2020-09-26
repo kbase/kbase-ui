@@ -54,6 +54,9 @@ host = ci
 # The testing service
 service = selenium-standalone
 
+# A kbase token; used in testing tasks
+token = 
+
 # functions
 
 # check_defined variable-name message
@@ -184,7 +187,7 @@ integration-tests:
 	@:$(call check_defined, env, first component of hostname and kbase environment)
 	@:$(call check_defined, browser, the browser to test against)
 	@:$(call check_defined, service, the testing service )
-	ENV=$(env) BROWSER=$(browser) SERVICE_USER=$(user) SERVICE_KEY=$(key) SERVICE=$(service) $(GRUNT) webdriver:service --env=$(env)
+	ENV=$(env) BROWSER=$(browser) SERVICE_USER=$(user) SERVICE_KEY=$(key) SERVICE=$(service) TOKEN=${token} $(GRUNT) webdriver:service --env=$(env)
 
 travis-tests:
 	$(GRUNT) test-travis
