@@ -31,7 +31,7 @@ function getProp(obj, propPath, defaultValue) {
 
 // a suite is a set of tests
 class Suite {
-    constructor({ testFiles, context, subTasks }) {
+    constructor({testFiles, context, subTasks}) {
         this.context = context;
         this.subTasks = subTasks;
         this.tests = testFiles.map((testDef) => {
@@ -51,7 +51,7 @@ class Suite {
 
 // a test is a set of test cases dedicated to one primary purpose.
 class Test {
-    constructor({ testDef, suite }) {
+    constructor({testDef, suite}) {
         this.suite = suite;
         this.context = JSON.parse(JSON.stringify(suite.context));
         this.testDef = testDef;
@@ -87,7 +87,7 @@ class Test {
 }
 
 class TestCase {
-    constructor({ testCaseDef, test, context }) {
+    constructor({testCaseDef, test, context}) {
         this.testCaseDef = testCaseDef;
         this.test = test;
         this.context = context;
@@ -141,7 +141,7 @@ class TestCase {
 }
 
 class TaskList {
-    constructor({ taskDefs, testCase, context }) {
+    constructor({taskDefs, testCase, context}) {
         this.testCase = testCase;
         try {
             this.context = Object.assign(JSON.parse(JSON.stringify(context)));
@@ -178,7 +178,7 @@ class TaskList {
                         });
                     }
                 } else {
-                    return new Task({ taskDef, testCase, context: this.context });
+                    return new Task({taskDef, testCase, context: this.context});
                 }
             })
             .filter((taskDef) => {
@@ -231,7 +231,7 @@ class TaskList {
 }
 
 class Task {
-    constructor({ taskDef, testCase, context }) {
+    constructor({taskDef, testCase, context}) {
         this.taskDef = taskDef;
         this.testCase = testCase;
         this.context = context;

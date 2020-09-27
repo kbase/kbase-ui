@@ -8,7 +8,7 @@ const runner = require('./runner');
 const utils = require('./utils');
 const glob = require('glob');
 const path = require('path');
-const { Merger } = require('./merger');
+const {Merger} = require('./merger');
 
 function loadData(config) {
     const dataFiles = glob.sync(`plugins/*/data/${config.env}/*.json`, {
@@ -106,7 +106,7 @@ function main() {
     /* eslint no-console: [0] */
     console.log('CONFIG', config);
 
-    const plugins = loadData({ env: process.env.ENV });
+    const plugins = loadData({env: process.env.ENV});
     const context = {
         config,
         plugins,
