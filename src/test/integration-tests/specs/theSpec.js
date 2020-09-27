@@ -103,12 +103,14 @@ function main() {
     }, {})[process.env.ENV];
     const config = new Merger(rawConfig.envDefault).mergeIn(envConfig).value();
 
+    /* eslint no-console: [0] */
     console.log('CONFIG', config);
 
     const plugins = loadData({ env: process.env.ENV });
     const context = {
         config,
-        plugins
+        plugins,
+        env: process.env // safe?
     };
 
     const testSuite = new runner.Suite({

@@ -187,6 +187,7 @@ integration-tests:
 	@:$(call check_defined, env, first component of hostname and kbase environment)
 	@:$(call check_defined, browser, the browser to test against)
 	@:$(call check_defined, service, the testing service )
+	@:$(call check_defined, token, the testing user auth tokens )
 	ENV=$(env) BROWSER=$(browser) SERVICE_USER=$(user) SERVICE_KEY=$(key) SERVICE=$(service) TOKEN=${token} $(GRUNT) webdriver:service --env=$(env)
 
 travis-tests:
