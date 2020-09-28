@@ -7,3 +7,4 @@ _attic
 # dev artifactcs from regular branches.
 /dev
 /tools
+/temp
