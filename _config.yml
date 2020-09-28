@@ -3,7 +3,22 @@ plugins:
   - jekyll-redirect-from
 remote_theme: kbaseIncubator/kbase-github-pages-theme
 search_enabled: false
-source: source
+exclude:
+  - _attic
+  - _site
+  - node_modules
+  - tools
+  - dev
+  - temp
+  - tools
+livereload_ignore:
+  - _attic
+  - _site
+  - node_modules
+  - tools
+  - dev
+  - temp
+  - tools
 aux_links:
   "KBase UI on Github":
     - "//github.com/kbase/kbase-ui"
@@ -46,3 +61,5 @@ navigation:
     - label: Tasks
       menu:
         - label: Local KBase Cert
+    - label: README
+    - label: LICENSE
