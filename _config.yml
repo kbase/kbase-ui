@@ -3,47 +3,46 @@ plugins:
   - jekyll-redirect-from
 remote_theme: kbaseIncubator/kbase-github-pages-theme
 search_enabled: false
-aux_links: 
-    "KBase UI on Github":
-        - "//github.com/kbase/kbase-ui"
-    "About KBase":
-        - "//kbase.us/about"
+source: source
+aux_links:
+  "KBase UI on Github":
+    - "//github.com/kbase/kbase-ui"
+  "About KBase":
+    - "//kbase.us/about"
 navigation:
-    menu:
-      - label: Getting Started
-        menu:
-          - label: Prerequisites
-          - label: Quick Start
-      - label: Workflows
-        menu:
-          - label: Updating kbase-ui 
-          - label: Updating a Plugin
-            menu:
-              - label: Setting Up
-              - label: Testing
-              - label: Releasing Plugin
-              - label: Releasing with kbase-ui to CI
-              - label: Releasing with kbase-ui to Prod
-          - label: Using a KBase Environment
-          - label: Releasing to CI
-      - label: Testing
-        menu:
-          - label: Unit Testing
-          - label: Integration Testing
-          - label: Image Testing
-      - label: Plugin Development
-      - label: Deployment
-      - label: Architecture
-        menu:
-            - label: Status
-            - label: Build
-            - label: Internal Design
-            - label: Plugin Support
-            - label: History
-            - label: Legacy Plugins
-      - label: Notes
-      - label: Tasks
-        menu:
-            - label: Local KBase Cert
-        
-          
+  menu:
+    - label: Getting Started
+      menu:
+        - label: Prerequisites
+        - label: Quick Start
+    - label: Workflows
+      menu:
+        - label: Updating kbase-ui
+        - label: Updating a Plugin
+          menu:
+            - label: Setting Up
+            - label: Testing
+            - label: Releasing Plugin
+            - label: Releasing with kbase-ui to CI
+            - label: Releasing with kbase-ui to Prod
+        - label: Using a KBase Environment
+        - label: Releasing to CI
+    - label: Testing
+      menu:
+        - label: Unit Testing
+        - label: Integration Testing
+        - label: Image Testing
+    - label: Plugin Development
+    - label: Deployment
+    - label: Architecture
+      menu:
+        - label: Status
+        - label: Build
+        - label: Internal Design
+        - label: Plugin Support
+        - label: History
+        - label: Legacy Plugins
+    - label: Notes
+    - label: Tasks
+      menu:
+        - label: Local KBase Cert
