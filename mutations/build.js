@@ -20,7 +20,7 @@
  */
 
 /*eslint-env node */
-/*eslint strict: ["error", "global"] */
+/*eslint strict: ["error", "global"], no-console: 0 */
 'use strict';
 
 const Promise = require('bluebird'),
@@ -31,7 +31,6 @@ const Promise = require('bluebird'),
     yaml = require('js-yaml'),
     glob = Promise.promisify(require('glob').Glob),
     exec = require('child_process').exec,
-    dir = Promise.promisifyAll(require('node-dir')),
     util = require('util'),
     handlebars = require('handlebars'),
     numeral = require('numeral'),
@@ -124,61 +123,6 @@ function gitInfo(state) {
 
 // SUB TASKS
 
-function arrayDiff(a, b) {
-    if (a.length >= b.length) {
-        return [];
-    }
-    var i;
-    for (i = 0; i < a.length; i += 1) {
-        if (a[i] !== b[i]) {
-            return [];
-        }
-    }
-    return b.slice(i, b.length);
-}
-
-/*
- *
- * Copy files from one directory to another, creating any required directories,
- * but of course requiring the source to exist.
- */
-function copyDirFiles(pathFrom, pathTo) {
-    var from = pathFrom.join('/'),
-        fromPath,
-        toPath = pathTo;
-    return fs
-        .realpathAsync(from)
-        .then(function (realpath) {
-            fromPath = realpath.split('/');
-            return dir.filesAsync(from);
-        })
-        .then(function (paths) {
-            return Promise.all(
-                paths.map(function (path) {
-                    return fs.realpathAsync(path).then(function (realpath) {
-                        return realpath.split('/');
-                    });
-                })
-            );
-        })
-        .then(function (realpaths) {
-            return Promise.all(
-                realpaths.map(function (filePath) {
-                    var dir = filePath.slice(0, filePath.length - 1),
-                        relative = arrayDiff(fromPath, dir),
-                        fileName = filePath[filePath.length - 1],
-                        targetDir = toPath.concat(relative);
-                    // make the found paths relative.
-
-                    return fs.ensureDirAsync(targetDir.join('/')).then(function () {
-                        return fs.copyAsync(filePath.join('/'), targetDir.concat([fileName]).join('/'));
-                        // mutant.log(targetDir.concat([fileName]).join('/'));
-                    });
-                })
-            );
-        });
-}
-
 function dirList(dir) {
     return fs
         .readdirAsync(dir.join('/'))
@@ -205,25 +149,6 @@ function dirList(dir) {
             });
         });
 }
-
-/*
- * Install any bower package which has an install config file at the top level.
- */
-
-function installModule(state, source) {
-    return mutant.loadYaml(source.concat(['install.yml'])).then(function (installConfig) {
-        if (installConfig.moduleType === 'amd') {
-            if (installConfig.package.type === 'namespaced') {
-                var from = source.concat(installConfig.package.path.split('/')),
-                    to = state.environment.path.concat(['build', 'client', 'modules']);
-
-                return copyDirFiles(from, to);
-            }
-        }
-    });
-}
-
-
 
 function fetchPluginsFromGithub(state) {
     // Load plugin config
@@ -296,7 +221,7 @@ function injectPluginsIntoConfig(state) {
             });
 
             // emulate the yaml file for now, or for ever.
-            return fs.writeFileAsync(configPath.concat(['plugin.yml']).join('/'), yaml.safeDump({ plugins: plugins }));
+            return fs.writeFileAsync(configPath.concat(['plugin.yml']).join('/'), yaml.safeDump({plugins: plugins}));
         });
 }
 
@@ -428,9 +353,9 @@ function copyFromNodeNodules(state) {
                         return Promise.all(
                             matches.map((match) => {
                                 const fromPath = state.environment.path
-                                    .concat(copySpec.cwd)
-                                    .concat([match])
-                                    .join('/'),
+                                        .concat(copySpec.cwd)
+                                        .concat([match])
+                                        .join('/'),
                                     toPath = state.environment.path
                                         .concat(copySpec.dest)
                                         .concat([match])
@@ -468,38 +393,38 @@ function installPlugins(state) {
                 pluginConfig = yaml.safeLoad(pluginFile);
                 const plugins = pluginConfig.plugins;
                 return Promise.all(
-                        // Supports installing from gitDownloads (which are downloaded prior to this)
-                        plugins
-                            .filter(function (plugin) {
-                                return typeof plugin === 'object' && plugin.source.github;
-                            })
-                            .map(function (plugin) {
-                                const pluginDir = root.concat(['gitDownloads', plugin.name]);
-                                const destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
-                                let srcDir;
-                                if (plugin.cwd) {
-                                    mutant.info(`${plugin.name}: plugin building from configured cwd: ${plugin.cwd}`)
-                                    const cwd = plugin.cwd.split('/');
-                                    srcDir = pluginDir.concat(cwd);
+                    // Supports installing from gitDownloads (which are downloaded prior to this)
+                    plugins
+                        .filter(function (plugin) {
+                            return typeof plugin === 'object' && plugin.source.github;
+                        })
+                        .map(function (plugin) {
+                            const pluginDir = root.concat(['gitDownloads', plugin.name]);
+                            const destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+                            let srcDir;
+                            if (plugin.cwd) {
+                                mutant.info(`${plugin.name}: plugin building from configured cwd: ${plugin.cwd}`);
+                                const cwd = plugin.cwd.split('/');
+                                srcDir = pluginDir.concat(cwd);
+                            } else {
+                                const distFile = pluginDir.concat(['dist.tgz']);
+                                if (pathExists.sync(distFile.join('/'))) {
+                                    mutant.info(`${plugin.name}: plugin installing from dist.tgz`);
+                                    tar.extract({
+                                        cwd: pluginDir.join('/'),
+                                        file: distFile.join('/'),
+                                        sync: true
+                                    });
+                                    srcDir = pluginDir.concat(['dist', 'plugin']);
                                 } else {
-                                    const distFile = pluginDir.concat(['dist.tgz']);
-                                    if (pathExists.sync(distFile.join('/'))) {
-                                        mutant.info(`${plugin.name}: plugin installing from dist.tgz`);
-                                        tar.extract({
-                                            cwd: pluginDir.join('/'),
-                                            file: distFile.join('/'),
-                                            sync: true
-                                        });
-                                        srcDir = pluginDir.concat(['dist', 'plugin']);
-                                    } else {
-                                        throw new Error('git plugin ${plugin.name} does not have an install method - neither cwd nor dist.tgz');
-                                    }
+                                    throw new Error('git plugin ${plugin.name} does not have an install method - neither cwd nor dist.tgz');
                                 }
+                            }
 
-                                mutant.ensureDir(destDir);
-                                return mutant.copyFiles(srcDir, destDir, '**/*');
-                            })
-                    )
+                            mutant.ensureDir(destDir);
+                            return mutant.copyFiles(srcDir, destDir, '**/*');
+                        })
+                )
                     .then(function () {
                         // Supports installing from a directory
                         return Promise.all(
@@ -718,7 +643,7 @@ function createBuildInfo(state) {
                 builtAt: new Date().getTime()
             };
         state.buildInfo = buildInfo;
-        return mutant.saveYaml(configDest, { buildInfo: buildInfo }).then(function () {
+        return mutant.saveYaml(configDest, {buildInfo: buildInfo}).then(function () {
             return state;
         });
     });
@@ -875,7 +800,7 @@ function addCacheBusting(state) {
         })
         .then(() => {
             return state;
-        })
+        });
 }
 
 function makeDeployConfig(state) {
@@ -1156,50 +1081,50 @@ function makeModuleVFS(state, whichBuild) {
                         }
                         return fs.readFileAsync(match, 'utf8').then(function (contents) {
                             switch (ext) {
-                                case 'js':
+                            case 'js':
+                                include(ext);
+                                vfs.scripts[path] = 'function () { ' + contents + ' }';
+                                break;
+                            case 'yaml':
+                            case 'yml':
+                                include(ext);
+                                vfs.resources.json[base] = yaml.safeLoad(contents);
+                                break;
+                            case 'json':
+                                if (vfs.resources.json[base]) {
+                                    throw new Error('duplicate entry for json detected: ' + path);
+                                }
+                                try {
                                     include(ext);
-                                    vfs.scripts[path] = 'function () { ' + contents + ' }';
-                                    break;
-                                case 'yaml':
-                                case 'yml':
+                                    vfs.resources.json[base] = JSON.parse(contents);
+                                } catch (ex) {
+                                    skip('error');
+                                    console.error('Error parsing json file: ' + path + ':' + ex.message);
+                                    // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
+                                }
+                                break;
+                            case 'text':
+                            case 'txt':
+                                include(ext);
+                                vfs.resources.text[base] = contents;
+                                break;
+                            case 'css':
+                                if (
+                                    cssExceptions.some(function (re) {
+                                        return re.test(contents);
+                                    })
+                                ) {
+                                    skip('css excluded');
+                                } else {
                                     include(ext);
-                                    vfs.resources.json[base] = yaml.safeLoad(contents);
-                                    break;
-                                case 'json':
-                                    if (vfs.resources.json[base]) {
-                                        throw new Error('duplicate entry for json detected: ' + path);
-                                    }
-                                    try {
-                                        include(ext);
-                                        vfs.resources.json[base] = JSON.parse(contents);
-                                    } catch (ex) {
-                                        skip('error');
-                                        console.error('Error parsing json file: ' + path + ':' + ex.message);
-                                        // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
-                                    }
-                                    break;
-                                case 'text':
-                                case 'txt':
-                                    include(ext);
-                                    vfs.resources.text[base] = contents;
-                                    break;
-                                case 'css':
-                                    if (
-                                        cssExceptions.some(function (re) {
-                                            return re.test(contents);
-                                        })
-                                    ) {
-                                        skip('css excluded');
-                                    } else {
-                                        include(ext);
-                                        vfs.resources.css[base] = contents;
-                                    }
-                                    break;
-                                case 'csv':
-                                    skip(ext);
-                                    break;
-                                default:
-                                    skip(ext);
+                                    vfs.resources.css[base] = contents;
+                                }
+                                break;
+                            case 'csv':
+                                skip(ext);
+                                break;
+                            default:
+                                skip(ext);
                             }
                         });
                     });

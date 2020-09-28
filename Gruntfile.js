@@ -28,7 +28,7 @@ module.exports = function (grunt) {
                 coverageReporter: {
                     dir: 'build/build-test-coverage/',
                     reporters: [
-                        { type: 'html', subdir: 'html' }
+                        {type: 'html', subdir: 'html'}
                     ]
                 },
                 autoWatch: true,
@@ -102,7 +102,7 @@ module.exports = function (grunt) {
         'webdriver:integration'
     ]);
 
-    // Does a single unit test run, then sends 
+    // Does a single unit test run, then sends
     // the lcov results to coveralls. Intended for running
     // from travis-ci.
     grunt.registerTask('test-travis', [

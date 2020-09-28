@@ -4,7 +4,7 @@ tasks:
   - action: setSessionCookie
     title: Set KBase session cookie (simulate login)
     params:
-      token: "{{config.auth.token}}"
+      token: "{{env.TOKEN}}"
   - wait: forElement
     timeout: 10000
     title: Ensure the logged-in menu appears, then open the user menu

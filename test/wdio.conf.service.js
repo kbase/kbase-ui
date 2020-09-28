@@ -1,27 +1,32 @@
-let baseUrl
+/* eslint-env node */
+/* eslint no-console: 0 */
+/*eslint {strict: ['error', 'global']}*/
+'use strict';
+
+let baseUrl;
 if (process.env.ENV === 'prod') {
     baseUrl = 'https://narrative.kbase.us';
 } else {
-    baseUrl = `https://${process.env.ENV}.kbase.us`
+    baseUrl = `https://${process.env.ENV}.kbase.us`;
 }
 console.log('TEST ENV        : ' + process.env.ENV);
 console.log('TEST BASE URL   : ' + baseUrl);
 
-const browserName = process.env.BROWSER
+const browserName = process.env.BROWSER;
 // const browserName = 'chrome';
 const browserConfigs = {
     chrome: {
-        browserName: "chrome",
+        browserName: 'chrome',
         acceptInsecureCerts: true,
         maxInstances: 1
     },
     firefox: {
-        browserName: "firefox",
+        browserName: 'firefox',
         acceptInsecureCerts: true,
         maxInstances: 1
     },
     safari: {
-        browserName: "safari"
+        browserName: 'safari'
     },
     safari13Catalina: {
         'os': 'OS X',
@@ -30,8 +35,8 @@ const browserConfigs = {
         'browser_version': '13.0',
         'resolution': '1920x1080'
     }
-}
-const browser = browserConfigs[browserName]
+};
+const browser = browserConfigs[browserName];
 
 console.log('TEST BROWSER    : ' + browserName);
 
@@ -43,7 +48,7 @@ console.log('TEST SERVICE    : ' + SERVICE);
 console.log('SERVICE USER    : ' + SERVICE_USER);
 console.log('SERVICE KEY     : ' + SERVICE_KEY);
 
-let wdioConfig = {
+const wdioConfig = {
     //
     // ====================
     // Runner Configuration
@@ -51,7 +56,7 @@ let wdioConfig = {
     //
     // WebdriverIO allows it to run your tests in arbitrary locations (e.g. locally or
     // on a remote machine).
-    runner: "local",
+    runner: 'local',
 
     //
     // ==================
@@ -62,7 +67,7 @@ let wdioConfig = {
     // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
-    specs: ["./dev/test/integration-tests/specs/theSpec.js"],
+    specs: ['./dev/test/integration-tests/specs/theSpec.js'],
     // Patterns to exclude.
     exclude: [
         // 'path/to/excluded/files'
@@ -100,7 +105,7 @@ let wdioConfig = {
     // Define all options that are relevant for the WebdriverIO instance here
     //
     // Level of logging verbosity: trace | debug | info | warn | error | silent
-    logLevel: "warn",
+    logLevel: 'warn',
     //
     // Set specific log levels per logger
     // loggers:
@@ -149,7 +154,7 @@ let wdioConfig = {
     //
     // Make sure you have the wdio adapter package for the specific framework installed
     // before running any tests.
-    framework: "jasmine",
+    framework: 'jasmine',
     //
     // The number of times to retry the entire specfile when it fails as a whole
     // specFileRetries: 1,
@@ -157,7 +162,7 @@ let wdioConfig = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter.html
-    reporters: ["dot", "spec"],
+    reporters: ['dot', 'spec'],
 
     //
     // Options to be passed to Jasmine.
@@ -169,7 +174,7 @@ let wdioConfig = {
         // The Jasmine framework allows interception of each assertion in order to log the state of the application
         // or website depending on the result. For example, it is pretty handy to take a screenshot every time
         // an assertion fails.
-        expectationResultHandler: function (passed, assertion) {
+        expectationResultHandler: function (/*passed, assertion*/) {
             // do something
         }
     }

@@ -8,7 +8,7 @@ define([
 
     class RouteService {
         constructor(p) {
-            const { config, params } = p;
+            const {config, params} = p;
             this.runtime = params.runtime;
             this.router = new routerMod.Router({...config, runtime: params.runtime});
             this.currentRouteHandler = null;
@@ -49,7 +49,7 @@ define([
             // "nextrequest". This ensures that we can close the loop for accessing
             // auth-required endpoints.
             if (handler.route.authorization) {
-                if (!this.runtime.service('session').isLoggedIn()) {
+                if (!this.runtime.service('session').isAuthenticated()) {
                     const loginParams = {
                         source: 'authorization'
                     };
@@ -116,7 +116,7 @@ define([
         }
 
         installRoute(route, options) {
-            
+
             if (route.component) {
                 this.router.addRoute(route, options);
             } else if (route.redirectHandler) {
@@ -144,7 +144,7 @@ define([
 
                     // Install all the routes
                     this.installRoutes(serviceConfig.routes || serviceConfig, {
-                        pluginName: pluginDef.package.name, 
+                        pluginName: pluginDef.package.name,
                         defaults,
                         mode: serviceConfig.mode
                     });

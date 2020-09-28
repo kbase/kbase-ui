@@ -4,23 +4,25 @@ env:
   es6: true
 extends: "eslint:recommended"
 parserOptions:
-  ecmaVersion: 2017
+  ecmaVersion: 9
 rules:
+  # no strict mode, because we like to use destructuring in arguments.
   strict:
     - error
     - never
-  indent:
-    - error
-    - 4
   linebreak-style:
     - error
     - unix
+  # single quotes are simply easier to type, and consistency is good.
   quotes:
     - error
     - single
+  # semis are best for reliability, and with format on save they'll be supplied
+  # automatically, but I'm not a true believer.
   semi:
     - error
     - always
+  # helps prevent leaving debugging console.logs
   no-console:
     - error
     - allow:
@@ -29,6 +31,7 @@ rules:
   # stylistic
   no-trailing-spaces:
     - error
+
   space-before-function-paren:
     - error
     - anonymous: always
@@ -51,4 +54,10 @@ rules:
     - error
   arrow-parens:
     - error
-  indent: [error, 4, SwitchCase]
+  indent:
+    - error
+    - 4
+    - SwitchCase: 0
+  object-curly-spacing:
+    - error
+    - never

@@ -1,4 +1,5 @@
-'use strict';
+/* eslint-env node */
+/* eslint no-console: 0 */
 
 const yargs = require('yargs');
 const yaml = require('js-yaml');
@@ -27,12 +28,12 @@ function mergePlugins(root, config, args) {
                 return {
                     pluginName: parts[0],
                     repoSuffix: parts[0]
-                }
+                };
             }
             return {
                 pluginName: parts[0],
-                repoSuffix: parts[1]                
-            }
+                repoSuffix: parts[1]
+            };
         });
 
         plugins.forEach(({pluginName, repoSuffix}) => {
@@ -183,23 +184,6 @@ function mergeLocalTests(root, config) {
     };
 }
 
-function mergeLocalDocs(root, config) {
-    config.services['kbase-ui'].volumes.push({
-        type: 'volume',
-        source: 'developer-docs',
-        target: '/kb/deployment/services/kbase-ui/dist/docs'
-    });
-    const docsHostDirectory = [root, 'docs'].join('/');
-    config.volumes['developer-docs'] = {
-        driver: 'local',
-        driver_opts: {
-            type: 'none',
-            o: 'bind',
-            device: docsHostDirectory
-        }
-    };
-}
-
 function main(args) {
     const root = getRoot();
 
@@ -235,8 +219,6 @@ function main(args) {
     mergeConfig(root, config, args);
 
     mergeLocalTests(root, config, args);
-
-    mergeLocalDocs(root, config, args);
 
     const outputPath = [root, 'dev', 'docker-compose.override.yml'].join('/');
     fs.writeFileSync(outputPath, yaml.safeDump(config));
