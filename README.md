@@ -244,7 +244,7 @@ The only solution at this time is to remove the `node_modules` directory when wo
 
 The document look, feel, and operation is determined by the Jekyll theme used. In this case, it is our own theme (based on another) [KBase Github Pages Theme](https://github.com/kbase/kbase-github-pages-theme).
 
-## Background 
+## Background
 
 This documentation set should provide instructions for building and deploying kbase-ui, and also background information on it's design and operation.
 
