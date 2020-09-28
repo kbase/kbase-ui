@@ -22,22 +22,31 @@ Another technique would be to simply use a kbase-ui feature branch for "CI" rele
 4. In your local kbase-ui, update the version in `plugins.yml` to the version set above.
    1. Note that this version should be in the semver format without the `v` prefix.
 5. Conduct a local build, and verify that it pulled in the correct version.
+
     ```bash
     make dev-start build-image=t
     ```
+
 6. Push up the kbase-ui changes (just the single line of `plugins.yml`) to your fork.
 7. Issue a Pull Request against kbase's kbase-ui
 8. When the PR is merged, an image will be built and pushed to dockerhub automatically.
    1. This process takes approximately 5-10 minutes
-9.  The CI kbase-ui deployment now needs to be updated. This is accomplished using rancher.
-   2. open an ssh forward to kbase:
+9. The CI kbase-ui deployment now needs to be updated. This is accomplished using rancher.
+    1. open an ssh forward to kbase:
        1. e.g `ssh -D 1234 yourusername@login1.berkeley.kbase.us`
        2. You may choose whichever port (1234 above) you prefer.
        3. Log in at the prompt if required to. This will be your kbase developer account password corresponding to `yourusername`.
        4. this ssh forward supports SOCKS
-   3. open a browser using this ssl proxy:
+    2. open a browser using this ssl proxy:
        1. e.g. in Firefox
            1. open preferences 
            2. open General > Network Settings > Settings... (at the bottom of the General tab)
            3. Select "Manual proxy configuration"
            4. In "SOCKS" enter "localhost" for "Host", and "1234" (or whatever you supplied on the command line above) for Port.
+    3. open the url `https://rancher.berkeley.kbase.us`
+    4. sign in with your KBase developer credentials
+    5. in the `ci-core` section, locate the row for `kbase-ui` (it will be shown in the second column)
+    6. click the Upgrade button, far right, ![Upgrade button](./images/update-button.png)
+    7. Wait for the Rancher ui to indicate the upgrade is complete.
+    8. Visit https://ci.kbase.us, and verify that your changes are there and behaving correctly.
+    9. Finish the upgrade by clicking on the Upgrade button a second time.
