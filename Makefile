@@ -183,12 +183,17 @@ uuid:
 unit-tests:
 	$(KARMA) start test/unit-tests/karma.conf.js
 
+# Filter test files to focus on just selected ones.
+# e.g. dataview/ will match just test files which include a dataview path element, effectively
+# selecting just the dataview plugin tests.
+focus = 
+
 integration-tests:
 	@:$(call check_defined, env, first component of hostname and kbase environment)
 	@:$(call check_defined, browser, the browser to test against)
 	@:$(call check_defined, service, the testing service )
 	@:$(call check_defined, token, the testing user auth tokens )
-	ENV=$(env) BROWSER=$(browser) SERVICE_USER=$(user) SERVICE_KEY=$(key) SERVICE=$(service) TOKEN=${token} $(GRUNT) webdriver:service --env=$(env)
+	ENV="$(env)" BROWSER="$(browser)" SERVICE_USER="$(user)" SERVICE_KEY="$(key)" SERVICE="$(service)" TOKEN="${token}" FOCUS="${focus}" $(GRUNT) webdriver:service --env=$(env)
 
 travis-tests:
 	$(GRUNT) test-travis
