@@ -4,7 +4,7 @@
 
 ## Usage
 
-This documentation is designed to be accessed at its home on Github, located at (https://kbase.github.io/kbase-ui).
+This documentation is designed to be accessed at its home on Github, located at [https://kbase.github.io/kbase-ui](https://kbase.github.io/kbase-ui).
 
 For developers, see [the developer documentation](https://kbase.github.io/kbase-ui/documentation)
 
@@ -18,7 +18,7 @@ The instructions below describe how to set up a macOS
 
 #### Native
 
-macOS ships with Ruby. However, since it is at the system level it may require root access to install gems. It should prompt you for your password (assuming you have admin access), but that doesn't always work. A good solution is documented here: https://guides.cocoapods.org/using/getting-started.html#sudo-less-installation.
+macOS ships with Ruby. However, since it is at the system level it may require root access to install gems. It should prompt you for your password (assuming you have admin access), but that doesn't always work. A good solution is documented [https://guides.cocoapods.org/using/getting-started.html#sudo-less-installation](https://guides.cocoapods.org/using/getting-started.html#sudo-less-installation)
 
 To cut to the chase:
 
@@ -114,7 +114,7 @@ gem install bundler
 
 Another tool for installing and managing multiple Rubys is `rvm`. Some consider it more complex than it needs to be, and it is more intrusive into your shell startup scripts, but it is simple to use.
 
-Install `rvm` from https://rvm.io
+Install `rvm` from [https://rvm.io](https://rvm.io).
 
 ##### Install rvm
 
@@ -135,7 +135,7 @@ This will take a while. It is possible that you'll need to install macOS develop
 
 Open a terminal into this repo's top level directory
 
-- install `bundler` version 2 if you don't already have it (it is a Ruby package.) 
+- install `bundler` version 2 if you don't already have it (it is a Ruby package.)
 
   If you installed Ruby with rvm, bundler 1 will already been installed. It will be need to be updated:
 
@@ -146,7 +146,7 @@ Open a terminal into this repo's top level directory
     > Note that this and other Ruby related commands will probably ask you to authorize installation. This is because the packages (gems) are being installed at the system level. Just go ahead and authorize - do not try to run these commands with `sudo`, as they are designed to be run as a regular user and only prompt for authorization when they need to.
 
 ### Linux
- 
+
 > TODO
 
 ### Windows
@@ -161,7 +161,6 @@ Now you are ready to start up a local copy of the documentation site. This is ac
 
 - you'll be working within the root directory (not docs as is sometimes the case)
 
-
 - install dependencies required by github pages:
 
     ``` bash
@@ -174,7 +173,7 @@ Now you are ready to start up a local copy of the documentation site. This is ac
     bundle exec jekyll serve --livereload
     ```
 
-- take your browser to https://localhost:4000.
+- take your browser to [https://localhost:4000](https://localhost:4000).
 
 - You should see the `kbase-ui-docs` site in full glory.
 
@@ -186,7 +185,7 @@ Now you are ready to start up a local copy of the documentation site. This is ac
 
 All documents which appear in the site are located in the `docs` directory. They are arranged in a directory structure which is the same as the table of contents in the documentation site. Each visible page is a markdown file.
 
-To update a page, simply update the associated markdown file. 
+To update a page, simply update the associated markdown file.
 
 If you have the developer server running (as described above), you should see your changes appear on the associated page within a few seconds.
 
