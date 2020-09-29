@@ -57,9 +57,17 @@ navigation:
         - label: Plugin Support
         - label: History
         - label: Legacy Plugins
+        - label: Integration Testing
+    - label: Documentation
+      menu:
+        - label: Getting Started
+        - label: Common Tasks
+          menu:
+            - label: Edit an Existing File
+            - label: Change a Menu Item
+            - label: Add a New File
+        - label: Status
     - label: Notes
     - label: Tasks
       menu:
         - label: Local KBase Cert
-    - label: README
-    - label: LICENSE
