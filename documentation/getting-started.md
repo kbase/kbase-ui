@@ -1,12 +1,6 @@
-# KBase UI Development Docs
-
-> Documentation for kbase-ui development
-
-## Usage
-
-This documentation is designed to be accessed at its home on Github, located at (https://kbase.github.io/kbase-ui).
-
-For developers, see [the developer documentation](https://kbase.github.io/kbase-ui/documentation)
+---
+---
+# Getting Started with Developing Documentation
 
 ## Installation
 
@@ -145,6 +139,8 @@ Open a terminal into this repo's top level directory
 
     > Note that this and other Ruby related commands will probably ask you to authorize installation. This is because the packages (gems) are being installed at the system level. Just go ahead and authorize - do not try to run these commands with `sudo`, as they are designed to be run as a regular user and only prompt for authorization when they need to.
 
+
+
 ### Linux
  
 > TODO
@@ -180,87 +176,9 @@ Now you are ready to start up a local copy of the documentation site. This is ac
 
 - As you edit and save source files, the documentation site will be rebuilt, and the browser will reload.
 
-### Common Editing Tasks
+### Common Development Tasks
 
-#### Editing an Existing File
-
-All documents which appear in the site are located in the `docs` directory. They are arranged in a directory structure which is the same as the table of contents in the documentation site. Each visible page is a markdown file.
-
-To update a page, simply update the associated markdown file. 
-
-If you have the developer server running (as described above), you should see your changes appear on the associated page within a few seconds.
-
-#### Changing a menu item
-
-The menu is stored in the standard Jekyll yaml configuration file `_config.yml` located in the `docs` directory.
-
-The `navigation` section contains a single item `menu`, which itself represents the entire navigation menu as a hierarchy as it appears on the site itself.
-
-Each menu item requires the `label` property. The label serves as the menu label, a navigation element in the url, and also either a directory entry or the documentation file to display.
-
-To change a menu's label, simply edit the associated label in this file.
-
-Autoloading does not work for changes to the config file, nor does manual reloading of the page - so you'll need to stop and start the development server.
-
-#### Adding a new file
-
-1. Determine where in the directory hierarchy the file should reside.
-   - The top of the repo is the top of the hierarchy.
-
-2. Update `_config.yml` to add the file to the menu.
-   - Each menu entry is an object in a list of other menu entries
-   - The only required property is `label`, which serves as the menu display label
-   - It is best to only use the label property. it will be converted to a file name by:
-      1. lowercasing
-      2. replacing spaces with `-`
-
-3. Add the file to the appropriate location with a name corresponding to the menu label, as described above.
-
-4. The file should have the following structure:
-
-    ```markdown
-    ---
-    ---
-    # TITLE
-    ```
-
-5. Start or stop and restart the Jekyll server:
-
-   ```bash
-   bundler exec jekyll serve --livereload
-   ```
-
-6. Confirm that the page is working correctly from the menu
-
-7. Now you may edit the new file
-
-#### Removing a file
-
-> TODO
-
-#### Updating or adding an image
-
-> TODO
-
-### Current Issues
-
-#### search broken
-
-If you see messages like `ERROR '/search-data.json' not found.` in the terminal in which you started `jekyll serve`, the search index needs to be built. Unfortunately, our theme's support for search is broken in several respects, and generating the search index will not help. Since search is not exposed, it is currently a harmless error.
-
-#### readme needs completion
-
-> TODO :)
-
-#### `livereload` and node_modules
-
-The `--livereload` option to `bundle exec jekyll serve --livereload` causes jekyll to watch the filesystem for changes, and when such occurs to rebuild the files and trigger a reload in the browser.
-
-Since this is a branch of the repo, if you have worked with kbase-ui develop branch, you'll probably have generated ignored artifacts. When switching docker branches, these artifacts will remain in the filesystem, and the `livereload` feature will dig into node_modules and other artifact directories. For most directories, this is harmless, but for `node_modules`, an error will be triggered (and performance may suffer due to the large number of files to watch.)
-
-The `livereload` option has a sister option `livereload_ignore` which is actually present in the `_config.yml` file, and specifies to ignore `node_modules`. Unfortunately, this option affects only what jekyll does when changed files are reported -- the file watcher still watches all files in the entire repo.
-
-The only solution at this time is to remove the `node_modules` directory when working on the `gh-pages` branch, and restore it via `yarn install` when switching back to work on the `develop` branch.
+See [common development tasks](./common-tasks) for further information.
 
 ### The theme
 
@@ -273,7 +191,3 @@ This documentation set should provide instructions for building and deploying kb
 ## See Also
 
 - [KBase Github Pages Theme](https://github.com/kbase/kbase-github-pages-theme)
-
-## License
-
-SEE LICENSE IN LICENSE.md
