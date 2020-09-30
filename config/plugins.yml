@@ -111,7 +111,7 @@ plugins:
         account: kbaseIncubator
   - name: taxonomy
     globalName: kbase-ui-plugin-taxonomy
-    version: 0.2.2
+    version: 0.3.0
     source:
       github:
         account: kbaseIncubator
