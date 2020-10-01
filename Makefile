@@ -25,15 +25,8 @@ GRUNT		    = ./node_modules/.bin/grunt
 KARMA			= ./node_modules/.bin/karma
 
 # The config used to control the build (build task)
-# dev, prod
-# Defaults to prod
-config			= 
-
-# The kbase-ui build folder to use for the docker image.
-# values: build, dist
-# Defaults to dist 
-# For local development, one would use the build, since is much faster 
-# to create. A debug build may be available in the future.
+# dev, ci, prod
+# Defaults to ci
 build           = dev
 
 # The deploy environment; used by dev-time image runners
@@ -75,12 +68,12 @@ __check_defined = \
 
 # Standard 'all' target = just do the standard build
 all:
-	@echo Use "make init && make build config=TARGET build"
+	@echo Use "make init && make build build=TARGET build"
 	@echo see docs/quick-deploy.md
 
 # See above for 'all' - just running 'make' should locally build
 default:
-	@echo Use "make init && make build config=TARGET build"
+	@echo Use "make init && make build build=TARGET build"
 	@echo see docs/quick-deploy.md
 
 # Initialization here pulls in all dependencies from Bower and NPM.
@@ -102,10 +95,11 @@ setup: setup-dirs
 init: setup node_modules
 
 # Perform the build. Build scnearios are supported through the config option
-# which is passed in like "make build config=ci"
+# which is passed in like "make build build=ci"
 build: clean-build 
+	@:$(call check_defined, build, "the build configuration: defaults to 'dev'")
 	@echo "> Building."
-	cd mutations; node build $(config)
+	cd mutations; node build $(build)
 
 docker-network:
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
@@ -187,13 +181,14 @@ unit-tests:
 # e.g. dataview/ will match just test files which include a dataview path element, effectively
 # selecting just the dataview plugin tests.
 focus = 
+blur = 
 
 integration-tests:
 	@:$(call check_defined, env, first component of hostname and kbase environment)
 	@:$(call check_defined, browser, the browser to test against)
 	@:$(call check_defined, service, the testing service )
 	@:$(call check_defined, token, the testing user auth tokens )
-	ENV="$(env)" BROWSER="$(browser)" SERVICE_USER="$(user)" SERVICE_KEY="$(key)" SERVICE="$(service)" TOKEN="${token}" FOCUS="${focus}" $(GRUNT) webdriver:service --env=$(env)
+	ENV="$(env)" BROWSER="$(browser)" SERVICE_USER="$(user)" SERVICE_KEY="$(key)" SERVICE="$(service)" TOKEN="${token}" FOCUS="${focus}" BLUR="${blur}" $(GRUNT) webdriver:service --env=$(env)
 
 travis-tests:
 	$(GRUNT) test-travis

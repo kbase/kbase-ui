@@ -354,7 +354,7 @@ function createInitialState(initialConfig) {
                 environment: {},
                 data: {},
                 state: {},
-                buildConfig: buildConfig,
+                buildConfig,
                 history: []
             };
             return makeRunDir(state);

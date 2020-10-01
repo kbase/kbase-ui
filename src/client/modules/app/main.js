@@ -5,7 +5,7 @@ define([
     'kb_lib/props',
     '../lib/utils',
 
-    'yaml!config/plugin.yml',
+    'json!config/plugins.json',
     'json!config/config.json',
     'json!deploy/config.json',
 
@@ -106,5 +106,5 @@ define([
         return app.start();
     }
 
-    return { start };
+    return {start};
 });
