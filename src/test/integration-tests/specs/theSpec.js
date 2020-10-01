@@ -47,6 +47,20 @@ function main() {
                 return new RegExp(focus);
             });
     })();
+
+    const blurs = (() => {
+        if (!process.env.BLUR) {
+            return [];
+        }
+        return process.env.BLUR.split(' ')
+            .filter((blur) => {
+                return (blur.length > 0);
+            })
+            .map((blur) => {
+                return new RegExp(blur);
+            });
+    })();
+
     const cwd = `${__dirname}/plugins`;
     const jsonFiles = glob.sync('*/*.json', {
         nodir: true,
@@ -54,12 +68,17 @@ function main() {
         cwd
     })
         .filter((file) => {
-            if (foci.length === 0) {
-                return true;
+            if (foci.length !== 0) {
+                return foci.some((focus) => {
+                    return focus.test(file);
+                });
             }
-            return foci.some((focus) => {
-                return focus.test(file);
-            });
+            if (blurs.length !== 0) {
+                return !blurs.some((blur) => {
+                    return blur.test(file);
+                });
+            }
+            return true;
         });
 
     const yamlFiles = glob.sync('*/*.@(yml|yaml)', {
@@ -68,12 +87,17 @@ function main() {
         cwd
     })
         .filter((file) => {
-            if (foci.length === 0) {
-                return true;
+            if (foci.length !== 0) {
+                return foci.some((focus) => {
+                    return focus.test(file);
+                });
             }
-            return foci.some((focus) => {
-                return focus.test(file);
-            });
+            if (blurs.length !== 0) {
+                return !blurs.some((blur) => {
+                    return blur.test(file);
+                });
+            }
+            return true;
         });
 
     const subTasks = glob
