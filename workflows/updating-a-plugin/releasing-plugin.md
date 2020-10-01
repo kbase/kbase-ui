@@ -1,17 +1,35 @@
-> Very out of date IGNORE for now
+---
+---
+# Releasing a Plugin
 
-# Deploying updated plugin
+When a plugin is ready for deployment in a KBase environment, e.g. CI for review, or Prod for do accompany a kbase-ui release, it will need to be prepared and released.
 
-When you have completed a round of changes to the plugin and it is ready for review on CI, you will need to update the plugin repo and issue the changes into the CI environment. Typically this will involve two sets of updates -- first a PR for your plugin changes, which results in a new version; secondly a PR for the new plugin version in kbase-ui, which will result in a new release in CI.
+This process is required whether releasing a plugin update to CI for review, to Prod for release, for for any other purpose in which the plugin needs to be integrated into kbase-ui for deployment.
 
-- commit all changes
-- push changes to your fork
-- issue a PR for the kbase plugin
-- after the PR is accepted, a new version will have been issued
-- update the plugin version in your kbase-ui plugins.yml config for both dev and ci (and prod if this is ready for release)
-- rebuild kbase-ui and verify that the build works, and that the changes are present
-- commit and push your kbase-ui changes (which will just be configuration changes to bump up the version for your plugin) to your kbase-ui fork
-- issue a PR for this change
-- the PR will be accepted and kbase-ui will be redeployed into CI
+## TL;DR
 
-> If the PR is in the early stages, it may still be in your personal github account; if this is so clearly you can skip the PR process for the plugin, and issue the new release version yourself. Don't worry —  when you transfer the repo to the kbase account, all commits and release tags are retained.
+1. Do a fresh build of your plugin, if it hasn't been done already
+
+    ```bash
+    yarn build
+    ```
+
+    This will produce the file `dist.tgz` at the top of the plugin repo.
+
+2. Push the plugin commits to your fork of the plugin
+3. Issue a Pull Request against the upstream kbase repo.
+4. When the PR is merged, create a release in semver format.
+   1. The tag should be in the format `vMAJOR.MINOR.PATCH`, e.g. `v1.2.3`
+   2. The comment should be `MAJOR.MINOR.PATCH`, e.g. `1.2.3`
+5. In your local kbase-ui, update the version in `plugins.yml` to the version set above.
+   1. Note that this version should be in the semver format without the `v` prefix.
+6. Conduct a local build, and verify that it pulled in the correct version.
+
+    ```bash
+    make dev-start build-image=t
+    ```
+
+What you do next depends on the particular effort you are engaged in, but the most common next steps are:
+
+- [releasing to ci](./releasing-with-kbase-ui-to-ci)
+- [releasing to prod](./releasing-with-kbase-ui-to-prod)

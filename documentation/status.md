@@ -19,3 +19,5 @@ Since this is a branch of the repo, if you have worked with kbase-ui develop bra
 The `livereload` option has a sister option `livereload_ignore` which is actually present in the `_config.yml` file, and specifies to ignore `node_modules`. Unfortunately, this option affects only what jekyll does when changed files are reported -- the file watcher still watches all files in the entire repo.
 
 The only solution at this time is to remove the `node_modules` directory when working on the `gh-pages` branch, and restore it via `yarn install` when switching back to work on the `develop` branch.
+
+This also affects the top level `build` directory, which may remain after a local build.

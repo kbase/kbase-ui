@@ -1,0 +1,42 @@
+@startuml
+:start build;
+:load build config;
+:generate build info;
+if (prod build?) then (yes)
+    if (is semver tag?) then (yes)
+        if (tag in release notes?) then (no)
+            stop
+        else (no)
+        endif 
+    else (no)
+    endif
+else (no)
+endif
+:install npm packages;
+:copy npm packages to build;
+:clone plugin repos;
+:copy plugin repos to build;
+:create config;
+:add cache busting;
+:remove source mapping;
+:copy build files to dist;
+if (prod build?) then (yes)
+    :create virtual file system (vfs);
+    :update index.html to load vfs;
+else (no)
+endif
+:continue build;
+if (prod build?) then (yes)
+    :tag as "latest";
+elseif (feature branch?) then (yes)
+    :tag as "feature-branch";
+else (no)
+    :tag as "develop";
+endif
+if (travis build?) then (yes)
+    :push image to dockerhub;
+else (no)
+endif
+:done!;
+stop
+@enduml

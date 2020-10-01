@@ -1,0 +1,51 @@
+
+@startuml
+control Host
+control Docker
+control BuildLayer
+collections HostFS
+control NPM
+collections BuildFS
+control GitHub
+collections DestFS
+collections DistFS
+control DistLayer
+Host -> Docker: build image
+Docker -> BuildLayer: make kbase ui
+BuildLayer -> HostFS: read config
+HostFS -> BuildLayer: return config
+BuildLayer -> BuildLayer: fetch and install npm packages
+BuildLayer -> NPM: fetch and install packages
+NPM -> HostFS: install (save) packages
+BuildLayer -> BuildLayer: copy npm packages to build
+HostFS -> BuildFS: copy npm packages
+BuildLayer -> GitHub: clone plugin repos
+GitHub -> HostFS: cloned
+BuildLayer -> BuildLayer: copy plugin repos to build
+HostFS -> BuildFS: copy plugin repos
+BuildLayer -> BuildFS: remove source maps in build
+BuildLayer -> BuildLayer: copy configs
+HostFS -> BuildFS: copy configs
+BuildLayer -> BuildLayer: create build info
+BuildLayer -> HostFS: save build info
+HostFS -> BuildFS: copy build config
+BuildLayer -> BuildLayer: verify version if prod build
+BuildLayer -> Host: exit if prod and no version
+BuildLayer -> BuildLayer: create config
+BuildLayer -> BuildFS: save config
+BuildLayer -> BuildLayer: add cache busting to .html
+BuildLayer -> BuildFS: save .html
+BuildLayer -> BuildLayer: remove source mapping for .js, .css
+BuildLayer -> BuildLayer: save modified .js, .css
+BuildLayer -> BuildFS:  copy files to dest
+BuildFS -> DestFS: copy all files
+BuildLayer -> BuildLayer: make VFS (if prod build)
+BuildLayer -> DestFS: create VFS (if prod build)
+BuildLayer -> BuildLayer: update index.html (if prod build)
+BuildLayer -> DistFS: save updated index.html (if prod build)
+BuildLayer -> BuildLayer: copy all files
+DistFS -> DistLayer: copy all files
+DistLayer->Docker: done
+Docker -> HostFS: build image
+Docker->Host: done
+@enduml

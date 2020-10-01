@@ -11,6 +11,7 @@ exclude:
   - dev
   - temp
   - tools
+  - build
 livereload_ignore:
   - _attic
   - _site
@@ -19,6 +20,7 @@ livereload_ignore:
   - dev
   - temp
   - tools
+  - build
 aux_links:
   "KBase UI on Github":
     - "//github.com/kbase/kbase-ui"

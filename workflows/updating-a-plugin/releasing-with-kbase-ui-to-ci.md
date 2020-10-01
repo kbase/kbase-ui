@@ -4,7 +4,7 @@
 
 During the iterative development of a plugin, as well as the final release, it will be released to CI for review.
 
-At present, the process for review release and final release are identical. 
+At present, the process for review release and final release are identical.
 
 We could entertain using a suffix like `-dev` for the plugin version to signal it should not be released. With such a scheme, we could prohibit the prod build if any plugins are configured for a dev version.
 
@@ -14,30 +14,12 @@ Another technique would be to simply use a kbase-ui feature branch for "CI" rele
 
 ## TL;DR
 
-1. Do a fresh build of your plugin, if it hasn't been done already
-
-    ```bash
-    yarn build
-    ```
-
-2. Push plugin changes to your fork of the plugin
-3. Issue a Pull Request against the upstream kbase repo.
-4. When the PR is merged, create a release in semver format.
-   1. The tag should be in the format `vMAJOR.MINOR.PATCH`, e.g. `v1.2.3`
-   2. The comment should be `MAJOR.MINOR.PATCH`, e.g. `1.2.3`
-5. In your local kbase-ui, update the version in `plugins.yml` to the version set above.
-   1. Note that this version should be in the semver format without the `v` prefix.
-6. Conduct a local build, and verify that it pulled in the correct version.
-
-    ```bash
-    make dev-start build-image=t
-    ```
-
-7. Push up the kbase-ui changes (just the single line of `plugins.yml`) to your fork.
-8. Issue a Pull Request against kbase's kbase-ui
-9. When the PR is merged, an image will be built and pushed to dockerhub automatically.
+1. Follow the instructions for [releasing a plugin](./releasing-a-plugin)
+2. Push up the kbase-ui changes (just the single line of `plugins.yml`) to your fork.
+3. Issue a Pull Request against kbase's kbase-ui
+4. When the PR is merged, an image will be built and pushed to dockerhub automatically.
    1.This process takes approximately 5-10 minutes
-10. The CI kbase-ui deployment now needs to be updated. This is accomplished using rancher.
+5. The CI kbase-ui deployment now needs to be updated. This is accomplished using rancher.
     1. open an ssh forward to kbase:
        1. e.g `ssh -D 1234 yourusername@login1.berkeley.kbase.us`
        2. You may choose whichever port (1234 above) you prefer.
