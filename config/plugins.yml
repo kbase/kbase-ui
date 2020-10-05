@@ -85,12 +85,6 @@ plugins:
     source:
       github:
         account: kbaseIncubator
-  - name: re-landing-pages
-    globalName: kbase-ui-plugin-re-landing-pages
-    version: 0.10.1
-    source:
-      github:
-        account: kbaseIncubator
   - name: dashboard4
     globalName: kbase-ui-plugin-dashboard4
     version: 0.2.3

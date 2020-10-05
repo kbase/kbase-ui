@@ -8,7 +8,7 @@ define([
     htm
 ) => {
 
-    const {h, Component, Fragment } = preact;
+    const {h, Component, Fragment} = preact;
     const html = htm.bind(h);
 
     const REDIRECT_IF_FOUND = true;

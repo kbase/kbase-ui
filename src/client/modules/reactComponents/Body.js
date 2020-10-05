@@ -12,7 +12,7 @@ define([
     Uuid
 ) => {
 
-    const {h, Component, createRef, render } = preact;
+    const {h, Component, createRef, render} = preact;
     const html = htm.bind(h);
 
     class PluginComponent {
@@ -35,7 +35,10 @@ define([
 
         setupForComponent() {
             this.routeComponentListener = this.props.runtime.receive('app', 'route-component', (routed) => {
-                const { params, route } = routed.routeHandler;
+                const {routeHandler: {params, route}} = routed;
+
+                // To support older plugins
+                params.view = route.view;
 
                 if (this.nodeRef.current === null) {
                     return;
@@ -56,7 +59,7 @@ define([
                     return;
                 }
 
-                this.pluginComponent = new PluginComponent(params.plugin, route.component);
+                this.pluginComponent = new PluginComponent(route.pluginName, route.component);
                 this.pluginComponent.pipe.put({
                     view: route.view,
                     params
@@ -68,7 +71,7 @@ define([
                     } else {
                         return [
                             'plugins',
-                            params.plugin,
+                            route.pluginName,
                             'modules',
                             route.component
                         ].join('/');
@@ -81,6 +84,7 @@ define([
                         pipe: this.pluginComponent.pipe,
                         view: route.view,
                         params,
+                        pluginName: route.pluginName,
                         key: new Uuid(4).format()
                     };
 

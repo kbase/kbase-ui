@@ -94,9 +94,14 @@ setup: setup-dirs
 
 init: setup node_modules
 
+compile:
+	@echo "> Compiling TypeScript files."
+	yarn compile
+
+
 # Perform the build. Build scnearios are supported through the config option
 # which is passed in like "make build build=ci"
-build: clean-build 
+build: clean-build compile
 	@:$(call check_defined, build, "the build configuration: defaults to 'dev'")
 	@echo "> Building."
 	cd mutations; node build $(build)

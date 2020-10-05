@@ -7,22 +7,22 @@ package:
   type: legacy
 install:
   routes:
-    - path: [narrativemanager, start]
+    - path: narrativemanager/start?:-app&:-method&:-copydata&:-appparam
       authorization: true
-      queryParams:
-        app: {}
-        method: {}
-        copydata: {}
-        appparam: {}
+      # queryParams:
+      #   app: {}
+      #   method: {}
+      #   copydata: {}
+      #   appparam: {}
       component: views/RecentNarrative
-    - path: [narrativemanager, new]
+    - path: narrativemanager/new?:-app&:-method&:-copydata&:-appparam&:-markdown
       authorization: true
-      queryParams:
-        app: {}
-        method: {}
-        markdown: {}
-        copydata: {}
-        appparam: {}
+      # queryParams:
+      #   app: {}
+      #   method: {}
+      #   markdown: {}
+      #   copydata: {}
+      #   appparam: {}
       component: views/NewNarrative
   menu:
     - name: narrative

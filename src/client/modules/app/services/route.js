@@ -1,60 +1,151 @@
-define([
-    'bluebird',
-    'lib/router'
-], function (
-    Promise,
-    routerMod
-) {
-
-    class RouteService {
-        constructor(p) {
-            const {config, params} = p;
+define(["require", "exports", "../../lib/router"], function (require, exports, router_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ServiceClass = exports.RouteService = void 0;
+    var RouteService = /** @class */ (function () {
+        function RouteService(_a) {
+            var config = _a.config, params = _a.params;
             this.runtime = params.runtime;
-            this.router = new routerMod.Router({...config, runtime: params.runtime});
+            this.router = new router_1.Router({
+                runtime: params.runtime,
+                defaultLocation: config.defaultLocation,
+                urls: config.urls
+            });
             this.currentRouteHandler = null;
             this.receivers = [];
             this.eventListeners = [];
         }
-
-        doRoute() {
-            let handler;
-            try {
-                handler = this.router.findCurrentRoute();
-            } catch (ex) {
-                if (ex instanceof routerMod.NotFoundException) {
-                    handler = {
-                        request: ex.request,
-                        original: ex.original,
-                        path: ex.path,
-                        params: {
-                            request: ex.request,
-                            original: ex.original,
-                            path: ex.path
-                        },
-                        route: {
-                            authorization: false,
-                            component: '/reactComponents/NotFound'
+        RouteService.prototype.doRoute = function () {
+            var _this = this;
+            var routed = (function () {
+                try {
+                    var routed_1 = _this.router.findCurrentRoute();
+                    var rolesRequired_1 = routed_1.route.rolesRequired;
+                    if (rolesRequired_1) {
+                        var roles = _this.runtime.service('session').getRoles(); // TODO
+                        if (!roles.some(function (role) {
+                            return rolesRequired_1.some(function (requiredRole) {
+                                return requiredRole === role.id;
+                            });
+                        })) {
+                            return {
+                                request: routed_1.request,
+                                params: {
+                                    title: {
+                                        name: 'title',
+                                        type: 'string',
+                                        value: 'Access Error'
+                                    },
+                                    message: {
+                                        name: 'message',
+                                        type: 'string',
+                                        value: "One or more required roles not available in your account:" + rolesRequired_1.join(', ')
+                                    }
+                                },
+                                route: {
+                                    path: [],
+                                    view: '',
+                                    authorization: false,
+                                    component: 'reactComponents/Error'
+                                }
+                            };
                         }
-                    };
-                } else {
-                    throw ex;
+                    }
+                    return routed_1;
                 }
+                catch (ex) {
+                    if (ex instanceof router_1.NotFoundException) {
+                        return {
+                            // request: ex.request,
+                            // original: ex.original,
+                            // path: ex.path,
+                            request: ex.request,
+                            params: {
+                            // request: ex.request,
+                            // original: ex.original,
+                            },
+                            route: {
+                                path: [],
+                                view: '',
+                                authorization: false,
+                                component: '/reactComponents/NotFound'
+                            }
+                        };
+                    }
+                    else if (ex instanceof router_1.RedirectException) {
+                        // TODO: do as redirect route!
+                        window.location.href = ex.url;
+                        return null;
+                    }
+                    else if (ex instanceof router_1.NotFoundNoHashException) {
+                        // TODO: refactor this, "reason" is just an idea.
+                        // return {
+                        //     request: {
+                        //         path: [],
+                        //         query: {},
+                        //         realPath: ''
+                        //     },
+                        //     params: {
+                        //         reason: {
+                        //             name: 'reason',
+                        //             type: 'string',
+                        //             value: 'not found no hash'
+                        //         }
+                        //     },
+                        //     route: {
+                        //         path: [],
+                        //         view: '',
+                        //         authorization: false,
+                        //         component: '/reactComponents/NotFound'
+                        //     }
+                        // };
+                        _this.runtime.send('app', 'navigate', _this.router.defaultLocation);
+                        return null;
+                    }
+                    else if (ex instanceof router_1.NotFoundHasRealPathException) {
+                        return {
+                            request: {
+                                path: [],
+                                query: {},
+                                realPath: ex.realPath
+                            },
+                            params: {
+                                reason: {
+                                    name: 'reason',
+                                    type: 'string',
+                                    value: 'has real path'
+                                }
+                            },
+                            route: {
+                                path: [],
+                                view: '',
+                                authorization: false,
+                                component: '/reactComponents/NotFound'
+                            }
+                        };
+                    }
+                    else {
+                        throw ex;
+                    }
+                }
+            })();
+            // Already handled!
+            if (routed === null) {
+                return;
             }
-
-            this.runtime.send('route', 'routing', handler);
-            this.currentRouteHandler = handler;
-
+            this.runtime.send('route', 'routing', routed);
+            this.currentRouteHandler = routed;
             // Ensure that if authorization is enabled for this route, that we have it.
             // If not, route to the login path with the current path encoded as
             // "nextrequest". This ensures that we can close the loop for accessing
             // auth-required endpoints.
-            if (handler.route.authorization) {
+            if (routed.route.authorization) {
                 if (!this.runtime.service('session').isAuthenticated()) {
-                    const loginParams = {
+                    var loginParams = {
                         source: 'authorization'
                     };
-                    if (handler.request.path) {
-                        loginParams.nextrequest = JSON.stringify(handler.request);
+                    if (routed.request.path) {
+                        loginParams.nextrequest = JSON.stringify(routed.request);
                     }
                     // TODO refactor-expt: here is where SOMETHING needs to listen for the login event.
                     // This is where we can hook in.
@@ -67,156 +158,169 @@ define([
                     return;
                 }
             }
-
             // We can also require that the route match at least one role defined in a list.
-            if (handler.route.rolesRequired) {
-                const roles = this.runtime.service('session').getRoles();
-                if (
-                    !roles.some((role) => {
-                        return handler.route.rolesRequired.some((requiredRole) => {
-                            return requiredRole === role.id;
-                        });
-                    })
-                ) {
-                    handler = {
-                        params: {
-                            title: 'Access Error',
-                            message:
-                                'One or more required roles not available in your account: ' +
-                                handler.route.rolesRequired.join(', ')
-                        },
-                        route: {
-                            authorization: false,
-                            component: 'reactComponents/Error'
-                        }
-                    };
-                    // throw new Error('One or more required roles not available in your account: ' + handler.route.requiredRoles.join(', '));
-                    // throw new lang.UIError({
-                    //     type: 'ConfiguratonError',
-                    //     name: 'RouterConfigurationError',
-                    //     source: 'installRoute',
-                    //     message: 'invalid route',
-                    //     suggestion: 'Fix the plugin which specified this route.',
-                    //     data: route
-                    // });
-                }
-            }
-            const route = {
-                routeHandler: handler
+            var route = {
+                routeHandler: routed
             };
-            if (handler.route.redirect) {
-                this.runtime.send('app', 'route-redirect', route);
-            } else if (handler.route.handler) {
-                this.runtime.send('app', 'route-handler', route);
-            } else if (handler.route.component) {
+            // if (routed.route.) {
+            //     this.runtime.send('app', 'route-redirect', route);
+            //     // } else if (handler.route.handler) {
+            //     //     this.runtime.send('app', 'route-handler', route);
+            if (routed.route.component) {
                 this.runtime.send('app', 'route-component', route);
-            } else {
+            }
+            else {
                 throw new Error('Not a valid route request');
             }
-        }
-
-        installRoute(route, options) {
-
+        };
+        RouteService.prototype.installRoute = function (route, options) {
+            // TODO: improve typing by route type
+            route.pluginName = options.pluginName;
             if (route.component) {
                 this.router.addRoute(route, options);
-            } else if (route.redirectHandler) {
-                this.router.addRoute(route, options);
-            } else {
+                // } else if (route.redirectHandler) {
+                //     this.router.addRoute(route, options);
+            }
+            else {
                 route.component = '/pluginSupport/Plugin';
                 this.router.addRoute(route, options);
             }
-        }
-
-        installRoutes(routes, options) {
+        };
+        RouteService.prototype.installRoutes = function (routes, defaults, options) {
+            var _this = this;
             if (!routes) {
                 return;
             }
-            routes.map((route) => {
-                return this.installRoute(route, options);
+            routes.map(function (route) {
+                var resolvedRoute = (function () {
+                    if (!defaults) {
+                        return route;
+                    }
+                    console.warn('DEFAULTS', defaults);
+                    return route;
+                    // Object.keys(defaults)
+                    //     .forEach((defaultKey) => {
+                    //         if (defaultKey in route) {
+                    //             route[defaultKey] = defaults[defaultKey];
+                    //         }
+                    //     });
+                })();
+                return _this.installRoute(resolvedRoute, options);
             });
-        }
-
-        pluginHandler(serviceConfig, pluginConfig, pluginDef) {
-            return new Promise((resolve, reject) => {
+        };
+        RouteService.prototype.pluginHandler = function (serviceConfig, pluginConfig, pluginDef) {
+            var _this = this;
+            return new Promise(function (resolve, reject) {
                 try {
                     // We now have service config defaults, at least for routes.
-                    const defaults = serviceConfig.defaults || {};
-
+                    var defaults = serviceConfig.defaults || {};
                     // Install all the routes
-                    this.installRoutes(serviceConfig.routes || serviceConfig, {
+                    _this.installRoutes(serviceConfig.routes || serviceConfig, defaults, {
                         pluginName: pluginDef.package.name,
-                        defaults,
                         mode: serviceConfig.mode
                     });
                     resolve();
-                } catch (ex) {
+                }
+                catch (ex) {
                     reject(ex);
                 }
             });
-        }
-
-        start() {
-            this.runtime.receive('app', 'do-route', () => {
-                this.doRoute();
+        };
+        RouteService.prototype.start = function () {
+            var _this = this;
+            this.runtime.receive('app', 'do-route', function () {
+                _this.doRoute();
             });
-
-            this.runtime.receive('app', 'new-route', (data) => {
+            this.runtime.receive('app', 'new-route', function (data) {
                 if (data.routeHandler.route.redirect) {
-                    this.runtime.send('app', 'route-redirect', data);
-                } else if (data.routeHandler.route.component) {
-                    this.runtime.send('app', 'route-component', data);
-                } else if (data.routeHandler.route.handler) {
-                    this.runtime.send('app', 'route-handler', data);
+                    _this.runtime.send('app', 'route-redirect', data);
+                }
+                else if (data.routeHandler.route.component) {
+                    _this.runtime.send('app', 'route-component', data);
+                }
+                else if (data.routeHandler.route.handler) {
+                    _this.runtime.send('app', 'route-handler', data);
                 }
             });
-
-            this.runtime.receive('app', 'route-redirect', (data) => {
-                this.runtime.send('app', 'navigate', {
+            this.runtime.receive('app', 'route-redirect', function (data) {
+                _this.runtime.send('app', 'navigate', {
                     path: data.routeHandler.route.redirect.path,
                     params: data.routeHandler.route.redirect.params
                 });
             });
-
-            this.runtime.receive('app', 'navigate', (data) => {
-                this.router.navigateTo(data);
+            this.runtime.receive('app', 'navigate', function (data) {
+                // NEW: convert the legacy naviation location to the
+                // new easier-to-type one defined in router.ts
+                var location = (function () {
+                    var path = data.path || data.url;
+                    if (!path) {
+                        return {
+                            type: 'internal',
+                            path: 'dashboard'
+                        };
+                    }
+                    if (typeof path !== 'string') {
+                        throw new Error('Invalid value for "path" in location');
+                    }
+                    if (path.match(/^http[s]?:/)) {
+                        return {
+                            type: 'external',
+                            url: path
+                        };
+                    }
+                    return {
+                        type: 'internal',
+                        path: path
+                    };
+                })();
+                _this.router.navigateTo(location);
             });
-
-            this.runtime.receive('app', 'redirect', (data) => {
-                this.router.redirectTo(data.url, data.new_window || data.newWindow);
+            this.runtime.receive('app', 'redirect', function (_a) {
+                var url = _a.url;
+                if (!url) {
+                    throw new Error('"url" is required for a "redirect" message');
+                }
+                if (typeof url !== 'string') {
+                    throw new Error('"usr" must be a string');
+                }
+                _this.router.navigateTo({
+                    type: 'external',
+                    url: url
+                });
+                // data.url, data.new_window || data.newWindow);
             });
-
             this.eventListeners.push({
                 target: window,
                 type: 'hashchange',
-                listener: () => {
-                    this.doRoute();
+                listener: function () {
+                    _this.doRoute();
                 }
             });
-            this.eventListeners.forEach((listener) => {
+            this.eventListeners.forEach(function (listener) {
                 listener.target.addEventListener(listener.type, listener.listener);
             });
             return Promise.resolve();
-        }
-
-        stop() {
-            this.receivers.forEach((receiver) => {
+        };
+        RouteService.prototype.stop = function () {
+            var _this = this;
+            this.receivers.forEach(function (receiver) {
                 if (receiver) {
-                    this.runtime.drop(receiver);
+                    _this.runtime.drop(receiver);
                 }
             });
-            this.eventListeners.forEach((listener) => {
+            this.eventListeners.forEach(function (listener) {
                 listener.target.removeEventListener(listener.type, listener.listener);
             });
             return Promise.resolve();
-        }
-
-        isAuthRequired() {
+        };
+        RouteService.prototype.isAuthRequired = function () {
             if (!this.currentRouteHandler) {
                 return false;
             }
             return this.currentRouteHandler.route.authorization;
-        }
-    }
-
-    return RouteService;
+        };
+        return RouteService;
+    }());
+    exports.RouteService = RouteService;
+    exports.ServiceClass = RouteService;
 });

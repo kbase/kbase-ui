@@ -8,7 +8,7 @@ define([
     Signin
 ) => {
 
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     class Login extends Component {
@@ -63,6 +63,7 @@ define([
                 .logout()
                 .then(() => {
                     this.props.runtime.send('app', 'navigate', {
+                        type: 'internal',
                         path: 'auth2/signedout'
                     });
                 })
