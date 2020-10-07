@@ -6,9 +6,11 @@ package:
   description: A developer tool
   type: legacy
 install:
-  routes:
-    - path: developer
-      component: views/Developer
+  route:
+    routes:
+      - path: developer
+        component: views/Developer
+        view: main
   menu:
     - name: developer
       section: developer

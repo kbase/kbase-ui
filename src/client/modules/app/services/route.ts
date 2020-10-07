@@ -1,4 +1,3 @@
-import { JSONObject, JSONValue } from '../../lib/json';
 import {
     Router, NotFoundException, RedirectException, RoutingLocation,
     RoutedRequest, NotFoundNoHashException,
@@ -16,13 +15,11 @@ interface EventListener {
 }
 
 interface ServiceConfig {
-    defaults: any; // TODO
     routes: Array<RouteSpec>;
     mode: string;
 }
 
 interface PluginConfig {
-
 }
 
 interface PluginDefinition {
@@ -115,7 +112,6 @@ export class RouteService {
                         params: {
                             // request: ex.request,
                             // original: ex.original,
-
                         },
                         route: {
                             path: [],
@@ -156,6 +152,7 @@ export class RouteService {
                     return {
                         request: {
                             path: [],
+                            original: '',
                             query: {},
                             realPath: ex.realPath
                         },
@@ -186,6 +183,27 @@ export class RouteService {
 
         this.runtime.send('route', 'routing', routed);
         this.currentRouteHandler = routed;
+
+        // Hack to handle narrative redirects until we improve them.
+        if (routed.params.nextrequest && routed.params.nextrequest.type === 'string') {
+            try {
+                // TODO: hmm, maybe multi-typed params is not a good idea?
+                const nextRequest = JSON.parse(routed.params.nextrequest.value);
+                if (nextRequest.path.match(/^\/narrative/)) {
+                    // routed.route.authorization = true;
+                    routed.params.source = {
+                        name: 'source',
+                        type: 'string',
+                        value: 'authorization'
+                    };
+                }
+                nextRequest.original = nextRequest.path;
+                nextRequest.path = nextRequest.path.split('/').slice(1);
+                routed.params.nextrequest.value = JSON.stringify(nextRequest);
+            } catch (ex) {
+                console.warn('Bad nextrequest', routed.params.nextrequest, ex);
+            }
+        }
 
         // Ensure that if authorization is enabled for this route, that we have it.
         // If not, route to the login path with the current path encoded as
@@ -241,36 +259,20 @@ export class RouteService {
         }
     }
 
-    installRoutes(routes: Array<RouteSpec>, defaults: RouteSpec, options: RouteOptions) {
+    installRoutes(routes: Array<RouteSpec>, options: RouteOptions) {
         if (!routes) {
             return;
         }
         routes.map((route) => {
-            const resolvedRoute: RouteSpec = (() => {
-                if (!defaults) {
-                    return route;
-                }
-                console.warn('DEFAULTS', defaults);
-                return route;
-                // Object.keys(defaults)
-                //     .forEach((defaultKey) => {
-                //         if (defaultKey in route) {
-                //             route[defaultKey] = defaults[defaultKey];
-                //         }
-                //     });
-            })();
-            return this.installRoute(resolvedRoute, options);
+            return this.installRoute(route, options);
         });
     }
 
     pluginHandler(serviceConfig: ServiceConfig, pluginConfig: PluginConfig, pluginDef: PluginDefinition) {
         return new Promise((resolve, reject) => {
             try {
-                // We now have service config defaults, at least for routes.
-                const defaults = serviceConfig.defaults || {};
-
                 // Install all the routes
-                this.installRoutes(serviceConfig.routes || serviceConfig, defaults, {
+                this.installRoutes(serviceConfig.routes || serviceConfig, {
                     pluginName: pluginDef.package.name,
                     mode: serviceConfig.mode
                 });
@@ -304,28 +306,53 @@ export class RouteService {
         });
 
         this.runtime.receive('app', 'navigate', (data) => {
-            // NEW: convert the legacy naviation location to the
+            // NEW: convert the legacy navigation location to the
             // new easier-to-type one defined in router.ts
             const location: RoutingLocation = ((): RoutingLocation => {
-                const path = data.path || data.url;
-                if (!path) {
+                if (!data.path && !data.url) {
                     return {
                         type: 'internal',
                         path: 'dashboard'
                     };
                 }
-                if (typeof path !== 'string') {
-                    throw new Error('Invalid value for "path" in location');
-                }
-                if (path.match(/^http[s]?:/)) {
+
+                // if (path.match(/^http[s]?:/)) {
+                // }
+                if (data.url) {
                     return {
                         type: 'external',
-                        url: path
+                        newWindow: true,
+                        url: data.url
                     };
                 }
+
+                // Catch narrative  requests.
+                // TODO: we should establish a full url format for this.
+                if (data.path[0] === 'narrative') {
+                    return {
+                        type: 'external',
+                        newWindow: false,
+                        url: [window.location.origin, data.path.join('/')].join('/')
+                    };
+                }
+
+                // TODO: umm, in routing location the path is a string path,
+                // the hash path, but in the navigate message it may be
+                // an array also. need to sort that out.
+                const path = ((possiblePath) => {
+                    if (Array.isArray(possiblePath)) {
+                        return possiblePath.join('/');
+                    }
+                    if (typeof possiblePath !== 'string') {
+                        throw new Error('Invalid value for "path" in location');
+                    }
+                    return possiblePath;
+                })(data.path);
+
                 return {
                     type: 'internal',
-                    path
+                    path,
+                    params: data.params
                 };
             })();
             this.router.navigateTo(location);
@@ -336,7 +363,7 @@ export class RouteService {
                 throw new Error('"url" is required for a "redirect" message');
             }
             if (typeof url !== 'string') {
-                throw new Error('"usr" must be a string');
+                throw new Error('"url" must be a string');
             }
             this.router.navigateTo({
                 type: 'external',

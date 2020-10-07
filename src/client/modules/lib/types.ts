@@ -1,3 +1,5 @@
+import { ReactiveDB } from "./kb_lib/ReactiveDB";
+
 export interface SimpleMap<T> { [key: string]: T; }
 
 
@@ -17,4 +19,6 @@ export interface Runtime {
     send: (channel: string, messageId: string, payload: any) => void;
     drop: (receiver: Receiver) => void;
     service: (name: string) => UIService;
+    config: <T>(key: string, defaultValue?: T) => any;
+    db: () => ReactiveDB;
 }

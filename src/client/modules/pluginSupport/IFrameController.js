@@ -244,6 +244,13 @@ define([
                         //     services: config.services
                         // };
 
+                        // const params = Object.entries(this.props.params.routeParams).reduce((params, [key, param]) => {
+                        //     params[key] = param.value;
+                        //     return params;
+                        // }, {});
+                        const params = Object.assign({}, this.props.params.routeParams);
+                        params.view = this.props.params.view;
+
                         const startMessage = {
                             authorization: {
                                 token: this.runtime.service('session').getAuthToken(),
@@ -255,8 +262,8 @@ define([
                                 })
                             },
                             config: this.runtime.rawConfig(),
-                            view: this.props.params.view,
-                            params: this.props.params.routeParams
+                            view: this.props.params.view.value,
+                            params
                         };
 
                         this.channel.send('start', startMessage);
@@ -310,9 +317,15 @@ define([
                     // TODO: remove because this duplicates start behaviour
                     // In order to do that, plugins which don't route on 'start'
                     // need to be updated.
-                    const params = this.props.params.routeParams;
+                    // const params = this.props.params.routeParams;
+                    // const params =  Object.entries(this.props.params.routeParams).reduce((params, [key, param]) => {
+                    //     params[key] = param.value;
+                    //     return params;
+                    // }, {});
+                    const params = Object.assign({}, this.props.params.routeParams);
                     const path = params.path || [];
                     const view = this.props.params.view;
+                    params.view = view;
                     const message = {
                         path, params, view, to: view
                     };

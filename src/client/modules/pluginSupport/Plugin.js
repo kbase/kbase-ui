@@ -52,6 +52,7 @@ define([
                     routeParams: this.props.params || {}
                 }
             };
+
             return html`
                 <div className="Plugin">
                     <${IFrameController} ...${props} />

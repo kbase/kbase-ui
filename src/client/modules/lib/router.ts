@@ -1,5 +1,15 @@
-import { isJSONObject, JSONObject } from "./json";
+
+import { isJSONObject, JSONObject } from "./kb_lib/json";
 import { SimpleMap } from "./types";
+
+export class CustomError {
+    message: string;
+    name: string;
+    constructor(message: string) {
+        this.message = message;
+        this.name = 'CustomError';
+    }
+}
 
 export interface NotFoundExceptionParams {
     // original: string;
@@ -10,7 +20,7 @@ export interface NotFoundExceptionParams {
     request: RoutingRequest;
 }
 
-export class NotFoundException extends Error {
+export class NotFoundException extends CustomError {
     // original: string;
     // path: Array<string>;
     params: any;
@@ -26,21 +36,21 @@ export class NotFoundException extends Error {
     }
 }
 
-export class NotFoundNoHashException extends Error {
+export class NotFoundNoHashException extends CustomError {
     constructor({ message }: { message: string; }) {
         super(message);
     }
 }
 
-export class NotFoundHasRealPathException extends Error {
-    realPath: string;
-    constructor({ message, realPath }: { message: string, realPath: string; }) {
+export class NotFoundHasRealPathException extends CustomError {
+    realPath: Array<string>;
+    constructor({ message, realPath }: { message: string, realPath: Array<string>; }) {
         super(message);
         this.realPath = realPath;
     }
 }
 
-export class RedirectException extends Error {
+export class RedirectException extends CustomError {
     url: string;
     constructor({ url }: { url: string; }) {
         super('Redirecting');
@@ -248,8 +258,9 @@ export interface RoutedRequest {
 type Mode = 'auto';
 
 interface RoutingRequest {
-    realPath: string;
+    realPath: Array<string>;
     path: Array<string>;
+    original: string;
     query: SimpleMap<string>;
 }
 
@@ -267,14 +278,16 @@ interface RoutingRequest {
 
 interface RoutingLocationBase {
     type: string;
+    newWindow?: boolean;
+    params?: Params;
 }
 
-interface InternalRoutingLocation {
+interface InternalRoutingLocation extends RoutingLocationBase {
     type: 'internal',
     path: string;
 }
 
-interface ExternalRoutingLocation {
+interface ExternalRoutingLocation extends RoutingLocationBase {
     type: 'external',
     url: string;
 }
@@ -487,8 +500,8 @@ export class Router {
         }
 
         if (routeSpec.queryParams) {
-            const queryParams = this.transformQuerySpec(routeSpec.queryParams);
-            Object.assign(queryParams, queryParams);
+            const queryParams2 = this.transformQuerySpec(routeSpec.queryParams);
+            Object.assign(queryParams, queryParams2);
         }
 
         const route: Route = {
@@ -516,7 +529,12 @@ export class Router {
     */
     getCurrentRequest(): RoutingRequest {
         // We also prohibit a real path.
-        const realPath = window.location.pathname.substr(1);
+        const realPath = window.location.pathname.substr(1)
+            .split('/')
+            .filter((pathElement) => {
+                return (pathElement.length > 0);
+            });
+
         if (realPath.length > 0) {
             console.error('Have path, cannot route', realPath);
             throw new NotFoundHasRealPathException({
@@ -543,14 +561,14 @@ export class Router {
 
         // We can also get a query from the hash
         // like https://ci.kbase.us#plugin?a=b
-        const pathQuery = hash.split('?', 2);
-        if (pathQuery.length === 2) {
-            const query2 = parseQueryString(pathQuery[1]);
+        const [hashPath, hashQuery] = hash.split('?', 2);
+        if (hashQuery) {
+            const query2 = parseQueryString(hashQuery);
             Object.keys(query2).forEach((key) => {
                 query[key] = query2[key];
             });
         }
-        const path: Array<string> = pathQuery[0]
+        const path = hashPath
             .split('/')
             .filter((pathComponent) => {
                 return pathComponent.length > 0;
@@ -562,6 +580,7 @@ export class Router {
         return {
             realPath,
             path,
+            original: hashPath,
             query
         };
     }
@@ -714,7 +733,7 @@ export class Router {
         return null;
     }
 
-    processQuery(route: Route, query: SimpleMap<string>): SimpleMap<string> {
+    processQuery(route: Route, query: SimpleMap<string>): RequestParams {
         // Now process any query parameters.
         // Query params are not used for route selection, but are used
         // to populate the params object.
@@ -730,13 +749,14 @@ export class Router {
         // which only defined query params are recognized.
         // The captureExtraSearch route flag disables the latter behavior.
         // All undefined query params are simply copied to the req.query.
-        const params: SimpleMap<string> = {};
+        const params: RequestParams = {};
         const unusedSearchKeys: Array<string> = [];
         Object.entries(query)
             .forEach(([key, value]) => {
                 const spec = queryParamsSpec[key];
                 if (!spec) {
                     unusedSearchKeys.push(key);
+                    return;
                 }
                 // This allows for supplying a param
                 // from the config.
@@ -745,18 +765,30 @@ export class Router {
                 if (spec.type === 'param') {
                     // The normal case, in which a search query parameter is
                     // picked up as a "param".
-                    params[key] = query[key];
+                    params[key] = {
+                        name: key,
+                        type: 'string',
+                        value: query[key]
+                    };
                 } else if (spec.type === 'literal') {
                     // A query param can also be specified as a
                     // literal value, in which case the value from the spec
                     // is placed into the params.
-                    params[key] = spec.value;
+                    params[key] = {
+                        name: key,
+                        type: 'string',
+                        value: spec.value
+                    };
                 }
             });
 
         if (route.captureExtraSearch && unusedSearchKeys.length > 0) {
             unusedSearchKeys.forEach((key) => {
-                params[key] = query[key];
+                params[key] = {
+                    name: key,
+                    type: 'string',
+                    value: query[key]
+                };
             });
         }
 
@@ -798,8 +830,6 @@ export class Router {
             });
         })();
 
-
-
         const queryParams = this.processQuery(route, request.query);
         if (queryParams) {
             Object.assign(params, queryParams);
@@ -811,7 +841,15 @@ export class Router {
         // This provides a mechanism for the plugin to directly pass params to the route's
         // widget.
         if (route.params) {
-            Object.assign(route.params, route.params);
+            Object.entries(route.params).forEach(([key, value]) => {
+                // Object.assign(params, route.params);
+                params[key] = {
+                    name: key,
+                    type: 'string',
+                    value
+                };
+            });
+
         }
 
         return {
@@ -898,10 +936,10 @@ export class Router {
         // }
         switch (location.type) {
             case 'internal':
-                this.navigateInternal(location.path);
+                this.navigateInternal(location);
                 break;
             case 'external':
-                this.navigateExternal(location.url, true);
+                this.navigateExternal(location, location.newWindow || false);
         }
 
         // if (location.path !== undefined) {
@@ -913,10 +951,16 @@ export class Router {
         // }
     }
 
-    navigateInternal(path: string) {
+    navigateInternal(location: InternalRoutingLocation) {
         const url = new URL(window.location.toString());
-        url.hash = '#' + path;
+        url.hash = '#' + location.path;
         url.pathname = '';
+        if (typeof location.params !== 'undefined') {
+            const params = url.searchParams;
+            Object.entries(location.params).forEach(([key, value]) => {
+                params.set(key, value);
+            });
+        }
         window.location.assign(url.toString());
     }
 
@@ -924,11 +968,18 @@ export class Router {
         window.location.replace(location);
     }
 
-    navigateExternal(location: string, newWindow: boolean) {
+    navigateExternal(location: ExternalRoutingLocation, newWindow: boolean) {
+        const url = new URL(location.url);
+        if (typeof location.params !== 'undefined') {
+            const params = url.searchParams;
+            Object.entries(location.params).forEach(([key, value]) => {
+                params.set(key, value);
+            });
+        }
         if (newWindow) {
-            window.open(location);
+            window.open(url.toString());
         } else {
-            window.location.replace(location);
+            window.location.replace(url.toString());
         }
     }
 }
