@@ -8,7 +8,7 @@ package:
 install:
   # Set up a route to install that widget in the main body view
   routes:
-    - path: ["bulk-ui"]
+    - path: bulk-ui
       component: views/DeprecatedBulkUI
   # Set up a menu item to invoke the path above
   menu:
@@ -22,4 +22,3 @@ install:
       newWindow: true
       label: Support
       icon: question
-

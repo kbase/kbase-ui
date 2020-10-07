@@ -6,10 +6,11 @@ package:
   description: A developer tool
   type: legacy
 install:
-  routes:
-    - path: ["developer", {type: rest, name: path}]
-      component: views/Developer
-      queryParams: {}
+  route:
+    routes:
+      - path: developer
+        component: views/Developer
+        view: main
   menu:
     - name: developer
       section: developer
@@ -17,9 +18,3 @@ install:
       path: developer/main
       label: Developer
       icon: cogs
-#    - name: developer-docs
-#      section: developer
-#      allowedRoles: DevToken
-#      uri: /docs/index.html
-#      label: Dev Docs
-#      icon: file-text-o

@@ -7,14 +7,11 @@ package:
   type: legacy
 install:
   routes:
-    - path: ["about"]
-      queryParams: {}
+    - path: about
       component: views/About
-    - path: ["about", "build"]
-      queryParams: {}
+    - path: about/build
       component: views/AboutBuild
-    - path: ["about", "services"]
-      queryParams: {}
+    - path: about/services
       component: views/AboutServices
   menu:
     - name: about

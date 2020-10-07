@@ -10,7 +10,7 @@ define([], () => {
     AppServiceError.prototype.name = 'AppServiceError';
 
     class AppServiceManager {
-        constructor({ moduleBasePath }) {
+        constructor({moduleBasePath}) {
             if (!moduleBasePath) {
                 throw new TypeError('moduleBasePath not provided');
             }
@@ -36,12 +36,12 @@ define([], () => {
                     if (serviceModule.ServiceClass) {
                         serviceInstance = new serviceModule.ServiceClass({
                             config: this.services[name].config,
-                            params: params
+                            params
                         });
                     } else {
                         serviceInstance = new serviceModule({
                             config: this.services[name].config,
-                            params: params
+                            params
                         });
                     }
                     service.instance = serviceInstance;

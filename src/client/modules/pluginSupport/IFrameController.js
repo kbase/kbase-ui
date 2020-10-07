@@ -18,7 +18,7 @@ define([
     IFrame
 ) => {
 
-    const {h, Component, render } = preact;
+    const {h, Component, render} = preact;
     const html = htm.bind(h);
 
     const SHOW_LOADING_AFTER = 1000;
@@ -103,19 +103,19 @@ define([
                 });
             });
 
-            this.channel.on('add-button', ({ button }) => {
+            this.channel.on('add-button', ({button}) => {
                 button.callback = () => {
                     this.channel.send.apply(this.iframeChannel, button.callbackMessage);
                 };
                 this.runtime.send('ui', 'addButton', button);
             });
 
-            this.channel.on('open-window', ({ url }) => {
+            this.channel.on('open-window', ({url}) => {
                 window.location.href = url;
                 // window.open(url, name);
             });
 
-            this.channel.on('set-plugin-params', ({ pluginParams }) => {
+            this.channel.on('set-plugin-params', ({pluginParams}) => {
                 if (Object.keys(pluginParams) === 0) {
                     window.location.search = '';
                     return;
@@ -167,7 +167,7 @@ define([
                 this.runtime.send('ui', 'setTitle', config.title);
             });
 
-            this.channel.on('ui-auth-navigate', ({ nextRequest, tokenInfo }) => {
+            this.channel.on('ui-auth-navigate', ({nextRequest, tokenInfo}) => {
                 const authSession = this.runtime.service('session').getClient();
                 authSession.setSessionCookie(tokenInfo.token, tokenInfo.expires);
                 return authSession.evaluateSession().then(() => {
@@ -200,7 +200,7 @@ define([
             this.channel.start();
         }
 
-        formPost({ action, params }) {
+        formPost({action, params}) {
             const donorNode = document.createElement('div');
             document.body.appendChild(donorNode);
             const props = {
@@ -233,7 +233,7 @@ define([
                 this.channel.setWindow(iframeWindow);
                 this.setupAndStartChannel();
                 this.channel.once('ready',
-                    ({ channelId }) => {
+                    ({channelId}) => {
                         ready();
                         this.channel.partnerId = channelId;
                         // TODO: narrow and improve the config support for plugins
@@ -244,19 +244,26 @@ define([
                         //     services: config.services
                         // };
 
+                        // const params = Object.entries(this.props.params.routeParams).reduce((params, [key, param]) => {
+                        //     params[key] = param.value;
+                        //     return params;
+                        // }, {});
+                        const params = Object.assign({}, this.props.params.routeParams);
+                        params.view = this.props.params.view;
+
                         const startMessage = {
                             authorization: {
                                 token: this.runtime.service('session').getAuthToken(),
                                 username: this.runtime.service('session').getUsername(),
                                 realname: this.runtime.service('session').getRealname(),
                                 email: this.runtime.service('session').getEmail(),
-                                roles: this.runtime.service('session').getRoles().map(({ id }) => {
+                                roles: this.runtime.service('session').getRoles().map(({id}) => {
                                     return id;
                                 })
                             },
                             config: this.runtime.rawConfig(),
-                            view: this.props.params.view,
-                            params: this.props.params.routeParams
+                            view: this.props.params.view.value,
+                            params
                         };
 
                         this.channel.send('start', startMessage);
@@ -310,9 +317,15 @@ define([
                     // TODO: remove because this duplicates start behaviour
                     // In order to do that, plugins which don't route on 'start'
                     // need to be updated.
-                    const params = this.props.params.routeParams;
+                    // const params = this.props.params.routeParams;
+                    // const params =  Object.entries(this.props.params.routeParams).reduce((params, [key, param]) => {
+                    //     params[key] = param.value;
+                    //     return params;
+                    // }, {});
+                    const params = Object.assign({}, this.props.params.routeParams);
                     const path = params.path || [];
                     const view = this.props.params.view;
+                    params.view = view;
                     const message = {
                         path, params, view, to: view
                     };

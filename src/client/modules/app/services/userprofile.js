@@ -15,7 +15,7 @@ define([
 ) => {
 
     class UserProfileService {
-        constructor({ params: { runtime } }) {
+        constructor({params: {runtime}}) {
             this.runtime = runtime;
             this.state = new Observed();
         }
@@ -246,5 +246,5 @@ define([
             return this.state.whenItem('userprofile');
         }
     }
-    return { ServiceClass: UserProfileService };
+    return {ServiceClass: UserProfileService};
 });

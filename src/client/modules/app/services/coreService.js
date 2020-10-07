@@ -1,37 +1,24 @@
-define([
-], function (
-) {
-
-    // class CoreService {
-    //     constructor({moduleName, minimumVersion, url, versionMethod, versionPath}) {
-    //         this.moduleName = moduleName;
-    //         this.minimumVersion = minimumVersion;
-    //         this.url = url;
-    //         this.versionMethod = versionMethod;
-    //         this.versionPath = versionPath;
-    //     }
-    // }
-
-    class CoreServicesMonitor {
-        constructor({ params: {runtime} }) {
+define(["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ServiceClass = exports.CoreServicesMonitor = void 0;
+    var CoreServicesMonitor = /** @class */ (function () {
+        function CoreServicesMonitor(_a) {
+            var runtime = _a.params.runtime;
             this.runtime = runtime;
-            this.services = {};
         }
-
-        start() {
+        CoreServicesMonitor.prototype.start = function () {
             return Promise.resolve();
-        }
-
-        stop() {
+        };
+        CoreServicesMonitor.prototype.stop = function () {
             return Promise.resolve();
-        }
-
-        pluginHandler() {
-        }
-
-        addCoreServiceDependency() {
-        }
-    }
-
-    return { ServiceClass: CoreServicesMonitor };
+        };
+        CoreServicesMonitor.prototype.pluginHandler = function () {
+        };
+        CoreServicesMonitor.prototype.addCoreServiceDependency = function () {
+        };
+        return CoreServicesMonitor;
+    }());
+    exports.CoreServicesMonitor = CoreServicesMonitor;
+    exports.ServiceClass = CoreServicesMonitor;
 });

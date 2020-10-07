@@ -10,22 +10,23 @@ define([
     IFrameController
 ) => {
 
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     class Plugin extends Component {
         constructor(props) {
             super(props);
             const {params} = props;
+
+            // TODO: ummm...
             if (params.viewParams) {
                 params.viewParams = JSON.parse(params.viewParams);
             }
 
-            if (typeof params.plugin === 'undefined') {
-                throw new Error('Plugin did not pass the plugin name via params');
-            }
-
-            self.pluginPath = ['modules', 'plugins', params.plugin].join('/');
+            // if (typeof params.plugin === 'undefined') {
+            //     throw new Error('Plugin did not pass the plugin name via params');
+            // }
+            // this.pluginName = props.pluginName;
         }
 
         componentDidMount() {
@@ -33,15 +34,17 @@ define([
         }
 
         render() {
+            // TODO: hmm, probably shouldn't assume anything about
+            // this plugin path.
             const pluginPath = [
                 'modules',
                 'plugins',
-                this.props.params.plugin
+                this.props.pluginName
             ].join('/');
 
             const props = {
                 runtime: this.props.runtime,
-                pluginPath: pluginPath,
+                pluginPath,
                 pipe: this.props.pipe,
                 params: {
                     view: this.props.view, // +++
@@ -49,6 +52,7 @@ define([
                     routeParams: this.props.params || {}
                 }
             };
+
             return html`
                 <div className="Plugin">
                     <${IFrameController} ...${props} />

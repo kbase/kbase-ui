@@ -1,130 +1,122 @@
-define([
-    'lib/feeds'
-], (
-    feeds
-) => {
-
-    const MONITORING_INTERVAL = 10000;
-
-    class FeedsService {
-        constructor({ params: {runtime} }) {
+define(["require", "exports", "../../lib/kb_lib/comm/coreServices/Feeds", "../../lib/kb_lib/Utils"], function (require, exports, Feeds_1, Utils_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ServiceClass = void 0;
+    var MONITORING_INTERVAL = 10000;
+    var FeedsService = /** @class */ (function () {
+        function FeedsService(_a) {
+            var runtime = _a.params.runtime;
             this.runtime = runtime;
-
             // TODO: move to service config.
             this.monitoringInterval = MONITORING_INTERVAL;
-
             this.monitorRunning = false;
             this.monitoringRunCount = 0;
             this.monitoringErrorCount = 0;
-
+            this.monitoringTimer = null;
             this.disabled = this.runtime.config('ui.coreServices.disabled', []).includes('Feeds');
         }
-
-        start() {
-            this.runtime.db().set('feeds', {
-                notifications: null,
-                error: null
+        FeedsService.prototype.start = function () {
+            var _this = this;
+            return Utils_1.tryPromise(function () {
+                _this.runtime.db().set('feeds', {
+                    notifications: null,
+                    error: null
+                });
+                if (_this.disabled) {
+                    console.warn('Feeds service disabled; skipping monitoring hooks');
+                    return;
+                }
+                // if logged in, populate and start monitoring for feeds notifications
+                if (_this.runtime.service('session').getAuthToken()) {
+                    return _this.startFeedsMonitoring();
+                }
+                // listen for login and out events...
+                _this.runtime.receive('session', 'loggedin', function () {
+                    _this.startFeedsMonitoring();
+                });
+                _this.runtime.receive('session', 'loggedout', function () {
+                    _this.stopFeedsMonitoring();
+                });
             });
-
-            if (this.disabled) {
-                console.warn('Feeds service disabled; skipping monitoring hooks');
+        };
+        FeedsService.prototype.stop = function () {
+            var _this = this;
+            return Utils_1.tryPromise(function () {
+                _this.stopFeedsMonitoring();
+            });
+        };
+        FeedsService.prototype.startFeedsMonitoring = function () {
+            if (this.monitorRunning) {
                 return;
             }
-
-            // if logged in, populate and start monitoring for feeds notifications
-            if (this.runtime.service('session').getAuthToken()) {
-                return this.startupFeedsMonitoring();
-            }
-
-            // listen for login and out events...
-            this.runtime.receive('session', 'loggedin', () => {
-                this.startFeedsMonitoring();
-            });
-
-            this.runtime.receive('session', 'loggedout', () => {
-                this.stopFeedsMonitoring();
-            });
-
-            return Promise.resolve();
-        }
-
-        stop() {
-            return Promise.resolve();
-        }
-
-        startFeedsMonitoring() {
             this.monitorRunning = true;
             this.monitoringLoop();
-        }
-
-        monitoringLoop() {
+        };
+        FeedsService.prototype.monitoringLoop = function () {
+            var _this = this;
             if (this.monitoringTimer) {
                 return;
             }
-
-            const monitoringJob = () => {
-                const feedsClient = new feeds.FeedsClient({
-                    url: this.runtime.config('services.Feeds.url'),
-                    token: this.runtime.service('session').getAuthToken()
+            var monitoringJob = function () {
+                var feedsClient = new Feeds_1.Feeds({
+                    url: _this.runtime.config('services.Feeds.url'),
+                    token: _this.runtime.service('session').getAuthToken()
                 });
                 return feedsClient.getUnseenNotificationCount()
-                    .then(({ unseen: { global, user } }) => {
-                        const currentUnseen = global + user;
-                        // are notifications different than the last time?
-                        const unseenNotificationsCount = this.runtime.db().get('feeds.unseenNotificationsCount');
-                        // only way is a deep equality comparison
-
-                        if (unseenNotificationsCount === currentUnseen) {
-                            return;
-                        }
-
-                        this.runtime.db().set('feeds', {
-                            unseenNotificationsCount: currentUnseen,
-                            error: null
-                        });
-                    })
-                    .catch((err) => {
-                        console.error('ERROR', err.message);
-                        this.runtime.db().set('feeds', {
-                            error: err.message
-                        });
+                    .then(function (_a) {
+                    var _b = _a.unseen, global = _b.global, user = _b.user;
+                    var currentUnseen = global + user;
+                    // are notifications different than the last time?
+                    var unseenNotificationsCount = _this.runtime.db().get('feeds.unseenNotificationsCount', 0);
+                    // only way is a deep equality comparison
+                    if (unseenNotificationsCount === currentUnseen) {
+                        return;
+                    }
+                    _this.runtime.db().set('feeds', {
+                        unseenNotificationsCount: currentUnseen,
+                        error: null
                     });
-            };
-
-            const loop = () => {
-                this.monitoringTimer = window.setTimeout(() => {
-                    monitoringJob()
-                        .then(() => {
-                            this.monitoringRunCount += 1;
-                            if (this.monitorRunning) {
-                                loop();
-                            }
-                        })
-                        .catch((err) => {
-                            this.monitoringErrorCount += 1;
-                            console.error('ERROR', err);
-                        });
-                }, this.monitoringInterval);
-            };
-
-            monitoringJob()
-                .then(() => {
-                    loop();
                 })
-                .catch((err) => {
-                    console.error('Error', err);
+                    .catch(function (err) {
+                    console.error('ERROR', err.message);
+                    _this.runtime.db().set('feeds', {
+                        error: err.message
+                    });
                 });
-        }
-
-        stopFeedsMonitoring() {
+            };
+            var loop = function () {
+                _this.monitoringTimer = window.setTimeout(function () {
+                    monitoringJob()
+                        .then(function () {
+                        _this.monitoringRunCount += 1;
+                        if (_this.monitorRunning) {
+                            loop();
+                        }
+                    })
+                        .catch(function (err) {
+                        _this.monitoringErrorCount += 1;
+                        console.error('ERROR', err);
+                    });
+                }, _this.monitoringInterval);
+            };
+            monitoringJob()
+                .then(function () {
+                loop();
+            })
+                .catch(function (err) {
+                console.error('Error', err);
+            });
+        };
+        FeedsService.prototype.stopFeedsMonitoring = function () {
             this.monitorRunning = false;
-            window.clearTimeout(this.monitoringTimer);
+            if (this.monitoringTimer !== null) {
+                window.clearTimeout(this.monitoringTimer);
+            }
             this.monitoringTimer = null;
-        }
-
-        pluginHandler() {
-        }
-    }
-
-    return { ServiceClass: FeedsService };
+        };
+        FeedsService.prototype.pluginHandler = function () {
+        };
+        return FeedsService;
+    }());
+    exports.ServiceClass = FeedsService;
 });
