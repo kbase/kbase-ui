@@ -23,14 +23,15 @@
 /*eslint {strict: ['error', 'global']}*/
 'use strict';
 
-const findit = require('findit2'),
-    Promise = require('bluebird'),
-    fs = Promise.promisifyAll(require('fs-extra')),
-    glob = Promise.promisify(require('glob').Glob),
-    yaml = require('js-yaml'),
-    ini = require('ini'),
-    chalk = require('chalk'),
-    uniqState = {};
+const findit = require('findit2');
+const Promise = require('bluebird');
+const fs = Promise.promisifyAll(require('fs-extra'));
+const glob = Promise.promisify(require('glob').Glob);
+const yaml = require('js-yaml');
+const ini = require('ini');
+const chalk = require('chalk');
+const path = require('path');
+const uniqState = {};
 
 // UTILS
 
@@ -116,7 +117,7 @@ function loadDockerEnvFile(path) {
 }
 
 function loadYaml(path) {
-    const yamlPath = path.join('/');
+    const yamlPath = Array.isArray(path) ? path.join('/') : path;
     return fs.readFileAsync(yamlPath, 'utf8').then(function (contents) {
         try {
             return yaml.safeLoad(contents);
@@ -330,25 +331,11 @@ function mergeObjects(listOfObjects) {
     return base;
 }
 
-function createInitialState(initialConfig) {
-    const initialFilesystem = initialConfig.initialFilesystem,
-        buildControlConfigPath = initialConfig.buildControlConfigPath,
-        buildControlDefaultsPath = initialConfig.buildControlDefaultsPath;
-
-    // TODO: do this better...
-    // var app, appName;
-    // if (process.argv[0].match(/node$/)) {
-    //     app = process.argv[1];
-    // } else {
-    //     app = process.argv[0];
-    // }
-    // appName = app.split('/').pop();
-
-    // log('Creating initial state for app: ' + appName);
+function createInitialState({rootDir, initialFilesystem, buildControlConfigPath, buildControlDefaultsPath}) {
     log('Creating initial state');
 
-    return Promise.all([loadYaml(buildControlConfigPath), loadYaml(buildControlDefaultsPath)])
-        .then(function (configs) {
+    return Promise.all([loadYaml(rootDir.concat(buildControlConfigPath)), loadYaml(rootDir.concat(buildControlDefaultsPath))])
+        .then((configs) => {
             const buildConfig = mergeObjects(configs);
             const state = {
                 environment: {},
@@ -359,17 +346,17 @@ function createInitialState(initialConfig) {
             };
             return makeRunDir(state);
         })
-        .then(function (state) {
+        .then((state) => {
             const inputFiles = mkdir(state.environment.root, ['inputfiles']);
             const inputFs = [];
 
             // We first copy the input directories into the input filesystem
-            initialFilesystem.forEach(function (spec) {
+            initialFilesystem.forEach((spec) => {
                 if (spec.path) {
-                    copydir(spec.cwd, spec.path, [], inputFiles.concat(spec.path));
+                    copydir(rootDir, spec.path, [], inputFiles.concat(spec.path));
                 } else if (spec.files) {
-                    spec.files.forEach(function (file) {
-                        copyfile(spec.cwd, file, [], inputFiles.concat([file]));
+                    spec.files.forEach((file) => {
+                        copyfile(rootDir, file, [], inputFiles.concat([file]));
                     });
                 }
             });
@@ -392,11 +379,11 @@ function createInitialState(initialConfig) {
 }
 
 function finish(state) {
-    return Promise.try(function () {
+    return Promise.try(() => {
         if (!state.buildConfig.keepBuildDir) {
             return removeRunDir(state);
         }
-    }).then(function () {
+    }).then(() => {
         log('Finished with mutations');
     });
 }

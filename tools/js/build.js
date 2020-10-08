@@ -23,22 +23,24 @@
 /*eslint strict: ["error", "global"], no-console: 0 */
 'use strict';
 
-const Promise = require('bluebird'),
-    fs = Promise.promisifyAll(require('fs-extra')),
-    pathExists = require('path-exists'),
-    mutant = require('./mutant'),
-    yaml = require('js-yaml'),
-    glob = Promise.promisify(require('glob').Glob),
-    exec = require('child_process').exec,
-    util = require('util'),
-    handlebars = require('handlebars'),
-    numeral = require('numeral'),
-    tar = require('tar');
+const Promise = require('bluebird');
+const fs = Promise.promisifyAll(require('fs-extra'));
+const pathExists = require('path-exists');
+const mutant = require('./mutant');
+const yaml = require('js-yaml');
+const glob = Promise.promisify(require('glob').Glob);
+const exec = require('child_process').exec;
+const util = require('util');
+const handlebars = require('handlebars');
+const numeral = require('numeral');
+const tar = require('tar');
+const yargs = require('yargs');
+const path = require('path');
 
 // UTILS
-function run(command, ignoreStdErr = false, verbose = false) {
+function run(command, {ignoreStdErr = false, verbose = false,  options = {}}) {
     return new Promise(function (resolve, reject) {
-        const proc = exec(command, {}, function (err, stdout, stderr) {
+        const proc = exec(command, options, function (err, stdout, stderr) {
             if (err) {
                 reject(err);
             }
@@ -58,7 +60,7 @@ function run(command, ignoreStdErr = false, verbose = false) {
 function gitClone(url, dest, branch = 'master') {
     const commandLine = ['git clone --quiet --depth 1', '--branch', branch, url, dest].join(' ');
     console.log('git cloning...', commandLine);
-    return run(commandLine, true);
+    return run(commandLine, {ignoreStdErr: true});
 }
 
 function gitInfo(state) {
@@ -597,7 +599,7 @@ function makeUIConfig(state) {
 
     return Promise.all(
         configFiles.map((file) => {
-            return mutant.loadYaml(file);
+            return mutant.loadYaml(path.join(file));
         })
     )
         .then((configs) => {
@@ -1060,38 +1062,34 @@ function makeModuleVFS(state, whichBuild) {
 
 function main(type) {
     return (
-        Promise.try(function () {
+        Promise.try(async function () {
+            const rootDir = (await getRoot()).split('/');
             // STEP 1: Create iniital build state.
             mutant.log('STEP 1: Creating initial state for build: ' + type);
             const initialFilesystem = [
                 {
-                    cwd: ['..'],
                     path: ['src', 'client']
                 },
                 {
-                    cwd: ['..'],
                     path: ['src', 'plugins']
                 },
                 {
-                    cwd: ['..'],
                     path: ['src', 'test']
                 },
                 {
-                    cwd: ['..'],
                     files: ['package.json']
                 },
                 {
-                    cwd: ['..'],
                     path: ['release-notes']
                 },
                 {
-                    cwd: ['..'],
                     path: ['config']
                 }
             ];
-            const buildControlConfigPath = ['..', 'config', 'build', type + '.yml'];
-            const buildControlDefaultsPath = ['..', 'config', 'build', 'defaults.yml'];
+            const buildControlConfigPath = ['config', 'build', type + '.yml'];
+            const buildControlDefaultsPath = ['config', 'build', 'defaults.yml'];
             const config = {
+                rootDir,
                 initialFilesystem,
                 buildControlConfigPath,
                 buildControlDefaultsPath
@@ -1250,19 +1248,29 @@ function main(type) {
     );
 }
 
+async function getRoot() {
+    const out = await run('git rev-parse --show-toplevel', {options: {
+        encoding: 'utf8'
+    }});
+    console.log('hmm', out);
+    return out.trim();
+}
+
 function usage() {
     console.error('usage: node build <config>');
 }
 
-const type = process.argv[2];
+const args = yargs.parse(process.argv.slice(2));
 
-if (type === undefined) {
+const buildType = args.config;
+
+if (buildType === undefined) {
     console.error('Build config not specified');
     usage();
     process.exit(1);
 }
 
-main(type).catch((err) => {
+main(buildType).catch((err) => {
     console.error('ERROR');
     console.error(err);
     console.error(
