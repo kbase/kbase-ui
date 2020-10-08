@@ -30,7 +30,6 @@ const glob = Promise.promisify(require('glob').Glob);
 const yaml = require('js-yaml');
 const ini = require('ini');
 const chalk = require('chalk');
-const path = require('path');
 const uniqState = {};
 
 // UTILS
@@ -57,20 +56,6 @@ function copyFiles(tryFrom, tryTo, globExpr) {
             );
         });
 }
-
-// function copyFiles(from, to, globExpr) {
-//     return glob(globExpr, {
-//         cwd: from.join('/'),
-//         nodir: true
-//     })
-//         .then(function (matches) {
-//             return Promise.all(matches.map(function (match) {
-//                 var fromPath = from.concat([match]).join('/'),
-//                     toPath = to.concat([match]).join('/');
-//                 return fs.copy(fromPath, toPath, {});
-//             }));
-//         });
-// }
 
 function ensureEmptyDir(path) {
     const dir = path.join('/');
@@ -251,15 +236,6 @@ function copyState(oldState) {
     });
 }
 
-function makeRunDir(state) {
-    const runDirName = uniqts('run_');
-    // This is the root of all process files
-    const root = (state.buildConfig.tempDir && ['..'].concat(state.buildConfig.tempDir.split('/'))) || ['mutantfiles'];
-    const runDir = mkdir(root, [runDirName]);
-    state.environment.root = runDir;
-    return state;
-}
-
 function removeRunDir(state) {
     if (state.environment.root) {
         return fs.removeAsync(state.environment.root.join('/')).then(function () {
@@ -334,17 +310,31 @@ function mergeObjects(listOfObjects) {
 function createInitialState({rootDir, initialFilesystem, buildControlConfigPath, buildControlDefaultsPath}) {
     log('Creating initial state');
 
-    return Promise.all([loadYaml(rootDir.concat(buildControlConfigPath)), loadYaml(rootDir.concat(buildControlDefaultsPath))])
+    return Promise.all([
+        loadYaml(rootDir.concat(buildControlConfigPath)),
+        loadYaml(rootDir.concat(buildControlDefaultsPath))
+    ])
         .then((configs) => {
             const buildConfig = mergeObjects(configs);
             const state = {
-                environment: {},
+                environment: {
+                    rootDir
+                },
                 data: {},
                 state: {},
                 buildConfig,
                 history: []
             };
-            return makeRunDir(state);
+
+            // Create the run directory.
+            // The run dir by default is in temp/files/run_####
+            // where #### is a unique suffix (uuid).
+            const runDirName = uniqts('run_');
+            // This is the root of all process files
+            const root = state.environment.rootDir.concat(state.buildConfig.tempDir.split('/'));
+            const runDir = mkdir(root, [runDirName]);
+            state.environment.root = runDir;
+            return state;
         })
         .then((state) => {
             const inputFiles = mkdir(state.environment.root, ['inputfiles']);

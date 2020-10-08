@@ -104,7 +104,7 @@ compile:
 build: clean-build compile
 	@:$(call check_defined, build, "the build configuration: defaults to 'dev'")
 	@echo "> Building."
-	yarn build --build $(build)
+	yarn build --config $(build)
 
 docker-network:
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
@@ -157,6 +157,7 @@ docker-compose-up: docker-network docker-compose-override
 		$(if $(findstring t,$(build-image)),--build))
 	@echo "> Issuing $(cmd)"
 	$(cmd)
+	@(eval docker-compose rm -v -f -s)
 
 # @cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose up --build
 

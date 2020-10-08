@@ -35,10 +35,9 @@ const handlebars = require('handlebars');
 const numeral = require('numeral');
 const tar = require('tar');
 const yargs = require('yargs');
-const path = require('path');
 
 // UTILS
-function run(command, {ignoreStdErr = false, verbose = false,  options = {}}) {
+function run(command, {ignoreStdErr = false, verbose = false,  options = {}} = {}) {
     return new Promise(function (resolve, reject) {
         const proc = exec(command, options, function (err, stdout, stderr) {
             if (err) {
@@ -252,21 +251,16 @@ function yarn(cmd, argv, options) {
     });
 }
 
-function yarnInstall(state) {
+async function yarnInstall(state) {
     const base = state.environment.path.concat(['build']);
     const packagePath = base.concat(['package.json']);
-    return mutant
-        .loadJson(packagePath)
-        .then(function (packageConfig) {
-            delete packageConfig.devDependencies;
-            return mutant.saveJson(packagePath, packageConfig);
-        })
-        .then(function () {
-            return yarn('install', ['--no-lockfile'], {
-                cwd: base.join('/'),
-                timeout: 300000
-            });
-        });
+    const packageConfig = await mutant.loadJson(packagePath);
+    delete packageConfig.devDependencies;
+    await mutant.saveJson(packagePath, packageConfig);
+    return yarn('install', ['--no-lockfile'], {
+        cwd: base.join('/'),
+        timeout: 300000
+    });
 }
 
 function copyFromNodeNodules(state) {
@@ -599,7 +593,7 @@ function makeUIConfig(state) {
 
     return Promise.all(
         configFiles.map((file) => {
-            return mutant.loadYaml(path.join(file));
+            return mutant.loadYaml(file);
         })
     )
         .then((configs) => {
@@ -798,8 +792,8 @@ function cleanup(state) {
 
 function makeDist(state) {
     const root = state.environment.path;
-    const buildPath = ['..', 'build'];
-    const distPath = ['..', 'build', 'dist'];
+    const buildPath = state.environment.rootDir.concat(['build']);
+    const distPath = state.environment.rootDir.concat(['build', 'dist']);
 
     return fs
         .removeAsync(distPath.join('/'))
@@ -879,13 +873,13 @@ function makeRelease(state) {
         });
 }
 
-function makeModuleVFS(state, whichBuild) {
-    const root = state.environment.path,
-        buildPath = ['..', 'build'];
+function makeModuleVFS(state) {
+    const root = state.environment.path;
+    const buildPath = state.environment.rootDir.concat(['build']);
 
-    return glob(root.concat([whichBuild, 'client', 'modules', '**', '*']).join('/'), {
+    return glob(root.concat(['dist', 'client', 'modules', '**', '*']).join('/'), {
         nodir: true,
-        exclude: [[whichBuild, 'client', 'modules', 'deploy', 'config.json']]
+        exclude: [['dist', 'client', 'modules', 'deploy', 'config.json']]
     })
         .then(function (matches) {
             // just read in file and build a giant map...
@@ -898,7 +892,7 @@ function makeModuleVFS(state, whichBuild) {
                     css: {}
                 }
             };
-            const vfsDest = buildPath.concat([whichBuild, 'client', 'moduleVfs.js']);
+            const vfsDest = buildPath.concat(['dist', 'client', 'moduleVfs.js']);
             const skipped = {};
 
             function skip(ext) {
@@ -1237,7 +1231,7 @@ function main(type) {
             // STEP 15. Create the Virtual File System (VFS) if specified in the build config.
             .then((state) => {
                 if (state.buildConfig.vfs) {
-                    return makeModuleVFS(state, 'dist');
+                    return makeModuleVFS(state);
                 } else {
                     return state;
                 }
@@ -1261,6 +1255,7 @@ function usage() {
 }
 
 const args = yargs.parse(process.argv.slice(2));
+console.log('hmm', args, process.argv);
 
 const buildType = args.config;
 
