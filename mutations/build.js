@@ -25,7 +25,6 @@
 
 const Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs-extra')),
-    path = require('path'),
     pathExists = require('path-exists'),
     mutant = require('./mutant'),
     yaml = require('js-yaml'),
@@ -80,13 +79,13 @@ function gitInfo(state) {
             return '';
         })
     ]).spread(function (infoString, subject, notes, url, branch, tag) {
-        var info = infoString.split('\n');
-        var version;
+        const info = infoString.split('\n');
+        let version;
         tag = tag.trim('\n');
         if (/^fatal/.test(tag)) {
             version = null;
         } else {
-            var m = /^v([\d]+)\.([\d]+)\.([\d]+)$/.exec(tag);
+            const m = /^v([\d]+)\.([\d]+)\.([\d]+)$/.exec(tag);
             if (m) {
                 version = m.slice(1).join('.');
             } else {
@@ -152,10 +151,10 @@ function dirList(dir) {
 
 function fetchPluginsFromGithub(state) {
     // Load plugin config
-    var root = state.environment.path,
-        pluginConfig,
-        pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/'),
-        gitDestination = root.concat(['gitDownloads']);
+    const root = state.environment.path;
+    let pluginConfig;
+    const pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/');
+    const gitDestination = root.concat(['gitDownloads']);
 
     return fs
         .mkdirsAsync(gitDestination.join('/'))
@@ -196,7 +195,7 @@ function fetchPluginsFromGithub(state) {
  */
 function injectPluginsIntoConfig(state) {
     // Load plugin config
-    var root = state.environment.path,
+    const root = state.environment.path,
         configPath = root.concat(['build', 'client', 'modules', 'config']),
         pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/');
 
@@ -252,8 +251,8 @@ function yarn(cmd, argv, options) {
 }
 
 function yarnInstall(state) {
-    var base = state.environment.path.concat(['build']);
-    var packagePath = base.concat(['package.json']);
+    const base = state.environment.path.concat(['build']);
+    const packagePath = base.concat(['package.json']);
     return mutant
         .loadJson(packagePath)
         .then(function (packageConfig) {
@@ -269,11 +268,11 @@ function yarnInstall(state) {
 }
 
 function copyFromNodeNodules(state) {
-    var root = state.environment.path;
+    const root = state.environment.path;
 
     return mutant.loadYaml(root.concat(['config', 'npmInstall.yml']))
         .then((config) => {
-            var copyJobs = [];
+            const copyJobs = [];
 
             config.npmFiles.forEach(function (cfg) {
             /*
@@ -282,10 +281,10 @@ function copyFromNodeNodules(state) {
                  but since this is not always the case, we allow the dir setting
                  to override this.
                  */
-                var dir = cfg.dir || cfg.name,
-                    sources,
-                    cwd,
-                    dest;
+                const dir = cfg.dir || cfg.name;
+                let sources;
+                let cwd;
+                let dest;
                 if (!dir) {
                     throw new Error(
                         'Either the name or dir property must be provided to establish the top level directory'
@@ -400,13 +399,13 @@ function fetchPlugins(state) {
  */
 function installPlugins(state) {
     // Load plugin config
-    var root = state.environment.path,
-        pluginConfig,
-        pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/');
+    const root = state.environment.path;
+    let pluginConfig;
+    const pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/');
     return (
         fs
             .readFileAsync(pluginConfigFile, 'utf8')
-            .then(function (pluginFile) {
+            .then((pluginFile) => {
                 pluginConfig = yaml.safeLoad(pluginFile);
                 const plugins = pluginConfig.plugins;
                 return Promise.all(
@@ -434,14 +433,14 @@ function installPlugins(state) {
                             return mutant.copyFiles(srcDir, destDir, '**/*');
                         })
                 )
-                    .then(function () {
+                    .then(() => {
                         // Supports installing from a directory
                         return Promise.all(
                             plugins
-                                .filter(function (plugin) {
+                                .filter((plugin) => {
                                     return typeof plugin === 'object' && plugin.source.directory;
                                 })
-                                .map(function (plugin) {
+                                .map((plugin) => {
                                     const cwds = plugin.cwd || 'dist/plugin',
                                         cwd = cwds.split('/'),
                                         // Our actual cwd is mutations, so we need to escape one up to the
@@ -461,14 +460,14 @@ function installPlugins(state) {
                                 })
                         );
                     })
-                    .then(function () {
+                    .then(() => {
                         // Supports internal plugins.
                         return Promise.all(
                             plugins
-                                .filter(function (plugin) {
+                                .filter((plugin) => {
                                     return typeof plugin === 'string';
                                 })
-                                .map(function (plugin) {
+                                .map((plugin) => {
                                     const source = root.concat(['plugins', plugin]),
                                         destination = root.concat(['build', 'client', 'modules', 'plugins', plugin]);
                                     mutant.ensureDir(destination);
@@ -478,7 +477,7 @@ function installPlugins(state) {
                     });
             })
             // now move the test files into the test dir
-            .then(function () {
+            .then(() => {
                 // dir list of all plugins
                 const pluginsPath = root.concat(['build', 'client', 'modules', 'plugins']);
                 return dirList(pluginsPath).then((pluginDirs) => {
@@ -498,7 +497,7 @@ function installPlugins(state) {
                     });
                 });
             })
-            .then(function () {
+            .then(() => {
                 return state;
             })
     );
@@ -531,34 +530,34 @@ function setupBuild(state) {
     state.steps = [];
     return mutant
         .deleteMatchingFiles(root.join('/'), /.*\.DS_Store$/)
-        .then(function () {
+        .then(() => {
             // the client really now becomes the build!
             const from = root.concat(['src', 'client']),
                 to = root.concat(['build', 'client']);
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
-        .then(function () {
+        .then(() => {
             // the client really now becomes the build!
             const from = root.concat(['src', 'test']),
                 to = root.concat(['test']);
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
-        .then(function () {
+        .then(() => {
             // the client really now becomes the build!
             const from = root.concat(['src', 'plugins']),
                 to = root.concat(['plugins']);
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
-        .then(function () {
+        .then(() => {
             return fs.moveAsync(
                 root.concat(['package.json']).join('/'),
                 root.concat(['build', 'package.json']).join('/')
             );
         })
-        .then(function () {
+        .then(() => {
             return fs.rmdirAsync(root.concat(['src']).join('/'));
         })
-        .then(function () {
+        .then(() => {
             return state;
         });
 }
@@ -815,18 +814,6 @@ function makeDist(state) {
             return fs.copyAsync(root.concat(['test']).join('/'), buildPath.concat(['test']).join('/'));
         })
         .then(function () {
-            return state;
-        });
-}
-
-/*
-    removeBuild
-    Remove the build/build directory
-*/
-function removeBuild(state) {
-    const buildPath = ['..', 'build'];
-    return fs.removeAsync(buildPath.concat(['build']).join('/'))
-        .then(() => {
             return state;
         });
 }

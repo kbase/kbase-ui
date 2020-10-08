@@ -23,7 +23,7 @@
 /*eslint {strict: ['error', 'global']}*/
 'use strict';
 
-var findit = require('findit2'),
+const findit = require('findit2'),
     Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs-extra')),
     glob = Promise.promisify(require('glob').Glob),
@@ -49,7 +49,7 @@ function copyFiles(tryFrom, tryTo, globExpr) {
         .spread(function (from, to, matches) {
             return Promise.all(
                 matches.map(function (match) {
-                    var fromPath = from.concat([match]).join('/'),
+                    const fromPath = from.concat([match]).join('/'),
                         toPath = to.concat([match]).join('/');
                     return fs.copy(fromPath, toPath, {});
                 })
@@ -72,7 +72,7 @@ function copyFiles(tryFrom, tryTo, globExpr) {
 // }
 
 function ensureEmptyDir(path) {
-    var dir = path.join('/');
+    const dir = path.join('/');
 
     // ensure dir
     return fs
@@ -88,7 +88,7 @@ function ensureEmptyDir(path) {
 }
 
 function loadDockerEnvFile(path) {
-    var filePath;
+    let filePath;
     if (typeof path === 'string') {
         filePath = path;
     } else {
@@ -102,13 +102,13 @@ function loadDockerEnvFile(path) {
             } else if (line[0] === '#') {
                 return lines;
             }
-            var pos = line.indexOf('=');
+            const pos = line.indexOf('=');
             if (pos === -1) {
                 lines[key] = null;
                 return lines;
             }
-            var key = line.slice(0, pos);
-            var value = line.slice(pos + 1);
+            const key = line.slice(0, pos);
+            const value = line.slice(pos + 1);
             lines[key] = value;
             return lines;
         }, {});
@@ -116,7 +116,7 @@ function loadDockerEnvFile(path) {
 }
 
 function loadYaml(path) {
-    var yamlPath = path.join('/');
+    const yamlPath = path.join('/');
     return fs.readFileAsync(yamlPath, 'utf8').then(function (contents) {
         try {
             return yaml.safeLoad(contents);
@@ -138,14 +138,14 @@ function saveYaml(path, data) {
 }
 
 function loadIni(iniPath) {
-    var yamlPath = iniPath.join('/');
+    const yamlPath = iniPath.join('/');
     return fs.readFileAsync(yamlPath, 'utf8').then(function (contents) {
         return ini.parse(contents);
     });
 }
 
 function rtrunc(array, len) {
-    var start = 0,
+    const start = 0,
         end = array.length - len;
     return array.slice(start, end);
 }
@@ -167,12 +167,12 @@ function uniq(prefix) {
 }
 
 function uniqts(prefix) {
-    var ts = new Date().getTime();
+    const ts = new Date().getTime();
     return prefix + String(ts);
 }
 
 function mkdir(inPath, dirPath) {
-    var path = inPath.concat(dirPath),
+    const path = inPath.concat(dirPath),
         pathString = path.join('/');
     if (fs.existsSync(pathString)) {
         throw new Error('Sorry, this dir already exists: ' + pathString);
@@ -186,22 +186,22 @@ function ensureDir(path) {
 }
 
 function copydir(fromRoot, fromDir, toRoot, toDir) {
-    var fromPath = fromRoot.concat(fromDir).join('/'),
+    const fromPath = fromRoot.concat(fromDir).join('/'),
         toPath = toRoot.concat(toDir).join('/');
     fs.copySync(fromPath, toPath);
 }
 
 function copyfile(fromRoot, fromDir, toRoot, toDir) {
-    var fromPath = fromRoot.concat(fromDir).join('/'),
+    const fromPath = fromRoot.concat(fromDir).join('/'),
         toPath = toRoot.concat(toDir).join('/');
     fs.copySync(fromPath, toPath);
 }
 
 function deleteMatchingFiles(path, regex) {
     return new Promise(function (resolve, reject) {
-        var finder = findit(path),
-            loadingFiles = true,
-            processingFiles = {};
+        const finder = findit(path);
+        let loadingFiles = true;
+        const processingFiles = {};
         finder.on('file', function (file) {
             if (file.match(regex)) {
                 processingFiles[file] = true;
@@ -230,10 +230,10 @@ function deleteMatchingFiles(path, regex) {
 function copyState(oldState) {
     return Promise.try(function () {
         if (!oldState.buildConfig.mutate) {
-            var newState = JSON.parse(JSON.stringify(oldState)),
-                tempDir = uniq('temp_'),
-                newFs = [tempDir],
-                start = new Date().getTime();
+            const newState = JSON.parse(JSON.stringify(oldState));
+            const tempDir = uniq('temp_');
+            const newFs = [tempDir];
+            let start = new Date().getTime();
 
             // Give the next process a fresh copy of all the files.
             newState.environment.filesystem = newFs;
@@ -251,10 +251,10 @@ function copyState(oldState) {
 }
 
 function makeRunDir(state) {
-    var runDirName = uniqts('run_'),
-        // This is the root of all process files
-        root = (state.buildConfig.tempDir && ['..'].concat(state.buildConfig.tempDir.split('/'))) || ['mutantfiles'],
-        runDir = mkdir(root, [runDirName]);
+    const runDirName = uniqts('run_');
+    // This is the root of all process files
+    const root = (state.buildConfig.tempDir && ['..'].concat(state.buildConfig.tempDir.split('/'))) || ['mutantfiles'];
+    const runDir = mkdir(root, [runDirName]);
     state.environment.root = runDir;
     return state;
 }
@@ -277,28 +277,28 @@ function log(msg) {
 }
 
 function info(msg) {
-    var line = 'INFO: ' + timestamp() + ': ' + msg;
-    var chalked = chalk.blue(line);
+    const line = 'INFO: ' + timestamp() + ': ' + msg;
+    const chalked = chalk.blue(line);
     process.stdout.write(chalked);
     process.stdout.write('\n');
 }
 
 function warn(msg) {
-    var line = 'WARN: ' + timestamp() + ': ' + msg;
-    var chalked = chalk.yellow(line);
+    const line = 'WARN: ' + timestamp() + ': ' + msg;
+    const chalked = chalk.yellow(line);
     process.stdout.write(chalked);
     process.stdout.write('\n');
 }
 
 function success(msg) {
-    var line = '✔   : ' + timestamp() + ': ' + msg;
-    var chalked = chalk.green(line);
+    const line = '✔   : ' + timestamp() + ': ' + msg;
+    const chalked = chalk.green(line);
     process.stdout.write(chalked);
     process.stdout.write('\n');
 }
 
 function mergeObjects(listOfObjects) {
-    var simpleObjectPrototype = Object.getPrototypeOf({});
+    const simpleObjectPrototype = Object.getPrototypeOf({});
 
     function isSimpleObject(obj) {
         return Object.getPrototypeOf(obj) === simpleObjectPrototype;
@@ -306,9 +306,9 @@ function mergeObjects(listOfObjects) {
 
     function merge(obj1, obj2, keyStack) {
         Object.keys(obj2).forEach(function (key) {
-            var obj1Value = obj1[key];
-            var obj2Value = obj2[key];
-            var obj1Type = typeof obj1Value;
+            const obj1Value = obj1[key];
+            const obj2Value = obj2[key];
+            const obj1Type = typeof obj1Value;
             // var obj2Type = typeof obj2Value;
             if (obj1Type === 'undefined') {
                 obj1[key] = obj2[key];
@@ -323,15 +323,15 @@ function mergeObjects(listOfObjects) {
         });
     }
 
-    var base = JSON.parse(JSON.stringify(listOfObjects[0]));
-    for (var i = 1; i < listOfObjects.length; i += 1) {
+    const base = JSON.parse(JSON.stringify(listOfObjects[0]));
+    for (let i = 1; i < listOfObjects.length; i += 1) {
         merge(base, listOfObjects[i], []);
     }
     return base;
 }
 
 function createInitialState(initialConfig) {
-    var initialFilesystem = initialConfig.initialFilesystem,
+    const initialFilesystem = initialConfig.initialFilesystem,
         buildControlConfigPath = initialConfig.buildControlConfigPath,
         buildControlDefaultsPath = initialConfig.buildControlDefaultsPath;
 
@@ -349,8 +349,8 @@ function createInitialState(initialConfig) {
 
     return Promise.all([loadYaml(buildControlConfigPath), loadYaml(buildControlDefaultsPath)])
         .then(function (configs) {
-            var buildConfig = mergeObjects(configs);
-            var state = {
+            const buildConfig = mergeObjects(configs);
+            const state = {
                 environment: {},
                 data: {},
                 state: {},
@@ -360,8 +360,8 @@ function createInitialState(initialConfig) {
             return makeRunDir(state);
         })
         .then(function (state) {
-            var inputFiles = mkdir(state.environment.root, ['inputfiles']),
-                inputFs = [];
+            const inputFiles = mkdir(state.environment.root, ['inputfiles']);
+            const inputFs = [];
 
             // We first copy the input directories into the input filesystem
             initialFilesystem.forEach(function (spec) {
@@ -378,7 +378,7 @@ function createInitialState(initialConfig) {
             // place files
             mkdir(state.environment.root.concat(['inputfiles']), 'tmp');
 
-            inputFs = ['inputfiles'];
+            inputFs.push('inputfiles');
 
             state.environment.filesystem = inputFs;
             state.environment.path = state.environment.root.concat(inputFs);
@@ -402,7 +402,7 @@ function finish(state) {
 }
 
 async function removeSourceMappingCSS(rootPath) {
-    var mapRe = /\/\*#\s*sourceMappingURL.*\*\//m;
+    const mapRe = /\/\*#\s*sourceMappingURL.*\*\//m;
     const pattern = rootPath
         .concat(['**', '*.css'])
         .join('/');
@@ -430,7 +430,7 @@ async function removeSourceMappingCSS(rootPath) {
                 console.warn('Fixing up CSS file to remove mapping');
                 console.warn(match);
 
-                var fixed = contents.replace(mapRe, '');
+                const fixed = contents.replace(mapRe, '');
                 return fs.writeFileAsync(match, fixed);
             });
         })
@@ -438,7 +438,7 @@ async function removeSourceMappingCSS(rootPath) {
 }
 
 async function removeSourceMappingJS(rootPath) {
-    var mapRe = /^\/\/#\s*sourceMappingURL.*$/m;
+    const mapRe = /^\/\/#\s*sourceMappingURL.*$/m;
     const pattern = rootPath
         .concat(['**', '*.js'])
         .join('/');
@@ -463,7 +463,7 @@ async function removeSourceMappingJS(rootPath) {
                 console.warn('Fixing up JS file to remove mapping');
                 console.warn(match);
 
-                var fixed = contents.replace(mapRe, '');
+                const fixed = contents.replace(mapRe, '');
                 return fs.writeFileAsync(match, fixed);
             });
         })
