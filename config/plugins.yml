@@ -99,13 +99,13 @@ plugins:
         account: kbaseIncubator
   - name: ontology
     globalName: kbase-ui-plugin-ontology
-    version: 0.2.2
+    version: 0.2.6
     source:
       github:
         account: kbaseIncubator
   - name: taxonomy
     globalName: kbase-ui-plugin-taxonomy
-    version: 0.3.1
+    version: 0.3.2
     source:
       github:
         account: kbaseIncubator

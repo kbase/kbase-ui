@@ -104,7 +104,7 @@ compile:
 build: clean-build compile
 	@:$(call check_defined, build, "the build configuration: defaults to 'dev'")
 	@echo "> Building."
-	cd mutations; node build $(build)
+	yarn build --config $(build)
 
 docker-network:
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
@@ -136,7 +136,7 @@ docker-compose-override:
 	@echo "> paths: $(paths)"
 	@echo "> local-narrative: $(local-narrative)"
 	@echo "> dynamic-services: $(dynamic-services)"
-	$(eval cmd = node $(TOPDIR)/tools/docker/build-docker-compose-override.js $(env) \
+	$(eval cmd = node $(TOPDIR)/tools/js/build-docker-compose-override.js $(env) \
 	  $(foreach p,$(plugins),--plugin $(p)) \
 	  $(foreach p,$(plugin),--plugin $(p)) \
 	  $(foreach i,$(internal-plugins),--internal $i) \
@@ -157,6 +157,7 @@ docker-compose-up: docker-network docker-compose-override
 		$(if $(findstring t,$(build-image)),--build))
 	@echo "> Issuing $(cmd)"
 	$(cmd)
+	@(eval docker-compose rm -v -f -s)
 
 # @cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose up --build
 
@@ -209,6 +210,8 @@ clean: clean-docs
 
 clean-temp:
 	$(GRUNT) clean:temp
+
+
 
 clean-build:
 	$(GRUNT) clean-build
