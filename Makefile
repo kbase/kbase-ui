@@ -170,10 +170,13 @@ docker-network-clean:
 	# @:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
 	bash tools/docker/clean-docker-network.sh
 
+start: init docker-compose-up
+
+stop: docker-compose-clean docker-network-clean
+
 dev-start: init docker-compose-up
 
 dev-stop: docker-compose-clean docker-network-clean
-
 
 uuid:
 	@node ./tools/gen-uuid.js
