@@ -19,11 +19,11 @@ define([
 ], (
     preact,
     htm,
-    PluginManager,
+    {PluginManager},
     AppServiceManager,
     kbaseServiceManager,
     Runtime,
-    Messenger,
+    {Messenger},
     props,
     MainWindow
 ) => {
@@ -150,7 +150,7 @@ define([
                     this.messenger.send({
                         channel: 'app',
                         message: 'navigate',
-                        data: {
+                        payload: {
                             path: 'message/error/notfound',
                             params: {
                                 info: JSON.stringify(info)

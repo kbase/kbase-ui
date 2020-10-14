@@ -5,35 +5,26 @@ package:
   title: Narrative Opener Tool
   description: The narrative manager
   type: legacy
-install:
-  routes:
-    - path: narrativemanager/start?:-app&:-method&:-copydata&:-appparam
-      authorization: true
-      # queryParams:
-      #   app: {}
-      #   method: {}
-      #   copydata: {}
-      #   appparam: {}
-      component: views/RecentNarrative
-    - path: narrativemanager/new?:-app&:-method&:-copydata&:-appparam&:-markdown
-      authorization: true
-      # queryParams:
-      #   app: {}
-      #   method: {}
-      #   markdown: {}
-      #   copydata: {}
-      #   appparam: {}
-      component: views/NewNarrative
+services:
+  route:
+    routes:
+      - path: "{{plugin}}/start?:-app&:-method&:-copydata&:-appparam"
+        authorization: true
+        component: views/RecentNarrative
+      - path: "{{plugin}}/new?:-app&:-method&:-copydata&:-appparam&:-markdown"
+        authorization: true
+        component: views/NewNarrative
   menu:
-    - name: narrative
-      definition:
-        path: narrativemanager/start
+    items:
+      - name: narrative
+        type: internal
+        path: "{{plugin}}/start"
         newWindow: true
         label: Narrative Interface
         icon: file
-    - name: new-narrative
-      definition:
-        path: narrativemanager/new
+      - name: new-narrative
+        type: internal
+        path: "{{plugin}}/new"
         newWindow: true
         label: New Narrative
         icon: plus

@@ -5,16 +5,18 @@ package:
   title: Developer Tools
   description: A developer tool
   type: legacy
-install:
+services:
   route:
     routes:
-      - path: developer
+      - path: "{{plugin}}"
         component: views/Developer
         view: main
   menu:
-    - name: developer
-      section: developer
-      allowedRoles: DevToken
-      path: developer/main
-      label: Developer
-      icon: cogs
+    items:
+      - name: developer
+        type: internal
+        path: "{{plugin}}/main"
+        section: developer
+        allowedRoles: [DevToken]
+        label: Developer
+        icon: cogs

@@ -5,20 +5,24 @@ package:
   title: Various UI Routes
   description: A welcome page
   type: legacy
-install:
+services:
   # Set up a route to install that widget in the main body view
-  routes:
-    - path: bulk-ui
-      component: views/DeprecatedBulkUI
+  route:
+    routes:
+      - path: bulk-ui
+        component: views/DeprecatedBulkUI
   # Set up a menu item to invoke the path above
   menu:
-    - name: about-kbase
-      uri: https://www.kbase.us/about
-      newWindow: true
-      label: About KBase
-      icon: info-circle
-    - name: help
-      uri: https://www.kbase.us/support
-      newWindow: true
-      label: Support
-      icon: question
+    items:
+      - name: about-kbase
+        type: external
+        uri: https://www.kbase.us/about
+        newWindow: true
+        label: About KBase
+        icon: info-circle
+      - name: help
+        type: external
+        uri: https://www.kbase.us/support
+        newWindow: true
+        label: Support
+        icon: question

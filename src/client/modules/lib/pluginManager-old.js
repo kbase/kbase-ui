@@ -5,7 +5,7 @@ define(['bluebird'], (Promise) => {
     const prequire = Promise.promisify(window.require);
 
     class PluginManager {
-        constructor({ runtime, moduleBase }) {
+        constructor({runtime, moduleBase}) {
             this.runtime = runtime;
             this.moduleBase = moduleBase || '/modules';
             this.services = {};
@@ -96,7 +96,7 @@ define(['bluebird'], (Promise) => {
                                 if (source.css) {
                                     const styleModule = source.module + '_css';
                                     paths[styleModule] = sourceFile;
-                                    shims[source.module] = { deps: ['css!' + styleModule] };
+                                    shims[source.module] = {deps: ['css!' + styleModule]};
                                 }
                             }
                         });
@@ -105,7 +105,7 @@ define(['bluebird'], (Promise) => {
 
                 // This usage of require.config will merge with the existing
                 // require configuration.
-                require.config({ paths: paths, shim: shims });
+                require.config({paths: paths, shim: shims});
 
                 // Create a dynamic module for the plugin to use. The current use
                 // case is for code within the plugin to have access to the path

@@ -76,47 +76,33 @@ define([
 
         // Receive a message on a channel, and have function fun handle
         // the message.
-        receive(channel, message, fun) {
-            return this.rcv({
-                channel: channel,
-                message: message,
-                handler: fun
+        receive(channel, message, handler) {
+            return this.messenger.receive({
+                channel,
+                message,
+                handler
             });
         }
 
         // The friendlier more verbose functions take explicit arguments and
         // packge them up into the messenger api format.
-        send(channel, message, data) {
+        send(channel, message, payload) {
             return this.messenger.send({
-                channel: channel,
-                message: message,
-                data: data
+                channel,
+                message,
+                payload
             });
         }
 
-        // The "short" versions of the message functions just use the raw
-        // messenger api, which expects an object argument.
-        rcv(spec) {
-            return this.messenger.receive(spec);
-        }
-
-        urcv(spec) {
-            return this.messenger.unreceive(spec);
-        }
-
-        snd(spec) {
-            return this.messenger.send(spec);
-        }
-
         drop(spec) {
-            this.urcv(spec);
+            return this.messenger.drop(spec);
         }
 
-        sendp(channel, message, data) {
+        sendp(channel, message, payload) {
             return this.messenger.sendPromise({
-                channel: channel,
-                message: message,
-                data: data
+                channel,
+                message,
+                payload
             });
         }
 

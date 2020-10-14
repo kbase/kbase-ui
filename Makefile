@@ -203,15 +203,12 @@ test: unit-tests
 
 test-travis: unit-tests travis-tests
 
-
 # Clean slate
 clean: clean-docs
 	$(GRUNT) clean-all
 
 clean-temp:
 	$(GRUNT) clean:temp
-
-
 
 clean-build:
 	$(GRUNT) clean-build

@@ -20,7 +20,7 @@ define([
     Hub,
     props,
     utils,
-    pluginConfig,
+    pluginsConfig,
     appConfigBase,
     deployConfig
 ) {
@@ -92,6 +92,16 @@ define([
                 }
             });
 
+        // recast the plugins as a map.
+        // We'll see how good this approach is when we
+        // convert this file to TS :)
+        const plugins = new Map();
+        Object.entries(pluginsConfig.plugins).map(([key, value]) => {
+            plugins.set(key, value);
+        });
+
+        console.log('plugins', plugins);
+
         const app = new Hub({
             appConfig: mergedConfig,
             nodes: {
@@ -99,7 +109,7 @@ define([
                     selector: '#root'
                 }
             },
-            plugins: pluginConfig.plugins,
+            plugins,
             services: mergedConfig.ui.services
         });
         global.setItem('app', app);
