@@ -1,15 +1,9 @@
 
 import { isJSONObject, JSONObject } from "./kb_lib/json";
+import { CustomError } from "./kb_lib/Utils";
 import { SimpleMap } from "./types";
 
-export class CustomError {
-    message: string;
-    name: string;
-    constructor(message: string) {
-        this.message = message;
-        this.name = 'CustomError';
-    }
-}
+
 
 export interface NotFoundExceptionParams {
     // original: string;
@@ -174,7 +168,7 @@ type QueryItemSpec =
 
 
 export interface RouteSpec {
-    path: string | Array<string>;
+    path: string;
     view: string;
     component: string;
     pluginName?: string; // TODO: make this a discriminated type: plugin, component
@@ -479,9 +473,9 @@ export class Router {
                 return pathConfig;
             }
 
-            if (Array.isArray(pathConfig)) {
-                return pathConfig.join('/');
-            }
+            // if (Array.isArray(pathConfig)) {
+            //     return pathConfig.join('/');
+            // }
             throw new Error('Path is not a string');
         })();
 

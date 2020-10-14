@@ -1,3 +1,11 @@
+export class CustomError {
+    message: string;
+    name: string;
+    constructor(message: string) {
+        this.message = message;
+        this.name = 'CustomError';
+    }
+}
 
 export const uniqueId = (() => {
     let genIdSerial: number = 0;
@@ -95,5 +103,36 @@ export function tryPromise<T>(callback: () => T): Promise<T> {
         } catch (ex) {
             reject(ex);
         }
+    });
+}
+
+interface UIErrorParams {
+    code: string;
+    type: string;
+    reason: string;
+    message: string;
+    blame: string;
+    suggestion: string;
+}
+
+export class UIError extends CustomError {
+    type: string;
+    reason: string;
+    blame: string;
+    code: string;
+    suggestion: string;
+    constructor({ type, reason, message, blame, code, suggestion }: UIErrorParams) {
+        super(message);
+        this.type = type;
+        this.reason = reason;
+        this.blame = blame;
+        this.code = code;
+        this.suggestion = suggestion;
+    }
+}
+
+export function stache(template: string, context: Map<string, string>) {
+    return template.replace(/{{(.*?)}}/g, (substring: string, key: string) => {
+        return context.get(key) || `** ${key} not found **`;
     });
 }

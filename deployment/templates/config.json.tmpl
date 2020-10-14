@@ -49,27 +49,23 @@
 				"menus": {
 					"hamburger": {
 						"sections": {
-							"main": {
-								"items": [{
-										"id": "narrative",
-										"auth": true
-									},
-                                    {
-                                        "id": "new-narrative",
-                                        "auth": true
-                                    },
-									{
-										"id": "jgi-search",
-										"auth": true
-									},
-									{
-										"id": "biochem-search",
-										"auth": false
-									}
-								]
-							},
-							"developer": {
-								"items": [{
+							"main": [{
+                                    "id": "narrative",
+                                    "auth": true
+                                },
+                                {
+                                    "id": "new-narrative",
+                                    "auth": true
+                                },
+                                {
+                                    "id": "jgi-search",
+                                    "auth": true
+                                },
+                                {
+                                    "id": "biochem-search",
+                                    "auth": false
+                            }],
+							"developer": [{
 									"id": "about-services",
 									"auth": true,
 									"allowRoles": [
@@ -99,10 +95,8 @@
 									"allowRoles": [
 										"DevToken"
 									]
-								}]
-							},
-							"help": {
-								"items": [{
+                            }],
+							"help": [{
 										"id": "about",
 										"auth": false
 									},
@@ -110,15 +104,12 @@
 										"id": "help",
 										"auth": false
 									}
-								]
-							}
-						},
+                            ]},
                         "disabled": [{{ range $i, $v := split .Env.ui_services_menu_hamburger_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
 					},
 					"sidebar": {
 						"sections": {
-							"main": {
-								"items": [{
+							"main": [{
 										"id": "dashboard",
 										"auth": true
 									},
@@ -147,9 +138,7 @@
 										"id": "feeds",
 										"auth": true
 									}
-								]
-							}
-						},
+                            ]},
                         "disabled": [{{ range $i, $v := split .Env.ui_services_menu_sidebar_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
 					}
 				}

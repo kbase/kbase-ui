@@ -8,10 +8,9 @@ define([
 ], (
     preact,
     htm,
-    DataPipe,
+    {DataPipe},
     Uuid
 ) => {
-
     const {h, Component, createRef, render} = preact;
     const html = htm.bind(h);
 

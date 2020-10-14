@@ -1,3 +1,4 @@
+import { stache } from '../../lib/kb_lib/Utils';
 import {
     Router, NotFoundException, RedirectException, RoutingLocation,
     RoutedRequest, NotFoundNoHashException,
@@ -248,6 +249,8 @@ export class RouteService {
     installRoute(route: RouteSpec, options: RouteOptions) {
         // TODO: improve typing by route type
         route.pluginName = options.pluginName;
+
+        route.path = stache(route.path, new Map<string, string>([['plugin', options.pluginName]]));
 
         if (route.component) {
             this.router.addRoute(route, options);
