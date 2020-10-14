@@ -89,9 +89,6 @@ export class PluginManager {
                     suggestion: 'This is a web app configuration issue, not a user error'
                 };
             }
-            // Temporary hack to allow older style plugin config.
-            // console.log('install into service', pluralTypeName, serviceDefinition, pluginDef, pluginConfig);
-            // TODO: fix
 
             // NB to avoid an empty call to installIntoService, just omit the
             // service from the install section.

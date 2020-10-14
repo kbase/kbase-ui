@@ -212,7 +212,6 @@ export class MenuService extends Service<MenuServiceConfig> {
         //         items: serviceConfig
         //     };
         // }
-        // console.log('[pluginHandler]', serviceConfig, pluginDef, pluginConfig);
 
         return tryPromise(() => {
             serviceConfig.items.forEach((menuItem) => {
@@ -236,9 +235,7 @@ export class MenuService extends Service<MenuServiceConfig> {
     }
 
     onChange(fun: (menuSystem: MenuSystem) => void) {
-        console.log('onChange 1');
         this.state.onChange((state: MenuSystem) => {
-            console.log('onChange 2', state);
             fun(state);
         });
     }

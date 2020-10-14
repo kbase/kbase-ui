@@ -136,7 +136,6 @@ define([
                     if (item.allowRoles) {
                         return intersect(item.allowRoles, userRoles);
                     }
-                    // console.log('allowing roles?', item);
                     return true;
                 });
             };

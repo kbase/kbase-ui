@@ -1,7 +1,5 @@
 
-import { getProp } from './props';
 import AsyncQueue from './asyncQueue';
-import { SimpleMap } from '../types';
 
 type Listener<T> = (value: T, oldValue: T | undefined) => void;
 
@@ -43,36 +41,6 @@ export class Observed<T> {
         this.listeners = newListeners;
     }
 
-    // modifyItem(key, modifier) {
-    //     var oldState = props.getProp(this.state, key),
-    //         newValue = modifier(oldState.value),
-    //         newListeners = [];
-    //     if (this.listeners[key]) {
-    //         this.listeners[key].forEach((item) => {
-    //             this.queue.addItem({
-    //                 onRun: ((fun, value, oldvalue) => {
-    //                     return () => {
-    //                         try {
-    //                             fun(value, oldvalue);
-    //                         } catch (ex) {
-    //                             //TODO: need a sensible way to manage exception reporting.
-    //                             //console.log('EX running onrun handler');
-    //                             //console.log(ex);
-    //                         }
-    //                     };
-    //                 })(item.onSet, newValue, oldState && oldState.value)
-    //             });
-    //             if (!item.oneTime) {
-    //                 newListeners.push(item);
-    //             }
-    //         });
-    //         this.listeners[key] = newListeners;
-    //     }
-
-    //     props.setProp(this.state, key, { status: 'set', value: newValue, time: new Date() });
-    //     return this;
-    // }
-
     getValue() {
         return this.value;
     }
@@ -98,34 +66,6 @@ export class Observed<T> {
         });
         return promise;
     }
-
-    // whenItem(key, timeout) {
-    //     var p = new Promise((resolve, reject) => {
-    //         if (props.hasProp(this.state, key)) {
-    //             var item = props.getProp(this.state, key);
-    //             if (item.status === 'error') {
-    //                 reject(item.error);
-    //             } else {
-    //                 resolve(item.value);
-    //             }
-    //         } else {
-    //             this.listenForItem(key, {
-    //                 oneTime: true,
-    //                 addedAt: new Date().getTime(),
-    //                 onSet: (value) => {
-    //                     resolve(value);
-    //                 },
-    //                 onError: (err) => {
-    //                     reject(err);
-    //                 }
-    //             });
-    //         }
-    //     });
-    //     if (timeout) {
-    //         return p.timeout(timeout);
-    //     }
-    //     return p;
-    // }
 }
 
 
