@@ -100,8 +100,6 @@ define([
             plugins.set(key, value);
         });
 
-        console.log('plugins', plugins);
-
         const app = new Hub({
             appConfig: mergedConfig,
             nodes: {

@@ -1203,7 +1203,6 @@
                                 if (vfsContent) {
                                     var head = document.getElementsByTagName('head')[0];
                                     var style = document.createElement('style');
-                                    // console.log('style used: ', barePath, vfsContent.length);
                                     head.appendChild(style);
                                     style.innerText = vfsContent;
                                     load();
@@ -1477,7 +1476,7 @@
                     each(cfg.packages, function (pkgObj) {
                         var location, name;
 
-                        pkgObj = typeof pkgObj === 'string' ? { name: pkgObj } : pkgObj;
+                        pkgObj = typeof pkgObj === 'string' ? {name: pkgObj} : pkgObj;
 
                         name = pkgObj.name;
                         location = pkgObj.location;

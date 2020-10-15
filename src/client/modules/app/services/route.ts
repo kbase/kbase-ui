@@ -189,17 +189,24 @@ export class RouteService {
         if (routed.params.nextrequest && routed.params.nextrequest.type === 'string') {
             try {
                 // TODO: hmm, maybe multi-typed params is not a good idea?
+                // TODO: narrative will set the nextrequest param to a string
+                // which begins with /narrative.
                 const nextRequest = JSON.parse(routed.params.nextrequest.value);
-                if (nextRequest.path.match(/^\/narrative/)) {
-                    // routed.route.authorization = true;
-                    routed.params.source = {
-                        name: 'source',
-                        type: 'string',
-                        value: 'authorization'
-                    };
+                if (typeof nextRequest.path === 'string') {
+                    if (nextRequest.path.match(/^\/narrative/)) {
+                        // routed.route.authorization = true;
+                        routed.params.source = {
+                            name: 'source',
+                            type: 'string',
+                            value: 'authorization'
+                        };
+                    }
+                    nextRequest.path = nextRequest.path.split('/').slice(1);
+                    nextRequest.original = nextRequest.path;
+                } else {
+                    nextRequest.original = nextRequest.path.join('/');
                 }
-                nextRequest.original = nextRequest.path;
-                nextRequest.path = nextRequest.path.split('/').slice(1);
+
                 routed.params.nextrequest.value = JSON.stringify(nextRequest);
             } catch (ex) {
                 console.warn('Bad nextrequest', routed.params.nextrequest, ex);

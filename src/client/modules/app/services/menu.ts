@@ -94,81 +94,12 @@ export class MenuService extends Service<MenuServiceConfig> {
         });
     }
 
-    /*
-     * Adds a new menu item to the catalog of available menu items.
-     */
-    // addToMenu(menuItemConfig: MenuItemConfig) {
-
-
-    //     // const menuItems = this.state.getItem('menuItems');
-    //     // const menuItemDef = menuItems[menuItemConfig.id];
-
-    //     // if (!menuItemDef) {
-    //     //     throw {
-    //     //         type: 'InvalidKey',
-    //     //         reason: 'MenuItemNotFound',
-    //     //         message: 'The menu item key provided, "' + menuItemConfig.id + '", is not registered'
-    //     //     };
-    //     // }
-
-    //     // let path;
-    //     // if (menuItemDef.path) {
-    //     //     if (typeof menuItemDef.path === 'string') {
-    //     //         path = menuItemDef.path;
-    //     //     } else if (menuItemDef.path instanceof Array) {
-    //     //         path = menuItemDef.path.join('/');
-    //     //     } else {
-    //     //         console.error('Invalid path for menu item', menuItemDef);
-    //     //         throw new Error('Invalid path for menu item');
-    //     //     }
-    //     // }
-    //     // const menuItem = {
-    //     //     // These are from the plugin's menu item definition
-    //     //     id: menuItemDef.id,
-    //     //     label: menuItemConfig.label || menuItemDef.label,
-    //     //     path: path,
-    //     //     icon: menuItemDef.icon,
-    //     //     uri: menuItemDef.uri,
-    //     //     newWindow: menuItemDef.newWindow,
-    //     //     beta: menuItemDef.beta || false,
-    //     //     // These are from the ui menu item spec
-    //     //     // allow: menuItemConfig.allow || null,
-    //     //     allowRoles: menuItemConfig.allowRoles || null,
-    //     //     authRequired: menuItemConfig.auth ? true : false
-    //     // };
-
-    //     // const menu = menuEntry.menu;
-    //     // const section = menuEntry.section;
-    //     // const position = menuEntry.position || 'bottom';
-
-    //     // this.state.update((state: MenuSystem) => {
-    //     //     // 'menu.' + menu, 
-    //     //     const menu = state.menuItems.
-    //     //     if (!menus[section]) {
-    //     //         console.error('ERROR: Menu section not defined', menuEntry, menu, section, menus);
-    //     //         throw new Error('Menu section not defined: ' + section);
-    //     //     }
-    //     //     if (position === 'top') {
-    //     //         menus[section].unshift(menuItem);
-    //     //     } else {
-    //     //         menus[section].push(menuItem);
-    //     //     }
-    //     //     // return menus;
-    //     //     return state;
-    //     // });
-    // }
-
-    // getCurrentMenu(menu) {
-    //     menu = menu || 'hamburger';
-    //     return this.state.getItem('menu.' + menu);
-    // }
-
     getMenuSection(section: Array<MenuItemConfig>, state: MenuSystem) {
         return section.map((menuItem) => {
             // TODO: filter menu items.
             const menuDef = state.menuItems.get(menuItem.id);
             if (!menuDef) {
-                console.warn('Menu definition not found', menuItem, Array.from(state.menuItems));
+                // console.warn('Menu definition not found', menuItem, Array.from(state.menuItems));
                 return;
             }
 
@@ -207,21 +138,9 @@ export class MenuService extends Service<MenuServiceConfig> {
         if (!serviceConfig) {
             return;
         }
-        // if (Array.isArray(serviceConfig)) {
-        //     serviceConfig = {
-        //         items: serviceConfig
-        //     };
-        // }
-        // console.log('[pluginHandler]', serviceConfig, pluginDef, pluginConfig);
 
         return tryPromise(() => {
             serviceConfig.items.forEach((menuItem) => {
-                // TODO: maybe just store the whole menu from
-                // the plugin config?
-                // menu.id = menu.name;
-                // if (serviceConfig.mode === 'auto') {
-                //     menu.path.unshift(pluginDef.package.name);
-                // }
                 // Not all plugins will have the "type", and I'm not comfortable necessarily with
                 // exposing TS' discriminated union typing...
                 if (typeof menuItem.type === 'undefined' && 'path' in menuItem) {
@@ -236,9 +155,7 @@ export class MenuService extends Service<MenuServiceConfig> {
     }
 
     onChange(fun: (menuSystem: MenuSystem) => void) {
-        console.log('onChange 1');
         this.state.onChange((state: MenuSystem) => {
-            console.log('onChange 2', state);
             fun(state);
         });
     }
@@ -246,68 +163,6 @@ export class MenuService extends Service<MenuServiceConfig> {
     start() {
         return Promise.resolve();
     }
-
-    // SERVICE API
-    // initialize() {
-    //     // The hamburger menu.
-    //     const menu = menus.hamburger;
-    //     menu.section.main.items.forEach((menuItem) => {
-    //         if (menuItem.disabled) {
-    //             return;
-    //         }
-    //         if (menu.disabled.includes(menuItem.id)) {
-    //             return;
-    //         }
-    //         this.addToMenu(menuItem);
-    //         //     {
-    //         //         menu,
-    //         //         section: menu.section,
-    //         //         position: 'bottom'
-    //         //         // allow: menuItem.allow
-    //         //     },
-
-    //         // );
-
-    //     });
-
-    //     Object.entries(menus)
-    //         .forEach(([menuDef]) => {
-    //             // Skip a menu with no sections
-    //             if (!menuDef.sections) {
-    //                 return;
-    //             }
-    //             Object.entries(menuDef.sections)
-    //                 .forEach(([section, sectionDef]) => {
-    //                     // Skip sections with no items.
-    //                     if (!sectionDef) {
-    //                         return;
-    //                     }
-    //                     if (!sectionDef.items) {
-    //                         return;
-    //                     }
-    //                     const items = sectionDef.items;
-    //                     const disabled = menuDef.disabled || [];
-    //                     items.forEach((menuItem) => {
-    //                         if (menuItem.disabled) {
-    //                             return;
-    //                         }
-    //                         if (disabled.indexOf(menuItem.id) >= 0) {
-    //                             return;
-    //                         }
-    //                         this.addToMenu(menuItem);
-    //                         //     {
-    //                         //         menu: menu,
-    //                         //         section: section,
-    //                         //         position: 'bottom',
-    //                         //         allow: menuItem.allow
-    //                         //     },
-
-    //                         // );
-    //                     });
-    //                 });
-    //         });
-    //     return Promise.resolve();
-    // }
 
     stop() {
         return Promise.resolve();

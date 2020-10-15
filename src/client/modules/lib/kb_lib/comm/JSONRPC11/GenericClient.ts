@@ -19,7 +19,11 @@ export class GenericClient {
         this.module = module;
     }
     async callFunc<ParamType, ReturnType>(funcName: string, params: ParamType): Promise<ReturnType> {
-        const client = new JSONRPCClient({ url: this.url, timeout: this.timeout, authorization: this.authorization });
+        const client = new JSONRPCClient({
+            url: this.url,
+            timeout: this.timeout,
+            authorization: this.authorization
+        });
         const method = `${this.module}.${funcName}`;
         const result = await client.callMethod(method, [params], { timeout: this.timeout });
 
@@ -30,7 +34,11 @@ export class GenericClient {
         return (result[0] as unknown) as ReturnType;
     }
     async callFuncEmptyResult<ParamType, ReturnType>(funcName: string, params: ParamType): Promise<void> {
-        const client = new JSONRPCClient({ url: this.url, timeout: this.timeout, authorization: this.authorization });
+        const client = new JSONRPCClient({
+            url: this.url,
+            timeout: this.timeout,
+            authorization: this.authorization
+        });
         const method = `${this.module}.${funcName}`;
         const result = await client.callMethod(method, [params], { timeout: this.timeout });
 

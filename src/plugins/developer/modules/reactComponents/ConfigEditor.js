@@ -7,7 +7,7 @@ define([
     htm
 ) => {
 
-    const { h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     class ConfigEditor extends Component {

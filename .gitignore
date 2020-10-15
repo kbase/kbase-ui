@@ -46,8 +46,3 @@ docker-compose.override.yml
 
 # working files when doing gh-pages and develop development
 /_site
-
-# Only here during the refactor to typescript
-src/client/modules/app/services/route.js 
-src/client/modules/lib/router.js 
-src/client/modules/lib/json.js 

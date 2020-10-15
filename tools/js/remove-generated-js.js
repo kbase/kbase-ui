@@ -10,12 +10,16 @@ async function main() {
     files.forEach(async (file) => {
         const [, base] = /^(.*)[.]ts$/.exec(file);
         if (!base) {
-            console.warn('weird, not a js file?', file);
+            console.warn('weird, not a ts file?', file);
             return;
         }
         const jsFile = `${base}.js`;
-        await fs.unlink(jsFile);
-        mutant.success(`Removed ${jsFile}`);
+        if (! await fs.pathExists(jsFile)) {
+            mutant.warn(`Not found, ignored: ${jsFile}`);
+        } else {
+            await fs.unlink(jsFile);
+            mutant.success(`Removed ${jsFile}`);
+        }
     });
 }
 

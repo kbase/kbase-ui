@@ -1,6 +1,6 @@
 import { ServiceWizardClient, GetServiceStatusResult, ServiceStatus } from '../coreServices/ServiceWizard';
-import { ServiceClient, ServiceClientParams } from './ServiceClient';
 import Cache from '../Cache';
+import { JSONRPCClient } from './JSONRPC11';
 
 const ITEM_LIFETIME = 1800000;
 const MONITORING_FREQUENCY = 60000;
@@ -34,32 +34,34 @@ var moduleCache = new Cache<ServiceStatus>({
  * rpcContext
  */
 
-export interface DynamicServiceClientParams extends ServiceClientParams {
+export interface DynamicServiceClientParams {
+    module: string;
+    url: string;
+    timeout: number;
+    authorization: string;
     version?: string;
-    // module: string;
 }
 
 
-export abstract class DynamicServiceClient extends ServiceClient {
+export class DynamicServiceGenericClient {
     version: string | null;
 
-    abstract module: string;
+    url: string;
+    serviceDiscoveryModule: string = 'ServiceWizard';
+    module: string;
+    timeout: number;
+    authorization: string;
 
-    // upstreamURL: string;
-    // serviceDiscoveryModule: string = 'ServiceWizard';
-
-    constructor(params: DynamicServiceClientParams) {
-        super(params);
-        const { version } = params;
-
-
+    constructor({ module, url, timeout, authorization, version }: DynamicServiceClientParams) {
         this.version = version || null;
         if (this.version === 'auto') {
             this.version = null;
         }
 
-        // this.serviceDiscoveryURL = params.url;
-        // this.module = module;
+        this.url = url;
+        this.module = module;
+        this.timeout = timeout;
+        this.authorization = authorization;
     }
 
     private moduleId() {
@@ -88,7 +90,7 @@ export abstract class DynamicServiceClient extends ServiceClient {
         const moduleInfo = await this.getCached(
             (): Promise<GetServiceStatusResult> => {
                 const client = new ServiceWizardClient({
-                    url: this.url,
+                    url: this.url!,
                     authorization: this.authorization,
                     timeout: this.timeout
                 });
@@ -120,13 +122,47 @@ export abstract class DynamicServiceClient extends ServiceClient {
     //     return await client.callFunc<P, T>(funcName, params);
     // }
 
+    // async callFunc<ParamType, ReturnType>(funcName: string, params: ParamType): Promise<ReturnType> {
+    //     await this.lookupModule();
+    //     return super.callFunc(funcName, params);
+    // }
+    // async callFuncEmptyResult<ParamType, ReturnType>(funcName: string, params: ParamType): Promise<void> {
+    //     await this.lookupModule();
+    //     return super.callFuncEmptyResult(funcName, params);
+    // }
+
     async callFunc<ParamType, ReturnType>(funcName: string, params: ParamType): Promise<ReturnType> {
-        await this.lookupModule();
-        return super.callFunc(funcName, params);
+        const moduleInfo = await this.lookupModule();
+        const client = new JSONRPCClient({
+            url: moduleInfo.url,
+            timeout: this.timeout,
+            authorization: this.authorization
+        });
+        const method = `${this.module}.${funcName}`;
+        const result = await client.callMethod(method, [params], { timeout: this.timeout });
+
+        if (result.length === 0) {
+            throw new Error('Too few (0) return values in return array');
+        }
+
+        return (result[0] as unknown) as ReturnType;
     }
+
     async callFuncEmptyResult<ParamType, ReturnType>(funcName: string, params: ParamType): Promise<void> {
-        await this.lookupModule();
-        return super.callFuncEmptyResult(funcName, params);
+        const moduleInfo = await this.lookupModule();
+        const client = new JSONRPCClient({
+            url: moduleInfo.url,
+            timeout: this.timeout,
+            authorization: this.authorization
+        });
+        const method = `${this.module}.${funcName}`;
+        const result = await client.callMethod(method, [params], { timeout: this.timeout });
+
+        if (result.length !== 0) {
+            throw new Error(`Too many (${result.length}) return values in return array`);
+        }
+
+        return;
     }
 }
 

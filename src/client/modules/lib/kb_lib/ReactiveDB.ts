@@ -45,7 +45,7 @@ export class ReactiveDB {
     }
 
     runQuery(query: Query) {
-        const dbValue = this.db.getItem<any>(query.path, undefined);
+        const dbValue = this.db.getItem<any>(query.path);
         if (typeof dbValue === 'undefined') {
             return;
         }
@@ -90,7 +90,7 @@ export class ReactiveDB {
     }
 
     get(path: string, defaultValue: any) {
-        return this.db.getItem(path, defaultValue);
+        return this.db.getItemWithDefault(path, defaultValue);
     }
 
     subscribe(query: Query, callback: () => void) {
