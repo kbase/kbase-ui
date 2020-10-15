@@ -168,7 +168,7 @@ define([
                         .done();
                 });
 
-                this.runtime.getService('session').onChange((loggedIn) => {
+                this.runtime.service('session').onChange((loggedIn) => {
                     if (loggedIn) {
                         this.loadProfile()
                             .then((profile) => {

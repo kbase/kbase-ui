@@ -41,6 +41,12 @@ define([
             this.state = {
                 menu: this.computeMenu()
             };
+
+            this.menuService.onChange(() => {
+                this.setState({
+                    menu: this.computeMenu()
+                });
+            });
         }
 
         componentDidMount() {

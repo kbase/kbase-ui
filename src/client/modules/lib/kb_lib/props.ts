@@ -1,7 +1,27 @@
 
 type PropPath = Array<string> | string;
 
-export function getProp<T>(obj: any, propPath: PropPath, defaultValue?: T): T | undefined {
+export function getProp<T>(obj: any, propPath: PropPath): T | undefined {
+    if (typeof propPath === 'string') {
+        propPath = propPath.split('.');
+    } else if (!(propPath instanceof Array)) {
+        throw new TypeError('Invalid type for key: ' + (typeof propPath));
+    }
+    for (let i = 0; i < propPath.length; i += 1) {
+        if ((obj === undefined) ||
+            (typeof obj !== 'object') ||
+            (obj === null)) {
+            return undefined;
+        }
+        obj = obj[propPath[i]];
+    }
+    if (typeof obj === 'undefined') {
+        return undefined;
+    }
+    return obj as T;
+}
+
+export function getPropWithDefault<T>(obj: any, propPath: PropPath, defaultValue: T): T {
     if (typeof propPath === 'string') {
         propPath = propPath.split('.');
     } else if (!(propPath instanceof Array)) {
@@ -15,7 +35,7 @@ export function getProp<T>(obj: any, propPath: PropPath, defaultValue?: T): T | 
         }
         obj = obj[propPath[i]];
     }
-    if (obj === undefined) {
+    if (typeof obj === 'undefined') {
         return defaultValue;
     }
     return obj as T;
@@ -66,8 +86,6 @@ export function setProp<T>(obj: any, propPath: PropPath, value: T) {
     // Finally set the property.
     obj[propKey] = value;
 }
-
-
 
 export function incrProp(obj: any, propPath: PropPath, increment?: number): number {
     if (typeof propPath === 'string') {
@@ -132,8 +150,12 @@ export class Props {
         this.obj = typeof data === 'undefined' ? {} : data;
     }
 
-    getItem<T>(props: PropPath, defaultValue: T) {
-        return getProp<T>(this.obj, props, defaultValue);
+    getItemWithDefault<T>(props: PropPath, defaultValue: T) {
+        return getPropWithDefault<T>(this.obj, props, defaultValue);
+    }
+
+    getItem<T>(props: PropPath) {
+        return getProp<T>(this.obj, props);
     }
 
     hasItem(propPath: PropPath) {

@@ -14,17 +14,15 @@ define([
     'lib/kbaseServiceManager',
     './runtime',
     'lib/messenger',
-    'kb_lib/props',
     'reactComponents/MainWindow/view'
 ], (
     preact,
     htm,
     {PluginManager},
-    AppServiceManager,
+    {AppServiceManager},
     kbaseServiceManager,
-    Runtime,
+    {Runtime},
     {Messenger},
-    props,
     MainWindow
 ) => {
     const html = htm.bind(preact.h);
@@ -71,10 +69,6 @@ define([
             this.services = params.services;
             this.nodes = params.nodes;
 
-            // We simply wrap the incoming props in our venerable Props thing.
-            this.appConfig = new props.Props({
-                data: params.appConfig
-            });
 
             // The entire ui (from the app's perspective) hinges upon a single
             // root node, which must already be established by the
@@ -99,7 +93,7 @@ define([
             });
 
             this.runtime = new Runtime({
-                config: this.appConfig,
+                config: params.appConfig,
                 messenger: this.messenger,
                 serviceManager: this.appServiceManager
             });
@@ -166,15 +160,15 @@ define([
                     runtime: this.runtime
                 })
                 .then(() => {
-                    return this.pluginManager.installPlugins(this.plugins);
-                })
-                .then(() => {
                     if (CHECK_CORE_SERVICES) {
                         return this.checkCoreServices();
                     }
                 })
                 .then(() => {
                     return this.appServiceManager.startServices();
+                })
+                .then(() => {
+                    return this.pluginManager.installPlugins(this.plugins);
                 })
                 .then(() => {
                     return this.mountRootComponent();

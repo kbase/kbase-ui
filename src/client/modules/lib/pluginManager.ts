@@ -93,7 +93,7 @@ export class PluginManager {
             // NB to avoid an empty call to installIntoService, just omit the
             // service from the install section.
             if (serviceDefinition) {
-                const service = this.runtime.getService(typeName);
+                const service = this.runtime.service(typeName);
                 if (service.pluginHandler) {
                     return service.pluginHandler(serviceDefinition, pluginDef, pluginConfig);
                 }

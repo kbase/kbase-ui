@@ -31,7 +31,7 @@ interface Subscription {
     handler: (payload: any) => void;
 }
 
-interface SubscriptionRef {
+export interface SubscriptionRef {
     id: string;
     channelName: string;
     message: string;

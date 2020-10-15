@@ -2,7 +2,7 @@ define([
     'preact',
     'htm',
     'uuid',
-    './windowChannel',
+    '../lib/kb_lib/windowChannel',
     'kb_lib/httpUtils',
     './AutoPostForm',
     './IFrame',
@@ -12,7 +12,7 @@ define([
     preact,
     htm,
     Uuid,
-    WindowChannel,
+    {WindowChannel},
     httpUtils,
     AutoPostForm,
     IFrame
