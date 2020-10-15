@@ -13,7 +13,7 @@ define([
         a = t('a');
 
     class SessionService {
-        constructor({ config, params: { runtime } }) {
+        constructor({config, params: {runtime}}) {
             this.runtime = runtime;
             this.extraCookies = [];
             if (config.cookie.backup.enabled) {
@@ -208,5 +208,5 @@ define([
             return this.auth2Session;
         }
     }
-    return { ServiceClass: SessionService };
+    return {ServiceClass: SessionService};
 });

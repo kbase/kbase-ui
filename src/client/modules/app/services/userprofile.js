@@ -15,7 +15,7 @@ define([
 ) => {
 
     class UserProfileService {
-        constructor({ params: { runtime } }) {
+        constructor({params: {runtime}}) {
             this.runtime = runtime;
             this.state = new Observed();
         }
@@ -168,7 +168,7 @@ define([
                         .done();
                 });
 
-                this.runtime.getService('session').onChange((loggedIn) => {
+                this.runtime.service('session').onChange((loggedIn) => {
                     if (loggedIn) {
                         this.loadProfile()
                             .then((profile) => {
@@ -246,5 +246,5 @@ define([
             return this.state.whenItem('userprofile');
         }
     }
-    return { ServiceClass: UserProfileService };
+    return {ServiceClass: UserProfileService};
 });

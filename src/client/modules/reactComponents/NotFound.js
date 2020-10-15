@@ -8,7 +8,7 @@ define([
     htm
 ) => {
 
-    const {h, Component, Fragment } = preact;
+    const {h, Component, Fragment} = preact;
     const html = htm.bind(h);
 
     const REDIRECT_IF_FOUND = true;
@@ -48,7 +48,7 @@ define([
         }
 
         async checkSites() {
-            const request = this.props.params.request;
+            const request = this.props.request;
             if (!TRY_UPSTREAM_SITES) {
                 console.warn('not trying upstream sites', request);
                 if (request.realPath.length === 1 &&
@@ -204,7 +204,7 @@ define([
         renderExistsOnMarketingSite() {
             const marketingURL = new URL(`https://${this.props.runtime.config('ui.services.route.urls.marketing')}/${this.state.path}`);
             const query = marketingURL.searchParams;
-            Object.entries(this.props.params.request.query).forEach(([key, value]) => {
+            Object.entries(this.props.request.query).forEach(([key, value]) => {
                 query.set(key, value);
             });
 
@@ -234,7 +234,7 @@ define([
         renderExistsOnOutreachSite() {
             const marketingURL = new URL(`https://${this.props.runtime.config('ui.services.route.urls.marketing')}/${this.state.path}`);
             const query = marketingURL.searchParams;
-            Object.entries(this.props.params.request.query).forEach(([key, value]) => {
+            Object.entries(this.props.request.query).forEach(([key, value]) => {
                 query.set(key, value);
             });
 
@@ -264,7 +264,7 @@ define([
         renderExistsOnDocsSite() {
             const docsURL = new URL(`https://${this.props.runtime.config('ui.services.route.urls.documentation')}/${this.state.path}`);
             const query = docsURL.searchParams;
-            Object.entries(this.props.params.request.query).forEach(([key, value]) => {
+            Object.entries(this.props.request.query).forEach(([key, value]) => {
                 query.set(key, value);
             });
 
@@ -338,7 +338,7 @@ define([
         }
 
         renderLoading() {
-            const path = this.props.params.request.realPath.join('/');
+            const path = this.props.request.realPath.join('/');
             this.props.runtime.send('ui', 'setTitle', `Not Found - ${path}`);
             const messages = this.state.messages.map((message) => {
                 return html`

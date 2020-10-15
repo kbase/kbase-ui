@@ -8,7 +8,7 @@ define([
     Uuid
 ) => {
 
-    const { h, Component, createRef } = preact;
+    const {h, Component, createRef} = preact;
     const html = htm.bind(h);
 
     class AutoPostForm extends Component {
@@ -24,7 +24,7 @@ define([
             this.ref.current.submit();
         }
         render() {
-            const { params, action } = this.props;
+            const {params, action} = this.props;
             const id = new Uuid(4).format();
             const formID = `html_${id}`;
 
@@ -43,7 +43,7 @@ define([
                   ref=${this.ref}
                   id=${formID}
                   action=${action}
-                  style=${{ display: 'hidden' }}
+                  style=${{display: 'hidden'}}
                   >
                 ${paramInputs}
             </form>

@@ -9,7 +9,7 @@ define([
     htm
 ) => {
 
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     class About extends Component {
@@ -136,7 +136,7 @@ define([
                 timeZoneName: 'short'
             }).format(new Date(buildInfo.builtAt));
             const contactUrl = this.props.runtime.config('resources.contact.url');
-            const helpUrl = this.props.runtime.config('resources.help.url');
+            // const helpUrl = this.props.runtime.config('resources.help.url');
             const aboutKBase = this.props.runtime.config('resources.documentation.aboutKBase.url');
 
             const uiDocumentationUrl = 'http://kbaseincubator.github.io/kbase-ui-docs';

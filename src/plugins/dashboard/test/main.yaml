@@ -1,0 +1,17 @@
+---
+description: Dashboard plugin
+specs:
+  - description: ""
+    baseSelector:
+      - type: plugin
+        value: dashboard
+    tasks:
+      - action: navigate
+        path: dashboard
+      - wait: forText
+        timeout: 5000
+        text: Dashboard
+        selector:
+          - type: raw
+            name: data-element
+            value: title

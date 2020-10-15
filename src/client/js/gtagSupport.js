@@ -2,13 +2,16 @@
  * Google Analytics Code snippet and supporting logic.
  */
 (function () {
+    const SESSION_COOKIE_NAME = 'kbase_session';
+    const PROD_UI_ORIGIN= 'https://narrative.kbase.us';
+    const PROD_SERVICE_ORIGIN = 'https://kbase.us';
     /**
      * fetch user info.
      * @param {string} token
      */
     function getServiceOrigin() {
-        if (document.location.origin === 'https://narrative.kbase.us') {
-            return 'https://kbase.us';
+        if (document.location.origin === PROD_UI_ORIGIN) {
+            return PROD_SERVICE_ORIGIN;
         }
         return document.location.origin;
     }
@@ -45,11 +48,13 @@
         if (!document.cookie) {
             return null;
         }
-        const cookiesArr = document.cookie.split(';');
-        for (let i = 0; i < cookiesArr.length; i += 1) {
-            const cookie = cookiesArr[i];
-            if (cookie.includes('kbase_session')) {
-                return cookie.slice(cookie.indexOf('=') + 1);
+        const cookies = document.cookie.split(';')
+            .map((item) => { return item.trim();});
+
+        for (const cookie of cookies) {
+            const [name, value] = cookie.split('=');
+            if (name === SESSION_COOKIE_NAME) {
+                return value;
             }
         }
         return null;
@@ -85,19 +90,20 @@
         // if cookies are set, get user name to add to config.
         const token = getToken();
         if (token) {
-            fetchUserInfo(token).then((username) => {
-                pushGTag('js', new Date());
-                pushGTag('config', 'UA-137652528-1', {
-                    user_id: username,
-                    page_location: document.location.href,
-                    page_path: path,
-                    page_title: document.title
+            fetchUserInfo(token)
+                .then((username) => {
+                    pushGTag('js', new Date());
+                    pushGTag('config', 'UA-137652528-1', {
+                        user_id: username,
+                        page_location: document.location.href,
+                        page_path: path,
+                        page_title: document.title
+                    });
+                    pushGTag('set', {
+                        user_id: username
+                    });
+                    pushGTag('config', 'AW-753507180');
                 });
-                pushGTag('set', {
-                    user_id: username
-                });
-                pushGTag('config', 'AW-753507180');
-            });
         } else {
             pushGTag('js', new Date());
             pushGTag('config', 'UA-137652528-1', {

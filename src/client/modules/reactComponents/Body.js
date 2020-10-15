@@ -8,11 +8,10 @@ define([
 ], (
     preact,
     htm,
-    DataPipe,
+    {DataPipe},
     Uuid
 ) => {
-
-    const {h, Component, createRef, render } = preact;
+    const {h, Component, createRef, render} = preact;
     const html = htm.bind(h);
 
     class PluginComponent {
@@ -35,7 +34,28 @@ define([
 
         setupForComponent() {
             this.routeComponentListener = this.props.runtime.receive('app', 'route-component', (routed) => {
-                const { params, route } = routed.routeHandler;
+                const {routeHandler: {params, route, request}} = routed;
+
+                // The params from the routed object are of type RequestParams; these are
+                // structured params, but when we send them to a the route components we send
+                // then as simple params.
+                const paramsToSend = Object.entries(params).reduce((params, [key, {type, value}]) => {
+                    switch (type) {
+                    case 'string':
+                        params[key] = value;
+                        break;
+                    case 'rest':
+                        params[key] = value.join(',');
+                        break;
+                    default:
+                        throw new Error(`Invalid param type ${type}`);
+                    }
+
+                    return params;
+                }, {});
+
+                // To support older plugins
+                paramsToSend.view = route.view;
 
                 if (this.nodeRef.current === null) {
                     return;
@@ -51,15 +71,15 @@ define([
 
                     this.pluginComponent.pipe.put({
                         view: route.view,
-                        params
+                        params: paramsToSend
                     });
                     return;
                 }
 
-                this.pluginComponent = new PluginComponent(params.plugin, route.component);
+                this.pluginComponent = new PluginComponent(route.pluginName, route.component);
                 this.pluginComponent.pipe.put({
                     view: route.view,
-                    params
+                    params: paramsToSend
                 });
 
                 const module = (() => {
@@ -68,7 +88,7 @@ define([
                     } else {
                         return [
                             'plugins',
-                            params.plugin,
+                            route.pluginName,
                             'modules',
                             route.component
                         ].join('/');
@@ -77,10 +97,12 @@ define([
 
                 require([module], (Component) => {
                     const props = {
+                        request,
                         runtime: this.props.runtime,
                         pipe: this.pluginComponent.pipe,
                         view: route.view,
-                        params,
+                        params: paramsToSend,
+                        pluginName: route.pluginName,
                         key: new Uuid(4).format()
                     };
 

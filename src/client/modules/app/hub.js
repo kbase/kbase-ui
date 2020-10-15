@@ -19,7 +19,7 @@ define(['./App'], function (App) {
             return this.app.start()
                 .then((runtime) => {
                     // kick off handling of the current route.
-                    runtime.send('app', 'do-route');
+                    runtime.send('app', 'do-route', true);
 
                     // TODO: detect if already on signedout page.
                     // TODO: this behavior should be defined in the main app
