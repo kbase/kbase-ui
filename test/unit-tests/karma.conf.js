@@ -60,7 +60,7 @@ module.exports = function (config) {
         // Note that we exclude all of the external modules (bower_components).
         // TODO: We may want to find a way to evaluate dependency test coverage at some point.
         preprocessors: {
-            'build/build/client/modules/!(bower_components|plugins)/**/*.js': ['coverage']
+            'build/build/client/modules/!(plugins)/**/*.js': ['coverage']
             // 'build/build/client/modules/**/*.js': ['coverage']
         },
 

@@ -5,7 +5,7 @@ define([
     'kb_lib/props',
     '../lib/utils',
 
-    'yaml!config/plugin.yml',
+    'json!config/plugins.json',
     'json!config/config.json',
     'json!deploy/config.json',
 
@@ -20,11 +20,10 @@ define([
     Hub,
     props,
     utils,
-    pluginConfig,
+    pluginsConfig,
     appConfigBase,
     deployConfig
 ) {
-    'use strict';
 
     // Set up global configuration of bluebird promises library.
     // This is the first invocation of bluebird.
@@ -93,6 +92,14 @@ define([
                 }
             });
 
+        // recast the plugins as a map.
+        // We'll see how good this approach is when we
+        // convert this file to TS :)
+        const plugins = new Map();
+        Object.entries(pluginsConfig.plugins).map(([key, value]) => {
+            plugins.set(key, value);
+        });
+
         const app = new Hub({
             appConfig: mergedConfig,
             nodes: {
@@ -100,12 +107,12 @@ define([
                     selector: '#root'
                 }
             },
-            plugins: pluginConfig.plugins,
+            plugins,
             services: mergedConfig.ui.services
         });
         global.setItem('app', app);
         return app.start();
     }
 
-    return { start };
+    return {start};
 });

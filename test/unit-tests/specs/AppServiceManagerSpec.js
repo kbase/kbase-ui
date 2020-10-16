@@ -2,7 +2,6 @@
 define([
     'lib/appServiceManager'
 ], function (App) {
-    'use strict';
 
     describe('Check out the AppServiceManager module exists', function () {
         it('module loads', function (done) {
@@ -16,7 +15,6 @@ define([
     //         var rootNode = document.createElement('div');
     //         rootNode.id = 'myrootnode';
     //         document.body.appendChild(rootNode);
-    //         // console.log('hmm, ', rootNode, document.querySelector('#myrootnode'));
     //         var app = App.make({
     //             appConfig: {
     //                 some: 'property'

@@ -2,7 +2,6 @@
 define([
     'app/App'
 ], function (App) {
-    'use strict';
 
     describe('Check out the App module exists', function () {
         it('module loads', function (done) {
@@ -16,7 +15,6 @@ define([
             const rootNode = document.createElement('div');
             rootNode.id = 'myrootnode';
             document.body.appendChild(rootNode);
-            // console.log('hmm, ', rootNode, document.querySelector('#myrootnode'));
             const app = new App({
                 appConfig: {
                     some: 'property'

@@ -20,24 +20,24 @@ requirejs.config({
     // TODO: bring these in programmatically
     paths: {
         bluebird: 'node_modules/bluebird/bluebird',
-        bootstrap_css: 'bower_components/bootstrap/css/bootstrap',
-        bootstrap: 'bower_components/bootstrap/js/bootstrap',
-        css: 'bower_components/require-css/css',
-        domReady: 'bower_components/requirejs-domready/domReady',
-        font_awesome: 'bower_components/font-awesome/css/font-awesome',
-        'js-yaml': 'bower_components/js-yaml/js-yaml',
-        jquery: 'bower_components/jquery/jquery',
-        json: 'bower_components/requirejs-json/json',
+        bootstrap_css: 'node_modules/bootstrap/css/bootstrap',
+        bootstrap: 'node_modules/bootstrap/js/bootstrap',
+        css: 'node_modules/require-css/css',
+        domReady: 'node_modules/requirejs-domready/domReady',
+        font_awesome: 'node_modules/font-awesome/css/font-awesome',
+        'js-yaml': 'node_modules/js-yaml/js-yaml',
+        jquery: 'node_modules/jquery/jquery',
+        json: 'node_modules/requirejs-json/json',
         kb_bootstrap: 'css/kb-bootstrap',
+        kb_lib: 'node_modules/@kbase/common-es6',
         kb_ui: 'css/kb-ui',
-        md5: 'bower_components/spark-md5/spark-md5',
-        numeral: 'bower_components/numeral/numeral',
+        md5: 'node_modules/spark-md5/spark-md5',
         preact: 'node_modules/preact/preact.umd',
         htm: 'node_modules/htm/htm.umd',
-        text: 'bower_components/requirejs-text/text',
-        uuid: 'bower_components/pure-uuid/uuid',
-        yaml: 'bower_components/requirejs-yaml/yaml',
-        semver: 'node_modules/semver-umd/semver-umd' 
+        text: 'node_modules/requirejs-text/text',
+        uuid: 'node_modules/pure-uuid/uuid',
+        yaml: 'ports/requirejs-yaml/yaml',
+        semver: 'node_modules/semver-umd/semver-umd'
     },
     shim: {
         bootstrap: {

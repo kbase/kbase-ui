@@ -1,5 +1,5 @@
 /*eslint-env node */
-/*eslint strict: ["error", "global"] */
+/*eslint strict: ["error", "global"], no-console: 0 */
 
 'use strict';
 

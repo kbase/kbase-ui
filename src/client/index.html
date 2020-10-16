@@ -4,7 +4,7 @@
 <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-137652528-1"></script>
-    <script src="/gtagSupport.js"></script>
+    <script src="/js/gtagSupport.js"></script>
     <!-- Google Tag Manager -->
     <script>(function (w, d, s, l, i) {
         w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' }); var f = d.getElementsByTagName(s)[0],
@@ -48,14 +48,14 @@
             If you have additional questions or concerns please <a href="https://www.kbase.us/support">contact us</a>.
         </p>
     </noscript>
-    <script src="/fallback.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
-    <script src="/mustard.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
+    <script src="/js/fallback.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
+    <script src="/js/mustard.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
     <script src="/build-info.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
     {{#if buildConfig.vfs}}
     <script src="/moduleVfs.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
     {{/if}}
-    <script src="/require-config.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
-    <script src="/modules/bower_components/requirejs/require.js?cb={{buildInfo.git.commitAbbreviatedHash}}"
+    <script src="/js/require-config.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
+    <script src="/modules/ports/requirejs/require.js?cb={{buildInfo.git.commitAbbreviatedHash}}"
         data-main="startup"></script>
 </body>
 

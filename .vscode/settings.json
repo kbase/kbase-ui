@@ -1,3 +1,8 @@
 {
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
+    "eslint.format.enable": true,
+    "eslint.lintTask.enable": true,
+    "editor.formatOnSave": true,
+    "eslint.alwaysShowStatus": true,
+    "eslint.packageManager": "yarn"
 }

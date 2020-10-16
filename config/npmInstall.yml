@@ -1,16 +1,37 @@
 # Copy npm amd packages into the main
 npmFiles:
+  - name: kb_lib
+    dir: "@kbase/common-es6"
+    cwd: src
+    src: "**/*"
   - name: bluebird
     cwd: js/browser
     src:
       - bluebird.js
+  - name: bootstrap
+    cwd: dist
+    src:
+      - js/bootstrap.js
+      - css/bootstrap.css
+      - fonts/*
   - name: dagre
+    cwd: dist
+  - name: font-awesome
+    src:
+      - css/font-awesome.css
+      - fonts/*
+  - name: jquery
+    cwd: dist
+  - name: js-yaml
     cwd: dist
   - name: lodash
   - name: preact
     cwd: dist
     src:
       - preact.umd.js
+  - dir: pure-uuid
+    src:
+      - uuid.js
   - name: kbase-ui-lib
     cwd: lib
     src:
@@ -23,7 +44,21 @@ npmFiles:
     cwd: dist
     src:
       - htm.umd.js
+  - name: require-css
+    src:
+      - css.js
+      - css-builder.js
+      - normalize.js
+  - dir: requirejs-domready
+    name: domReady
+  - dir: requirejs-json
+    name: json
+  - dir: requirejs-text
+    name: text
   - name: semver-umd
     cwd: lib
     src:
       - semver-umd.js
+  - dir: spark-md5
+    name: spark-md5
+

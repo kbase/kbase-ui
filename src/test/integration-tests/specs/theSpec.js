@@ -8,7 +8,7 @@ const runner = require('./runner');
 const utils = require('./utils');
 const glob = require('glob');
 const path = require('path');
-const { Merger } = require('./merger');
+const {Merger} = require('./merger');
 
 function loadData(config) {
     const dataFiles = glob.sync(`plugins/*/data/${config.env}/*.json`, {
@@ -33,17 +33,72 @@ function loadData(config) {
 }
 
 function main() {
-    const jsonFiles = glob.sync('plugins/*/*.json', {
-        nodir: true,
-        absolute: true,
-        cwd: __dirname
-    });
+    // focus allows the user to select which tests to run by one or
+    // more regexes.
+    const foci = (() => {
+        if (!process.env.FOCUS) {
+            return [];
+        }
+        return process.env.FOCUS.split(' ')
+            .filter((focus) => {
+                return (focus.length > 0);
+            })
+            .map((focus) => {
+                return new RegExp(focus);
+            });
+    })();
 
-    const yamlFiles = glob.sync('plugins/*/*.@(yml|yaml)', {
+    const blurs = (() => {
+        if (!process.env.BLUR) {
+            return [];
+        }
+        return process.env.BLUR.split(' ')
+            .filter((blur) => {
+                return (blur.length > 0);
+            })
+            .map((blur) => {
+                return new RegExp(blur);
+            });
+    })();
+
+    const cwd = `${__dirname}/plugins`;
+    const jsonFiles = glob.sync('*/*.json', {
         nodir: true,
-        absolute: true,
-        cwd: __dirname
-    });
+        absolute: false,
+        cwd
+    })
+        .filter((file) => {
+            if (foci.length !== 0) {
+                return foci.some((focus) => {
+                    return focus.test(file);
+                });
+            }
+            if (blurs.length !== 0) {
+                return !blurs.some((blur) => {
+                    return blur.test(file);
+                });
+            }
+            return true;
+        });
+
+    const yamlFiles = glob.sync('*/*.@(yml|yaml)', {
+        nodir: true,
+        absolute: false,
+        cwd
+    })
+        .filter((file) => {
+            if (foci.length !== 0) {
+                return foci.some((focus) => {
+                    return focus.test(file);
+                });
+            }
+            if (blurs.length !== 0) {
+                return !blurs.some((blur) => {
+                    return blur.test(file);
+                });
+            }
+            return true;
+        });
 
     const subTasks = glob
         .sync('subtasks/*.yaml', {
@@ -58,11 +113,11 @@ function main() {
 
     const pluginTests = jsonFiles
         .map(function (file) {
-            return utils.loadJSONFile(file);
+            return utils.loadJSONFile(`${cwd}/${file}`);
         })
         .concat(
             yamlFiles.map(function (file) {
-                return utils.loadYAMLFile(file);
+                return utils.loadYAMLFile(`${cwd}/${file}`);
             })
         );
 
@@ -103,12 +158,12 @@ function main() {
     }, {})[process.env.ENV];
     const config = new Merger(rawConfig.envDefault).mergeIn(envConfig).value();
 
-    console.log('CONFIG', config);
-
-    const plugins = loadData({ env: process.env.ENV });
+    /* eslint no-console: [0] */
+    const plugins = loadData({env: process.env.ENV});
     const context = {
         config,
-        plugins
+        plugins,
+        env: process.env // safe?
     };
 
     const testSuite = new runner.Suite({

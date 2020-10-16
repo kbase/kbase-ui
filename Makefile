@@ -25,15 +25,8 @@ GRUNT		    = ./node_modules/.bin/grunt
 KARMA			= ./node_modules/.bin/karma
 
 # The config used to control the build (build task)
-# dev, prod
-# Defaults to prod
-config			= 
-
-# The kbase-ui build folder to use for the docker image.
-# values: build, dist
-# Defaults to dist 
-# For local development, one would use the build, since is much faster 
-# to create. A debug build may be available in the future.
+# dev, ci, prod
+# Defaults to ci
 build           = dev
 
 # The deploy environment; used by dev-time image runners
@@ -54,6 +47,9 @@ host = ci
 # The testing service
 service = selenium-standalone
 
+# A kbase token; used in testing tasks
+token = 
+
 # functions
 
 # check_defined variable-name message
@@ -72,12 +68,12 @@ __check_defined = \
 
 # Standard 'all' target = just do the standard build
 all:
-	@echo Use "make init && make build config=TARGET build"
+	@echo Use "make init && make build build=TARGET build"
 	@echo see docs/quick-deploy.md
 
 # See above for 'all' - just running 'make' should locally build
 default:
-	@echo Use "make init && make build config=TARGET build"
+	@echo Use "make init && make build build=TARGET build"
 	@echo see docs/quick-deploy.md
 
 # Initialization here pulls in all dependencies from Bower and NPM.
@@ -98,11 +94,17 @@ setup: setup-dirs
 
 init: setup node_modules
 
+compile:
+	@echo "> Compiling TypeScript files."
+	yarn compile
+
+
 # Perform the build. Build scnearios are supported through the config option
-# which is passed in like "make build config=ci"
-build: clean-build 
+# which is passed in like "make build build=ci"
+build: clean-build compile
+	@:$(call check_defined, build, "the build configuration: defaults to 'dev'")
 	@echo "> Building."
-	cd mutations; node build $(config)
+	yarn build --config $(build)
 
 docker-network:
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
@@ -134,7 +136,7 @@ docker-compose-override:
 	@echo "> paths: $(paths)"
 	@echo "> local-narrative: $(local-narrative)"
 	@echo "> dynamic-services: $(dynamic-services)"
-	$(eval cmd = node $(TOPDIR)/tools/docker/build-docker-compose-override.js $(env) \
+	$(eval cmd = node $(TOPDIR)/tools/js/build-docker-compose-override.js $(env) \
 	  $(foreach p,$(plugins),--plugin $(p)) \
 	  $(foreach p,$(plugin),--plugin $(p)) \
 	  $(foreach i,$(internal-plugins),--internal $i) \
@@ -155,6 +157,7 @@ docker-compose-up: docker-network docker-compose-override
 		$(if $(findstring t,$(build-image)),--build))
 	@echo "> Issuing $(cmd)"
 	$(cmd)
+	@(eval docker-compose rm -v -f -s)
 
 # @cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose up --build
 
@@ -167,10 +170,13 @@ docker-network-clean:
 	# @:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
 	bash tools/docker/clean-docker-network.sh
 
+start: init docker-compose-up
+
+stop: docker-compose-clean docker-network-clean
+
 dev-start: init docker-compose-up
 
 dev-stop: docker-compose-clean docker-network-clean
-
 
 uuid:
 	@node ./tools/gen-uuid.js
@@ -180,11 +186,18 @@ uuid:
 unit-tests:
 	$(KARMA) start test/unit-tests/karma.conf.js
 
+# Filter test files to focus on just selected ones.
+# e.g. dataview/ will match just test files which include a dataview path element, effectively
+# selecting just the dataview plugin tests.
+focus = 
+blur = 
+
 integration-tests:
 	@:$(call check_defined, env, first component of hostname and kbase environment)
 	@:$(call check_defined, browser, the browser to test against)
 	@:$(call check_defined, service, the testing service )
-	ENV=$(env) BROWSER=$(browser) SERVICE_USER=$(user) SERVICE_KEY=$(key) SERVICE=$(service) $(GRUNT) webdriver:service --env=$(env)
+	@:$(call check_defined, token, the testing user auth tokens )
+	ENV="$(env)" BROWSER="$(browser)" SERVICE_USER="$(user)" SERVICE_KEY="$(key)" SERVICE="$(service)" TOKEN="${token}" FOCUS="${focus}" BLUR="${blur}" $(GRUNT) webdriver:service --env=$(env)
 
 travis-tests:
 	$(GRUNT) test-travis
@@ -192,7 +205,6 @@ travis-tests:
 test: unit-tests
 
 test-travis: unit-tests travis-tests
-
 
 # Clean slate
 clean: clean-docs

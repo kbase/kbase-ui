@@ -3,21 +3,18 @@ define([
     'htm',
     './AboutService',
     'kb_lib/jsonRpc/genericClient',
-    'kb_common_ts/HttpClient',
+    'kb_ts/HttpClient',
     'reactComponents/Loading',
 
     'bootstrap'
 ], (
-    preact,
+    {h, Component },
     htm,
     AboutService,
     GenericClient,
-    HttpClient,
+    {HttpClient, HttpHeader},
     Loading
 ) => {
-    'use strict';
-
-    const {h, Component } = preact;
     const html = htm.bind(h);
 
     class AboutServiceMain extends Component {
@@ -94,9 +91,9 @@ define([
 
         restClient() {
             return () => {
-                const header = new HttpClient.HttpHeader();
+                const header = new HttpHeader();
                 header.setHeader('accept', 'application/json');
-                const http = new HttpClient.HttpClient();
+                const http = new HttpClient();
                 const baseUrl = this.props.runtime.config(`services.${this.props.service.module}.url`);
                 const url = baseUrl + this.props.service.path;
                 return http

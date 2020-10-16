@@ -13,10 +13,9 @@ define([
     Props,
     md5
 ) => {
-    'use strict';
 
     class UserProfileService {
-        constructor({ params: { runtime } }) {
+        constructor({params: {runtime}}) {
             this.runtime = runtime;
             this.state = new Observed();
         }
@@ -150,38 +149,39 @@ define([
 
         // list for request fetch the user profile
         start() {
-            this.runtime.receive('profile', 'check', () => {
-                return this.loadProfile()
-                    .then((profile) => {
-                        this.state.setItem('userprofile', profile);
-                        this.runtime.send('profile', 'loaded', profile);
-                    })
-                    .done();
-            });
-
-            this.runtime.receive('profile', 'reload', () => {
-                return this.loadProfile()
-                    .then((profile) => {
-                        this.state.setItem('userprofile', profile);
-                        this.runtime.send('profile', 'loaded', profile);
-                    })
-                    .done();
-            });
-
-            this.runtime.getService('session').onChange((loggedIn) => {
-                if (loggedIn) {
-                    this.loadProfile()
+            return Promise.try(() => {
+                this.runtime.receive('profile', 'check', () => {
+                    return this.loadProfile()
                         .then((profile) => {
                             this.state.setItem('userprofile', profile);
+                            this.runtime.send('profile', 'loaded', profile);
                         })
-                        .catch((err) => {
-                            console.error('ERROR starting profile app service', err);
-                        });
-                } else {
-                    this.state.setItem('userprofile', null);
-                }
+                        .done();
+                });
+
+                this.runtime.receive('profile', 'reload', () => {
+                    return this.loadProfile()
+                        .then((profile) => {
+                            this.state.setItem('userprofile', profile);
+                            this.runtime.send('profile', 'loaded', profile);
+                        })
+                        .done();
+                });
+
+                this.runtime.service('session').onChange((loggedIn) => {
+                    if (loggedIn) {
+                        this.loadProfile()
+                            .then((profile) => {
+                                this.state.setItem('userprofile', profile);
+                            })
+                            .catch((err) => {
+                                console.error('ERROR starting profile app service', err);
+                            });
+                    } else {
+                        this.state.setItem('userprofile', null);
+                    }
+                });
             });
-            return true;
         }
 
         stop() {
@@ -246,5 +246,5 @@ define([
             return this.state.whenItem('userprofile');
         }
     }
-    return { ServiceClass: UserProfileService };
+    return {ServiceClass: UserProfileService};
 });

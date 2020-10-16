@@ -9,9 +9,8 @@ define([
     preact,
     htm
 ) => {
-    'use strict';
 
-    const { h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     class HamburgerMenu extends Component {
@@ -46,9 +45,14 @@ define([
                 return null;
             }
             return html`
-                <li role="presentation"
-                    className="divider"></li>
                 ${this.renderSection(menuItems)}
+                <li role="presentation" className="divider"></li>
+            `;
+        }
+
+        renderDivider() {
+            return html`
+                <li role="presentation" className="divider"></li>
             `;
         }
 
@@ -59,6 +63,24 @@ define([
         }
 
         render() {
+            const menuContent = [];
+            let hasContent = false;
+            [
+                this.props.menu.main,
+                this.props.menu.developer,
+                this.props.menu.help
+            ].forEach((menu) => {
+                if (menu.length > 0) {
+                    if (hasContent) {
+                        menuContent.push(this.renderDivider());
+                    }
+                    menuContent.push(this.renderSection(menu));
+                    hasContent = true;
+                } else {
+                    hasContent = false;
+                }
+            });
+
             return html`
                 <div className="navbar HamburgerMenu">
                     <button id="kb-nav-menu"
@@ -70,9 +92,7 @@ define([
                     <ul className="dropdown-menu"
                         role="menu"
                         aria-labeledby="kb-nav-menu">
-                        ${this.renderSection(this.props.menu.main)}
-                        ${this.renderSectionWithDivider(this.props.menu.developer)}
-                        ${this.renderSectionWithDivider(this.props.menu.help)}
+                        ${menuContent}
                         </ul>
                     
                 </div>

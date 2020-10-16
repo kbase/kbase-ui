@@ -33,7 +33,12 @@ Most KBase users will be exposed to the KBase UI by ... [using KBase](https://na
 
 ## Documentation
 
-- The previous documentation is now out of date; new [documentation](https://kbaseincubator.github.io/kbase-ui-docs) but incomplete, and in progress.
+
+`kbase-ui` documentation is available at [https://kbase.github.io/kbase-ui](https://kbase.github.io/kbase-ui).
+
+General "ui at kbase" documentation is available at [https://kbaseincubator.github.io/kbase-ui-docs](https://kbaseincubator.github.io/kbase-ui-docs).
+
+> Note that all of the documentation is incomplete and in progress.
 
 ## Contributing
 
@@ -41,7 +46,7 @@ The KBase UI is an open source project, managed through github. As such, contrib
 
 ## Release Notes
 
-The current released version is [2.1.12](release-notes/RELEASE_NOTES_2.1.12.md).
+The current released version is [2.2.0](release-notes/RELEASE_NOTES_2.2.0.md).
 
 ## Reporting Bugs
 

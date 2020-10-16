@@ -1,5 +1,4 @@
 # package caches wherever they may be installed
-bower_components
 node_modules
 
 # Any trash directories
@@ -38,9 +37,12 @@ yarn.lock
 !/temp/README.md
 
 docker-compose.override.yml
-
+        
 /tools/proxy/contents/ssl/*
 !/tools/proxy/contents/ssl/README.md
 
 # can be left over with a manual npm install with --no-cache (I think)
 /false
+
+# working files when doing gh-pages and develop development
+/_site

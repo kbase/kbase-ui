@@ -7,7 +7,6 @@ define([
     'css!app/styles/kb-ui',
     'domReady'
 ], (Promise, html) => {
-    'use strict';
 
     const t = html.tag,
         div = t('div'),

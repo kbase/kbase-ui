@@ -9,7 +9,6 @@ app be itself testable, much needed to be stripped out and placed into an app-sp
  module like this.
 */
 define(['./App'], function (App) {
-    'use strict';
 
     return class Hub {
         constructor(params) {
@@ -20,7 +19,7 @@ define(['./App'], function (App) {
             return this.app.start()
                 .then((runtime) => {
                     // kick off handling of the current route.
-                    runtime.send('app', 'do-route');
+                    runtime.send('app', 'do-route', true);
 
                     // TODO: detect if already on signedout page.
                     // TODO: this behavior should be defined in the main app
