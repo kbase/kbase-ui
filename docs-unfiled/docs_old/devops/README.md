@@ -1,3 +1,0 @@
-# Devops
-
-[ to be done ]
