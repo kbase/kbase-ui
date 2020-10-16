@@ -21,9 +21,6 @@ _attic/
 /mutations/mutantfiles
 report.*.json
 
-# Doc artifacts
-/docs/_site
-
 # Developer artifacts
 /dev/docker-compose.override.yml
 /dev/gitlab-config
@@ -44,5 +41,8 @@ docker-compose.override.yml
 # can be left over with a manual npm install with --no-cache (I think)
 /false
 
-# working files when doing gh-pages and develop development
+# working files when doing gh-pages work
 /_site
+
+# A handy directory for staching non-commitable working files
+/_todo
