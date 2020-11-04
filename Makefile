@@ -94,6 +94,10 @@ setup: setup-dirs
 
 init: setup node_modules
 
+quality: 
+	@echo "> Checking code quality."
+	yarn quality
+
 compile:
 	@echo "> Compiling TypeScript files."
 	yarn compile
@@ -101,7 +105,7 @@ compile:
 
 # Perform the build. Build scnearios are supported through the config option
 # which is passed in like "make build build=ci"
-build: clean-build compile
+build: quality clean-build compile
 	@:$(call check_defined, build, "the build configuration: defaults to 'dev'")
 	@echo "> Building."
 	yarn build --config $(build)

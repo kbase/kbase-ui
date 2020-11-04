@@ -20,6 +20,8 @@
     "scripts": {
         "compile": "tsc",
         "clean-ts": "node tools/js/remove-generated-js.js",
+        "stats": "node tools/js/stats.js",
+        "quality": "node tools/js/quality.js",
         "build": "node tools/js/build.js",
         "test": "node test/node/test.js",
         "watch": "nodemon --watch ./src/client --ext ts --exec 'yarn compile || exit 1'"

@@ -16,7 +16,7 @@ plugins:
         account: kbase
   - name: dataview
     globalName: kbase-ui-plugin-dataview
-    version: 4.7.34
+    version: 4.7.35
     source:
       github:
         account: kbase
@@ -34,7 +34,7 @@ plugins:
         account: kbase
   - name: jgi-search
     globalName: kbase-ui-plugin-jgi-search
-    version: 2.1.1
+    version: 2.1.3
     source:
       github:
         account: kbase
@@ -94,7 +94,7 @@ plugins:
         account: eapearson
   - name: samples
     globalName: kbase-ui-plugin-samples
-    version: 0.7.16
+    version: 0.9.0
     source:
       github:
         account: kbaseIncubator

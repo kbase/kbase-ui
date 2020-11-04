@@ -1246,7 +1246,6 @@ async function getRoot() {
     const out = await run('git rev-parse --show-toplevel', {options: {
         encoding: 'utf8'
     }});
-    console.log('hmm', out);
     return out.trim();
 }
 
@@ -1255,7 +1254,6 @@ function usage() {
 }
 
 const args = yargs.parse(process.argv.slice(2));
-console.log('hmm', args, process.argv);
 
 const buildType = args.config;
 
