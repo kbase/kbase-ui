@@ -272,7 +272,7 @@ http {
 
         location /narratives/ {
             # proxy_pass https://{{ .Env.deploy_hostname }}:443;
-            proxy_pass https://{{ .Env.deploy_hostname }}:443/ui-assets/images/kbase-logos/logo-fulltext-540-185.png;
+            proxy_pass https://{{ .Env.deploy_hostname }}:443;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
             client_max_body_size 300M;
