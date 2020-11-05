@@ -4,9 +4,15 @@ import { AMDRequire } from "./types";
 export class AppServiceError extends Error {
     type: string;
     suggestion: string;
-    constructor({ type, message, suggestion }: { type: string, message: string, suggestion: string; }) {
+    constructor(
+        { type, message, suggestion }: {
+            type: string;
+            message: string;
+            suggestion: string;
+        },
+    ) {
         super(message);
-        this.name = 'AppServiceError';
+        this.name = "AppServiceError";
         this.type = type;
         this.suggestion = suggestion;
     }
@@ -25,11 +31,9 @@ interface UIServiceConfig {
 }
 
 interface UIServiceDefinition {
-
 }
 
 declare var require: AMDRequire;
-
 
 // function AppServiceError(type, message, suggestion) {
 //         this.type = type;
@@ -45,11 +49,10 @@ export class AppServiceManager {
     services: Map<string, Service>;
     constructor({ moduleBasePath }: { moduleBasePath: string; }) {
         if (!moduleBasePath) {
-            throw new TypeError('moduleBasePath not provided');
+            throw new TypeError("moduleBasePath not provided");
         }
         this.moduleBasePath = moduleBasePath;
         this.services = new Map();
-
     }
 
     addService(serviceConfig: UIServiceConfig, serviceDef: UIServiceDefinition) {
@@ -57,28 +60,28 @@ export class AppServiceManager {
             name: serviceConfig.name,
             module: serviceConfig.module,
             config: serviceDef,
-            instance: null
+            instance: null,
         });
     }
 
     loadService(name: string, params: any) {
         return new Promise((resolve, reject) => {
             const service = this.services.get(name);
-            if (typeof service === 'undefined') {
+            if (typeof service === "undefined") {
                 throw new Error(`Service ${name} is not defined`);
             }
-            const moduleName = [this.moduleBasePath, service.module].join('/');
+            const moduleName = [this.moduleBasePath, service.module].join("/");
             require([moduleName], (serviceModule) => {
                 var serviceInstance;
                 if (serviceModule.ServiceClass) {
                     serviceInstance = new serviceModule.ServiceClass({
                         config: service.config,
-                        params
+                        params,
                     });
                 } else {
                     serviceInstance = new serviceModule({
                         config: service.config,
-                        params
+                        params,
                     });
                 }
                 service.instance = serviceInstance;
@@ -96,27 +99,39 @@ export class AppServiceManager {
                     return result;
                 })
                 .catch((err) => {
-                    console.error('ERROR loading service', name);
+                    console.error("ERROR loading service", name);
                     throw err;
                 });
         });
         return Promise.all(allServices);
     }
 
-    startServices() {
-        const allServices = Array.from(this.services.entries()).map(([name, service]) => {
-            tryPromise(() => {
-                if (!service.instance) {
-                    console.warn('Warning: no service started for ' + name);
-                    throw new Error('No service started for ' + name);
+    startServices(
+        options: { except?: Array<string>; only?: Array<string>; } = {},
+    ) {
+        const allServices = Array.from(this.services.entries())
+            .filter(([name, service]) => {
+                if (options.except) {
+                    return !options.except.includes(name);
                 }
-                if (!service.instance.start) {
-                    console.warn('Warning: no start method for ' + name);
-                    return;
+                if (options.only) {
+                    return options.only.includes(name);
                 }
-                return service.instance.start();
+                return true;
+            })
+            .map(([name, service]) => {
+                return tryPromise(() => {
+                    if (!service.instance) {
+                        console.warn("Warning: no service started for " + name);
+                        throw new Error("No service started for " + name);
+                    }
+                    if (!service.instance.start) {
+                        console.warn("Warning: no start method for " + name);
+                        return;
+                    }
+                    return service.instance.start();
+                });
             });
-        });
         return Promise.all(allServices);
     }
 
@@ -139,10 +154,10 @@ export class AppServiceManager {
         if (!service) {
             // TODO: throw real exception
             throw new AppServiceError({
-                type: 'UndefinedService',
+                type: "UndefinedService",
                 message: 'The requested service "' + name + '" has not been registered',
                 suggestion:
-                    'This is a system configuration issue. The requested service should be installed or the client code programmed to check for its existence first (with hasService)'
+                    "This is a system configuration issue. The requested service should be installed or the client code programmed to check for its existence first (with hasService)",
             });
         }
         return service.instance;

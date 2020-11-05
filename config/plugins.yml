@@ -6,7 +6,7 @@ plugins:
   - narrativemanager
   - about
   - developer
-  # - dashboard
+  - dashboard
   # external:
   - name: typeview
     globalName: kbase-ui-plugin-typeview
@@ -20,12 +20,12 @@ plugins:
     source:
       github:
         account: kbase
-  - name: dashboard
-    globalName: kbase-ui-plugin-dashboard
-    version: 4.1.1
-    source:
-      github:
-        account: kbase
+  # - name: dashboard
+  #   globalName: kbase-ui-plugin-dashboard
+  #   version: 4.1.1
+  #   source:
+  #     github:
+  #       account: kbase
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
     version: 2.4.3
@@ -34,7 +34,7 @@ plugins:
         account: kbase
   - name: jgi-search
     globalName: kbase-ui-plugin-jgi-search
-    version: 2.1.1
+    version: 2.1.3
     source:
       github:
         account: kbase
@@ -94,7 +94,7 @@ plugins:
         account: eapearson
   - name: samples
     globalName: kbase-ui-plugin-samples
-    version: 0.7.16
+    version: 0.9.0
     source:
       github:
         account: kbaseIncubator
