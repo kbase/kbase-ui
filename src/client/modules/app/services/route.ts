@@ -313,10 +313,6 @@ export class RouteService {
 
     start() {
         this.runtime.receive("app", "do-route", () => {
-            console.log(
-                "got do-route",
-                this.runtime.service("session").isAuthenticated(),
-            );
             this.doRoute();
         });
 
