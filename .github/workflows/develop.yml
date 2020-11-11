@@ -40,7 +40,7 @@ jobs:
         uses: docker/build-push-action@v1
         with:
           username: ${{ github.actor }}
-          password: ${{ secrets.CR_PAT }}
+          password: ${{ secrets.GHCR_TOKEN }}
           registry: ghcr.io
           repository: ${{ github.repository }}
           build_args: BUILD=${{ env.BUILD }},BUILD_DATE=${{ steps.date.outputs.date }},VCS_REF=${{ env.VCS_REF}},BRANCH=${{ env.BRANCH}},TAG=${{ env.TAG }}
