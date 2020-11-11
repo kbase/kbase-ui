@@ -42,7 +42,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          repository: eapearson/kbase-ui/kbase-ui-ci
+          repository: ${{ github.repository }}/kbase-ui-ci
           build_args: BUILD=${{ env.BUILD }},BUILD_DATE=${{ steps.date.outputs.date }},VCS_REF=${{ env.VCS_REF}},BRANCH=${{ env.BRANCH}},TAG=${{ env.TAG }}
           tag_with_ref: true
       # - name: Build and Push to Packages
