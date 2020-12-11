@@ -4,6 +4,7 @@ name: Build and Push Up Develop Branch Image
   push:
     branches:
       - develop
+      - "feature-*"
 env:
   BUILD: ci
   VCS_REF: ${{ github.sha }}

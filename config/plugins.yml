@@ -28,7 +28,7 @@ plugins:
         account: kbase
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
-    version: 2.4.3
+    version: 2.4.4
     source:
       github:
         account: kbase
@@ -88,13 +88,13 @@ plugins:
         account: kbaseIncubator
   - name: dashboard4
     globalName: kbase-ui-plugin-dashboard4
-    version: 0.3.1
+    version: 0.4.3
     source:
       github:
         account: eapearson
   - name: samples
     globalName: kbase-ui-plugin-samples
-    version: 0.9.1
+    version: 0.9.3
     source:
       github:
         account: kbaseIncubator
