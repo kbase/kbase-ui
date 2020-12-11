@@ -1,17 +1,22 @@
-import { stache } from '../../lib/kb_lib/Utils';
+import { stache } from "../../lib/kb_lib/Utils";
 import {
-    Router, NotFoundException, RedirectException, RoutingLocation,
-    RoutedRequest, NotFoundNoHashException,
-    NotFoundHasRealPathException, RouteSpec, RouteOptions,
-} from '../../lib/router';
-import { Receiver, Runtime, SimpleMap } from '../../lib/types';
-
+    NotFoundException,
+    NotFoundHasRealPathException,
+    NotFoundNoHashException,
+    RedirectException,
+    RoutedRequest,
+    RouteOptions,
+    Router,
+    RouteSpec,
+    RoutingLocation,
+} from "../../lib/router";
+import { Receiver, Runtime, SimpleMap } from "../../lib/types";
 
 type RouteHandler = RoutedRequest;
 
 interface EventListener {
-    target: Element | Window,
-    type: string,
+    target: Element | Window;
+    type: string;
     listener: () => void;
 }
 
@@ -30,7 +35,7 @@ interface PluginDefinition {
 }
 
 interface RouteServiceConfig {
-    defaultLocation: RoutingLocation,
+    defaultLocation: RoutingLocation;
     urls: SimpleMap<string>;
 }
 
@@ -58,7 +63,7 @@ export class RouteService {
         this.router = new Router({
             runtime: params.runtime,
             defaultLocation: config.defaultLocation,
-            urls: config.urls
+            urls: config.urls,
         });
         this.currentRouteHandler = null;
         this.receivers = [];
@@ -71,7 +76,9 @@ export class RouteService {
                 const routed = this.router.findCurrentRoute();
                 const rolesRequired = routed.route.rolesRequired;
                 if (rolesRequired) {
-                    const roles = this.runtime.service('session').getRoles() as Array<Role>; // TODO
+                    const roles = this.runtime.service("session").getRoles() as Array<
+                        Role
+                    >; // TODO
                     if (
                         !roles.some((role) => {
                             return rolesRequired.some((requiredRole) => {
@@ -83,21 +90,23 @@ export class RouteService {
                             request: routed.request,
                             params: {
                                 title: {
-                                    name: 'title',
-                                    type: 'string',
-                                    value: 'Access Error'
+                                    name: "title",
+                                    type: "string",
+                                    value: "Access Error"
                                 },
                                 message: {
-                                    name: 'message',
-                                    type: 'string',
-                                    value: `One or more required roles not available in your account:${rolesRequired.join(', ')}`
+                                    name: "message",
+                                    type: "string",
+                                    value:
+                                        `One or more required roles not available in your account:${rolesRequired.join(", ")
+                                        }`
                                 }
                             },
                             route: {
                                 path: [],
-                                view: '',
+                                view: "",
                                 authorization: false,
-                                component: 'reactComponents/Error'
+                                component: "reactComponents/Error",
                             }
                         };
                     }
@@ -116,10 +125,10 @@ export class RouteService {
                         },
                         route: {
                             path: [],
-                            view: '',
+                            view: "",
                             authorization: false,
-                            component: '/reactComponents/NotFound'
-                        }
+                            component: "/reactComponents/NotFound",
+                        },
                     };
                 } else if (ex instanceof RedirectException) {
                     // TODO: do as redirect route!
@@ -147,29 +156,29 @@ export class RouteService {
                     //         component: '/reactComponents/NotFound'
                     //     }
                     // };
-                    this.runtime.send('app', 'navigate', this.router.defaultLocation);
+                    this.runtime.send("app", "navigate", this.router.defaultLocation);
                     return null;
                 } else if (ex instanceof NotFoundHasRealPathException) {
                     return {
                         request: {
                             path: [],
-                            original: '',
+                            original: "",
                             query: {},
-                            realPath: ex.realPath
+                            realPath: ex.realPath,
                         },
                         params: {
                             reason: {
-                                name: 'reason',
-                                type: 'string',
-                                value: 'has real path'
-                            }
+                                name: "reason",
+                                type: "string",
+                                value: "has real path",
+                            },
                         },
                         route: {
                             path: [],
-                            view: '',
+                            view: "",
                             authorization: false,
-                            component: '/reactComponents/NotFound'
-                        }
+                            component: "/reactComponents/NotFound",
+                        },
                     };
                 } else {
                     throw ex;
@@ -182,34 +191,36 @@ export class RouteService {
             return;
         }
 
-        this.runtime.send('route', 'routing', routed);
+        this.runtime.send("route", "routing", routed);
         this.currentRouteHandler = routed;
 
         // Hack to handle narrative redirects until we improve them.
-        if (routed.params.nextrequest && routed.params.nextrequest.type === 'string') {
+        if (
+            routed.params.nextrequest && routed.params.nextrequest.type === "string"
+        ) {
             try {
                 // TODO: hmm, maybe multi-typed params is not a good idea?
                 // TODO: narrative will set the nextrequest param to a string
                 // which begins with /narrative.
                 const nextRequest = JSON.parse(routed.params.nextrequest.value);
-                if (typeof nextRequest.path === 'string') {
+                if (typeof nextRequest.path === "string") {
                     if (nextRequest.path.match(/^\/narrative/)) {
                         // routed.route.authorization = true;
                         routed.params.source = {
-                            name: 'source',
-                            type: 'string',
-                            value: 'authorization'
+                            name: "source",
+                            type: "string",
+                            value: "authorization",
                         };
                     }
-                    nextRequest.path = nextRequest.path.split('/').slice(1);
+                    nextRequest.path = nextRequest.path.split("/").slice(1);
                     nextRequest.original = nextRequest.path;
                 } else {
-                    nextRequest.original = nextRequest.path.join('/');
+                    nextRequest.original = nextRequest.path.join("/");
                 }
 
                 routed.params.nextrequest.value = JSON.stringify(nextRequest);
             } catch (ex) {
-                console.warn('Bad nextrequest', routed.params.nextrequest, ex);
+                console.warn("Bad nextrequest", routed.params.nextrequest, ex);
             }
         }
 
@@ -218,20 +229,20 @@ export class RouteService {
         // "nextrequest". This ensures that we can close the loop for accessing
         // auth-required endpoints.
         if (routed.route.authorization) {
-            if (!this.runtime.service('session').isAuthenticated()) {
+            if (!this.runtime.service("session").isAuthenticated()) {
                 const loginParams: SimpleMap<string> = {
-                    source: 'authorization'
+                    source: "authorization",
                 };
                 if (routed.request.path) {
                     loginParams.nextrequest = JSON.stringify(routed.request);
                 }
                 // TODO refactor-expt: here is where SOMETHING needs to listen for the login event.
                 // This is where we can hook in.
-                this.runtime.send('app', 'navigate', {
-                    path: 'login',
+                this.runtime.send("app", "navigate", {
+                    path: "login",
                     // path: runtime.feature('auth', 'paths.login'),
                     // TODO: path needs to be the path + params
-                    params: loginParams
+                    params: loginParams,
                 });
                 return;
             }
@@ -240,16 +251,16 @@ export class RouteService {
         // We can also require that the route match at least one role defined in a list.
 
         const route = {
-            routeHandler: routed
+            routeHandler: routed,
         };
         // if (routed.route.) {
         //     this.runtime.send('app', 'route-redirect', route);
         //     // } else if (handler.route.handler) {
         //     //     this.runtime.send('app', 'route-handler', route);
         if (routed.route.component) {
-            this.runtime.send('app', 'route-component', route);
+            this.runtime.send("app", "route-component", route);
         } else {
-            throw new Error('Not a valid route request');
+            throw new Error("Not a valid route request");
         }
     }
 
@@ -257,14 +268,17 @@ export class RouteService {
         // TODO: improve typing by route type
         route.pluginName = options.pluginName;
 
-        route.path = stache(route.path, new Map<string, string>([['plugin', options.pluginName]]));
+        route.path = stache(
+            route.path,
+            new Map<string, string>([["plugin", options.pluginName]]),
+        );
 
         if (route.component) {
             this.router.addRoute(route, options);
             // } else if (route.redirectHandler) {
             //     this.router.addRoute(route, options);
         } else {
-            route.component = '/pluginSupport/Plugin';
+            route.component = "/pluginSupport/Plugin";
             this.router.addRoute(route, options);
         }
     }
@@ -278,15 +292,19 @@ export class RouteService {
         });
     }
 
-    pluginHandler(serviceConfig: ServiceConfig, pluginConfig: PluginConfig, pluginDef: PluginDefinition) {
+    pluginHandler(
+        serviceConfig: ServiceConfig,
+        pluginConfig: PluginConfig,
+        pluginDef: PluginDefinition,
+    ) {
         return new Promise((resolve, reject) => {
             try {
                 // Install all the routes
                 this.installRoutes(serviceConfig.routes || serviceConfig, {
                     pluginName: pluginDef.package.name,
-                    mode: serviceConfig.mode
+                    mode: serviceConfig.mode,
                 });
-                resolve();
+                resolve(null);
             } catch (ex) {
                 reject(ex);
             }
@@ -294,35 +312,35 @@ export class RouteService {
     }
 
     start() {
-        this.runtime.receive('app', 'do-route', () => {
+        this.runtime.receive("app", "do-route", () => {
             this.doRoute();
         });
 
-        this.runtime.receive('app', 'new-route', (data) => {
+        this.runtime.receive("app", "new-route", (data) => {
             if (data.routeHandler.route.redirect) {
-                this.runtime.send('app', 'route-redirect', data);
+                this.runtime.send("app", "route-redirect", data);
             } else if (data.routeHandler.route.component) {
-                this.runtime.send('app', 'route-component', data);
+                this.runtime.send("app", "route-component", data);
             } else if (data.routeHandler.route.handler) {
-                this.runtime.send('app', 'route-handler', data);
+                this.runtime.send("app", "route-handler", data);
             }
         });
 
-        this.runtime.receive('app', 'route-redirect', (data) => {
-            this.runtime.send('app', 'navigate', {
+        this.runtime.receive("app", "route-redirect", (data) => {
+            this.runtime.send("app", "navigate", {
                 path: data.routeHandler.route.redirect.path,
-                params: data.routeHandler.route.redirect.params
+                params: data.routeHandler.route.redirect.params,
             });
         });
 
-        this.runtime.receive('app', 'navigate', (data) => {
+        this.runtime.receive("app", "navigate", (data) => {
             // NEW: convert the legacy navigation location to the
             // new easier-to-type one defined in router.ts
             const location: RoutingLocation = ((): RoutingLocation => {
                 if (!data.path && !data.url) {
                     return {
-                        type: 'internal',
-                        path: 'dashboard'
+                        type: "internal",
+                        path: "dashboard",
                     };
                 }
 
@@ -330,19 +348,19 @@ export class RouteService {
                 // }
                 if (data.url) {
                     return {
-                        type: 'external',
+                        type: "external",
                         newWindow: true,
-                        url: data.url
+                        url: data.url,
                     };
                 }
 
                 // Catch narrative  requests.
                 // TODO: we should establish a full url format for this.
-                if (data.path[0] === 'narrative') {
+                if (data.path[0] === "narrative") {
                     return {
-                        type: 'external',
+                        type: "external",
                         newWindow: false,
-                        url: [window.location.origin, data.path.join('/')].join('/')
+                        url: [window.location.origin, data.path.join("/")].join("/"),
                     };
                 }
 
@@ -351,43 +369,43 @@ export class RouteService {
                 // an array also. need to sort that out.
                 const path = ((possiblePath) => {
                     if (Array.isArray(possiblePath)) {
-                        return possiblePath.join('/');
+                        return possiblePath.join("/");
                     }
-                    if (typeof possiblePath !== 'string') {
+                    if (typeof possiblePath !== "string") {
                         throw new Error('Invalid value for "path" in location');
                     }
                     return possiblePath;
                 })(data.path);
 
                 return {
-                    type: 'internal',
+                    type: "internal",
                     path,
-                    params: data.params
+                    params: data.params,
                 };
             })();
             this.router.navigateTo(location);
         });
 
-        this.runtime.receive('app', 'redirect', ({ url }) => {
+        this.runtime.receive("app", "redirect", ({ url }) => {
             if (!url) {
                 throw new Error('"url" is required for a "redirect" message');
             }
-            if (typeof url !== 'string') {
+            if (typeof url !== "string") {
                 throw new Error('"url" must be a string');
             }
             this.router.navigateTo({
-                type: 'external',
-                url
+                type: "external",
+                url,
             });
             // data.url, data.new_window || data.newWindow);
         });
 
         this.eventListeners.push({
             target: window,
-            type: 'hashchange',
+            type: "hashchange",
             listener: () => {
                 this.doRoute();
-            }
+            },
         });
         this.eventListeners.forEach((listener) => {
             listener.target.addEventListener(listener.type, listener.listener);
