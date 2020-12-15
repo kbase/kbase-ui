@@ -20,12 +20,12 @@ plugins:
     source:
       github:
         account: kbase
-  - name: dashboard
-    globalName: kbase-ui-plugin-dashboard
-    version: 4.1.1
-    source:
-      github:
-        account: kbase
+    - name: dashboard
+      globalName: kbase-ui-plugin-dashboard
+      version: 4.1.1
+      source:
+        github:
+          account: kbase
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
     version: 2.4.4
@@ -94,7 +94,7 @@ plugins:
         account: eapearson
   - name: samples
     globalName: kbase-ui-plugin-samples
-    version: 0.9.4
+    version: 0.9.5
     source:
       github:
         account: kbaseIncubator
