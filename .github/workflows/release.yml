@@ -2,10 +2,10 @@
 name: Build and Push Up Develop Branch Image
 on:
   push:
-    branches:
-      - develop
+    tag:
+      - v[0-9]+.[0-9]+.[0-9]+
 env:
-  BUILD: ci
+  BUILD: prod
   VCS_REF: ${{ github.sha }}
   BRANCH: ${{ github.ref }}
   TAG: ${{ github.ref }}

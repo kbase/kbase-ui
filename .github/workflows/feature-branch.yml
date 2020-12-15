@@ -1,6 +1,6 @@
 ---
 name: Build and Push Up Develop Branch Image
-"on":
+on:
   push:
     branches:
       - develop
