@@ -17,7 +17,8 @@ COPY . /kb
 ARG BUILD
 
 # Build kbase-ui
-RUN make build config=$BUILD
+RUN echo "Using build arg $BUILD"
+RUN make build config="$BUILD"
 
 LABEL stage=intermediate
 

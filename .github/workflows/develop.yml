@@ -41,15 +41,4 @@ jobs:
             VCS_REF=${{ github.sha }}
             BRANCH=${{ github.ref }}
             TAG=${{ github.ref }}
-          # cache-from: type=registry,ref=kbase/kbase-ui:develop
-          # cache-to: type=inline
-          tags: kbase/kbase-ui:develop
-      # - name: Build and Push to Github Packages
-      #   uses: docker/build-push-action@v1
-      #   with:
-      #     username: ${{ github.actor }}
-      #     password: ${{ secrets.GHCR_TOKEN }}
-      #     registry: ghcr.io
-      #     repository: ${{ github.repository }}
-      #     build_args: BUILD=ci,BUILD_DATE=${{ steps.date.outputs.date }},VCS_REF=${{ github.sha }},BRANCH=${{ github.ref }},TAG=${{ github.ref }}
-      #     tag_with_ref: true
+          tags: ghcr.io/${{ github.repository_owner }}/kbase-ui:develop
