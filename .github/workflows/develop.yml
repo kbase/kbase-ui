@@ -67,4 +67,4 @@ jobs:
             VCS_REF=${{ github.sha }}
             BRANCH=${{ github.ref }}
             TAG=${{ github.ref }}
-          tags: ghcr.io/${{ github.repository_owner }}/develop
+          tags: ghcr.io/${{ github.repository_owner }}/kbase-ui:develop
