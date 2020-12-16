@@ -1,16 +1,14 @@
 ---
 name: Build and Push Up Master Release Branch Image
 on:
-  push:
-    branches:
-      - master
-    tag:
-      - v[0-9]+.[0-9]+.[0-9]+
-env:
-  BUILD: prod
-  VCS_REF: ${{ github.sha }}
-  BRANCH: ${{ github.ref }}
-  TAG: ${{ github.ref }}
+  release:
+    types: [published]
+    # - v[0-9]+.[0-9]+.[0-9]+
+# env:
+#   BUILD: prod
+#   VCS_REF: ${{ github.sha }}
+#   BRANCH: ${{ github.ref }}
+#   TAG: ${{ github.ref }}
 jobs:
   docker_build:
     runs-on: ubuntu-latest
@@ -27,5 +25,5 @@ jobs:
           password: ${{ secrets.GHCR_TOKEN }}
           registry: ghcr.io
           repository: ${{ github.repository }}
-          build_args: BUILD=${{ env.BUILD }},BUILD_DATE=${{ steps.date.outputs.date }},VCS_REF=${{ env.VCS_REF}},BRANCH=${{ env.BRANCH}},TAG=${{ env.TAG }}
+          build_args: BUILD=prod,BUILD_DATE=${{ steps.date.outputs.date }},VCS_REF=${{ github.sha }},BRANCH=${{ github.ref }},TAG=${{ github.ref }}
           tag_with_ref: true
