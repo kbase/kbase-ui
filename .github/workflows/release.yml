@@ -1,5 +1,5 @@
 ---
-name: Build and Push Up Release Branch Image
+name: Build and Push Up Master Release Branch Image
 on:
   push:
     branches:
