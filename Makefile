@@ -26,8 +26,8 @@ KARMA			= ./node_modules/.bin/karma
 
 # The config used to control the build (build task)
 # dev, ci, prod
-# Defaults to ci
-build           = dev
+# Defaults to dev
+config          = dev
 
 # The deploy environment; used by dev-time image runners
 # dev, ci, next, appdev, prod
@@ -108,7 +108,7 @@ compile:
 build: quality clean-build compile
 	@:$(call check_defined, build, "the build configuration: defaults to 'dev'")
 	@echo "> Building."
-	yarn build --config $(build)
+	yarn build --config $(config)
 
 docker-network:
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
