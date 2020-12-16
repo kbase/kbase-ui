@@ -106,7 +106,7 @@ compile:
 # Perform the build. Build scnearios are supported through the config option
 # which is passed in like "make build build=ci"
 build: quality clean-build compile
-	@:$(call check_defined, build, "the build configuration: defaults to 'dev'")
+	@:$(call check_defined, config, "the build configuration: defaults to 'dev'")
 	@echo "> Building."
 	yarn build --config $(config)
 
