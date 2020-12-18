@@ -165,7 +165,14 @@ define([
                     }
                 })
                 .then(() => {
-                    return this.appServiceManager.startServices();
+                    return this.appServiceManager.startServices({
+                        only: ['session']
+                    });
+                })
+                .then(() => {
+                    return this.appServiceManager.startServices({
+                        except: ['session']
+                    });
                 })
                 .then(() => {
                     return this.pluginManager.installPlugins(this.plugins);
