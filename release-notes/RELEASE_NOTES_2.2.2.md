@@ -25,7 +25,7 @@ none
 
 ### FIXES
 
-none
+- dataview: fix a lin in the provenance viewer
 
 ### DEPENDENCIES
 
