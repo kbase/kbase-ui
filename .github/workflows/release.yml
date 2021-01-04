@@ -1,11 +1,11 @@
 ---
-name: Build and Push Up Develop Branch Image
+name: Build and Push Up Master Release Branch Image
 on:
-  push:
-    branches:
-      - develop
+  release:
+    types: [published]
+    # - v[0-9]+.[0-9]+.[0-9]+
 # env:
-#   BUILD: ci
+#   BUILD: prod
 #   VCS_REF: ${{ github.sha }}
 #   BRANCH: ${{ github.ref }}
 #   TAG: ${{ github.ref }}
@@ -62,9 +62,11 @@ jobs:
           pull: true
           push: true
           build-args: |
-            BUILD_CONFIG=ci
+            BUILD_CONFIG=prod
             BUILD_DATE=${{ steps.date.outputs.date }}
             VCS_REF=${{ github.sha }}
             BRANCH=${{ github.ref }}
             TAG=${{ github.ref }}
-          tags: ghcr.io/${{ github.repository_owner }}/kbase-ui:develop
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kbase-ui:latest
+            ghcr.io/${{ github.repository_owner }}/kbase-ui:${{ env.CI_ACTION_REF_NAME }}

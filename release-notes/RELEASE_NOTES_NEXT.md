@@ -22,7 +22,7 @@ Migrate build from travic-ci to github actions (in progress)
 
 ### FIXES
 
-none
+- catalog: fix help links to point to new documentation site
 
 ### DEPENDENCIES
 

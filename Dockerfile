@@ -14,10 +14,11 @@ RUN yarn install --no-lockfile
 
 COPY . /kb
 
-ARG BUILD
+ARG BUILD_CONFIG
 
 # Build kbase-ui
-RUN make build config=$BUILD
+RUN echo "Using build arg $BUILD_CONFIG"
+RUN make build config="$BUILD_CONFIG"
 
 LABEL stage=intermediate
 

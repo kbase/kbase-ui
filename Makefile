@@ -26,8 +26,8 @@ KARMA			= ./node_modules/.bin/karma
 
 # The config used to control the build (build task)
 # dev, ci, prod
-# Defaults to ci
-build           = dev
+# Defaults to dev
+config          = dev
 
 # The deploy environment; used by dev-time image runners
 # dev, ci, next, appdev, prod
@@ -61,7 +61,7 @@ check_defined = \
         $(call __check_defined,$1,$(strip $(value 2)))))
 __check_defined = \
     $(if $(value $1),, \
-        $(error Undefined $1$(if $2, ($2))$(if $(value @), \
+        $(error Undefined "$1"$(if $2, ($2))$(if $(value @), \
                 required by target `$@')))
 
 .PHONY: all test build docs
@@ -106,9 +106,9 @@ compile:
 # Perform the build. Build scnearios are supported through the config option
 # which is passed in like "make build build=ci"
 build: quality clean-build compile
-	@:$(call check_defined, build, "the build configuration: defaults to 'dev'")
+	@:$(call check_defined, config, "the build configuration: defaults to 'dev'")
 	@echo "> Building."
-	yarn build --config $(build)
+	yarn build --config $(config)
 
 docker-network:
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
@@ -154,10 +154,11 @@ docker-compose-override:
 	$(cmd)
 
 docker-compose-up: docker-network docker-compose-override
-	@:$(call check_defined, build, "the kbase-ui build config: defaults to 'dev'")
+	@:$(call check_defined, config, "the kbase-ui build config: defaults to 'dev'")
 	@:$(call check_defined, env, "the runtime (deploy) environment: defaults to 'dev'")
 	@echo "> Building and running docker image for development"
-	$(eval cmd = cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose up \
+	@echo ">   BUILD_CONFIG=$(config) DEPLOY_ENV=$(env)"
+	$(eval cmd = cd dev; BUILD_CONFIG=$(config) DEPLOY_ENV=$(env) docker-compose up \
 		$(if $(findstring t,$(build-image)),--build))
 	@echo "> Issuing $(cmd)"
 	$(cmd)
@@ -167,7 +168,7 @@ docker-compose-up: docker-network docker-compose-override
 
 docker-compose-clean:
 	@echo "> Cleaning up after docker compose..."
-	@cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose rm -f -s
+	@cd dev; BUILD=$(config) DEPLOY_ENV=$(env) docker-compose rm -f -s
 	@echo "> If necessary, Docker containers have been stopped and removed"
 
 docker-network-clean:

@@ -85,7 +85,7 @@ export class AppServiceManager {
                     });
                 }
                 service.instance = serviceInstance;
-                resolve();
+                resolve(null);
             }, (err) => {
                 reject(err);
             });

@@ -6,7 +6,8 @@
 
 | Version                           | Date       | Notes               |
 | --------------------------------- | ---------- | ------------------- |
-| [NEXT](RELEASE_NOTES_NEXT.md)     | 2020-XX-XX |                     |
+| [NEXT](RELEASE_NOTES_NEXT.md)     | 2021-??-?? |                     |
+| [2.2.2](RELEASE_NOTES_2.2.2.md)   | 2020-12-16 |                     |
 | [2.2.1](RELEASE_NOTES_2.2.1.md)   | 2020-11-03 |                     |
 | [2.2.0](RELEASE_NOTES_2.2.0.md)   | 2020-10-15 |                     |
 | [2.1.12](RELEASE_NOTES_2.1.12.md) | 2020-09-18 |                     |
