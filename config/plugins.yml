@@ -46,7 +46,7 @@ plugins:
         account: kbase
   - name: catalog
     globalName: kbase-ui-plugin-catalog
-    version: 2.2.2
+    version: 2.2.4
     source:
       github:
         account: kbase
