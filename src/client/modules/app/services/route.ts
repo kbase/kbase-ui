@@ -304,7 +304,7 @@ export class RouteService {
                     pluginName: pluginDef.package.name,
                     mode: serviceConfig.mode,
                 });
-                resolve();
+                resolve(null);
             } catch (ex) {
                 reject(ex);
             }
