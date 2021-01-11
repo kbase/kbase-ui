@@ -18,7 +18,7 @@ none
 
 ### IMPROVEMENTS
 
-- none
+Migrate build from travic-ci to github actions (in progress)
 
 ### FIXES
 
