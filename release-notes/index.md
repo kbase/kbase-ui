@@ -1,12 +1,8 @@
 # RELEASE NOTES INDEX
 
-> Note: 1.5.0 is the first version with release notes
-
-> Note: 1.5.0 is the first release with a version
-
 | Version                           | Date       | Notes               |
 | --------------------------------- | ---------- | ------------------- |
-| [2.3.0](RELEASE_NOTES_2.3.0.md)   | 2021-01-11 |                     |
+| [2.3.0](RELEASE_NOTES_2.3.0.md)   | 2021-01-12 |                     |
 | [2.2.2](RELEASE_NOTES_2.2.2.md)   | 2020-12-16 |                     |
 | [2.2.1](RELEASE_NOTES_2.2.1.md)   | 2020-11-03 |                     |
 | [2.2.0](RELEASE_NOTES_2.2.0.md)   | 2020-10-15 |                     |
@@ -73,3 +69,8 @@
 | 1.2.0                             | 2016-04-20 |                     |
 | 1.1.0                             | 2016-03-03 |                     |
 | 1.0.0                             | 2016-02-24 |                     |
+
+
+> Note: 1.5.0 is the first version with release notes
+
+> Note: 1.5.0 is the first release with a version
