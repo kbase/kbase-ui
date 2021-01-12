@@ -298,7 +298,7 @@ class Task {
         }
 
         if (typeof paramValue === 'string') {
-            paramValue = this.interpValue(paramValue);
+            return this.interpValue(paramValue);
         }
         return paramValue;
     }
@@ -368,10 +368,21 @@ class Task {
                 };
             case 'keys':
                 return () => {
-                    const keys = this.getParam(taskDef, 'keys');
-                    keys.forEach((key) => {
-                        browser.keys(key);
-                    });
+                    const keys = this.getParam(taskDef, 'keys', false);
+                    if (keys) {
+                        keys.forEach((key) => {
+                            browser.keys(key);
+                        });
+                    } else {
+                        const string = this.getParam(taskDef, 'string', false);
+                        if (string) {
+                            string.split('').forEach((key) => {
+                                browser.keys(key);
+                            });
+                        } else {
+                            throw new Error('"keys" action requires either a param of either "keys" or "string"');
+                        }
+                    }
                 };
             case 'switchToFrame':
             case 'switchToPluginIFrame':
@@ -482,7 +493,8 @@ class Task {
                 if (Number.isNaN(value)) {
                     return false;
                 }
-                return utils.isValidNumber(value, this.getParam(taskDef, 'number'));
+                const param = this.getParam(taskDef, 'number')
+                return utils.isValidNumber(value, param);
             };
         case 'forCount':
         case 'forElementCount':
@@ -493,7 +505,8 @@ class Task {
                     }
                     const els = browser.$$(taskDef.resolvedSelector);
                     const count = els.length;
-                    return utils.isValidNumber(count, this.getParam(taskDef, 'count'));
+                    const param = this.getParam(taskDef, 'count');
+                    return utils.isValidNumber(count, param);
                 } catch (ex) {
                     return false;
                 }
@@ -582,10 +595,19 @@ class Task {
         const elementType = element.elementType || '';
 
         if (element.type) {
-            if (element.type === 'raw') {
-                return `${elementType}[${element.name}="${this.interpValue(element.value)}"]${nth}`;
-            } else {
-                return `${elementType}[data-k-b-testhook-${element.type}="${this.interpValue(element.value)}"]${nth}`;
+            switch (element.type) {
+                case 'raw':
+                    return `${elementType}[${element.name}="${this.interpValue(element.value)}"]${nth}`;
+                case 'id':
+                    return `#${element.value}`;
+                case 'class':
+                    return `.${element.value.split(/\s+/).join('.')}`;
+                case 'tag':
+                    return `${element.value}`;
+                case 'selector':
+                    return element.selector;
+                default: 
+                    return `${elementType}[data-k-b-testhook-${element.type}="${this.interpValue(element.value)}"]${nth}`;
             }
         } else if (elementType) {
             return `${elementType}${nth}`;
