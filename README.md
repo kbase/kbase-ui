@@ -46,7 +46,7 @@ The KBase UI is an open source project, managed through github. As such, contrib
 
 ## Release Notes
 
-The current released version is [NEXT](release-notes/RELEASE_NOTES_NEXT.md).
+The current released version is [2.3.0](release-notes/RELEASE_NOTES_2.3.0.md).
 
 ## Reporting Bugs
 

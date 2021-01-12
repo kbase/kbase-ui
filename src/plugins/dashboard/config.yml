@@ -16,5 +16,5 @@ services:
         type: internal
         path: "{{plugin}}"
         newWindow: false
-        label: Dashboard
-        icon: dashboard
+        label: Narratives
+        icon: files-o

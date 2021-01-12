@@ -10,8 +10,12 @@ specs:
         path: dashboard
       - wait: forText
         timeout: 5000
-        text: Dashboard
+        text: Signed out
         selector:
+          - type: id
+            value: react-root
           - type: raw
-            name: data-element
-            value: title
+            name: class
+            value: mt4
+          - type: tag
+            value: h1

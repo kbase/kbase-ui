@@ -1,4 +1,4 @@
-# KBase kbase-ui NEXT Release Notes
+# KBase kbase-ui 2.3.0 Release Notes
 
 
 
@@ -18,7 +18,7 @@ none
 
 ### IMPROVEMENTS
 
-- none
+Migrate build from travic-ci to github actions (in progress)
 
 ### FIXES
 

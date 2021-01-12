@@ -1,0 +1,19 @@
+---
+description: Dashboard plugin
+specs:
+  - description: ""
+    baseSelector: []
+    tasks:
+      - subtask: login
+        title: login
+      - action: navigate
+        path: dashboard
+      - wait: forText
+        timeout: 5000
+        text: Narratives
+        selector:
+          - type: id
+            value: react-global-header
+          - type: raw
+            name: class
+            value: roboto-header
