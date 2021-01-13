@@ -2,7 +2,7 @@
 
 | Version                           | Date       | Notes               |
 | --------------------------------- | ---------- | ------------------- |
-| [NEXT](RELEASE_NOTES_NEXT.md)     | 2021-01-?? |                     |
+| [2.3.1](RELEASE_NOTES_2.3.1.md)   | 2021-01-13 |                     |
 | [2.3.0](RELEASE_NOTES_2.3.0.md)   | 2021-01-12 |                     |
 | [2.2.2](RELEASE_NOTES_2.2.2.md)   | 2020-12-16 |                     |
 | [2.2.1](RELEASE_NOTES_2.2.1.md)   | 2020-11-03 |                     |
@@ -71,7 +71,4 @@
 | 1.1.0                             | 2016-03-03 |                     |
 | 1.0.0                             | 2016-02-24 |                     |
 
-
 > Note: 1.5.0 is the first version with release notes
-
-> Note: 1.5.0 is the first release with a version
