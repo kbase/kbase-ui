@@ -68,6 +68,7 @@ function isValidNumber(theNumber, comparisonSpec) {
         case 'lessThanOrEqual':
             return theNumber <= comparisonValue;
         case 'exact':
+        case 'eq':
         case 'equals':
         case 'equal':
             return theNumber === comparisonValue;
