@@ -199,7 +199,8 @@ http {
             proxy_read_timeout 10m;
         }
 
-        # Dynamic Service proxying
+        # -- vv Dynamic Service proxying vv ------------------------------------------
+        # 
         # If dynamic services are provided in the configuration, we will proxy requests
         # to them to local instances.
         # This works by trapping calls to /dynserv/XXX.Module
@@ -207,8 +208,11 @@ http {
         # the service wizard
         # where XXX is a random-appearing string component provided by the service wizard
         # and Module is the dynamic service module name.
+
         {{ if .Env.dynamic_service_proxies }}
+
         {{ range split .Env.dynamic_service_proxies " " }}
+
         # note that the elements of the list must match the service path used in the ui call,
         # and also the hostname assigned to the docker container.
         # SO this means that probably service entries which are more complicated than simple strings
@@ -226,11 +230,14 @@ http {
             proxy_pass http://{{ . }}:5000;
             proxy_read_timeout 10m;
         }
+
         {{ end }}
+
         {{ end }}
 
         # Un-trapped dynamic service calls are routed to the real dynamic service
         # endpoints.
+
         location /dynserv {
             {{ if .Env.deploy_ui_hostname }}
                 include /etc/nginx/cors.conf;
@@ -241,6 +248,8 @@ http {
             client_max_body_size 300M;
             proxy_read_timeout 10m;
         }
+
+        # -- ^^ Dynamic Service proxying ^^ ------------------------------------------
 
         # Repeat the ui proxying for the case in which they reside on the same
         # host name as services.

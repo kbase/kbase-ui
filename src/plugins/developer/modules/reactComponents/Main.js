@@ -15,7 +15,7 @@ define([
             super(props);
         }
         componentDidMount() {
-            this.props.runtime.send('ui', 'setTitle', 'Developer Tools - Main');
+            this.props.runtime.send('ui', 'setTitle', 'Main | Developer Tools');
         }
 
         render() {
