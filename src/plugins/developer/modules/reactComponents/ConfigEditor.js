@@ -15,7 +15,7 @@ define([
             super(props);
         }
         componentDidMount() {
-            this.props.runtime.send('ui', 'setTitle', 'Config Editor');
+            this.props.runtime.send('ui', 'setTitle', 'Config Editor | Developer Tools');
         }
         onSave() {
 
