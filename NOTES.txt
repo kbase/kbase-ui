@@ -1,3 +1,0 @@
-DO NOT CHECK ME IN
-
-make dev-start build-image=f plugins="auth2-client dashboard feeds job-browser2 dataview typeview jgi-search biochem-search catalog react-profile-view dashboard4" paths="modules/app/services"
