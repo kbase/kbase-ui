@@ -96,6 +96,7 @@ define([
                     return {
                         id: menuItem.id,
                         label: menuItem.label,
+                        tooltip: menuItem.tooltip,
                         icon: menuItem.icon,
                         path: menuItem.path,
                         authRequired: menuItem.authRequired ? true : false,

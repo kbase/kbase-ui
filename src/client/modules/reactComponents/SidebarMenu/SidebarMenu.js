@@ -1,16 +1,18 @@
 define([
     'preact',
     'htm',
+    'jquery',
 
     // for effect
     'bootstrap',
     'css!./SidebarMenu.css'
 ], (
     preact,
-    htm
+    htm, 
+    $
 ) => {
 
-    const {h, Component} = preact;
+    const {h, Component, createRef} = preact;
     const html = htm.bind(h);
 
     class SidebarMenu extends Component {
@@ -26,6 +28,8 @@ define([
                 }
             );
 
+            this.ref = createRef();
+
             this.state = {
                 feedsNotificationCount: null,
                 feedsError: null
@@ -35,6 +39,7 @@ define([
         componentDidMount() {
             const feeds = this.props.runtime.db().get('feeds');
             this.processFeeds(feeds);
+            $(this.ref.current).tooltip({selector: '[data-toggle="tooltip"]'});
         }
 
         processFeeds(feeds) {
@@ -69,8 +74,8 @@ define([
                     </div>
                     <div className="fa fa-stack-1x fa-globe"
                         style=${{fontSize: '85%',
-        top: '-7px',
-        left: '-3px'}}>
+                                top: '-7px',
+                                left: '-3px'}}>
                     </div>
                 </div>
             `;
@@ -151,10 +156,14 @@ define([
 
         renderButton(menuItem) {
             const activeClass = menuItem.isActive ? ' -active' : '';
+            console.warn('menu item', menuItem);
             return html`
                 <a className=${'SidebarMenu -button' + activeClass}
                    data-k-b-testhook-element="menu-item"
                    data-k-b-testhook-button=${menuItem.id}
+                   data-toggle="tooltip" 
+                   data-placement="right"
+                   title=${menuItem.tooltip || ''}
                    onClick=${() => {this.onNavClick(menuItem.path);}}>
                    ${this.renderIcon(menuItem)}
                    <div>${menuItem.label}</div>
@@ -169,7 +178,7 @@ define([
                 return this.renderButton(menuItem);
             });
             return html`
-                <div>
+                <div ref=${this.ref}>
                     ${buttons}
                 </div>
             `;

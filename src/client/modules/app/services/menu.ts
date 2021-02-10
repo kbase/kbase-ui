@@ -11,6 +11,7 @@ interface MenuItemDefinitionBase {
     type: string;
     name: string;
     label: string;
+    tooltip?: string;
     icon: string;
     auth?: boolean;
     newWindow?: boolean;
