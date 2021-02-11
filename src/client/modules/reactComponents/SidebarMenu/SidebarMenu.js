@@ -156,7 +156,6 @@ define([
 
         renderButton(menuItem) {
             const activeClass = menuItem.isActive ? ' -active' : '';
-            console.warn('menu item', menuItem);
             return html`
                 <a className=${'SidebarMenu -button' + activeClass}
                    data-k-b-testhook-element="menu-item"
