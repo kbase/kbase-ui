@@ -104,7 +104,7 @@ export class MenuService extends Service<MenuServiceConfig> {
                 return;
             }
 
-            // The ui's menu config can ovveride certain properties of the 
+            // The ui's menu config can override certain properties of the
             // plugin's menu definition
             menuDef.auth = menuDef.auth || menuItem.auth;
             return menuDef;
@@ -168,6 +168,6 @@ export class MenuService extends Service<MenuServiceConfig> {
     stop() {
         return Promise.resolve();
     }
-};
+}
 
 export const ServiceClass = MenuService;
