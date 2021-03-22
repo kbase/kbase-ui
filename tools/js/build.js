@@ -257,7 +257,7 @@ async function yarnInstall(state) {
     const packageConfig = await mutant.loadJson(packagePath);
     delete packageConfig.devDependencies;
     await mutant.saveJson(packagePath, packageConfig);
-    return yarn('install', ['--no-lockfile'], {
+    return yarn('install', [], {
         cwd: base.join('/'),
         timeout: 300000
     });
