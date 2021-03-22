@@ -163,7 +163,7 @@ function fetchPluginsFromGithub(state) {
             return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8')]);
         })
         .spread(function (pluginFile) {
-            pluginConfig = yaml.safeLoad(pluginFile);
+            pluginConfig = yaml.load(pluginFile);
         })
         .then(function () {
             // First generate urls to all the plugin repos.
@@ -206,7 +206,7 @@ function injectPluginsIntoConfig(state) {
             return fs.readFileAsync(pluginConfigFile, 'utf8');
         })
         .then((pluginFile) => {
-            return yaml.safeLoad(pluginFile);
+            return yaml.load(pluginFile);
         })
         .then((pluginConfig) => {
             const plugins = {};
@@ -402,7 +402,7 @@ function installPlugins(state) {
         fs
             .readFileAsync(pluginConfigFile, 'utf8')
             .then((pluginFile) => {
-                pluginConfig = yaml.safeLoad(pluginFile);
+                pluginConfig = yaml.load(pluginFile);
                 const plugins = pluginConfig.plugins;
                 return Promise.all(
                     // Supports installing from gitDownloads (which are downloaded prior to this)
@@ -980,7 +980,7 @@ function makeModuleVFS(state) {
                             case 'yaml':
                             case 'yml':
                                 include(ext);
-                                vfs.resources.json[base] = yaml.safeLoad(contents);
+                                vfs.resources.json[base] = yaml.load(contents);
                                 break;
                             case 'json':
                                 if (vfs.resources.json[base]) {
