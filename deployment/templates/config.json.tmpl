@@ -11,7 +11,7 @@
             "dynamicServiceProxies": [{{ range $i, $v := split .Env.dynamic_service_proxies "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
         }
     },
-    "ui": {       
+    "ui": {
         "services": {
 			"connection": {},
 			"coreService": {},
@@ -108,28 +108,34 @@
 									},
 									{
 										"id": "organizations",
-										"auth": true
+										"auth": true,
+										"tooltip": "Search, join, manage KBase Organizations"
 									},
 									{
 										"id": "catalog",
-										"auth": false
+										"auth": false,
+										"tooltip": "Searchable catalog of all KBase Narrative Apps and Types"
 									},
 									{
 										"id": "search",
-										"auth": true
+										"auth": true,
+										"tooltip": "Search KBase in Narratives and Reference Data"
 									},
 									{
 										"id": "jobbrowser",
 										"label": "Jobs",
-										"auth": true
+										"auth": true,
+										"tooltip": "Browse and manage your jobs spawned by your Narratives"
 									},
 									{
 										"id": "account",
-										"auth": true
+										"auth": true,
+										"tooltip": "Manage your KBase Account"
 									},
 									{
 										"id": "feeds",
-										"auth": true
+										"auth": true,
+										"tooltip": "View notifications from your KBase Feeds"
 									}
                             ]},
                         "disabled": [{{ range $i, $v := split .Env.ui_services_menu_sidebar_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
@@ -367,7 +373,7 @@
 				"semverNotImplemented": true
 			}
 		},
-       
+
         "SearchAPI2": {
             "aliases": [],
             "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_path "services/searchapi2/rpc" }}",
@@ -408,7 +414,7 @@
 			],
 			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_staging_path "services/staging_service" }}"
 		}
-        
+
     },
     "dynamicServices": {
         "JobBrowserBFF": {
