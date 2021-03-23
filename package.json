@@ -77,7 +77,6 @@
         "tar": "6.1.0",
         "typescript": "4.2.3",
         "uglify-es": "3.3.9",
-        "uuid": "8.3.2",
         "webdriverio": "7.2.2",
         "yargs": "16.2.0"
     },
@@ -90,12 +89,12 @@
         "jquery": "3.6.0",
         "js-yaml": "4.0.0",
         "preact": "10.5.13",
-        "pure-uuid": "1.6.2",
         "require-css": "0.1.10",
         "requirejs-domready": "2.0.3",
         "requirejs-json": "0.0.3",
         "requirejs-text": "2.0.15",
         "semver-umd": "5.5.7",
-        "spark-md5": "3.0.1"
+        "spark-md5": "3.0.1",
+        "uuid": "8.3.2"
     }
 }

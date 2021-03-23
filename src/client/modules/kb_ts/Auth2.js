@@ -4,14 +4,14 @@ define([
     './HttpClient',
     './Auth2Client',
     './Auth2Error',
-    'uuid'
+    'uuid',
 ], (
     Html,
-    { HttpQuery } ,
-    { HttpHeader },
-    { AuthClient },
-    { AuthError},
-    Uuid
+    {HttpQuery},
+    {HttpHeader},
+    {AuthClient},
+    {AuthError},
+    {v4: uuidv4},
 ) => {
 
     // const { HttpQuery } = HttpUtils;
@@ -82,7 +82,7 @@ define([
         tokensRevokeAll: 'tokens/revokeall',
         userSearch: 'api/V2/users/search',
         adminUserSearch: 'api/V2/admin/search',
-        adminUser: 'api/V2/admin/user'
+        adminUser: 'api/V2/admin/user',
     };
 
     // export interface ILoginOptions {
@@ -261,7 +261,7 @@ define([
     // Classes
 
     class Auth2 {
-    // config: AuthConfig;
+        // config: AuthConfig;
 
         constructor(config) {
             this.config = config;
@@ -273,16 +273,17 @@ define([
                 {
                     id: 'Globus',
                     label: 'Globus',
-                    logoutUrl: 'https://www.globus.org/app/logout'
+                    logoutUrl: 'https://www.globus.org/app/logout',
                 },
                 {
                     id: 'Google',
                     label: 'Google',
-                    logoutUrl: 'https://accounts.google.com/Logout'
-                }
+                    logoutUrl: 'https://accounts.google.com/Logout',
+                },
             ];
 
         }
+
         getProvider(providerId) {
             var providers = this.getProviders();
             return providers.filter((provider) => {
@@ -290,15 +291,15 @@ define([
             })[0];
         }
 
-        root()  {
+        root() {
             const httpClient = new AuthClient();
             return httpClient.request({
                 method: 'GET',
                 withCredentials: true,
                 header: new HttpHeader({
-                    Accept: 'application/json'
+                    Accept: 'application/json',
                 }),
-                url: this.makePath([endpoints.root])
+                url: this.makePath([endpoints.root]),
             })
                 .then((result) => {
                     return this.processResult(result, 200);
@@ -312,7 +313,7 @@ define([
         did the correctthing.
     */
         loginStart(config) {
-        // Set the client state cookie.
+            // Set the client state cookie.
             // var state = JSON.stringify(config.state);
 
             // Punt over to the auth service
@@ -323,7 +324,7 @@ define([
             // const button = t('button');
 
             const search = new HttpQuery({
-                state: JSON.stringify(config.state)
+                state: JSON.stringify(config.state),
             }).toString();
 
             var url = document.location.origin + '?' + search;
@@ -331,29 +332,29 @@ define([
             const query = {
                 provider: config.provider,
                 redirecturl: url,
-                stayloggedin: config.stayLoggedIn ? 'true' : 'false'
+                stayloggedin: config.stayLoggedIn ? 'true' : 'false',
             };
 
-            const formId = new Uuid(4).format();
+            const formId = uuidv4();
 
             const content = form({
                 method: 'post',
                 id: formId,
                 action: this.makePath(endpoints.loginStart),
                 style: {
-                    display: 'hidden'
-                }
+                    display: 'hidden',
+                },
             }, [
                 input({
                     type: 'hidden',
                     name: 'provider',
-                    value: query.provider
+                    value: query.provider,
                 }, []),
                 input({
                     type: 'hidden',
                     name: 'redirecturl',
-                    value: query.redirecturl
-                }, [])
+                    value: query.redirecturl,
+                }, []),
             ]);
             var donorNode = document.createElement('div');
 
@@ -371,32 +372,30 @@ define([
             const input = t('input');
 
             const query = {
-                provider: config.provider
+                provider: config.provider,
             };
 
-            const formId = new Uuid(4).format();
+            const formId = uuidv4();
 
-            const content = form({
+            config.node.innerHTML = form({
                 method: 'POST',
                 id: formId,
                 action: [this.config.baseUrl, endpoints.linkStart].join('/'),
                 style: {
-                    display: 'hidden'
-                }
+                    display: 'hidden',
+                },
             }, [
                 input({
                     type: 'hidden',
                     name: 'provider',
-                    value: query.provider
+                    value: query.provider,
                 }, []),
                 input({
                     type: 'hidden',
                     name: 'token',
-                    value: token
-                })
+                    value: token,
+                }),
             ]);
-
-            config.node.innerHTML = content;
 
             (document.getElementById(formId)).submit();
         }
@@ -418,7 +417,7 @@ define([
                 throw new AuthError({
                     code: 'decode-error',
                     message: 'Error decoding JSON error response',
-                    detail: ex.message
+                    detail: ex.message,
                 });
             }
         }
@@ -432,9 +431,9 @@ define([
                 header: new HttpHeader({
                     authorization: token,
                     'content-type': 'application/json',
-                    accept: 'application/json'
+                    accept: 'application/json',
                 }),
-                url: this.makePath([endpoints.linkRemove, config.identityId])
+                url: this.makePath([endpoints.linkRemove, config.identityId]),
             })
                 .then((result) => {
                     return this.processResult(result, 204);
@@ -450,9 +449,9 @@ define([
                 header: new HttpHeader({
                     authorization: token,
                     'content-type': 'application/json',
-                    'accept': 'application/json'
+                    'accept': 'application/json',
                 }),
-                url: this.makePath(endpoints.logout)
+                url: this.makePath(endpoints.logout),
             })
                 .then((result) => {
                     return this.processResult(result, 200);
@@ -467,9 +466,9 @@ define([
                 withCredentials: true,
                 header: new HttpHeader({
                     authorization: token,
-                    'content-type': 'application/json'
+                    'content-type': 'application/json',
                 }),
-                url: this.makePath([endpoints.tokensRevoke, tokenid])
+                url: this.makePath([endpoints.tokensRevoke, tokenid]),
             })
                 .then((result) => {
                     return this.processResult(result, 204);
@@ -484,9 +483,9 @@ define([
                 withCredentials: true,
                 header: new HttpHeader({
                     authorization: token,
-                    'content-type': 'application/json'
+                    'content-type': 'application/json',
                 }),
-                url: this.makePath(endpoints.tokensRevokeAll)
+                url: this.makePath(endpoints.tokensRevokeAll),
             })
                 .then((result) => {
                     return this.processResult(result, 204);
@@ -500,8 +499,8 @@ define([
                 url: this.makePath([endpoints.tokenInfo]),
                 withCredentials: true,
                 header: new HttpHeader({
-                    authorization: token
-                })
+                    authorization: token,
+                }),
             })
                 .then((result) => {
                     return this.processResult(result, 200);
@@ -516,8 +515,8 @@ define([
                 url: this.makePath(endpoints.apiMe),
                 header: new HttpHeader({
                     authorization: token,
-                    accept: 'application/json'
-                })
+                    accept: 'application/json',
+                }),
             })
                 .then((result) => {
                     return this.processResult(result, 200);
@@ -533,9 +532,9 @@ define([
                 header: new HttpHeader({
                     authorization: token,
                     accept: 'application/json',
-                    'content-type': 'application/json'
+                    'content-type': 'application/json',
                 }),
-                data: JSON.stringify(data)
+                data: JSON.stringify(data),
             })
                 .then((result) => {
                     this.processResult(result, 204);
@@ -557,8 +556,8 @@ define([
                 url: this.makePath([endpoints.tokens]),
                 header: new HttpHeader({
                     authorization: token,
-                    accept: 'application/json'
-                })
+                    accept: 'application/json',
+                }),
             })
                 .then((result) => {
                     return this.processResult(result, 200);
@@ -574,9 +573,9 @@ define([
                 header: new HttpHeader({
                     authorization: token,
                     accept: 'application/json',
-                    'content-type': 'application/json'
+                    'content-type': 'application/json',
                 }),
-                data: JSON.stringify(create)
+                data: JSON.stringify(create),
             })
                 .then((result) => {
                     return this.processResult(result, 200);
@@ -592,8 +591,8 @@ define([
                 withCredentials: true,
                 url: this.makePath(endpoints.loginChoice),
                 header: new HttpHeader({
-                    accept: 'application/json'
-                })
+                    accept: 'application/json',
+                }),
             })
                 .then((result) => {
                     return this.processResult(result, 200);
@@ -607,8 +606,8 @@ define([
                 withCredentials: true,
                 url: this.makePath(endpoints.loginCancel),
                 header: new HttpHeader({
-                    accept: 'application/json'
-                })
+                    accept: 'application/json',
+                }),
             })
                 .then((result) => {
                     return this.processResult(result, 204);
@@ -622,8 +621,8 @@ define([
                 withCredentials: true,
                 url: this.makePath(endpoints.linkCancel),
                 header: new HttpHeader({
-                    accept: 'application/json'
-                })
+                    accept: 'application/json',
+                }),
             })
                 .then((result) => {
                     return this.processResult(result, 204);
@@ -636,7 +635,7 @@ define([
                 linkall: arg.linkAll,
                 policyids: arg.agreements.map((a) => {
                     return [a.id, a.version].join('.');
-                })
+                }),
             };
             const httpClient = new AuthClient();
             return httpClient.request({
@@ -646,8 +645,8 @@ define([
                 data: JSON.stringify(data),
                 header: new HttpHeader({
                     'content-type': 'application/json',
-                    accept: 'application/json'
-                })
+                    accept: 'application/json',
+                }),
             })
                 .then((result) => {
                     return this.processResult(result, 200);
@@ -663,8 +662,8 @@ define([
                 data: JSON.stringify(data),
                 header: new HttpHeader({
                     'content-type': 'application/json',
-                    'accept': 'application/json'
-                })
+                    'accept': 'application/json',
+                }),
             })
                 .then((result) => {
                     return this.processResult(result, 201);
@@ -679,8 +678,8 @@ define([
                 withCredentials: true,
                 url: this.makePath([endpoints.loginUsernameSuggest, username]),
                 header: new HttpHeader({
-                    accept: 'application/json'
-                })
+                    accept: 'application/json',
+                }),
             })
                 .then((result) => {
                     return this.processResult(result, 200);
@@ -696,16 +695,16 @@ define([
                 url: this.makePath(endpoints.linkChoice),
                 header: new HttpHeader({
                     accept: 'application/json',
-                    authorization: token
-                })
+                    authorization: token,
+                }),
             })
                 .then((result) => {
                     return this.processResult(result, 200);
                 })
                 .then((response) => {
-                // The link choice structure provided by the auth2 service has evolved
-                // over time, so we normalize it to a structure easier to digest by the
-                // front end.
+                    // The link choice structure provided by the auth2 service has evolved
+                    // over time, so we normalize it to a structure easier to digest by the
+                    // front end.
                     if (response.haslinks) {
                         return {
                             id: response.idents[0].id,
@@ -716,7 +715,7 @@ define([
                             provider: response.provider,
                             provusername: response.idents[0].provusername,
                             linkeduser: null,
-                            user: response.user
+                            user: response.user,
                         };
                     } else {
                         return {
@@ -728,7 +727,7 @@ define([
                             provider: response.provider,
                             provusername: response.linked[0].provusername,
                             linkeduser: response.linked[0].user,
-                            user: response.user
+                            user: response.user,
                         };
                     }
                 });
@@ -736,7 +735,7 @@ define([
 
         linkPick(token, identityId) {
             const data = {
-                id: identityId
+                id: identityId,
             };
             const httpClient = new AuthClient();
             return httpClient.request({
@@ -747,8 +746,8 @@ define([
                 header: new HttpHeader({
                     authorization: token,
                     'content-type': 'application/json',
-                    accept: 'application/json'
-                })
+                    accept: 'application/json',
+                }),
             })
                 .then((result) => {
                     return this.processResult(result, 204);
@@ -760,7 +759,7 @@ define([
                 if (expectedResponse !== result.status) {
                     throw new AuthError({
                         code: 'unexpected-response-code',
-                        message: 'Unexpected response code; expected ' + String(expectedResponse) + ', received ' + String(result.status)
+                        message: 'Unexpected response code; expected ' + String(expectedResponse) + ', received ' + String(result.status),
                     });
                 }
                 if (result.status === 200 || result.status === 201) {
@@ -775,15 +774,15 @@ define([
                 } else {
                     throw new AuthError({
                         code: 'unexpected-response-code',
-                        message: 'Unexpected response code; expected ' + String(expectedResponse) + ', received ' + String(result.status)
+                        message: 'Unexpected response code; expected ' + String(expectedResponse) + ', received ' + String(result.status),
                     });
                 }
             } else {
-            // TODO: should we distinguish error conditions or let the caller do so?
-            // Maybe we should throw a basic error type, like
-            // AuthorizationError - for 401s
-            // ClientError - for 400s
-            // ServerError - for 500s
+                // TODO: should we distinguish error conditions or let the caller do so?
+                // Maybe we should throw a basic error type, like
+                // AuthorizationError - for 401s
+                // ClientError - for 400s
+                // ServerError - for 500s
                 var auth2ErrorData, errorResponse;
                 var errorText = result.response;
                 try {
@@ -800,8 +799,8 @@ define([
                                 message: 'The auth service could not be contacted due to a proxy error (502)',
                                 detail: 'An error returned by the proxy service indicates that the auth service is not operating corectly',
                                 data: {
-                                    text: result.response
-                                }
+                                    text: result.response,
+                                },
                             };
                         } else {
                             errorResponse = {
@@ -812,8 +811,8 @@ define([
                                 data: {
                                     text: result.response,
                                     contentType: result.header.getContentType().mediaType,
-                                    status: result.status
-                                }
+                                    status: result.status,
+                                },
                             };
                         }
                         // errorData = {
@@ -829,8 +828,8 @@ define([
                         message: 'Error decoding error message',
                         detail: 'Original error code: ' + result.status,
                         data: {
-                            text: errorText
-                        }
+                            text: errorText,
+                        },
                     });
                 }
                 if (auth2ErrorData) {
@@ -839,7 +838,7 @@ define([
                         code: String(code),
                         status: result.status,
                         message: auth2ErrorData.error.message || auth2ErrorData.error.apperror,
-                        data: auth2ErrorData
+                        data: auth2ErrorData,
                     });
                 }
                 throw new AuthError(errorResponse);
@@ -852,10 +851,10 @@ define([
             const path = this.makePath([endpoints.userSearch, searchInput.prefix]);
 
             const search = new HttpQuery({
-                fields: searchInput.fields
+                fields: searchInput.fields,
             }).toString();
 
-            const url = path + '?'  + search;
+            const url = path + '?' + search;
 
             return httpClient.request({
                 method: 'GET',
@@ -863,11 +862,11 @@ define([
                 url: url,
                 header: new HttpHeader({
                     authorization: token,
-                    accept: 'application/json'
-                })
+                    accept: 'application/json',
+                }),
             })
                 .then((result) => {
-                    return this.processResult(result,200);
+                    return this.processResult(result, 200);
                 });
         }
 
@@ -875,7 +874,7 @@ define([
             const httpClient = new AuthClient();
 
             const search = new HttpQuery({
-                fields: searchInput.fields
+                fields: searchInput.fields,
             }).toString();
 
             const url = this.makePath([endpoints.adminUserSearch, searchInput.prefix]) + '?' + search;
@@ -886,8 +885,8 @@ define([
                 url: url,
                 header: new HttpHeader({
                     authorization: token,
-                    accept: 'application/json'
-                })
+                    accept: 'application/json',
+                }),
             })
                 .then((result) => {
                     return this.processResult(result, 200);
@@ -902,8 +901,8 @@ define([
                 url: this.makePath([endpoints.adminUser, username]),
                 header: new HttpHeader({
                     authorization: token,
-                    accept: 'application/json'
-                })
+                    accept: 'application/json',
+                }),
             })
                 .then((result) => {
                     return this.processResult(result, 200);
