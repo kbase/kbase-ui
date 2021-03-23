@@ -109,23 +109,23 @@
 									{
 										"id": "organizations",
 										"auth": true,
-										"tooltip": "Search, join, manage KBase Organizations"
+										"tooltip": "Browse, search, join and manage KBase Organizations"
 									},
 									{
 										"id": "catalog",
 										"auth": false,
-										"tooltip": "Searchable catalog of all KBase Narrative Apps and Types"
+										"tooltip": "Browse and search a catalog of KBase Narrative Apps and Workspace Types"
 									},
 									{
 										"id": "search",
 										"auth": true,
-										"tooltip": "Search KBase in Narratives and Reference Data"
+										"tooltip": "Search KBase data objects in Narratives and Reference Workspaces"
 									},
 									{
 										"id": "jobbrowser",
 										"label": "Jobs",
 										"auth": true,
-										"tooltip": "Browse and manage your jobs spawned by your Narratives"
+										"tooltip": "Browse and manage jobs spawned in your Narratives"
 									},
 									{
 										"id": "account",
@@ -135,7 +135,7 @@
 									{
 										"id": "feeds",
 										"auth": true,
-										"tooltip": "View notifications from your KBase Feeds"
+										"tooltip": "Browse and manage notifications from your KBase Feeds"
 									}
                             ]},
                         "disabled": [{{ range $i, $v := split .Env.ui_services_menu_sidebar_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
