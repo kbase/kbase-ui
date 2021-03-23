@@ -7,7 +7,7 @@ define([
 ], (
     preact,
     htm,
-    Uuid
+    {v4: uuidv4}
 ) => {
 
     const {h, Component, createRef} = preact;
@@ -22,7 +22,7 @@ define([
             //     params, runtime
             // } = props;
 
-            const id = new Uuid(4).format();
+            const id = uuidv4();
             this.id = `frame_ ${id}`;
 
             this.ref = createRef();

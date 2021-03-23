@@ -16,7 +16,7 @@ define([
     'css!app/styles/kb-ui'
 ], function (
     Promise,
-    Uuid,
+    {v4: uuidv4},
     Hub,
     props,
     utils,
@@ -35,7 +35,7 @@ define([
 
     // establish a global root namespace upon which we can
     // hang data, which at this time is just the app.
-    const globalRef = new Uuid(4).format();
+    const globalRef = uuidv4();
     const global = (window[globalRef] = new props.Props());
 
     function start() {

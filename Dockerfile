@@ -10,7 +10,7 @@ RUN apk upgrade --update-cache --available && \
 
 COPY ./package.json /kb
 WORKDIR /kb
-RUN yarn install --no-lockfile
+RUN yarn install
 
 COPY . /kb
 
@@ -55,7 +55,7 @@ COPY --from=builder /kb/deployment/templates /kb/deployment/templates
 # Deployment-time scripts
 COPY --from=builder /kb/deployment/scripts /kb/deployment/scripts
 
-# Need to include the integration tests since otherwise we need a local build 
+# Need to include the integration tests since otherwise we need a local build
 # to pick them up.
 COPY --from=builder /kb/build/test /kb/deployment/services/kbase-ui/test
 
@@ -66,7 +66,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.vcs-ref=$COMMIT \
     org.label-schema.schema-version="1.0.0-rc1" \
     us.kbase.vcs-branch=$BRANCH  \
-    us.kbase.vcs-tag=$TAG \ 
+    us.kbase.vcs-tag=$TAG \
     maintainer="Steve Chan sychan@lbl.gov"
 
 # Run as a regular user, not root.

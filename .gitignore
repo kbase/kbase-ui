@@ -27,14 +27,13 @@ report.*.json
 /dev/test-config.json
 /dev/temp
 /dev/test
-yarn.lock
 
 # General purpose temp directory
 /temp/*
 !/temp/README.md
 
 docker-compose.override.yml
-        
+
 /tools/proxy/contents/ssl/*
 !/tools/proxy/contents/ssl/README.md
 

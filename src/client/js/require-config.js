@@ -37,7 +37,7 @@
             preact: 'node_modules/preact/preact.umd',
             htm: 'node_modules/htm/htm.umd',
             text: 'node_modules/requirejs-text/text',
-            uuid: 'node_modules/pure-uuid/uuid',
+            uuid: 'node_modules/uuid/uuid.min',
             yaml: 'ports/requirejs-yaml/yaml',
             semver: 'node_modules/semver-umd/semver-umd'
         },

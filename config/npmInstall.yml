@@ -14,8 +14,6 @@ npmFiles:
       - js/bootstrap.js
       - css/bootstrap.css
       - fonts/*
-  - name: dagre
-    cwd: dist
   - name: font-awesome
     src:
       - css/font-awesome.css
@@ -24,22 +22,14 @@ npmFiles:
     cwd: dist
   - name: js-yaml
     cwd: dist
-  - name: lodash
   - name: preact
     cwd: dist
     src:
       - preact.umd.js
-  - dir: pure-uuid
+  - name: uuid
+    cwd: dist/umd
     src:
-      - uuid.js
-  - name: kbase-ui-lib
-    cwd: lib
-    src:
-      - "**/*"
-  - name: kbase-ui-components
-    cwd: lib
-    src:
-      - "**/*"
+      - uuid.min.js
   - name: htm
     cwd: dist
     src:

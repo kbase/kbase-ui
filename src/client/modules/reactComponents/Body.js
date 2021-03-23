@@ -9,7 +9,7 @@ define([
     preact,
     htm,
     {DataPipe},
-    Uuid
+    {v4: uuidv4}
 ) => {
     const {h, Component, createRef, render} = preact;
     const html = htm.bind(h);
@@ -103,7 +103,7 @@ define([
                         view: route.view,
                         params: paramsToSend,
                         pluginName: route.pluginName,
-                        key: new Uuid(4).format()
+                        key: uuidv4()
                     };
 
                     // ensure the root node is empty.

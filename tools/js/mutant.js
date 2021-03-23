@@ -105,7 +105,7 @@ function loadYaml(path) {
     const yamlPath = Array.isArray(path) ? path.join('/') : path;
     return fs.readFileAsync(yamlPath, 'utf8').then(function (contents) {
         try {
-            return yaml.safeLoad(contents);
+            return yaml.load(contents);
         } catch (ex) {
             console.error('Error loading yaml', ex, contents);
             throw new Error('Error loading yaml: ' + ex.message);
@@ -120,7 +120,7 @@ function loadJson(path) {
 }
 
 function saveYaml(path, data) {
-    return fs.writeFileAsync(path.join('/'), yaml.safeDump(data));
+    return fs.writeFileAsync(path.join('/'), yaml.dump(data));
 }
 
 function loadIni(iniPath) {

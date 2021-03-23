@@ -2,24 +2,21 @@ define([
     'preact',
     'htm',
     'uuid',
-    './Notifications'
+    './Notifications',
 ], (
     preact,
     htm,
-    Uuid,
-    Notifications
+    {v4: uuidv4},
+    Notifications,
 ) => {
-
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
-
     const AUTODISMISSER_INTERVAL = 1000;
 
-
     class Notification {
-        constructor({ notification, parent }) {
+        constructor({notification, parent}) {
             const newNotification = notification;
-            this.id = newNotification.id || new Uuid(4).format();
+            this.id = newNotification.id || uuidv4();
             this.message = newNotification.message;
             this.description = newNotification.description;
             this.autodismiss = newNotification.autodismiss;
@@ -73,9 +70,9 @@ define([
             super(props);
 
             this.runtime = this.props.runtime;
-            this.sendingChannel = new Uuid(4).format();
+            this.sendingChannel = uuidv4();
             this.autoDismisser = new AutoDismisser({
-                runner: this.autodismissRunner.bind(this)
+                runner: this.autodismissRunner.bind(this),
             });
 
             this.state = {
@@ -84,27 +81,27 @@ define([
                     info: 0,
                     success: 0,
                     warning: 0,
-                    error: 0
+                    error: 0,
                 },
-                show: false
+                show: false,
             };
         }
 
         closeNotifications() {
             this.setState({
-                show: false
+                show: false,
             });
         }
 
         showNotifications() {
             this.setState({
-                show: true
+                show: true,
             });
         }
 
         toggleNotifications() {
             this.setState({
-                show: !this.state.show
+                show: !this.state.show,
             });
         }
 
@@ -133,7 +130,7 @@ define([
 
         componentDidMount() {
             this.runtime.send('notification', 'ready', {
-                channel: this.sendingChannel
+                channel: this.sendingChannel,
             });
 
             this.runtime.receive(this.sendingChannel, 'new', (message) => {
@@ -170,7 +167,7 @@ define([
             }
 
             this.setState({
-                notifications, summary
+                notifications, summary,
             }, () => {
                 this.autoDismisser.run();
             });
@@ -179,7 +176,7 @@ define([
         }
 
         addNotification(newMessage) {
-            const notification = new Notification({ notification: newMessage, parent: this });
+            const notification = new Notification({notification: newMessage, parent: this});
             const {summary, notifications} = this.state;
             // const summaryItem = summary[notification.type];
             // if (summaryItem) {
@@ -191,7 +188,7 @@ define([
             notifications.unshift(notification);
             // this.notificationMap[notification.id] = notification;
             this.setState({
-                notifications, summary
+                notifications, summary,
             });
         }
 
@@ -208,7 +205,7 @@ define([
             summary[notificationToRemove.type] -= 1;
 
             this.setState({
-                notifications, summary
+                notifications, summary,
             });
         }
 
@@ -230,7 +227,7 @@ define([
                 this.addNotification(message);
             }
             this.setState({
-                show: true
+                show: true,
             });
         }
 
@@ -241,12 +238,12 @@ define([
                 show: this.state.show,
                 closeNotifications: this.closeNotifications.bind(this),
                 toggleNotifications: this.toggleNotifications.bind(this),
-                clearNotification: this.clearNotification.bind(this)
+                clearNotification: this.clearNotification.bind(this),
             };
             return html`
-                <div className="NotificationsMain"
+                <div class="NotificationsMain"
                      data-k-b-testhook-component="notificationsmain">
-                    <${Notifications} ...${props} />
+                    <${Notifications} ...${props}/>
                 </div>
             `;
         }

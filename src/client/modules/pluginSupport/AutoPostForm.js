@@ -5,7 +5,7 @@ define([
 ], (
     preact,
     htm,
-    Uuid
+    {v4: uuidv4}
 ) => {
 
     const {h, Component, createRef} = preact;
@@ -25,7 +25,7 @@ define([
         }
         render() {
             const {params, action} = this.props;
-            const id = new Uuid(4).format();
+            const id = uuidv4();
             const formID = `html_${id}`;
 
             const paramInputs = Array.from(Object.entries(params))
