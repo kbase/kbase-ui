@@ -39,7 +39,8 @@ define([
             this.receivers = [];
 
             this.channel = new WindowChannel({
-                host: document.location.origin
+                host: document.location.origin,
+                to: uuidv4()
             });
 
             this.state = {
@@ -116,7 +117,7 @@ define([
             });
 
             this.channel.on('set-plugin-params', ({pluginParams}) => {
-                if (Object.keys(pluginParams) === 0) {
+                if (Object.keys(pluginParams).length === 0) {
                     window.location.search = '';
                     return;
                 }
@@ -333,6 +334,7 @@ define([
                 origin: document.location.origin,
                 pathRoot: this.props.pluginPath,
                 channelId: this.channel.channelId,
+                pluginChannelId: this.channel.partnerId,
                 whenMounted: (w) => {
                     // this.channel.setWindow(this.iframe.window);
                     this.iframeMounted(w);
