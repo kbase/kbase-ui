@@ -63,7 +63,8 @@ define([
                 buildInfo: this.props.runtime.config('buildInfo'),
                 developMode: false,
                 params: this.props.params,
-                channelId: this.props.channelId
+                channelId: this.props.channelId,
+                pluginChannelId: this.props.pluginChannelId
             };
 
             const paramString = window.encodeURIComponent(JSON.stringify(params));
