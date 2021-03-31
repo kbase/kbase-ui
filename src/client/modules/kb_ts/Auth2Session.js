@@ -3,13 +3,13 @@ define([
     'uuid',
     './Cookie',
     './Auth2',
-    './Auth2Error'
+    './Auth2Error',
 ], (
     Promise,
-    Uuid,
-    { CookieManager, Cookie },
-    { Auth2 },
-    { AuthError }
+    {v4: uuidv4},
+    {CookieManager, Cookie},
+    {Auth2},
+    {AuthError},
 ) => {
 
     // import { CookieManager, Cookie } from './Cookie';
@@ -62,7 +62,7 @@ define([
         Syncing: 'SYNCING',
         Error: 'ERROR',
         Interrupted: 'INTERRUPTED',
-        None: 'NONE'
+        None: 'NONE',
     };
 
     // interface SessionCache {
@@ -125,7 +125,7 @@ define([
             this.sessionCache = {
                 session: null,
                 fetchedAt: 0,
-                state: CacheState.New
+                state: CacheState.New,
             };
         }
 
@@ -183,6 +183,7 @@ define([
             }
             return null;
         }
+
         getKbaseSession() {
             const session = this.getSession();
             if (!session) {
@@ -194,16 +195,12 @@ define([
                 user_id: info.user,
                 name: info.name,
                 token: session.token,
-                kbase_sessionid: null
+                kbase_sessionid: null,
             };
         }
 
         isAuthorized() {
-            const session = this.getSession();
-            if (session) {
-                return true;
-            }
-            return false;
+            return this.getSession() ? true: false;
         }
 
         isLoggedIn() {
@@ -320,13 +317,15 @@ define([
         }
 
         onChange(listener) {
-            const id =  new Uuid(4).format();
+            const id = uuidv4();
             this.changeListeners[id] = listener;
             return id;
         }
+
         offChange(id) {
             delete this.changeListeners[id];
         }
+
         notifyListeners(change) {
             if (change === null) {
                 return;
@@ -344,7 +343,6 @@ define([
         checkSession() {
             return Promise.try(() => {
                 const cookieToken = this.getAuthCookie();
-                const currentSession = this.getSession();
                 const now = new Date().getTime();
 
                 // This handles the token cookie going missing. This may happen
@@ -355,12 +353,12 @@ define([
                         this.sessionCache.session = null;
                         this.sessionCache.state = CacheState.None;
                         return {
-                            status: 'loggedout'
+                            status: 'loggedout',
                         };
                     } else {
                         this.sessionCache.state = CacheState.None;
                         return {
-                            status: 'nosession'
+                            status: 'nosession',
                         };
                     }
                 }
@@ -369,7 +367,7 @@ define([
                 if (this.sessionCache.session === null) {
                     return {
                         status: 'newtoken',
-                        token: cookieToken
+                        token: cookieToken,
                     };
                 }
 
@@ -380,7 +378,7 @@ define([
                     this.sessionCache.session = null;
                     return {
                         status: 'newtoken',
-                        token: cookieToken
+                        token: cookieToken,
                     };
                 }
 
@@ -391,7 +389,7 @@ define([
                     this.sessionCache.state = CacheState.None;
                     this.removeSessionCookie();
                     return {
-                        status: 'loggedout'
+                        status: 'loggedout',
                     };
                 } else if (expiresIn <= 300000) {
                     // TODO: issue warning to ui.
@@ -409,14 +407,14 @@ define([
                         if (checkedFor > 5000) {
                             return {
                                 status: 'interrupted-retry',
-                                token: cookieToken
+                                token: cookieToken,
                             };
                         }
                     } else {
                         if (checkedFor > 60000) {
                             return {
                                 status: 'interrupted-retry',
-                                token: cookieToken
+                                token: cookieToken,
                             };
                         }
                     }
@@ -424,7 +422,7 @@ define([
                     // state, so we just return ok here.
                     return {
                         status: 'ok',
-                        token: cookieToken
+                        token: cookieToken,
                     };
                 }
 
@@ -437,13 +435,13 @@ define([
                     this.sessionCache.state = CacheState.Stale;
                     return {
                         status: 'cacheexpired',
-                        token: cookieToken
+                        token: cookieToken,
                     };
                 }
 
                 return {
                     status: 'ok',
-                    token: cookieToken
+                    token: cookieToken,
                 };
             });
         }
@@ -486,12 +484,12 @@ define([
                 this.extraCookies.forEach((cookie) => {
                     const items = this.cookieManager.getItems(cookie.name);
                     if (items.length === 1) {
-                    // good.
+                        // good.
                     } else if (items.length > 1) {
-                    // bad - what to do?
+                        // bad - what to do?
                         repairNeeded = false;
                     } else {
-                    // Add this cookie.
+                        // Add this cookie.
                         repairNeeded = true;
                     }
                 });
@@ -533,7 +531,8 @@ define([
                     case 'cacheexpired':
                         // All these cases need the session to be rebuilt.
                         break;
-                    default: throw new Error('Unexpected session state: ' + sessionState.status);
+                    default:
+                        throw new Error('Unexpected session state: ' + sessionState.status);
                     }
 
                     const token = sessionState.token;
@@ -555,7 +554,7 @@ define([
                             this.sessionCache.session = {
                                 token,
                                 tokenInfo,
-                                me
+                                me,
                             };
 
                             // Rewrite the extras cookies
@@ -725,5 +724,5 @@ define([
         }
     }
 
-    return { Auth2Session };
+    return {Auth2Session};
 });

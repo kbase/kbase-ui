@@ -1,7 +1,7 @@
 ---
-description: Unauthenticated
+description: Narrative Manager
 specs:
-  - description: should get the signin page
+  - description: should get the signin page when not authenticated
     baseSelector: []
     tasks:
       - action: navigate

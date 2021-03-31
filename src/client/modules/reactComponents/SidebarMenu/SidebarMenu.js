@@ -1,40 +1,42 @@
 define([
     'preact',
     'htm',
+    'jquery',
 
     // for effect
     'bootstrap',
-    'css!./SidebarMenu.css'
+    'css!./SidebarMenu.css',
 ], (
     preact,
-    htm
+    htm,
+    $,
 ) => {
 
-    const {h, Component} = preact;
+    const {h, Component, createRef} = preact;
     const html = htm.bind(h);
 
     class SidebarMenu extends Component {
         constructor(props) {
             super(props);
 
-            props.runtime.db().subscribe(
-                {
-                    path: 'feeds'
-                },
-                (feeds) => {
-                    this.processFeeds(feeds);
-                }
-            );
+            props.runtime.db().subscribe({
+                path: 'feeds',
+            }, (feeds) => {
+                this.processFeeds(feeds);
+            });
+
+            this.ref = createRef();
 
             this.state = {
                 feedsNotificationCount: null,
-                feedsError: null
+                feedsError: null,
             };
         }
 
         componentDidMount() {
             const feeds = this.props.runtime.db().get('feeds');
             this.processFeeds(feeds);
+            $(this.ref.current).tooltip({selector: '[data-toggle="tooltip"]'});
         }
 
         processFeeds(feeds) {
@@ -46,7 +48,7 @@ define([
             // this.notificationError(null);
             this.setState({
                 feedsNotificationCount: feeds.unseenNotificationsCount,
-                feedsError: feeds.error
+                feedsError: feeds.error,
             });
         }
 
@@ -63,14 +65,12 @@ define([
                 <div className="fa-stack fa-2x"
                      style=${{marginBotom: '-12px'}}
                      ariaHidden="true">
-                     <div className="fa fa-stack-2x fa-search"
-                          style=${{fontSize: '1.6em'}}>
+                    <div className="fa fa-stack-2x fa-search"
+                         style=${{fontSize: '1.6em'}}>
 
                     </div>
                     <div className="fa fa-stack-1x fa-globe"
-                        style=${{fontSize: '85%',
-        top: '-7px',
-        left: '-3px'}}>
+                         style=${{fontSize: '85%', top: '-7px', left: '-3px'}}>
                     </div>
                 </div>
             `;
@@ -98,7 +98,7 @@ define([
                 color: 'rgb(193, 119, 54)',
                 textAlign: 'center',
                 fontWeight: 'bold',
-                fontStyle: 'italic'
+                fontStyle: 'italic',
             };
             return html`
                 <div style=${style}>
@@ -108,7 +108,7 @@ define([
         }
 
         renderBadge(menuItem) {
-            if (menuItem.id !== 'feeds') {
+            if (menuItem.name !== 'feeds') {
                 return;
             }
             const notificationCount = this.state.feedsNotificationCount;
@@ -130,20 +130,20 @@ define([
 
             return html`
                 <div style=${{
-        position: 'absolute',
-        top: '0',
-        right: '0'
-    }}>
+                    position: 'absolute',
+                    top: '0',
+                    right: '0',
+                }}>
                     <div style=${{
-        padding: '4px',
-        color: 'white',
-        backgroundColor: 'rgba(255, 0, 0, 0.8)',
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontStyle: 'italic',
-        borderRadius: '3px'
-    }}>
-                    ${content}
+                        padding: '4px',
+                        color: 'white',
+                        backgroundColor: 'rgba(255, 0, 0, 0.8)',
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                        fontStyle: 'italic',
+                        borderRadius: '3px',
+                    }}>
+                        ${content}
                     </div>
                 </div>
             `;
@@ -155,11 +155,16 @@ define([
                 <a className=${'SidebarMenu -button' + activeClass}
                    data-k-b-testhook-element="menu-item"
                    data-k-b-testhook-button=${menuItem.id}
-                   onClick=${() => {this.onNavClick(menuItem.path);}}>
-                   ${this.renderIcon(menuItem)}
-                   <div>${menuItem.label}</div>
-                   ${this.renderBeta(menuItem)}
-                   ${this.renderBadge(menuItem)}
+                   data-toggle="tooltip"
+                   data-placement="right"
+                   title=${menuItem.tooltip || ''}
+                   onClick=${() => {
+                       this.onNavClick(menuItem.path);
+                   }}>
+                    ${this.renderIcon(menuItem)}
+                    <div>${menuItem.label}</div>
+                    ${this.renderBeta(menuItem)}
+                    ${this.renderBadge(menuItem)}
                 </a>
             `;
         }
@@ -169,7 +174,7 @@ define([
                 return this.renderButton(menuItem);
             });
             return html`
-                <div>
+                <div ref=${this.ref}>
                     ${buttons}
                 </div>
             `;

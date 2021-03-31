@@ -29,7 +29,7 @@ define([
     Body
 ) => {
 
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     class MainWindow extends Component {
@@ -65,28 +65,28 @@ define([
                 plugin: this.props.plugin
             };
             return html`
-                <div className="-navbar"
+                <div class="-navbar"
                     style=${{padding: '0'}}>
-                    <div className="-cell -menu">
+                    <div class="-cell -menu">
                         <${HamburgerMenu} ...${props} />
                     </div>
-                    <div className="-cell -logo">
+                    <div class="-cell -logo">
                         <${Logo} ...${props} />
                     </div>
-                    <div className="-cell -title">
+                    <div class="-cell -title">
                         <${Title} ...${props} />
                     </div>
-                    <div className="-buttons">
+                    <div class="-buttons">
                         <${ButtonBar} ...${props} />
                     </div>
                     ${this.renderSystemAlertToggle()}
-                    <div className="-notification">
+                    <div class="-notification">
                         <${Notification} ...${props} />
                     </div>
-                    <div className="-deploymnent">
+                    <div class="-cell -deployment">
                         <${Deployment} ...${props} />
                     </div>
-                    <div className="-login -cell">
+                    <div class="-login -cell">
                         <${Signin} ...${props} />
                     </div>
                 </div>
@@ -102,7 +102,7 @@ define([
                 return;
             }
             return html`
-                <div className="-cell -alerts">
+                <div class="-cell -alerts">
                     <${SystemAlertToggle} ...${props} />
                 </div>
             `;
@@ -125,18 +125,18 @@ define([
                 runtime: this.props.runtime
             };
             return html`
-                <div className="MainWindow"
+                <div class="MainWindow"
                      data-k-b-testhook-component="mainwindow">
-                    <div className="-header">
+                    <div class="-header">
                         ${this.renderHeader()}
                     </div>
-                    <div className="-body">
-                        <div className="-nav">
+                    <div class="-body">
+                        <div class="-nav">
                             <${Sidebar} ...${props} />
                         </div>
-                        <div className="-content-area">
+                        <div class="-content-area">
                             ${this.renderSystemAlertBanner()}
-                            <div className="-plugin-content">
+                            <div class="-plugin-content">
                                 <${Body} ...${props} />
                             </div>
                         </div>

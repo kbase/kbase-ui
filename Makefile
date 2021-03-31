@@ -48,12 +48,18 @@ host = ci
 service = selenium-standalone
 
 # A kbase token; used in testing tasks
-token = 
+token =
+
+# A timeout parameter; used for integration tests
+timeout = 
+
+# An interval parameter; used to control the pause between tests in integration tests
+interval = 
 
 # functions
 
 # check_defined variable-name message
-# Ensures that the given variable 'variable-name' is defined; if not 
+# Ensures that the given variable 'variable-name' is defined; if not
 # prints 'message' and the process exits with 1.
 # thanks https://stackoverflow.com/questions/10858261/abort-makefile-if-variable-not-set
 check_defined = \
@@ -88,19 +94,19 @@ setup-dirs:
 
 node_modules:
 	@echo "> Installing build and test tools."
-	yarn install --no-lockfile
+	npm install
 
 setup: setup-dirs
 
 init: setup node_modules
 
-quality: 
+quality:
 	@echo "> Checking code quality."
-	yarn quality
+	npm run quality
 
 compile:
 	@echo "> Compiling TypeScript files."
-	yarn compile
+	npm run compile
 
 
 # Perform the build. Build scnearios are supported through the config option
@@ -108,7 +114,7 @@ compile:
 build: quality clean-build compile
 	@:$(call check_defined, config, "the build configuration: defaults to 'dev'")
 	@echo "> Building."
-	yarn build --config $(config)
+	npm run build -- --config $(config)
 
 docker-network:
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
@@ -121,7 +127,7 @@ docker-ignore:
 	@$(TOPDIR)/node_modules/.bin/dockerignore
 
 # Build the docker image, assumes that make init and make build have been done already
-docker-image: 
+docker-image:
 	@echo "> Building docker image for this branch; assuming we are on Travis CI"
 	@bash $(TOPDIR)/deployment/tools/build-travis.bash
 
@@ -131,7 +137,7 @@ fake-travis-build:
 	@bash $(TOPDIR)/tools/docker/build-travis-fake.bash
 
 
-docker-compose-override: 
+docker-compose-override:
 	@echo "> Creating docker compose override..."
 	@echo "> With options:"
 	@echo "> plugins: $(plugins)"
@@ -194,15 +200,15 @@ unit-tests:
 # Filter test files to focus on just selected ones.
 # e.g. dataview/ will match just test files which include a dataview path element, effectively
 # selecting just the dataview plugin tests.
-focus = 
-blur = 
+focus =
+blur =
 
 integration-tests:
 	@:$(call check_defined, env, first component of hostname and kbase environment)
 	@:$(call check_defined, browser, the browser to test against)
 	@:$(call check_defined, service, the testing service )
 	@:$(call check_defined, token, the testing user auth tokens )
-	ENV="$(env)" BROWSER="$(browser)" SERVICE_USER="$(user)" SERVICE_KEY="$(key)" SERVICE="$(service)" TOKEN="${token}" FOCUS="${focus}" BLUR="${blur}" $(GRUNT) webdriver:service --env=$(env)
+	ENV="$(env)" BROWSER="$(browser)" SERVICE_USER="$(user)" SERVICE_KEY="$(key)" SERVICE="$(service)" TOKEN="${token}" FOCUS="${focus}" BLUR="${blur}"  DEFAULT_TASK_TIMEOUT="${timeout}" DEFAULT_PAUSE_FOR="${interval}" $(GRUNT) webdriver:service --env=$(env)
 
 travis-tests:
 	$(GRUNT) test-travis
@@ -230,7 +236,7 @@ clean-docs:
 
 docs:
 	cd docs; \
-	yarn install --no-lockfile; \
+	npm install; \
 	./node_modules/.bin/gitbook build ./book
 
 docs-viewer: docs
@@ -245,7 +251,7 @@ get-gitlab-config:
 
 clean-gitlab-config:
 	rm -rf dev/gitlab-config
-	
+
 dev-cert:
 	bash tools/make-dev-cert.sh
 

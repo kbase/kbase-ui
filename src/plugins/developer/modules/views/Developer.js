@@ -4,13 +4,19 @@ define([
     '../reactComponents/Main',
     '../reactComponents/ConfigEditor',
     '../reactComponents/Tabs',
+    '../reactComponents/Dashboard',
+    '../reactComponents/Tools',
+    '../reactComponents/Plugins',
     'css!./Developer'
 ], (
     preact,
     htm,
     Main,
     ConfigEditor,
-    Tabs
+    Tabs,
+    Dashboard,
+    Tools,
+    Plugins
 ) => {
 
     const { h, Component } = preact;
@@ -32,6 +38,18 @@ define([
                 id: 'config',
                 title: 'Config Editor',
                 component: ConfigEditor
+            }, {
+                id: 'plugins',
+                title: 'Plugins',
+                component: Plugins
+            }, {
+                id: 'tools',
+                title: 'Tools',
+                component: Tools
+            }, {
+                id: 'dashboard',
+                title: 'Dashboard',
+                component: Dashboard
             }];
             const tabProps = {
                 runtime: this.props.runtime

@@ -11,6 +11,7 @@ interface MenuItemDefinitionBase {
     type: string;
     name: string;
     label: string;
+    tooltip?: string;
     icon: string;
     auth?: boolean;
     newWindow?: boolean;
@@ -63,6 +64,7 @@ interface MenuItemConfig {
     allow?: Array<string>;
     disabled?: boolean;
     beta?: boolean;
+    tooltip?: string;
 }
 
 interface MenuConstructorConfig {
@@ -99,13 +101,13 @@ export class MenuService extends Service<MenuServiceConfig> {
             // TODO: filter menu items.
             const menuDef = state.menuItems.get(menuItem.id);
             if (!menuDef) {
-                // console.warn('Menu definition not found', menuItem, Array.from(state.menuItems));
                 return;
             }
 
-            // The ui's menu config can ovveride certain properties of the 
+            // The ui's menu config can override certain properties of the
             // plugin's menu definition
             menuDef.auth = menuDef.auth || menuItem.auth;
+            menuDef.tooltip = menuDef.tooltip || menuItem.tooltip;
             return menuDef;
         })
             .filter((possibleMenuItem) => {
@@ -167,6 +169,6 @@ export class MenuService extends Service<MenuServiceConfig> {
     stop() {
         return Promise.resolve();
     }
-};
+}
 
 export const ServiceClass = MenuService;

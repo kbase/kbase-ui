@@ -9,10 +9,6 @@ interface RuntimeParams {
     serviceManager: AppServiceManager;
 }
 
-interface RuntimeConfig {
-
-}
-
 interface FeatureSwitchDefinition {
     id: string;
     title: string;
@@ -59,7 +55,7 @@ export class Runtime {
     }
 
     allow(tag: string) {
-        var allowed = this.configProps.getItemWithDefault<Array<string>>('ui.allow', []);
+        let allowed = this.configProps.getItemWithDefault<Array<string>>('ui.allow', []);
         if (!(allowed instanceof Array)) {
             allowed = [allowed];
         }
@@ -76,8 +72,7 @@ export class Runtime {
         }
 
         const enabledFeatureSwitches = this.configProps.getItemWithDefault<Array<string>>('ui.featureSwitches.enabled', []);
-        const enabled = enabledFeatureSwitches.includes(id);
-        return enabled;
+        return enabledFeatureSwitches.includes(id);
     }
 
     featureDisabled(id: string) {
@@ -90,8 +85,7 @@ export class Runtime {
         }
 
         const disabledFeatureSwitches = this.configProps.getItemWithDefault<Array<string>>('ui.featureSwitches.disabled', []);
-        const disabled = disabledFeatureSwitches.includes(id);
-        return disabled;
+        return disabledFeatureSwitches.includes(id);
     }
 
     // The receive and send functions are the primary message methods
@@ -107,7 +101,7 @@ export class Runtime {
     }
 
     // The friendlier more verbose functions take explicit arguments and
-    // packge them up into the messenger api format.
+    // package them up into the messenger api format.
     send(channel: string, message: string, payload: any) {
         return this.messenger.send({
             channel,
@@ -145,4 +139,4 @@ export class Runtime {
     hasService(name: string) {
         return this.serviceManager.hasService(name);
     }
-};
+}

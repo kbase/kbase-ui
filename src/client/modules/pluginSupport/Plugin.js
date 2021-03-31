@@ -47,7 +47,7 @@ define([
                 pluginPath,
                 pipe: this.props.pipe,
                 params: {
-                    view: this.props.view, // +++
+                    view: this.props.view,
                     originalPath: window.location.pathname,
                     routeParams: this.props.params || {}
                 }

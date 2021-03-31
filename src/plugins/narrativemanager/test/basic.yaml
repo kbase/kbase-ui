@@ -1,7 +1,7 @@
 ---
-description: Ensure main view appears
+description: Narrative Manager
 specs:
-  - description: should have main panel framing appear when hit the path
+  - description: should open a new narrative
     baseSelector: []
     tasks:
       - subtask: login
@@ -9,7 +9,7 @@ specs:
       - action: navigate
         title: navigate to narrativemanager/new
         path: narrativemanager/new
-      - wait: forElement 
+      - wait: forElement
         timeout: 10000
         selector:
           - type: raw

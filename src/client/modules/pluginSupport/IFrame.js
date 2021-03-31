@@ -7,7 +7,7 @@ define([
 ], (
     preact,
     htm,
-    Uuid
+    {v4: uuidv4}
 ) => {
 
     const {h, Component, createRef} = preact;
@@ -22,7 +22,7 @@ define([
             //     params, runtime
             // } = props;
 
-            const id = new Uuid(4).format();
+            const id = uuidv4();
             this.id = `frame_ ${id}`;
 
             this.ref = createRef();
@@ -63,7 +63,8 @@ define([
                 buildInfo: this.props.runtime.config('buildInfo'),
                 developMode: false,
                 params: this.props.params,
-                channelId: this.props.channelId
+                channelId: this.props.channelId,
+                pluginChannelId: this.props.pluginChannelId
             };
 
             const paramString = window.encodeURIComponent(JSON.stringify(params));

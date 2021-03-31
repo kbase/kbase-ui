@@ -11,7 +11,7 @@ define([
 ], (
     preact,
     htm,
-    Uuid,
+    {v4: uuidv4},
     {WindowChannel},
     httpUtils,
     AutoPostForm,
@@ -33,13 +33,14 @@ define([
 
             this.runtime = runtime;
 
-            const id = new Uuid(4).format();
+            const id = uuidv4();
             this.id = `host_ ${id}`;
 
             this.receivers = [];
 
             this.channel = new WindowChannel({
-                host: document.location.origin
+                host: document.location.origin,
+                to: uuidv4()
             });
 
             this.state = {
@@ -116,7 +117,7 @@ define([
             });
 
             this.channel.on('set-plugin-params', ({pluginParams}) => {
-                if (Object.keys(pluginParams) === 0) {
+                if (Object.keys(pluginParams).length === 0) {
                     window.location.search = '';
                     return;
                 }
@@ -224,17 +225,12 @@ define([
         }
 
         setupCommunication(iframeWindow) {
-            const ready = () => {
-                return;
-            };
-
             return new Promise((resolve, reject) => {
                 this.temp_window = iframeWindow;
                 this.channel.setWindow(iframeWindow);
                 this.setupAndStartChannel();
                 this.channel.once('ready',
                     ({channelId}) => {
-                        ready();
                         this.channel.partnerId = channelId;
                         // TODO: narrow and improve the config support for plugins
                         // E.g.
@@ -338,6 +334,7 @@ define([
                 origin: document.location.origin,
                 pathRoot: this.props.pluginPath,
                 channelId: this.channel.channelId,
+                pluginChannelId: this.channel.partnerId,
                 whenMounted: (w) => {
                     // this.channel.setWindow(this.iframe.window);
                     this.iframeMounted(w);
@@ -374,14 +371,14 @@ define([
                 break;
             }
             return html`
-            <div className="-cover">
-                <div className="well PluginLoading">
-                    <span className="fa fa-rotate-225 fa-2x fa-plug"
+            <div class="-cover">
+                <div class="well PluginLoading">
+                    <span class="fa fa-rotate-225 fa-2x fa-plug"
                           style=${{marginRight: '8px', color: color}}></span>
                     <span>
                         ${message}
                     </span>
-                    <span className="fa fa-2x fa-spinner fa-pulse"
+                    <span class="fa fa-2x fa-spinner fa-pulse"
                         style=${{marginLeft: '8px'}}></span>
                 </div>
             </div>
@@ -390,7 +387,7 @@ define([
 
         render() {
             return html`
-            <div className="IFrameController">
+            <div class="IFrameController">
                 ${this.renderLoading()}
                 ${this.renderIFrame()}
             </div>
