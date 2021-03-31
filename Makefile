@@ -88,7 +88,7 @@ setup-dirs:
 
 node_modules:
 	@echo "> Installing build and test tools."
-	yarn install
+	npm install
 
 setup: setup-dirs
 
@@ -96,11 +96,11 @@ init: setup node_modules
 
 quality:
 	@echo "> Checking code quality."
-	yarn quality
+	npm run quality
 
 compile:
 	@echo "> Compiling TypeScript files."
-	yarn compile
+	npm run compile
 
 
 # Perform the build. Build scnearios are supported through the config option
@@ -108,7 +108,7 @@ compile:
 build: quality clean-build compile
 	@:$(call check_defined, config, "the build configuration: defaults to 'dev'")
 	@echo "> Building."
-	yarn build --config $(config)
+	npm run build -- --config $(config)
 
 docker-network:
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
@@ -230,7 +230,7 @@ clean-docs:
 
 docs:
 	cd docs; \
-	yarn install; \
+	npm install; \
 	./node_modules/.bin/gitbook build ./book
 
 docs-viewer: docs
