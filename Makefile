@@ -50,6 +50,12 @@ service = selenium-standalone
 # A kbase token; used in testing tasks
 token =
 
+# A timeout parameter; used for integration tests
+timeout = 
+
+# An interval parameter; used to control the pause between tests in integration tests
+interval = 
+
 # functions
 
 # check_defined variable-name message
@@ -202,7 +208,7 @@ integration-tests:
 	@:$(call check_defined, browser, the browser to test against)
 	@:$(call check_defined, service, the testing service )
 	@:$(call check_defined, token, the testing user auth tokens )
-	ENV="$(env)" BROWSER="$(browser)" SERVICE_USER="$(user)" SERVICE_KEY="$(key)" SERVICE="$(service)" TOKEN="${token}" FOCUS="${focus}" BLUR="${blur}" $(GRUNT) webdriver:service --env=$(env)
+	ENV="$(env)" BROWSER="$(browser)" SERVICE_USER="$(user)" SERVICE_KEY="$(key)" SERVICE="$(service)" TOKEN="${token}" FOCUS="${focus}" BLUR="${blur}"  DEFAULT_TASK_TIMEOUT="${timeout}" DEFAULT_PAUSE_FOR="${interval}" $(GRUNT) webdriver:service --env=$(env)
 
 travis-tests:
 	$(GRUNT) test-travis
