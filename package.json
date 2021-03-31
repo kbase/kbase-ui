@@ -24,7 +24,7 @@
         "quality": "node tools/js/quality.js",
         "build": "node tools/js/build.js",
         "test": "node test/node/test.js",
-        "watch": "nodemon --watch ./src/client --ext ts --exec 'yarn compile || exit 1'"
+        "watch": "nodemon --watch ./src/client --ext ts --exec 'npm run compile || exit 1'"
     },
     "devDependencies": {
         "@wdio/browserstack-service": "7.2.2",

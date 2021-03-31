@@ -37,7 +37,7 @@ const tar = require('tar');
 const yargs = require('yargs');
 
 // UTILS
-function run(command, {ignoreStdErr = false, verbose = false, options = {}} = {}) {
+function run(command, { ignoreStdErr = false, verbose = false, options = {} } = {}) {
     return new Promise(function (resolve, reject) {
         const proc = exec(command, options, function (err, stdout, stderr) {
             if (err) {
@@ -59,7 +59,7 @@ function run(command, {ignoreStdErr = false, verbose = false, options = {}} = {}
 function gitClone(url, dest, branch = 'master') {
     const commandLine = ['git clone --quiet --depth 1', '--branch', branch, url, dest].join(' ');
     console.log('git cloning...', commandLine);
-    return run(commandLine, {ignoreStdErr: true});
+    return run(commandLine, { ignoreStdErr: true });
 }
 
 function gitInfo(state) {
@@ -225,16 +225,47 @@ function injectPluginsIntoConfig(state) {
             });
 
             // Save this as a json file; this is the config that kbase-ui will load at runtime.
-            return fs.writeFileAsync(configPath.concat(['plugins.json']).join('/'), JSON.stringify({plugins}));
+            return fs.writeFileAsync(configPath.concat(['plugins.json']).join('/'), JSON.stringify({ plugins }));
         })
         .then(() => {
             return state;
         });
 }
 
-function yarn(cmd, argv, options) {
+// function yarn(cmd, argv, options) {
+//     return new Promise(function (resolve, reject) {
+//         exec('yarn ' + cmd + ' ' + argv.join(' '), options, function (err, stdout, stderr) {
+//             if (err) {
+//                 reject(err);
+//             }
+//             if (stderr) {
+//                 // reject(new Error(stderr));
+//                 resolve({
+//                     warnings: stderr,
+//                 });
+//             }
+//             resolve({
+//                 result: stdout,
+//             });
+//         });
+//     });
+// }
+
+// async function yarnInstall(state) {
+//     const base = state.environment.path.concat(['build']);
+//     const packagePath = base.concat(['package.json']);
+//     const packageConfig = await mutant.loadJson(packagePath);
+//     delete packageConfig.devDependencies;
+//     await mutant.saveJson(packagePath, packageConfig);
+//     return yarn('install', [], {
+//         cwd: base.join('/'),
+//         timeout: 300000,
+//     });
+// }
+
+function npm(cmd, argv, options) {
     return new Promise(function (resolve, reject) {
-        exec('yarn ' + cmd + ' ' + argv.join(' '), options, function (err, stdout, stderr) {
+        exec('npm ' + cmd + ' ' + argv.join(' '), options, function (err, stdout, stderr) {
             if (err) {
                 reject(err);
             }
@@ -251,13 +282,13 @@ function yarn(cmd, argv, options) {
     });
 }
 
-async function yarnInstall(state) {
+async function npmInstall(state) {
     const base = state.environment.path.concat(['build']);
     const packagePath = base.concat(['package.json']);
     const packageConfig = await mutant.loadJson(packagePath);
     delete packageConfig.devDependencies;
     await mutant.saveJson(packagePath, packageConfig);
-    return yarn('install', [], {
+    return npm('install', [], {
         cwd: base.join('/'),
         timeout: 300000,
     });
@@ -342,7 +373,7 @@ function copyFromNodeNodules(state) {
             return Promise.all(
                 copyJobs.map((copySpec) => {
                     const cwd = state.environment.path.concat(copySpec.cwd).join('/');
-                    return glob(copySpec.src, {cwd, nodir: true})
+                    return glob(copySpec.src, { cwd, nodir: true })
                         .then((matches) => {
                             // Do the copy!
                             if (matches.length === 0) {
@@ -351,9 +382,9 @@ function copyFromNodeNodules(state) {
                             return Promise.all(
                                 matches.map((match) => {
                                     const fromPath = state.environment.path
-                                            .concat(copySpec.cwd)
-                                            .concat([match])
-                                            .join('/'),
+                                        .concat(copySpec.cwd)
+                                        .concat([match])
+                                        .join('/'),
                                         toPath = state.environment.path
                                             .concat(copySpec.dest)
                                             .concat([match])
@@ -558,7 +589,7 @@ function setupBuild(state) {
 
 
 function installNPMPackages(state) {
-    return yarnInstall(state)
+    return npmInstall(state)
         .then(() => {
             return fs.remove(state.environment.path.concat(['build', 'package.json']).join('/'));
         })
@@ -619,7 +650,7 @@ function createBuildInfo(state) {
                 builtAt: new Date().getTime(),
             };
         state.buildInfo = buildInfo;
-        return mutant.saveJson(configDest, {buildInfo: buildInfo})
+        return mutant.saveJson(configDest, { buildInfo: buildInfo })
             .then(function () {
                 return state;
             });
@@ -974,50 +1005,50 @@ function makeModuleVFS(state) {
                         }
                         return fs.readFileAsync(match, 'utf8').then(function (contents) {
                             switch (ext) {
-                            case 'js':
-                                include(ext);
-                                vfs.scripts[path] = 'function () { ' + contents + ' }';
-                                break;
-                            case 'yaml':
-                            case 'yml':
-                                include(ext);
-                                vfs.resources.json[base] = yaml.load(contents);
-                                break;
-                            case 'json':
-                                if (vfs.resources.json[base]) {
-                                    throw new Error('duplicate entry for json detected: ' + path);
-                                }
-                                try {
+                                case 'js':
                                     include(ext);
-                                    vfs.resources.json[base] = JSON.parse(contents);
-                                } catch (ex) {
-                                    skip('error');
-                                    console.error('Error parsing json file: ' + path + ':' + ex.message);
-                                    // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
-                                }
-                                break;
-                            case 'text':
-                            case 'txt':
-                                include(ext);
-                                vfs.resources.text[base] = contents;
-                                break;
-                            case 'css':
-                                if (
-                                    cssExceptions.some(function (re) {
-                                        return re.test(contents);
-                                    })
-                                ) {
-                                    skip('css excluded');
-                                } else {
+                                    vfs.scripts[path] = 'function () { ' + contents + ' }';
+                                    break;
+                                case 'yaml':
+                                case 'yml':
                                     include(ext);
-                                    vfs.resources.css[base] = contents;
-                                }
-                                break;
-                            case 'csv':
-                                skip(ext);
-                                break;
-                            default:
-                                skip(ext);
+                                    vfs.resources.json[base] = yaml.load(contents);
+                                    break;
+                                case 'json':
+                                    if (vfs.resources.json[base]) {
+                                        throw new Error('duplicate entry for json detected: ' + path);
+                                    }
+                                    try {
+                                        include(ext);
+                                        vfs.resources.json[base] = JSON.parse(contents);
+                                    } catch (ex) {
+                                        skip('error');
+                                        console.error('Error parsing json file: ' + path + ':' + ex.message);
+                                        // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
+                                    }
+                                    break;
+                                case 'text':
+                                case 'txt':
+                                    include(ext);
+                                    vfs.resources.text[base] = contents;
+                                    break;
+                                case 'css':
+                                    if (
+                                        cssExceptions.some(function (re) {
+                                            return re.test(contents);
+                                        })
+                                    ) {
+                                        skip('css excluded');
+                                    } else {
+                                        include(ext);
+                                        vfs.resources.css[base] = contents;
+                                    }
+                                    break;
+                                case 'csv':
+                                    skip(ext);
+                                    break;
+                                default:
+                                    skip(ext);
                             }
                         });
                     });
@@ -1106,7 +1137,7 @@ function main(type) {
                 return mutant.copyState(state);
             })
             .then((state) => {
-                mutant.log('STEP 3: Installing NPM packages with YARN...');
+                mutant.log('STEP 3: Installing NPM packages...');
                 return installNPMPackages(state);
             })
 
