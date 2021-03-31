@@ -7,6 +7,7 @@ var handlebars = require('handlebars');
 
 const DEFAULT_TASK_TIMEOUT = process.env.DEFAULT_TASK_TIMEOUT || 10000;
 const DEFAULT_PAUSE_FOR = process.env.DEFAULT_PAUSE_FOR || 1000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = DEFAULT_TASK_TIMEOUT;
 
 
 function getProp(obj, propPath, defaultValue) {
@@ -31,7 +32,7 @@ function getProp(obj, propPath, defaultValue) {
 
 // a suite is a set of tests
 class Suite {
-    constructor({testFiles, context, subTasks}) {
+    constructor({ testFiles, context, subTasks }) {
         this.context = context;
         this.subTasks = subTasks;
         this.tests = testFiles.map((testDef) => {
@@ -51,7 +52,7 @@ class Suite {
 
 // a test is a set of test cases dedicated to one primary purpose.
 class Test {
-    constructor({testDef, suite}) {
+    constructor({ testDef, suite }) {
         this.suite = suite;
         this.context = JSON.parse(JSON.stringify(suite.context));
         this.testDef = testDef;
@@ -87,7 +88,7 @@ class Test {
 }
 
 class TestCase {
-    constructor({testCaseDef, test, context}) {
+    constructor({ testCaseDef, test, context }) {
         this.testCaseDef = testCaseDef;
         this.test = test;
         this.context = context;
@@ -141,7 +142,7 @@ class TestCase {
 }
 
 class TaskList {
-    constructor({taskDefs, testCase, context}) {
+    constructor({ taskDefs, testCase, context }) {
         this.testCase = testCase;
         try {
             this.context = Object.assign(JSON.parse(JSON.stringify(context)));
@@ -178,7 +179,7 @@ class TaskList {
                         });
                     }
                 } else {
-                    return new Task({taskDef, testCase, context: this.context});
+                    return new Task({ taskDef, testCase, context: this.context });
                 }
             })
             .filter((taskDef) => {
@@ -231,7 +232,7 @@ class TaskList {
 }
 
 class Task {
-    constructor({taskDef, testCase, context}) {
+    constructor({ taskDef, testCase, context }) {
         this.taskDef = taskDef;
         this.testCase = testCase;
         this.context = context;
@@ -331,127 +332,127 @@ class Task {
     actionFunc(taskDef) {
         if (taskDef.action) {
             switch (taskDef.action) {
-            case 'setSessionCookie':
-                return () => {
-                    const token = this.getParam(taskDef, 'token');
-                    browser.setCookies([
-                        {
-                            name: 'kbase_session',
-                            value: token,
-                            path: '/'
-                        }
-                    ]);
-                    let cookie;
-                    browser.call(() => {
-                        return browser.getCookies(['kbase_session']).then((cookies) => {
-                            cookie = cookies[0];
+                case 'setSessionCookie':
+                    return () => {
+                        const token = this.getParam(taskDef, 'token');
+                        browser.setCookies([
+                            {
+                                name: 'kbase_session',
+                                value: token,
+                                path: '/'
+                            }
+                        ]);
+                        let cookie;
+                        browser.call(() => {
+                            return browser.getCookies(['kbase_session']).then((cookies) => {
+                                cookie = cookies[0];
+                            });
                         });
-                    });
-                    expect(cookie.value).toEqual(token);
-                };
-            case 'deleteSessionCookie':
-                return () => {
-                    browser.deleteCookie('kbase_session');
-                    let cookie;
-                    browser.call(() => {
-                        return browser.getCookies(['kbase_session']).then((cookies) => {
-                            cookie = cookies[0];
+                        expect(cookie.value).toEqual(token);
+                    };
+                case 'deleteSessionCookie':
+                    return () => {
+                        browser.deleteCookie('kbase_session');
+                        let cookie;
+                        browser.call(() => {
+                            return browser.getCookies(['kbase_session']).then((cookies) => {
+                                cookie = cookies[0];
+                            });
                         });
-                    });
-                    expect(cookie).toBeUndefined();
-                };
-            case 'navigate':
-                return () => {
-                    const path = this.getParam(taskDef, 'path');
-                    const url = '#' + path;
-                    browser.url(url);
-                };
-            case 'keys':
-                return () => {
-                    const keys = this.getParam(taskDef, 'keys', false);
-                    if (keys) {
-                        keys.forEach((key) => {
-                            browser.keys(key);
-                        });
-                    } else {
-                        const string = this.getParam(taskDef, 'string', false);
-                        if (string) {
-                            string.split('').forEach((key) => {
+                        expect(cookie).toBeUndefined();
+                    };
+                case 'navigate':
+                    return () => {
+                        const path = this.getParam(taskDef, 'path');
+                        const url = '#' + path;
+                        browser.url(url);
+                    };
+                case 'keys':
+                    return () => {
+                        const keys = this.getParam(taskDef, 'keys', false);
+                        if (keys) {
+                            keys.forEach((key) => {
                                 browser.keys(key);
                             });
                         } else {
-                            throw new Error('"keys" action requires either a param of either "keys" or "string"');
-                        }
-                    }
-                };
-            case 'switchToFrame':
-            case 'switchToPluginIFrame':
-                return () => {
-                    browser.switchToFrame(browser.$('[data-k-b-testhook-iframe="plugin-iframe"]'));
-                };
-            case 'switchToParent':
-                return () => {
-                    browser.switchToParentFrame();
-                };
-            case 'switchToTop':
-                return () => {
-                    browser.switchToFrame(null);
-                };
-            case 'baseSelector':
-                return () => {
-                    this.testCase.baseSelector = this.getParam(taskDef, 'selector');
-                };
-            case 'click':
-                return () => {
-                    browser.$(this.testCase.resolvedSelector).click();
-                };
-            case 'scrollIntoView':
-            case 'scroll-into-view':
-                return () => {
-                    browser.$(this.testCase.resolvedSelector).scrollIntoView();
-                };
-            case 'scroll-to-top':
-                return () => {
-                    browser.$(this.testCase.resolvedSelector).scrollIntoView({inline: 'start', block: 'start'});
-                };
-            case 'pause':
-                return () => {
-                    let pauseFor = this.getParam(taskDef, 'for', null);
-                    if (pauseFor) {
-                        if (typeof pauseFor === 'object') {
-                            if (pauseFor.random) {
-                                const [from, to] = pauseFor.random;
-                                const r = Math.random();
-                                pauseFor = Math.round(r * (to - from) + from);
+                            const string = this.getParam(taskDef, 'string', false);
+                            if (string) {
+                                string.split('').forEach((key) => {
+                                    browser.keys(key);
+                                });
                             } else {
-                                console.warn('Invalid pause.for', pauseFor);
-                                pauseFor = DEFAULT_PAUSE_FOR;
+                                throw new Error('"keys" action requires either a param of either "keys" or "string"');
                             }
                         }
-                    } else {
-                        pauseFor = DEFAULT_PAUSE_FOR;
-                    }
-                    browser.pause(pauseFor);
-                };
-            case 'setValue':
-                return () => {
-                    browser.setValue(this.testCase.resolvedSelector, this.getParam(taskDef, 'value'));
-                };
-            case 'setLocal':
-                return () => {
-                    if (!this.context.local) {
-                        this.context.local = {};
-                    }
-                    this.context.local[this.taskDef.name] = this.taskDef.value;
-                };
-            case 'echo':
-            case 'log':
-                return () => {
-                    // eslint-disable-next-line no-console
-                    console.log('LOG', this.getParam(taskDef, 'text'));
-                };
-            default:
-                throw new Error('Unknown task action: "' + taskDef.action + '"');
+                    };
+                case 'switchToFrame':
+                case 'switchToPluginIFrame':
+                    return () => {
+                        browser.switchToFrame(browser.$('[data-k-b-testhook-iframe="plugin-iframe"]'));
+                    };
+                case 'switchToParent':
+                    return () => {
+                        browser.switchToParentFrame();
+                    };
+                case 'switchToTop':
+                    return () => {
+                        browser.switchToFrame(null);
+                    };
+                case 'baseSelector':
+                    return () => {
+                        this.testCase.baseSelector = this.getParam(taskDef, 'selector');
+                    };
+                case 'click':
+                    return () => {
+                        browser.$(this.testCase.resolvedSelector).click();
+                    };
+                case 'scrollIntoView':
+                case 'scroll-into-view':
+                    return () => {
+                        browser.$(this.testCase.resolvedSelector).scrollIntoView();
+                    };
+                case 'scroll-to-top':
+                    return () => {
+                        browser.$(this.testCase.resolvedSelector).scrollIntoView({ inline: 'start', block: 'start' });
+                    };
+                case 'pause':
+                    return () => {
+                        let pauseFor = this.getParam(taskDef, 'for', null);
+                        if (pauseFor) {
+                            if (typeof pauseFor === 'object') {
+                                if (pauseFor.random) {
+                                    const [from, to] = pauseFor.random;
+                                    const r = Math.random();
+                                    pauseFor = Math.round(r * (to - from) + from);
+                                } else {
+                                    console.warn('Invalid pause.for', pauseFor);
+                                    pauseFor = DEFAULT_PAUSE_FOR;
+                                }
+                            }
+                        } else {
+                            pauseFor = DEFAULT_PAUSE_FOR;
+                        }
+                        browser.pause(pauseFor);
+                    };
+                case 'setValue':
+                    return () => {
+                        browser.setValue(this.testCase.resolvedSelector, this.getParam(taskDef, 'value'));
+                    };
+                case 'setLocal':
+                    return () => {
+                        if (!this.context.local) {
+                            this.context.local = {};
+                        }
+                        this.context.local[this.taskDef.name] = this.taskDef.value;
+                    };
+                case 'echo':
+                case 'log':
+                    return () => {
+                        // eslint-disable-next-line no-console
+                        console.log('LOG', this.getParam(taskDef, 'text'));
+                    };
+                default:
+                    throw new Error('Unknown task action: "' + taskDef.action + '"');
             }
         } else {
             throw new Error('Missing action in task "' + taskDef.title || 'no title' + '"');
@@ -460,75 +461,75 @@ class Task {
 
     waitFunc(taskDef) {
         switch (taskDef.wait) {
-        case 'forText':
-            return () => {
-                if (!browser.$(taskDef.resolvedSelector).isExisting()) {
-                    return false;
-                }
-                const nodeValue = browser.$(taskDef.resolvedSelector).getText();
-                const testValue = this.getParam(taskDef, 'text');
-                return nodeValue === testValue;
-            };
-        case 'forTextMatch':
-        case 'forTextRegex':
-            return () => {
-                if (!browser.$(taskDef.resolvedSelector).isExisting()) {
-                    return false;
-                }
-                const nodeValue = browser.$(taskDef.resolvedSelector).getText();
-                const regexpString = this.getParam(taskDef, ['value', 'text', 'regexp']);
-                const testValue = new RegExp(regexpString, this.getParam(taskDef, 'flags', ''));
-                return testValue.test(nodeValue);
-            };
-        case 'forNumber':
-            return () => {
-                if (!browser.$(taskDef.resolvedSelector).isExisting()) {
-                    return false;
-                }
-                var text = browser.$(taskDef.resolvedSelector).getText();
-                if (!text) {
-                    return false;
-                }
-                const value = Number(text.replace(/,/g, ''));
-                if (Number.isNaN(value)) {
-                    return false;
-                }
-                const param = this.getParam(taskDef, 'number')
-                return utils.isValidNumber(value, param);
-            };
-        case 'forCount':
-        case 'forElementCount':
-            return () => {
-                try {
+            case 'forText':
+                return () => {
                     if (!browser.$(taskDef.resolvedSelector).isExisting()) {
                         return false;
                     }
-                    const els = browser.$$(taskDef.resolvedSelector);
-                    const count = els.length;
-                    const param = this.getParam(taskDef, 'count');
-                    return utils.isValidNumber(count, param);
-                } catch (ex) {
-                    return false;
-                }
-            };
-        case 'forPlugin':
-            return () => {
-                try {
-                    browser.switchToFrame(null);
-                    browser.switchToFrame(browser.$('[data-k-b-testhook-iframe="plugin-iframe"]'));
+                    const nodeValue = browser.$(taskDef.resolvedSelector).getText();
+                    const testValue = this.getParam(taskDef, 'text');
+                    return nodeValue === testValue;
+                };
+            case 'forTextMatch':
+            case 'forTextRegex':
+                return () => {
                     if (!browser.$(taskDef.resolvedSelector).isExisting()) {
                         return false;
                     }
-                    return true;
-                } catch (ex) {
-                    return false;
-                }
-            };
-        case 'forElement':
-        default:
-            return () => {
-                return browser.$(taskDef.resolvedSelector).isExisting();
-            };
+                    const nodeValue = browser.$(taskDef.resolvedSelector).getText();
+                    const regexpString = this.getParam(taskDef, ['value', 'text', 'regexp']);
+                    const testValue = new RegExp(regexpString, this.getParam(taskDef, 'flags', ''));
+                    return testValue.test(nodeValue);
+                };
+            case 'forNumber':
+                return () => {
+                    if (!browser.$(taskDef.resolvedSelector).isExisting()) {
+                        return false;
+                    }
+                    var text = browser.$(taskDef.resolvedSelector).getText();
+                    if (!text) {
+                        return false;
+                    }
+                    const value = Number(text.replace(/,/g, ''));
+                    if (Number.isNaN(value)) {
+                        return false;
+                    }
+                    const param = this.getParam(taskDef, 'number')
+                    return utils.isValidNumber(value, param);
+                };
+            case 'forCount':
+            case 'forElementCount':
+                return () => {
+                    try {
+                        if (!browser.$(taskDef.resolvedSelector).isExisting()) {
+                            return false;
+                        }
+                        const els = browser.$$(taskDef.resolvedSelector);
+                        const count = els.length;
+                        const param = this.getParam(taskDef, 'count');
+                        return utils.isValidNumber(count, param);
+                    } catch (ex) {
+                        return false;
+                    }
+                };
+            case 'forPlugin':
+                return () => {
+                    try {
+                        browser.switchToFrame(null);
+                        browser.switchToFrame(browser.$('[data-k-b-testhook-iframe="plugin-iframe"]'));
+                        if (!browser.$(taskDef.resolvedSelector).isExisting()) {
+                            return false;
+                        }
+                        return true;
+                    } catch (ex) {
+                        return false;
+                    }
+                };
+            case 'forElement':
+            default:
+                return () => {
+                    return browser.$(taskDef.resolvedSelector).isExisting();
+                };
         }
     }
 
@@ -606,7 +607,7 @@ class Task {
                     return `${element.value}`;
                 case 'selector':
                     return element.selector;
-                default: 
+                default:
                     return `${elementType}[data-k-b-testhook-${element.type}="${this.interpValue(element.value)}"]${nth}`;
             }
         } else if (elementType) {
@@ -638,12 +639,12 @@ class Task {
         }
         var fullPath;
         switch (selector.type) {
-        case 'relative':
-            fullPath = utils.extend(this.testCase.baseSelector || [], selector.path);
-            break;
-        case 'absolute':
-            fullPath = selector.path;
-            break;
+            case 'relative':
+                fullPath = utils.extend(this.testCase.baseSelector || [], selector.path);
+                break;
+            case 'absolute':
+                fullPath = selector.path;
+                break;
         }
         const sel = this.buildSelector(fullPath);
         return sel;
