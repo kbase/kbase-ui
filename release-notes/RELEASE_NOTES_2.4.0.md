@@ -7,7 +7,6 @@ This release brings a release of the data-search plugin utilizing the search2 le
 ### NEW
 
 - tooltips for sidebar menu
-- data-search: refactor to search2/legacy api, add support for AMA
 
 ### REMOVED
 
@@ -22,6 +21,10 @@ none
 
 - job-browser: switch to user profile for user search
 - improve alignment of deployment env icon
+- add tooltips to sidebar menu items
+- update narrative navigator sidebar menu item with "Navigator" and navigator-like icon
+- data-search: refactor to search2/legacy api, add support for AMA
+- tools improvements: switch from yarn to npm, add integration test timeout parameters for make task,
 
 ### FIXES
 
@@ -32,3 +35,4 @@ none
 ### MAJOR DEPENDENCY CHANGES
 
 - updated many dependencies, removed unused ones
+- remove pure-uuid (duplicate uuid library), replace usages with uuid.
