@@ -66,14 +66,6 @@ function parseQueryString(s: string) {
     return params;
 }
 
-function paramsToQuery(params: SimpleMap<string>) {
-    return Object.keys(params)
-        .map((key) => {
-            return key + '=' + encodeURIComponent(params[key]);
-        })
-        .join('&');
-}
-
 function getQuery() {
     const query = window.location.search;
     if (!query || query.length === 1) {

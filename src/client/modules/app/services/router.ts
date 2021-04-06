@@ -66,14 +66,6 @@ function parseQueryString(s: string) {
     return params;
 }
 
-function paramsToQuery(params: SimpleMap<string>) {
-    return Object.keys(params)
-        .map((key) => {
-            return key + '=' + encodeURIComponent(params[key]);
-        })
-        .join('&');
-}
-
 function getQuery() {
     const query = window.location.search;
     if (!query || query.length === 1) {
@@ -363,13 +355,6 @@ export class Router {
             }
             if (!paramName) {
                 paramName = queryName;
-            }
-            // destructuring arrays from Array<string> may result in
-            // undefined variables; split will always produce a string element for the
-            // first position, even if the string being split is empty.
-            if (typeof paramName === 'undefined') {
-                console.error('Param name not provided in path spec', querySpec, queryField);
-                throw new Error('Param name not provided in path spec');
             }
             if (paramName.charAt(0) === ':') {
                 if (paramName.charAt(1) === '-') {
