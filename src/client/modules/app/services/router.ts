@@ -1,7 +1,7 @@
 
-import { isJSONObject, JSONObject } from "./kb_lib/json";
-import { CustomError } from "./kb_lib/Utils";
-import { SimpleMap } from "./types";
+import { isJSONObject, JSONObject } from "../../lib/kb_lib/json";
+import { CustomError } from "../../lib/kb_lib/Utils";
+import { SimpleMap } from "../../lib/types";
 
 
 export interface NotFoundExceptionParams {
