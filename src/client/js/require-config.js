@@ -32,6 +32,7 @@
             json: 'node_modules/requirejs-json/json',
             kb_bootstrap: 'css/kb-bootstrap',
             kb_lib: 'node_modules/@kbase/common-es6',
+            kb_lib2: 'node_modules/@kbase/ui-lib',
             kb_ui: 'css/kb-ui',
             md5: 'node_modules/spark-md5/spark-md5',
             preact: 'node_modules/preact/preact.umd',
