@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { isSimpleObject } from "./simpleObject";
 
 interface ListenerParams {
     name: string;
@@ -256,40 +255,26 @@ export class WindowChannel {
      */
     receiveMessage(messageEvent: MessageEvent) {
         const message = messageEvent.data as Message;
-
-        // console.warn('[receiveMessage] 1', message);
-
         // Here we have a series of filters to determine whether this message should be
         // handled by this post message bus.
         // In all cases we issue a warning, and return.
 
-        // if (!isSimpleObject(message)) {
-        //     console.warn('[receiveMessage x] ignored message because not simple object', message);
-        //     this.stats.ignored += 1;
-        //     return;
-        // }
-
-        if (typeof message !== 'object') {
-            // console.warn('[receiveMessage] ignored message because not object', message);
+        if (typeof message !== 'object' || message === null) {
             this.stats.ignored += 1;
             return;
         }
 
         // TODO: could do more here.
         if (!message.envelope) {
-            // console.warn('[receiveMessage] ignored message because no envelope', message);
             this.stats.ignored += 1;
             return;
         }
 
         // Here we ignore messages intended for another windowChannel object.
         if (message.envelope.to !== this.id) {
-            // console.warn('[receiveMessage] ignored message because "to" is not this id', this.id, message);
             this.stats.ignored += 1;
             return;
         }
-
-        // console.warn('[receiveMessage] 2', message);
 
         this.stats.received += 1;
 
@@ -401,7 +386,6 @@ export class WindowChannel {
             throw new Error('Not running - may not send ')
         }
         this.stats.sent += 1;
-        // console.warn('[sendMessage]', message, this.host);
         this.window.postMessage(message.toJSON(), this.host);
     }
 
@@ -535,7 +519,6 @@ export class WindowChannel {
     }
 
     start(): WindowChannel {
-        // console.warn('[start]', this);
         this.currentListener = (message: MessageEvent) => {
             this.receiveMessage(message);
         };
