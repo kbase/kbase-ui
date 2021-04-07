@@ -171,8 +171,8 @@ define([
                 window.document.body.click();
             });
 
-            this.channel.on('set-title', (config) => {
-                this.runtime.send('ui', 'setTitle', config.title);
+            this.channel.on('set-title', ({title}) => {
+                this.runtime.send('ui', 'setTitle', title);
             });
 
             this.channel.on('ui-auth-navigate', ({nextRequest, tokenInfo}) => {
@@ -244,7 +244,6 @@ define([
                 this.props.pipe.start();
                 this.channel.once('ready',
                     ({channelId}) => {
-                        // console.warn('[ready]', channelId);
                         this.channel.partnerId = channelId;
                         // TODO: narrow and improve the config support for plugins
                         // E.g.
@@ -262,6 +261,16 @@ define([
                         params.view = this.props.params.view;
 
                         const startMessage = {
+                            authentication: {
+                                token: this.runtime.service('session').getAuthToken(),
+                                username: this.runtime.service('session').getUsername(),
+                                realname: this.runtime.service('session').getRealname(),
+                                email: this.runtime.service('session').getEmail(),
+                                roles: this.runtime.service('session').getRoles().map(({id}) => {
+                                    return id;
+                                })
+                            },
+                            // TODO: remove when all plugins converted.
                             authorization: {
                                 token: this.runtime.service('session').getAuthToken(),
                                 username: this.runtime.service('session').getUsername(),
@@ -275,7 +284,6 @@ define([
                             view: this.props.params.view.value,
                             params
                         };
-                        // console.warn('[ready]', startMessage, this.channel);
                         this.channel.send('start', startMessage);
                         // Any sends to the channel should only be enabled after the
                         // start message is received.
