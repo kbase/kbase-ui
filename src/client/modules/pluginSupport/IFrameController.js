@@ -171,8 +171,8 @@ define([
                 window.document.body.click();
             });
 
-            this.channel.on('set-title', (config) => {
-                this.runtime.send('ui', 'setTitle', config.title);
+            this.channel.on('set-title', ({title}) => {
+                this.runtime.send('ui', 'setTitle', title);
             });
 
             this.channel.on('ui-auth-navigate', ({nextRequest, tokenInfo}) => {
@@ -244,7 +244,6 @@ define([
                 this.props.pipe.start();
                 this.channel.once('ready',
                     ({channelId}) => {
-                        // console.warn('[ready]', channelId);
                         this.channel.partnerId = channelId;
                         // TODO: narrow and improve the config support for plugins
                         // E.g.
@@ -285,7 +284,6 @@ define([
                             view: this.props.params.view.value,
                             params
                         };
-                        // console.warn('[ready]', startMessage, this.channel);
                         this.channel.send('start', startMessage);
                         // Any sends to the channel should only be enabled after the
                         // start message is received.
