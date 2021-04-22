@@ -130,19 +130,19 @@ define([
 
             return html`
                 <div style=${{
-                    position: 'absolute',
-                    top: '0',
-                    right: '0',
-                }}>
+        position: 'absolute',
+        top: '0',
+        right: '0',
+    }}>
                     <div style=${{
-                        padding: '4px',
-                        color: 'white',
-                        backgroundColor: 'rgba(255, 0, 0, 0.8)',
-                        textAlign: 'center',
-                        fontWeight: 'bold',
-                        fontStyle: 'italic',
-                        borderRadius: '3px',
-                    }}>
+        padding: '4px',
+        color: 'white',
+        backgroundColor: 'rgba(255, 0, 0, 0.8)',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontStyle: 'italic',
+        borderRadius: '3px',
+    }}>
                         ${content}
                     </div>
                 </div>
@@ -159,8 +159,8 @@ define([
                    data-placement="right"
                    title=${menuItem.tooltip || ''}
                    onClick=${() => {
-                       this.onNavClick(menuItem.path);
-                   }}>
+        this.onNavClick(menuItem.path);
+    }}>
                     ${this.renderIcon(menuItem)}
                     <div>${menuItem.label}</div>
                     ${this.renderBeta(menuItem)}

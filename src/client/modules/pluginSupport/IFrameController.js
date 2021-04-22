@@ -3,6 +3,7 @@ define([
     'htm',
     'uuid',
     '../lib/kb_lib/windowChannel',
+    // 'kb_lib2/windowChannel',
     'kb_lib/httpUtils',
     './AutoPostForm',
     './IFrame',
@@ -12,7 +13,7 @@ define([
     preact,
     htm,
     {v4: uuidv4},
-    {WindowChannel},
+    {WindowChannelInit},
     httpUtils,
     AutoPostForm,
     IFrame
@@ -38,10 +39,19 @@ define([
 
             this.receivers = [];
 
-            this.channel = new WindowChannel({
-                host: document.location.origin,
-                to: uuidv4()
-            });
+            this.channel = null;
+
+            this.hostChannelId = uuidv4();
+            this.pluginChannelId = uuidv4();
+
+
+            // channel = chan.makeChannel(hostChannelId);
+
+            // this.channel = new WindowChannel({
+            //     host: document.location.origin,
+            //     to: uuidv4()
+            // });
+            // this.channel.setDebug(true);
 
             this.state = {
                 loading: 'yes',
@@ -51,15 +61,6 @@ define([
         }
 
         componentDidMount() {
-            this.props.pipe.tap(({view, params}) => {
-                const path = params.path || [];
-                const message = {
-                    view, to: view, path, params
-                };
-                this.channel.send('navigate', message);
-            });
-            this.props.pipe.start();
-
             // Listen for slow loading plugins.
             this.monitorLoad();
         }
@@ -90,7 +91,13 @@ define([
             }, SHOW_SUPER_SLOW_LOADING_AFTER);
         }
 
-        setupAndStartChannel() {
+        setupAndStartChannel(iframeWindow) {
+            const chan = new WindowChannelInit({
+                id: this.hostChannelId,
+                window: iframeWindow,
+                host: window.document.location.origin
+            });
+            this.channel = chan.makeChannel(this.pluginChannelId);
             this.channel.on('get-auth-status', () => {
                 this.channel.send('auth-status', {
                     token: this.runtime.service('session').getAuthToken(),
@@ -164,8 +171,8 @@ define([
                 window.document.body.click();
             });
 
-            this.channel.on('set-title', (config) => {
-                this.runtime.send('ui', 'setTitle', config.title);
+            this.channel.on('set-title', ({title}) => {
+                this.runtime.send('ui', 'setTitle', title);
             });
 
             this.channel.on('ui-auth-navigate', ({nextRequest, tokenInfo}) => {
@@ -226,9 +233,15 @@ define([
 
         setupCommunication(iframeWindow) {
             return new Promise((resolve, reject) => {
-                this.temp_window = iframeWindow;
-                this.channel.setWindow(iframeWindow);
-                this.setupAndStartChannel();
+                this.setupAndStartChannel(iframeWindow);
+                this.props.pipe.tap(({view, params, request}) => {
+                    const path = params.path || [];
+                    const message = {
+                        view, to: view, path, params, request
+                    };
+                    this.channel.send('navigate', message);
+                });
+                this.props.pipe.start();
                 this.channel.once('ready',
                     ({channelId}) => {
                         this.channel.partnerId = channelId;
@@ -248,6 +261,16 @@ define([
                         params.view = this.props.params.view;
 
                         const startMessage = {
+                            authentication: {
+                                token: this.runtime.service('session').getAuthToken(),
+                                username: this.runtime.service('session').getUsername(),
+                                realname: this.runtime.service('session').getRealname(),
+                                email: this.runtime.service('session').getEmail(),
+                                roles: this.runtime.service('session').getRoles().map(({id}) => {
+                                    return id;
+                                })
+                            },
+                            // TODO: remove when all plugins converted.
                             authorization: {
                                 token: this.runtime.service('session').getAuthToken(),
                                 username: this.runtime.service('session').getUsername(),
@@ -261,7 +284,6 @@ define([
                             view: this.props.params.view.value,
                             params
                         };
-
                         this.channel.send('start', startMessage);
                         // Any sends to the channel should only be enabled after the
                         // start message is received.
@@ -333,15 +355,16 @@ define([
             const props = {
                 origin: document.location.origin,
                 pathRoot: this.props.pluginPath,
-                channelId: this.channel.channelId,
-                pluginChannelId: this.channel.partnerId,
+                hostChannelId: this.hostChannelId,
+                pluginChannelId: this.pluginChannelId,
                 whenMounted: (w) => {
                     // this.channel.setWindow(this.iframe.window);
                     this.iframeMounted(w);
                 },
                 hostId: this.id,
                 params: this.props.params,
-                runtime: this.props.runtime
+                runtime: this.props.runtime,
+                original: this.props.original
             };
 
             return html`

@@ -1,191 +1,286 @@
-import { uniqueId } from "./Utils";
-
-// Default period with which to poll for stale listeners.
-const DEFAULT_MONITOR_FREQUENCY = 100;
-
+import { v4 as uuidv4 } from 'uuid';
 
 interface ListenerParams {
     name: string;
-    onSuccess: (payload: any) => void;
-    onError: (error: Error) => void;
+    callback: (payload: Payload) => void;
+    onError?: (error: Error) => void;
 }
 
 class Listener {
     name: string;
-    onSuccess: (payload: any) => void;
-    onError: (error: Error) => void;
-    constructor({ name, onSuccess, onError }: ListenerParams) {
+    callback: (payload: Payload) => void;
+    onError?: (error: Error) => void;
+
+    constructor({ name, callback, onError }: ListenerParams) {
         this.name = name;
-        this.onSuccess = onSuccess;
+        this.callback = callback;
         this.onError = onError;
     }
 }
 
-interface Response {
-    handler: (payload: any) => void;
-    started: number;
+type Payload = any;
+
+interface WaitingListenerParams extends ListenerParams {
+    timeout?: number;
 }
 
-class Envelope {
+class WaitingListener extends Listener {
+    started: Date;
+    timeout: number;
+
+    constructor(params: WaitingListenerParams) {
+        super(params);
+        this.started = new Date();
+        this.timeout = params.timeout || 5000;
+    }
+}
+
+type EnvelopeType =
+    'plain' |
+    'request' |
+    'reply';
+
+interface EnvelopeBase {
+    type: EnvelopeType;
     from: string;
     to: string;
     id: string;
-    created: Date;
-    constructor({ from, to }: { from: string, to: string; }) {
-        this.from = from;
-        this.to = to;
-        this.id = uniqueId();
-        this.created = new Date();
-    }
-
-    toJSON() {
-        return {
-            from: this.from,
-            to: this.to,
-            id: this.id,
-            created: this.created.getTime()
-        };
-    }
+    created: number;
 }
 
+interface PlainEnvelope extends EnvelopeBase {
+    type: 'plain';
+}
 
+interface RequestEnvelope extends EnvelopeBase {
+    type: 'request';
+}
+
+interface ReplyEnvelope extends EnvelopeBase {
+    type: 'reply';
+    inReplyTo: string;
+    status: 'ok' | 'error'
+}
+
+type Envelope =
+    PlainEnvelope |
+    RequestEnvelope |
+    ReplyEnvelope;
+
+// class Envelope {
+//     from: string;
+//     to: string;
+//     id: string;
+//     created: Date;
+//
+//     constructor({ from, to }: { from: string; to: string }) {
+//         this.from = from;
+//         this.to = to;
+//         this.id = uuidv4();
+//         this.created = new Date();
+//     }
+//
+//     toJSON(): JSONObject {
+//         return {
+//             from: this.from,
+//             to: this.to,
+//             id: this.id,
+//             created: this.created.getTime()
+//         };
+//     }
+// }
+//
+// interface ReplyToEnvelopeConstructorParams {
+//     from: string;
+//     to: string;
+//     inReplyTo: string;
+// }
+//
+// class ReplyEnvelope extends Envelope {
+//     inReplyTo:string;
+//     constructor(params: ReplyToEnvelopeConstructorParams) {
+//         super(params);
+//         this.inReplyTo = params.inReplyTo;
+//     }
+//
+//     toJSON() {
+//         const base = super.toJSON();
+//         base['inReplyTo'] = this.inReplyTo
+//         return base;
+//     }
+// }
 
 class Message {
-    id: string;
     name: string;
     payload: any;
+    id: string;
+    created: Date;
     envelope: Envelope;
 
-    constructor({ name, payload, from, to }: { name: string, payload: any, from: string, to: string; }) {
+    constructor({ name, payload, envelope }: { name: string; payload: any; envelope: Envelope }) {
         this.name = name;
         this.payload = payload;
-        this.envelope = new Envelope({ from, to });
-        this.id = uniqueId();
+        this.id = uuidv4();
+        this.created = new Date();
+        this.envelope = envelope;
     }
 
     toJSON() {
         return {
-            envelope: this.envelope.toJSON(),
+            envelope: this.envelope,
             name: this.name,
             payload: this.payload
         };
     }
 }
 
-interface WaitingListenerParams extends ListenerParams {
-    timeout: number;
+interface Handler {
+    started: Date;
+    handler: (response: any) => any;
 }
 
-class WaitingListener extends Listener {
-    started: number;
-    timeout: number;
-    status: 'new' | 'waiting' | 'timedout' | 'completed';
-    constructor(config: WaitingListenerParams) {
-        super(config);
-        this.started = Date.now();
-        this.timeout = config.timeout;
-        this.status = 'new';
-    }
+interface ReplyHandler {
+    started: Date;
+    handler: (status: 'ok' | 'error', response: any) => any;
 }
 
-interface WindowChannelParams {
-    on: Window;
-    host: string;
-    to: string;
+export interface WindowChannelInitParams {
+    window?: Window;
+    host?: string;
+    id?: string;
+    to?: string;
 }
 
-type MessageId = string;
-
-export class WindowChannel {
-    global: Window;
-    host: string;
-    channelId: string;
-    partnerId: string;
-    awaitingResponse: Map<MessageId, Response>;
-    waitingListeners: Map<MessageId, Array<WaitingListener>>;
-    listeners: Map<MessageId, Array<Listener>>;
-    lastId: number;
-    sentCount: number;
-    receivedCount: number;
-    isDebug: boolean;
-    currentListener: ((event: MessageEvent<any>) => void) | null;
-    constructor({ on, host, to }: WindowChannelParams) {
+export class WindowChannelInit {
+    private readonly window: Window;
+    private readonly host: string;
+    private readonly id: string;
+    constructor(params: WindowChannelInitParams = {}) {
         // The given window upon which we will listen for messages.
-        this.global = on;
+        this.window = params.window || window;
 
         // The host for the window; required for postmessage
-        this.host = host || document.location.origin;
+        this.host = params.host || this.window.document.location.origin;
 
         // The channel id. Used to filter all messages received to
         // this channel.
-        this.channelId = uniqueId();
+        this.id = params.id || uuidv4();
+    }
+
+    makeChannel(partnerId: string) {
+        return new WindowChannel({
+            window: this.window,
+            host: this.host,
+            id: this.id,
+            to: partnerId
+        });
+    }
+
+    getId() {
+        return this.id;
+    }
+}
+
+
+export interface WindowChannelParams {
+    window: Window;
+    host: string;
+    id: string;
+    to: string;
+}
+
+interface Stats {
+    sent: number;
+    received: number;
+    ignored: number;
+}
+
+export class WindowChannel {
+    private readonly window: Window;
+    private readonly host: string;
+    private readonly id: string;
+    private partnerId: string;
+    private awaitingResponses: Map<string, ReplyHandler>;
+    private waitingListeners: Map<string, Array<Listener>>;
+    private listeners: Map<string, Array<Listener>>;
+    private lastId: number;
+    private currentListener: ((message: MessageEvent) => void) | null;
+    private running: boolean;
+    private readonly stats: Stats;
+
+    constructor({ window, host, id, to }: WindowChannelParams) {
+        // The given window upon which we will listen for messages.
+        this.window = window;
+
+        // The host for the window; required for postmessage
+        this.host = host;
+
+        // The channel id. Used to filter all messages received to
+        // this channel.
+        this.id = id;
 
         this.partnerId = to;
 
-        // And we also filter by the envelope.to field matching
-        // this id, recipientID.
-        // this.receiveFor = config.receiveFor;
-
-        this.awaitingResponse = new Map();
-        this.waitingListeners = new Map();
-        this.listeners = new Map();
+        this.awaitingResponses = new Map<string, Handler>();
+        this.waitingListeners = new Map<string, Array<Listener>>();
+        this.listeners = new Map<string, Array<Listener>>();
 
         this.lastId = 0;
-        this.sentCount = 0;
-        this.receivedCount = 0;
 
-        this.isDebug = false;
         this.currentListener = null;
-    }
-
-    setDebug(isDebug: boolean) {
-        this.isDebug = isDebug;
-    }
-
-    setPartner(partnerChannelId: string) {
-        this.partnerId = partnerChannelId;
-    }
-
-    setWindow(global: Window) {
-        this.global = global;
-    }
-
-    genId() {
-        this.lastId += 1;
-        return 'msg_' + String(this.lastId);
-    }
-
-    receiveMessage(messageEvent: MessageEvent<any>) {
-        const possibleMessage = messageEvent.data;
-
-        if (!possibleMessage) {
-            if (this.isDebug) {
-                console.warn('No message data; message ignored', messageEvent);
-            }
-            return;
+        this.running = false;
+        this.stats = {
+            sent: 0,
+            received: 0,
+            ignored: 0
         }
-        // TODO: more positive way of asserting this is a kbase message?
-        if (!possibleMessage.envelope) {
-            if (this.isDebug) {
-                console.warn('No message envelope, not from KBase; message ignored', messageEvent);
-            }
-            return;
-        }
+    }
 
-        const message = (possibleMessage as unknown) as Message;
+    getId(): string {
+        return this.id;
+    }
 
-        if (message.envelope.to !== this.channelId) {
-            if (this.isDebug) {
-                console.warn('Message envelope does not match this channel\'s id', messageEvent);
-            }
+    getPartnerId(): string {
+        return this.partnerId;
+    }
+
+    getStats(): Stats {
+        return this.stats;
+    }
+
+    /**
+     * Receives all messages sent via postMessage to the associated window.
+     *
+     * @param messageEvent - a post message event
+     */
+    receiveMessage(messageEvent: MessageEvent) {
+        const message = messageEvent.data as Message;
+        // Here we have a series of filters to determine whether this message should be
+        // handled by this post message bus.
+        // In all cases we issue a warning, and return.
+
+        if (typeof message !== 'object' || message === null) {
+            this.stats.ignored += 1;
             return;
         }
 
+        // TODO: could do more here.
+        if (!message.envelope) {
+            this.stats.ignored += 1;
+            return;
+        }
 
+        // Here we ignore messages intended for another windowChannel object.
+        if (message.envelope.to !== this.id) {
+            this.stats.ignored += 1;
+            return;
+        }
+
+        this.stats.received += 1;
 
         // A message sent as a request will have registered a response handler
-        // in the awaitingResponse hash, using a generated id as the key.
-        // TODO: to to rethink using the message id here. Perhaps something like a
+        // in the awaitingResponses hash, using a generated id as the key.
+        // TODO: to to rethink using the message id here. Perhaps somehting like a
         // chain of ids, the root of which is the origination id, which is the one
         // known here when it it is sent; the message "id" should be assigned whenver
         // a message is sent, but a response  message would include the original
@@ -195,26 +290,26 @@ export class WindowChannel {
         // These are useful for, e.g., a promise which awaits a message to be sent
         // within some window...
 
-        if (message.envelope.id && this.awaitingResponse.has(message.envelope.id)) {
-            try {
-                const response = this.awaitingResponse.get(message.envelope.id)!;
-                this.awaitingResponse.delete(message.envelope.id);
-                response.handler(message.payload);
-            } catch (ex) {
-                console.error('Error handling response for message ', message, ex);
+        // if a reply, we ...
+        if (message.envelope.type === 'reply' && this.awaitingResponses.has(message.envelope.inReplyTo)) {
+            const response = this.awaitingResponses.get(message.envelope.inReplyTo);
+            this.awaitingResponses.delete(message.envelope.inReplyTo);
+            if (response) {
+                response.handler(message.envelope.status, message.payload);
             }
+            return;
         }
 
         // and also awaiting by message name. Like a listener, but they are only used
         // once.
+
         if (this.waitingListeners.has(message.name)) {
             const awaiting = this.waitingListeners.get(message.name)!;
             this.waitingListeners.delete(message.name);
             awaiting.forEach((listener) => {
                 try {
-                    listener.onSuccess(message.payload);
+                    listener.callback(message.payload);
                 } catch (ex) {
-                    console.error('Error handling listener for message', message, ex);
                     if (listener.onError) {
                         listener.onError(ex);
                     }
@@ -224,20 +319,46 @@ export class WindowChannel {
 
         // Otherwise, permanently registered handlers are found in the listeners for the
         // message name.
-        if (this.listeners.has(message.name)) {
-            this.listeners.get(message.name)!.forEach((listener) => {
-                if (!listener.onSuccess) {
-                    console.warn('no handler for listener!', listener);
-                }
-                try {
-                    listener.onSuccess(message.payload);
-                } catch (ex) {
-                    console.error('Error handling listener for message', message, ex);
-                    if (listener.onError) {
-                        listener.onError(ex);
+        const listeners = this.listeners.get(message.name) || [];
+        for (const listener of listeners) {
+            switch (message.envelope.type) {
+                case 'request':
+                    const [ok, err] = (() => {
+                        try {
+                            return [listener.callback(message.payload), null];
+                        } catch (ex) {
+                            return [null, {
+                                message: ex.message,
+                            }];
+                        }
+                    })();
+                    const replyEnvelop: ReplyEnvelope = {
+                        type: 'reply',
+                        from: message.envelope.to,
+                        to: message.envelope.from,
+                        created: Date.now(),
+                        id: uuidv4(),
+                        inReplyTo: message.envelope.id,
+                        status: ok ? 'ok' : 'error'
                     }
-                }
-            });
+                    const replyMessage = new Message({
+                        envelope: replyEnvelop,
+                        name: 'reply',
+                        payload: ok || err
+                    });
+                    this.sendMessage(replyMessage);
+                case 'plain':
+                default:
+                    // default case handles older messages without the envelope type.
+                    try {
+                        return listener.callback(message.payload);
+                    } catch (ex) {
+                        if (listener.onError) {
+                            listener.onError(ex);
+                        }
+                    }
+                    break;
+            }
         }
     }
 
@@ -245,65 +366,95 @@ export class WindowChannel {
         if (!this.listeners.has(listener.name)) {
             this.listeners.set(listener.name, []);
         }
-        // if (this.listeners[listener.name]) {
-        //     throw new Error('Listener already established for "' + listener.name + '"');
-        // }
         this.listeners.get(listener.name)!.push(listener);
     }
 
-    on(name: string, onSuccess: (payload: any) => void, onError: (error: Error) => void) {
+    on(messageId: string, callback: (payload: any) => any, onError?: (error: Error) => void) {
         this.listen(
             new Listener({
-                name,
-                onSuccess,
-                onError
+                name: messageId,
+                callback,
+                onError: (error: Error) => {
+                    if (onError) {
+                        onError(error);
+                    }
+                }
             })
         );
     }
 
     sendMessage(message: Message) {
-        this.global.postMessage(message.toJSON(), this.host);
+        if (!this.running) {
+            throw new Error('Not running - may not send ')
+        }
+        this.stats.sent += 1;
+        this.window.postMessage(message.toJSON(), this.host);
     }
 
-    send(name: string, payload: any) {
-        const message = new Message({ name, payload, from: this.channelId, to: this.partnerId });
+    send(name: string, payload: Payload) {
+        const envelope: PlainEnvelope = {
+            type: 'plain',
+            from: this.id,
+            to: this.partnerId,
+            created: Date.now(),
+            id: uuidv4()
+        };
+        const message = new Message({ name, payload, envelope });
         this.sendMessage(message);
     }
 
-    sendRequest(message: Message, handler: (payload: any) => void) {
-        this.awaitingResponse.set(message.id, {
-            started: Date.now(),
+    sendRequest(message: Message, handler: (status: 'ok' | 'error', response: any) => any) {
+        if (!this.running) {
+            throw new Error('Not running - may not send ')
+        }
+        this.awaitingResponses.set(message.envelope.id, {
+            started: new Date(),
             handler
         });
         this.sendMessage(message);
     }
 
-    request(name: string, payload: any) {
+    request(name: string, payload: Payload) {
         return new Promise((resolve, reject) => {
-            try {
-                this.sendRequest(new Message({ name, payload, from: this.channelId, to: this.partnerId }), (response) => {
+            const envelope: RequestEnvelope = {
+                type: 'request',
+                from: this.id,
+                to: this.partnerId,
+                created: Date.now(),
+                id: uuidv4()
+            };
+            const message = new Message({
+                name,
+                payload,
+                envelope
+            });
+            this.sendRequest(message, (status: 'ok' | 'error', response: any) => {
+                if (status === 'ok') {
                     resolve(response);
-                });
-            } catch (ex) {
-                reject(ex);
-            }
+                } else {
+                    // TODO: tighten up the typing!!!
+                    reject(new Error(response.message));
+                }
+            });
         });
     }
 
     startMonitor() {
         window.setTimeout(() => {
-            const now = Date.now();
-            this.waitingListeners.forEach((listeners, key) => {
+            const now = new Date().getTime();
+
+            // first take care of listeners awaiting a message.
+            for (const [id, listeners] of Array.from(this.waitingListeners.entries())) {
                 const newListeners = listeners.filter((listener) => {
-                    if (listener.timeout) {
-                        const elapsed = now - listener.started;
+                    if (listener instanceof WaitingListener) {
+                        const elapsed = now - listener.started.getTime();
                         if (elapsed > listener.timeout) {
                             try {
                                 if (listener.onError) {
-                                    listener.onError(new Error('timeout after ' + elapsed));
+                                    listener.onError(new Error('timout after ' + elapsed));
                                 }
                             } catch (ex) {
-                                console.error('Error calling error handler', key, ex);
+                                console.error('Error calling error handler', id, ex);
                             }
                             return false;
                         } else {
@@ -314,25 +465,14 @@ export class WindowChannel {
                     }
                 });
                 if (newListeners.length === 0) {
-                    this.waitingListeners.delete(key);
+                    this.waitingListeners.delete(id);
                 }
-            });
-            // Here we restart the monitor if there are any waitingListeners left.
+            }
 
             if (this.waitingListeners.size > 0) {
                 this.startMonitor();
             }
-
-            // if (
-            //     Object.keys(this.waitingListeners).some((key) => {
-            //         return this.waitingListeners[key].some((listener) => {
-            //             return listener.timeout ? true : false;
-            //         });
-            //     })
-            // ) {
-            //     this.startMonitor();
-            // }
-        }, DEFAULT_MONITOR_FREQUENCY);
+        }, 100);
     }
 
     listenOnce(listener: WaitingListener) {
@@ -345,13 +485,16 @@ export class WindowChannel {
         }
     }
 
-    once(name: string, onSuccess: (payload: any) => string, onError: (error: Error) => void, timeout: number) {
+    once(name: string, callback: (payload: Payload) => void, onError?: (error: Error) => void) {
         this.listenOnce(
             new WaitingListener({
-                name,
-                onSuccess,
-                onError,
-                timeout
+                name: name,
+                callback,
+                onError: (error: Error) => {
+                    if (onError) {
+                        onError(error);
+                    }
+                }
             })
         );
     }
@@ -362,7 +505,7 @@ export class WindowChannel {
                 new WaitingListener({
                     name: name,
                     timeout: timeout,
-                    onSuccess: (payload) => {
+                    callback: (payload) => {
                         resolve(payload);
                     },
                     onError: (error) => {
@@ -373,32 +516,24 @@ export class WindowChannel {
         });
     }
 
-    stats() {
-        return {
-            sent: this.sentCount,
-            received: this.receivedCount
-        };
+    setPartner(id: string) {
+        this.partnerId = id;
     }
 
-    attach(global: Window) {
-        this.global = global;
-    }
-
-    start() {
-        this.currentListener = (event: MessageEvent<any>) => {
-            this.receiveMessage(event);
+    start(): WindowChannel {
+        this.currentListener = (message: MessageEvent) => {
+            this.receiveMessage(message);
         };
-        this.global.addEventListener('message', this.currentListener, false);
+        this.window.addEventListener('message', this.currentListener, false);
+        this.running = true;
+        return this;
     }
 
     stop() {
-        if (this.currentListener && this.global) {
-            if (!this.global.removeEventListener) {
-                console.warn('HUH?', this.global);
-            } else {
-                this.global.removeEventListener('message', this.currentListener, false);
-            }
+        this.running = false;
+        if (this.currentListener) {
+            this.window.removeEventListener('message', this.currentListener, false);
         }
+        return this;
     }
 }
-

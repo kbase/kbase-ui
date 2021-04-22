@@ -27,10 +27,17 @@ define([
 
             this.ref = createRef();
 
-            const indexPath = this.props.pathRoot + '/iframe_root/index.html';
+            const indexPath = [
+                this.props.pathRoot,
+                '/iframe_root/index.html',
+                '#',
+                this.props.original
+            ].join('');
 
             // Make an absolute url to this.
-            this.url = this.props.origin + '/' + indexPath + this.cacheBuster();
+            // TODO: add hash
+            this.url = this.props.origin + '/' + indexPath; // + this.cacheBuster();
+
 
         }
 
@@ -63,7 +70,8 @@ define([
                 buildInfo: this.props.runtime.config('buildInfo'),
                 developMode: false,
                 params: this.props.params,
-                channelId: this.props.channelId,
+                channelId: this.props.hostChannelId,
+                hostChannelId: this.props.hostChannelId,
                 pluginChannelId: this.props.pluginChannelId
             };
 
@@ -74,7 +82,9 @@ define([
                     name=${this.id}
                     data-k-b-testhook-iframe="plugin-iframe"
                     data-params=${paramString}
-                    data-channel-id=${this.props.channelId}
+                    data-channel-id=${this.props.hostChannelId}
+                    data-host-channel-id=${this.props.hostChannelId}
+                    data-plugin-channel-id=${this.props.pluginChannelId}
                     className="IFrame -iframe"
                     frameborder="0"
                     scrolling="no"

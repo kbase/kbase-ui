@@ -178,6 +178,10 @@
                     "title": "Samples linked to objects via the Sample Service"
                 },
                 {
+                    "id": "object-link-to-term",
+                    "title": "Data objects linked to ontology terms"
+                },
+                {
                     "id": "redirect-to-www",
                     "title": "Redirect to www.kbase.us if not physical path, ui hash path, or token"
                 }
@@ -333,6 +337,17 @@
 			],
 			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_kbasedataimport_path "services/data_import_export" }}",
 			"name": "Data Import Export"
+		},
+		"SampleService": {
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_userprofile_path "services/sampleservice" }}",
+			"name": "Sample Service",
+			"coreService": true,
+			"type": "jsonrpc",
+			"version": {
+				"method": "status",
+				"minimum": "0.1.0-alpha25",
+				"required": "0.1.0-alpha25"
+			}
 		},
 		"ServiceWizard": {
 			"aliases": [
