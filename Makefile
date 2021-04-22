@@ -51,10 +51,10 @@ service = selenium-standalone
 token =
 
 # A timeout parameter; used for integration tests
-timeout = 
+timeout =
 
 # An interval parameter; used to control the pause between tests in integration tests
-interval = 
+interval =
 
 # functions
 
@@ -145,6 +145,7 @@ docker-compose-override:
 	@echo "> libraries: $(libraries)"
 	@echo "> paths: $(paths)"
 	@echo "> local-narrative: $(local-narrative)"
+	@echo "> services: $(services)"
 	@echo "> dynamic-services: $(dynamic-services)"
 	$(eval cmd = node $(TOPDIR)/tools/js/build-docker-compose-override.js $(env) \
 	  $(foreach p,$(plugins),--plugin $(p)) \
