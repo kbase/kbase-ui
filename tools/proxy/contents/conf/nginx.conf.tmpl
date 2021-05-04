@@ -86,7 +86,7 @@ http {
         # Needed for running narratives
         location /narrative/ {
             access_log /var/log/nginx/narrative.log upstream_log;
-            
+
             include /etc/nginx/cors.conf;
             {{ if .Env.local_narrative }}
                 proxy_pass http://narrative/narrative/;
@@ -107,7 +107,7 @@ http {
             proxy_pass https://{{ .Env.deploy_ui_hostname }}:443;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
-            client_max_body_size 300M;         
+            client_max_body_size 300M;
         }
 
         location /narratives/ {
@@ -122,7 +122,7 @@ http {
         location / {
             client_max_body_size 300M;
             proxy_pass http://kbase_ui;
-            proxy_http_version 1.1;       
+            proxy_http_version 1.1;
             proxy_set_header Connection "";
         }
     }
@@ -141,12 +141,12 @@ http {
         # note should put the service module name in /etc/hosts and map to localhost
         {{ if .Env.service_proxies }}
         {{ range split .Env.service_proxies " " }}
-        
+
         {{ if eq . "searchapi2" }}
             location /services/searchapi2/legacy {
-                {{ if $.Env.deploy_ui_hostname }}
+
                 include /etc/nginx/cors.conf;
-                {{ end }}
+
                 # set $upstream http://searchapi2:5000/legacy;
                 # proxy_pass $upstream;
                 proxy_pass http://searchapi2:5000/legacy;
@@ -156,9 +156,9 @@ http {
             }
 
             location /services/searchapi2/rpc {
-                {{ if $.Env.deploy_ui_hostname }}
+
                 include /etc/nginx/cors.conf;
-                {{ end }}
+
                 # set $upstream http://searchapi2:5000/rpc;
                 # proxy_pass $upstream;
                 proxy_pass http://searchapi2:5000/rpc;
@@ -168,9 +168,9 @@ http {
             }
         {{ else }}
             location /services/{{ . }} {
-                {{ if $.Env.deploy_ui_hostname }}
+
                 include /etc/nginx/cors.conf;
-                {{ end }}
+
                 set $upstream http://{{ . }}:5000;
                 proxy_pass $upstream;
                 proxy_http_version 1.1;
@@ -187,9 +187,9 @@ http {
         # Proxy all service calls, including auth2, to the real CI
         location /services {
             # The cookie path rewriting is just for auth2
-            {{ if .Env.deploy_ui_hostname }}
+
             include /etc/nginx/cors.conf;
-            {{ end }}
+
             proxy_cookie_path /login /services/auth/login;
             proxy_cookie_path /link /services/auth/link;
             proxy_pass https://services/services;
@@ -200,7 +200,7 @@ http {
         }
 
         # -- vv Dynamic Service proxying vv ------------------------------------------
-        # 
+        #
         # If dynamic services are provided in the configuration, we will proxy requests
         # to them to local instances.
         # This works by trapping calls to /dynserv/XXX.Module
@@ -218,9 +218,9 @@ http {
         # SO this means that probably service entries which are more complicated than simple strings
         #    without punctuation will work, but if they contain a / or something, maybe not.
         location ~ ^/dynserv/[^.]+[.]{{ . }}.*$ {
-            {{ if $.Env.deploy_ui_hostname }}
+
                 include /etc/nginx/cors.conf;
-            {{ end }}
+
 
             # This handles plain dynamic service calls, which don't have any path following the module name
             rewrite ^/dynserv/[^.]+[.]{{ . }}$ / break;
@@ -239,9 +239,9 @@ http {
         # endpoints.
 
         location /dynserv {
-            {{ if .Env.deploy_ui_hostname }}
+
                 include /etc/nginx/cors.conf;
-            {{ end }}
+
             proxy_pass https://dynamic_services/dynserv;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
@@ -263,7 +263,7 @@ http {
             {{ end }}
 
             access_log /var/log/nginx/narrative.log upstream_log;
-            
+
             proxy_connect_timeout 10s;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
@@ -276,7 +276,7 @@ http {
             proxy_pass https://{{ .Env.deploy_hostname }}:443;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
-            client_max_body_size 300M;         
+            client_max_body_size 300M;
         }
 
         location /narratives/ {
@@ -292,9 +292,9 @@ http {
             proxy_pass http://kbase_ui;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
-            client_max_body_size 300M;         
+            client_max_body_size 300M;
         }
-        
+
         {{ end }}
     }
 }
