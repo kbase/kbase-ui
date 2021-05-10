@@ -36,7 +36,7 @@ define([
 
             // Make an absolute url to this.
             // TODO: add hash
-            this.url = this.props.origin + '/' + indexPath; // + this.cacheBuster();
+            this.url = this.props.origin + '/' + indexPath + this.cacheBuster();
 
 
         }
@@ -53,7 +53,7 @@ define([
 
         cacheBuster() {
             // TODO: get develop mode from runtime
-            return '?cb=' + this.cacheBusterKey(this.props.runtime.config('buildInfo'), false);
+            return '?__cb__=' + this.cacheBusterKey(this.props.runtime.config('buildInfo'), false);
         }
 
         componentDidMount() {

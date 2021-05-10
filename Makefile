@@ -227,7 +227,6 @@ clean-temp:
 
 clean-build:
 	$(GRUNT) clean-build
-
 clean-docs:
 	@rm -rf ./docs/book/_book
 	@rm -rf ./docs/node_modules

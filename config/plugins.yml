@@ -16,7 +16,7 @@ plugins:
         account: kbase
   - name: dataview
     globalName: kbase-ui-plugin-dataview
-    version: 4.8.0
+    version: 4.8.4
     source:
       github:
         account: kbase
@@ -52,7 +52,7 @@ plugins:
         account: kbase
   - name: data-search
     globalName: kbase-ui-plugin-data-search
-    version: 2.3.1
+    version: 2.3.2
     source:
       github:
         account: kbase
@@ -88,13 +88,13 @@ plugins:
         account: eapearson
   - name: samples
     globalName: kbase-ui-plugin-samples
-    version: 0.12.9
+    version: 0.12.13
     source:
       github:
         account: kbaseIncubator
   - name: ontology
     globalName: kbase-ui-plugin-ontology
-    version: 0.4.1
+    version: 0.4.5
     source:
       github:
         account: kbaseIncubator
