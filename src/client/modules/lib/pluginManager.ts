@@ -1,9 +1,8 @@
 /* global define */
 // Note that we use the global require here because we need to
 // update the global confirmation.
-// const prequire = Promise.promisify(window.require);
 
-import { tryPromise } from "./kb_lib/Utils";
+import {tryPromise} from "./kb_lib/Utils";
 import {
     PluginConfig, PluginDefinition, PluginLoadConfig,
     PluginServiceDefinition, Runtime, Service, AMDRequire
@@ -26,20 +25,6 @@ interface LegacyInstallerConfig {
     resourcesRoot: string;
 }
 
-function prequire(dependencies: Array<string>) {
-    return new Promise((resolve, reject) => {
-        try {
-            require(dependencies, (result) => {
-                resolve(result);
-            }, (error) => {
-                reject(error);
-            });
-        } catch (ex) {
-            reject(ex);
-        }
-    });
-}
-
 interface PluginManagerConstructorParams {
     runtime: Runtime;
     moduleBase: string;
@@ -49,24 +34,12 @@ export class PluginManager {
     runtime: Runtime;
     moduleBase: string;
     services: Map<string, Service<any>>;
-    constructor({ runtime, moduleBase }: PluginManagerConstructorParams) {
+
+    constructor({runtime, moduleBase}: PluginManagerConstructorParams) {
         this.runtime = runtime;
         this.moduleBase = moduleBase || '/modules';
         this.services = new Map<string, Service<any>>();
     }
-
-    /*
-     * All of these installXXX installers return an array of
-     * promises.
-     */
-
-    // registerService(serviceNames: Array<string>, serviceDef: ServiceDefinition) {
-    //     // TODO: transform service definition to service 
-    //     const service = serviceDef as Service<any>;
-    //     serviceNames.forEach((name) => {
-    //         this.services.set(name, service);
-    //     });
-    // }
 
     installIntoService(
         pluralTypeName: string,
@@ -104,8 +77,6 @@ export class PluginManager {
     installLegacyPlugin(pluginLoadConfig: PluginLoadConfig, pluginConfig: PluginConfig) {
         // build up a list of modules and add them to the require config.
         return tryPromise(() => {
-            const paths: Map<string, any> = new Map();
-            const shims: Map<string, any> = new Map();
             const sourcePath = pluginLoadConfig.directory;
 
             let usingSourceModules = false;
@@ -131,21 +102,36 @@ export class PluginManager {
 
     }
 
+    cacheBusterKey(buildInfo: any, developMode: boolean) {
+        // NB developMode not implemented yet, so always defaults
+        // to the gitCommitHash
+        if (developMode) {
+            return String(new Date().getTime());
+        } else {
+            return buildInfo.git.commitHash;
+        }
+    }
+
+    cacheBuster() {
+        // TODO: get develop mode from runtime
+        return '?cb=' + this.cacheBusterKey(this.runtime.config('buildInfo'), false);
+    }
+
     installIFramePlugin(pluginLoadConfig: PluginLoadConfig, pluginConfig: PluginConfig) {
         // build up a list of modules and add them to the require config.
         return tryPromise(() => {
             const pluginInstallerConfig: IframeInstallerConfig = {
                 usingSourceModules: false,
                 root: pluginLoadConfig.directory,
-                iframePath: `${pluginLoadConfig.directory}/iframe_root/index.html`
+                iframePath: `${pluginLoadConfig.directory}/iframe_root/index.html` + this.cacheBuster()
             };
 
-            // This overrides the plugin's own concept of plugin name with 
-            // the one provided in kbase-ui's name for the plugin, which is derived
+            // This overrides the plugin's own concept of plugin name with
+            // the one provided in kbase-ui's name for the plugin, which is deri ved
             // from plugins.yml
             // This allows us to support loading the same plugin twice under different
             // names. This has very limited utility ... but is very useful when needed.
-            // E.g. to load different versions of the same plugin for side by side 
+            // E.g. to load different versions of the same plugin for side by side
             // evaluation
             // TODO: come up with a better way of doing this!
             pluginConfig.package.name = pluginLoadConfig.name;
@@ -155,19 +141,6 @@ export class PluginManager {
             if (!serviceConfigs) {
                 return null;
             }
-
-            const installSteps: Array<Promise<any>> = [];
-
-            // Object.keys(serviceConfigs).forEach((serviceName) => {
-            //     const installDef = serviceConfigs[serviceName];
-            //     const installationPromise = this.installIntoService(serviceName, installDef, pluginInstallerConfig, pluginConfig);
-            //     if (installationPromise) {
-            //         installSteps.push(installationPromise);
-            //     }
-            // });
-            // // Do all of the install steps.
-            // return Promise.all(installSteps);
-
 
             return Promise.all(Object.entries(serviceConfigs)
                 .map(([serviceName, serviceConfig]) => {
@@ -193,30 +166,6 @@ export class PluginManager {
         });
     }
 
-    // makePromiseIterator(actions) {
-    //     return new Promise((topResolve, topReject) => {
-    //         function promiseIterator(actions) {
-    //             if (actions === undefined || actions.length === 0) {
-    //                 topResolve('DONE');
-    //             }
-    //             const next = actions[0];
-    //             const rest = actions.slice(1);
-    //             Promise.try(() => {
-    //                 return new Promise((resolve, reject, notify) => {
-    //                     next(resolve, reject, notify);
-    //                 });
-    //             })
-    //                 .then(() => {
-    //                     return promiseIterator(rest);
-    //                 })
-    //                 .catch((err) => {
-    //                     topReject(err);
-    //                 });
-    //         }
-    //         promiseIterator(actions);
-    //     });
-    // }
-
     /**
      *
      * @param {type} pluginDef
@@ -240,7 +189,7 @@ export class PluginManager {
     }
 
     installPlugins(pluginLoadConfigs: Map<string, PluginLoadConfig>) {
-        const loaders = Array.from(pluginLoadConfigs, ([pluginName, pluginLoadConfig]) => {
+        const loaders = Array.from(pluginLoadConfigs, ([_pluginName, pluginLoadConfig]) => {
             return this.loadPlugin(pluginLoadConfig);
         });
         return Promise.all(loaders);
