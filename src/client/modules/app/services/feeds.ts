@@ -87,10 +87,11 @@ class FeedsService {
             });
             return feedsClient.getUnseenNotificationCount()
                 .then(({ unseen: { global, user } }) => {
+
                     const currentUnseen = global + user;
+
                     // are notifications different than the last time?
                     const unseenNotificationsCount = this.runtime.db().get('feeds.unseenNotificationsCount', 0);
-                    // only way is a deep equality comparison
 
                     if (unseenNotificationsCount === currentUnseen) {
                         return;

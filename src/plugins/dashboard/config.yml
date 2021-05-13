@@ -14,7 +14,8 @@ services:
     items:
       - name: dashboard
         type: internal
+        tooltip: Narrative Navigator - browse and search Narratives
         path: "{{plugin}}"
         newWindow: false
-        label: Narratives
-        icon: files-o
+        label: Navigator
+        icon: compass
