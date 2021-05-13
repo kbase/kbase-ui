@@ -221,7 +221,7 @@ function main(args) {
     mergeLocalTests(root, config, args);
 
     const outputPath = [root, 'dev', 'docker-compose.override.yml'].join('/');
-    fs.writeFileSync(outputPath, yaml.safeDump(config));
+    fs.writeFileSync(outputPath, yaml.dump(config));
 }
 
 main(yargs.parse(process.argv.slice(2)));
