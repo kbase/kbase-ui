@@ -8,7 +8,6 @@ define([
     htm,
     SidebarMenu
 ) => {
-
     const {h, Component} = preact;
     const html = htm.bind(h);
 
@@ -94,8 +93,10 @@ define([
                 .map((menuItem) => {
                     const isActive = (selectedItemPath && selectedItemPath === menuItem.path) ? true : false;
                     return {
-                        id: menuItem.id,
+                        id: menuItem.name,
+                        name: menuItem.name,
                         label: menuItem.label,
+                        tooltip: menuItem.tooltip,
                         icon: menuItem.icon,
                         path: menuItem.path,
                         authRequired: menuItem.authRequired ? true : false,
