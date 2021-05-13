@@ -30,15 +30,13 @@ define([
             const indexPath = [
                 this.props.pathRoot,
                 '/iframe_root/index.html',
+                this.cacheBuster(),
                 '#',
                 this.props.original
             ].join('');
 
             // Make an absolute url to this.
-            // TODO: add hash
-            this.url = this.props.origin + '/' + indexPath + this.cacheBuster();
-
-
+            this.url = this.props.origin + '/' + indexPath;
         }
 
         cacheBusterKey(buildInfo, developMode) {
@@ -53,7 +51,7 @@ define([
 
         cacheBuster() {
             // TODO: get develop mode from runtime
-            return '?__cb__=' + this.cacheBusterKey(this.props.runtime.config('buildInfo'), false);
+            return '?cb=' + this.cacheBusterKey(this.props.runtime.config('buildInfo'), false);
         }
 
         componentDidMount() {
