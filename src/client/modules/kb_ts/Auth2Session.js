@@ -6,7 +6,7 @@ define([
     './Auth2Error'
 ], (
     Promise,
-    Uuid,
+    {v4: uuidv4},
     { CookieManager, Cookie },
     { Auth2 },
     { AuthError }
@@ -320,7 +320,7 @@ define([
         }
 
         onChange(listener) {
-            const id =  new Uuid(4).format();
+            const id =  uuidv4();
             this.changeListeners[id] = listener;
             return id;
         }

@@ -9,7 +9,7 @@ import {
     Router,
     RouteSpec,
     RoutingLocation,
-} from "../../lib/router";
+} from "./router";
 import { Receiver, Runtime, SimpleMap } from "../../lib/types";
 
 type RouteHandler = RoutedRequest;
@@ -248,20 +248,18 @@ export class RouteService {
             }
         }
 
-        // We can also require that the route match at least one role defined in a list.
+        this.runtime.send("app", "route-component", routed);
 
-        const route = {
-            routeHandler: routed,
-        };
-        // if (routed.route.) {
-        //     this.runtime.send('app', 'route-redirect', route);
-        //     // } else if (handler.route.handler) {
-        //     //     this.runtime.send('app', 'route-handler', route);
-        if (routed.route.component) {
-            this.runtime.send("app", "route-component", route);
-        } else {
-            throw new Error("Not a valid route request");
-        }
+        // const route = {
+        //     routeHandler: routed,
+        //     request: routed.request
+        // };
+
+        // if (routed) {
+        //     this.runtime.send("app", "route-component", route);
+        // } else {
+        //     throw new Error("Not a valid route request");
+        // }
     }
 
     installRoute(route: RouteSpec, options: RouteOptions) {
@@ -316,20 +314,20 @@ export class RouteService {
             this.doRoute();
         });
 
-        this.runtime.receive("app", "new-route", (data) => {
-            if (data.routeHandler.route.redirect) {
-                this.runtime.send("app", "route-redirect", data);
-            } else if (data.routeHandler.route.component) {
-                this.runtime.send("app", "route-component", data);
-            } else if (data.routeHandler.route.handler) {
-                this.runtime.send("app", "route-handler", data);
+        this.runtime.receive("app", "new-route", (routed) => {
+            if (routed.route.redirect) {
+                this.runtime.send("app", "route-redirect", routed);
+            } else if (routed.route.component) {
+                this.runtime.send("app", "route-component", routed);
+            } else if (routed.route.handler) {
+                this.runtime.send("app", "route-handler", routed);
             }
         });
 
-        this.runtime.receive("app", "route-redirect", (data) => {
+        this.runtime.receive("app", "route-redirect", (routed) => {
             this.runtime.send("app", "navigate", {
-                path: data.routeHandler.route.redirect.path,
-                params: data.routeHandler.route.redirect.params,
+                path: routed.route.redirect.path,
+                params: routed.route.redirect.params,
             });
         });
 

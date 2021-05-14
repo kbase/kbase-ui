@@ -7,7 +7,7 @@ define([
 ], (
     preact,
     htm,
-    Uuid
+    {v4: uuidv4}
 ) => {
 
     const {h, Component, createRef} = preact;
@@ -22,16 +22,21 @@ define([
             //     params, runtime
             // } = props;
 
-            const id = new Uuid(4).format();
+            const id = uuidv4();
             this.id = `frame_ ${id}`;
 
             this.ref = createRef();
 
-            const indexPath = this.props.pathRoot + '/iframe_root/index.html';
+            const indexPath = [
+                this.props.pathRoot,
+                '/iframe_root/index.html',
+                this.cacheBuster(),
+                '#',
+                this.props.original
+            ].join('');
 
             // Make an absolute url to this.
-            this.url = this.props.origin + '/' + indexPath + this.cacheBuster();
-
+            this.url = this.props.origin + '/' + indexPath;
         }
 
         cacheBusterKey(buildInfo, developMode) {
@@ -47,6 +52,7 @@ define([
         cacheBuster() {
             // TODO: get develop mode from runtime
             return '?cb=' + this.cacheBusterKey(this.props.runtime.config('buildInfo'), false);
+            // return '';
         }
 
         componentDidMount() {
@@ -63,7 +69,9 @@ define([
                 buildInfo: this.props.runtime.config('buildInfo'),
                 developMode: false,
                 params: this.props.params,
-                channelId: this.props.channelId
+                channelId: this.props.hostChannelId,
+                hostChannelId: this.props.hostChannelId,
+                pluginChannelId: this.props.pluginChannelId
             };
 
             const paramString = window.encodeURIComponent(JSON.stringify(params));
@@ -73,7 +81,9 @@ define([
                     name=${this.id}
                     data-k-b-testhook-iframe="plugin-iframe"
                     data-params=${paramString}
-                    data-channel-id=${this.props.channelId}
+                    data-channel-id=${this.props.hostChannelId}
+                    data-host-channel-id=${this.props.hostChannelId}
+                    data-plugin-channel-id=${this.props.pluginChannelId}
                     className="IFrame -iframe"
                     frameborder="0"
                     scrolling="no"

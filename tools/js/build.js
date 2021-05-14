@@ -37,7 +37,7 @@ const tar = require('tar');
 const yargs = require('yargs');
 
 // UTILS
-function run(command, {ignoreStdErr = false, verbose = false,  options = {}} = {}) {
+function run(command, {ignoreStdErr = false, verbose = false, options = {}} = {}) {
     return new Promise(function (resolve, reject) {
         const proc = exec(command, options, function (err, stdout, stderr) {
             if (err) {
@@ -163,7 +163,7 @@ function fetchPluginsFromGithub(state) {
             return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8')]);
         })
         .spread(function (pluginFile) {
-            pluginConfig = yaml.safeLoad(pluginFile);
+            pluginConfig = yaml.load(pluginFile);
         })
         .then(function () {
             // First generate urls to all the plugin repos.
@@ -206,7 +206,7 @@ function injectPluginsIntoConfig(state) {
             return fs.readFileAsync(pluginConfigFile, 'utf8');
         })
         .then((pluginFile) => {
-            return yaml.safeLoad(pluginFile);
+            return yaml.load(pluginFile);
         })
         .then((pluginConfig) => {
             const plugins = {};
@@ -232,9 +232,9 @@ function injectPluginsIntoConfig(state) {
         });
 }
 
-function yarn(cmd, argv, options) {
+function npm(cmd, argv, options) {
     return new Promise(function (resolve, reject) {
-        exec('yarn ' + cmd + ' ' + argv.join(' '), options, function (err, stdout, stderr) {
+        exec('npm ' + cmd + ' ' + argv.join(' '), options, function (err, stdout, stderr) {
             if (err) {
                 reject(err);
             }
@@ -251,13 +251,13 @@ function yarn(cmd, argv, options) {
     });
 }
 
-async function yarnInstall(state) {
+async function npmInstall(state) {
     const base = state.environment.path.concat(['build']);
     const packagePath = base.concat(['package.json']);
     const packageConfig = await mutant.loadJson(packagePath);
     delete packageConfig.devDependencies;
     await mutant.saveJson(packagePath, packageConfig);
-    return yarn('install', ['--no-lockfile'], {
+    return npm('install', [], {
         cwd: base.join('/'),
         timeout: 300000
     });
@@ -271,16 +271,13 @@ function copyFromNodeNodules(state) {
             const copyJobs = [];
 
             config.npmFiles.forEach(function (cfg) {
-            /*
-                 The top level bower directory name is usually the name of the
-                 package (which also is often also base of the sole json file name)
-                 but since this is not always the case, we allow the dir setting
-                 to override this.
-                 */
+                /*
+                     The top level bower directory name is usually the name of the
+                     package (which also is often also base of the sole json file name)
+                     but since this is not always the case, we allow the dir setting
+                     to override this.
+                     */
                 const dir = cfg.dir || cfg.name;
-                let sources;
-                let cwd;
-                let dest;
                 if (!dir) {
                     throw new Error(
                         'Either the name or dir property must be provided to establish the top level directory'
@@ -290,7 +287,9 @@ function copyFromNodeNodules(state) {
                 /*
                  The source defaults to the package name with .js, unless the
                  src property is provided, in which case it must be either a single
-                 or set of glob-compatible strings.*/
+                 or set of glob-compatible strings.
+                */
+                let sources;
                 if (cfg.src) {
                     if (typeof cfg.src === 'string') {
                         sources = [cfg.src];
@@ -309,6 +308,8 @@ function copyFromNodeNodules(state) {
                  the destination. Since we are relative to the root of this process, we
                  need to jigger that here.
                  */
+
+                let cwd;
                 if (cfg.cwd) {
                     if (typeof cfg.cwd === 'string') {
                         cfg.cwd = cfg.cwd.split(/,/);
@@ -322,14 +323,10 @@ function copyFromNodeNodules(state) {
                  The destination will be composed of 'node_modules' at the top
                  level, then the package name or dir (as specified above).
                  This is the core of our "thinning and flattening", which is part of the
-                 point of this bower copy process.
+                 point of this copy process.
                  In addition, if the spec includes a dest property, we will use that
                  */
-                if (cfg.standalone) {
-                    dest = ['build', 'client', 'modules'].concat([cfg.name]);
-                } else {
-                    dest = ['build', 'client', 'modules', 'node_modules'].concat([cfg.dir || cfg.name]);
-                }
+                const dest = ['build', 'client', 'modules', 'node_modules'].concat([cfg.dir || cfg.name]);
 
                 sources.forEach(function (source) {
                     copyJobs.push({
@@ -344,12 +341,13 @@ function copyFromNodeNodules(state) {
             // in the above spec.
             return Promise.all(
                 copyJobs.map((copySpec) => {
-                    return glob(copySpec.src, {
-                        cwd: state.environment.path.concat(copySpec.cwd).join('/'),
-                        nodir: true
-                    })
+                    const cwd = state.environment.path.concat(copySpec.cwd).join('/');
+                    return glob(copySpec.src, {cwd, nodir: true})
                         .then((matches) => {
-                        // Do the copy!
+                            // Do the copy!
+                            if (matches.length === 0) {
+                                throw new Error(`No matches for npm module "${copySpec.src}" in ${cwd}`);
+                            }
                             return Promise.all(
                                 matches.map((match) => {
                                     const fromPath = state.environment.path
@@ -402,7 +400,7 @@ function installPlugins(state) {
         fs
             .readFileAsync(pluginConfigFile, 'utf8')
             .then((pluginFile) => {
-                pluginConfig = yaml.safeLoad(pluginFile);
+                pluginConfig = yaml.load(pluginFile);
                 const plugins = pluginConfig.plugins;
                 return Promise.all(
                     // Supports installing from gitDownloads (which are downloaded prior to this)
@@ -560,7 +558,7 @@ function setupBuild(state) {
 
 
 function installNPMPackages(state) {
-    return yarnInstall(state)
+    return npmInstall(state)
         .then(() => {
             return fs.remove(state.environment.path.concat(['build', 'package.json']).join('/'));
         })
@@ -706,6 +704,7 @@ function verifyVersion(state) {
   ui is built.)
   It provides the service url base, analytics keys, feature filters, ui elements.
 */
+
 /*
  * obsolete:
  * The standard kbase deploy config lives in the root, and is named deploy.cfg
@@ -902,6 +901,7 @@ function makeModuleVFS(state) {
                     skipped[ext] += 1;
                 }
             }
+
             const included = {};
 
             function include(ext) {
@@ -927,6 +927,7 @@ function makeModuleVFS(state) {
                         mutant.log(item.key + ':' + item.count);
                     });
             }
+
             const exceptions = [/\/modules\/plugins\/.*?\/iframe_root\//];
             const cssExceptions = [/@import/, /@font-face/];
             const supportedExtensions = ['js', 'yaml', 'yml', 'json', 'text', 'txt', 'css'];
@@ -980,7 +981,7 @@ function makeModuleVFS(state) {
                             case 'yaml':
                             case 'yml':
                                 include(ext);
-                                vfs.resources.json[base] = yaml.safeLoad(contents);
+                                vfs.resources.json[base] = yaml.load(contents);
                                 break;
                             case 'json':
                                 if (vfs.resources.json[base]) {
@@ -1105,7 +1106,7 @@ function main(type) {
                 return mutant.copyState(state);
             })
             .then((state) => {
-                mutant.log('STEP 3: Installing NPM packages with YARN...');
+                mutant.log('STEP 3: Installing NPM packages...');
                 return installNPMPackages(state);
             })
 
@@ -1204,7 +1205,7 @@ function main(type) {
             .then((state) => {
                 if (state.buildConfig.release) {
                     mutant.log('STEP 13. Processing for release...');
-                    return  makeRelease(state);
+                    return makeRelease(state);
                 } else {
                     mutant.log('Not a release, skipping makeRelease...');
                     return state;
@@ -1221,12 +1222,12 @@ function main(type) {
             })
 
 
-        // STEP 15. Remove the
-        // Note - no reason to copy state any longer since we are not using
-        // the temp build filesystem any longer.
-        // .then((state) => {
-        //     return removeBuild(state);
-        // })
+            // STEP 15. Remove the
+            // Note - no reason to copy state any longer since we are not using
+            // the temp build filesystem any longer.
+            // .then((state) => {
+            //     return removeBuild(state);
+            // })
 
             // STEP 15. Create the Virtual File System (VFS) if specified in the build config.
             .then((state) => {
@@ -1243,9 +1244,11 @@ function main(type) {
 }
 
 async function getRoot() {
-    const out = await run('git rev-parse --show-toplevel', {options: {
-        encoding: 'utf8'
-    }});
+    const out = await run('git rev-parse --show-toplevel', {
+        options: {
+            encoding: 'utf8'
+        }
+    });
     return out.trim();
 }
 

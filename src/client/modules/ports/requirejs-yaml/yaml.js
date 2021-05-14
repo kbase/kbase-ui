@@ -5,7 +5,7 @@ define([
     text,
     yaml
 ) {
-    var buildMap = {};
+    const buildMap = {};
 
     return {
         write: function (pluginName, name, write) {
@@ -22,7 +22,7 @@ define([
         load: function (name, parentRequire, onload, config) {
             text.get(parentRequire.toUrl(name), function (yamlString) {
                 try {
-                    var result = yaml.safeLoad(yamlString);
+                    const result = yaml.load(yamlString);
                     if (config.isBuild) {
                         buildMap[name] = JSON.stringify(result);
                     }

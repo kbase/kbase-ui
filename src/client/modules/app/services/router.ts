@@ -1,6 +1,6 @@
-import {isJSONObject, JSONObject} from "./kb_lib/json";
-import {CustomError} from "./kb_lib/Utils";
-import {SimpleMap} from "./types";
+import {isJSONObject, JSONObject} from "../../lib/kb_lib/json";
+import {CustomError} from "../../lib/kb_lib/Utils";
+import {SimpleMap} from "../../lib/types";
 
 
 export interface NotFoundExceptionParams {
@@ -358,13 +358,6 @@ export class Router {
             }
             if (!paramName) {
                 paramName = queryName;
-            }
-            // destructuring arrays from Array<string> may result in
-            // undefined variables; split will always produce a string element for the
-            // first position, even if the string being split is empty.
-            if (typeof paramName === 'undefined') {
-                console.error('Param name not provided in path spec', querySpec, queryField);
-                throw new Error('Param name not provided in path spec');
             }
             if (paramName.charAt(0) === ':') {
                 if (paramName.charAt(1) === '-') {
