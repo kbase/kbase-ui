@@ -11,7 +11,7 @@ define([
     { HttpHeader },
     { AuthClient },
     { AuthError},
-    Uuid
+    {v4: uuidv4}
 ) => {
 
     // const { HttpQuery } = HttpUtils;
@@ -334,7 +334,7 @@ define([
                 stayloggedin: config.stayLoggedIn ? 'true' : 'false'
             };
 
-            const formId = new Uuid(4).format();
+            const formId = uuidv4();
 
             const content = form({
                 method: 'post',
@@ -374,7 +374,7 @@ define([
                 provider: config.provider
             };
 
-            const formId = new Uuid(4).format();
+            const formId = uuidv4();
 
             const content = form({
                 method: 'POST',

@@ -6,20 +6,20 @@ define([
 ], (
     preact,
     htm,
-    Uuid,
+    {v4: uuidv4},
     Notifications
 ) => {
 
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     const AUTODISMISSER_INTERVAL = 1000;
 
 
     class Notification {
-        constructor({ notification, parent }) {
+        constructor({notification, parent}) {
             const newNotification = notification;
-            this.id = newNotification.id || new Uuid(4).format();
+            this.id = newNotification.id || uuidv4();
             this.message = newNotification.message;
             this.description = newNotification.description;
             this.autodismiss = newNotification.autodismiss;
@@ -73,7 +73,7 @@ define([
             super(props);
 
             this.runtime = this.props.runtime;
-            this.sendingChannel = new Uuid(4).format();
+            this.sendingChannel = uuidv4();
             this.autoDismisser = new AutoDismisser({
                 runner: this.autodismissRunner.bind(this)
             });
@@ -179,7 +179,7 @@ define([
         }
 
         addNotification(newMessage) {
-            const notification = new Notification({ notification: newMessage, parent: this });
+            const notification = new Notification({notification: newMessage, parent: this});
             const {summary, notifications} = this.state;
             // const summaryItem = summary[notification.type];
             // if (summaryItem) {
@@ -246,7 +246,7 @@ define([
             return html`
                 <div className="NotificationsMain"
                      data-k-b-testhook-component="notificationsmain">
-                    <${Notifications} ...${props} />
+                    <${Notifications} ...${props}/>
                 </div>
             `;
         }

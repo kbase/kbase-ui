@@ -18,15 +18,9 @@ define([
             super(props);
             const {params} = props;
 
-            // TODO: ummm...
             if (params.viewParams) {
                 params.viewParams = JSON.parse(params.viewParams);
             }
-
-            // if (typeof params.plugin === 'undefined') {
-            //     throw new Error('Plugin did not pass the plugin name via params');
-            // }
-            // this.pluginName = props.pluginName;
         }
 
         componentDidMount() {
@@ -34,8 +28,6 @@ define([
         }
 
         render() {
-            // TODO: hmm, probably shouldn't assume anything about
-            // this plugin path.
             const pluginPath = [
                 'modules',
                 'plugins',
@@ -45,9 +37,10 @@ define([
             const props = {
                 runtime: this.props.runtime,
                 pluginPath,
+                original: this.props.request.original,
                 pipe: this.props.pipe,
                 params: {
-                    view: this.props.view, // +++
+                    view: this.props.view,
                     originalPath: window.location.pathname,
                     routeParams: this.props.params || {}
                 }
@@ -55,7 +48,7 @@ define([
 
             return html`
                 <div className="Plugin">
-                    <${IFrameController} ...${props} />
+                    <${IFrameController} ...${props}/>
                 </div>
             `;
         }

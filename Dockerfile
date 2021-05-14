@@ -5,12 +5,13 @@ FROM alpine:3.12 as builder
 
 # add deps for building kbase-ui
 RUN apk upgrade --update-cache --available && \
-    apk add --update --no-cache bash chromium g++ git make nodejs yarn python2 && \
+    apk add --update --no-cache bash chromium g++ git make nodejs npm python2 && \
     mkdir -p /kb
 
 COPY ./package.json /kb
+COPY ./package-lock.json /kb
 WORKDIR /kb
-RUN yarn install --no-lockfile
+RUN npm install
 
 COPY . /kb
 
@@ -55,7 +56,7 @@ COPY --from=builder /kb/deployment/templates /kb/deployment/templates
 # Deployment-time scripts
 COPY --from=builder /kb/deployment/scripts /kb/deployment/scripts
 
-# Need to include the integration tests since otherwise we need a local build 
+# Need to include the integration tests since otherwise we need a local build
 # to pick them up.
 COPY --from=builder /kb/build/test /kb/deployment/services/kbase-ui/test
 
@@ -66,7 +67,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.vcs-ref=$COMMIT \
     org.label-schema.schema-version="1.0.0-rc1" \
     us.kbase.vcs-branch=$BRANCH  \
-    us.kbase.vcs-tag=$TAG \ 
+    us.kbase.vcs-tag=$TAG \
     maintainer="Steve Chan sychan@lbl.gov"
 
 # Run as a regular user, not root.

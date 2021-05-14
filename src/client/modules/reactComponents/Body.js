@@ -9,12 +9,12 @@ define([
     preact,
     htm,
     {DataPipe},
-    Uuid
+    {v4: uuidv4}
 ) => {
     const {h, Component, createRef, render} = preact;
     const html = htm.bind(h);
 
-    class PluginComponent {
+    class PluginProxy {
         constructor(pluginName, component) {
             this.pluginName = pluginName;
             this.component = component;
@@ -29,12 +29,14 @@ define([
             this.routeListener = null;
             this.routeComponentListener = null;
             this.nodeRef = createRef();
-            this.pluginComponent = null;
+            this.currentPluginProxy = null;
         }
 
         setupForComponent() {
             this.routeComponentListener = this.props.runtime.receive('app', 'route-component', (routed) => {
-                const {routeHandler: {params, route, request}} = routed;
+                const {
+                    params, route, request
+                } = routed;
 
                 // The params from the routed object are of type RequestParams; these are
                 // structured params, but when we send them to a the route components we send
@@ -64,20 +66,21 @@ define([
 
                 // We don't remount if it is the same plugin and component.
                 // But we do if the plugin says so!
-                if (this.pluginComponent !== null &&
-                    this.pluginComponent.pluginName === params.plugin &&
-                    this.pluginComponent.component == route.component &&
+                if (this.currentPluginProxy !== null &&
+                    this.currentPluginProxy.pluginName === params.plugin &&
+                    this.currentPluginProxy.component == route.component &&
                     !route.forceMount) {
 
                     this.pluginComponent.pipe.put({
                         view: route.view,
-                        params: paramsToSend
+                        params: paramsToSend,
+                        request
                     });
                     return;
                 }
 
-                this.pluginComponent = new PluginComponent(route.pluginName, route.component);
-                this.pluginComponent.pipe.put({
+                this.currentPluginProxy = new PluginProxy(route.pluginName, route.component);
+                this.currentPluginProxy.pipe.put({
                     view: route.view,
                     params: paramsToSend
                 });
@@ -99,11 +102,11 @@ define([
                     const props = {
                         request,
                         runtime: this.props.runtime,
-                        pipe: this.pluginComponent.pipe,
+                        pipe: this.currentPluginProxy.pipe,
                         view: route.view,
                         params: paramsToSend,
                         pluginName: route.pluginName,
-                        key: new Uuid(4).format()
+                        key: uuidv4()
                     };
 
                     // ensure the root node is empty.

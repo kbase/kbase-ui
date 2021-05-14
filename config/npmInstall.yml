@@ -4,6 +4,10 @@ npmFiles:
     dir: "@kbase/common-es6"
     cwd: src
     src: "**/*"
+  - name: kb_lib2
+    dir: "@kbase/ui-lib"
+    cwd: lib/lib
+    src: "**/*"
   - name: bluebird
     cwd: js/browser
     src:
@@ -14,8 +18,6 @@ npmFiles:
       - js/bootstrap.js
       - css/bootstrap.css
       - fonts/*
-  - name: dagre
-    cwd: dist
   - name: font-awesome
     src:
       - css/font-awesome.css
@@ -24,22 +26,14 @@ npmFiles:
     cwd: dist
   - name: js-yaml
     cwd: dist
-  - name: lodash
   - name: preact
     cwd: dist
     src:
       - preact.umd.js
-  - dir: pure-uuid
+  - name: uuid
+    cwd: dist/umd
     src:
-      - uuid.js
-  - name: kbase-ui-lib
-    cwd: lib
-    src:
-      - "**/*"
-  - name: kbase-ui-components
-    cwd: lib
-    src:
-      - "**/*"
+      - uuid.min.js
   - name: htm
     cwd: dist
     src:
@@ -61,4 +55,3 @@ npmFiles:
       - semver-umd.js
   - dir: spark-md5
     name: spark-md5
-

@@ -11,8 +11,8 @@ define([
 ], (
     preact,
     htm,
-    Uuid,
-    {WindowChannel},
+    {v4: uuidv4},
+    {WindowChannelInit},
     httpUtils,
     AutoPostForm,
     IFrame
@@ -33,14 +33,15 @@ define([
 
             this.runtime = runtime;
 
-            const id = new Uuid(4).format();
+            const id = uuidv4();
             this.id = `host_ ${id}`;
 
             this.receivers = [];
 
-            this.channel = new WindowChannel({
-                host: document.location.origin
-            });
+            this.channel = null;
+
+            this.hostChannelId = uuidv4();
+            this.pluginChannelId = uuidv4();
 
             this.state = {
                 loading: 'yes',
@@ -50,15 +51,6 @@ define([
         }
 
         componentDidMount() {
-            this.props.pipe.tap(({view, params}) => {
-                const path = params.path || [];
-                const message = {
-                    view, to: view, path, params
-                };
-                this.channel.send('navigate', message);
-            });
-            this.props.pipe.start();
-
             // Listen for slow loading plugins.
             this.monitorLoad();
         }
@@ -89,7 +81,13 @@ define([
             }, SHOW_SUPER_SLOW_LOADING_AFTER);
         }
 
-        setupAndStartChannel() {
+        setupAndStartChannel(iframeWindow) {
+            const chan = new WindowChannelInit({
+                id: this.hostChannelId,
+                window: iframeWindow,
+                host: window.document.location.origin
+            });
+            this.channel = chan.makeChannel(this.pluginChannelId);
             this.channel.on('get-auth-status', () => {
                 this.channel.send('auth-status', {
                     token: this.runtime.service('session').getAuthToken(),
@@ -116,7 +114,7 @@ define([
             });
 
             this.channel.on('set-plugin-params', ({pluginParams}) => {
-                if (Object.keys(pluginParams) === 0) {
+                if (Object.keys(pluginParams).length === 0) {
                     window.location.search = '';
                     return;
                 }
@@ -163,8 +161,8 @@ define([
                 window.document.body.click();
             });
 
-            this.channel.on('set-title', (config) => {
-                this.runtime.send('ui', 'setTitle', config.title);
+            this.channel.on('set-title', ({title}) => {
+                this.runtime.send('ui', 'setTitle', title);
             });
 
             this.channel.on('ui-auth-navigate', ({nextRequest, tokenInfo}) => {
@@ -224,17 +222,18 @@ define([
         }
 
         setupCommunication(iframeWindow) {
-            const ready = () => {
-                return;
-            };
-
             return new Promise((resolve, reject) => {
-                this.temp_window = iframeWindow;
-                this.channel.setWindow(iframeWindow);
-                this.setupAndStartChannel();
+                this.setupAndStartChannel(iframeWindow);
+                this.props.pipe.tap(({view, params, request}) => {
+                    const path = params.path || [];
+                    const message = {
+                        view, to: view, path, params, request
+                    };
+                    this.channel.send('navigate', message);
+                });
+                this.props.pipe.start();
                 this.channel.once('ready',
                     ({channelId}) => {
-                        ready();
                         this.channel.partnerId = channelId;
                         // TODO: narrow and improve the config support for plugins
                         // E.g.
@@ -252,6 +251,16 @@ define([
                         params.view = this.props.params.view;
 
                         const startMessage = {
+                            authentication: {
+                                token: this.runtime.service('session').getAuthToken(),
+                                username: this.runtime.service('session').getUsername(),
+                                realname: this.runtime.service('session').getRealname(),
+                                email: this.runtime.service('session').getEmail(),
+                                roles: this.runtime.service('session').getRoles().map(({id}) => {
+                                    return id;
+                                })
+                            },
+                            // TODO: remove when all plugins converted.
                             authorization: {
                                 token: this.runtime.service('session').getAuthToken(),
                                 username: this.runtime.service('session').getUsername(),
@@ -265,7 +274,6 @@ define([
                             view: this.props.params.view.value,
                             params
                         };
-
                         this.channel.send('start', startMessage);
                         // Any sends to the channel should only be enabled after the
                         // start message is received.
@@ -337,14 +345,16 @@ define([
             const props = {
                 origin: document.location.origin,
                 pathRoot: this.props.pluginPath,
-                channelId: this.channel.channelId,
+                hostChannelId: this.hostChannelId,
+                pluginChannelId: this.pluginChannelId,
                 whenMounted: (w) => {
                     // this.channel.setWindow(this.iframe.window);
                     this.iframeMounted(w);
                 },
                 hostId: this.id,
                 params: this.props.params,
-                runtime: this.props.runtime
+                runtime: this.props.runtime,
+                original: this.props.original
             };
 
             return html`
@@ -374,14 +384,14 @@ define([
                 break;
             }
             return html`
-            <div className="-cover">
-                <div className="well PluginLoading">
-                    <span className="fa fa-rotate-225 fa-2x fa-plug"
+            <div class="-cover">
+                <div class="well PluginLoading">
+                    <span class="fa fa-rotate-225 fa-2x fa-plug"
                           style=${{marginRight: '8px', color: color}}></span>
                     <span>
                         ${message}
                     </span>
-                    <span className="fa fa-2x fa-spinner fa-pulse"
+                    <span class="fa fa-2x fa-spinner fa-pulse"
                         style=${{marginLeft: '8px'}}></span>
                 </div>
             </div>
@@ -390,7 +400,7 @@ define([
 
         render() {
             return html`
-            <div className="IFrameController">
+            <div class="IFrameController">
                 ${this.renderLoading()}
                 ${this.renderIFrame()}
             </div>
