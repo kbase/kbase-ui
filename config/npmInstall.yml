@@ -4,9 +4,10 @@ npmFiles:
     dir: "@kbase/common-es6"
     cwd: src
     src: "**/*"
-  - name: kb_lib2
+  - name: ui_lib
     dir: "@kbase/ui-lib"
-    cwd: lib/lib
+    convertCommonJS: true
+    cwd: lib
     src: "**/*"
   - name: bluebird
     cwd: js/browser

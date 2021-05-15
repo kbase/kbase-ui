@@ -78,7 +78,7 @@
     },
     "dependencies": {
         "@kbase/common-es6": "0.12.3",
-        "@kbase/ui-lib": "0.4.3",
+        "@kbase/ui-lib": "0.4.9",
         "@types/uuid": "8",
         "bluebird": "3.7.2",
         "bootstrap": "3.4.1",
