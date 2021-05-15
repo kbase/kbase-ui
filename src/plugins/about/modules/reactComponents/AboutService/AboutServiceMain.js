@@ -3,16 +3,18 @@ define([
     'htm',
     './AboutService',
     'kb_lib/jsonRpc/genericClient',
-    'kb_ts/HttpClient',
+    'ui_lib/comm/JSONRPC20/GenericClient',
+    'ui_lib/json',
     'reactComponents/Loading',
 
     'bootstrap'
 ], (
-    {h, Component },
+    {h, Component},
     htm,
     AboutService,
     GenericClient,
-    {HttpClient, HttpHeader},
+    {default: GenericClient20},
+    {traverse},
     Loading
 ) => {
     const html = htm.bind(h);
@@ -76,7 +78,7 @@ define([
             });
             return () => {
                 return Promise.resolve()
-                    .then(()=> {
+                    .then(() => {
                         if (this.props.service.versionMethod) {
                             return client.callFunc(this.props.service.versionMethod, []);
                         } else if (this.props.service.statusMethod) {
@@ -89,30 +91,48 @@ define([
             };
         }
 
-        restClient() {
+        jsonrpc20Client() {
+            const serviceModule = this.props.service.module;
+            const client = new GenericClient20({
+                module: serviceModule,
+                url: this.props.runtime.config(`services.${serviceModule}.url`),
+                token: this.props.runtime.service('session').getAuthToken(),
+                prefix: false
+            });
             return () => {
-                const header = new HttpHeader();
-                header.setHeader('accept', 'application/json');
-                const http = new HttpClient();
-                const baseUrl = this.props.runtime.config(`services.${this.props.service.module}.url`);
-                const url = baseUrl + this.props.service.path;
-                return http
-                    .request({
-                        method: 'GET',
-                        url,
-                        header
+                return Promise.resolve()
+                    .then(() => {
+                        if (this.props.service.versionMethod) {
+                            return client.callFunc(this.props.service.versionMethod);
+                        } else if (this.props.service.statusMethod) {
+                            return client.callFunc(this.props.service.statusMethod);
+                        }
                     })
                     .then((result) => {
-                        if (result.status >= 300) {
-                            throw new Error(`Error in response: ${result.status}`);
-                        }
-                        try {
-                            return JSON.parse(result.response);
-                        } catch (ex) {
-                            console.error('[renderAuth]', ex);
-                            throw new Error(ex);
-                        }
+                        return result;
                     });
+            };
+        }
+
+        restClient() {
+            return async () => {
+                const baseUrl = this.props.runtime.config(`services.${this.props.service.module}.url`);
+                const url = baseUrl + this.props.service.path;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'accept': 'application/json'
+                    }
+                });
+                if (response.status >= 300) {
+                    throw new Error(`Error in response: ${response.status}`);
+                }
+                try {
+                    return JSON.parse(await response.text());
+                } catch (ex) {
+                    console.error('[renderAuth]', ex);
+                    throw new Error(ex);
+                }
             };
         }
 
@@ -120,6 +140,9 @@ define([
             switch (this.props.service.type) {
             case 'jsonrpc11':
                 return this.jsonrpc11Client();
+            case 'jsonrpc20':
+                return this.jsonrpc20Client();
+
             case 'rest':
                 return this.restClient();
             }
@@ -137,7 +160,7 @@ define([
                 .then(([result, perf]) => {
                     let version;
                     if (this.props.service.versionKey) {
-                        version = result[this.props.service.versionKey];
+                        version = traverse(result, this.props.service.versionKey);
                     } else {
                         version = result;
                     }
@@ -163,14 +186,15 @@ define([
 
         renderLoading() {
             return html`
-                <${Loading} message="Measuring service..." />
+                <${Loading} message="Measuring service..."/>
             `;
         }
 
         renderError() {
             return html`
                 <div className="alert alert-danger">
-                    <em>Error!</em><p>${this.state.error.message}</p>
+                    <em>Error!</em>
+                    <p>${this.state.error.message}</p>
                 </div>
             `;
         }
@@ -183,7 +207,7 @@ define([
                 return this.renderLoading();
             case 'loaded':
                 return html`
-                    <${AboutService} ...${this.state.data} />
+                    <${AboutService} ...${this.state.data}/>
                 `;
             case 'error':
                 return this.renderError();

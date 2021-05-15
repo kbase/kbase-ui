@@ -3,15 +3,17 @@ define([
     'htm',
     '../reactComponents/AboutCoreServices',
     '../reactComponents/AboutDynamicServices',
+    '../reactComponents/Tabs',
     'css!./style.css'
 ], (
     preact,
     htm,
     AboutCoreServices,
-    AboutDynamicServices
+    AboutDynamicServices,
+    Tabs
 ) => {
 
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     class AboutServices extends Component {
@@ -20,15 +22,23 @@ define([
         }
 
         render() {
+            const tabs = [{
+                id: 'coreServices',
+                title: 'Core Services',
+                component: AboutCoreServices
+            }, {
+                id: 'dynamicServices',
+                title: 'Dynamic Services',
+                component: AboutDynamicServices
+            }];
+            const tabProps = {
+                runtime: this.props.runtime
+            };
             return html`
-            <div className="View">
-                <h2>Core Services</h2>
-                <${AboutCoreServices} runtime=${this.props.runtime}/>
-
-                <h2>Dynamic Services</h2>
-                <${AboutDynamicServices} runtime=${this.props.runtime} />
-            </div>
-        `;
+                <div className="View">
+                    <${Tabs} tabs=${tabs} tabProps=${tabProps} />
+                </div>
+            `;
         }
     }
 

@@ -2,38 +2,31 @@ define([
     'preact',
     'htm',
 
-    'bootstrap'
+    'bootstrap',
 ], (
     preact,
-    htm
+    htm,
 ) => {
 
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     class AboutService extends Component {
         render() {
             return html`
-                <table className="table">
-                    <tbody>
-                        <tr >
-                            <th style=${{width: '12em'}}>Version</th>
-                            <td>${this.props.version}</td>
-                        </tr>
-                        <tr>
-                            <th>Perf avg (ms/call)</th>
-                            <td>${this.props.average}</td>
-                        </tr>
-                        <tr>
-                            <th>Perf calls (ms/call)</th>
-                            <td>${this.props.measures.join(', ')}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <td>${this.props.version}</td>
+                <td>
+                    <div style=${{textAlign: 'right', width: '6em'}}>
+                        ${Intl.NumberFormat('en-US', {
+        useGrouping: true,
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+    }).format(this.props.average)}
+                    </div>
+                </td>
+                <td>${this.props.measures.join(', ')}</td>
             `;
-
         }
-
     }
 
     return AboutService;

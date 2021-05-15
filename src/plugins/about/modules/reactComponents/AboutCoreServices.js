@@ -1,14 +1,16 @@
 define([
     'preact',
     'htm',
-    './AboutService/AboutServiceMain'
+    './AboutService/AboutServiceMain',
+
+    'bootstrap'
 ], (
     preact,
     htm,
     AboutService
 ) => {
 
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     const SERVICES = [
@@ -46,11 +48,11 @@ define([
             versionKey: 'version'
         },
         {
-            title: 'Search (legacy)',
-            module: 'KBaseSearchEngine',
-            type: 'jsonrpc11',
-            statusMethod: 'status',
-            versionKey: 'version'
+            title: 'Search2',
+            module: 'SearchAPI2',
+            type: 'jsonrpc20',
+            statusMethod: 'rpc.discover',
+            versionKey: 'service_info.version'
             // statusKeys: [
             //     {
             //         key: 'version',
@@ -84,14 +86,42 @@ define([
 
     class AboutCoreServices extends Component {
         render() {
-            return SERVICES.map((service) => {
+            const rows = SERVICES.map((service) => {
                 return html`
-                    <h3>${service.title}</h3>
-                    <div>
-                        <${AboutService} service=${service} runtime=${this.props.runtime} />
-                    </div>
+                    <tr>
+                        <td>
+                            ${service.title}
+                        </td>
+                        <${AboutService} service=${service} runtime=${this.props.runtime}/>
+                    </tr>
                 `;
             });
+            return html`
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+
+                        <th style=${{width: '12em'}}>
+                            Service
+                        </th>
+                        <th>
+                            Version
+                        </th>
+                        <th>
+                            Perf (ms/call)
+                        </th>
+                        <th>
+                            Perf calls (ms/call)
+                        </th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    ${rows}
+                    </tbody>
+
+                </table>
+            `;
         }
     }
 
