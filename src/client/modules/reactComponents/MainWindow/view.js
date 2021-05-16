@@ -29,7 +29,7 @@ define([
     Body
 ) => {
 
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     class MainWindow extends Component {
@@ -83,7 +83,7 @@ define([
                     <div className="-notification">
                         <${Notification} ...${props} />
                     </div>
-                    <div className="-deploymnent">
+                    <div className="-cell -deployment">
                         <${Deployment} ...${props} />
                     </div>
                     <div className="-login -cell">
