@@ -22,6 +22,7 @@ none
 ### FIXES
 
 - remove search1, add search2 to developer mode "About Services".
+- improve alignment of deployment icon
 
 ### MAJOR DEPENDENCY CHANGES
 

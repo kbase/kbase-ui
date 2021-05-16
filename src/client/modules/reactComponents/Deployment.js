@@ -1,12 +1,14 @@
 define([
     'preact',
-    'htm'
+    'htm',
+    './Deployment.styles',
 ], (
     preact,
-    htm
+    htm,
+    styles,
 ) => {
 
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     class Deployment extends Component {
@@ -27,20 +29,11 @@ define([
             return html`
                 <div className="Deployment"
                      data-k-b-testhook-component="deployment"
-                     style=${{
-        border: '1px silver solid',
-        padding: '3px',
-        margin: '2px'
-    }}>
-                    <div style=${{
-        textAlign: 'center',
-        fontWeight: 'bold',
-    }}>
+                     style=${styles.Deployment}>
+                    <div style=${styles.Label}>
                         ${this.label}
                     </div>
-                    <div style=${{
-        textAlign: 'center'
-    }}>
+                    <div style=${styles.Icon}>
                         <span className=${'fa fa-2x fa-' + this.icon}></span>
                     </div>
                 </div>
