@@ -373,22 +373,24 @@ function copyFromNodeNodules(state) {
 async function convertCommonJSNodeModules(state) {
     const root = state.environment.path;
     const config = await mutant.loadYaml(root.concat(['config', 'npmInstall.yml']));
-    mutant.log('CONVERTING');
-    await config.npmFiles.map(async (cfg) => {
-        mutant.log(`  name: ${cfg.name}`);
-        mutant.log(`  convertCommonJS? ${cfg.convertCommonJS}`);
+
+    mutant.log('Converting CommonJS modules to AMD...');
+
+    for (const cfg of config.npmFiles) {
         if (!cfg.convertCommonJS) {
-            return;
+            continue;
         }
+
+        mutant.log(`  name: ${cfg.name}`);
+
         const name = cfg.dir || cfg.name;
         const original = root.concat(['build', 'client', 'modules', 'node_modules', name]).join('/');
         const dest = root.concat(['build', 'client', 'modules', 'node_modules', name + '_amd']).join('/');
 
-        mutant.log(`  YES! ${original}, ${dest}`);
         await run(`npx r.js -convert ${original} ${dest}`);
         await fs.removeAsync(original);
         await fs.moveAsync(dest, original);
-    });
+    }
 }
 
 function fetchPlugins(state) {
