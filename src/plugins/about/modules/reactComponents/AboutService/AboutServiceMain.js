@@ -3,8 +3,8 @@ define([
     'htm',
     './AboutService',
     'kb_lib/jsonRpc/genericClient',
-    'ui_lib/comm/JSONRPC20/GenericClient',
-    'ui_lib/json',
+    'ui-lib/comm/JSONRPC20/GenericClient',
+    'ui-lib/json',
     'reactComponents/Loading',
 
     'bootstrap'

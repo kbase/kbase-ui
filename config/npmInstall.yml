@@ -4,7 +4,7 @@ npmFiles:
     dir: "@kbase/common-es6"
     cwd: src
     src: "**/*"
-  - name: ui_lib
+  - name: ui-lib
     dir: "@kbase/ui-lib"
     convertCommonJS: true
     cwd: lib
