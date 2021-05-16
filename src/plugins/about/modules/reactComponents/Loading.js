@@ -1,23 +1,28 @@
 define([
     'preact',
     'htm',
-
+    './Loading.styles',
     'bootstrap'
 ], (
     preact,
-    htm
+    htm,
+    styles
 ) => {
 
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     class Loading extends Component {
         render() {
             return html`
-                <div>
-                    <span className="fa fa-2x fa-spinner fa-pulse"></span>
-                    ${' '}
-                    ${this.props.message}
+                <div style=${styles.LoadingContainer}>
+                    <div style=${styles.Loading}>
+                        <span className="fa fa-2x fa-spinner fa-pulse"></span>
+                        ${' '}
+                        <span style=${styles.LoadingMessage}>
+                            ${this.props.message}
+                        </span>
+                    </div>
                 </div>
             `;
         }

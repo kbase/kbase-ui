@@ -14,7 +14,7 @@ define([
     Loading
 ) => {
 
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     class AboutDynamicServices extends Component {
@@ -42,7 +42,7 @@ define([
                 .then(([result]) => {
                     this.setState({
                         loading: false,
-                        data:result
+                        data: result
                     });
                 });
         }
@@ -58,7 +58,8 @@ define([
 
         render() {
             if (this.state.loading) {
-                return html`<${Loading} message="Loading dynamic services..." />`;
+                return html`
+                    <${Loading} message="Loading dynamic services..."/>`;
             }
             return this.renderDynamicServices();
         }

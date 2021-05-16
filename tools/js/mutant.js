@@ -393,25 +393,18 @@ async function removeSourceMappingCSS(rootPath) {
     );
 
     log(`Removing source mapping from ${matches.length} CSS files`);
-    // matches.forEach((match) => {
-    //     log(match);
-    // })
 
-    await Promise.all(
-        matches.map(function (match) {
-            return fs.readFileAsync(match, 'utf8').then(function (contents) {
-                // replace the map line with an empty string
-                if (!mapRe.test(contents)) {
-                    return;
-                }
-                console.warn('Fixing up CSS file to remove mapping');
-                console.warn(match);
+    for (const match of matches) {
+        const contents = await fs.readFileAsync(match, 'utf8');
+        if (!mapRe.test(contents)) {
+            continue;
+        }
+        console.warn('Fixing up CSS file to remove mapping');
+        console.warn(match);
 
-                const fixed = contents.replace(mapRe, '');
-                return fs.writeFileAsync(match, fixed);
-            });
-        })
-    );
+        const fixed = contents.replace(mapRe, '');
+        await fs.writeFileAsync(match, fixed);
+    }
 }
 
 async function removeSourceMappingJS(rootPath) {
@@ -430,22 +423,17 @@ async function removeSourceMappingJS(rootPath) {
 
     log(`Removing source mapping from ${matches.length} JS files`);
 
-    await Promise.all(
-        matches.map(function (match) {
-            return fs.readFileAsync(match, 'utf8').then(function (contents) {
-                // replace the map line with an empty string
-                if (!mapRe.test(contents)) {
-                    return;
-                }
-                console.warn('Fixing up JS file to remove mapping');
-                console.warn(match);
+    for (const match of matches) {
+        const contents = await fs.readFileAsync(match, 'utf8');
+        if (!mapRe.test(contents)) {
+            continue;
+        }
+        console.warn('Fixing up JS file to remove mapping');
+        console.warn(match);
 
-                const fixed = contents.replace(mapRe, '');
-                return fs.writeFileAsync(match, fixed);
-            });
-        })
-    );
-
+        const fixed = contents.replace(mapRe, '');
+        await fs.writeFileAsync(match, fixed);
+    }
 }
 
 module.exports = {

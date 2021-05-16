@@ -33,6 +33,7 @@
             kb_bootstrap: 'css/kb-bootstrap',
             kb_lib: 'node_modules/@kbase/common-es6',
             kb_ui: 'css/kb-ui',
+            'ui-lib': 'node_modules/@kbase/ui-lib',
             md5: 'node_modules/spark-md5/spark-md5',
             preact: 'node_modules/preact/preact.umd',
             htm: 'node_modules/htm/htm.umd',
