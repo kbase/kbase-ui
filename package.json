@@ -27,6 +27,7 @@
         "watch": "nodemon --watch ./src/client --ext ts --exec 'npm run compile || exit 1'"
     },
     "devDependencies": {
+        "@sitespeed.io/throttle": "2.1.1",
         "@wdio/browserstack-service": "7.5.7",
         "@wdio/cli": "7.5.7",
         "@wdio/dot-reporter": "7.5.7",
