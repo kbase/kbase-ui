@@ -6,8 +6,9 @@ define([
     'kb_lib/httpUtils',
     './AutoPostForm',
     './IFrame',
+    'reactComponents/ErrorView',
 
-    'css!./IFrameController.css'
+    'css!./IFrameController.css',
 ], (
     preact,
     htm,
@@ -15,7 +16,8 @@ define([
     {WindowChannelInit},
     httpUtils,
     AutoPostForm,
-    IFrame
+    IFrame,
+    ErrorView,
 ) => {
 
     const {h, Component, render} = preact;
@@ -24,6 +26,8 @@ define([
     const SHOW_LOADING_AFTER = 1000;
     const SHOW_SLOW_LOADING_AFTER = 5000;
     const SHOW_SUPER_SLOW_LOADING_AFTER = 30000;
+
+    const PLUGIN_STARTUP_TIMEOUT = 60000;
 
     class IFrameController extends Component {
         constructor(props) {
@@ -44,7 +48,7 @@ define([
             this.pluginChannelId = uuidv4();
 
             this.state = {
-                loading: 'yes',
+                status: 'loading',
             };
 
             this.loadingTimer = null;
@@ -58,7 +62,7 @@ define([
         monitorLoad() {
             this.loadingTimer = window.setTimeout(() => {
                 this.setState({
-                    loading: 'slow'
+                    status: 'slow',
                 });
                 this.monitorSlowLoad();
             }, SHOW_LOADING_AFTER);
@@ -67,7 +71,7 @@ define([
         monitorSlowLoad() {
             this.loadingTimer = window.setTimeout(() => {
                 this.setState({
-                    loading: 'veryslow'
+                    status: 'veryslow',
                 });
                 this.monitorSuperSlowLoad();
             }, SHOW_SLOW_LOADING_AFTER);
@@ -76,7 +80,7 @@ define([
         monitorSuperSlowLoad() {
             this.loadingTimer = window.setTimeout(() => {
                 this.setState({
-                    loading: 'superslow'
+                    status: 'superslow',
                 });
             }, SHOW_SUPER_SLOW_LOADING_AFTER);
         }
@@ -85,19 +89,19 @@ define([
             const chan = new WindowChannelInit({
                 id: this.hostChannelId,
                 window: iframeWindow,
-                host: window.document.location.origin
+                host: window.document.location.origin,
             });
             this.channel = chan.makeChannel(this.pluginChannelId);
             this.channel.on('get-auth-status', () => {
                 this.channel.send('auth-status', {
                     token: this.runtime.service('session').getAuthToken(),
-                    username: this.runtime.service('session').getUsername()
+                    username: this.runtime.service('session').getUsername(),
                 });
             });
 
             this.channel.on('get-config', () => {
                 this.channel.send('config', {
-                    value: this.runtime.rawConfig()
+                    value: this.runtime.rawConfig(),
                 });
             });
 
@@ -202,9 +206,10 @@ define([
             const donorNode = document.createElement('div');
             document.body.appendChild(donorNode);
             const props = {
-                action, params
+                action, params,
             };
-            render(html`<${AutoPostForm} ...${props} />`, donorNode);
+            render(html`
+                <${AutoPostForm} ...${props}/>`, donorNode);
         }
 
         setupChannelSends() {
@@ -213,12 +218,19 @@ define([
                     token: this.runtime.service('session').getAuthToken(),
                     username: this.runtime.service('session').getUsername(),
                     realname: this.runtime.service('session').getRealname(),
-                    email: this.runtime.service('session').getEmail()
+                    email: this.runtime.service('session').getEmail(),
                 });
             }));
             this.receivers.push(this.runtime.receive('session', 'loggedout', () => {
                 this.channel.send('loggedout', {});
             }));
+        }
+
+        stopLoadingMonitor() {
+            if (this.loadingTimer !== null) {
+                window.clearTimeout(this.loadingTimer);
+                this.loadingTimer = null;
+            }
         }
 
         setupCommunication(iframeWindow) {
@@ -227,26 +239,15 @@ define([
                 this.props.pipe.tap(({view, params, request}) => {
                     const path = params.path || [];
                     const message = {
-                        view, to: view, path, params, request
+                        view, to: view, path, params, request,
                     };
                     this.channel.send('navigate', message);
                 });
                 this.props.pipe.start();
-                this.channel.once('ready',
+                this.channel.once('ready', PLUGIN_STARTUP_TIMEOUT,
                     ({channelId}) => {
                         this.channel.partnerId = channelId;
-                        // TODO: narrow and improve the config support for plugins
-                        // E.g.
-                        // const config = this.runtime.rawConfig();
-                        // const pluginConfig = {
-                        //     baseURL: config.deploy.services.urlBase,
-                        //     services: config.services
-                        // };
 
-                        // const params = Object.entries(this.props.params.routeParams).reduce((params, [key, param]) => {
-                        //     params[key] = param.value;
-                        //     return params;
-                        // }, {});
                         const params = Object.assign({}, this.props.params.routeParams);
                         params.view = this.props.params.view;
 
@@ -258,7 +259,7 @@ define([
                                 email: this.runtime.service('session').getEmail(),
                                 roles: this.runtime.service('session').getRoles().map(({id}) => {
                                     return id;
-                                })
+                                }),
                             },
                             // TODO: remove when all plugins converted.
                             authorization: {
@@ -268,11 +269,11 @@ define([
                                 email: this.runtime.service('session').getEmail(),
                                 roles: this.runtime.service('session').getRoles().map(({id}) => {
                                     return id;
-                                })
+                                }),
                             },
                             config: this.runtime.rawConfig(),
                             view: this.props.params.view.value,
-                            params
+                            params,
                         };
                         this.channel.send('start', startMessage);
                         // Any sends to the channel should only be enabled after the
@@ -281,20 +282,14 @@ define([
                     });
 
                 // Sent by the plugin to indicate that the plugin has finished loading.
-                this.channel.once('started', () => {
-                    if (this.loadingTimer !== null) {
-                        window.clearTimeout(this.loadingTimer);
-                        this.loadingTimer = null;
-                    }
-                    this.setState({
-                        loading: null
-                    });
+                this.channel.once('started', PLUGIN_STARTUP_TIMEOUT, () => {
+                    this.stopLoadingMonitor();
                     resolve();
                 });
 
                 // Sent by a plugin if it encounters an error and doesn't want to display it
                 // itself, or it occurs before it is able to render anything.
-                this.channel.once('start-error', (config) => {
+                this.channel.once('start-error', PLUGIN_STARTUP_TIMEOUT, (config) => {
                     reject(new Error(config.message));
                 });
             },
@@ -320,55 +315,96 @@ define([
         }
 
         iframeMounted(w) {
-            this.setupCommunication(w)
+            return this.setupCommunication(w)
                 .then(() => {
-                    // TODO: remove because this duplicates start behaviour
-                    // In order to do that, plugins which don't route on 'start'
-                    // need to be updated.
-                    // const params = this.props.params.routeParams;
-                    // const params =  Object.entries(this.props.params.routeParams).reduce((params, [key, param]) => {
-                    //     params[key] = param.value;
-                    //     return params;
-                    // }, {});
                     const params = Object.assign({}, this.props.params.routeParams);
                     const path = params.path || [];
                     const view = this.props.params.view;
                     params.view = view;
                     const message = {
-                        path, params, view, to: view
+                        path, params, view, to: view,
                     };
                     this.channel.send('navigate', message);
                 });
         }
 
+        renderError() {
+            if (this.state.status !== 'error') {
+                return;
+            }
+
+            return html`
+                <div style=${{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                    <div style=${{flex: '0 0 auto', minWidth: '30em', maxWidth: '60em'}}>
+                        <${ErrorView}
+                                title="Error Loading Plugin!"
+                                description=${this.state.error.description}
+                                message=${this.state.error.message}
+                                info=${this.state.error.info}
+                                remedies=${this.state.error.remedies}
+                        />
+                    </div>
+                </div>
+            `;
+        }
+
         renderIFrame() {
+            if (this.state.status === 'error') {
+                return;
+            }
             const props = {
                 origin: document.location.origin,
                 pathRoot: this.props.pluginPath,
                 hostChannelId: this.hostChannelId,
                 pluginChannelId: this.pluginChannelId,
                 whenMounted: (w) => {
-                    // this.channel.setWindow(this.iframe.window);
-                    this.iframeMounted(w);
+                    this.iframeMounted(w)
+                        .then(() => {
+                            this.setState({
+                                status: 'loaded',
+                            });
+                        })
+                        .catch((err) => {
+                            this.stopLoadingMonitor();
+                            this.setState({
+                                status: 'error',
+                                error: {
+                                    message: err.message,
+                                    description: 'An error was encountered loading the current plugin.',
+                                    info: {
+                                        pluginName: this.props.pluginName
+                                    },
+                                    remedies: [
+                                        {
+                                            title: 'Wait a while and try again',
+                                            description: 'This condition may be temporary, e.g. network issues; if you ' +
+                                                'wait a period of time and retry, the issue may have been resolved.'
+                                        }, {
+                                            title: 'Contact KBase Support',
+                                            url: 'https://www.kbase.us/support',
+                                            description: 'Visit KBase Support to see if other users are experience the '+
+                                                'issue, and if not, create a support ticket.'
+                                        }
+                                    ]
+                                },
+                            });
+                        });
                 },
                 hostId: this.id,
                 params: this.props.params,
                 runtime: this.props.runtime,
-                original: this.props.original
+                original: this.props.original,
             };
 
             return html`
-                <${IFrame} ...${props} />
+                <${IFrame} ...${props}/>
             `;
         }
 
         renderLoading() {
-            if (this.state.loading === null) {
-                return;
-            }
             let message, color;
-            switch (this.state.loading) {
-            case 'yes': // don't show anything yet...
+            switch (this.state.status) {
+            case 'loading': // don't show anything yet...
                 return;
             case 'slow':
                 message = 'Loading Plugin...';
@@ -382,28 +418,31 @@ define([
                 message = 'Loading Plugin - your connection appears to be slow, still loading ...';
                 color = '#a94442';
                 break;
+            default:
+                return;
             }
             return html`
-            <div class="-cover">
-                <div class="well PluginLoading">
+                <div class="-cover">
+                    <div class="well PluginLoading">
                     <span class="fa fa-rotate-225 fa-2x fa-plug"
                           style=${{marginRight: '8px', color: color}}></span>
-                    <span>
+                        <span>
                         ${message}
                     </span>
-                    <span class="fa fa-2x fa-spinner fa-pulse"
-                        style=${{marginLeft: '8px'}}></span>
+                        <span class="fa fa-2x fa-spinner fa-pulse"
+                              style=${{marginLeft: '8px'}}></span>
+                    </div>
                 </div>
-            </div>
             `;
         }
 
         render() {
             return html`
-            <div class="IFrameController">
-                ${this.renderLoading()}
-                ${this.renderIFrame()}
-            </div>
+                <div class="IFrameController">
+                    ${this.renderLoading()}
+                    ${this.renderError()}
+                    ${this.renderIFrame()}
+                </div>
             `;
         }
     }
