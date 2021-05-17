@@ -5,6 +5,8 @@
     // For production we should use the commit hash or
     // semver
 
+    const REQUIRE_WAIT_SECONDS = 60;
+
     function cacheBusterKey(buildInfo, developMode) {
         // NB developMode not implemented yet, so always defaults
         // to the gitCommitHash
@@ -19,7 +21,7 @@
         baseUrl: '/modules',
         urlArgs: 'cb=' + cacheBusterKey(global.__kbase__build__, false),
         catchError: true,
-        waitSeconds: 60,
+        waitSeconds: REQUIRE_WAIT_SECONDS,
         paths: {
             bluebird: 'node_modules/bluebird/bluebird',
             bootstrap_css: 'node_modules/bootstrap/css/bootstrap',
