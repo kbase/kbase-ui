@@ -401,10 +401,10 @@
          "SearchAPI2Legacy": {
             "aliases": [],
             "module": "KBaseSearchEngine",
-            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_path "services/searchapi2/legacy" }}",
+            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_legacy_path "services/searchapi2/legacy" }}",
 			"name": "Search Engine",
 			"coreService": true,
-			"type": "jsonrpc2",
+			"type": "jsonrpc",
 			"version": false
         },
         "execution_engine2": {
