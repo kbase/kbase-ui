@@ -442,11 +442,12 @@ export class WindowChannel {
         }
     }
 
-    once(name: string, callback: (payload: Payload) => void, onError?: (error: Error) => void) {
+    once(name: string, timeout: number, callback: (payload: Payload) => void, onError?: (error: Error) => void) {
         this.listenOnce(
             new WaitingListener({
-                name: name,
+                name,
                 callback,
+                timeout,
                 onError: (error: Error) => {
                     if (onError) {
                         onError(error);
@@ -460,8 +461,8 @@ export class WindowChannel {
         return new Promise((resolve, reject) => {
             return this.listenOnce(
                 new WaitingListener({
-                    name: name,
-                    timeout: timeout,
+                    name,
+                    timeout,
                     callback: (payload) => {
                         resolve(payload);
                     },

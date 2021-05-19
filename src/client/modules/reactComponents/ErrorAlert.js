@@ -2,13 +2,13 @@ define([
     'preact',
     'htm',
 
-    'bootstrap'
+    'bootstrap',
 ], (
     preact,
-    htm
+    htm,
 ) => {
 
-    const {h, Component } = preact;
+    const {h, Component} = preact;
     const html = htm.bind(h);
 
     class ErrorAlert extends Component {
@@ -20,7 +20,7 @@ define([
                 return this.props.message || this.props.children;
             })();
             return html`
-                <div className="alert alert-danger" style=${{width:'50%', margin: '0 auto'}}>
+                <div className="alert alert-danger" style=${{width: '50%', margin: '0 auto'}}>
                     ${content}
                 </div>
             `;

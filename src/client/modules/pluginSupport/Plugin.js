@@ -37,6 +37,7 @@ define([
             const props = {
                 runtime: this.props.runtime,
                 pluginPath,
+                pluginName: this.props.pluginName,
                 original: this.props.request.original,
                 pipe: this.props.pipe,
                 params: {

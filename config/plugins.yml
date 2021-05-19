@@ -28,7 +28,7 @@ plugins:
   #       account: kbase
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
-    version: 2.4.5
+    version: 2.4.6
     source:
       github:
         account: kbase
@@ -52,7 +52,7 @@ plugins:
         account: kbase
   - name: data-search
     globalName: kbase-ui-plugin-data-search
-    version: 2.3.2
+    version: 2.3.3
     source:
       github:
         account: kbase

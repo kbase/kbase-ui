@@ -25,7 +25,8 @@ define([
             const rows = data.map((datum, index) => {
                 return html`
                     <tr>
-                        <th>${index}</th>
+                        <th style=${{color: 'rgba(150, 150, 150, 1)'}}>${index}</th>
+                        <td><span className="fa fa-arrow-right" /></td>
                         <td>${this.renderJSON(datum)}</td>
                     </tr>
                 `;
@@ -45,7 +46,8 @@ define([
                 const rows = Object.keys(data).map((key) => {
                     return html`
                         <tr>
-                            <th>${key}</th>
+                            <th style=${{color: 'rgba(150, 150, 150, 1)'}}>${key}</th>
+                            <td><span className="fa fa-arrow-right" /></td>
                             <td>${this.renderJSON(data[key])}</td>
                         </tr>
                     `;
