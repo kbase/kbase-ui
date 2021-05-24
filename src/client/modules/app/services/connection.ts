@@ -89,6 +89,8 @@ function niceDuration(value: number, { resolution }: { resolution: string; }) {
     }
 }
 
+const HEARTBEAT_INTERVAL = 1000;
+
 const INTERVAL_NORMAL = 15000;
 const INTERVAL_DEFAULT = INTERVAL_NORMAL;
 const INTERVAL_DISCONNECT1 = 1000;
@@ -128,6 +130,7 @@ class ConnectionService {
         disconnect2: number;
         disconnect3: number;
     };
+    timer: number | null = null;
     constructor({ params: { runtime } }: ConnectionServiceParams) {
         this.runtime = runtime;
         this.userProfile = new Observed<UserProfile | any>(null);
@@ -166,7 +169,7 @@ class ConnectionService {
     }
 
     start() {
-        this.runtime.receive('app', 'heartbeat', () => {
+        this.timer = window.setInterval(() => {
             if (this.checking) {
                 return;
             }
@@ -261,7 +264,7 @@ class ConnectionService {
                         this.lastCheckAt = new Date().getTime();
                     });
             }
-        });
+        }, HEARTBEAT_INTERVAL);
 
         // also, monitor the kbase-ui server to ensure we are connected
         return Promise.resolve();
@@ -269,6 +272,9 @@ class ConnectionService {
 
     stop() {
         return Promise.resolve(() => {
+            if (this.timer !== null) {
+                window.clearInterval(this.timer);
+            }
             this.userProfile.setValue(null);
             return null;
         });
