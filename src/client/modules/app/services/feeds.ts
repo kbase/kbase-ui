@@ -45,19 +45,19 @@ class FeedsService {
                 return;
             }
 
-            // if logged in, populate and start monitoring for feeds notifications
-            if (this.runtime.service('session').getAuthToken()) {
-                return this.startFeedsMonitoring();
-            }
-
             // listen for login and out events...
             this.runtime.receive('session', 'loggedin', () => {
                 this.startFeedsMonitoring();
             });
 
             this.runtime.receive('session', 'loggedout', () => {
-                this.stopFeedsMonitoring();
+                                this.stopFeedsMonitoring();
             });
+
+            // if logged in, populate and start monitoring for feeds notifications
+            if (this.runtime.service('session').getAuthToken()) {
+                return this.startFeedsMonitoring();
+            }
         });
     }
 
