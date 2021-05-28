@@ -4,14 +4,20 @@ define([
     preact
 ) => {
 
-    const {h, Component} = preact;
+    const {Component} = preact;
 
     class Dashboard extends Component {
         componentDidMount() {
-            this.props.runtime.send('ui', 'setTitle', 'Redirecting to Narratives...');
+            if (this.props.runtime.service('session').isAuthenticated()) {
+                this.props.runtime.send('ui', 'setTitle', 'Redirecting to Narratives...');
+            }
         }
         render() {
-            window.location.replace(window.location.origin + '/narratives');
+            if (this.props.runtime.service('session').isAuthenticated()) {
+                window.location.replace(window.location.origin + '/narratives');
+            } else {
+                window.location.replace(`${window.location.origin}#login`);
+            }
         }
     }
 

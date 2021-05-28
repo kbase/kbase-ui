@@ -164,27 +164,15 @@ define([
                                 description: ''
                             });
                         }
-
                         if (this.auth2Session.isAuthorized()) {
                             if (change === 'newuser') {
-                            // TODO: do something special...
+                                // TODO: do something special...
                             }
-
                             this.state.setItem('loggedin', true);
                             this.runtime.send('session', 'loggedin');
                         } else {
                             this.state.setItem('loggedin', false);
                             this.runtime.send('session', 'loggedout');
-                        // TODO: detect if already on signedout page.
-                        // TODO: this behavior should be defined in the main app
-                        // TODO: there this behavior should look at the current plugin route,
-                        // if it does not require authorization, just send let it be -- it should
-                        // listen for the auth event itself and handle things appropriately.
-                        // We'll have to update those or add a new plugin flag indicating that the
-                        // plugin handles auth change events itself.
-                        // runtime.send('app', 'navigate', {
-                        //     path: 'auth2/signedout'
-                        // });
                         }
                     });
                 });
