@@ -16,16 +16,10 @@ plugins:
         account: kbase
   - name: dataview
     globalName: kbase-ui-plugin-dataview
-    version: 4.8.9
+    version: 4.8.10
     source:
       github:
         account: kbase
-  # - name: dashboard
-  #   globalName: kbase-ui-plugin-dashboard
-  #   version: 4.1.1
-  #   source:
-  #     github:
-  #       account: kbase
   - name: auth2-client
     globalName: kbase-ui-plugin-auth2-client
     version: 2.4.6
@@ -88,7 +82,7 @@ plugins:
         account: eapearson
   - name: samples
     globalName: kbase-ui-plugin-samples
-    version: 0.12.18
+    version: 0.12.19
     source:
       github:
         account: kbaseIncubator
