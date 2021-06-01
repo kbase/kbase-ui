@@ -82,7 +82,7 @@ plugins:
         account: eapearson
   - name: samples
     globalName: kbase-ui-plugin-samples
-    version: 0.12.22
+    version: 0.12.23
     source:
       github:
         account: kbaseIncubator
