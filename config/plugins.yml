@@ -16,7 +16,7 @@ plugins:
         account: kbase
   - name: dataview
     globalName: kbase-ui-plugin-dataview
-    version: 4.8.10
+    version: 4.8.11
     source:
       github:
         account: kbase
@@ -82,7 +82,7 @@ plugins:
         account: eapearson
   - name: samples
     globalName: kbase-ui-plugin-samples
-    version: 0.12.19
+    version: 0.12.20
     source:
       github:
         account: kbaseIncubator
