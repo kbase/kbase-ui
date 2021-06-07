@@ -39,6 +39,9 @@ define([
     this.onSelectTab(id);
 }}>
                         ${title}
+                        <div className="-bottom-mask-container">
+                            <div className="-bottom-mask" />
+                        </div>
                     </div>
                 `;
             });

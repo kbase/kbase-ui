@@ -14,6 +14,8 @@ services:
         component: views/AboutBuild
       - path: "{{plugin}}/services"
         component: views/AboutServices
+      - path: "{{plugin}}/plugins"
+        component: views/AboutPlugins
   menu:
     items:
       - name: about
@@ -31,3 +33,8 @@ services:
         path: "{{plugin}}/services"
         label: KBase Services Status
         icon: server
+      - name: about-plugins
+        type: internal
+        path: "{{plugin}}/plugins"
+        label: KBase UI Plugins
+        icon: plug

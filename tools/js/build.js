@@ -121,6 +121,64 @@ function gitInfo(state) {
     });
 }
 
+async function gitInfo2(state, directory) {
+    const pwd = process.cwd();
+    process.chdir(directory);
+    return Promise.all([
+        run('git show --format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d --name-status | head -n 8'),
+        run('git log -1 --pretty=%s'),
+        run('git log -1 --pretty=%N'),
+        run('git config --get remote.origin.url'),
+        run('git rev-parse --abbrev-ref HEAD'),
+        run('git describe --exact-match --tags $(git rev-parse HEAD)').catch(function () {
+            // For non-prod ui we can be tolerant of a missing version, but not for prod.
+            if (state.buildConfig.release) {
+                throw new Error('This is a release build, a semver tag is required');
+            }
+            mutant.log('Not on a tag, but that is ok since this is not a release build');
+            mutant.log('version will be unavailable in the ui');
+            return '';
+        }),
+    ]).spread(async (infoString, subject, notes, url, branch, tag) => {
+        const info = infoString.split('\n');
+        let version;
+        tag = tag.trim('\n');
+        if (/^fatal/.test(tag)) {
+            version = null;
+        } else {
+            const m = /^v([\d]+)\.([\d]+)\.([\d]+)$/.exec(tag);
+            if (m) {
+                version = m.slice(1).join('.');
+            } else {
+                version = null;
+            }
+        }
+
+        url = url.trim('\n');
+        if (url.endsWith('.git')) {
+            url = url.slice(0, -4);
+        }
+
+        process.chdir(pwd);
+
+        return {
+            commitHash: info[0],
+            commitAbbreviatedHash: info[1],
+            authorName: info[2],
+            authorDate: new Date(parseInt(info[3]) * 1000).toISOString(),
+            committerName: info[4],
+            committerDate: new Date(parseInt(info[5]) * 1000).toISOString(),
+            reflogSelector: info[6],
+            subject: subject.trim('\n'),
+            commitNotes: notes.trim('\n'),
+            originUrl: url,
+            branch: branch.trim('\n'),
+            tag: tag,
+            version: version,
+        };
+    });
+}
+
 // SUB TASKS
 
 function dirList(dir) {
@@ -156,6 +214,7 @@ function fetchPluginsFromGithub(state) {
     let pluginConfig;
     const pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/');
     const gitDestination = root.concat(['gitDownloads']);
+    state.pluginsManifest = [];
 
     return fs
         .mkdirsAsync(gitDestination.join('/'))
@@ -165,7 +224,7 @@ function fetchPluginsFromGithub(state) {
         .spread(function (pluginFile) {
             pluginConfig = yaml.load(pluginFile);
         })
-        .then(function () {
+        .then(async () => {
             // First generate urls to all the plugin repos.
             const githubPlugins = pluginConfig.plugins
                 .filter(function (plugin) {
@@ -179,13 +238,35 @@ function fetchPluginsFromGithub(state) {
                     url = plugin.source.github.url || 'https://github.com/' + gitAccount + '/' + repoName;
 
                 const dest = gitDestination.concat([plugin.name]).join('/');
-                mutant.log(`... cloning plugin repo ${plugin.globalName}, version ${version}, branch: ${branch}`);
-                return gitClone(url, dest, branch);
+
+                return gitClone(url, dest, branch)
+                    .then(async () => {
+                        mutant.log(`... cloning plugin repo ${plugin.globalName}, version ${version}, branch: ${branch}`);
+                        const gitInfo = await gitInfo2(state, dest);
+                        state.pluginsManifest.push({
+                            name: plugin.name,
+                            globalName: plugin.globalName,
+                            repoName,
+                            version,
+                            branch,
+                            gitAccount,
+                            url,
+                            gitInfo,
+                        });
+                    });
             });
         })
         .then(() => {
             return state;
         });
+}
+
+async function savePluginManifest(state) {
+    const root = state.environment.path;
+    const configDest = root.concat(['build', 'client', 'modules', 'config']);
+    const manifestPath = configDest.concat(['plugins-manifest.json']);
+    await mutant.saveJson(manifestPath, state.pluginsManifest);
+    return state;
 }
 
 /*
@@ -1154,6 +1235,15 @@ function main(type) {
             .then((state) => {
                 mutant.log('STEP 5: Fetching plugins...');
                 return fetchPlugins(state);
+            })
+
+            // STEP 5: Get external plugins from github and prepare the plugin load config for runtime usage.
+            .then((state) => {
+                return mutant.copyState(state);
+            })
+            .then((state) => {
+                mutant.log('STEP 5b: Save plugin manifest...');
+                return savePluginManifest(state);
             })
 
             // STEP 6: Unpack plugins and move them into their final resting place.
