@@ -164,7 +164,8 @@ export interface RouteSpec {
     path: string;
     view: string;
     component: string;
-    pluginName?: string; // TODO: make this a discriminated type: plugin, component
+    type: 'applet' | 'plugin' | 'component';
+    name?: string; // TODO: make this a discriminated type: plugin, component
     queryParams?: SimpleMap<QueryItemSpec>; // not really
     authorization?: boolean;
     params?: Params;
@@ -176,7 +177,8 @@ export interface RouteSpec {
 }
 
 export interface RouteOptions {
-    pluginName: string;
+    type: 'applet' | 'plugin';
+    name: string;
     mode: string;
 }
 
@@ -204,6 +206,7 @@ type RequestParam = RequestParamString | RequestParamRest;
 
 type RequestParams = SimpleMap<RequestParam>;
 
+// TODO: this is now the same as the "RouteSpec" - so unify them!
 export interface Route {
     // request: RoutingRequest;
     // pathSpec: string;
@@ -220,7 +223,8 @@ export interface Route {
     captureExtraSearch?: boolean;
     rolesRequired?: Array<string>;
     forceMount?: boolean;
-    pluginName?: string;
+    type: 'applet' | 'plugin' | 'component';
+    name?: string;
 }
 
 export interface RoutedRequest {
@@ -229,39 +233,12 @@ export interface RoutedRequest {
     params: RequestParams;
 }
 
-
-// interface Routed {
-//     request: RoutingRequest;
-//     // pathSpec: string;
-//     // path: Array<PathElement>;
-//     view: string;
-//     // queryParams?: SimpleMap<string>; // not really
-//     authorization?: boolean;
-//     params?: Params;
-//     reentrant?: boolean;
-//     captureExtraPath?: boolean;
-// }
-
-type Mode = 'auto';
-
 interface RoutingRequest {
     realPath: Array<string>;
     path: Array<string>;
     original: string;
     query: SimpleMap<string>;
 }
-
-// interface Location {
-//     path: string | Array<string>;
-//     // TODO use only one of params or query
-//     params?: SimpleMap<string>;
-//     query?: SimpleMap<string>;
-//     external?: boolean;
-//     replace?: boolean;
-//     urlPath?: string;
-//     redirect?: boolean;
-//     newWindow?: boolean;
-// }
 
 interface RoutingLocationBase {
     type: string;
@@ -315,10 +292,7 @@ export class Router {
 
         // split path
         const pathElements = pathPart.split('/').filter((pathElement) => {
-            if (pathElement.trim().length === 0) {
-                return false;
-            }
-            return true;
+            return (pathElement.trim().length !== 0);
         });
 
         // create path spec
@@ -421,17 +395,17 @@ export class Router {
         }, {});
     }
 
-    addRoute(routeSpec: RouteSpec, {pluginName, mode}: RouteOptions) {
+    addRoute(routeSpec: RouteSpec, {type, name, mode}: RouteOptions) {
         if (typeof routeSpec.params === 'undefined') {
             routeSpec.params = {};
         }
-        if (!routeSpec.params.plugin) {
-            routeSpec.params.plugin = pluginName;
-        }
+        // if (!routeSpec.params.plugin) {
+        //     routeSpec.params.plugin = pluginName;
+        // }
 
         // Handle old view spec.
         if (!routeSpec.view && routeSpec.params && routeSpec.params.view) {
-            console.warn(`[${pluginName}]: deprecated: view "${routeSpec.params.view}" supplied in params`);
+            console.warn(`[${name}]: deprecated: view "${routeSpec.params.view}" supplied in params`);
             routeSpec.view = routeSpec.params.view;
         }
 
@@ -469,15 +443,15 @@ export class Router {
         const [path, queryParams] = this.transformPathSpec(pathConfig);
         switch (mode) {
             case 'auto':
-                // In auto mode, the plugin name becomes the first path component.
+                // In auto mode, the applet/plugin name becomes the first path component.
                 path.unshift({
                     type: 'literal',
-                    value: pluginName
+                    value: name
                 });
         }
 
         if (path.length === 0) {
-            throw new Error(`Route path cannot be empty for "${pluginName}"`);
+            throw new Error(`Route path cannot be empty for "${name}"`);
         }
 
         if (routeSpec.queryParams) {
@@ -487,7 +461,6 @@ export class Router {
 
         const route: Route = {
             path,
-            // pathSpec: routeSpec.path,
             view: routeSpec.view,
             component: routeSpec.component,
             authorization: routeSpec.authorization,
@@ -498,7 +471,8 @@ export class Router {
             captureExtraSearch: routeSpec.captureExtraSearch,
             rolesRequired: routeSpec.rolesRequired,
             forceMount: routeSpec.forceMount,
-            pluginName: routeSpec.pluginName
+            type,
+            name: routeSpec.name
         };
         this.routes.push(route);
     }
@@ -722,7 +696,6 @@ export class Router {
         // placed into the params.
 
         // The total params is the path params and query params
-        const searchParamKeys = Object.keys(query);
         const queryParamsSpec = route.queryParams || {};
 
         // Use the query params spec in the route first. This picks up
@@ -733,7 +706,7 @@ export class Router {
         const params: RequestParams = {};
         const unusedSearchKeys: Array<string> = [];
         Object.entries(query)
-            .forEach(([key, value]) => {
+            .forEach(([key, _value]) => {
                 const spec = queryParamsSpec[key];
                 if (!spec) {
                     unusedSearchKeys.push(key);
@@ -835,12 +808,6 @@ export class Router {
         return {
             route, request, params
         };
-    }
-
-    listRoutes() {
-        return this.routes.map((route) => {
-            return route.path;
-        });
     }
 
     navigateTo(location: RoutingLocation) {

@@ -9,6 +9,7 @@
 define([
     'preact',
     'htm',
+    'lib/appletManager',
     'lib/pluginManager',
     'lib/appServiceManager',
     'lib/kbaseServiceManager',
@@ -18,6 +19,7 @@ define([
 ], (
     preact,
     htm,
+    {AppletManager},
     {PluginManager},
     {AppServiceManager},
     kbaseServiceManager,
@@ -37,7 +39,7 @@ define([
     fallback error handling, and a simple set of predefined root nodes.
     The rest of the web app is crafted out of the plugins which are loaded
     from the configuration.
-    Much of what plugin loading involves is interation with services, which is
+    Much of what plugin loading involves is interaction with services, which is
     usually literally providing a configuration object to the service and allowing
     the service to do its thing.
     This makes for a very small core, in which nearly all of the functionality is
@@ -66,6 +68,7 @@ define([
     return class App {
         constructor(params) {
             this.plugins = params.plugins;
+            this.applets = params.applets;
             this.services = params.services;
             this.nodes = params.nodes;
 
@@ -99,6 +102,10 @@ define([
             });
 
             this.pluginManager = new PluginManager({
+                runtime: this.runtime
+            });
+
+            this.appletManager = new AppletManager({
                 runtime: this.runtime
             });
 
@@ -173,6 +180,9 @@ define([
                     return this.appServiceManager.startServices({
                         except: ['session']
                     });
+                })
+                .then(() => {
+                    return this.appletManager.installApplets(this.applets);
                 })
                 .then(() => {
                     return this.pluginManager.installPlugins(this.plugins);

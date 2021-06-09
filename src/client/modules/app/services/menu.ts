@@ -1,6 +1,6 @@
-import { PluginConfig, PluginDefinition, Service, ServiceConfig } from '../../lib/types';
-import { StateMachine } from '../../lib/kb_lib/StateMachine';
-import { stache, tryPromise } from '../../lib/kb_lib/Utils';
+import {Service, ServiceConfig} from '../../lib/types';
+import {StateMachine} from '../../lib/kb_lib/StateMachine';
+import {stache, tryPromise} from '../../lib/kb_lib/Utils';
 
 interface MenuSystem {
     menuItems: Map<string, MenuItemDefinition>,
@@ -77,7 +77,7 @@ export class MenuService extends Service<MenuServiceConfig> {
     // menus: MenuConfig;
     state: StateMachine<MenuSystem>;
 
-    constructor({ config: { menus } }: MenuConstructorConfig) {
+    constructor({config: {menus}}: MenuConstructorConfig) {
         super();
         // this.menus = menus;
         this.state = new StateMachine<MenuSystem>({
@@ -136,7 +136,11 @@ export class MenuService extends Service<MenuServiceConfig> {
     }
 
     // Plugin interface
-    pluginHandler(serviceConfig: MenuServiceConfig, pluginDef: PluginDefinition, pluginConfig: PluginConfig) {
+    pluginHandler(
+        serviceConfig: MenuServiceConfig,
+        type: 'applet' | 'plugin',
+        name: string
+    ) {
         if (!serviceConfig) {
             return;
         }
@@ -149,7 +153,10 @@ export class MenuService extends Service<MenuServiceConfig> {
                     menuItem.type = 'internal';
                 }
                 if (menuItem.type === 'internal') {
-                    menuItem.path = stache(menuItem.path, new Map<string, string>([['plugin', pluginConfig.package.name]]));
+                    menuItem.path = stache(menuItem.path, new Map<string, string>([
+                        ['name', name],
+                        ['plugin', name]
+                    ]));
                 }
                 this.addMenuItem(menuItem);
             });

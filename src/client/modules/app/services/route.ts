@@ -1,4 +1,4 @@
-import { stache } from "../../lib/kb_lib/Utils";
+import {stache} from "../../lib/kb_lib/Utils";
 import {
     NotFoundException,
     NotFoundHasRealPathException,
@@ -10,7 +10,7 @@ import {
     RouteSpec,
     RoutingLocation,
 } from "./router";
-import { Receiver, Runtime, SimpleMap } from "../../lib/types";
+import {Receiver, Runtime, Service, SimpleMap} from "../../lib/types";
 
 type RouteHandler = RoutedRequest;
 
@@ -25,16 +25,16 @@ interface ServiceConfig {
     mode: string;
 }
 
-interface PluginConfig {
+interface AppletConfig {
 }
 
-interface PluginDefinition {
+interface AppletDefinition {
     package: {
         name: string;
     };
 }
 
-interface RouteServiceConfig {
+interface RouteServiceConfig  extends ServiceConfig {
     defaultLocation: RoutingLocation;
     urls: SimpleMap<string>;
 }
@@ -52,13 +52,16 @@ interface Role {
     id: string;
 }
 
-export class RouteService {
+export class RouteService extends Service<RouteServiceConfig> {
     runtime: Runtime;
     router: Router;
     currentRouteHandler: RouteHandler | null;
     receivers: Array<Receiver>;
     eventListeners: Array<EventListener>;
-    constructor({ config, params }: RouteServiceParams) {
+
+    constructor(param: RouteServiceParams) {
+        super();
+        const {config, params} = param;
         this.runtime = params.runtime;
         this.router = new Router({
             runtime: params.runtime,
@@ -76,9 +79,7 @@ export class RouteService {
                 const routed = this.router.findCurrentRoute();
                 const rolesRequired = routed.route.rolesRequired;
                 if (rolesRequired) {
-                    const roles = this.runtime.service("session").getRoles() as Array<
-                        Role
-                    >; // TODO
+                    const roles = this.runtime.service("session").getRoles() as Array<Role>; // TODO
                     if (
                         !roles.some((role) => {
                             return rolesRequired.some((requiredRole) => {
@@ -107,6 +108,8 @@ export class RouteService {
                                 view: "",
                                 authorization: false,
                                 component: "reactComponents/Error",
+                                type: 'component',
+                                name: 'error'
                             }
                         };
                     }
@@ -128,6 +131,8 @@ export class RouteService {
                             view: "",
                             authorization: false,
                             component: "/reactComponents/NotFound",
+                            type: 'component',
+                            name: 'notfound'
                         },
                     };
                 } else if (ex instanceof RedirectException) {
@@ -178,6 +183,8 @@ export class RouteService {
                             view: "",
                             authorization: false,
                             component: "/reactComponents/NotFound",
+                            type: 'component',
+                            name: 'notfound'
                         },
                     };
                 } else {
@@ -249,33 +256,23 @@ export class RouteService {
         }
 
         this.runtime.send("app", "route-component", routed);
-
-        // const route = {
-        //     routeHandler: routed,
-        //     request: routed.request
-        // };
-
-        // if (routed) {
-        //     this.runtime.send("app", "route-component", route);
-        // } else {
-        //     throw new Error("Not a valid route request");
-        // }
     }
 
     installRoute(route: RouteSpec, options: RouteOptions) {
         // TODO: improve typing by route type
-        route.pluginName = options.pluginName;
+        route.type = options.type;
+        route.name = options.name;
 
         route.path = stache(
             route.path,
-            new Map<string, string>([["plugin", options.pluginName]]),
+            new Map<string, string>([["name", options.name], ["plugin", options.name]]),
         );
 
         if (route.component) {
+            // This used to be internal plugins, now they are "applets".
             this.router.addRoute(route, options);
-            // } else if (route.redirectHandler) {
-            //     this.router.addRoute(route, options);
         } else {
+            // This is how iframe-mounted plugins are managed.
             route.component = "/pluginSupport/Plugin";
             this.router.addRoute(route, options);
         }
@@ -292,14 +289,15 @@ export class RouteService {
 
     pluginHandler(
         serviceConfig: ServiceConfig,
-        pluginConfig: PluginConfig,
-        pluginDef: PluginDefinition,
+        type: 'applet' | 'plugin',
+        name: string
     ) {
         return new Promise((resolve, reject) => {
             try {
                 // Install all the routes
                 this.installRoutes(serviceConfig.routes || serviceConfig, {
-                    pluginName: pluginDef.package.name,
+                    type,
+                    name: name,
                     mode: serviceConfig.mode,
                 });
                 resolve(null);
@@ -384,7 +382,7 @@ export class RouteService {
             this.router.navigateTo(location);
         });
 
-        this.runtime.receive("app", "redirect", ({ url }) => {
+        this.runtime.receive("app", "redirect", ({url}) => {
             if (!url) {
                 throw new Error('"url" is required for a "redirect" message');
             }

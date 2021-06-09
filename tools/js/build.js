@@ -14,7 +14,7 @@
  * - each process may mutate the system, and must pass those mutations to
  *   the next process.
  * - processes are just javascript, so may include conditional branching, etc.
- * - procsses are asynchronous by nature, promises, so may arbitrarily contain
+ * - processes are asynchronous by nature, promises, so may arbitrarily contain
  *   async tasks, as long as they adhere to the promises api.
  *
  */
@@ -292,21 +292,49 @@ function injectPluginsIntoConfig(state) {
         .then((pluginConfig) => {
             const plugins = {};
             pluginConfig.plugins.forEach((pluginItem) => {
-                if (typeof pluginItem === 'string') {
-                    // internal plugins are specified by just their string name.
-                    plugins[pluginItem] = {
-                        name: pluginItem,
-                        directory: 'plugins/' + pluginItem,
-                        disabled: false,
-                    };
-                } else {
-                    pluginItem.directory = 'plugins/' + pluginItem.name;
-                    plugins[pluginItem.name] = pluginItem;
-                }
+                pluginItem.directory = 'plugins/' + pluginItem.name;
+                plugins[pluginItem.name] = pluginItem;
             });
 
             // Save this as a json file; this is the config that kbase-ui will load at runtime.
             return fs.writeFileAsync(configPath.concat(['plugins.json']).join('/'), JSON.stringify({plugins}));
+        })
+        .then(() => {
+            return state;
+        });
+}
+
+function injectAppletsIntoConfig(state) {
+    // Load plugin config
+    const root = state.environment.path;
+    const configPath = root.concat(['build', 'client', 'modules', 'config']);
+    const appletsConfigFile = root.concat(['config', 'applets.yml']).join('/');
+
+    return fs
+        .ensureDirAsync(configPath.join('/'))
+        .then(() => {
+            return fs.readFileAsync(appletsConfigFile, 'utf8');
+        })
+        .then((appletsFile) => {
+            return yaml.load(appletsFile);
+        })
+        .then((appletsConfig) => {
+            const applets = {};
+            appletsConfig.applets.forEach((appletItem) => {
+                if (typeof appletItem === 'string') {
+                    applets[appletItem] = {
+                        name: appletItem,
+                        directory: 'applets/' + appletItem,
+                        disabled: false,
+                    };
+                } else {
+                    appletItem.directory = 'applets/' + appletItem.name;
+                    applets[appletItem.name] = appletItem;
+                }
+            });
+
+            // Save this as a json file; this is the config that kbase-ui will load at runtime.
+            return fs.writeFileAsync(configPath.concat(['applets.json']).join('/'), JSON.stringify({applets}));
         })
         .then(() => {
             return state;
@@ -595,6 +623,27 @@ function installPlugins(state) {
                     });
                 });
             })
+            // now move the test files into the test dir
+            .then(() => {
+                // dir list of all plugins
+                const appletsPath = root.concat(['build', 'client', 'modules', 'applets']);
+                return dirList(appletsPath).then((appletDirs) => {
+                    return Promise.each(appletDirs, (appletDir) => {
+                        // Has integration tests?
+                        const testDir = appletDir.path.concat(['test']);
+                        return pathExists(testDir.join('/')).then((exists) => {
+                            const justDir = appletDir.path[appletDir.path.length - 1];
+                            if (!exists) {
+                                mutant.warn('applet without tests: ' + justDir);
+                            } else {
+                                mutant.success('applet with tests!  : ' + justDir);
+                                const dest = root.concat(['test', 'integration-tests', 'specs', 'applets', justDir]);
+                                return fs.moveAsync(testDir.join('/'), dest.join('/'));
+                            }
+                        });
+                    });
+                });
+            })
             .then(() => {
                 return state;
             })
@@ -638,12 +687,6 @@ function setupBuild(state) {
             // the client really now becomes the build!
             const from = root.concat(['src', 'test']),
                 to = root.concat(['test']);
-            return fs.moveAsync(from.join('/'), to.join('/'));
-        })
-        .then(() => {
-            // the client really now becomes the build!
-            const from = root.concat(['src', 'plugins']),
-                to = root.concat(['plugins']);
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
         .then(() => {
@@ -853,7 +896,7 @@ function makeConfig(state) {
                     .then(function () {
                         return Promise.all(
                             configs.map(function (file) {
-                                fs.remove(file.join('/'));
+                                return fs.remove(file.join('/'));
                             }),
                         );
                     });
@@ -1173,9 +1216,6 @@ function main(type) {
                     path: ['src', 'client'],
                 },
                 {
-                    path: ['src', 'plugins'],
-                },
-                {
                     path: ['src', 'test'],
                 },
                 {
@@ -1226,6 +1266,15 @@ function main(type) {
             .then((state) => {
                 mutant.log('STEP 4: Removing source maps...');
                 return removeSourceMaps(state);
+            })
+
+            // STEP 5a: Get applets mapping
+            .then((state) => {
+                return mutant.copyState(state);
+            })
+            .then((state) => {
+                mutant.log('STEP 5a: Injecting applet configs...');
+                return injectAppletsIntoConfig(state);
             })
 
             // STEP 5: Get external plugins from github and prepare the plugin load config for runtime usage.

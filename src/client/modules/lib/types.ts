@@ -2,21 +2,11 @@ import { ReactiveDB } from "./kb_lib/ReactiveDB";
 
 export interface SimpleMap<T> { [key: string]: T; }
 
-
-
-interface UIServiceParams {
-    config: any,
-    params: any;
-}
-
-
 export type Receiver = (payload: any) => void;
 
 type UIService = any;
 
-
 export interface PluginServiceDefinition {
-
 }
 
 // A plugin's configuration
@@ -61,8 +51,11 @@ export interface ServiceConfig {
 
 }
 
+export type PluginType = 'applet' | 'plugin';
+
 export abstract class Service<T extends ServiceConfig> {
-    abstract pluginHandler(serviceConfig: T, pluginDef: PluginDefinition, pluginConfig: PluginConfig): void;
+    abstract pluginHandler(serviceConfig: T, type: PluginType, name: string): void;
+    // abstract pluginHandler(serviceConfig: T, pluginDef: PluginDefinition, pluginConfig: PluginConfig): void;
 }
 
 export interface Runtime {

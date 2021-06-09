@@ -6,6 +6,7 @@ define([
     '../lib/utils',
 
     'json!config/plugins.json',
+    'json!config/applets.json',
     'json!config/config.json',
     'json!deploy/config.json',
 
@@ -21,6 +22,7 @@ define([
     props,
     utils,
     pluginsConfig,
+    appletsConfig,
     appConfigBase,
     deployConfig
 ) {
@@ -56,7 +58,8 @@ define([
         // extracted from the services.
         // TODO: we can get rid of this malarky if we can remove non-core
         // services from the services config.
-        var coreServices = Object.entries(mergedConfig.services)
+
+        mergedConfig.coreServices = Object.entries(mergedConfig.services)
             .filter(([, serviceConfig]) => {
                 return serviceConfig.coreService;
             })
@@ -68,7 +71,6 @@ define([
                     version: serviceConfig.version
                 };
             });
-        mergedConfig.coreServices = coreServices;
 
         // Expand aliases.
         // This simply makes a new entry in the services object for
@@ -100,6 +102,11 @@ define([
             plugins.set(key, value);
         });
 
+        const applets = new Map();
+        Object.entries(appletsConfig.applets).map(([key, value]) => {
+            applets.set(key, value);
+        });
+
         const app = new Hub({
             appConfig: mergedConfig,
             nodes: {
@@ -107,6 +114,7 @@ define([
                     selector: '#root'
                 }
             },
+            applets,
             plugins,
             services: mergedConfig.ui.services
         });

@@ -1,13 +1,6 @@
 ## Plugin Build Configuration
 ---
 plugins:
-  # Plugins which come-with kbase-ui
-  - welcome
-  - narrativemanager
-  - about
-  - developer
-  - dashboard
-  # external:
   - name: typeview
     globalName: kbase-ui-plugin-typeview
     version: 3.1.0

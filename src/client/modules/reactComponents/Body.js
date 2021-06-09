@@ -4,12 +4,12 @@ define([
     'lib/DataPipe',
     'uuid',
 
-    'css!./Body.css'
+    'css!./Body.css',
 ], (
     preact,
     htm,
     {DataPipe},
-    {v4: uuidv4}
+    {v4: uuidv4},
 ) => {
     const {h, Component, createRef, render} = preact;
     const html = htm.bind(h);
@@ -35,11 +35,11 @@ define([
         setupForComponent() {
             this.routeComponentListener = this.props.runtime.receive('app', 'route-component', (routed) => {
                 const {
-                    params, route, request
+                    params, route, request,
                 } = routed;
 
                 // The params from the routed object are of type RequestParams; these are
-                // structured params, but when we send them to a the route components we send
+                // structured params, but when we send them to the route components we send
                 // then as simple params.
                 const paramsToSend = Object.entries(params).reduce((params, [key, {type, value}]) => {
                     switch (type) {
@@ -68,33 +68,43 @@ define([
                 // But we do if the plugin says so!
                 if (this.currentPluginProxy !== null &&
                     this.currentPluginProxy.pluginName === params.plugin &&
-                    this.currentPluginProxy.component == route.component &&
+                    this.currentPluginProxy.component === route.component &&
                     !route.forceMount) {
 
                     this.pluginComponent.pipe.put({
                         view: route.view,
                         params: paramsToSend,
-                        request
+                        request,
                     });
                     return;
                 }
 
-                this.currentPluginProxy = new PluginProxy(route.pluginName, route.component);
+                this.currentPluginProxy = new PluginProxy(route.name, route.component);
                 this.currentPluginProxy.pipe.put({
                     view: route.view,
-                    params: paramsToSend
+                    params: paramsToSend,
                 });
 
                 const module = (() => {
                     if (route.component.startsWith('/')) {
                         return route.component.slice(1);
                     } else {
-                        return [
-                            'plugins',
-                            route.pluginName,
-                            'modules',
-                            route.component
-                        ].join('/');
+                        switch (route.type) {
+                        case 'applet':
+                            return [
+                                'applets',
+                                route.name,
+                                'modules',
+                                route.component,
+                            ].join('/');
+                        case 'plugin':
+                            return [
+                                'plugins',
+                                route.name,
+                                'modules',
+                                route.component,
+                            ].join('/');
+                        }
                     }
                 })();
 
@@ -105,8 +115,9 @@ define([
                         pipe: this.currentPluginProxy.pipe,
                         view: route.view,
                         params: paramsToSend,
-                        pluginName: route.pluginName,
-                        key: uuidv4()
+                        name: route.name,
+                        pluginName: route.name,
+                        key: uuidv4(),
                     };
 
                     // ensure the root node is empty.
@@ -115,7 +126,8 @@ define([
                     }
 
                     // Then render our component.
-                    render(html`<${Component} ...${props}/>`, rootNode);
+                    render(html`
+                        <${Component} ...${props}/>`, rootNode);
                 });
             });
         }
@@ -136,8 +148,8 @@ define([
         render() {
             return html`
                 <div className="Body"
-                    ref=${this.nodeRef}
-                    data-k-b-testhook-component="body">
+                     ref=${this.nodeRef}
+                     data-k-b-testhook-component="body">
                 </div>
             `;
         }

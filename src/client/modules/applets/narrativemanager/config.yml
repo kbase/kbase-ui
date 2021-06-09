@@ -1,0 +1,30 @@
+## YAML Template.
+---
+package:
+  name: narrativemanager
+  title: Narrative Opener Tool
+  description: The narrative manager
+  type: legacy
+services:
+  route:
+    routes:
+      - path: "{{name}}/start?:-app&:-method&:-copydata&:-appparam"
+        authorization: true
+        component: views/RecentNarrative
+      - path: "{{name}}/new?:-app&:-method&:-copydata&:-appparam&:-markdown"
+        authorization: true
+        component: views/NewNarrative
+  menu:
+    items:
+      - name: narrative
+        type: internal
+        path: "{{name}}/start"
+        newWindow: true
+        label: Narrative Interface
+        icon: file
+      - name: new-narrative
+        type: internal
+        path: "{{name}}/new"
+        newWindow: true
+        label: New Narrative
+        icon: plus
