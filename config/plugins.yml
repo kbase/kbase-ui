@@ -75,7 +75,7 @@ plugins:
         account: eapearson
   - name: samples
     globalName: kbase-ui-plugin-samples
-    version: 0.13.0
+    version: 0.13.1
     source:
       github:
         account: kbaseIncubator
