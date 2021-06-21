@@ -9,7 +9,7 @@ plugins:
         account: kbase
   - name: dataview
     globalName: kbase-ui-plugin-dataview
-    version: 4.8.18
+    version: 4.8.20
     source:
       github:
         account: kbase
