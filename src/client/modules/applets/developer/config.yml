@@ -1,0 +1,22 @@
+## Welcome Panel
+---
+package:
+  name: developer
+  title: Developer Tools
+  description: A developer tool
+  type: legacy
+services:
+  route:
+    routes:
+      - path: "{{name}}"
+        component: views/Developer
+        view: main
+  menu:
+    items:
+      - name: developer
+        type: internal
+        path: "{{name}}"
+        section: developer
+        allowedRoles: [DevToken]
+        label: Developer
+        icon: cogs

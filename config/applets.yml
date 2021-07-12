@@ -1,0 +1,8 @@
+## Applet Build Configuration
+---
+applets:
+  - welcome
+  - narrativemanager
+  - about
+  - developer
+  - dashboard

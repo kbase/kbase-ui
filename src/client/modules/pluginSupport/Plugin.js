@@ -31,13 +31,13 @@ define([
             const pluginPath = [
                 'modules',
                 'plugins',
-                this.props.pluginName
+                this.props.name
             ].join('/');
 
             const props = {
                 runtime: this.props.runtime,
                 pluginPath,
-                pluginName: this.props.pluginName,
+                pluginName: this.props.name,
                 original: this.props.request.original,
                 pipe: this.props.pipe,
                 params: {

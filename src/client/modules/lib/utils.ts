@@ -1,3 +1,11 @@
+import {
+    AMDRequire
+} from "./types";
+
+// TODO: a hack to override the node require definition built into TS
+// TODO: there may be a compiler option to allow using AMD require?
+declare var require: AMDRequire;
+
 function isSimpleObject(obj: any) {
     if (typeof obj !== 'object' || obj === null) {
         return false;
@@ -29,6 +37,7 @@ export function mergeObjects(listOfObjects: Array<any>) {
             }
         });
     }
+
     const base = JSON.parse(JSON.stringify(listOfObjects[0]));
     for (let i = 1; i < listOfObjects.length; i += 1) {
         merge(base, listOfObjects[i], []);
@@ -36,3 +45,16 @@ export function mergeObjects(listOfObjects: Array<any>) {
     return base;
 }
 
+export function prequire(dependencies: Array<string>) {
+    return new Promise((resolve, reject) => {
+        try {
+            require(dependencies, (result) => {
+                resolve(result);
+            }, (error) => {
+                reject(error);
+            });
+        } catch (ex) {
+            reject(ex);
+        }
+    });
+}

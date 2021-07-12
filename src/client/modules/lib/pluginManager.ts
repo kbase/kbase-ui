@@ -26,24 +26,12 @@ interface LegacyInstallerConfig {
     resourcesRoot: string;
 }
 
-function prequire(dependencies: Array<string>) {
-    return new Promise((resolve, reject) => {
-        try {
-            require(dependencies, (result) => {
-                resolve(result);
-            }, (error) => {
-                reject(error);
-            });
-        } catch (ex) {
-            reject(ex);
-        }
-    });
-}
-
 interface PluginManagerConstructorParams {
     runtime: Runtime;
     moduleBase: string;
 }
+
+export type PluginType = 'legacy' | 'iframe';
 
 export class PluginManager {
     runtime: Runtime;
@@ -59,14 +47,6 @@ export class PluginManager {
      * All of these installXXX installers return an array of
      * promises.
      */
-
-    // registerService(serviceNames: Array<string>, serviceDef: ServiceDefinition) {
-    //     // TODO: transform service definition to service 
-    //     const service = serviceDef as Service<any>;
-    //     serviceNames.forEach((name) => {
-    //         this.services.set(name, service);
-    //     });
-    // }
 
     installIntoService(
         pluralTypeName: string,
@@ -95,7 +75,7 @@ export class PluginManager {
             if (serviceDefinition) {
                 const service = this.runtime.service(typeName);
                 if (service.pluginHandler) {
-                    return service.pluginHandler(serviceDefinition, pluginDef, pluginConfig);
+                    return service.pluginHandler(serviceDefinition, 'plugin', pluginConfig.package.name);
                 }
             }
         });
@@ -104,8 +84,6 @@ export class PluginManager {
     installLegacyPlugin(pluginLoadConfig: PluginLoadConfig, pluginConfig: PluginConfig) {
         // build up a list of modules and add them to the require config.
         return tryPromise(() => {
-            const paths: Map<string, any> = new Map();
-            const shims: Map<string, any> = new Map();
             const sourcePath = pluginLoadConfig.directory;
 
             let usingSourceModules = false;
@@ -140,12 +118,12 @@ export class PluginManager {
                 iframePath: `${pluginLoadConfig.directory}/iframe_root/index.html`
             };
 
-            // This overrides the plugin's own concept of plugin name with 
+            // This overrides the plugin's own concept of plugin name with
             // the one provided in kbase-ui's name for the plugin, which is derived
             // from plugins.yml
             // This allows us to support loading the same plugin twice under different
             // names. This has very limited utility ... but is very useful when needed.
-            // E.g. to load different versions of the same plugin for side by side 
+            // E.g. to load different versions of the same plugin for side by side
             // evaluation
             // TODO: come up with a better way of doing this!
             pluginConfig.package.name = pluginLoadConfig.name;
@@ -155,19 +133,6 @@ export class PluginManager {
             if (!serviceConfigs) {
                 return null;
             }
-
-            const installSteps: Array<Promise<any>> = [];
-
-            // Object.keys(serviceConfigs).forEach((serviceName) => {
-            //     const installDef = serviceConfigs[serviceName];
-            //     const installationPromise = this.installIntoService(serviceName, installDef, pluginInstallerConfig, pluginConfig);
-            //     if (installationPromise) {
-            //         installSteps.push(installationPromise);
-            //     }
-            // });
-            // // Do all of the install steps.
-            // return Promise.all(installSteps);
-
 
             return Promise.all(Object.entries(serviceConfigs)
                 .map(([serviceName, serviceConfig]) => {
@@ -180,7 +145,7 @@ export class PluginManager {
         // build up a list of modules and add them to the require config.
         return tryPromise(() => {
             // Plugin type - legacy or iframe.
-            const pluginType = pluginConfig.package.type || 'iframe';
+            const pluginType: PluginType = pluginConfig.package.type || 'iframe';
 
             switch (pluginType) {
                 case 'legacy':
@@ -192,30 +157,6 @@ export class PluginManager {
             }
         });
     }
-
-    // makePromiseIterator(actions) {
-    //     return new Promise((topResolve, topReject) => {
-    //         function promiseIterator(actions) {
-    //             if (actions === undefined || actions.length === 0) {
-    //                 topResolve('DONE');
-    //             }
-    //             const next = actions[0];
-    //             const rest = actions.slice(1);
-    //             Promise.try(() => {
-    //                 return new Promise((resolve, reject, notify) => {
-    //                     next(resolve, reject, notify);
-    //                 });
-    //             })
-    //                 .then(() => {
-    //                     return promiseIterator(rest);
-    //                 })
-    //                 .catch((err) => {
-    //                     topReject(err);
-    //                 });
-    //         }
-    //         promiseIterator(actions);
-    //     });
-    // }
 
     /**
      *
@@ -240,7 +181,7 @@ export class PluginManager {
     }
 
     installPlugins(pluginLoadConfigs: Map<string, PluginLoadConfig>) {
-        const loaders = Array.from(pluginLoadConfigs, ([pluginName, pluginLoadConfig]) => {
+        const loaders = Array.from(pluginLoadConfigs, ([_pluginName, pluginLoadConfig]) => {
             return this.loadPlugin(pluginLoadConfig);
         });
         return Promise.all(loaders);

@@ -14,7 +14,7 @@
  * - each process may mutate the system, and must pass those mutations to
  *   the next process.
  * - processes are just javascript, so may include conditional branching, etc.
- * - procsses are asynchronous by nature, promises, so may arbitrarily contain
+ * - processes are asynchronous by nature, promises, so may arbitrarily contain
  *   async tasks, as long as they adhere to the promises api.
  *
  */
@@ -121,6 +121,64 @@ function gitInfo(state) {
     });
 }
 
+async function gitInfo2(state, directory) {
+    const pwd = process.cwd();
+    process.chdir(directory);
+    return Promise.all([
+        run('git show --format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d --name-status | head -n 8'),
+        run('git log -1 --pretty=%s'),
+        run('git log -1 --pretty=%N'),
+        run('git config --get remote.origin.url'),
+        run('git rev-parse --abbrev-ref HEAD'),
+        run('git describe --exact-match --tags $(git rev-parse HEAD)').catch(function () {
+            // For non-prod ui we can be tolerant of a missing version, but not for prod.
+            if (state.buildConfig.release) {
+                throw new Error('This is a release build, a semver tag is required');
+            }
+            mutant.log('Not on a tag, but that is ok since this is not a release build');
+            mutant.log('version will be unavailable in the ui');
+            return '';
+        }),
+    ]).spread(async (infoString, subject, notes, url, branch, tag) => {
+        const info = infoString.split('\n');
+        let version;
+        tag = tag.trim('\n');
+        if (/^fatal/.test(tag)) {
+            version = null;
+        } else {
+            const m = /^v([\d]+)\.([\d]+)\.([\d]+)$/.exec(tag);
+            if (m) {
+                version = m.slice(1).join('.');
+            } else {
+                version = null;
+            }
+        }
+
+        url = url.trim('\n');
+        if (url.endsWith('.git')) {
+            url = url.slice(0, -4);
+        }
+
+        process.chdir(pwd);
+
+        return {
+            commitHash: info[0],
+            commitAbbreviatedHash: info[1],
+            authorName: info[2],
+            authorDate: new Date(parseInt(info[3]) * 1000).toISOString(),
+            committerName: info[4],
+            committerDate: new Date(parseInt(info[5]) * 1000).toISOString(),
+            reflogSelector: info[6],
+            subject: subject.trim('\n'),
+            commitNotes: notes.trim('\n'),
+            originUrl: url,
+            branch: branch.trim('\n'),
+            tag: tag,
+            version: version,
+        };
+    });
+}
+
 // SUB TASKS
 
 function dirList(dir) {
@@ -156,6 +214,7 @@ function fetchPluginsFromGithub(state) {
     let pluginConfig;
     const pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/');
     const gitDestination = root.concat(['gitDownloads']);
+    state.pluginsManifest = [];
 
     return fs
         .mkdirsAsync(gitDestination.join('/'))
@@ -165,7 +224,7 @@ function fetchPluginsFromGithub(state) {
         .spread(function (pluginFile) {
             pluginConfig = yaml.load(pluginFile);
         })
-        .then(function () {
+        .then(async () => {
             // First generate urls to all the plugin repos.
             const githubPlugins = pluginConfig.plugins
                 .filter(function (plugin) {
@@ -179,13 +238,35 @@ function fetchPluginsFromGithub(state) {
                     url = plugin.source.github.url || 'https://github.com/' + gitAccount + '/' + repoName;
 
                 const dest = gitDestination.concat([plugin.name]).join('/');
-                mutant.log(`... cloning plugin repo ${plugin.globalName}, version ${version}, branch: ${branch}`);
-                return gitClone(url, dest, branch);
+
+                return gitClone(url, dest, branch)
+                    .then(async () => {
+                        mutant.log(`... cloning plugin repo ${plugin.globalName}, version ${version}, branch: ${branch}`);
+                        const gitInfo = await gitInfo2(state, dest);
+                        state.pluginsManifest.push({
+                            name: plugin.name,
+                            globalName: plugin.globalName,
+                            repoName,
+                            version,
+                            branch,
+                            gitAccount,
+                            url,
+                            gitInfo,
+                        });
+                    });
             });
         })
         .then(() => {
             return state;
         });
+}
+
+async function savePluginManifest(state) {
+    const root = state.environment.path;
+    const configDest = root.concat(['build', 'client', 'modules', 'config']);
+    const manifestPath = configDest.concat(['plugins-manifest.json']);
+    await mutant.saveJson(manifestPath, state.pluginsManifest);
+    return state;
 }
 
 /*
@@ -211,21 +292,49 @@ function injectPluginsIntoConfig(state) {
         .then((pluginConfig) => {
             const plugins = {};
             pluginConfig.plugins.forEach((pluginItem) => {
-                if (typeof pluginItem === 'string') {
-                    // internal plugins are specified by just their string name.
-                    plugins[pluginItem] = {
-                        name: pluginItem,
-                        directory: 'plugins/' + pluginItem,
-                        disabled: false,
-                    };
-                } else {
-                    pluginItem.directory = 'plugins/' + pluginItem.name;
-                    plugins[pluginItem.name] = pluginItem;
-                }
+                pluginItem.directory = 'plugins/' + pluginItem.name;
+                plugins[pluginItem.name] = pluginItem;
             });
 
             // Save this as a json file; this is the config that kbase-ui will load at runtime.
             return fs.writeFileAsync(configPath.concat(['plugins.json']).join('/'), JSON.stringify({plugins}));
+        })
+        .then(() => {
+            return state;
+        });
+}
+
+function injectAppletsIntoConfig(state) {
+    // Load plugin config
+    const root = state.environment.path;
+    const configPath = root.concat(['build', 'client', 'modules', 'config']);
+    const appletsConfigFile = root.concat(['config', 'applets.yml']).join('/');
+
+    return fs
+        .ensureDirAsync(configPath.join('/'))
+        .then(() => {
+            return fs.readFileAsync(appletsConfigFile, 'utf8');
+        })
+        .then((appletsFile) => {
+            return yaml.load(appletsFile);
+        })
+        .then((appletsConfig) => {
+            const applets = {};
+            appletsConfig.applets.forEach((appletItem) => {
+                if (typeof appletItem === 'string') {
+                    applets[appletItem] = {
+                        name: appletItem,
+                        directory: 'applets/' + appletItem,
+                        disabled: false,
+                    };
+                } else {
+                    appletItem.directory = 'applets/' + appletItem.name;
+                    applets[appletItem.name] = appletItem;
+                }
+            });
+
+            // Save this as a json file; this is the config that kbase-ui will load at runtime.
+            return fs.writeFileAsync(configPath.concat(['applets.json']).join('/'), JSON.stringify({applets}));
         })
         .then(() => {
             return state;
@@ -514,6 +623,27 @@ function installPlugins(state) {
                     });
                 });
             })
+            // now move the test files into the test dir
+            .then(() => {
+                // dir list of all plugins
+                const appletsPath = root.concat(['build', 'client', 'modules', 'applets']);
+                return dirList(appletsPath).then((appletDirs) => {
+                    return Promise.each(appletDirs, (appletDir) => {
+                        // Has integration tests?
+                        const testDir = appletDir.path.concat(['test']);
+                        return pathExists(testDir.join('/')).then((exists) => {
+                            const justDir = appletDir.path[appletDir.path.length - 1];
+                            if (!exists) {
+                                mutant.warn('applet without tests: ' + justDir);
+                            } else {
+                                mutant.success('applet with tests!  : ' + justDir);
+                                const dest = root.concat(['test', 'integration-tests', 'specs', 'applets', justDir]);
+                                return fs.moveAsync(testDir.join('/'), dest.join('/'));
+                            }
+                        });
+                    });
+                });
+            })
             .then(() => {
                 return state;
             })
@@ -557,12 +687,6 @@ function setupBuild(state) {
             // the client really now becomes the build!
             const from = root.concat(['src', 'test']),
                 to = root.concat(['test']);
-            return fs.moveAsync(from.join('/'), to.join('/'));
-        })
-        .then(() => {
-            // the client really now becomes the build!
-            const from = root.concat(['src', 'plugins']),
-                to = root.concat(['plugins']);
             return fs.moveAsync(from.join('/'), to.join('/'));
         })
         .then(() => {
@@ -772,7 +896,7 @@ function makeConfig(state) {
                     .then(function () {
                         return Promise.all(
                             configs.map(function (file) {
-                                fs.remove(file.join('/'));
+                                return fs.remove(file.join('/'));
                             }),
                         );
                     });
@@ -1092,9 +1216,6 @@ function main(type) {
                     path: ['src', 'client'],
                 },
                 {
-                    path: ['src', 'plugins'],
-                },
-                {
                     path: ['src', 'test'],
                 },
                 {
@@ -1147,6 +1268,15 @@ function main(type) {
                 return removeSourceMaps(state);
             })
 
+            // STEP 5a: Get applets mapping
+            .then((state) => {
+                return mutant.copyState(state);
+            })
+            .then((state) => {
+                mutant.log('STEP 5a: Injecting applet configs...');
+                return injectAppletsIntoConfig(state);
+            })
+
             // STEP 5: Get external plugins from github and prepare the plugin load config for runtime usage.
             .then((state) => {
                 return mutant.copyState(state);
@@ -1154,6 +1284,15 @@ function main(type) {
             .then((state) => {
                 mutant.log('STEP 5: Fetching plugins...');
                 return fetchPlugins(state);
+            })
+
+            // STEP 5: Get external plugins from github and prepare the plugin load config for runtime usage.
+            .then((state) => {
+                return mutant.copyState(state);
+            })
+            .then((state) => {
+                mutant.log('STEP 5b: Save plugin manifest...');
+                return savePluginManifest(state);
             })
 
             // STEP 6: Unpack plugins and move them into their final resting place.
