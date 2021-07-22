@@ -78,13 +78,13 @@ plugins:
     version: 0.13.4
     source:
       github:
-        account: kbaseIncubator
+        account: kbase
   - name: ontology
     globalName: kbase-ui-plugin-ontology
     version: 0.4.5
     source:
       github:
-        account: kbaseIncubator
+        account: kbase
   - name: taxonomy
     globalName: kbase-ui-plugin-taxonomy
     version: 0.3.7
