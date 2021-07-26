@@ -1,4 +1,7 @@
 .Title {
     font-weight: bold;
     font-size: 200%;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
