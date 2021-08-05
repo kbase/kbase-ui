@@ -13,7 +13,6 @@ console.log('TEST ENV        : ' + process.env.ENV);
 console.log('TEST BASE URL   : ' + baseUrl);
 
 const browserName = process.env.BROWSER;
-// const browserName = 'chrome';
 const browserConfigs = {
     chrome: {
         browserName: 'chrome',
@@ -287,7 +286,7 @@ const wdioConfig = {
      * @param {Object} exitCode 0 - success, 1 - fail
      * @param {Object} config wdio configuration object
      * @param {Array.<Object>} capabilities list of capabilities details
-     * @param {<Object>} results object containing test results
+     * @param {Object} results object containing test results
      */
     // onComplete: function(exitCode, config, capabilities, results) {
     // },

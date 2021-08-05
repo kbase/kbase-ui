@@ -63,4 +63,4 @@ rules:
     - never
   comma-dangle:
     - error
-    - only-multiline
+    - never
