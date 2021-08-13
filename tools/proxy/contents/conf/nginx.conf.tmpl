@@ -86,7 +86,7 @@ http {
         # Needed for running narratives
         location /narrative/ {
             access_log /var/log/nginx/narrative.log upstream_log;
-            
+
             include /etc/nginx/cors.conf;
             {{ if .Env.local_narrative }}
                 proxy_pass http://narrative/narrative/;
@@ -107,12 +107,11 @@ http {
             proxy_pass https://{{ .Env.deploy_ui_hostname }}:443;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
-            client_max_body_size 300M;         
+            client_max_body_size 300M;
         }
 
         location /narratives/ {
-            # proxy_pass https://{{ .Env.deploy_ui_hostname }}:443;
-            proxy_pass https://{{ .Env.deploy_ui_hostname }}:443/ui-assets/images/kbase-logos/logo-fulltext-540-185.png;
+            proxy_pass https://{{ .Env.deploy_ui_hostname }}:443;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
             client_max_body_size 300M;
@@ -122,7 +121,7 @@ http {
         location / {
             client_max_body_size 300M;
             proxy_pass http://kbase_ui;
-            proxy_http_version 1.1;       
+            proxy_http_version 1.1;
             proxy_set_header Connection "";
         }
     }
@@ -141,7 +140,7 @@ http {
         # note should put the service module name in /etc/hosts and map to localhost
         {{ if .Env.service_proxies }}
         {{ range split .Env.service_proxies " " }}
-        
+
         {{ if eq . "searchapi2" }}
             location /services/searchapi2/legacy {
                 {{ if $.Env.deploy_ui_hostname }}
@@ -254,7 +253,7 @@ http {
             {{ end }}
 
             access_log /var/log/nginx/narrative.log upstream_log;
-            
+
             proxy_connect_timeout 10s;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
@@ -267,7 +266,7 @@ http {
             proxy_pass https://{{ .Env.deploy_hostname }}:443;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
-            client_max_body_size 300M;         
+            client_max_body_size 300M;
         }
 
         location /narratives/ {
@@ -283,9 +282,9 @@ http {
             proxy_pass http://kbase_ui;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
-            client_max_body_size 300M;         
+            client_max_body_size 300M;
         }
-        
+
         {{ end }}
     }
 }
