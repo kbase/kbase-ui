@@ -70,7 +70,7 @@
         "selenium-standalone": "6.23.0",
         "selenium-webdriver": "4.0.0-beta.3",
         "simple-git": "2.39.0",
-        "tar": "6.1.0",
+        "tar": "6.1.9",
         "typescript": "4.2.4",
         "uglify-es": "3.3.9",
         "webdriverio": "7.6.0",
