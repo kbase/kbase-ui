@@ -19,20 +19,20 @@ define([
 
         buildAvatarUrl(profile) {
             switch (profile.profile.userdata.avatarOption || 'gravatar') {
-            case 'gravatar':
-                var gravatarDefault = profile.profile.userdata.gravatarDefault || 'identicon';
-                var gravatarHash = profile.profile.synced.gravatarHash;
-                if (gravatarHash) {
-                    return (
-                        'https://www.gravatar.com/avatar/' + gravatarHash + '?s=32&amp;r=pg&d=' + gravatarDefault
-                    );
-                } else {
+                case 'gravatar':
+                    var gravatarDefault = profile.profile.userdata.gravatarDefault || 'identicon';
+                    var gravatarHash = profile.profile.synced.gravatarHash;
+                    if (gravatarHash) {
+                        return (
+                            'https://www.gravatar.com/avatar/' + gravatarHash + '?s=300amp;r=pg&d=' + gravatarDefault
+                        );
+                    } else {
+                        return '/images/nouserpic.png';
+                    }
+                case 'silhouette':
+                case 'mysteryman':
+                default:
                     return '/images/nouserpic.png';
-                }
-            case 'silhouette':
-            case 'mysteryman':
-            default:
-                return '/images/nouserpic.png';
             }
         }
 
@@ -43,7 +43,7 @@ define([
             }
             const avatarURL = this.buildAvatarUrl(this.props.profile);
 
-            return html`
+            return html `
                 <img
                     src="${avatarURL}"
                     style="width: 40px;"
@@ -58,7 +58,7 @@ define([
         }
 
         renderMenu() {
-            return html`
+            return html `
                 <ul class="dropdown-menu dropdown-menu-right"
                     role="menu">
                     <li>
@@ -123,7 +123,7 @@ define([
         }
 
         renderLoggedIn() {
-            return html`
+            return html `
                 <div class="dropdown"
                     style="display: inline-block" 
                     data-k-b-testhook-menu="signed-in">
@@ -144,7 +144,7 @@ define([
         }
 
         renderNotLoggedIn() {
-            return html`
+            return html `
                 <span data-k-b-testhook-widget="signin">
                     <a class="btn btn-primary navbar-btn kb-nav-btn"
                        disabled=${this.props.isLoginView}

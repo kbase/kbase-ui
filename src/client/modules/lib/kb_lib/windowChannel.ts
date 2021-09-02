@@ -9,7 +9,7 @@ interface ListenerParams {
 class Listener {
     name: string;
     callback: (payload: Payload) => void;
-    onError?: (error: Error) => void;
+    onError?: (error: any) => void;
 
     constructor({ name, callback, onError }: ListenerParams) {
         this.name = name;
@@ -35,10 +35,7 @@ class WaitingListener extends Listener {
     }
 }
 
-type EnvelopeType =
-    'plain' |
-    'request' |
-    'reply';
+type EnvelopeType = 'plain' | 'request' | 'reply';
 
 interface EnvelopeBase {
     type: EnvelopeType;
@@ -59,13 +56,10 @@ interface RequestEnvelope extends EnvelopeBase {
 interface ReplyEnvelope extends EnvelopeBase {
     type: 'reply';
     inReplyTo: string;
-    status: 'ok' | 'error'
+    status: 'ok' | 'error';
 }
 
-type Envelope =
-    PlainEnvelope |
-    RequestEnvelope |
-    ReplyEnvelope;
+type Envelope = PlainEnvelope | RequestEnvelope | ReplyEnvelope;
 
 class Message {
     name: string;
@@ -74,7 +68,15 @@ class Message {
     created: Date;
     envelope: Envelope;
 
-    constructor({ name, payload, envelope }: { name: string; payload: any; envelope: Envelope }) {
+    constructor({
+        name,
+        payload,
+        envelope,
+    }: {
+        name: string;
+        payload: any;
+        envelope: Envelope;
+    }) {
         this.name = name;
         this.payload = payload;
         this.id = uuidv4();
@@ -86,7 +88,7 @@ class Message {
         return {
             envelope: this.envelope,
             name: this.name,
-            payload: this.payload
+            payload: this.payload,
         };
     }
 }
@@ -129,7 +131,7 @@ export class WindowChannelInit {
             window: this.window,
             host: this.host,
             id: this.id,
-            to: partnerId
+            to: partnerId,
         });
     }
 
@@ -137,7 +139,6 @@ export class WindowChannelInit {
         return this.id;
     }
 }
-
 
 export interface WindowChannelParams {
     window: Window;
@@ -189,8 +190,8 @@ export class WindowChannel {
         this.stats = {
             sent: 0,
             received: 0,
-            ignored: 0
-        }
+            ignored: 0,
+        };
     }
 
     getId(): string {
@@ -248,8 +249,13 @@ export class WindowChannel {
         // within some window...
 
         // if a reply, we ...
-        if (message.envelope.type === 'reply' && this.awaitingResponses.has(message.envelope.inReplyTo)) {
-            const response = this.awaitingResponses.get(message.envelope.inReplyTo);
+        if (
+            message.envelope.type === 'reply' &&
+            this.awaitingResponses.has(message.envelope.inReplyTo)
+        ) {
+            const response = this.awaitingResponses.get(
+                message.envelope.inReplyTo
+            );
             this.awaitingResponses.delete(message.envelope.inReplyTo);
             if (response) {
                 response.handler(message.envelope.status, message.payload);
@@ -284,9 +290,18 @@ export class WindowChannel {
                         try {
                             return [listener.callback(message.payload), null];
                         } catch (ex) {
-                            return [null, {
-                                message: ex.message,
-                            }];
+                            const message = (() => {
+                                if (ex instanceof Error) {
+                                    return ex.message;
+                                }
+                                return '';
+                            })();
+                            return [
+                                null,
+                                {
+                                    message,
+                                },
+                            ];
                         }
                     })();
                     const replyEnvelop: ReplyEnvelope = {
@@ -296,12 +311,12 @@ export class WindowChannel {
                         created: Date.now(),
                         id: uuidv4(),
                         inReplyTo: message.envelope.id,
-                        status: ok ? 'ok' : 'error'
-                    }
+                        status: ok ? 'ok' : 'error',
+                    };
                     const replyMessage = new Message({
                         envelope: replyEnvelop,
                         name: 'reply',
-                        payload: ok || err
+                        payload: ok || err,
                     });
                     this.sendMessage(replyMessage);
                 case 'plain':
@@ -311,7 +326,7 @@ export class WindowChannel {
                         return listener.callback(message.payload);
                     } catch (ex) {
                         if (listener.onError) {
-                            listener.onError(ex);
+                            listener.onError(ex as unknown as Error);
                         }
                     }
                     break;
@@ -326,7 +341,11 @@ export class WindowChannel {
         this.listeners.get(listener.name)!.push(listener);
     }
 
-    on(messageId: string, callback: (payload: any) => any, onError?: (error: Error) => void) {
+    on(
+        messageId: string,
+        callback: (payload: any) => any,
+        onError?: (error: any) => void
+    ) {
         this.listen(
             new Listener({
                 name: messageId,
@@ -335,14 +354,14 @@ export class WindowChannel {
                     if (onError) {
                         onError(error);
                     }
-                }
+                },
             })
         );
     }
 
     sendMessage(message: Message) {
         if (!this.running) {
-            throw new Error('Not running - may not send ')
+            throw new Error('Not running - may not send ');
         }
         this.stats.sent += 1;
         this.window.postMessage(message.toJSON(), this.host);
@@ -354,19 +373,22 @@ export class WindowChannel {
             from: this.id,
             to: this.partnerId,
             created: Date.now(),
-            id: uuidv4()
+            id: uuidv4(),
         };
         const message = new Message({ name, payload, envelope });
         this.sendMessage(message);
     }
 
-    sendRequest(message: Message, handler: (status: 'ok' | 'error', response: any) => any) {
+    sendRequest(
+        message: Message,
+        handler: (status: 'ok' | 'error', response: any) => any
+    ) {
         if (!this.running) {
-            throw new Error('Not running - may not send ')
+            throw new Error('Not running - may not send ');
         }
         this.awaitingResponses.set(message.envelope.id, {
             started: new Date(),
-            handler
+            handler,
         });
         this.sendMessage(message);
     }
@@ -378,21 +400,24 @@ export class WindowChannel {
                 from: this.id,
                 to: this.partnerId,
                 created: Date.now(),
-                id: uuidv4()
+                id: uuidv4(),
             };
             const message = new Message({
                 name,
                 payload,
-                envelope
+                envelope,
             });
-            this.sendRequest(message, (status: 'ok' | 'error', response: any) => {
-                if (status === 'ok') {
-                    resolve(response);
-                } else {
-                    // TODO: tighten up the typing!!!
-                    reject(new Error(response.message));
+            this.sendRequest(
+                message,
+                (status: 'ok' | 'error', response: any) => {
+                    if (status === 'ok') {
+                        resolve(response);
+                    } else {
+                        // TODO: tighten up the typing!!!
+                        reject(new Error(response.message));
+                    }
                 }
-            });
+            );
         });
     }
 
@@ -401,17 +426,25 @@ export class WindowChannel {
             const now = new Date().getTime();
 
             // first take care of listeners awaiting a message.
-            for (const [id, listeners] of Array.from(this.waitingListeners.entries())) {
+            for (const [id, listeners] of Array.from(
+                this.waitingListeners.entries()
+            )) {
                 const newListeners = listeners.filter((listener) => {
                     if (listener instanceof WaitingListener) {
                         const elapsed = now - listener.started.getTime();
                         if (elapsed > listener.timeout) {
                             try {
                                 if (listener.onError) {
-                                    listener.onError(new Error('timout after ' + elapsed));
+                                    listener.onError(
+                                        new Error('timout after ' + elapsed)
+                                    );
                                 }
                             } catch (ex) {
-                                console.error('Error calling error handler', id, ex);
+                                console.error(
+                                    'Error calling error handler',
+                                    id,
+                                    ex
+                                );
                             }
                             return false;
                         } else {
@@ -442,7 +475,12 @@ export class WindowChannel {
         }
     }
 
-    once(name: string, timeout: number, callback: (payload: Payload) => void, onError?: (error: Error) => void) {
+    once(
+        name: string,
+        timeout: number,
+        callback: (payload: Payload) => void,
+        onError?: (error: Error) => void
+    ) {
         this.listenOnce(
             new WaitingListener({
                 name,
@@ -452,7 +490,7 @@ export class WindowChannel {
                     if (onError) {
                         onError(error);
                     }
-                }
+                },
             })
         );
     }
@@ -468,7 +506,7 @@ export class WindowChannel {
                     },
                     onError: (error) => {
                         reject(error);
-                    }
+                    },
                 })
             );
         });
@@ -490,7 +528,11 @@ export class WindowChannel {
     stop() {
         this.running = false;
         if (this.currentListener) {
-            this.window.removeEventListener('message', this.currentListener, false);
+            this.window.removeEventListener(
+                'message',
+                this.currentListener,
+                false
+            );
         }
         return this;
     }

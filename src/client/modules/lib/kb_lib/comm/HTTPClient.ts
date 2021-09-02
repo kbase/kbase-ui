@@ -8,8 +8,7 @@ const DEFAULT_TIMEOUT = 10000;
 //     cancellation: true
 // });
 
-
-export type HTTPHeaderFields = { [key: string]: string; };
+export type HTTPHeaderFields = { [key: string]: string };
 
 interface ContentType {
     mediaType: string;
@@ -25,7 +24,7 @@ export class HTTPHeader {
             return {};
         }
         let fieldsArray = responseHeaders.split(/\n/);
-        var fieldsMap: { [key: string]: string; } = {};
+        var fieldsMap: { [key: string]: string } = {};
         fieldsArray.forEach((field) => {
             let firstColon = field.indexOf(':', 0);
             let name = field.substr(0, firstColon).trim();
@@ -36,7 +35,7 @@ export class HTTPHeader {
     }
 
     public static fromMap(header: any): HTTPHeaderFields {
-        var fieldsMap: { [key: string]: string; } = {};
+        var fieldsMap: { [key: string]: string } = {};
         Object.keys(header).forEach((name) => {
             fieldsMap[name.toLowerCase()] = header[name];
         });
@@ -64,8 +63,10 @@ export class HTTPHeader {
     exportHeader(xhr: XMLHttpRequest) {
         Object.keys(this.header)
             .filter((key) => {
-                if (this.getHeader(key) === undefined ||
-                    this.getHeader(key) === null) {
+                if (
+                    this.getHeader(key) === undefined ||
+                    this.getHeader(key) === null
+                ) {
                     return false;
                 }
                 return true;
@@ -74,11 +75,16 @@ export class HTTPHeader {
                 // normalize value?
                 var stringValue = ((value) => {
                     switch (typeof value) {
-                        case 'string': return value;
-                        case 'number': return String(value);
-                        case 'boolean': return String(value);
+                        case 'string':
+                            return value;
+                        case 'number':
+                            return String(value);
+                        case 'boolean':
+                            return String(value);
                         default:
-                            throw new Error('Invalid type for header value: ' + typeof value);
+                            throw new Error(
+                                'Invalid type for header value: ' + typeof value
+                            );
                     }
                 })(this.getHeader(key));
                 xhr.setRequestHeader(key, stringValue);
@@ -94,11 +100,11 @@ export class HTTPHeader {
         if (values[1]) {
             return {
                 mediaType: values[0],
-                charset: values[1]
+                charset: values[1],
             };
         } else {
             return {
-                mediaType: values[0]
+                mediaType: values[0],
             };
         }
     }
@@ -109,13 +115,17 @@ export class HTTPHeader {
 //     value: string;
 // }
 
-
 export class TimeoutError extends Error {
     timeout: number;
     elapsed: number;
     xhr: XMLHttpRequest;
 
-    constructor(timeout: number, elapsed: number, message: string, xhr: XMLHttpRequest) {
+    constructor(
+        timeout: number,
+        elapsed: number,
+        message: string,
+        xhr: XMLHttpRequest
+    ) {
         super(message);
 
         Object.setPrototypeOf(this, TimeoutError.prototype);
@@ -167,29 +177,28 @@ export class AbortError extends Error {
 }
 
 export interface RequestOptions {
-    url: string,
-    method: string,
-    timeout: number,
-    query?: QueryMap,
-    header?: HTTPHeader,
-    responseType?: string,
-    withCredentials?: boolean,
+    url: string;
+    method: string;
+    timeout: number;
+    query?: QueryMap;
+    header?: HTTPHeader;
+    responseType?: string;
+    withCredentials?: boolean;
     data?: null | string | Array<number>;
     onCancel?: (callback: () => void) => void;
 }
 
 export type ResponseType = string | null;
 
-
 export interface Response<T extends ResponseType> {
-    status: number,
-    response: T,
-    responseType: XMLHttpRequestResponseType,
+    status: number;
+    response: T;
+    responseType: XMLHttpRequestResponseType;
     header: HTTPHeader;
 }
 
 export interface StringResponse extends Response<string> {
-    responseType: 'text',
+    responseType: 'text';
     response: string;
 }
 
@@ -202,9 +211,12 @@ export class HTTPClient {
     constructor(options?: HTTPClientOptions) {
         this.options = options;
     }
-    async request<T extends ResponseType>(options: RequestOptions): Promise<Response<T>> {
+    async request<T extends ResponseType>(
+        options: RequestOptions
+    ): Promise<Response<T>> {
         let startTime = new Date().getTime();
-        const timeout = options.timeout || this.options?.timeout || DEFAULT_TIMEOUT;
+        const timeout =
+            options.timeout || this.options?.timeout || DEFAULT_TIMEOUT;
         return new Promise((resolve, reject) => {
             const xhr: XMLHttpRequest = new XMLHttpRequest();
             xhr.onload = () => {
@@ -213,23 +225,30 @@ export class HTTPClient {
                     case 'text':
                         resolve({
                             status: xhr.status,
-                            response: (xhr.response as unknown) as T,
+                            response: xhr.response as unknown as T,
                             responseType: xhr.responseType,
-                            header: new HTTPHeader(xhr)
+                            header: new HTTPHeader(xhr),
                         });
                         return;
                     default:
-                        throw new Error(`Unsupported response type ${xhr.responseType}`);
-
+                        throw new Error(
+                            `Unsupported response type ${xhr.responseType}`
+                        );
                 }
-
             };
             xhr.ontimeout = () => {
-                var elapsed = (new Date().getTime()) - startTime;
-                reject(new TimeoutError(timeout, elapsed, 'Request timeout', xhr));
+                var elapsed = new Date().getTime() - startTime;
+                reject(
+                    new TimeoutError(timeout, elapsed, 'Request timeout', xhr)
+                );
             };
             xhr.onerror = () => {
-                reject(new GeneralError('General request error ' + options.url, xhr));
+                reject(
+                    new GeneralError(
+                        'General request error ' + options.url,
+                        xhr
+                    )
+                );
             };
             xhr.onabort = () => {
                 reject(new AbortError('Request was aborted', xhr));
@@ -240,13 +259,14 @@ export class HTTPClient {
                 url += '?' + new HTTPQuery(options.query).toString();
             }
 
-            const rt = (options.responseType || 'text') as XMLHttpRequestResponseType;
+            const rt = (options.responseType ||
+                'text') as XMLHttpRequestResponseType;
             xhr.responseType = rt;
 
             try {
                 xhr.open(options.method, url, true);
             } catch (ex) {
-                reject(new GeneralError('Error opening request ' + ex.name, xhr));
+                reject(new GeneralError('Error opening request', xhr));
                 return;
             }
 
@@ -258,7 +278,9 @@ export class HTTPClient {
                     options.header.exportHeader(xhr);
                 }
             } catch (ex) {
-                reject(new GeneralError('Error applying header before send ' + ex.name, xhr));
+                reject(
+                    new GeneralError('Error applying header before send', xhr)
+                );
             }
 
             try {
@@ -276,7 +298,12 @@ export class HTTPClient {
                 } else if (options.data === null) {
                     xhr.send();
                 } else {
-                    reject(new Error('Invalid type of data to send: ' + typeof options.data));
+                    reject(
+                        new Error(
+                            'Invalid type of data to send: ' +
+                                typeof options.data
+                        )
+                    );
                 }
             } catch (ex) {
                 reject(new GeneralError('Error sending data in request', xhr));
