@@ -24,7 +24,7 @@ define([
                     var gravatarHash = profile.profile.synced.gravatarHash;
                     if (gravatarHash) {
                         return (
-                            'https://www.gravatar.com/avatar/' + gravatarHash + '?s=300amp;r=pg&d=' + gravatarDefault
+                            `https://www.gravatar.com/avatar/${gravatarHash}?s=300&r=pg&d=${gravatarDefault}`
                         );
                     } else {
                         return '/images/nouserpic.png';
