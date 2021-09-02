@@ -224,16 +224,6 @@ clean-docs:
 # If you need more clean refinement, please see Gruntfile.js, in which you will
 # find clean tasks for each major build artifact.
 
-docs:
-	cd docs; \
-	npm install --no-lockfile; \
-	./node_modules/.bin/gitbook build ./book
-
-docs-viewer: docs
-	cd docs; \
-	(./node_modules/.bin/wait-on -t 10000 http://localhost:4000 && ./node_modules/.bin/opn http://localhost:4000 &); \
-	./node_modules/.bin/gitbook serve ./book
-
 # git -c http.sslVerify=false clone https://oauth2:s5TDQnKk4kpHXCVdUNfh@gitlab.kbase.lbl.gov:1443/devops/kbase_ui_config.git
 get-gitlab-config:
 	mkdir -p dev/gitlab-config; \
