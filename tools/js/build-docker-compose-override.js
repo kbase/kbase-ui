@@ -36,7 +36,7 @@ function mergePlugins(root, config, args) {
             };
         });
 
-        plugins.forEach(({pluginName, repoSuffix}) => {
+        plugins.forEach(({ pluginName, repoSuffix }) => {
             const pluginRoot = root + '/../kbase-ui-plugin-' + repoSuffix;
             let pluginDir = pluginRoot + '/dist/plugin';
 
@@ -167,6 +167,12 @@ function mergeLocalNarrative(root, config, args) {
     }
 }
 
+function mergeLocalNavigator(root, config, args) {
+    if (args.local_navigator) {
+        config.services['kbase-ui-proxy'].environment.push('local_navigator=true');
+    }
+}
+
 function mergeLocalTests(root, config) {
     config.services['kbase-ui'].volumes.push({
         type: 'volume',
@@ -215,6 +221,8 @@ function main(args) {
     mergeServices(root, config, args);
 
     mergeLocalNarrative(root, config, args);
+
+    mergeLocalNavigator(root, config, args);
 
     mergeConfig(root, config, args);
 

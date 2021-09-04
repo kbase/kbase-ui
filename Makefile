@@ -139,6 +139,7 @@ docker-compose-override:
 	@echo "> libraries: $(libraries)"
 	@echo "> paths: $(paths)"
 	@echo "> local-narrative: $(local-narrative)"
+	@echo "> local-navigator: $(local-navigator)"
 	@echo "> dynamic-services: $(dynamic-services)"
 	$(eval cmd = node $(TOPDIR)/tools/js/build-docker-compose-override.js $(env) \
 	  $(foreach p,$(plugins),--plugin $(p)) \
@@ -149,7 +150,8 @@ docker-compose-override:
 	  $(foreach d,$(dynamic-services),--dynamic_services $d) \
 	  $(foreach s,$(services),--services $s) \
 	  $(if $(findstring t,$(local-docs)),--local_docs) \
-	  $(if $(findstring t,$(local-narrative)),--local_narrative))
+	  $(if $(findstring t,$(local-narrative)),--local_narrative) \
+	  $(if $(findstring t,$(local-navigator)),--local_navigator))
 	@echo "> Issuing: $(cmd)"
 	$(cmd)
 
