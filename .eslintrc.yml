@@ -1,64 +1,47 @@
 env:
-    browser: true
     amd: true
+    browser: true
     es6: true
-extends: 'eslint:recommended'
+    node: true
+extends:
+    - 'eslint:recommended'
+    - prettier
+    - preact
 parserOptions:
-    ecmaVersion: 9
+    ecmaVersion: 2018
+root: true
 rules:
-    # no strict mode, because we like to use destructuring in arguments.
     strict:
         - error
-        - never
-    linebreak-style:
-        - error
-        - unix
-    # single quotes are simply easier to type, and consistency is good.
-    quotes:
-        - error
-        - single
-    # semis are best for reliability, and with format on save they'll be supplied
-    # automatically, but I'm not a true believer.
-    semi:
-        - error
-        - always
-    # helps prevent leaving debugging console.logs
+        - function
     no-console:
         - error
         - allow:
               - warn
               - error
-    # stylistic
-    no-trailing-spaces:
+    require-await:
         - error
-
-    space-before-function-paren:
+    no-confusing-arrow:
         - error
-        - anonymous: always
-          named: never
-          asyncArrow: always
-    space-in-parens:
+    no-const-assign:
         - error
-        - never
-    func-call-spacing:
+    no-duplicate-imports:
         - error
-        - never
-    keyword-spacing:
+    no-useless-computed-key:
         - error
-        - before: true
-          after: true
-    no-fallthrough:
+    no-useless-rename:
         - error
-        - commentPattern: fallthrough
+    no-var:
+        - error
+    prefer-arrow-callback:
+        - warn
     prefer-const:
         - error
-    arrow-parens:
-        - error
+    prefer-rest-params:
+        - warn
+    prefer-spread:
+        - warn
     indent:
         - error
         - 4
         - SwitchCase: 1
-
-    comma-dangle:
-        - error
-        - never

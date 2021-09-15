@@ -4,5 +4,6 @@
     "eslint.lintTask.enable": true,
     "editor.formatOnSave": true,
     "eslint.alwaysShowStatus": true,
-    "eslint.packageManager": "yarn"
+    "eslint.packageManager": "yarn",
+    "prettier.requireConfig": true
 }
