@@ -338,15 +338,10 @@
 			"name": "Data Import Export"
 		},
 		"SampleService": {
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_userprofile_path "services/sampleservice" }}",
+			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_sampleservice_path "services/sampleservice" }}",
 			"name": "Sample Service",
 			"coreService": true,
-			"type": "jsonrpc",
-			"version": {
-				"method": "status",
-				"minimum": "0.1.0-alpha25",
-				"required": "0.1.0-alpha25"
-			}
+			"type": "jsonrpc"
 		},
 		"ServiceWizard": {
 			"aliases": [
