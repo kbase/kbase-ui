@@ -9,12 +9,12 @@ define([
 
     'bootstrap'
 ], (
-    {h, Component},
+    { h, Component },
     htm,
     AboutService,
     GenericClient,
-    {default: GenericClient20},
-    {traverse},
+    { default: GenericClient20 },
+    { traverse },
     Loading
 ) => {
     const html = htm.bind(h);
@@ -23,7 +23,7 @@ define([
         constructor(props) {
             super(props);
             this.state = {
-                status: 'none',
+                status: 'loading',
                 data: null,
                 error: null
             };
@@ -48,7 +48,7 @@ define([
                 const next = (itersLeft) => {
                     if (itersLeft === 0) {
                         resolve({
-                            measures: measures,
+                            measures,
                             total: this.sum(measures),
                             average: this.sum(measures) / measures.length
                         });
@@ -121,7 +121,7 @@ define([
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
-                        'accept': 'application/json'
+                        accept: 'application/json'
                     }
                 });
                 if (response.status >= 300) {
@@ -138,21 +138,18 @@ define([
 
         getAPICall() {
             switch (this.props.service.type) {
-            case 'jsonrpc11':
-                return this.jsonrpc11Client();
-            case 'jsonrpc20':
-                return this.jsonrpc20Client();
+                case 'jsonrpc11':
+                    return this.jsonrpc11Client();
+                case 'jsonrpc20':
+                    return this.jsonrpc20Client();
 
-            case 'rest':
-                return this.restClient();
+                case 'rest':
+                    return this.restClient();
             }
         }
 
         componentDidMount() {
             const ver = this.getAPICall();
-            this.setState({
-                status: 'loading'
-            });
             return Promise.all([
                 ver(),
                 this.perf(ver)
@@ -201,16 +198,14 @@ define([
 
         render() {
             switch (this.state.status) {
-            case 'none':
-                return this.renderLoading();
-            case 'loading':
-                return this.renderLoading();
-            case 'loaded':
-                return html`
+                case 'loading':
+                    return this.renderLoading();
+                case 'loaded':
+                    return html`
                     <${AboutService} ...${this.state.data}/>
                 `;
-            case 'error':
-                return this.renderError();
+                case 'error':
+                    return this.renderError();
             }
         }
     }
