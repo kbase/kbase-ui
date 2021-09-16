@@ -1,7 +1,6 @@
 /* eslint-env node */
 /* eslint no-console: 0 */
 /*eslint {strict: ['error', 'global']}*/
-'use strict';
 
 let baseUrl;
 if (process.env.ENV === 'prod') {
@@ -9,8 +8,8 @@ if (process.env.ENV === 'prod') {
 } else {
     baseUrl = `https://${process.env.ENV}.kbase.us`;
 }
-console.log('TEST ENV        : ' + process.env.ENV);
-console.log('TEST BASE URL   : ' + baseUrl);
+console.log(`TEST ENV        : ${process.env.ENV}`);
+console.log(`TEST BASE URL   : ${baseUrl}`);
 
 const browserName = process.env.BROWSER;
 const browserConfigs = {
@@ -28,24 +27,24 @@ const browserConfigs = {
         browserName: 'safari'
     },
     safari13Catalina: {
-        'os': 'OS X',
-        'os_version': 'Catalina',
-        'browser': 'Safari',
-        'browser_version': '13.0',
-        'resolution': '1920x1080'
+        os: 'OS X',
+        os_version: 'Catalina',
+        browser: 'Safari',
+        browser_version: '13.0',
+        resolution: '1920x1080'
     }
 };
 const browser = browserConfigs[browserName];
 
-console.log('TEST BROWSER    : ' + browserName);
+console.log(`TEST BROWSER    : ${browserName}`);
 
 const SERVICE_USER = process.env.SERVICE_USER;
 const SERVICE_KEY = process.env.SERVICE_KEY;
 const SERVICE = process.env.SERVICE;
 
-console.log('TEST SERVICE    : ' + SERVICE);
-console.log('SERVICE USER    : ' + SERVICE_USER);
-console.log('SERVICE KEY     : ' + SERVICE_KEY);
+console.log(`TEST SERVICE    : ${SERVICE}`);
+console.log(`SERVICE USER    : ${SERVICE_USER}`);
+console.log(`SERVICE KEY     : ${SERVICE_KEY}`);
 
 const wdioConfig = {
     //
