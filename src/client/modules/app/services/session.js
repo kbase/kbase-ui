@@ -1,9 +1,9 @@
 define([
-    'kb_ts/Auth2Session',
+    'lib/kb_lib/Auth2Session',
     'kb_lib/observed',
     'kb_lib/html'
 ], (
-    {Auth2Session},
+    { Auth2Session },
     Observed,
     html
 ) => {
@@ -13,7 +13,7 @@ define([
         a = t('a');
 
     class SessionService {
-        constructor({config, params: {runtime}}) {
+        constructor({ config, params: { runtime } }) {
             this.runtime = runtime;
             this.extraCookies = [];
             if (config.cookie.backup.enabled) {
@@ -137,32 +137,32 @@ define([
                             state: change
                         });
                         switch (change) {
-                        case 'interrupted':
-                            var description = div([
-                                p(
-                                    'Your session cannot be verified because the authorization service is currently inaccessible'
-                                ),
-                                p([
-                                    'You may patiently await it\'s recovery or ',
-                                    a(
-                                        {
-                                            href: '/#signout'
-                                        },
-                                        'signout'
+                            case 'interrupted':
+                                var description = div([
+                                    p(
+                                        'Your session cannot be verified because the authorization service is currently inaccessible'
                                     ),
-                                    ' and try again later'
-                                ])
-                            ]);
-                            this.notifyError({
-                                message: 'Session cannot be verified',
-                                description: description
-                            });
-                            return;
-                        case 'restored':
-                            this.notifyOk({
-                                message: 'Communication restored -- session has been verified',
-                                description: ''
-                            });
+                                    p([
+                                        'You may patiently await it\'s recovery or ',
+                                        a(
+                                            {
+                                                href: '/#signout'
+                                            },
+                                            'signout'
+                                        ),
+                                        ' and try again later'
+                                    ])
+                                ]);
+                                this.notifyError({
+                                    message: 'Session cannot be verified',
+                                    description: description
+                                });
+                                return;
+                            case 'restored':
+                                this.notifyOk({
+                                    message: 'Communication restored -- session has been verified',
+                                    description: ''
+                                });
                         }
                         if (this.auth2Session.isAuthorized()) {
                             if (change === 'newuser') {
@@ -196,5 +196,5 @@ define([
             return this.auth2Session;
         }
     }
-    return {ServiceClass: SessionService};
+    return { ServiceClass: SessionService };
 });

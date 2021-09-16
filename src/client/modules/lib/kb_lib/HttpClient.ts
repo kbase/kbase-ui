@@ -1,11 +1,5 @@
 import { HttpQuery, QueryMap } from './HttpUtils';
 
-// import * as Promise from 'bluebird';
-
-// Promise.config({
-//     cancellation: true
-// });
-
 export type HttpHeaderFields = { [key: string]: string };
 
 interface ContentType {
@@ -34,7 +28,6 @@ export class HttpHeader {
 
     public static fromMap(header: Map<string, string>): HttpHeaderFields {
         const fieldsMap: { [key: string]: string } = {};
-
         header.forEach((value: string, key: string) => {
             fieldsMap[key.toLowerCase()] = value;
         });
@@ -58,7 +51,7 @@ export class HttpHeader {
         } else if (initialHeaders instanceof Map) {
             this.header = HttpHeader.fromMap(initialHeaders);
         } else {
-            this.header = HttpHeader.fromMap(initialHeaders);
+            this.header = HttpHeader.fromObject(initialHeaders);
         }
     }
 
@@ -101,20 +94,17 @@ export class HttpHeader {
             });
     }
 
-    // getContentType(): ContentType {
-    //     let value = this.header['content-type'];
-    //     if (!value) {
-    //         return {
-    //             mediaType: null,
-    //             charset: null
-    //         };
-    //     }
-    //     let values = value.split(';').map((x) => x.trim());
-    //     return {
-    //         mediaType: values[0],
-    //         charset: values[1] || null
-    //     };
-    // }
+    getContentType(): ContentType | null {
+        let value = this.header['content-type'];
+        if (!value) {
+            return null;
+        }
+        let values = value.split(';').map((x) => x.trim());
+        return {
+            mediaType: values[0],
+            charset: values[1],
+        };
+    }
 }
 
 // interface HttpHeaderField {

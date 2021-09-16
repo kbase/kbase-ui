@@ -2,12 +2,6 @@ import { HTTPQuery, QueryMap } from './HTTPUtils';
 
 const DEFAULT_TIMEOUT = 10000;
 
-// import * as Bluebird from 'bluebird';
-
-// Bluebird.config({
-//     cancellation: true
-// });
-
 export type HTTPHeaderFields = { [key: string]: string };
 
 interface ContentType {
