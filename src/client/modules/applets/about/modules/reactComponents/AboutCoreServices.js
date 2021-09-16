@@ -48,7 +48,7 @@ define([
             versionKey: 'version'
         },
         {
-            title: 'Samples',
+            title: 'Sample Service',
             module: 'SampleService',
             type: 'jsonrpc11',
             statusMethod: 'status',
