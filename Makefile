@@ -223,6 +223,9 @@ clean-docs:
 	@rm -rf ./docs/book/_book
 	@rm -rf ./docs/node_modules
 
+clean-ts:
+	@npm run clean-ts
+
 # If you need more clean refinement, please see Gruntfile.js, in which you will
 # find clean tasks for each major build artifact.
 
