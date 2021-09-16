@@ -1,12 +1,10 @@
-/* global describe, it, expect */
 define([
     'lib/appServiceManager'
-], function (App) {
+], (App) => {
 
-    describe('Check out the AppServiceManager module exists', function () {
-        it('module loads', function (done) {
+    describe('Check out the AppServiceManager module exists', () => {
+        it('module loads', () => {
             expect(App).toBeTruthy();
-            done();
         });
     });
 

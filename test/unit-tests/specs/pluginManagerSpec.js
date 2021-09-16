@@ -1,12 +1,10 @@
-/* global describe, it, expect */
 define([
     'lib/pluginManager'
-], function (pluginManager) {
+], (pluginManager) => {
 
-    describe('Check out the KBaseServiceManager module exists', function () {
-        it('module loads', function (done) {
+    describe('Check out the KBaseServiceManager module exists', () => {
+        it('module loads', () => {
             expect(pluginManager).toBeTruthy();
-            done();
         });
     });
 

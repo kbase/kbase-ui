@@ -1,17 +1,13 @@
-/* global describe, it, expect */
 define([
     'app/App'
-], function (App) {
+], (App) => {
 
-    describe('Check out the App module exists', function () {
-        it('module loads', function (done) {
+    describe('The App module', () => {
+        it('should load loads', () => {
             expect(App).toBeTruthy();
-            done();
         });
-    });
 
-    describe('Instantiate with good and bad values', function () {
-        it('Good values, but wouldnt run an app.', function (done) {
+        it('Good values, but wouldn\'t run an app', () => {
             const rootNode = document.createElement('div');
             rootNode.id = 'myrootnode';
             document.body.appendChild(rootNode);
@@ -24,11 +20,56 @@ define([
                         selector: '#myrootnode'
                     }
                 },
+                applets: [],
                 plugins: [],
                 services: {}
             });
             expect(app).toBeTruthy();
-            done();
+        });
+
+        // it('Create and start the app', async () => {
+        //     const rootNode = document.createElement('div');
+        //     rootNode.id = 'myrootnode';
+        //     document.body.appendChild(rootNode);
+        //     const app = new App({
+        //         appConfig: {
+        //             some: 'property',
+        //         },
+        //         nodes: {
+        //             root: {
+        //                 selector: '#myrootnode'
+        //             }
+        //         },
+        //         applets: [],
+        //         plugins: [],
+        //         services: {
+
+        //         }
+        //     });
+        //     await app.start();
+        //     expect(app).toBeTruthy();
+        // });
+
+        it('Should throw if given an invalid root node', () => {
+            const rootNode = document.createElement('div');
+            rootNode.id = 'myrootnode';
+            document.body.appendChild(rootNode);
+            const createApp = () => {
+                return new App({
+                    appConfig: {
+                        some: 'property'
+                    },
+                    nodes: {
+                        root: {
+                            selector: '#myrootnodex'
+                        }
+                    },
+                    plugins: [],
+                    services: {}
+                });
+            }
+            expect(createApp).toThrow();
+
         });
     });
 
