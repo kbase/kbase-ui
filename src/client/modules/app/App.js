@@ -19,12 +19,12 @@ define([
 ], (
     preact,
     htm,
-    {AppletManager},
-    {PluginManager},
-    {AppServiceManager},
+    { AppletManager },
+    { PluginManager },
+    { AppServiceManager },
     kbaseServiceManager,
-    {Runtime},
-    {Messenger},
+    { Runtime },
+    { Messenger },
     MainWindow
 ) => {
     const html = htm.bind(preact.h);
@@ -78,7 +78,7 @@ define([
             // calling code. If this node is absent, we simply fail here.
             this.rootNode = document.querySelector(this.nodes.root.selector);
             if (!this.rootNode) {
-                throw new Error('Cannot set root node for selector ' + this.nodes.root.selector);
+                throw new Error(`Cannot set root node for selector ${this.nodes.root.selector}`);
             }
 
             // Events
@@ -195,6 +195,6 @@ define([
                 });
         }
 
-        stop() {}
+        stop() { }
     };
 });

@@ -1,18 +1,20 @@
-import { tryPromise } from "./kb_lib/Utils";
-import { AMDRequire } from "./types";
+import { tryPromise } from './kb_lib/Utils';
+import { AMDRequire } from './types';
 
 export class AppServiceError extends Error {
     type: string;
     suggestion: string;
-    constructor(
-        { type, message, suggestion }: {
-            type: string;
-            message: string;
-            suggestion: string;
-        },
-    ) {
+    constructor({
+        type,
+        message,
+        suggestion,
+    }: {
+        type: string;
+        message: string;
+        suggestion: string;
+    }) {
         super(message);
-        this.name = "AppServiceError";
+        this.name = 'AppServiceError';
         this.type = type;
         this.suggestion = suggestion;
     }
@@ -30,8 +32,7 @@ interface UIServiceConfig {
     module: string;
 }
 
-interface UIServiceDefinition {
-}
+interface UIServiceDefinition {}
 
 declare var require: AMDRequire;
 
@@ -47,15 +48,18 @@ declare var require: AMDRequire;
 export class AppServiceManager {
     moduleBasePath: string;
     services: Map<string, Service>;
-    constructor({ moduleBasePath }: { moduleBasePath: string; }) {
+    constructor({ moduleBasePath }: { moduleBasePath: string }) {
         if (!moduleBasePath) {
-            throw new TypeError("moduleBasePath not provided");
+            throw new TypeError('moduleBasePath not provided');
         }
         this.moduleBasePath = moduleBasePath;
         this.services = new Map();
     }
 
-    addService(serviceConfig: UIServiceConfig, serviceDef: UIServiceDefinition) {
+    addService(
+        serviceConfig: UIServiceConfig,
+        serviceDef: UIServiceDefinition
+    ) {
         this.services.set(serviceConfig.name, {
             name: serviceConfig.name,
             module: serviceConfig.module,
@@ -67,12 +71,12 @@ export class AppServiceManager {
     loadService(name: string, params: any) {
         return new Promise((resolve, reject) => {
             const service = this.services.get(name);
-            if (typeof service === "undefined") {
+            if (typeof service === 'undefined') {
                 throw new Error(`Service ${name} is not defined`);
             }
-            const moduleName = [this.moduleBasePath, service.module].join("/");
+            const moduleName = [this.moduleBasePath, service.module].join('/');
             require([moduleName], (serviceModule) => {
-                var serviceInstance;
+                let serviceInstance;
                 if (serviceModule.ServiceClass) {
                     serviceInstance = new serviceModule.ServiceClass({
                         config: service.config,
@@ -93,24 +97,26 @@ export class AppServiceManager {
     }
 
     loadServices(params: any) {
-        const allServices = Array.from(this.services.entries()).map(([name]) => {
-            return this.loadService(name, params)
-                .then((result) => {
-                    return result;
-                })
-                .catch((err) => {
-                    console.error("ERROR loading service", name);
-                    throw err;
-                });
-        });
+        const allServices = Array.from(this.services.entries()).map(
+            ([name]) => {
+                return this.loadService(name, params)
+                    .then((result) => {
+                        return result;
+                    })
+                    .catch((err) => {
+                        console.error('ERROR loading service', name);
+                        throw err;
+                    });
+            }
+        );
         return Promise.all(allServices);
     }
 
     startServices(
-        options: { except?: Array<string>; only?: Array<string>; } = {},
+        options: { except?: Array<string>; only?: Array<string> } = {}
     ) {
         const allServices = Array.from(this.services.entries())
-            .filter(([name, service]) => {
+            .filter(([name]) => {
                 if (options.except) {
                     return !options.except.includes(name);
                 }
@@ -122,11 +128,11 @@ export class AppServiceManager {
             .map(([name, service]) => {
                 return tryPromise(() => {
                     if (!service.instance) {
-                        console.warn("Warning: no service started for " + name);
-                        throw new Error("No service started for " + name);
+                        console.warn(`Warning: no service started for ${name}`);
+                        throw new Error(`No service started for ${name}`);
                     }
                     if (!service.instance.start) {
-                        console.warn("Warning: no start method for " + name);
+                        console.warn(`Warning: no start method for ${name}`);
                         return;
                     }
                     return service.instance.start();
@@ -137,7 +143,7 @@ export class AppServiceManager {
 
     stopServices() {
         const allServices = Object.keys(this.services).map((name) => {
-            var service = this.services.get(name);
+            const service = this.services.get(name);
             if (service && service.instance && service.instance.stop) {
                 return service.instance.stop();
             }
@@ -154,10 +160,10 @@ export class AppServiceManager {
         if (!service) {
             // TODO: throw real exception
             throw new AppServiceError({
-                type: "UndefinedService",
-                message: 'The requested service "' + name + '" has not been registered',
+                type: 'UndefinedService',
+                message: `The requested service "${name}" has not been registered`,
                 suggestion:
-                    "This is a system configuration issue. The requested service should be installed or the client code programmed to check for its existence first (with hasService)",
+                    'This is a system configuration issue. The requested service should be installed or the client code programmed to check for its existence first (with hasService)',
             });
         }
         return service.instance;

@@ -15,14 +15,13 @@
         // to the gitCommitHash
         if (developMode) {
             return String(new Date().getTime());
-        } else {
-            return buildInfo.gitCommitHash;
         }
+        return buildInfo.gitCommitHash;
     }
 
     global.require = {
         baseUrl: '/modules',
-        urlArgs: 'cb=' + cacheBusterKey(global.__kbase__build__, false),
+        urlArgs: `cb=${cacheBusterKey(global.__kbase__build__, false)}`,
         catchError: true,
         waitSeconds: REQUIRE_WAIT_SECONDS,
         paths: {
@@ -69,67 +68,67 @@
     */
     global.require.onError = (err) => {
         switch (err.requireType) {
-        case 'notloaded':
-            if (/esprima/.test(err.message)) {
-                // ignore esprima for now. The loading is attempted within the
-                // yaml library ...
-                console.warn('esprima require test detected');
-                return;
-            } else if (/buffer/.test(err.message)) {
-                // blame js-yaml
-                console.warn('buffer require test detected');
-                return;
-            }
-            break;
-        case 'timeout':
-            if (err.requireModules) {
-                if (err.requireModules.some(function (module) {
-                    return (module === '//www.google-analytics.com/analytics.js');
-                })) {
-                    global.KBaseFallback.showError({
-                        title: 'Analytics Blocked (timeout)',
-                        content: [
-                            'A browser setting, plugin, or other constraint has prevented the Analytics module from loading. KBase uses this module to measure usage of the Narrative Interface. The Narrative Interface will not operate with this constraint in place.',
-                        ],
-                        references: [{
-                            title: 'Incompatible Plugins',
-                            url: 'https://docs.kbase.us/incompatible-plugins',
-                        }],
-                    });
-                }
-            }
-            break;
-        case 'require':
-            console.error('Error in require-loaded code');
-            console.error(err);
-            return;
-        case 'scripterror':
-            if (err.requireModules) {
-                if (err.requireModules.some(function (moduleName) {
-                    return (moduleName === 'app/googleAnalytics');
-                })) {
-                    // KBaseFallback.redirect('/pages/gablocked.html');
-                    global.KBaseFallback.showError({
-                        title: 'Analytics Blocked (scripterror)',
-                        content: [
-                            'A browser setting, plugin, or other constraint has prevented the Analytics module from loading. KBase uses this module to measure usage of the Narrative Interface. The Narrative Interface will not operate with this constraint in place.',
-                        ],
-                        references: [{
-                            title: 'Incompatible Plugins',
-                            url: 'https://docs.kbase.us/incompatible-plugins',
-                        }],
-                    });
+            case 'notloaded':
+                if (/esprima/.test(err.message)) {
+                    // ignore esprima for now. The loading is attempted within the
+                    // yaml library ...
+                    console.warn('esprima require test detected');
+                    return;
+                } else if (/buffer/.test(err.message)) {
+                    // blame js-yaml
+                    console.warn('buffer require test detected');
                     return;
                 }
-            }
-            break;
-        case 'define':
-        case 'fromtexteval':
-        case 'mismatch':
-        case 'requireargs':
-        case 'nodefine':
-        case 'importscripts':
-            break;
+                break;
+            case 'timeout':
+                if (err.requireModules) {
+                    if (err.requireModules.some((module) => {
+                        return (module === '//www.google-analytics.com/analytics.js');
+                    })) {
+                        global.KBaseFallback.showError({
+                            title: 'Analytics Blocked (timeout)',
+                            content: [
+                                'A browser setting, plugin, or other constraint has prevented the Analytics module from loading. KBase uses this module to measure usage of the Narrative Interface. The Narrative Interface will not operate with this constraint in place.',
+                            ],
+                            references: [{
+                                title: 'Incompatible Plugins',
+                                url: 'https://docs.kbase.us/incompatible-plugins',
+                            }],
+                        });
+                    }
+                }
+                break;
+            case 'require':
+                console.error('Error in require-loaded code');
+                console.error(err);
+                return;
+            case 'scripterror':
+                if (err.requireModules) {
+                    if (err.requireModules.some((moduleName) => {
+                        return (moduleName === 'app/googleAnalytics');
+                    })) {
+                        // KBaseFallback.redirect('/pages/gablocked.html');
+                        global.KBaseFallback.showError({
+                            title: 'Analytics Blocked (scripterror)',
+                            content: [
+                                'A browser setting, plugin, or other constraint has prevented the Analytics module from loading. KBase uses this module to measure usage of the Narrative Interface. The Narrative Interface will not operate with this constraint in place.',
+                            ],
+                            references: [{
+                                title: 'Incompatible Plugins',
+                                url: 'https://docs.kbase.us/incompatible-plugins',
+                            }],
+                        });
+                        return;
+                    }
+                }
+                break;
+            case 'define':
+            case 'fromtexteval':
+            case 'mismatch':
+            case 'requireargs':
+            case 'nodefine':
+            case 'importscripts':
+                break;
         }
 
         global.KBaseFallback.showError({
@@ -137,8 +136,8 @@
             content: [
                 'An error has occurred while loading one of the modules required to run the KBase Application.',
                 err.message.replace('\n', '<br>'),
-                'Type: ' + err.requireType,
-                err.requireModules ? 'Modules: ' + err.requireModules.join(', ') : null,
+                `Type: ${err.requireType}`,
+                err.requireModules ? `Modules: ${err.requireModules.join(', ')}` : null,
             ],
             references: [{
                 title: 'Reporting Application Errors',
