@@ -210,7 +210,7 @@ integration-tests:
 test: unit-tests
 
 # Clean slate
-clean: clean-docs
+clean: clean-docs clean-ts
 	$(GRUNT) clean-all
 
 clean-temp:
