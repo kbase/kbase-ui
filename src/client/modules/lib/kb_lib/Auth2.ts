@@ -509,7 +509,7 @@ export class Auth2 {
                 withCredentials: true,
                 header: new HttpHeader({
                     authorization: token,
-                    timeout: TIMEOUT,
+                    accept: 'application/json',
                 }),
                 timeout: TIMEOUT,
             })
