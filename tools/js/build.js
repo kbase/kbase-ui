@@ -25,7 +25,6 @@
 
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs-extra'));
-const pathExists = require('path-exists');
 const mutant = require('./mutant');
 const yaml = require('js-yaml');
 const glob = Promise.promisify(require('glob').Glob);
@@ -37,9 +36,9 @@ const tar = require('tar');
 const yargs = require('yargs');
 
 // UTILS
-function run(command, {ignoreStdErr = false, verbose = false, options = {}} = {}) {
-    return new Promise(function (resolve, reject) {
-        const proc = exec(command, options, function (err, stdout, stderr) {
+function run(command, { ignoreStdErr = false, verbose = false, options = {} } = {}) {
+    return new Promise(function(resolve, reject) {
+        const proc = exec(command, options, function(err, stdout, stderr) {
             if (err) {
                 reject(err);
             }
@@ -59,7 +58,7 @@ function run(command, {ignoreStdErr = false, verbose = false, options = {}} = {}
 function gitClone(url, dest, branch = 'master') {
     const commandLine = ['git clone --quiet --depth 1', '--branch', branch, url, dest].join(' ');
     console.log('git cloning...', commandLine);
-    return run(commandLine, {ignoreStdErr: true});
+    return run(commandLine, { ignoreStdErr: true });
 }
 
 function gitInfo(state) {
@@ -70,7 +69,7 @@ function gitInfo(state) {
         run('git log -1 --pretty=%N'),
         run('git config --get remote.origin.url'),
         run('git rev-parse --abbrev-ref HEAD'),
-        run('git describe --exact-match --tags $(git rev-parse HEAD)').catch(function () {
+        run('git describe --exact-match --tags $(git rev-parse HEAD)').catch(function() {
             // For non-prod ui we can be tolerant of a missing version, but not for prod.
             if (state.buildConfig.release) {
                 throw new Error('This is a release build, a semver tag is required');
@@ -79,7 +78,7 @@ function gitInfo(state) {
             mutant.log('version will be unavailable in the ui');
             return '';
         })
-    ]).spread(function (infoString, subject, notes, url, branch, tag) {
+    ]).spread(function(infoString, subject, notes, url, branch, tag) {
         const info = infoString.split('\n');
         let version;
         tag = tag.trim('\n');
@@ -130,10 +129,10 @@ async function gitInfo2(state, directory) {
         run('git log -1 --pretty=%N'),
         run('git config --get remote.origin.url'),
         run('git rev-parse --abbrev-ref HEAD'),
-        run('git describe --exact-match --tags $(git rev-parse HEAD)').catch(function () {
+        run('git describe --exact-match --tags $(git rev-parse HEAD)').catch(function() {
             return '';
         })
-    ]).spread(async (infoString, subject, notes, url, branch, tag) => {
+    ]).spread(async(infoString, subject, notes, url, branch, tag) => {
         const info = infoString.split('\n');
         let version;
         tag = tag.trim('\n');
@@ -178,15 +177,15 @@ async function gitInfo2(state, directory) {
 function dirList(dir) {
     return fs
         .readdirAsync(dir.join('/'))
-        .then(function (files) {
-            return files.map(function (file) {
+        .then(function(files) {
+            return files.map(function(file) {
                 return dir.concat([file]);
             });
         })
-        .then(function (files) {
+        .then(function(files) {
             return Promise.all(
-                files.map(function (file) {
-                    return fs.statAsync(file.join('/')).then(function (stats) {
+                files.map(function(file) {
+                    return fs.statAsync(file.join('/')).then(function(stats) {
                         return {
                             stats: stats,
                             path: file
@@ -195,8 +194,8 @@ function dirList(dir) {
                 })
             );
         })
-        .then(function (files) {
-            return files.filter(function (file) {
+        .then(function(files) {
+            return files.filter(function(file) {
                 return file.stats.isDirectory();
             });
         });
@@ -215,13 +214,13 @@ function fetchPluginsFromGithub(state) {
         .then(() => {
             return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8')]);
         })
-        .spread(function (pluginFile) {
+        .spread(function(pluginFile) {
             pluginConfig = yaml.load(pluginFile);
         })
-        .then(async () => {
+        .then(async() => {
             // First generate urls to all the plugin repos.
             const githubPlugins = pluginConfig.plugins
-                .filter(function (plugin) {
+                .filter(function(plugin) {
                     return (typeof plugin === 'object' && !plugin.internal && plugin.source.github);
                 });
             return Promise.each(githubPlugins, (plugin) => {
@@ -234,7 +233,7 @@ function fetchPluginsFromGithub(state) {
                 const dest = gitDestination.concat([plugin.name]).join('/');
 
                 return gitClone(url, dest, branch)
-                    .then(async () => {
+                    .then(async() => {
                         mutant.log(`... cloning plugin repo ${plugin.globalName}, version ${version}, branch: ${branch}`);
                         const gitInfo = await gitInfo2(state, dest);
                         state.pluginsManifest.push({
@@ -291,7 +290,7 @@ function injectPluginsIntoConfig(state) {
             });
 
             // Save this as a json file; this is the config that kbase-ui will load at runtime.
-            return fs.writeFileAsync(configPath.concat(['plugins.json']).join('/'), JSON.stringify({plugins}));
+            return fs.writeFileAsync(configPath.concat(['plugins.json']).join('/'), JSON.stringify({ plugins }));
         })
         .then(() => {
             return state;
@@ -328,7 +327,7 @@ function injectAppletsIntoConfig(state) {
             });
 
             // Save this as a json file; this is the config that kbase-ui will load at runtime.
-            return fs.writeFileAsync(configPath.concat(['applets.json']).join('/'), JSON.stringify({applets}));
+            return fs.writeFileAsync(configPath.concat(['applets.json']).join('/'), JSON.stringify({ applets }));
         })
         .then(() => {
             return state;
@@ -336,8 +335,8 @@ function injectAppletsIntoConfig(state) {
 }
 
 function npm(cmd, argv, options) {
-    return new Promise(function (resolve, reject) {
-        exec('npm ' + cmd + ' ' + argv.join(' '), options, function (err, stdout, stderr) {
+    return new Promise(function(resolve, reject) {
+        exec('npm ' + cmd + ' ' + argv.join(' '), options, function(err, stdout, stderr) {
             if (err) {
                 reject(err);
             }
@@ -373,7 +372,7 @@ function copyFromNodeNodules(state) {
         .then((config) => {
             const copyJobs = [];
 
-            config.npmFiles.forEach(function (cfg) {
+            config.npmFiles.forEach(function(cfg) {
                 /*
                      The top level bower directory name is usually the name of the
                      package (which also is often also base of the sole json file name)
@@ -431,7 +430,7 @@ function copyFromNodeNodules(state) {
                  */
                 const dest = ['build', 'client', 'modules', 'node_modules'].concat([cfg.dir || cfg.name]);
 
-                sources.forEach(function (source) {
+                sources.forEach(function(source) {
                     copyJobs.push({
                         cwd: cwd,
                         src: source,
@@ -445,7 +444,7 @@ function copyFromNodeNodules(state) {
             return Promise.all(
                 copyJobs.map((copySpec) => {
                     const cwd = state.environment.path.concat(copySpec.cwd).join('/');
-                    return glob(copySpec.src, {cwd, nodir: true})
+                    return glob(copySpec.src, { cwd, nodir: true })
                         .then((matches) => {
                             // Do the copy!
                             if (matches.length === 0) {
@@ -454,13 +453,13 @@ function copyFromNodeNodules(state) {
                             return Promise.all(
                                 matches.map((match) => {
                                     const fromPath = state.environment.path
-                                            .concat(copySpec.cwd)
-                                            .concat([match])
-                                            .join('/'),
+                                        .concat(copySpec.cwd)
+                                        .concat([match])
+                                        .join('/'),
                                         toPath = state.environment.path
-                                            .concat(copySpec.dest)
-                                            .concat([match])
-                                            .join('/');
+                                        .concat(copySpec.dest)
+                                        .concat([match])
+                                        .join('/');
                                     return fs.copy(fromPath, toPath, {});
                                 })
                             );
@@ -503,7 +502,7 @@ function fetchPlugins(state) {
             mutant.log('Inject Plugins Into Config');
             return injectPluginsIntoConfig(state);
         })
-        .then(function () {
+        .then(function() {
             return state;
         });
 }
@@ -524,123 +523,123 @@ function installPlugins(state) {
     const pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/');
     return (
         fs
-            .readFileAsync(pluginConfigFile, 'utf8')
-            .then((pluginFile) => {
-                pluginConfig = yaml.load(pluginFile);
-                const plugins = pluginConfig.plugins;
-                return Promise.all(
+        .readFileAsync(pluginConfigFile, 'utf8')
+        .then((pluginFile) => {
+            pluginConfig = yaml.load(pluginFile);
+            const plugins = pluginConfig.plugins;
+            return Promise.all(
                     // Supports installing from gitDownloads (which are downloaded prior to this)
                     plugins
+                    .filter((plugin) => {
+                        return typeof plugin === 'object' && plugin.source.github;
+                    })
+                    .map((plugin) => {
+                        const pluginDir = root.concat(['gitDownloads', plugin.name]);
+                        const destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+                        const distFile = pluginDir.concat(['dist.tgz']);
+                        if (!fs.pathExists(distFile.join('/'))) {
+                            throw new Error('git plugin ${plugin.name} does not have a dist.tgz');
+                        }
+
+                        mutant.info(`${plugin.name}: plugin installing from dist.tgz`);
+                        tar.extract({
+                            cwd: pluginDir.join('/'),
+                            file: distFile.join('/'),
+                            sync: true
+                        });
+                        const srcDir = pluginDir.concat(['dist', 'plugin']);
+                        mutant.ensureDir(destDir);
+                        return mutant.copyFiles(srcDir, destDir, '**/*');
+                    })
+                )
+                .then(() => {
+                    // Supports installing from a directory
+                    return Promise.all(
+                        plugins
                         .filter((plugin) => {
-                            return typeof plugin === 'object' && plugin.source.github;
+                            return typeof plugin === 'object' && plugin.source.directory;
                         })
                         .map((plugin) => {
-                            const pluginDir = root.concat(['gitDownloads', plugin.name]);
-                            const destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
-                            const distFile = pluginDir.concat(['dist.tgz']);
-                            if (!pathExists.sync(distFile.join('/'))) {
-                                throw new Error('git plugin ${plugin.name} does not have a dist.tgz');
-                            }
-
-                            mutant.info(`${plugin.name}: plugin installing from dist.tgz`);
-                            tar.extract({
-                                cwd: pluginDir.join('/'),
-                                file: distFile.join('/'),
-                                sync: true
-                            });
-                            const srcDir = pluginDir.concat(['dist', 'plugin']);
-                            mutant.ensureDir(destDir);
-                            return mutant.copyFiles(srcDir, destDir, '**/*');
+                            const cwds = plugin.cwd || 'dist/plugin',
+                                cwd = cwds.split('/'),
+                                // Our actual cwd is mutations, so we need to escape one up to the
+                                // project root.
+                                repoRoot = (plugin.source.directory.root &&
+                                    plugin.source.directory.root.split('/')) || ['', 'kb', 'plugins'],
+                                source = repoRoot.concat([plugin.name]).concat(cwd),
+                                destination = root.concat([
+                                    'build',
+                                    'client',
+                                    'modules',
+                                    'plugins',
+                                    plugin.name
+                                ]);
+                            mutant.ensureDir(destination);
+                            return mutant.copyFiles(source, destination, '**/*');
                         })
-                )
-                    .then(() => {
-                        // Supports installing from a directory
-                        return Promise.all(
-                            plugins
-                                .filter((plugin) => {
-                                    return typeof plugin === 'object' && plugin.source.directory;
-                                })
-                                .map((plugin) => {
-                                    const cwds = plugin.cwd || 'dist/plugin',
-                                        cwd = cwds.split('/'),
-                                        // Our actual cwd is mutations, so we need to escape one up to the
-                                        // project root.
-                                        repoRoot = (plugin.source.directory.root &&
-                                            plugin.source.directory.root.split('/')) || ['', 'kb', 'plugins'],
-                                        source = repoRoot.concat([plugin.name]).concat(cwd),
-                                        destination = root.concat([
-                                            'build',
-                                            'client',
-                                            'modules',
-                                            'plugins',
-                                            plugin.name
-                                        ]);
-                                    mutant.ensureDir(destination);
-                                    return mutant.copyFiles(source, destination, '**/*');
-                                })
-                        );
-                    })
-                    .then(() => {
-                        // Supports internal plugins.
-                        return Promise.all(
-                            plugins
-                                .filter((plugin) => {
-                                    return typeof plugin === 'string';
-                                })
-                                .map((plugin) => {
-                                    const source = root.concat(['plugins', plugin]),
-                                        destination = root.concat(['build', 'client', 'modules', 'plugins', plugin]);
-                                    mutant.ensureDir(destination);
-                                    return mutant.copyFiles(source, destination, '**/*');
-                                })
-                        );
-                    });
-            })
-            // now move the test files into the test dir
-            .then(() => {
-                // dir list of all plugins
-                const pluginsPath = root.concat(['build', 'client', 'modules', 'plugins']);
-                return dirList(pluginsPath).then((pluginDirs) => {
-                    return Promise.each(pluginDirs, (pluginDir) => {
-                        // Has integration tests?
-                        const testDir = pluginDir.path.concat(['test']);
-                        return pathExists(testDir.join('/')).then((exists) => {
-                            const justDir = pluginDir.path[pluginDir.path.length - 1];
-                            if (!exists) {
-                                mutant.warn('plugin without tests: ' + justDir);
-                            } else {
-                                mutant.success('plugin with tests!  : ' + justDir);
-                                const dest = root.concat(['test', 'integration-tests', 'specs', 'plugins', justDir]);
-                                return fs.moveAsync(testDir.join('/'), dest.join('/'));
-                            }
-                        });
+                    );
+                })
+                .then(() => {
+                    // Supports internal plugins.
+                    return Promise.all(
+                        plugins
+                        .filter((plugin) => {
+                            return typeof plugin === 'string';
+                        })
+                        .map((plugin) => {
+                            const source = root.concat(['plugins', plugin]),
+                                destination = root.concat(['build', 'client', 'modules', 'plugins', plugin]);
+                            mutant.ensureDir(destination);
+                            return mutant.copyFiles(source, destination, '**/*');
+                        })
+                    );
+                });
+        })
+        // now move the test files into the test dir
+        .then(() => {
+            // dir list of all plugins
+            const pluginsPath = root.concat(['build', 'client', 'modules', 'plugins']);
+            return dirList(pluginsPath).then((pluginDirs) => {
+                return Promise.each(pluginDirs, (pluginDir) => {
+                    // Has integration tests?
+                    const testDir = pluginDir.path.concat(['test']);
+                    return fs.pathExistsAsync(testDir.join('/')).then((exists) => {
+                        const justDir = pluginDir.path[pluginDir.path.length - 1];
+                        if (!exists) {
+                            mutant.warn('plugin without tests: ' + justDir);
+                        } else {
+                            mutant.success('plugin with tests!  : ' + justDir);
+                            const dest = root.concat(['test', 'integration-tests', 'specs', 'plugins', justDir]);
+                            return fs.moveAsync(testDir.join('/'), dest.join('/'));
+                        }
                     });
                 });
-            })
-            // now move the test files into the test dir
-            .then(() => {
-                // dir list of all plugins
-                const appletsPath = root.concat(['build', 'client', 'modules', 'applets']);
-                return dirList(appletsPath).then((appletDirs) => {
-                    return Promise.each(appletDirs, (appletDir) => {
-                        // Has integration tests?
-                        const testDir = appletDir.path.concat(['test']);
-                        return pathExists(testDir.join('/')).then((exists) => {
-                            const justDir = appletDir.path[appletDir.path.length - 1];
-                            if (!exists) {
-                                mutant.warn('applet without tests: ' + justDir);
-                            } else {
-                                mutant.success('applet with tests!  : ' + justDir);
-                                const dest = root.concat(['test', 'integration-tests', 'specs', 'applets', justDir]);
-                                return fs.moveAsync(testDir.join('/'), dest.join('/'));
-                            }
-                        });
+            });
+        })
+        // now move the test files into the test dir
+        .then(() => {
+            // dir list of all plugins
+            const appletsPath = root.concat(['build', 'client', 'modules', 'applets']);
+            return dirList(appletsPath).then((appletDirs) => {
+                return Promise.each(appletDirs, (appletDir) => {
+                    // Has integration tests?
+                    const testDir = appletDir.path.concat(['test']);
+                    return fs.pathExistsAsync(testDir.join('/')).then((exists) => {
+                        const justDir = appletDir.path[appletDir.path.length - 1];
+                        if (!exists) {
+                            mutant.warn('applet without tests: ' + justDir);
+                        } else {
+                            mutant.success('applet with tests!  : ' + justDir);
+                            const dest = root.concat(['test', 'integration-tests', 'specs', 'applets', justDir]);
+                            return fs.moveAsync(testDir.join('/'), dest.join('/'));
+                        }
                     });
                 });
-            })
-            .then(() => {
-                return state;
-            })
+            });
+        })
+        .then(() => {
+            return state;
+        })
     );
 }
 
@@ -734,10 +733,10 @@ function makeUIConfig(state) {
         configDest = root.concat(['build', 'client', 'modules', 'config']);
 
     return Promise.all(
-        configFiles.map((file) => {
-            return mutant.loadYaml(file);
-        })
-    )
+            configFiles.map((file) => {
+                return mutant.loadYaml(file);
+            })
+        )
         .then((configs) => {
             return mutant.mergeObjects([{}].concat(configs));
         })
@@ -763,8 +762,8 @@ function createBuildInfo(state) {
                 builtAt: new Date().getTime()
             };
         state.buildInfo = buildInfo;
-        return mutant.saveJson(configDest, {buildInfo: buildInfo})
-            .then(function () {
+        return mutant.saveJson(configDest, { buildInfo: buildInfo })
+            .then(function() {
                 return state;
             });
     });
@@ -774,14 +773,14 @@ function getReleaseNotes(state, version) {
     // lives in release-notes/RELEASE_NOTES_#.#.#.md
     const root = state.environment.path;
     const releaseNotesPath = root.concat(['release-notes', 'RELEASE_NOTES_' + version + '.md']);
-    return fs.readFileAsync(releaseNotesPath.join('/'), 'utf8').catch(function (err) {
+    return fs.readFileAsync(releaseNotesPath.join('/'), 'utf8').catch(function(err) {
         mutant.warn('release notes file not found: ' + releaseNotesPath.join('/'), err);
         return null;
     });
 }
 
 function verifyVersion(state) {
-    return Promise.try(function () {
+    return Promise.try(function() {
         if (!state.buildConfig.release) {
             mutant.log('In a non-prod build, release version not checked.');
             return;
@@ -832,7 +831,7 @@ function verifyVersion(state) {
                     );
                 }
             });
-    }).then(function () {
+    }).then(function() {
         return state;
     });
 }
@@ -861,56 +860,56 @@ function makeConfig(state) {
 
     return (
         Promise.all([fs.mkdirsAsync(deployModules.join('/'))])
-            .then(function () {
-                // A bit weird to do this here...
-                return fs
-                    .readFileAsync(root.concat(['build', 'client', 'build-info.js.txt']).join('/'), 'utf8')
-                    .then(function (template) {
-                        const dest = root.concat(['build', 'client', 'build-info.js']).join('/');
-                        const out = handlebars.compile(template)(state.buildInfo);
-                        return fs.writeFileAsync(dest, out);
-                    })
-                    .then(function () {
-                        fs.removeAsync(root.concat(['build', 'client', 'build-info.js.txt']).join('/'));
-                    });
-            })
-            // Now merge the configs.
-            .then(function () {
-                const configs = [
-                    // root.concat(['config', 'services.yml']),
-                    root.concat(['build', 'client', 'modules', 'config', 'ui.json']),
-                    root.concat(['build', 'client', 'modules', 'config', 'buildInfo.json'])
-                ];
-                return Promise.all(configs.map(mutant.loadJson))
-                    .then((configs) => {
-                        const merged = mutant.mergeObjects(configs);
-                        const dest = root.concat(['build', 'client', 'modules', 'config', 'config.json']);
-                        return mutant.saveJson(dest, merged);
-                    })
-                    .then(function () {
-                        return Promise.all(
-                            configs.map(function (file) {
-                                return fs.remove(file.join('/'));
-                            })
-                        );
-                    });
-            })
-            .then(function () {
-                return state;
-            })
+        .then(function() {
+            // A bit weird to do this here...
+            return fs
+                .readFileAsync(root.concat(['build', 'client', 'build-info.js.txt']).join('/'), 'utf8')
+                .then(function(template) {
+                    const dest = root.concat(['build', 'client', 'build-info.js']).join('/');
+                    const out = handlebars.compile(template)(state.buildInfo);
+                    return fs.writeFileAsync(dest, out);
+                })
+                .then(function() {
+                    fs.removeAsync(root.concat(['build', 'client', 'build-info.js.txt']).join('/'));
+                });
+        })
+        // Now merge the configs.
+        .then(function() {
+            const configs = [
+                // root.concat(['config', 'services.yml']),
+                root.concat(['build', 'client', 'modules', 'config', 'ui.json']),
+                root.concat(['build', 'client', 'modules', 'config', 'buildInfo.json'])
+            ];
+            return Promise.all(configs.map(mutant.loadJson))
+                .then((configs) => {
+                    const merged = mutant.mergeObjects(configs);
+                    const dest = root.concat(['build', 'client', 'modules', 'config', 'config.json']);
+                    return mutant.saveJson(dest, merged);
+                })
+                .then(function() {
+                    return Promise.all(
+                        configs.map(function(file) {
+                            return fs.remove(file.join('/'));
+                        })
+                    );
+                });
+        })
+        .then(function() {
+            return state;
+        })
     );
 }
 
 function addCacheBusting(state) {
     const root = state.environment.path;
     return Promise.all(
-        ['index.html', 'load-narrative.html'].map((fileName) => {
-            return Promise.all([
-                fileName,
-                fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')
-            ]);
-        })
-    )
+            ['index.html', 'load-narrative.html'].map((fileName) => {
+                return Promise.all([
+                    fileName,
+                    fs.readFileAsync(root.concat(['build', 'client', fileName]).join('/'), 'utf8')
+                ]);
+            })
+        )
         .then((templates) => {
             return Promise.all(
                 templates.map((template) => {
@@ -928,7 +927,7 @@ function addCacheBusting(state) {
 function cleanup(state) {
     const root = state.environment.path;
     return fs.removeAsync(root.concat(['build', 'node_modules']).join('/'))
-        .then(function () {
+        .then(function() {
             return state;
         });
 }
@@ -940,19 +939,19 @@ function makeDist(state) {
 
     return fs
         .removeAsync(distPath.join('/'))
-        .then(function () {
+        .then(function() {
             mutant.log('Copying config...');
             return fs.moveAsync(root.concat(['config']).join('/'), distPath.concat(['config']).join('/'));
         })
-        .then(function () {
+        .then(function() {
             mutant.log('Copying build...');
             return fs.copyAsync(root.concat(['build', 'client']).join('/'), distPath.concat(['client']).join('/'));
         })
-        .then(function () {
+        .then(function() {
             mutant.log('Copying test...');
             return fs.copyAsync(root.concat(['test']).join('/'), buildPath.concat(['test']).join('/'));
         })
-        .then(function () {
+        .then(function() {
             return state;
         });
 }
@@ -968,15 +967,15 @@ function makeRelease(state) {
         uglify = require('uglify-es');
 
     return glob(root.concat(['client', 'modules', '**', '*.js']).join('/'), {
-        nodir: true
-    })
+            nodir: true
+        })
         .then((matches) => {
             // TODO: incorporate a sustainable method for omitting
             // directories from alteration.
             // FORNOW: we need to protect iframe-based plugins from having
             // their plugin code altered.
             const reProtected = /\/modules\/plugins\/.*?\/iframe_root\//;
-            const files = matches.filter(function (match) {
+            const files = matches.filter(function(match) {
                 return !reProtected.test(match);
             });
             return Promise.all(files)
@@ -1011,7 +1010,7 @@ function makeRelease(state) {
                         });
                 });
         })
-        .then(function () {
+        .then(function() {
             return state;
         });
 }
@@ -1021,10 +1020,12 @@ function makeModuleVFS(state) {
     const buildPath = state.environment.rootDir.concat(['build']);
 
     return glob(root.concat(['dist', 'client', 'modules', '**', '*']).join('/'), {
-        nodir: true,
-        exclude: [['dist', 'client', 'modules', 'deploy', 'config.json']]
-    })
-        .then(function (matches) {
+            nodir: true,
+            exclude: [
+                ['dist', 'client', 'modules', 'deploy', 'config.json']
+            ]
+        })
+        .then(function(matches) {
             // just read in file and build a giant map...
             const vfs = {
                 scripts: {},
@@ -1058,16 +1059,16 @@ function makeModuleVFS(state) {
 
             function showStats(db) {
                 Object.keys(db)
-                    .map(function (key) {
+                    .map(function(key) {
                         return {
                             key: key,
                             count: db[key]
                         };
                     })
-                    .sort(function (a, b) {
+                    .sort(function(a, b) {
                         return b.count - a.count;
                     })
-                    .forEach(function (item) {
+                    .forEach(function(item) {
                         mutant.log(item.key + ':' + item.count);
                     });
             }
@@ -1076,13 +1077,13 @@ function makeModuleVFS(state) {
             const cssExceptions = [/@import/, /@font-face/];
             const supportedExtensions = ['js', 'yaml', 'yml', 'json', 'text', 'txt', 'css'];
             return Promise.all(matches)
-                .mapSeries(function (match) {
+                .mapSeries(function(match) {
                     const relativePath = match.split('/').slice(root.length + 2);
                     const path = '/' + relativePath.join('/');
 
                     // exclusion based on path pattern
                     if (
-                        exceptions.some(function (re) {
+                        exceptions.some(function(re) {
                             return re.test(path);
                         })
                     ) {
@@ -1106,7 +1107,7 @@ function makeModuleVFS(state) {
                         return;
                     }
 
-                    return fs.statAsync(match).then(function (stat) {
+                    return fs.statAsync(match).then(function(stat) {
                         if (stat.size > 200000) {
                             mutant.warn(
                                 'omitting file from bundle because too big: ' + numeral(stat.size).format('0.0b')
@@ -1116,57 +1117,57 @@ function makeModuleVFS(state) {
                             skip('toobig');
                             return;
                         }
-                        return fs.readFileAsync(match, 'utf8').then(function (contents) {
+                        return fs.readFileAsync(match, 'utf8').then(function(contents) {
                             switch (ext) {
-                            case 'js':
-                                include(ext);
-                                vfs.scripts[path] = 'function () { ' + contents + ' }';
-                                break;
-                            case 'yaml':
-                            case 'yml':
-                                include(ext);
-                                vfs.resources.json[base] = yaml.load(contents);
-                                break;
-                            case 'json':
-                                if (vfs.resources.json[base]) {
-                                    throw new Error('duplicate entry for json detected: ' + path);
-                                }
-                                try {
+                                case 'js':
                                     include(ext);
-                                    vfs.resources.json[base] = JSON.parse(contents);
-                                } catch (ex) {
-                                    skip('error');
-                                    console.error('Error parsing json file: ' + path + ':' + ex.message);
-                                    // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
-                                }
-                                break;
-                            case 'text':
-                            case 'txt':
-                                include(ext);
-                                vfs.resources.text[base] = contents;
-                                break;
-                            case 'css':
-                                if (
-                                    cssExceptions.some(function (re) {
-                                        return re.test(contents);
-                                    })
-                                ) {
-                                    skip('css excluded');
-                                } else {
+                                    vfs.scripts[path] = 'function () { ' + contents + ' }';
+                                    break;
+                                case 'yaml':
+                                case 'yml':
                                     include(ext);
-                                    vfs.resources.css[base] = contents;
-                                }
-                                break;
-                            case 'csv':
-                                skip(ext);
-                                break;
-                            default:
-                                skip(ext);
+                                    vfs.resources.json[base] = yaml.load(contents);
+                                    break;
+                                case 'json':
+                                    if (vfs.resources.json[base]) {
+                                        throw new Error('duplicate entry for json detected: ' + path);
+                                    }
+                                    try {
+                                        include(ext);
+                                        vfs.resources.json[base] = JSON.parse(contents);
+                                    } catch (ex) {
+                                        skip('error');
+                                        console.error('Error parsing json file: ' + path + ':' + ex.message);
+                                        // throw new Error('Error parsing json file: ' + path + ':' + ex.message);
+                                    }
+                                    break;
+                                case 'text':
+                                case 'txt':
+                                    include(ext);
+                                    vfs.resources.text[base] = contents;
+                                    break;
+                                case 'css':
+                                    if (
+                                        cssExceptions.some(function(re) {
+                                            return re.test(contents);
+                                        })
+                                    ) {
+                                        skip('css excluded');
+                                    } else {
+                                        include(ext);
+                                        vfs.resources.css[base] = contents;
+                                    }
+                                    break;
+                                case 'csv':
+                                    skip(ext);
+                                    break;
+                                default:
+                                    skip(ext);
                             }
                         });
                     });
                 })
-                .then(function () {
+                .then(function() {
                     mutant.log('vfs created');
                     mutant.log('skipped: ');
                     showStats(skipped);
@@ -1175,10 +1176,10 @@ function makeModuleVFS(state) {
                     const modules =
                         '{' +
                         Object.keys(vfs.scripts)
-                            .map(function (path) {
-                                return '"' + path + '": ' + vfs.scripts[path];
-                            })
-                            .join(', \n') +
+                        .map(function(path) {
+                            return '"' + path + '": ' + vfs.scripts[path];
+                        })
+                        .join(', \n') +
                         '}';
                     const script = [
                         'window.require_modules = ' + modules,
@@ -1188,7 +1189,7 @@ function makeModuleVFS(state) {
                     fs.writeFileAsync(vfsDest.join('/'), script);
                 });
         })
-        .then(function () {
+        .then(function() {
             return state;
         });
 }
@@ -1201,12 +1202,11 @@ function makeModuleVFS(state) {
 
 function main(type) {
     return (
-        Promise.try(async function () {
+        Promise.try(async function() {
             const rootDir = (await getRoot()).split('/');
             // STEP 1: Create iniital build state.
             mutant.log('STEP 1: Creating initial state for build: ' + type);
-            const initialFilesystem = [
-                {
+            const initialFilesystem = [{
                     path: ['src', 'client']
                 },
                 {
@@ -1232,165 +1232,165 @@ function main(type) {
             };
             return mutant.createInitialState(config);
         })
-            // STEP 2: Set up the build, mostly putting files into their starting positions out of src.
-            // Moves files out of src and into build or root dir
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                mutant.log('STEP 2: Setting up build...');
-                return setupBuild(state);
-            })
+        // STEP 2: Set up the build, mostly putting files into their starting positions out of src.
+        // Moves files out of src and into build or root dir
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            mutant.log('STEP 2: Setting up build...');
+            return setupBuild(state);
+        })
 
-            // STEP 3: Install npm dependencies
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                mutant.log('STEP 3: Installing NPM packages...');
-                return installNPMPackages(state);
-            })
+        // STEP 3: Install npm dependencies
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            mutant.log('STEP 3: Installing NPM packages...');
+            return installNPMPackages(state);
+        })
 
-            // STEP 4: Remove source mapping from .js and .css files which have it
-            // Remove source mapping from the ui - do this before introducing
-            // the plugins in order to simplify omitting those files.
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                mutant.log('STEP 4: Removing source maps...');
-                return removeSourceMaps(state);
-            })
+        // STEP 4: Remove source mapping from .js and .css files which have it
+        // Remove source mapping from the ui - do this before introducing
+        // the plugins in order to simplify omitting those files.
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            mutant.log('STEP 4: Removing source maps...');
+            return removeSourceMaps(state);
+        })
 
-            // STEP 5a: Get applets mapping
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                mutant.log('STEP 5a: Injecting applet configs...');
-                return injectAppletsIntoConfig(state);
-            })
+        // STEP 5a: Get applets mapping
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            mutant.log('STEP 5a: Injecting applet configs...');
+            return injectAppletsIntoConfig(state);
+        })
 
-            // STEP 5: Get external plugins from github and prepare the plugin load config for runtime usage.
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                mutant.log('STEP 5: Fetching plugins...');
-                return fetchPlugins(state);
-            })
+        // STEP 5: Get external plugins from github and prepare the plugin load config for runtime usage.
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            mutant.log('STEP 5: Fetching plugins...');
+            return fetchPlugins(state);
+        })
 
-            // STEP 5: Get external plugins from github and prepare the plugin load config for runtime usage.
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                mutant.log('STEP 5b: Save plugin manifest...');
-                return savePluginManifest(state);
-            })
+        // STEP 5: Get external plugins from github and prepare the plugin load config for runtime usage.
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            mutant.log('STEP 5b: Save plugin manifest...');
+            return savePluginManifest(state);
+        })
 
-            // STEP 6: Unpack plugins and move them into their final resting place.
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                mutant.log('STEP 6: Installing Plugins...');
-                return installPlugins(state);
-            })
+        // STEP 6: Unpack plugins and move them into their final resting place.
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            mutant.log('STEP 6: Installing Plugins...');
+            return installPlugins(state);
+        })
 
-            // STEP 7: Creates the core ui config file, ui.json, and stores it in the state
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                mutant.log('STEP 7: Copying config files...');
-                return makeUIConfig(state);
-            })
+        // STEP 7: Creates the core ui config file, ui.json, and stores it in the state
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            mutant.log('STEP 7: Copying config files...');
+            return makeUIConfig(state);
+        })
 
-            // STEP 8: Creates a config file containing build-time information
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                mutant.log('STEP 8: Creating build record ...');
-                return createBuildInfo(state);
-            })
+        // STEP 8: Creates a config file containing build-time information
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            mutant.log('STEP 8: Creating build record ...');
+            return createBuildInfo(state);
+        })
 
-            // STEP 9: Verify the tag and release info if this is a release build
-            // Here we verify that the version stamp, release notes, and tag are consistent.
-            // For prod we need to compare all three and fail the build if there is not a match.
-            // For dev, we need to compare the stamp and release notes, not the tag.
-            // At some future time when working solely off of master, we will be able to compare
-            // to the most recent tag.
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                mutant.log('STEP 9: Verifying version...');
-                return verifyVersion(state);
-            })
+        // STEP 9: Verify the tag and release info if this is a release build
+        // Here we verify that the version stamp, release notes, and tag are consistent.
+        // For prod we need to compare all three and fail the build if there is not a match.
+        // For dev, we need to compare the stamp and release notes, not the tag.
+        // At some future time when working solely off of master, we will be able to compare
+        // to the most recent tag.
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            mutant.log('STEP 9: Verifying version...');
+            return verifyVersion(state);
+        })
 
-            // STEP 10: This step creates the main config file and build-info.js
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then(function (state) {
-                mutant.log('STEP 10: aking main config file...');
-                return makeConfig(state);
-            })
+        // STEP 10: This step creates the main config file and build-info.js
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then(function(state) {
+            mutant.log('STEP 10: aking main config file...');
+            return makeConfig(state);
+        })
 
-            // STEP 11: Add cache-busting in html files by template substitution.
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                mutant.log('Adding cache busting to html templates...');
-                return addCacheBusting(state);
-            })
+        // STEP 11: Add cache-busting in html files by template substitution.
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            mutant.log('Adding cache busting to html templates...');
+            return addCacheBusting(state);
+        })
 
-            // STEP 12. Clean up build artifacts
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                mutant.log('STEP 12. Cleaning up...');
-                return cleanup(state);
-            })
+        // STEP 12. Clean up build artifacts
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            mutant.log('STEP 12. Cleaning up...');
+            return cleanup(state);
+        })
 
-            // STEP 13. If this is a release, do extra processing of the build
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                if (state.buildConfig.release) {
-                    mutant.log('STEP 13. Processing for release...');
-                    return makeRelease(state);
-                } else {
-                    mutant.log('Not a release, skipping makeRelease...');
-                    return state;
-                }
-            })
+        // STEP 13. If this is a release, do extra processing of the build
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            if (state.buildConfig.release) {
+                mutant.log('STEP 13. Processing for release...');
+                return makeRelease(state);
+            } else {
+                mutant.log('Not a release, skipping makeRelease...');
+                return state;
+            }
+        })
 
-            // STEP 14. Copies the build files from working directory to the final destination
-            .then((state) => {
-                return mutant.copyState(state);
-            })
-            .then((state) => {
-                mutant.log('STEP 14. Making the base build...');
-                return makeDist(state);
-            })
+        // STEP 14. Copies the build files from working directory to the final destination
+        .then((state) => {
+            return mutant.copyState(state);
+        })
+        .then((state) => {
+            mutant.log('STEP 14. Making the base build...');
+            return makeDist(state);
+        })
 
-            // STEP 15. Create the Virtual File System (VFS) if specified in the build config.
-            .then((state) => {
-                if (state.buildConfig.vfs) {
-                    return makeModuleVFS(state);
-                } else {
-                    return state;
-                }
-            })
-            .then((state) => {
-                return mutant.finish(state);
-            })
+        // STEP 15. Create the Virtual File System (VFS) if specified in the build config.
+        .then((state) => {
+            if (state.buildConfig.vfs) {
+                return makeModuleVFS(state);
+            } else {
+                return state;
+            }
+        })
+        .then((state) => {
+            return mutant.finish(state);
+        })
     );
 }
 

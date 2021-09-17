@@ -14,7 +14,6 @@ _attic/
 
 # Build artifacts
 /build/dist
-/build/build
 /build/build-test-coverage
 /build/test
 /build/deploy

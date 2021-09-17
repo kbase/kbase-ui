@@ -139,6 +139,7 @@ docker-compose-override:
 	@echo "> libraries: $(libraries)"
 	@echo "> paths: $(paths)"
 	@echo "> local-narrative: $(local-narrative)"
+	@echo "> local-navigator: $(local-navigator)"
 	@echo "> dynamic-services: $(dynamic-services)"
 	$(eval cmd = node $(TOPDIR)/tools/js/build-docker-compose-override.js $(env) \
 	  $(foreach p,$(plugins),--plugin $(p)) \
@@ -149,7 +150,8 @@ docker-compose-override:
 	  $(foreach d,$(dynamic-services),--dynamic_services $d) \
 	  $(foreach s,$(services),--services $s) \
 	  $(if $(findstring t,$(local-docs)),--local_docs) \
-	  $(if $(findstring t,$(local-narrative)),--local_narrative))
+	  $(if $(findstring t,$(local-narrative)),--local_narrative) \
+	  $(if $(findstring t,$(local-navigator)),--local_navigator))
 	@echo "> Issuing: $(cmd)"
 	$(cmd)
 
@@ -208,7 +210,7 @@ integration-tests:
 test: unit-tests
 
 # Clean slate
-clean: clean-docs
+clean: clean-docs clean-ts
 	$(GRUNT) clean-all
 
 clean-temp:
@@ -221,18 +223,11 @@ clean-docs:
 	@rm -rf ./docs/book/_book
 	@rm -rf ./docs/node_modules
 
+clean-ts:
+	@npm run clean-ts
+
 # If you need more clean refinement, please see Gruntfile.js, in which you will
 # find clean tasks for each major build artifact.
-
-docs:
-	cd docs; \
-	npm install --no-lockfile; \
-	./node_modules/.bin/gitbook build ./book
-
-docs-viewer: docs
-	cd docs; \
-	(./node_modules/.bin/wait-on -t 10000 http://localhost:4000 && ./node_modules/.bin/opn http://localhost:4000 &); \
-	./node_modules/.bin/gitbook serve ./book
 
 # git -c http.sslVerify=false clone https://oauth2:s5TDQnKk4kpHXCVdUNfh@gitlab.kbase.lbl.gov:1443/devops/kbase_ui_config.git
 get-gitlab-config:

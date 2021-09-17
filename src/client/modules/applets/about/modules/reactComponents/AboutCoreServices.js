@@ -10,7 +10,7 @@ define([
     AboutService
 ) => {
 
-    const {h, Component} = preact;
+    const { h, Component } = preact;
     const html = htm.bind(h);
 
     const SERVICES = [
@@ -45,6 +45,13 @@ define([
             type: 'rest',
             module: 'groups',
             path: '/',
+            versionKey: 'version'
+        },
+        {
+            title: 'Sample Service',
+            module: 'SampleService',
+            type: 'jsonrpc11',
+            statusMethod: 'status',
             versionKey: 'version'
         },
         {
@@ -101,7 +108,7 @@ define([
                     <thead>
                     <tr>
 
-                        <th style=${{width: '12em'}}>
+                        <th style=${{ width: '12em' }}>
                             Service
                         </th>
                         <th>

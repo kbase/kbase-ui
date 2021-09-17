@@ -4,7 +4,6 @@ type Payload = any;
 
 export type Tap = (payload: Payload) => void;
 
-
 export class DataPipe {
     pipe: Array<Payload>;
     taps: Array<Tap>;
@@ -41,7 +40,18 @@ export class DataPipe {
                 try {
                     tap(item);
                 } catch (ex) {
-                    console.error('Error processing tap: ' + ex.message, ex, tap, item);
+                    const message = (() => {
+                        if (ex instanceof Error) {
+                            return ex.message;
+                        }
+                        return '';
+                    })();
+                    console.error(
+                        'Error processing tap: ' + message,
+                        ex,
+                        tap,
+                        item
+                    );
                 }
             });
         });

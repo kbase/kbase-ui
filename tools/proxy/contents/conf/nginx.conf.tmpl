@@ -1,3 +1,8 @@
+#
+# A minimal proxying configuration for running kbase-ui through a secure proxy
+# against a KBase deploy environment.
+#
+
 daemon off;
 error_log /dev/stdout info;
 worker_processes auto;
@@ -5,7 +10,6 @@ pid /var/run/nginx.pid;
 
 events {
 	worker_connections 1024;
-	# multi_accept on;
 }
 
 http {
@@ -47,6 +51,18 @@ http {
         {{ end }}
     }
 
+    upstream kbase_navigator {
+        {{ if .Env.local_navigator }}
+            server navigator:5000;
+        {{ else }}
+            {{ if .Env.deploy_ui_hostname }}
+                server {{ .Env.deploy_ui_hostname }}:443;
+            {{ else }}
+                server {{ .Env.deploy_hostname }}:443;
+            {{ end }}
+        {{ end }}
+    }
+
     log_format upstream_log '[$time_local] $remote_addr - $remote_user - $server_name to: $upstream_addr: $request upstream_response_time $upstream_response_time proxy_host $proxy_host upstream_status $upstream_status upstream_response_length $upstream_response_length upstream_http_location $upstream_http_location msec $msec request_time $request_time';
 
 
@@ -54,13 +70,7 @@ http {
 	access_log /var/log/nginx/access.log;
 	error_log /var/log/nginx/error.log debug;
 
-    #
-    # A minimal proxying configuration for running kbase-ui through a secure proxy
-    # against ci.
-    #
-    # It is designed to operate inside a VM which naturally routes ci.kbase.us to its
-    # real location, while the host has ci mapped to the vm via /etc/hosts.
-    #
+
 
     # Route insecure requests to secure.
     server {
@@ -82,6 +92,7 @@ http {
         ssl_certificate /kb/deployment/ssl/test.crt;
         ssl_certificate_key /kb/deployment/ssl/test.key;
         ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
+        proxy_http_version 1.1;
 
         # Needed for running narratives
         location /narrative/ {
@@ -95,33 +106,37 @@ http {
             {{ end }}
 
             proxy_connect_timeout 10s;
-            # proxy_hide_header 'Host';
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
-            proxy_http_version 1.1;
             proxy_set_header Origin https://{{ .Env.deploy_ui_hostname }};
             proxy_set_header Host {{ .Env.deploy_ui_hostname }};
         }
 
         location /ui-assets/ {
             proxy_pass https://{{ .Env.deploy_ui_hostname }}:443;
-            proxy_http_version 1.1;
             proxy_set_header Connection "";
             client_max_body_size 300M;
         }
 
         location /narratives/ {
-            proxy_pass https://{{ .Env.deploy_ui_hostname }}:443;
-            proxy_http_version 1.1;
+            {{ if .Env.local_navigator }}
+                proxy_pass http://navigator/narratives/;
+            {{ else }}
+                proxy_pass https://kbase_navigator/narratives/;
+            {{ end }}
+
+            access_log /var/log/nginx/navigator.log upstream_log;
+
             proxy_set_header Connection "";
             client_max_body_size 300M;
             proxy_read_timeout 10m;
+            proxy_set_header Origin  https://{{ .Env.deploy_ui_hostname }};
+            proxy_set_header Host {{ .Env.deploy_ui_hostname }};
         }
 
         location / {
             client_max_body_size 300M;
             proxy_pass http://kbase_ui;
-            proxy_http_version 1.1;
             proxy_set_header Connection "";
         }
     }
@@ -134,6 +149,7 @@ http {
         ssl_certificate /kb/deployment/ssl/test.crt;
         ssl_certificate_key /kb/deployment/ssl/test.key;
         ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
+        proxy_http_version 1.1;
 
         # Service proxying
         # specified as a list of service modules
@@ -146,10 +162,7 @@ http {
                 {{ if $.Env.deploy_ui_hostname }}
                 include /etc/nginx/cors.conf;
                 {{ end }}
-                # set $upstream http://searchapi2:5000/legacy;
-                # proxy_pass $upstream;
                 proxy_pass http://searchapi2:5000/legacy;
-                proxy_http_version 1.1;
                 proxy_set_header Connection "";
                 client_max_body_size 300M;
             }
@@ -158,10 +171,7 @@ http {
                 {{ if $.Env.deploy_ui_hostname }}
                 include /etc/nginx/cors.conf;
                 {{ end }}
-                # set $upstream http://searchapi2:5000/rpc;
-                # proxy_pass $upstream;
                 proxy_pass http://searchapi2:5000/rpc;
-                proxy_http_version 1.1;
                 proxy_set_header Connection "";
                 client_max_body_size 300M;
             }
@@ -172,7 +182,6 @@ http {
                 {{ end }}
                 set $upstream http://{{ . }}:5000;
                 proxy_pass $upstream;
-                proxy_http_version 1.1;
                 proxy_set_header Connection "";
                 client_max_body_size 300M;
                 proxy_read_timeout 10m;
@@ -192,7 +201,6 @@ http {
             proxy_cookie_path /login /services/auth/login;
             proxy_cookie_path /link /services/auth/link;
             proxy_pass https://services/services;
-            proxy_http_version 1.1;
             proxy_set_header Connection "";
             client_max_body_size 300M;
             proxy_read_timeout 10m;
@@ -235,7 +243,6 @@ http {
                 include /etc/nginx/cors.conf;
             {{ end }}
             proxy_pass https://dynamic_services/dynserv;
-            proxy_http_version 1.1;
             proxy_set_header Connection "";
             client_max_body_size 300M;
             proxy_read_timeout 10m;
@@ -257,30 +264,34 @@ http {
             proxy_connect_timeout 10s;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
-            proxy_http_version 1.1;
             proxy_set_header Origin  https://{{ .Env.deploy_hostname }};
             proxy_set_header Host {{ .Env.deploy_hostname }};
         }
 
         location /ui-assets/ {
             proxy_pass https://{{ .Env.deploy_hostname }}:443;
-            proxy_http_version 1.1;
             proxy_set_header Connection "";
             client_max_body_size 300M;
         }
 
         location /narratives/ {
-            # proxy_pass https://{{ .Env.deploy_hostname }}:443;
-            proxy_pass https://{{ .Env.deploy_hostname }}:443;
-            proxy_http_version 1.1;
+            {{ if .Env.local_navigator }}
+                proxy_pass http://navigator/narratives/;
+            {{ else }}
+                proxy_pass https://kbase_navigator/narratives/;
+            {{ end }}
+
+            access_log /var/log/nginx/navigator.log upstream_log;
+
             proxy_set_header Connection "";
             client_max_body_size 300M;
             proxy_read_timeout 10m;
+            proxy_set_header Origin  https://{{ .Env.deploy_hostname }};
+            proxy_set_header Host {{ .Env.deploy_hostname }};
         }
 
         location / {
             proxy_pass http://kbase_ui;
-            proxy_http_version 1.1;
             proxy_set_header Connection "";
             client_max_body_size 300M;
         }

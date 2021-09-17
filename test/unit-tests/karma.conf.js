@@ -16,7 +16,7 @@ switch (process.platform) {
         process.env.CHROME_BIN = '/usr/bin/chromium-browser';
         break;
     default:
-        throw new Error('Unsupported platform: ' + process.platform);
+        throw new Error(`Unsupported platform: ${process.platform}`);
 }
 
 module.exports = function (config) {
@@ -40,7 +40,7 @@ module.exports = function (config) {
         // set in the basePath property above.
         files: [
             // All of the AMD modules in the hub.
-            { pattern: 'build/build/client/modules/**/*.js', included: false },
+            { pattern: 'build/dist/client/modules/**/*.js', included: false },
             // {pattern: 'build/client/bower_components/**/*.js', included: false},
             // Our test specs
             { pattern: 'test/unit-tests/specs/**/*.js', included: false },
@@ -60,7 +60,7 @@ module.exports = function (config) {
         // Note that we exclude all of the external modules (bower_components).
         // TODO: We may want to find a way to evaluate dependency test coverage at some point.
         preprocessors: {
-            'build/build/client/modules/!(plugins)/**/*.js': ['coverage']
+            'build/dist/client/modules/!(plugins)/**/*.js': ['coverage']
             // 'build/build/client/modules/**/*.js': ['coverage']
         },
 
@@ -89,7 +89,7 @@ module.exports = function (config) {
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
         // browsers: ['PhantomJS'],
-        browsers: browsers,
+        browsers,
         customLaunchers: {
             ChromiumNoSandbox: {
                 base: 'ChromiumHeadless',

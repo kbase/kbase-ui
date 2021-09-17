@@ -9,10 +9,6 @@ interface RuntimeParams {
     serviceManager: AppServiceManager;
 }
 
-interface RuntimeConfig {
-
-}
-
 interface FeatureSwitchDefinition {
     id: string;
     title: string;
@@ -31,7 +27,11 @@ export class Runtime {
         this.messenger = messenger;
         this.serviceManager = serviceManager;
         this.globalDB = new ReactiveDB();
-        this.featureSwitches = this.configProps.getItemWithDefault<Array<FeatureSwitchDefinition>>('ui.featureSwitches.available', [])
+        this.featureSwitches = this.configProps
+            .getItemWithDefault<Array<FeatureSwitchDefinition>>(
+                'ui.featureSwitches.available',
+                []
+            )
             .reduce((features, featureSwitch) => {
                 features.set(featureSwitch.id, featureSwitch);
                 return features;
@@ -59,23 +59,28 @@ export class Runtime {
     }
 
     allow(tag: string) {
-        var allowed = this.configProps.getItemWithDefault<Array<string>>('ui.allow', []);
+        let allowed = this.configProps.getItemWithDefault<Array<string>>(
+            'ui.allow',
+            []
+        );
         if (!(allowed instanceof Array)) {
             allowed = [allowed];
         }
-        return (allowed.indexOf(tag) >= 0);
+        return allowed.indexOf(tag) >= 0;
     }
 
     featureEnabled(id: string) {
         const featureSwitch = this.featureSwitches.get(id);
         if (!featureSwitch) {
-            throw new Error('Feature switch "' + id + '" not defined');
+            throw new Error(`Feature switch "${id}" not defined`);
         }
         if (featureSwitch.disabled) {
             return false;
         }
 
-        const enabledFeatureSwitches = this.configProps.getItemWithDefault<Array<string>>('ui.featureSwitches.enabled', []);
+        const enabledFeatureSwitches = this.configProps.getItemWithDefault<
+            Array<string>
+        >('ui.featureSwitches.enabled', []);
         const enabled = enabledFeatureSwitches.includes(id);
         return enabled;
     }
@@ -89,7 +94,9 @@ export class Runtime {
             return true;
         }
 
-        const disabledFeatureSwitches = this.configProps.getItemWithDefault<Array<string>>('ui.featureSwitches.disabled', []);
+        const disabledFeatureSwitches = this.configProps.getItemWithDefault<
+            Array<string>
+        >('ui.featureSwitches.disabled', []);
         const disabled = disabledFeatureSwitches.includes(id);
         return disabled;
     }
@@ -102,7 +109,7 @@ export class Runtime {
         return this.messenger.receive({
             channel,
             message,
-            handler
+            handler,
         });
     }
 
@@ -112,7 +119,7 @@ export class Runtime {
         return this.messenger.send({
             channel,
             message,
-            payload
+            payload,
         });
     }
 
@@ -124,7 +131,7 @@ export class Runtime {
         return this.messenger.sendPromise({
             channel,
             message,
-            payload
+            payload,
         });
     }
 
@@ -145,4 +152,4 @@ export class Runtime {
     hasService(name: string) {
         return this.serviceManager.hasService(name);
     }
-};
+}

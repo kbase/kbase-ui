@@ -1,66 +1,48 @@
 env:
-  browser: true
-  amd: true
-  es6: true
-extends: "eslint:recommended"
+    amd: true
+    browser: true
+    es6: true
+    node: true
+extends:
+    - 'eslint:recommended'
+    - prettier
+    - preact
+    - 'plugin:@typescript-eslint/recommended'
 parserOptions:
-  ecmaVersion: 9
+    ecmaVersion: 2018
+root: true
 rules:
-  # no strict mode, because we like to use destructuring in arguments.
-  strict:
-    - error
-    - never
-  linebreak-style:
-    - error
-    - unix
-  # single quotes are simply easier to type, and consistency is good.
-  quotes:
-    - error
-    - single
-  # semis are best for reliability, and with format on save they'll be supplied
-  # automatically, but I'm not a true believer.
-  semi:
-    - error
-    - always
-  # helps prevent leaving debugging console.logs
-  no-console:
-    - error
-    - allow:
-        - warn
+    strict:
         - error
-  # stylistic
-  no-trailing-spaces:
-    - error
-
-  space-before-function-paren:
-    - error
-    - anonymous: always
-      named: never
-      asyncArrow: always
-  space-in-parens:
-    - error
-    - never
-  func-call-spacing:
-    - error
-    - never
-  keyword-spacing:
-    - error
-    - before: true
-      after: true
-  no-fallthrough:
-    - error
-    - commentPattern: fallthrough
-  prefer-const:
-    - error
-  arrow-parens:
-    - error
-  indent:
-    - error
-    - 4
-    - SwitchCase: 0
-  object-curly-spacing:
-    - error
-    - never
-  comma-dangle:
-    - error
-    - never
+        - function
+    no-console:
+        - error
+        - allow:
+              - warn
+              - error
+    require-await:
+        - error
+    no-confusing-arrow:
+        - error
+    no-const-assign:
+        - error
+    no-duplicate-imports:
+        - error
+    no-useless-computed-key:
+        - error
+    no-useless-rename:
+        - error
+    no-var:
+        - error
+    prefer-arrow-callback:
+        - warn
+    prefer-const:
+        - error
+    prefer-rest-params:
+        - warn
+    prefer-spread:
+        - warn
+    indent:
+        - error
+        - 4
+        - SwitchCase: 1
