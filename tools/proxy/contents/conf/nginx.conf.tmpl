@@ -51,7 +51,7 @@ http {
         {{ end }}
     }
 
-    upstream xyz {
+    upstream kbase_navigator {
         {{ if .Env.local_navigator }}
             server navigator:5000;
         {{ else }}
@@ -120,9 +120,9 @@ http {
 
         location /narratives/ {
             {{ if .Env.local_navigator }}
-                proxy_pass http://xyz/narratives/;
+                proxy_pass http://navigator/narratives/;
             {{ else }}
-                proxy_pass https://xyz/narratives/;
+                proxy_pass https://kbase_navigator/narratives/;
             {{ end }}
 
             access_log /var/log/nginx/navigator.log upstream_log;
@@ -130,8 +130,8 @@ http {
             proxy_set_header Connection "";
             client_max_body_size 300M;
             proxy_read_timeout 10m;
-            proxy_set_header Origin  https://{{ .Env.deploy_hostname }};
-            proxy_set_header Host {{ .Env.deploy_hostname }};
+            proxy_set_header Origin  https://{{ .Env.deploy_ui_hostname }};
+            proxy_set_header Host {{ .Env.deploy_ui_hostname }};
         }
 
         location / {
@@ -276,9 +276,9 @@ http {
 
         location /narratives/ {
             {{ if .Env.local_navigator }}
-                proxy_pass http://xyz/narratives/;
+                proxy_pass http://navigator/narratives/;
             {{ else }}
-                proxy_pass https://xyz/narratives/;
+                proxy_pass https://kbase_navigator/narratives/;
             {{ end }}
 
             access_log /var/log/nginx/navigator.log upstream_log;
