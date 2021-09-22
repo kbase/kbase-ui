@@ -51,7 +51,7 @@ http {
         {{ end }}
     }
 
-    upstream kbase_navigator {
+    upstream navigator {
         {{ if .Env.local_navigator }}
             server navigator:5000;
         {{ else }}
@@ -120,9 +120,9 @@ http {
 
         location /narratives/ {
             {{ if .Env.local_navigator }}
-                proxy_pass http://navigator/narratives/;
+                proxy_pass http://navigator/;
             {{ else }}
-                proxy_pass https://kbase_navigator/narratives/;
+                proxy_pass https://navigator/narratives/;
             {{ end }}
 
             access_log /var/log/nginx/navigator.log upstream_log;
@@ -276,9 +276,9 @@ http {
 
         location /narratives/ {
             {{ if .Env.local_navigator }}
-                proxy_pass http://navigator/narratives/;
+                proxy_pass http://navigator/;
             {{ else }}
-                proxy_pass https://kbase_navigator/narratives/;
+                proxy_pass https://navigator/narratives/;
             {{ end }}
 
             access_log /var/log/nginx/navigator.log upstream_log;
