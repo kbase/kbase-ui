@@ -81,7 +81,7 @@ plugins:
               account: kbase
     - name: ontology
       globalName: kbase-ui-plugin-ontology
-      version: 0.4.5
+      version: 1.0.0
       source:
           github:
               account: kbase
