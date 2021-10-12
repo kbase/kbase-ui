@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "feature-*"
+      - "fix-*"
 # env:
 #   BUILD: ci
 #   VCS_REF: ${{ github.sha }}
