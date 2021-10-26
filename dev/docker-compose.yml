@@ -6,11 +6,9 @@ services:
     kbase-ui:
         build:
             context: ../
-            args:
-                - BUILD_CONFIG=${BUILD_CONFIG}
-        # just use dev_build for the image tag so we can easily clean
+        # just use dev for the image tag so we can easily clean
         # up afterwards.
-        image: kbase/kbase-ui:dev_build
+        image: kbase/kbase-ui:dev
         networks:
             - kbase-dev
         container_name: kbase-ui
@@ -23,8 +21,10 @@ services:
             # - https://oauth2:${GITLAB_TOKEN}@gitlab.kbase.lbl.gov:1443/devops/kbase_ui_config/raw/develop/${DEPLOY_ENV}_config.ini
             - '-template'
             - /kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf
-            - '-template'
-            - /kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json
+            # - '-wait'
+            # - 'file://kb/deployment/services/kbase-ui/app/index.html'
+            # - '-template'
+            # - /kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/app/config.json
             - bash
             - /kb/deployment/scripts/start-server.bash
     kbase-ui-proxy:

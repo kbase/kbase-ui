@@ -1,0 +1,42 @@
+.NarrativeHeader .-prop-table {
+    display: flex;
+    flex-direction: column;
+}
+
+.NarrativeHeader .-prop-table .-row {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.NarrativeHeader .-prop-table .-title {
+    flex: 1 1 0;
+    white-space: nowrap;
+    overflow-y: hidden;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid silver;
+}
+
+.NarrativeHeader .-prop-table .-row .-col {
+    flex: 1 1 0;
+    white-space: nowrap;
+    overflow-y: hidden;
+    text-overflow: ellipsis;
+}
+
+.NarrativeHeader .-prop-table .-row .-col:nth-child(1) {
+    font-weight: bold;
+    color: rgb(100 100 100);
+    flex: 0 0 8em;
+}
+
+/* Bootstrap BS */
+
+.NarrativeHeader .container-fluid {
+    padding: 0;
+}
+.NarrativeHeader .-well {
+    border: 1px solid silver;
+    border-radius: 4px;
+    padding: 4px;
+}

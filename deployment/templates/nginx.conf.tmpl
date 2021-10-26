@@ -31,15 +31,15 @@ http {
     access_log {{ .Env.nginx_log_syslog }} combined;
     {{ end }}
     # If nginx_log_stdout env var isn't false or empty, log to stdout
-    {{ if isTrue (default .Env.nginx_log_stdout "true") }}
+    {{ if isTrue (default "true" .Env.nginx_log_stdout) }}
     access_log /dev/stdout;
     {{ end }}
     access_log /var/log/nginx/access.log;
 
-    {{ if isTrue (default .Env.nginx_log_stderr "true") }}
-    error_log /dev/stderr {{ default .Env.nginx_loglevel "error" }};
+    {{ if isTrue (default "true" .Env.nginx_log_stderr) }}
+    error_log /dev/stderr {{ default "error" .Env.nginx_loglevel }};
     {{ end }}
-    error_log /var/log/nginx/error.log {{ default .Env.nginx_loglevel "error" }};
+    error_log /var/log/nginx/error.log {{ default "error" .Env.nginx_loglevel }};
 
     ##
     # Gzip settings
@@ -60,20 +60,19 @@ http {
     }
 
     server {
-        listen      {{ default .Env.nginx_listen "80"}} default_server;
-        server_name {{ default .Env.nginx_server_name "localhost" }};
+        listen      {{ default "80" .Env.nginx_listen }} default_server;
+        server_name {{ default "localhost" .Env.nginx_server_name }};
 
         location / {
             # Ensure that index.html is invoked even if a path is
             # specified and doesn't exist.
-            try_files $uri /$uri /index.html;
-            #   index index.html;
+            # try_files $uri /$uri /index.html;
             ssi_silent_errors off;
             allow all;
             # this ensures that a downstream cache service will revalidate.
             add_header Cache-Control 'no-cache';
 
-            root /kb/deployment/services/kbase-ui/dist;
+            root /kb/deployment/services/kbase-ui/app;
         }
 
         # Format is /__poke/https://www.example.com/some/path

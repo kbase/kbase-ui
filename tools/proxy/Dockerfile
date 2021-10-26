@@ -8,17 +8,21 @@ ARG BRANCH=develop
 ARG TAG
 
 # used for processing the config file templates
-ENV DOCKERIZE_VERSION v0.6.1
+RUN version=v0.15.1 && \
+    wget -O - https://github.com/powerman/dockerize/releases/download/${version}/dockerize-`uname -s`-`uname -m` | install /dev/stdin /usr/local/bin/dockerize
+#
+#ENV DOCKERIZE_VERSION v0.6.1
 RUN apk --update upgrade && \
     apk add --no-cache bash bash-completion ca-certificates nginx openssl && \
-    mkdir -p /kb/deployment && \
-    wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
-    tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
-    rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+    mkdir -p /kb/deployment
+
+#    wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
+#    tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
+#    rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 COPY contents /kb/deployment
 
-RUN /kb/deployment/maybe-install-self-signed-cert.sh
+RUN sh /kb/deployment/maybe-install-self-signed-cert.sh
 
 # The BUILD_DATE value seem to bust the docker cache when the timestamp changes, move to
 # the end
@@ -29,8 +33,9 @@ LABEL org.label-schema.vcs-url="https://github.com/kbase/kbase-ui.git" \
     us.kbase.vcs-tag=$TAG \
     maintainer="Steve Chan sychan@lbl.gov"
 
-ENTRYPOINT [ \
-    "dockerize", \
+ENTRYPOINT [ "dockerize" ]
+
+CMD [ \
     "-template",  "/kb/deployment/conf/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
     "-template", "/kb/deployment/conf/cors.conf.tmpl:/etc/nginx/cors.conf", \
     "nginx"]

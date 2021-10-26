@@ -13,11 +13,9 @@ _attic/
 .DS_Store
 
 # Build artifacts
-/build/dist
-/build/build-test-coverage
-/build/test
-/build/deploy
-/mutations/mutantfiles
+/build/
+!/build/README.md
+
 report.*.json
 
 # Developer artifacts
@@ -27,6 +25,8 @@ report.*.json
 /dev/temp
 /dev/test
 yarn.lock
+/react-app/public/modules
+_working/
 
 # General purpose temp directory
 /temp/*

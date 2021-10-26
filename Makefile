@@ -81,34 +81,41 @@ default:
 # bower install is not part of the build process, since the bower
 # config is not known until the parts are assembled...
 
-setup-dirs:
-	@echo "> Setting up directories."
-	mkdir -p temp/files
-	mkdir -p dev/test
+# setup-dirs:
+# 	@echo "> Setting up directories."
+# 	mkdir -p temp/files
+# 	mkdir -p dev/test
 
-node_modules:
-	@echo "> Installing build and test tools."
-	npm install --no-lockfile
+# node_modules:
+# 	@echo "> Installing build and test tools."
+# 	npm install --no-lockfile
 
-setup: setup-dirs
+# setup: setup-dirs
 
-init: setup node_modules
+# init: setup node_modules
 
-quality:
-	@echo "> Checking code quality."
-	npm run quality
+# quality:
+# 	@echo "> Checking code quality."
+# 	npm run quality
 
-compile:
-	@echo "> Compiling TypeScript files."
-	npm run compile
+# compile:
+# 	@echo "> Compiling TypeScript files."
+# 	npm run compile
 
 
 # Perform the build. Build scnearios are supported through the config option
 # which is passed in like "make build build=ci"
-build: quality clean-build compile
-	@:$(call check_defined, config, "the build configuration: defaults to 'dev'")
-	@echo "> Building."
-	npm run build -- --config $(config)
+# build-old: quality clean-build compile
+# 	@:$(call check_defined, config, "the build configuration: defaults to 'dev'")
+# 	@echo "> Building."
+# 	npm run build -- --config $(config)
+
+# New build??
+# For now, everything is in static, but we need
+# to compile somewhere else, then start:merge files together
+# for the dist.
+# build: compile
+
 
 docker-network:
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
@@ -125,12 +132,6 @@ docker-image:
 	@echo "> Building docker image for this branch; assuming we are on Travis CI"
 	@bash $(TOPDIR)/deployment/tools/build-travis.bash
 
-fake-travis-build:
-	@echo "> Building docker image for this branch, using fake "
-	@echo "  Travis environment variables derived from git."
-	@bash $(TOPDIR)/tools/docker/build-travis-fake.bash
-
-
 docker-compose-override:
 	@echo "> Creating docker compose override..."
 	@echo "> With options:"
@@ -144,23 +145,19 @@ docker-compose-override:
 	$(eval cmd = node $(TOPDIR)/tools/js/build-docker-compose-override.js $(env) \
 	  $(foreach p,$(plugins),--plugin $(p)) \
 	  $(foreach p,$(plugin),--plugin $(p)) \
-	  $(foreach i,$(internal-plugins),--internal $i) \
-	  $(foreach l,$(libraries),--lib $l) \
-	  $(foreach f,$(paths),---path $f) \
 	  $(foreach d,$(dynamic-services),--dynamic_services $d) \
 	  $(foreach s,$(services),--services $s) \
-	  $(if $(findstring t,$(local-docs)),--local_docs) \
 	  $(if $(findstring t,$(local-narrative)),--local_narrative) \
 	  $(if $(findstring t,$(local-navigator)),--local_navigator))
 	@echo "> Issuing: $(cmd)"
 	$(cmd)
 
-docker-compose-up: docker-network docker-compose-override
+docker-compose-up: docker-network # docker-compose-override
 	@:$(call check_defined, config, "the kbase-ui build config: defaults to 'dev'")
 	@:$(call check_defined, env, "the runtime (deploy) environment: defaults to 'dev'")
 	@echo "> Building and running docker image for development"
-	@echo ">   BUILD_CONFIG=$(config) DEPLOY_ENV=$(env)"
-	$(eval cmd = cd dev; BUILD_CONFIG=$(config) DEPLOY_ENV=$(env) docker-compose up \
+	@echo ">   DEPLOY_ENV=$(env)"
+	$(eval cmd = cd dev; DEPLOY_ENV=$(env) docker-compose up \
 		$(if $(findstring t,$(build-image)),--build))
 	@echo "> Issuing $(cmd)"
 	$(cmd)
@@ -177,16 +174,9 @@ docker-network-clean:
 	# @:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
 	bash tools/docker/clean-docker-network.sh
 
-start: init docker-compose-up
+start: docker-compose-up
 
 stop: docker-compose-clean docker-network-clean
-
-dev-start: init docker-compose-up
-
-dev-stop: docker-compose-clean docker-network-clean
-
-uuid:
-	@node ./tools/gen-uuid.js
 
 # Tests are managed by grunt, but this also mimics the workflow.
 #init build
@@ -243,3 +233,8 @@ dev-cert:
 rm-dev-cert:
 	rm tools/proxy/contents/ssl/*
 
+build: 
+	sh scripts/tasks/build.sh
+	sh scripts/tasks/copy-build.sh
+	sh scripts/tasks/install-plugins.sh
+	

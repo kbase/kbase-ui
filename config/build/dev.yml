@@ -1,7 +1,0 @@
-## dev Build Config
-## see README.md
----
-target: dev
-release: false
-dist: false
-vfs: false

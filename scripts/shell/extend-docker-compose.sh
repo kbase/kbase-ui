@@ -1,0 +1,1 @@
+bash scripts/deno/docker-compose-override.sh

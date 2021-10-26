@@ -1,0 +1,21 @@
+.NarrativeListing {
+    /*border: 1px solid red;*/
+}
+
+.NarrativeListing .-narrative {
+    /*border: 1px solid green;*/
+    padding: 0.5em;
+    cursor: pointer;
+}
+
+.NarrativeListing .-narrative:hover {
+    background-color: rgba(200, 200, 200, 0.3);
+}
+
+.NarrativeListing .-narrative .-title {
+    font-weight: bold;
+}
+
+.NarrativeListing .-narrative .-subtitle {
+    font-size: 90%;
+}

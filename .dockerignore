@@ -1,35 +1,37 @@
 # package caches wherever they may be installed
 node_modules
+react-app/build/
 
-# Any trash directories
-_trash
 
-# IDEs
-# put your ide here
-nbproject
+# # Any trash directories
+# _trash
 
-# Editor and OS artifacts
-.DS_Store
-.vscode
-.idea
+# # IDEs
+# # put your ide here
+# nbproject
 
-# Build artifacts
-/build/dist
-/build/build
-/build/build-test-coverage
-/build/test
-/build/deploy
-/mutations/mutantfiles
+# # Editor and OS artifacts
+# .DS_Store
+# .vscode
+# .idea
 
-# Doc artifacts
-_book
+# # Build artifacts
+# /build/dist
+# /build/build
+# /build/build-test-coverage
+# /build/test
+# /build/deploy
+# /mutations/mutantfiles
 
-# Developer artifacts
-/dev/docker-compose.override.yml
-node_modules
+# # Doc artifacts
+# _book
 
-# General purpose temp directory
-/temp/*
-!/temp/README.md
+# # Developer artifacts
+# /dev/docker-compose.override.yml
+# node_modules
 
-docker-compose.override.yml
+# # General purpose temp directory
+# /temp/*
+# !/temp/README.md
+
+# docker-compose.override.yml

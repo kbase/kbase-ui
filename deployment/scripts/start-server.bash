@@ -1,5 +1,5 @@
 # check that the deploy config file is ok.
-DEPLOY_CFG=/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json
+DEPLOY_CFG=/kb/deployment/services/kbase-ui/app/config.json
 NGINX_CFG=/etc/nginx/nginx.conf
 
 echo "Checking config file..."
@@ -18,6 +18,8 @@ then
     echo "Deployment config contains <no value>, indicating that the docker run"
     echo "environment is missing a key used in the config template."
     echo "Target file is ${DEPLOY_CFG}"
+    echo "Contents are"
+    cat ${DEPLOY_CFG}
     exit 1
 else
     echo "...and valid!"

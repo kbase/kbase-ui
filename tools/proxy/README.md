@@ -1,5 +1,26 @@
-# Deployment Docker context
+# Development Proxy
 
-This directory is a placeholder. Contents other than this directory will not be checked in.
+Docker manual:
 
-In the deployment process, this directory serves as the docker context. All files to be incorporated into the image are copied into this directory, and the entire contents copied to the image's /kb/deployment directory.
+build:
+
+docker build . -t kbase/kbase-ui-proxy:dev
+
+
+run:
+
+docker run kbase/proxy:dev
+
+docker run --network kbase-dev -p 80:80 -p 443:443 --dns 8.8.8.8 --rm -e "deploy_hostname=ci.kbase.us" -e "kbase_ui_host=kbase-ui" kbase/kbase-ui-proxy:dev
+
+env vars:
+
+required:
+deploy_hostname
+kbase_ui_host
+
+optional:
+local_navigator
+local_narrative
+service_proxies
+dynamic_service_proxies

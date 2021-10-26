@@ -1,0 +1,20 @@
+version: '3.6'
+services:
+  kbase-ui:
+    volumes:
+      - type: bind
+        source: /Users/erikpearson/Work/KBase/2021Q3/kbase-ui/dev/gitlab-config
+        target: /kb/deployment/config
+      - type: volume
+        source: integration-tests
+        target: /kb/deployment/services/kbase-ui/test
+    environment: []
+  kbase-ui-proxy:
+    environment: []
+volumes:
+  integration-tests:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Users/erikpearson/Work/KBase/2021Q3/kbase-ui/dev/test

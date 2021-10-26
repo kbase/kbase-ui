@@ -2,180 +2,140 @@
     "deploy": {
         "id": "kbase-ui",
         "target": "/kb/deployment/services/kbase-ui",
-        "environment": "{{ default .Env.deploy_environment "dev" }}",
-        "hostname": "{{ default .Env.deploy_hostname "localhost" }}",
+        "environment": "{{ .Env.deploy_environment }}",
+        "hostname": "{{ .Env.deploy_hostname }}",
         "icon": "{{ .Env.deploy_icon }}",
         "name": "{{ .Env.deploy_name }}",
+        "ui": {
+            "origin": "https://{{ default .Env.deploy_hostname .Env.deploy_ui_hostname }}"
+        },
         "services": {
-            "urlBase": "https://{{ default .Env.deploy_hostname "localhost" }}",
-            "dynamicServiceProxies": [{{ range $i, $v := split .Env.dynamic_service_proxies "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
+            "urlBase": "{{ .Env.deploy_hostname }}",
+            "dynamicServiceProxies": []
         }
     },
     "ui": {
         "services": {
-			"connection": {},
-			"coreService": {},
-			"instrumentation": {},
-			"notification": {},
-			"route": {
-                "defaultLocation": {
-                    "type": "internal",
-                    "path": "login"
-                },
-                "urls": {
-                    "marketing": "www.kbase.us",
-                    "documentation": "docs.kbase.us"
-                }
+            "connection": {
+                "name": "Connection"
             },
-			"session": {
+            "coreService": {
+                "name": "Core Service Monitor"
+            },
+            "instrumentation": {
+                "name": "Instrumentation"
+            },
+            "notification": {
+                "name": "Notification"
+            },
+            "session": {
+                "name": "Session",
                 "cookie": {
                     "maxAge": 5184000,
                     "name": "kbase_session",
                     "backup": {
                         "name": "kbase_session_backup",
                         "domain": {{ if .Env.ui_backupCookie_domain }}"{{.Env.ui_backupCookie_domain}}"{{else}}null{{end}},
-                        "enabled": {{ default .Env.ui_backupCookie_enabled "false"}}
+                        "enabled": {{ default "false" .Env.ui_backupCookie_enabled }}
                     }
                 },
                 "loginWidget": "kb_login_signin"
             },
-			"userprofile": {},
-			"feeds": {},
-			"menu": {
-				"menus": {
-					"hamburger": {
-						"sections": {
-							"main": [{
-                                    "id": "narrative",
-                                    "auth": true
-                                },
-                                {
-                                    "id": "new-narrative",
-                                    "auth": true
-                                },
-                                {
-                                    "id": "jgi-search",
-                                    "auth": true
-                                },
-                                {
-                                    "id": "biochem-search",
-                                    "auth": false
-                            }],
-							"developer": [{
-									"id": "about-services",
-									"auth": true,
-									"allowRoles": [
-										"DevToken"
-									]
-								}, {
-									"id": "about-plugins",
-									"auth": true,
-									"allowRoles": [
-										"DevToken"
-									]
-								}, {
-									"id": "developer",
-									"auth": true,
-									"allowRoles": [
-										"DevToken"
-									]
-								}, {
-									"id": "dashboard4",
-									"auth": true,
-									"allowRoles": [
-										"DevToken"
-									]
-								}, {
-                                    "id": "public-search",
-                                    "auth": true,
-                                    "allowRoles": [
-                                        "DevToken"
-                                    ]
-                                }],
-							"help": [{
-										"id": "about",
-										"auth": false
-									},
-									{
-										"id": "help",
-										"auth": false
-									}
-                            ]},
-                        "disabled": [{{ range $i, $v := split .Env.ui_services_menu_hamburger_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
-					},
-					"sidebar": {
-						"sections": {
-							"main": [{
-										"id": "dashboard",
-										"auth": true
-									},
-									{
-										"id": "organizations",
-										"auth": true,
-										"tooltip": "Browse, search, join and manage KBase Organizations"
-									},
-									{
-										"id": "catalog",
-										"auth": false,
-										"tooltip": "Browse and search a catalog of KBase Narrative Apps and Workspace Types"
-									},
-									{
-										"id": "search",
-										"auth": true,
-										"tooltip": "Search KBase data objects in Narratives and Reference Workspaces"
-									},
-									{
-										"id": "jobbrowser",
-										"label": "Jobs",
-										"auth": true,
-										"tooltip": "Browse and manage jobs spawned in your Narratives"
-									},
-									{
-										"id": "account",
-										"auth": true,
-										"tooltip": "Manage your KBase Account"
-									},
-									{
-										"id": "feeds",
-										"auth": true,
-										"tooltip": "Browse and manage notifications from your KBase Feeds"
-									}
-                            ]},
-                        "disabled": [{{ range $i, $v := split .Env.ui_services_menu_sidebar_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
-					}
-				}
-			}
-		},
-        "allow": [{{ range $i, $v := split .Env.allow "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+            "userprofile": {
+                "name": "User Profile"
+            },
+            "feeds": {
+                "name": "Feeds"
+            }
+        },
+        "urls": {
+            "marketing": {
+                "url": "www.kbase.us",
+                "title": "Marketing Site"
+            },
+            "documentation": {
+                "url": "docs.kbase.us",
+                "title": "Documentation Site"
+            },
+            "statusPage": {
+                "url": "http://kbase.us/internal/status",
+                "title": "KBase Status Page"
+            },
+            "submitJiraTicket": {
+                "url": "https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%20version",
+                "title": "Submit a Jira Ticket"
+            },
+            "narrative": {
+                "url": "https://{{ .Env.deploy_hostname }}.kbase.us/narrative",
+                "title": "Narrative User Interface"
+            },
+            "loginHelp": {
+                "url": "https://www.kbase.us/support",
+                "title": "Login Help"
+            },
+            "narrativeGuide": {
+                "url": "https://docs.kbase.us/getting-started/narrative",
+                "title": "Narrative Guide"
+            },
+            "tutorials": {
+                "url": "https://docs.kbase.us/workflows",
+                "title": "Tutorials"
+            },
+            "apps": {
+                "url": "https://kbase.us/applist",
+                "title": "App List"
+            },
+            "troubleshooting": {
+                "url": "https://docs.kbase.us/troubleshooting",
+                "title": "Troubleshooting"
+            },
+            "aboutKBase": {
+                "url": "https://www.kbase.us/about/",
+                "title": "About KBase"
+            },
+            "contact": {
+                "url": "https://www.kbase.us/support",
+                "title": "Support"
+            },
+            "help": {
+                "url": "https://www.kbase.us/support/",
+                "title": "Support"
+            }
+        },
+        "allow": [
+            "alpha",
+            "beta"
+        ],
         "featureSwitches": {
-            "enabled": [{{ range $i, $v := split .Env.ui_featureSwitches_enabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
-            "disabled": [{{ range $i, $v := split .Env.ui_featureSwitches_disabled "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
-            "available": [{
-					"id": "orcid_auth_provider",
-					"title": "ORCiD auth provider",
-					"description": "The ORCiD auth provider is"
-				},
-				{
-					"id": "system_alert_notification",
-					"title": "The New System Alert Notification",
-					"disabled": true
-				},
-				{
-					"id": "search_features",
-					"title": "Search over Genome Features"
-				},
-				{
-					"id": "similar_genomes",
-					"title": "Similar Genomes Landing Page Widget"
-				},
-				{
-					"id": "new_provenance_widget",
-					"title": "New Provenance Widget"
-				},
-				{
-					"id": "re-lineage",
-					"title": "Lineage driven by Relation Engine"
-				},
+            "enabled": [{{ range $i, $v := splitList "," .Env.ui_featureSwitches_enabled }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+            "disabled": [{{ range $i, $v := splitList "," .Env.ui_featureSwitches_disabled }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+            "available": [
+                {
+                    "id": "orcid_auth_provider",
+                    "title": "ORCiD auth provider",
+                    "description": "The ORCiD auth provider is"
+                },
+                {
+                    "id": "system_alert_notification",
+                    "title": "The New System Alert Notification",
+                    "disabled": true
+                },
+                {
+                    "id": "search_features",
+                    "title": "Search over Genome Features"
+                },
+                {
+                    "id": "similar_genomes",
+                    "title": "Similar Genomes Landing Page Widget"
+                },
+                {
+                    "id": "new_provenance_widget",
+                    "title": "New Provenance Widget"
+                },
+                {
+                    "id": "re-lineage",
+                    "title": "Lineage driven by Relation Engine"
+                },
                 {
                     "id": "object-link-to-term",
                     "title": "Data objects linked to ontology terms"
@@ -184,301 +144,778 @@
                     "id": "redirect-to-www",
                     "title": "Redirect to www.kbase.us if not physical path, ui hash path, or token"
                 }
-			]
+            ]
         },
         "coreServices": {
-            "disabled": [{{ range $i, $v := split (default .Env.ui_coreServices_disabled "") "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
-        },
-        "images": {
-            "spinner": {
-                "url": "/images/ajax-loader.gif"
-            }
+            "disabled": [{{ range $i, $v := splitList "," (default "" .Env.ui_coreServices_disabled) }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
         },
         "constants": {
-            "client_timeout": 900000,
-            "service_check_timeouts": {
+            "clientTimeout": 900000,
+            "serviceCheckTimeouts": {
                 "slow": 3000,
                 "hard": 5000
             }
         },
-        "paths": {
-            "spa_root": "#",
-            "version_check": "/narrative_version",
-            "dashboard_metrics": "/userMetrics"
-        },
-        "urls": {
-            "status_page": "http://kbase.us/internal/status",
-            "submit_jira_ticket": "https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%20version"
+        "menus": {
+            "hamburger": {
+                "main": {
+                    "items": [
+                        {
+                            "name": "narrative",
+                            "type": "internal",
+                            "path": "narrativemanager/start",
+                            "newWindow": true,
+                            "label": "Narrative Interface",
+                            "icon": "file"
+                        },
+                        {
+                            "name": "new-narrative",
+                            "type": "internal",
+                            "path": "narrativemanager/new",
+                            "newWindow": true,
+                            "label": "New Narrative",
+                            "icon": "plus"
+                        }
+                    ]
+                },
+                "developer": {
+                    "items": [
+                        {
+                            "name": "about",
+                            "type": "internal",
+                            "path": "about",
+                            "label": "About KBase UI",
+                            "icon": "info-circle"
+                        },
+                        {
+                            "name": "developer",
+                            "type": "internal",
+                            "path": "developer",
+                            "allowedRoles": [
+                                "DevToken"
+                            ],
+                            "label": "Developer",
+                            "icon": "cogs"
+                        },
+                        {
+                            "name": "dashboard4",
+                            "label": "Dashboard 4",
+                            "type": "internal",
+                            "path": "dashboard4",
+                            "newWindow": false,
+                            "icon": "compass",
+                            "requiresAuth": true,
+                            "allowedRoles": [
+                                "DevToken"
+                            ]
+                        },
+                        {
+                            "name": "about-services",
+                            "type": "internal",
+                            "path": "about/services",
+                            "label": "KBase Services Status",
+                            "icon": "server"
+                        },
+                        {
+                            "name": "about-plugins",
+                            "type": "internal",
+                            "path": "about/plugins",
+                            "label": "KBase UI Plugins",
+                            "icon": "plug"
+                        }
+                    ]
+                },
+                "help": {
+                    "items": [
+                        {
+                            "name": "about-kbase",
+                            "type": "external",
+                            "url": "https://www.kbase.us/about",
+                            "newWindow": true,
+                            "label": "About KBase",
+                            "icon": "info-circle"
+                        },
+                        {
+                            "name": "help",
+                            "type": "external",
+                            "url": "https://www.kbase.us/support",
+                            "newWindow": true,
+                            "label": "Support",
+                            "icon": "question"
+                        }
+                    ]
+                }
+            },
+            "sidebar": {
+                "items": [
+                    {
+                        "name": "Navigator",
+                        "label": "Navigator",
+                        "type": "internal",
+                        "tooltip": "Narrative Navigator - browse and search Narratives",
+                        "path": "navigator",
+                        "newWindow": false,
+                        "icon": "compass",
+                        "requiresAuth": true
+                    },
+                    {
+                        "name": "Orgs",
+                        "type": "internal",
+                        "tooltip": "Browse, search, join and manage KBase Organizations",
+                        "path": "orgs",
+                        "newWindow": false,
+                        "label": "Orgs",
+                        "icon": "users",
+                        "requiresAuth": true
+                    },
+                    {
+                        "name": "Catalog",
+                        "type": "internal",
+                        "tooltip": "Browse and search a catalog of KBase Narrative Apps and Workspace Types",
+                        "path": "catalog/apps",
+                        "newWindow": false,
+                        "label": "Catalog",
+                        "icon": "book",
+                        "requiresAuth": false
+                    },
+                    {
+                        "name": "Search",
+                        "type": "internal",
+                        "tooltip": "Search KBase data objects in Narratives and Reference Workspaces",
+                        "path": "search",
+                        "newWindow": false,
+                        "label": "Search",
+                        "icon": "search",
+                        "requiresAuth": true
+                    },
+                    {
+                        "name": "Jobs",
+                        "type": "internal",
+                        "tooltip": "Browse and manage jobs spawned in your Narratives",
+                        "path": "jobbrowser",
+                        "newWindow": false,
+                        "label": "Jobs",
+                        "icon": "suitcase",
+                        "requiresAuth": true
+                    },
+                    {
+                        "name": "Account",
+                        "type": "internal",
+                        "tooltip": "Manage your KBase Account",
+                        "path": "auth2/account",
+                        "newWindow": false,
+                        "label": "Account",
+                        "icon": "drivers-license",
+                        "requiresAuth": true
+                    },
+                    {
+                        "name": "Feeds",
+                        "type": "internal",
+                        "tooltip": "Browse and manage notifications from your KBase Feeds",
+                        "path": "feeds",
+                        "newWindow": false,
+                        "label": "Feeds",
+                        "icon": "bullhorn",
+                        "requiresAuth": true
+                    }
+                ]
+            }
         }
     },
-    "docsite": {
-		"base_url": "http://www.kbase.us",
-		"host": "kbase.us",
-		"paths": {
-			"about": "/about",
-			"contact": "/support",
-			"browser_support": "/support"
-		}
-	},
     "services": {
-        "auth2": {
-			"aliases": [
-				"auth",
-				"Auth"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_auth2_path "services/auth" }}",
-			"cookieName": "kbase_session",
-			"name": "Authorization Version 2",
-			"coreService": true,
-			"type": "rest",
-			"version": {
-				"path": "/",
-				"propertyPath": "version",
-				"minimum": "{{ .Env.services_auth2_version_minimum }}",
-                "required": "^0.4.0"
-			},
-			"providers": [{{ range $i, $v := split .Env.services_auth2_providers "," }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
-		},
-		"Catalog": {
-			"aliases": [
-				"catalog"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_catalog_path "services/catalog" }}",
-			"name": "Catalog",
-			"coreService": true,
-			"type": "jsonrpc",
-			"version": {
-				"method": "version",
-				"minimum": "2.1.0",
-                "required": "^2.1.0"
-			}
-		},
-		"Feeds": {
-			"aliases": [
-				"feeds"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_feeds_path "services/feeds" }}",
-			"name": "Feeds",
-			"coreService": true,
-			"type": "rest",
-			"version": {
-				"path": "/",
-				"propertyPath": "version",
-				"minimum": "1.0.1",
-                "required": "^1.0.1"
-			}
-		},
-		"Groups": {
-			"aliases": [
-				"groups"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_groups_path "services/groups" }}",
-			"name": "Groups",
-			"coreService": true,
-			"type": "rest",
-			"version": {
-				"path": "/",
-				"propertyPath": "version",
-				"minimum": "0.1.0",
-                "required": "^0.1.0"
-			}
-		},
-		"NarrativeMethodStore": {
-			"aliases": [
-				"narrative_method_store"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_narrativemethodstore_path "services/narrative_method_store/rpc" }}",
-			"image_url": "https://{{ default .Env.deploy_hostname "localhost" }}/services/narrative_method_store/",
-			"name": "Narrative Method Store",
-			"coreService": true,
-			"type": "jsonrpc",
-			"version": {
-				"method": "ver",
-				"minimum": "0.3.6",
-                "required": "^0.3.6"
-			}
-		},
-		"shock": {
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_shock_path "services/shock-api" }}",
-			"name": "Shock"
-		},
-		"UserProfile": {
-			"aliases": [
-				"user_profile"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_userprofile_path "services/user_profile/rpc" }}",
-			"name": "User Profile",
-			"coreService": true,
-			"type": "jsonrpc",
-			"version": {
-				"method": "ver",
-				"minimum": "0.2.0",
-				"required": "^0.2.0"
-			}
-		},
-		"UserAndJobState": {
-			"aliases": [
-				"user_job_state"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_userandjobstate_path "services/userandjobstate" }}",
-			"name": "User and Job State"
-		},
-		"NarrativeJobService": {
-			"aliases": [
-				"narrative_job_service"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_narrativejobservice_path "services/njs_wrapper" }}",
-			"name": "Narrative Job Service"
-		},
-		"KBaseDataImport": {
-			"aliases": [
-				"data_import_export"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_kbasedataimport_path "services/data_import_export" }}",
-			"name": "Data Import Export"
-		},
-		"SampleService": {
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_sampleservice_path "services/sampleservice" }}",
-			"name": "Sample Service",
-			"coreService": true,
-			"type": "jsonrpc"
-		},
-		"ServiceWizard": {
-			"aliases": [
-				"service_wizard"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_servicewizard_path "services/service_wizard" }}",
-			"name": "Service Wizard",
-			"coreService": true,
-			"type": "jsonrpc",
-			"version": {
-				"method": "version",
-				"minimum": "0.4.0",
-				"required": "^0.4.0"
-			}
-		},
-		"Workspace": {
-			"aliases": [
-				"workspace"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_workspace_path "services/ws" }}",
-			"name": "Workspace",
-			"coreService": true,
-			"type": "jsonrpc",
-			"version": {
-				"method": "ver",
-				"minimum": "0.9.0",
-                "required": "^0.9.0"
-			}
-		},
-		"RelationEngine": {
-			"aliases": [],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_relationengine_path "services/relation_engine_api" }}",
-			"name": "Relation Engine",
-			"coreService": true,
-			"type": "rest",
-			"version": {
-				"path": "/",
-				"semverNotImplemented": true
-			}
-		},
-
-        "SearchAPI2": {
-            "aliases": [],
-            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_path "services/searchapi2/rpc" }}",
-            "legacyUrl": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_path "services/searchapi2/legacy" }}",
-			"name": "Search Engine",
-			"coreService": true,
-			"type": "jsonrpc2",
-			"version": false
+        "Auth2": {
+            "module": "Auth2",
+            "aliases": [
+                "auth2",
+                "auth",
+                "Auth"
+            ],
+            "url": "https://{{ .Env.deploy_hostname }}/{{ default "services/auth" .Env.deploy_services_auth2_path }}",
+            "cookieName": "kbase_session",
+            "extraCookieNames": [],
+            "name": "Authorization Version 2",
+            "type": "rest",
+            "version": {
+                "path": "/",
+                "propertyPath": "version"
+            },
+            "providers": [
+                "Google",
+                "Globus",
+                "OrcID"
+            ]
         },
-         "SearchAPI2Legacy": {
+        "Catalog": {
+            "module": "Catalog",
+            "aliases": [
+                "catalog"
+            ],
+            "url": "https://{{ .Env.deploy_hostname }}/services/catalog",
+            "name": "Catalog",
+            "type": "jsonrpc",
+            "version": {
+                "method": "version"
+            }
+        },
+        "Feeds": {
+            "module": "Feeds",
+            "aliases": [
+                "feeds"
+            ],
+            "url": "https://{{ .Env.deploy_hostname }}/services/feeds",
+            "name": "Feeds",
+            "type": "rest",
+            "version": {
+                "path": "/",
+                "propertyPath": "version"
+            }
+        },
+        "Groups": {
+            "module": "Groups",
+            "aliases": [
+                "groups"
+            ],
+            "url": "https://{{ .Env.deploy_hostname }}/services/groups",
+            "name": "Groups",
+            "type": "rest",
+            "version": {
+                "path": "/",
+                "propertyPath": "version"
+            }
+        },
+        "NarrativeJobService": {
+            "module": "NarrativeJobService",
+            "aliases": [
+                "narrative_job_service",
+                "njs"
+            ],
+            "url": "https://{{ .Env.deploy_hostname }}/services/njs_wrapper",
+            "name": "Narrative Job Service",
+            "type": "jsonrpc",
+            "version": {
+                "method": "ver"
+            }
+        },
+        "NarrativeMethodStore": {
+            "module": "NarrativeMethodStore",
+            "aliases": [
+                "narrative_method_store"
+            ],
+            "url": "https://{{ .Env.deploy_hostname }}/services/narrative_method_store/rpc",
+            "image_url": "https://{{ .Env.deploy_hostname }}/services/narrative_method_store/",
+            "name": "Narrative Method Store",
+            "type": "jsonrpc",
+            "version": {
+                "method": "ver"
+            }
+        },
+        "UserProfile": {
+            "module": "UserProfile",
+            "aliases": [
+                "user_profile"
+            ],
+            "url": "https://{{ .Env.deploy_hostname }}/services/user_profile/rpc",
+            "name": "User Profile",
+            "type": "jsonrpc",
+            "version": {
+                "method": "ver"
+            }
+        },
+        "SampleService": {
+            "module": "SampleService",
+            "url": "https://{{ .Env.deploy_hostname }}/services/sampleservice",
+            "name": "Sample Service",
+            "type": "jsonrpc"
+        },
+        "ServiceWizard": {
+            "module": "ServiceWizard",
+            "aliases": [
+                "service_wizard"
+            ],
+            "url": "https://{{ .Env.deploy_hostname }}/services/service_wizard",
+            "name": "Service Wizard",
+            "type": "jsonrpc",
+            "version": {
+                "method": "version"
+            }
+        },
+        "Workspace": {
+            "module": "Workspace",
+            "aliases": [
+                "workspace"
+            ],
+            "url": "https://{{ .Env.deploy_hostname }}/services/ws",
+            "name": "Workspace",
+            "type": "jsonrpc",
+            "version": {
+                "method": "ver"
+            }
+        },
+        "RelationEngine": {
+            "module": "RelationEngine",
+            "aliases": [],
+            "url": "https://{{ .Env.deploy_hostname }}/services/relation_engine_api",
+            "name": "Relation Engine",
+            "type": "rest",
+            "version": {
+                "path": "/",
+                "semverNotImplemented": true
+            }
+        },
+        "SearchAPI2": {
+            "module": "SearchAPI2",
+            "aliases": [],
+            "url": "https://{{ .Env.deploy_hostname }}/services/searchapi2/rpc",
+            "legacyUrl": "https://{{ .Env.deploy_hostname }}/services/searchapi2/legacy",
+            "name": "Search Engine",
+            "type": "jsonrpc2"
+        },
+        "SearchAPI2Legacy": {
             "aliases": [],
             "module": "KBaseSearchEngine",
-            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_searchapi2_legacy_path "services/searchapi2/legacy" }}",
-			"name": "Search Engine",
-			"coreService": true,
-			"type": "jsonrpc",
-			"version": false
+            "url": "https://{{ .Env.deploy_hostname }}/services/searchapi2/legacy",
+            "name": "Search Engine",
+            "type": "jsonrpc"
         },
         "execution_engine2": {
-            "aliases": ["ee2", "ExecutionEngine2"],
-            "url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_ee2_path "services/ee2" }}",
-			"name": "Execution Engine2",
-			"coreService": true,
-			"type": "jsonrpc",
-			"version": false
-        },
-		"doc_site": {
-			"url": "http://kbase.us",
-			"name": "Documentation and Support Site"
-		},
-		"narrative": {
-			"url": "{{ .Env.services_narrative_url }}",
-            "name": "Narrative User Interface"
-		},
-		"staging": {
-			"aliases": [
-				"staging_service"
-			],
-			"url": "https://{{ default .Env.deploy_hostname "localhost" }}/{{ default .Env.deploy_services_staging_path "services/staging_service" }}"
-		}
-
+            "module": "execution_engine2",
+            "aliases": [
+                "ee2",
+                "ExecutionEngine2"
+            ],
+            "url": "https://{{ .Env.deploy_hostname }}/services/ee2",
+            "name": "Execution Engine2",
+            "type": "jsonrpc"
+        }
     },
     "dynamicServices": {
         "JobBrowserBFF": {
-            "version": "{{default .Env.dynamicServices_JobBrowserBFF_version "auto"}}"
+            "module": "JobBrowserBFF",
+            "version": "auto"
         },
         "SampleService": {
-            "version": "{{default .Env.dynamicServices_SampleService_version "auto"}}"
+            "module": "SampleService",
+            "version": "auto"
         },
         "OntologyAPI": {
-            "version": "{{default .Env.dynamicServices_OntologyAPI_version "auto"}}"
+            "module": "OntologyAPI",
+            "version": "dev"
         },
         "TaxonomyAPI": {
-            "version": "{{default .Env.dynamicServices_TaxonomyAPI_version "auto"}}"
+            "module": "TaxonomyAPI",
+            "version": "auto"
         }
     },
-    "resources": {
-		"docSite": {
-			"base": {
-				"url": "https://docs.kbase.us"
-			}
-		},
-        "marketingSite": {
-            "base": {
-                "url": "https://www.kbase.us"
+    "release": {
+        "version": "2.5.1"
+    },
+    "build": {
+        "target": "prod",
+        "stats": {
+            "start": 1631917379600
+        },
+        "git": {
+            "commitHash": "d37b199a0c2b0a9ab2799ad95f5c088b805e57ad",
+            "commitAbbreviatedHash": "d37b199",
+            "authorName": "Erik Pearson",
+            "authorDate": "2021-09-17T22:21:07.000Z",
+            "committerName": "GitHub",
+            "committerDate": "2021-09-17T22:21:07.000Z",
+            "reflogSelector": " (grafted, HEAD, tag: v2.5.1)",
+            "subject": "Merge pull request #1573 from kbase/feature-towards-2.5.1",
+            "commitNotes": "",
+            "originUrl": "https://github.com/kbase/kbase-ui",
+            "branch": "HEAD",
+            "tag": "v2.5.1",
+            "version": "2.5.1"
+        },
+        "hostInfo": null,
+        "builtAt": 1631917419543
+    },
+    "plugins": [
+        {
+            "name": "typeview",
+            "globalName": "kbase-ui-plugin-typeview",
+            "repoName": "kbase-ui-plugin-typeview",
+            "version": "3.1.0",
+            "branch": "v3.1.0",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-typeview",
+            "gitInfo": {
+                "commitHash": "e7c8a11b135d4f76d82d1576ec2f88d30e7f41ae",
+                "commitAbbreviatedHash": "e7c8a11",
+                "authorName": "Erik Pearson",
+                "authorDate": "2020-10-07T00:45:15.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2020-10-07T00:45:15.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v3.1.0)",
+                "subject": "Merge pull request #21 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-typeview",
+                "branch": "HEAD",
+                "tag": "v3.1.0",
+                "version": "3.1.0"
             }
         },
-		"documentation": {
-			"loginHelp": {
-				"url": "https://www.kbase.us/support"
-			},
-			"narrativeGuide": {
-				"url": "https://docs.kbase.us/getting-started/narrative"
-			},
-			"tutorials": {
-				"url": "https://docs.kbase.us/workflows"
-			},
-			"apps": {
-				"url": "https://kbase.us/applist"
-			},
-			"troubleshooting": {
-				"signin": "https://docs.kbase.us/troubleshooting"
-			},
-			"aboutKBase": {
-				"url": "https://www.kbase.us/about/"
-			}
-		},
-		"contact": {
-			"url": "https://www.kbase.us/support",
-			"name": "Support"
-		},
-		"help": {
-			"url": "https://www.kbase.us/support/",
-			"name": "Support"
-		},
-		"status_page": "http://kbase.us/internal/status",
-		"submit_jira_ticket": "https://atlassian.kbase.us/secure/CreateIssueDetails!init.jspa?pid=10200&issuetype=1&description=#Narrative%"
-	}
+        {
+            "name": "dataview",
+            "globalName": "kbase-ui-plugin-dataview",
+            "repoName": "kbase-ui-plugin-dataview",
+            "version": "4.9.0",
+            "branch": "v4.9.0",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-dataview",
+            "gitInfo": {
+                "commitHash": "4f8569f908cfc10bc5f46601e0fb8ca8e713f3f9",
+                "commitAbbreviatedHash": "4f8569f",
+                "authorName": "Erik Pearson",
+                "authorDate": "2021-08-13T16:17:10.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2021-08-13T16:17:10.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v4.9.0)",
+                "subject": "Merge pull request #198 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-dataview",
+                "branch": "HEAD",
+                "tag": "v4.9.0",
+                "version": "4.9.0"
+            }
+        },
+        {
+            "name": "auth2-client",
+            "globalName": "kbase-ui-plugin-auth2-client",
+            "repoName": "kbase-ui-plugin-auth2-client",
+            "version": "2.4.6",
+            "branch": "v2.4.6",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-auth2-client",
+            "gitInfo": {
+                "commitHash": "964a847ccba9588fe821d75dc3e81a3ff5dc2c45",
+                "commitAbbreviatedHash": "964a847",
+                "authorName": "Erik Pearson",
+                "authorDate": "2021-05-16T23:53:32.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2021-05-16T23:53:32.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v2.4.6)",
+                "subject": "Merge pull request #185 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-auth2-client",
+                "branch": "HEAD",
+                "tag": "v2.4.6",
+                "version": "2.4.6"
+            }
+        },
+        {
+            "name": "jgi-search",
+            "globalName": "kbase-ui-plugin-jgi-search",
+            "repoName": "kbase-ui-plugin-jgi-search",
+            "version": "2.1.3",
+            "branch": "v2.1.3",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-jgi-search",
+            "gitInfo": {
+                "commitHash": "8e1355289a35c74997d1d16a1d9e98912f60cba7",
+                "commitAbbreviatedHash": "8e13552",
+                "authorName": "Erik Pearson",
+                "authorDate": "2020-11-03T20:44:39.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2020-11-03T20:44:39.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v2.1.3)",
+                "subject": "Merge pull request #38 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-jgi-search",
+                "branch": "HEAD",
+                "tag": "v2.1.3",
+                "version": "2.1.3"
+            }
+        },
+        {
+            "name": "feeds",
+            "globalName": "kbase-ui-plugin-feeds",
+            "repoName": "kbase-ui-plugin-feeds",
+            "version": "2.1.1",
+            "branch": "v2.1.1",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-feeds",
+            "gitInfo": {
+                "commitHash": "18bf613e87117e6abe13470abe9e306e39ba187a",
+                "commitAbbreviatedHash": "18bf613",
+                "authorName": "Erik Pearson",
+                "authorDate": "2020-10-13T15:59:06.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2020-10-13T15:59:06.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v2.1.1)",
+                "subject": "Merge pull request #34 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-feeds",
+                "branch": "HEAD",
+                "tag": "v2.1.1",
+                "version": "2.1.1"
+            }
+        },
+        {
+            "name": "catalog",
+            "globalName": "kbase-ui-plugin-catalog",
+            "repoName": "kbase-ui-plugin-catalog",
+            "version": "2.2.5",
+            "branch": "v2.2.5",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-catalog",
+            "gitInfo": {
+                "commitHash": "9f90864a42dadc6f85cf52e990648a7c417d9e39",
+                "commitAbbreviatedHash": "9f90864",
+                "authorName": "Erik Pearson",
+                "authorDate": "2021-06-30T00:33:54.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2021-06-30T00:33:54.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v2.2.5)",
+                "subject": "Merge pull request #60 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-catalog",
+                "branch": "HEAD",
+                "tag": "v2.2.5",
+                "version": "2.2.5"
+            }
+        },
+        {
+            "name": "data-search",
+            "globalName": "kbase-ui-plugin-data-search",
+            "repoName": "kbase-ui-plugin-data-search",
+            "version": "2.3.3",
+            "branch": "v2.3.3",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-data-search",
+            "gitInfo": {
+                "commitHash": "6d9da77e6e264c2af027d6dd37650990eb1e2027",
+                "commitAbbreviatedHash": "6d9da77",
+                "authorName": "Erik Pearson",
+                "authorDate": "2021-05-16T23:39:30.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2021-05-16T23:39:30.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v2.3.3)",
+                "subject": "Merge pull request #91 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-data-search",
+                "branch": "HEAD",
+                "tag": "v2.3.3",
+                "version": "2.3.3"
+            }
+        },
+        {
+            "name": "organizations",
+            "globalName": "kbase-ui-plugin-organizations",
+            "repoName": "kbase-ui-plugin-organizations",
+            "version": "2.1.11",
+            "branch": "v2.1.11",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-organizations",
+            "gitInfo": {
+                "commitHash": "2d9f3558a4911b7f33bf200225039e24b76d5255",
+                "commitAbbreviatedHash": "2d9f355",
+                "authorName": "Erik Pearson",
+                "authorDate": "2021-09-04T16:06:23.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2021-09-04T16:06:23.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v2.1.11)",
+                "subject": "Merge pull request #22 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-organizations",
+                "branch": "HEAD",
+                "tag": "v2.1.11",
+                "version": "2.1.11"
+            }
+        },
+        {
+            "name": "biochem-search",
+            "globalName": "kbase-ui-plugin-biochem-search",
+            "repoName": "kbase-ui-plugin-biochem-search",
+            "version": "2.2.1",
+            "branch": "v2.2.1",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-biochem-search",
+            "gitInfo": {
+                "commitHash": "277970a28ca121b35b7fb037eb844e1151d90170",
+                "commitAbbreviatedHash": "277970a2",
+                "authorName": "Erik Pearson",
+                "authorDate": "2020-10-13T16:30:51.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2020-10-13T16:30:51.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v2.2.1)",
+                "subject": "Merge pull request #24 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-biochem-search",
+                "branch": "HEAD",
+                "tag": "v2.2.1",
+                "version": "2.2.1"
+            }
+        },
+        {
+            "name": "job-browser2",
+            "globalName": "kbase-ui-plugin-job-browser2",
+            "repoName": "kbase-ui-plugin-job-browser2",
+            "version": "1.6.3",
+            "branch": "v1.6.3",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-job-browser2",
+            "gitInfo": {
+                "commitHash": "0472dcd37497764cec370b44f0c28c8df26a4561",
+                "commitAbbreviatedHash": "0472dcd",
+                "authorName": "Erik Pearson",
+                "authorDate": "2021-02-18T06:36:26.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2021-02-18T06:36:26.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v1.6.3)",
+                "subject": "Merge pull request #92 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-job-browser2",
+                "branch": "HEAD",
+                "tag": "v1.6.3",
+                "version": "1.6.3"
+            }
+        },
+        {
+            "name": "react-profile-view",
+            "globalName": "kbase-ui-plugin-react-profile-view",
+            "repoName": "kbase-ui-plugin-react-profile-view",
+            "version": "1.3.1",
+            "branch": "v1.3.1",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-react-profile-view",
+            "gitInfo": {
+                "commitHash": "d5908115b69856fb1238135a708feb9c2f7f20c8",
+                "commitAbbreviatedHash": "d590811",
+                "authorName": "Erik Pearson",
+                "authorDate": "2020-10-13T16:40:37.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2020-10-13T16:40:37.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v1.3.1)",
+                "subject": "Merge pull request #40 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-react-profile-view",
+                "branch": "HEAD",
+                "tag": "v1.3.1",
+                "version": "1.3.1"
+            }
+        },
+        {
+            "name": "dashboard4",
+            "globalName": "kbase-ui-plugin-dashboard4",
+            "repoName": "kbase-ui-plugin-dashboard4",
+            "version": "0.4.3",
+            "branch": "v0.4.3",
+            "gitAccount": "eapearson",
+            "url": "https://github.com/eapearson/kbase-ui-plugin-dashboard4",
+            "gitInfo": {
+                "commitHash": "9073b01aa27fabd6767192d069a2cf378f6634c9",
+                "commitAbbreviatedHash": "9073b01",
+                "authorName": "Erik Pearson",
+                "authorDate": "2020-11-24T17:50:08.000Z",
+                "committerName": "Erik Pearson",
+                "committerDate": "2020-11-24T17:50:08.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v0.4.3)",
+                "subject": "add direct searchapi2 config support",
+                "commitNotes": "",
+                "originUrl": "https://github.com/eapearson/kbase-ui-plugin-dashboard4",
+                "branch": "HEAD",
+                "tag": "v0.4.3",
+                "version": "0.4.3"
+            }
+        },
+        {
+            "name": "samples",
+            "globalName": "kbase-ui-plugin-samples",
+            "repoName": "kbase-ui-plugin-samples",
+            "version": "0.13.4",
+            "branch": "v0.13.4",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-samples",
+            "gitInfo": {
+                "commitHash": "67f82213e2ea5eb2ac7e1602c42de4d237059488",
+                "commitAbbreviatedHash": "67f8221",
+                "authorName": "Erik Pearson",
+                "authorDate": "2021-07-09T21:29:38.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2021-07-09T21:29:38.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v0.13.4)",
+                "subject": "Merge pull request #95 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-samples",
+                "branch": "HEAD",
+                "tag": "v0.13.4",
+                "version": "0.13.4"
+            }
+        },
+        {
+            "name": "ontology",
+            "globalName": "kbase-ui-plugin-ontology",
+            "repoName": "kbase-ui-plugin-ontology",
+            "version": "0.4.5",
+            "branch": "v0.4.5",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-ontology",
+            "gitInfo": {
+                "commitHash": "6be1a435b2fb52a9be48a5d10cd6fb2882dc026d",
+                "commitAbbreviatedHash": "6be1a43",
+                "authorName": "Erik Pearson",
+                "authorDate": "2021-05-05T15:24:15.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2021-05-05T15:24:15.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v0.4.5)",
+                "subject": "Merge pull request #33 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-ontology",
+                "branch": "HEAD",
+                "tag": "v0.4.5",
+                "version": "0.4.5"
+            }
+        },
+        {
+            "name": "taxonomy",
+            "globalName": "kbase-ui-plugin-taxonomy",
+            "repoName": "kbase-ui-plugin-taxonomy",
+            "version": "0.3.7",
+            "branch": "v0.3.7",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-taxonomy",
+            "gitInfo": {
+                "commitHash": "ae6d34bc1e17b64fd1fd640b987a41d66f50a25a",
+                "commitAbbreviatedHash": "ae6d34b",
+                "authorName": "Erik Pearson",
+                "authorDate": "2021-01-07T13:40:41.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2021-01-07T13:40:41.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v0.3.7)",
+                "subject": "Merge pull request #12 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-taxonomy",
+                "branch": "HEAD",
+                "tag": "v0.3.7",
+                "version": "0.3.7"
+            }
+        },
+        {
+            "name": "public-search",
+            "globalName": "kbase-ui-plugin-public-search",
+            "repoName": "kbase-ui-plugin-public-search",
+            "version": "0.15.6",
+            "branch": "v0.15.6",
+            "gitAccount": "kbase",
+            "url": "https://github.com/kbase/kbase-ui-plugin-public-search",
+            "gitInfo": {
+                "commitHash": "0078f484f793049dc5cf7c7d9b321a60d762d66b",
+                "commitAbbreviatedHash": "0078f48",
+                "authorName": "Erik Pearson",
+                "authorDate": "2021-04-20T19:31:15.000Z",
+                "committerName": "GitHub",
+                "committerDate": "2021-04-20T19:31:15.000Z",
+                "reflogSelector": " (grafted, HEAD, tag: v0.15.6)",
+                "subject": "Merge pull request #9 from eapearson/master",
+                "commitNotes": "",
+                "originUrl": "https://github.com/kbase/kbase-ui-plugin-public-search",
+                "branch": "HEAD",
+                "tag": "v0.15.6",
+                "version": "0.15.6"
+            }
+        }
+    ]
 }

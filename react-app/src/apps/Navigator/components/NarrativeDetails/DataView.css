@@ -1,0 +1,12 @@
+.DataView {
+    overflow-y: auto;
+}
+
+.DataView .-name {
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.DataView .-type {
+
+}

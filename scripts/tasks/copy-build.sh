@@ -1,0 +1,1 @@
+cp -pr react-app/build build/app

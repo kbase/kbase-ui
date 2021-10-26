@@ -1,5 +1,0 @@
-# Build config file
----
-tempDir: temp/files
-mutate: true
-keepBuildDir: false

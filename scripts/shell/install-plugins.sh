@@ -1,0 +1,1 @@
+bash scripts/deno/install-plugins.sh

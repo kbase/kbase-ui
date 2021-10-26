@@ -1,0 +1,12 @@
+.MessageAlert {
+    margin: 0 auto;
+}
+
+.MessageAlert .alert-title {
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.MessageAlert .fa {
+    margin-right: 0.5em;
+}

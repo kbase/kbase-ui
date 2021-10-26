@@ -1,0 +1,12 @@
+.ErrorAlert {
+    margin: 0 auto;
+}
+
+.ErrorAlert .alert-title {
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.ErrorAlert .fa {
+    margin-right: 0.5em;
+}

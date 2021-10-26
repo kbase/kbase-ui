@@ -1,0 +1,18 @@
+.ErrorMessage {
+  margin: 4em 2em 0 2em;
+  min-width: 10em;
+  max-width: 60em;
+  align-self: center;
+}
+
+.ErrorMessage .-title {
+  font-weight: bold;
+}
+
+.ErrorMessage .-title > .-text {
+  margin-left: 0.5em;
+}
+
+.ErrorMessage .-message {
+  margin-top: 1em;
+}

@@ -1,0 +1,1252 @@
+[
+    {
+        "name": "enigma",
+        "info": {
+            "title": "Ecosystems and Networks Integrated with Genes and Molecular Assemblies",
+            "shortTitle": "ENIGMA",
+            "homePage": "https://enigma.lbl.gov"
+        },
+        "mappings": {
+            "id": "name",
+            "parent": "enigma:well_name",
+            "name": "name"
+        },
+        "columns": [
+            {
+                "title": "AODC (cells/g)",
+                "aliases": [
+                    "aodc (cells/g)"
+                ],
+                "sampleKey": "enigma:aodc"
+            },
+            {
+                "title": "Aquifer",
+                "aliases": [
+                    "aquifer"
+                ],
+                "sampleKey": "enigma:aquifer"
+            },
+            {
+                "title": "Area Name",
+                "aliases": [
+                    "area name"
+                ],
+                "sampleKey": "enigma:area_name"
+            },
+            {
+                "title": "Average Water Level (ft AMSL)",
+                "aliases": [
+                    "average water level (ft amsl)"
+                ],
+                "sampleKey": "enigma:average_water_level"
+            },
+            {
+                "title": "BONCAT Activity (cell/g)",
+                "aliases": [
+                    "boncat activity (cell/g)"
+                ],
+                "sampleKey": "enigma:boncat_activity"
+            },
+            {
+                "title": "Biomass Carbon (mg/g)",
+                "aliases": [
+                    "biomass carbon (mg/g)"
+                ],
+                "sampleKey": "enigma:biomass_carbon"
+            },
+            {
+                "title": "Boring (ft BGS)",
+                "aliases": [
+                    "boring (ft bgs)"
+                ],
+                "sampleKey": "enigma:boring"
+            },
+            {
+                "title": "Boring Diameter (in)",
+                "aliases": [
+                    "boring diameter (in)"
+                ],
+                "sampleKey": "enigma:boring_diameter"
+            },
+            {
+                "title": "Boring Refusal",
+                "aliases": [
+                    "boring refusal"
+                ],
+                "sampleKey": "enigma:boring_refusal"
+            },
+            {
+                "title": "Collection Time",
+                "aliases": [
+                    "collection time"
+                ],
+                "sampleKey": "enigma:collection_time"
+            },
+            {
+                "title": "Condition",
+                "aliases": [
+                    "condition"
+                ],
+                "sampleKey": "enigma:condition"
+            },
+            {
+                "title": "Conductivity (mS/cm)",
+                "aliases": [
+                    "conductivity (ms/cm)"
+                ],
+                "sampleKey": "enigma:conductivity"
+            },
+            {
+                "title": "DAPI Cell Count (cells/g)",
+                "aliases": [
+                    "dapi cell count (cells/g)"
+                ],
+                "sampleKey": "enigma:dapi_cell_count"
+            },
+            {
+                "title": "DNA Picogreen Total (ng)",
+                "aliases": [
+                    "dna picogreen total (ng)"
+                ],
+                "sampleKey": "enigma:dna_picogreen_total"
+            },
+            {
+                "title": "Date",
+                "aliases": [
+                    "date"
+                ],
+                "sampleKey": "enigma:date"
+            },
+            {
+                "title": "Depth (cm bgs)",
+                "aliases": [
+                    "depth (cm bgs)"
+                ],
+                "sampleKey": "depth_bgs"
+            },
+            {
+                "title": "Description",
+                "aliases": [
+                    "description"
+                ],
+                "sampleKey": "description"
+            },
+            {
+                "title": "Drive Casing End Depth (ft BGS)",
+                "aliases": [
+                    "drive casing end depth (ft bgs)"
+                ],
+                "sampleKey": "enigma:drive_casing_end_depth"
+            },
+            {
+                "title": "Drive Casing ID (in)",
+                "aliases": [
+                    "drive casing id (in)"
+                ],
+                "sampleKey": "enigma:drive_casing_id"
+            },
+            {
+                "title": "Drive Casing OD (in)",
+                "aliases": [
+                    "drive casing od (in)"
+                ],
+                "sampleKey": "enigma:drive_casing_od"
+            },
+            {
+                "title": "Drive Casing Start Depth (ft BGS)",
+                "aliases": [
+                    "drive casing start depth (ft bgs)"
+                ],
+                "sampleKey": "enigma:drive_casing_start_depth"
+            },
+            {
+                "title": "Drive Casing Type",
+                "aliases": [
+                    "drive casing type"
+                ],
+                "sampleKey": "enigma:drive_casing_type"
+            },
+            {
+                "title": "Environmental Package",
+                "aliases": [
+                    "environmental package"
+                ],
+                "sampleKey": "env_package"
+            },
+            {
+                "title": "Experiment Name",
+                "aliases": [
+                    "experiment name"
+                ],
+                "sampleKey": "enigma:experiment_name"
+            },
+            {
+                "title": "Filter (micron)",
+                "aliases": [
+                    "filter (micron)"
+                ],
+                "sampleKey": "enigma:filter"
+            },
+            {
+                "title": "Fraction",
+                "aliases": [
+                    "fraction"
+                ],
+                "sampleKey": "enigma:fraction"
+            },
+            {
+                "title": "Fractures/Cavities/WaterBreaks",
+                "aliases": [
+                    "fractures/cavities/waterbreaks"
+                ],
+                "sampleKey": "enigma:fractures_cavities_waterbreaks"
+            },
+            {
+                "title": "Functional Area",
+                "aliases": [
+                    "functional area"
+                ],
+                "sampleKey": "enigma:functional_area"
+            },
+            {
+                "title": "Geological Zone",
+                "aliases": [
+                    "geological zone"
+                ],
+                "sampleKey": "enigma:geological_zone"
+            },
+            {
+                "title": "Ground Elevation (ft AMSL)",
+                "aliases": [
+                    "ground elevation (ft amsl)"
+                ],
+                "sampleKey": "enigma:ground_elevation"
+            },
+            {
+                "title": "Installation Method",
+                "aliases": [
+                    "installation method"
+                ],
+                "sampleKey": "enigma:installation_method"
+            },
+            {
+                "title": "Latitude",
+                "aliases": [
+                    "latitude"
+                ],
+                "sampleKey": "latitude"
+            },
+            {
+                "title": "Leucine Activity (ngC/day cell}",
+                "aliases": [
+                    "leucine activity (ngc/day cell}"
+                ],
+                "sampleKey": "enigma:leucine_activity"
+            },
+            {
+                "title": "Longitude",
+                "aliases": [
+                    "longitude"
+                ],
+                "sampleKey": "longitude"
+            },
+            {
+                "title": "Lower Seal End Depth (ft BGS)",
+                "aliases": [
+                    "lower seal end depth (ft bgs)"
+                ],
+                "sampleKey": "enigma:lower_seal_end_depth"
+            },
+            {
+                "title": "Lower Seal Start Depth (ft BGS)",
+                "aliases": [
+                    "lower seal start depth (ft bgs)"
+                ],
+                "sampleKey": "enigma:lower_seal_start_depth"
+            },
+            {
+                "title": "Lower Seal Type (ft BGS)",
+                "aliases": [
+                    "lower seal type (ft bgs)"
+                ],
+                "sampleKey": "enigma:lower_seal_type"
+            },
+            {
+                "title": "Material",
+                "aliases": [
+                    "material"
+                ],
+                "sampleKey": "material"
+            },
+            {
+                "title": "Maturation Time",
+                "aliases": [
+                    "maturation time"
+                ],
+                "sampleKey": "enigma:maturation_time"
+            },
+            {
+                "title": "Max Water Level (ft AMSL)",
+                "aliases": [
+                    "max water level (ft amsl)"
+                ],
+                "sampleKey": "enigma:max_water_level"
+            },
+            {
+                "title": "Method",
+                "aliases": [
+                    "method"
+                ],
+                "sampleKey": "enigma:method"
+            },
+            {
+                "title": "Min Water Level (ft AMSL)",
+                "aliases": [
+                    "min water level (ft amsl)"
+                ],
+                "sampleKey": "enigma:min_water_level"
+            },
+            {
+                "title": "Moisture (%)",
+                "aliases": [
+                    "moisture (%)"
+                ],
+                "sampleKey": "enigma:moisture"
+            },
+            {
+                "title": "Open",
+                "aliases": [
+                    "open"
+                ],
+                "sampleKey": "enigma:open"
+            },
+            {
+                "title": "Open Casing Depth (ft BGS)",
+                "aliases": [
+                    "open casing depth (ft bgs)"
+                ],
+                "sampleKey": "enigma:open_casing_depth"
+            },
+            {
+                "title": "Open Casing ID (in)",
+                "aliases": [
+                    "open casing id (in)"
+                ],
+                "sampleKey": "enigma:open_casing_id"
+            },
+            {
+                "title": "Open Casing OD (in)",
+                "aliases": [
+                    "open casing od (in)"
+                ],
+                "sampleKey": "enigma:open_casing_od"
+            },
+            {
+                "title": "Open Casing Type",
+                "aliases": [
+                    "open casing type"
+                ],
+                "sampleKey": "enigma:open_casing_type"
+            },
+            {
+                "title": "Open Hole Depth (ft BGS)",
+                "aliases": [
+                    "open hole depth (ft bgs)"
+                ],
+                "sampleKey": "enigma:open_hole_depth"
+            },
+            {
+                "title": "Open Hole Diameter (in)",
+                "aliases": [
+                    "open hole diameter (in)"
+                ],
+                "sampleKey": "enigma:open_hole_diameter"
+            },
+            {
+                "title": "Open Interval Diameter (in)",
+                "aliases": [
+                    "open interval diameter (in)"
+                ],
+                "sampleKey": "enigma:open_interval_diameter"
+            },
+            {
+                "title": "Open Interval End Depth (ft BGS)",
+                "aliases": [
+                    "open interval end depth (ft bgs)"
+                ],
+                "sampleKey": "enigma:open_interval_end_depth"
+            },
+            {
+                "title": "Open Interval Start Depth (ft BGS)",
+                "aliases": [
+                    "open interval start depth (ft bgs)"
+                ],
+                "sampleKey": "enigma:open_interval_start_depth"
+            },
+            {
+                "title": "Organic Carbon (mg/g dry weight)",
+                "aliases": [
+                    "organic carbon (mg/g dry weight)"
+                ],
+                "sampleKey": "enigma:organic_carbon"
+            },
+            {
+                "title": "Origination or Plug/Abandon",
+                "aliases": [
+                    "origination or plug/abandon"
+                ],
+                "sampleKey": "enigma:origination_or_plug_abandon"
+            },
+            {
+                "title": "Other Name",
+                "aliases": [
+                    "other name"
+                ],
+                "sampleKey": "other_names"
+            },
+            {
+                "title": "Packing Depth End (ft BGS)",
+                "aliases": [
+                    "packing depth end (ft bgs)"
+                ],
+                "sampleKey": "enigma:packing_depth_end"
+            },
+            {
+                "title": "Packing Depth Start (ft BGS)",
+                "aliases": [
+                    "packing depth start (ft bgs)"
+                ],
+                "sampleKey": "enigma:packing_depth_start"
+            },
+            {
+                "title": "Packing Type",
+                "aliases": [
+                    "packing type"
+                ],
+                "sampleKey": "enigma:packing_type"
+            },
+            {
+                "title": "Pore Water Extraction (microliters)",
+                "aliases": [
+                    "pore water extraction (microliters)"
+                ],
+                "sampleKey": "enigma:pore_water_extraction"
+            },
+            {
+                "title": "Recovery Factor",
+                "aliases": [
+                    "recovery factor"
+                ],
+                "sampleKey": "enigma:recovery_factor"
+            },
+            {
+                "title": "Redox Potential",
+                "aliases": [
+                    "redox potential"
+                ],
+                "sampleKey": "enigma:redox_potential"
+            },
+            {
+                "title": "Replicate",
+                "aliases": [
+                    "replicate"
+                ],
+                "sampleKey": "enigma:replicate"
+            },
+            {
+                "title": "Rock Formation",
+                "aliases": [
+                    "rock formation"
+                ],
+                "sampleKey": "enigma:rock_formation"
+            },
+            {
+                "title": "SampleID",
+                "aliases": [
+                    "sampleid"
+                ],
+                "sampleKey": "name"
+            },
+            {
+                "title": "Screen Bottom Elevation (ft AMSL)",
+                "aliases": [
+                    "screen bottom elevation (ft amsl)"
+                ],
+                "sampleKey": "enigma:screen_bottom_elevation"
+            },
+            {
+                "title": "Screen End Depth (ft BGS)",
+                "aliases": [
+                    "screen end depth (ft bgs)"
+                ],
+                "sampleKey": "enigma:screen_end_depth"
+            },
+            {
+                "title": "Screen Start Depth (ft BGS)",
+                "aliases": [
+                    "screen start depth (ft bgs)"
+                ],
+                "sampleKey": "enigma:screen_start_depth"
+            },
+            {
+                "title": "Screen Top Elevation (ft AMSL)",
+                "aliases": [
+                    "screen top elevation (ft amsl)"
+                ],
+                "sampleKey": "enigma:screen_top_elevation"
+            },
+            {
+                "title": "Screen Type",
+                "aliases": [
+                    "screen type"
+                ],
+                "sampleKey": "enigma:screen_type"
+            },
+            {
+                "title": "Screened",
+                "aliases": [
+                    "screened"
+                ],
+                "sampleKey": "enigma:screened"
+            },
+            {
+                "title": "Screened Interval (ft)",
+                "aliases": [
+                    "screened interval (ft)"
+                ],
+                "sampleKey": "enigma:screened_interval"
+            },
+            {
+                "title": "Temperature (Celsius)",
+                "aliases": [
+                    "temperature (celsius)"
+                ],
+                "sampleKey": "temperature"
+            },
+            {
+                "title": "Time Zone",
+                "aliases": [
+                    "time zone"
+                ],
+                "sampleKey": "enigma:time_zone"
+            },
+            {
+                "title": "Top of Casing Elevation (ft AMSL)",
+                "aliases": [
+                    "top of casing elevation (ft amsl)"
+                ],
+                "sampleKey": "enigma:top_of_casing_elevation"
+            },
+            {
+                "title": "Top of Casing Stickup (ft)",
+                "aliases": [
+                    "top of casing stickup (ft)"
+                ],
+                "sampleKey": "enigma:top_of_casing_stickup"
+            },
+            {
+                "title": "TopofFreshBedrock (ft BGS)",
+                "aliases": [
+                    "topoffreshbedrock (ft bgs)"
+                ],
+                "sampleKey": "enigma:top_of_fresh_bedrock"
+            },
+            {
+                "title": "TopofWeatheredBedrock (ft BGS)",
+                "aliases": [
+                    "topofweatheredbedrock (ft bgs)"
+                ],
+                "sampleKey": "enigma:top_of_weathered_bedrock"
+            },
+            {
+                "title": "Total Carbon (mg/g dry weight)",
+                "aliases": [
+                    "total carbon (mg/g dry weight)"
+                ],
+                "sampleKey": "enigma:total_carbon"
+            },
+            {
+                "title": "Total Nitrogen (mg/g dry weight)",
+                "aliases": [
+                    "total nitrogen (mg/g dry weight)"
+                ],
+                "sampleKey": "enigma:total_nitrogen"
+            },
+            {
+                "title": "Treatment",
+                "aliases": [
+                    "treatment"
+                ],
+                "sampleKey": "enigma:treatment"
+            },
+            {
+                "title": "Type of Well",
+                "aliases": [
+                    "type of well"
+                ],
+                "sampleKey": "enigma:well_type"
+            },
+            {
+                "title": "Upper Seal End Depth (ft BGS)",
+                "aliases": [
+                    "upper seal end depth (ft bgs)"
+                ],
+                "sampleKey": "enigma:upper_seal_end_depth"
+            },
+            {
+                "title": "Upper Seal Start Depth (ft BGS)",
+                "aliases": [
+                    "upper seal start depth (ft bgs)"
+                ],
+                "sampleKey": "enigma:upper_seal_start_depth"
+            },
+            {
+                "title": "Upper Seal Type",
+                "aliases": [
+                    "upper seal type"
+                ],
+                "sampleKey": "enigma:upper_seal_type"
+            },
+            {
+                "title": "Well Casing Depth (ft BGS)",
+                "aliases": [
+                    "well casing depth (ft bgs)"
+                ],
+                "sampleKey": "enigma:well_casing_depth"
+            },
+            {
+                "title": "Well Casing ID (in)",
+                "aliases": [
+                    "well casing id (in)"
+                ],
+                "sampleKey": "enigma:well_casing_id"
+            },
+            {
+                "title": "Well Casing OD (in)",
+                "aliases": [
+                    "well casing od (in)"
+                ],
+                "sampleKey": "enigma:well_casing_od"
+            },
+            {
+                "title": "Well Casing Type",
+                "aliases": [
+                    "well casing type"
+                ],
+                "sampleKey": "enigma:well_casing_type"
+            },
+            {
+                "title": "Well Name",
+                "aliases": [
+                    "well name"
+                ],
+                "sampleKey": "enigma:well_name"
+            },
+            {
+                "title": "Well Status",
+                "aliases": [
+                    "well status"
+                ],
+                "sampleKey": "enigma:well_status"
+            },
+            {
+                "title": "pH",
+                "aliases": [
+                    "ph"
+                ],
+                "sampleKey": "ph"
+            }
+        ],
+        "columnsFromSchema": false
+    },
+    {
+        "name": "kbase",
+        "info": {
+            "title": "KBase custom sample template",
+            "shortTitle": "KBase",
+            "homePage": "https://kbase.us"
+        },
+        "mappings": {
+            "id": "id",
+            "parent": "parent_id",
+            "name": "name"
+        },
+        "columns": [],
+        "columnsFromSchema": true
+    },
+    {
+        "name": "sesar",
+        "info": {
+            "title": "System for Earth Sample Registration",
+            "shortTitle": "SESAR",
+            "homePage": "https://www.geosamples.org/"
+        },
+        "mappings": {
+            "id": "sesar:igsn",
+            "parent": "sesar:parent_igsn",
+            "name": "name",
+            "skipLines": "^Object Type:"
+        },
+        "columns": [
+            {
+                "title": "Age (max)",
+                "aliases": [
+                    "age (max)",
+                    "Age Max",
+                    "age max"
+                ],
+                "sampleKey": "sesar:age_max"
+            },
+            {
+                "title": "Age (min)",
+                "aliases": [
+                    "age (min)",
+                    "Age Min",
+                    "age min"
+                ],
+                "sampleKey": "sesar:age_min"
+            },
+            {
+                "title": "Age unit (e.g. million years (Ma))",
+                "aliases": [
+                    "age unit (e.g. million years (ma))",
+                    "Age Unit",
+                    "age unit"
+                ],
+                "sampleKey": "sesar:age_unit"
+            },
+            {
+                "title": "City/Township",
+                "aliases": [
+                    "city/township",
+                    "City",
+                    "city"
+                ],
+                "sampleKey": "city_township"
+            },
+            {
+                "title": "Classification",
+                "aliases": [
+                    "classification"
+                ],
+                "sampleKey": "sesar:classification"
+            },
+            {
+                "title": "Classification Comment",
+                "aliases": [
+                    "classification comment"
+                ],
+                "sampleKey": "sesar:classification_comment"
+            },
+            {
+                "title": "Collection date",
+                "aliases": [
+                    "collection date",
+                    "Collection Start Date",
+                    "collection start date"
+                ],
+                "sampleKey": "sesar:collection_date"
+            },
+            {
+                "title": "Collection date (end)",
+                "aliases": [
+                    "collection date (end)",
+                    "Collection End Date",
+                    "collection end date"
+                ],
+                "sampleKey": "sesar:collection_date_end"
+            },
+            {
+                "title": "Collection date precision",
+                "aliases": [
+                    "collection date precision"
+                ],
+                "sampleKey": "sesar:collection_date_precision"
+            },
+            {
+                "title": "Collection method",
+                "aliases": [
+                    "collection method"
+                ],
+                "sampleKey": "sesar:collection_method"
+            },
+            {
+                "title": "Collection method description",
+                "aliases": [
+                    "collection method description",
+                    "Collection Method Descr",
+                    "collection method descr"
+                ],
+                "sampleKey": "sesar:collection_method_description"
+            },
+            {
+                "title": "Collection time",
+                "aliases": [
+                    "collection time",
+                    "Collection Start Time",
+                    "collection start time"
+                ],
+                "sampleKey": "sesar:collection_time"
+            },
+            {
+                "title": "Collection time (end)",
+                "aliases": [
+                    "collection time (end)",
+                    "Collection End Time",
+                    "collection end time"
+                ],
+                "sampleKey": "sesar:collection_time_end"
+            },
+            {
+                "title": "Collector/Chief Scientist",
+                "aliases": [
+                    "collector/chief scientist"
+                ],
+                "sampleKey": "sesar:collector_chief_scientist"
+            },
+            {
+                "title": "Collector/Chief Scientist Address",
+                "aliases": [
+                    "collector/chief scientist address",
+                    "Collector/Chief Scientist Detail",
+                    "collector/chief scientist detail"
+                ],
+                "sampleKey": "sesar:collector_chief_scientist_address"
+            },
+            {
+                "title": "Comment",
+                "aliases": [
+                    "comment"
+                ],
+                "sampleKey": "comment"
+            },
+            {
+                "title": "Country",
+                "aliases": [
+                    "country"
+                ],
+                "sampleKey": "country"
+            },
+            {
+                "title": "County",
+                "aliases": [
+                    "county"
+                ],
+                "sampleKey": "county"
+            },
+            {
+                "title": "Cur Registrant Name",
+                "aliases": [
+                    "cur registrant name"
+                ],
+                "sampleKey": "sesar:registrant_current"
+            },
+            {
+                "title": "Current Archive",
+                "aliases": [
+                    "current archive"
+                ],
+                "sampleKey": "sesar:archive_current"
+            },
+            {
+                "title": "Current Archive Contact",
+                "aliases": [
+                    "current archive contact"
+                ],
+                "sampleKey": "sesar:archive_contact_current"
+            },
+            {
+                "title": "Depth in Core (max)",
+                "aliases": [
+                    "depth in core (max)",
+                    "Depth Max",
+                    "depth max"
+                ],
+                "sampleKey": "sesar:depth_in_core_max"
+            },
+            {
+                "title": "Depth in Core (min)",
+                "aliases": [
+                    "depth in core (min)",
+                    "Depth Min",
+                    "depth min"
+                ],
+                "sampleKey": "sesar:depth_in_core_min"
+            },
+            {
+                "title": "Depth scale",
+                "aliases": [
+                    "depth scale"
+                ],
+                "sampleKey": "sesar:depth_scale"
+            },
+            {
+                "title": "Easting (m) (Coordinate system: UTM NAD83)",
+                "aliases": [
+                    "easting (m) (coordinate system: utm nad83)"
+                ],
+                "sampleKey": "sesar:easting"
+            },
+            {
+                "title": "Elevation end",
+                "aliases": [
+                    "elevation end"
+                ],
+                "sampleKey": "elevation_end"
+            },
+            {
+                "title": "Elevation start",
+                "aliases": [
+                    "elevation start",
+                    "Elevation",
+                    "elevation"
+                ],
+                "sampleKey": "elevation"
+            },
+            {
+                "title": "Elevation unit",
+                "aliases": [
+                    "elevation unit"
+                ],
+                "sampleKey": "sesar:elevation_unit"
+            },
+            {
+                "title": "Field name (informal classification)",
+                "aliases": [
+                    "field name (informal classification)",
+                    "Field Name",
+                    "field name"
+                ],
+                "sampleKey": "sesar:field_name"
+            },
+            {
+                "title": "Field program/Cruise",
+                "aliases": [
+                    "field program/cruise"
+                ],
+                "sampleKey": "sesar:field_program_cruise"
+            },
+            {
+                "title": "Geological age",
+                "aliases": [
+                    "geological age"
+                ],
+                "sampleKey": "sesar:geological_age"
+            },
+            {
+                "title": "Geological unit",
+                "aliases": [
+                    "geological unit"
+                ],
+                "sampleKey": "sesar:geological_unit"
+            },
+            {
+                "title": "IGSN",
+                "aliases": [
+                    "igsn"
+                ],
+                "sampleKey": "sesar:igsn"
+            },
+            {
+                "title": "Is Archived",
+                "aliases": [
+                    "is archived"
+                ],
+                "sampleKey": "sesar:is_archived"
+            },
+            {
+                "title": "Latitude (Coordinate system: WGS 84)",
+                "aliases": [
+                    "latitude (coordinate system: wgs 84)",
+                    "Latitude Start",
+                    "latitude start",
+                    "Latitude",
+                    "latitude"
+                ],
+                "sampleKey": "latitude"
+            },
+            {
+                "title": "Latitude (end) (Coordinate system: WGS 84)",
+                "aliases": [
+                    "latitude (end) (coordinate system: wgs 84)",
+                    "Latitude End",
+                    "latitude end"
+                ],
+                "sampleKey": "latitude_end"
+            },
+            {
+                "title": "Launch ID",
+                "aliases": [
+                    "launch id"
+                ],
+                "sampleKey": "sesar:launch_id"
+            },
+            {
+                "title": "Launch platform name",
+                "aliases": [
+                    "launch platform name"
+                ],
+                "sampleKey": "sesar:launch_platform_name"
+            },
+            {
+                "title": "Launch type",
+                "aliases": [
+                    "launch type",
+                    "Launch Type Name",
+                    "launch type name"
+                ],
+                "sampleKey": "sesar:launch_type"
+            },
+            {
+                "title": "Locality",
+                "aliases": [
+                    "locality"
+                ],
+                "sampleKey": "locality"
+            },
+            {
+                "title": "Locality description",
+                "aliases": [
+                    "locality description"
+                ],
+                "sampleKey": "locality_description"
+            },
+            {
+                "title": "Location description",
+                "aliases": [
+                    "location description"
+                ],
+                "sampleKey": "location_description"
+            },
+            {
+                "title": "Longitude (Coordinate system: WGS 84)",
+                "aliases": [
+                    "longitude (coordinate system: wgs 84)",
+                    "Longitude",
+                    "longitude",
+                    "Longitude Start",
+                    "longitude start"
+                ],
+                "sampleKey": "longitude"
+            },
+            {
+                "title": "Longitude (end) (Coordinate system: WGS 84)",
+                "aliases": [
+                    "longitude (end) (coordinate system: wgs 84)",
+                    "Longitude End",
+                    "longitude end"
+                ],
+                "sampleKey": "longitude_end"
+            },
+            {
+                "title": "Material",
+                "aliases": [
+                    "material"
+                ],
+                "sampleKey": "sesar:material"
+            },
+            {
+                "title": "Name of physiographic feature",
+                "aliases": [
+                    "name of physiographic feature"
+                ],
+                "sampleKey": "sesar:physiographic_feature_name"
+            },
+            {
+                "title": "Navigation Type",
+                "aliases": [
+                    "navigation type",
+                    "Nav Type Name",
+                    "nav type name"
+                ],
+                "sampleKey": "sesar:navigation_type"
+            },
+            {
+                "title": "Northing (m) (Coordinate system: UTM NAD83)",
+                "aliases": [
+                    "northing (m) (coordinate system: utm nad83)"
+                ],
+                "sampleKey": "sesar:northing"
+            },
+            {
+                "title": "Org Registrant Name",
+                "aliases": [
+                    "org registrant name"
+                ],
+                "sampleKey": "sesar:registrant_org"
+            },
+            {
+                "title": "Original Archive",
+                "aliases": [
+                    "original archive"
+                ],
+                "sampleKey": "sesar:archive_original"
+            },
+            {
+                "title": "Original Archive Contact",
+                "aliases": [
+                    "original archive contact"
+                ],
+                "sampleKey": "sesar:archive_contact_original"
+            },
+            {
+                "title": "Other name(s)",
+                "aliases": [
+                    "other name(s)"
+                ],
+                "sampleKey": "other_names"
+            },
+            {
+                "title": "Parent IGSN",
+                "aliases": [
+                    "parent igsn"
+                ],
+                "sampleKey": "sesar:parent_igsn"
+            },
+            {
+                "title": "Platform Description",
+                "aliases": [
+                    "platform description"
+                ],
+                "sampleKey": "sesar:platform_description"
+            },
+            {
+                "title": "Platform name",
+                "aliases": [
+                    "platform name"
+                ],
+                "sampleKey": "sesar:platform_name"
+            },
+            {
+                "title": "Platform type",
+                "aliases": [
+                    "platform type"
+                ],
+                "sampleKey": "sesar:platform_type"
+            },
+            {
+                "title": "Primary Physiographic feature",
+                "aliases": [
+                    "primary physiographic feature",
+                    "Physiographic Feature",
+                    "physiographic feature"
+                ],
+                "sampleKey": "sesar:physiographic_feature_primary"
+            },
+            {
+                "title": "Purpose",
+                "aliases": [
+                    "purpose"
+                ],
+                "sampleKey": "purpose"
+            },
+            {
+                "title": "Related URL",
+                "aliases": [],
+                "sampleKey": "sesar:related_url"
+            },
+            {
+                "title": "Related URL Type",
+                "aliases": [],
+                "sampleKey": "sesar:related_url_type"
+            },
+            {
+                "title": "Related URL Desription",
+                "aliases": [],
+                "sampleKey": "sesar:related_url_description"
+            },
+            {
+                "title": "Related Identifiers",
+                "aliases": [],
+                "sampleKey": "sesar:related_identifiers"
+            },
+            {
+                "title": "Relation Type",
+                "aliases": [],
+                "sampleKey": "sesar:relation_type"
+            },
+            {
+                "title": "Release Date",
+                "aliases": [
+                    "release date"
+                ],
+                "sampleKey": "sesar:release_date"
+            },
+            {
+                "title": "Sample Description",
+                "aliases": [
+                    "sample description",
+                    "Description",
+                    "description"
+                ],
+                "sampleKey": "description"
+            },
+            {
+                "title": "Sample Name",
+                "aliases": [
+                    "sample name"
+                ],
+                "sampleKey": "name"
+            },
+            {
+                "title": "Sample Type",
+                "aliases": [
+                    "sample type"
+                ],
+                "sampleKey": "sesar:sample_type"
+            },
+            {
+                "title": "Size",
+                "aliases": [
+                    "size"
+                ],
+                "sampleKey": "sesar:size"
+            },
+            {
+                "title": "Size unit",
+                "aliases": [
+                    "size unit"
+                ],
+                "sampleKey": "sesar:size_unit"
+            },
+            {
+                "title": "State/Province",
+                "aliases": [
+                    "state/province",
+                    "State",
+                    "state"
+                ],
+                "sampleKey": "state_province"
+            },
+            {
+                "title": "Sub-object type",
+                "aliases": [
+                    "sub-object type"
+                ],
+                "sampleKey": "sesar:sub-object_type"
+            },
+            {
+                "title": "URL",
+                "aliases": [
+                    "url"
+                ],
+                "sampleKey": "url"
+            },
+            {
+                "title": "Vertical Datum",
+                "aliases": [
+                    "vertical datum"
+                ],
+                "sampleKey": "sesar:vertical_datum"
+            },
+            {
+                "title": "Zone (e.g., 11R)",
+                "aliases": [
+                    "zone (e.g., 11r)"
+                ],
+                "sampleKey": "sesar:zone"
+            }
+        ],
+        "columnsFromSchema": false
+    }
+]

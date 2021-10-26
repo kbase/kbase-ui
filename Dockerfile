@@ -1,31 +1,3 @@
-# ------------------------------
-# The build image
-# ------------------------------
-FROM alpine:3.14 as builder
-
-# add deps for building kbase-ui
-RUN apk upgrade --update-cache --available && \
-    apk add --update --no-cache bash chromium g++ git make nodejs npm python2 && \
-    mkdir -p /kb
-
-COPY ./package.json /kb
-COPY ./package-lock.json /kb
-WORKDIR /kb
-RUN npm install
-
-COPY . /kb
-
-ARG BUILD_CONFIG
-
-# Build kbase-ui
-RUN echo "Using build arg $BUILD_CONFIG"
-RUN make build config="$BUILD_CONFIG"
-
-LABEL stage=intermediate
-
-# ------------------------------
-# The product image
-# ------------------------------
 FROM alpine:3.14
 
 RUN apk upgrade --update-cache --available && \
@@ -35,11 +7,13 @@ RUN apk upgrade --update-cache --available && \
 WORKDIR /kb
 
 # This version uses master; otherwise functionally equivalent other than style.
-RUN archive=dockerize-alpine-linux-amd64-v0.6.1.tar.gz && \
-    wget https://github.com/kbase/dockerize/raw/master/$archive && \
-    tar xvzf $archive && \
-    rm $archive && \
-    mv dockerize /usr/local/bin
+RUN version=v0.15.1 && \
+    wget -O - https://github.com/powerman/dockerize/releases/download/${version}/dockerize-`uname -s`-`uname -m` | install /dev/stdin /usr/local/bin/dockerize
+# RUN archive=dockerize-alpine-linux-amd64-v0.6.1.tar.gz && \
+#     wget https://github.com/kbase/dockerize/raw/master/$archive && \
+#     tar xvzf $archive && \
+#     rm $archive && \
+#     mv dockerize /usr/local/bin
 
 # These ARGs values are passed in via the docker build command
 ARG BUILD_DATE
@@ -48,17 +22,17 @@ ARG BRANCH=develop
 ARG TAG
 
 # The main thing -- the kbase-ui built code.
-COPY --from=builder /kb/build/dist/client /kb/deployment/services/kbase-ui/dist/
+COPY build /kb/deployment/services/kbase-ui
 
 # Config templates
-COPY --from=builder /kb/deployment/templates /kb/deployment/templates
+COPY deployment/templates /kb/deployment/templates
 
 # Deployment-time scripts
-COPY --from=builder /kb/deployment/scripts /kb/deployment/scripts
+COPY deployment/scripts /kb/deployment/scripts
 
 # Need to include the integration tests since otherwise we need a local build
 # to pick them up.
-COPY --from=builder /kb/build/test /kb/deployment/services/kbase-ui/test
+# COPY --from=builder /kb/build/test /kb/deployment/services/kbase-ui/test
 
 # The BUILD_DATE value seem to bust the docker cache when the timestamp changes, move to
 # the end
@@ -79,5 +53,5 @@ ENTRYPOINT [ "dockerize" ]
 
 CMD [  \
     "-template", "/kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
-    "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json", \
+    "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/config.json", \
     "bash", "/kb/deployment/scripts/start-server.bash" ]

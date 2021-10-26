@@ -1,6 +1,7 @@
 {
     "name": "kbase-ui",
-    "version": "2.0.8",
+    "version": "3.0.0",
+    "type": "module",
     "keywords": [
         "util",
         "functional",
@@ -18,13 +19,18 @@
         "briehl"
     ],
     "scripts": {
-        "compile": "tsc",
+        "compile": "tsc --outFile static/app.js",
         "clean-ts": "node tools/js/remove-generated-js.js",
         "stats": "node tools/js/stats.js",
         "quality": "node tools/js/quality.js",
         "build": "node tools/js/build.js",
         "test": "node test/node/test.js",
-        "watch": "nodemon --watch ./src/client --ext ts --exec 'npm run compile || exit 1'"
+        "watch": "nodemon --watch ./src/client --ext ts --exec 'npm run compile || exit 1'",
+        "vscode:prepublish": "npm run esbuild-base -- --minify",
+        "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+        "esbuild": "npm run esbuild-base -- --sourcemap",
+        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+        "test-compile": "tsc -p ./"
     },
     "devDependencies": {
         "@sitespeed.io/throttle": "3.0.0",
@@ -39,8 +45,10 @@
         "@wdio/spec-reporter": "7.12.5",
         "@wdio/sync": "7.12.5",
         "@wdio/testingbot-service": "7.12.5",
+        "bluebird": "3.7.2",
         "chalk": "4.1.2",
         "dockerignore": "0.2.0",
+        "esbuild": "0.12.28",
         "eslint": "7.32.0",
         "eslint-config-preact": "1.1.4",
         "eslint-config-prettier": "8.3.0",
@@ -100,6 +108,7 @@
         "requirejs-text": "2.0.16",
         "semver-umd": "5.5.7",
         "spark-md5": "3.0.2",
+        "systemjs": "6.10.3",
         "uuid": "8.3.2"
     },
     "prettier": {

@@ -1,7 +1,0 @@
-## prod Build Config
-## see README.md 
----
-target: prod
-release: false
-dist: true
-vfs: true

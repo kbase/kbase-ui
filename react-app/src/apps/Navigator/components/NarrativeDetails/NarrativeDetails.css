@@ -1,0 +1,17 @@
+.NarrativeDetails .-title-row {
+    font-size: 150%;
+}
+
+.NarrativeDetails .-title-row .-icon {
+    margin-right: 1em;
+}
+
+.NarrativeDetails .-title-row .-title {
+
+}
+
+.NarrativeDetails .-title-row .-version {
+    color: rgb(200 200 200);
+    font-style: italic;
+    margin-left: 1em;
+}

@@ -1,0 +1,13 @@
+.Loading {
+  margin: 4em 2em 0 2em;
+  min-width: 10em;
+  max-width: 60em;
+  align-self: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.Loading > .-message {
+  margin-left: 0.5em;
+}
