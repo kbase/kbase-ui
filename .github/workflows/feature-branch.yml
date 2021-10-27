@@ -1,5 +1,5 @@
 ---
-name: Build and Push Up Feature Branch Image
+name: Build and Push Up Feature or Fix Branch Image
 on:
     push:
         branches:
