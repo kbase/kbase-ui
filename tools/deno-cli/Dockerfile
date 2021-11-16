@@ -7,6 +7,7 @@ RUN apk upgrade --update-cache --available && \
 # EXPOSE 1993
 RUN mkdir /app
 RUN chown deno:deno /app
+RUN chmod a+rwx -R /app
 WORKDIR /app
 
 # Prefer not to run as root.
