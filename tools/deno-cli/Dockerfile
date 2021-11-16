@@ -5,7 +5,8 @@ RUN apk upgrade --update-cache --available && \
 
 # The port that your application listens to.
 # EXPOSE 1993
-
+RUN mkdir /app
+RUN chown deno:deno /app
 WORKDIR /app
 
 # Prefer not to run as root.
