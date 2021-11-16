@@ -10,4 +10,4 @@ services:
         container_name: kbase-deno
         dns: 8.8.8.8
         volumes:
-            - $DIR:/app:Z
+            - $DIR:/app:rw
