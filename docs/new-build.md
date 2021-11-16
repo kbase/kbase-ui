@@ -1,4 +1,4 @@
-# New KBase UI Buil
+# New KBase UI Build
 
 `kbase-ui` is now a Create React App (CRA) project, and as such it is bundled, and developed using the standard CRA tools.
 
@@ -6,7 +6,7 @@ The build process is not significantly simplified, from the KBase point of view 
 
 ## The Process
 
-- clean out 
+- clean out:
   - build
   - build the web app, creating a bundled web app linked into the initial index html file.
   - `sh scripts/shell/build.sh`
@@ -22,10 +22,16 @@ The build process is not significantly simplified, from the KBase point of view 
   - nginx server
   - kbase-ui configuration
 
+in the GHA build, the workflow takes care of building the image.
+
+for local consumption:
+
 - make the image:
   - `sh scripts/shell/build-image.sh`
 
 - run the image:
+    - `sh scripts/shell/run-image.sh`
+
 
 
 docker-compose --rm up
@@ -168,4 +174,20 @@ logged in for the plugin
 
 
 
+
+# ITERATING
+
+in one terminal: 
+
+cd react-app
+npm run start
+
+
+in another:
+
+tools/proxy-standalone
+ENV=ci docker compose up
+
+
+# Build image
 

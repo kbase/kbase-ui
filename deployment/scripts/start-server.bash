@@ -1,5 +1,5 @@
 # check that the deploy config file is ok.
-DEPLOY_CFG=/kb/deployment/services/kbase-ui/app/config.json
+DEPLOY_CFG=/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json
 NGINX_CFG=/etc/nginx/nginx.conf
 
 echo "Checking config file..."

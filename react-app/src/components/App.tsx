@@ -1,19 +1,20 @@
-import {Component} from 'react';
-import AuthWrapper, {AuthContext, AuthState} from '../contexts/Auth';
-import ConfigWrapper, {ConfigContext, ConfigState,} from '../contexts/ConfigContext';
-import RuntimeWrapper, {RuntimeContext} from '../contexts/RuntimeContext';
-import {AsyncProcess, AsyncProcessStatus} from '../lib/AsyncProcess';
-import {Config} from '../types/config';
+import { Component } from 'react';
+import AuthWrapper, { AuthContext, AuthState } from '../contexts/Auth';
+import ConfigWrapper, {
+    ConfigContext,
+    ConfigState,
+} from '../contexts/ConfigContext';
+import RuntimeWrapper, { RuntimeContext } from '../contexts/RuntimeContext';
+import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
+import { Config } from '../types/config';
 import Loading from './Loading';
 import MainWindow from './MainWindow/view';
 
-export type AppLoadState = AsyncProcess<Config>;
+export type AppLoadState = AsyncProcess<Config, string>;
 
-export interface AppProps {
-}
+export interface AppProps {}
 
-interface AppState {
-}
+interface AppState {}
 
 export default class App extends Component<AppProps, AppState> {
     render() {
@@ -32,7 +33,7 @@ export default class App extends Component<AppProps, AppState> {
                                     />
                                 );
                             case AsyncProcessStatus.ERROR:
-                                return <div>Error! {configValue.message}</div>;
+                                return <div>Error! {configValue.error}</div>;
                             case AsyncProcessStatus.SUCCESS:
                                 return (
                                     <AuthWrapper
@@ -54,7 +55,7 @@ export default class App extends Component<AppProps, AppState> {
                                                         return (
                                                             <div>
                                                                 Error!{' '}
-                                                                {value.message}
+                                                                {value.error}
                                                             </div>
                                                         );
                                                     case AsyncProcessStatus.SUCCESS:
@@ -70,18 +71,30 @@ export default class App extends Component<AppProps, AppState> {
                                                                 }
                                                             >
                                                                 <RuntimeContext.Consumer>
-                                                                    {(value) => {
-                                                                        if (value === null) {
+                                                                    {(
+                                                                        value
+                                                                    ) => {
+                                                                        if (
+                                                                            value ===
+                                                                            null
+                                                                        ) {
                                                                             return;
                                                                         }
-                                                                        return <MainWindow
-                                                                            authState={value.authState}
-                                                                            config={value.config}
-                                                                            setTitle={value.setTitle}
-                                                                        />
+                                                                        return (
+                                                                            <MainWindow
+                                                                                authState={
+                                                                                    value.authState
+                                                                                }
+                                                                                config={
+                                                                                    value.config
+                                                                                }
+                                                                                setTitle={
+                                                                                    value.setTitle
+                                                                                }
+                                                                            />
+                                                                        );
                                                                     }}
                                                                 </RuntimeContext.Consumer>
-
                                                             </RuntimeWrapper>
                                                         );
                                                 }

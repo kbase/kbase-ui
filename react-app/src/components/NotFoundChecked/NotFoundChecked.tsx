@@ -1,7 +1,7 @@
-import {Component, Fragment} from 'react';
+import { Component, Fragment } from 'react';
 // import { RouteComponentProps } from 'react-router-dom';
-import {AuthenticationState, AuthenticationStatus} from '../../contexts/Auth';
-import {Config} from '../../types/config';
+import { AuthenticationState, AuthenticationStatus } from '../../contexts/Auth';
+import { Config } from '../../types/config';
 import flapjack from './flapjack.png';
 
 const REDIRECT_IF_FOUND = true;
@@ -52,8 +52,10 @@ interface NotFoundCheckedState {
     messages: Array<string>;
 }
 
-export default class NotFound extends Component<NotFoundCheckedProps,
-    NotFoundCheckedState> {
+export default class NotFound extends Component<
+    NotFoundCheckedProps,
+    NotFoundCheckedState
+> {
     constructor(props: NotFoundCheckedProps) {
         super(props);
         this.state = {
@@ -223,8 +225,8 @@ export default class NotFound extends Component<NotFoundCheckedProps,
                         messages: [
                             ...this.state.messages.slice(0, -1),
                             this.state.messages[
-                            this.state.messages.length - 1
-                                ] + 'nope',
+                                this.state.messages.length - 1
+                            ] + 'nope',
                         ],
                     },
                     () => {
@@ -277,14 +279,14 @@ export default class NotFound extends Component<NotFoundCheckedProps,
         // this.props.setTitle(`Not Found - ${this.state.path}`);
         return (
             <div className="well">
-                <div style={{display: 'flex', flexDirection: 'row'}}>
-                    <div style={{flex: '0 0 auto', marginRight: '30px'}}>
-                        <img src={flapjack} alt="The Flapjack"/>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <div style={{ flex: '0 0 auto', marginRight: '30px' }}>
+                        <img src={flapjack} alt="The Flapjack" />
                     </div>
-                    <div style={{flex: '1 1 0px'}}>
+                    <div style={{ flex: '1 1 0px' }}>
                         <p
                             className="text-danger"
-                            style={{fontSize: '140%', marginTop: '10px'}}
+                            style={{ fontSize: '140%', marginTop: '10px' }}
                         >
                             Sorry, "{this.state.path}" was not found.
                         </p>
@@ -299,14 +301,14 @@ export default class NotFound extends Component<NotFoundCheckedProps,
         // this.props.setTitle(`Path Not Found - ${this.state.path}`);
         return (
             <div className="well">
-                <div style={{display: 'flex', flexDirection: 'row'}}>
-                    <div style={{flex: '0 0 auto', marginRight: '30px'}}>
-                        <img src={flapjack} alt="The Flapjack"/>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <div style={{ flex: '0 0 auto', marginRight: '30px' }}>
+                        <img src={flapjack} alt="The Flapjack" />
                     </div>
-                    <div style={{flex: '1 1 0px'}}>
+                    <div style={{ flex: '1 1 0px' }}>
                         <p
                             className="text-danger"
-                            style={{fontSize: '140%', marginTop: '10px'}}
+                            style={{ fontSize: '140%', marginTop: '10px' }}
                         >
                             Sorry, "#{this.state.path}" was not found.
                         </p>
@@ -337,19 +339,19 @@ export default class NotFound extends Component<NotFoundCheckedProps,
 
         return (
             <div className="well">
-                <div className="text-danger" style={{fontSize: '140%'}}>
+                <div className="text-danger" style={{ fontSize: '140%' }}>
                     <strong>
                         <span className="fa fa-meh-o"></span>$ Path Not Found
                     </strong>
                 </div>
                 <p
                     className="text-danger"
-                    style={{fontSize: '140%', marginTop: '10px'}}
+                    style={{ fontSize: '140%', marginTop: '10px' }}
                 >
                     The path you requested, <em>"{this.state.path}"</em>, was
                     not found on this site.
                 </p>
-                <p style={{fontSize: '140%', marginTop: '10px'}}>
+                <p style={{ fontSize: '140%', marginTop: '10px' }}>
                     However, it does exist on{' '}
                     <a href="{marketingURL.toString()}">
                         the KBase Homepage Site
@@ -379,19 +381,19 @@ export default class NotFound extends Component<NotFoundCheckedProps,
 
         return (
             <div className="well">
-                <div className="text-danger" style={{fontSize: '140%'}}>
+                <div className="text-danger" style={{ fontSize: '140%' }}>
                     <strong>
                         <span className="fa fa-meh-o"></span> Path Not Found
                     </strong>
                 </div>
                 <p
                     className="text-danger"
-                    style={{fontSize: '140%', marginTop: '10px'}}
+                    style={{ fontSize: '140%', marginTop: '10px' }}
                 >
                     The path you requested, <em>"{this.state.path}"</em>, was
                     not found on this site.
                 </p>
-                <p style={{fontSize: '140%', marginTop: '10px'}}>
+                <p style={{ fontSize: '140%', marginTop: '10px' }}>
                     However, it does exist on{' '}
                     <a href="{marketingURL.toString()}">
                         the KBase Homepage Site
@@ -421,19 +423,19 @@ export default class NotFound extends Component<NotFoundCheckedProps,
 
         return (
             <div className="well">
-                <div className="text-danger" style={{fontSize: '140%'}}>
+                <div className="text-danger" style={{ fontSize: '140%' }}>
                     <strong>
                         <span className="fa fa-meh-o"></span> Path Not Found
                     </strong>
                 </div>
                 <p
                     className="text-danger"
-                    style={{fontSize: '140%', marginTop: '10px'}}
+                    style={{ fontSize: '140%', marginTop: '10px' }}
                 >
                     The path you requested, <em>"{this.state.path}"</em>, was
                     not found on this site.
                 </p>
-                <p style={{fontSize: '140%', marginTop: '10px'}}>
+                <p style={{ fontSize: '140%', marginTop: '10px' }}>
                     However, it does exist on{' '}
                     <a href="{docsURL.toString()}">
                         the KBase Documentation Site
@@ -498,21 +500,21 @@ export default class NotFound extends Component<NotFoundCheckedProps,
         // this.props.setTitle(`Not Found - ${this.state.path}`);
         return (
             <div className="well">
-                <div style={{display: 'flex', flexDirection: 'row'}}>
-                    <div style={{flex: '0 0 auto', marginRight: '20px'}}>
-                        <img src="/images/flapjack.png" alt="The Flapjack"/>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <div style={{ flex: '0 0 auto', marginRight: '20px' }}>
+                        <img src="/images/flapjack.png" alt="The Flapjack" />
                     </div>
-                    <div style={{flex: '1 1 0px'}}>
+                    <div style={{ flex: '1 1 0px' }}>
                         <p
                             className="text-danger"
-                            style={{fontSize: '140%', marginTop: '10px'}}
+                            style={{ fontSize: '140%', marginTop: '10px' }}
                         >
                             Sorry, "{this.state.path}" was not found. *
                         </p>
                         ${this.renderKBaseLinks()}
                         <p
                             className="text-danger"
-                            style={{marginTop: '30px'}}
+                            style={{ marginTop: '30px' }}
                         >
                             * Actually, an error was encountered checking for
                             this path: "{this.state.error!.message}"
@@ -524,7 +526,7 @@ export default class NotFound extends Component<NotFoundCheckedProps,
     }
 
     renderLoading() {
-        const path = this.props.realPath;
+        // const path = this.props.realPath;
         // this.props.setTitle(`Not Found - ${path}`);
         const messages = this.state.messages.map((message, index) => {
             return <p key={index}>{message}</p>;
@@ -560,6 +562,6 @@ export default class NotFound extends Component<NotFoundCheckedProps,
     }
 
     render() {
-        return <div style={{margin: '0 10px'}}>{this.renderSwitch()}</div>;
+        return <div style={{ margin: '0 10px' }}>{this.renderSwitch()}</div>;
     }
 }

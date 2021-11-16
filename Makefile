@@ -233,8 +233,16 @@ dev-cert:
 rm-dev-cert:
 	rm tools/proxy/contents/ssl/*
 
+clean-build:
+	rm -rf build/dist
+
 build: 
 	sh scripts/tasks/build.sh
 	sh scripts/tasks/copy-build.sh
 	sh scripts/tasks/install-plugins.sh
 	
+build-image:
+	sh scripts/shell/build-image.sh
+
+run-image:
+	sh scripts/shell/run-image.sh

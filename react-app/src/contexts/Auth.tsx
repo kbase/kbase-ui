@@ -70,7 +70,7 @@ export type AuthenticationState =
     | AuthenticationStateAuthenticated
     | AuthenticationStateUnauthenticated;
 
-export type AuthState = AsyncProcess<AuthenticationState>;
+export type AuthState = AsyncProcess<AuthenticationState, string>;
 
 // Context
 
@@ -146,10 +146,10 @@ export default class AuthWrapper extends React.Component<
         };
     }
 
-    errorState(message: string): AsyncProcessError {
+    errorState(error: string): AsyncProcessError<string> {
         return {
             status: AsyncProcessStatus.ERROR,
-            message,
+            error,
         };
     }
 
@@ -192,7 +192,6 @@ export default class AuthWrapper extends React.Component<
                 });
             }
         } catch (ex) {
-            console.log('error!', ex);
             if (ex instanceof JSONRPC11Exception) {
                 switch (ex.error.code) {
                     case 10020:

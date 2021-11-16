@@ -1,0 +1,111 @@
+/* .container {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+} */
+
+.header {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    font-weight: bold;
+    color: gray;
+    /* border-top: 1px solid rgba(200, 200, 200, 0.5); */
+    /* border-bottom: 2px solid rgba(200, 200, 200, 0.5); */
+    /* Force scrollbar so it aligns w/body*/
+    overflow-y: scroll;
+}
+
+.header::-webkit-scrollbar-track {
+    background-color: white;
+}
+
+.header::-webkit-scrollbar-thumb {
+    background-color: white;
+}
+
+.header-col {
+    flex: 1 1 0;
+    padding: 4px;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.wrapper {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-y: hidden;
+}
+.body {
+    flex: 1 1 0;
+    /* display: flex; */
+    /* flex-direction: column; */
+    min-height: 0;
+    min-width: 0;
+    overflow-y: scroll;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* background-color: rgba(100, 100, 100, 0.1); */
+}
+
+.grid {
+    position: relative;
+}
+
+.grid-row {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    /* align-items: center; */
+    /* border-bottom: 1px solid rgba(200, 200, 200, 0.5); */
+}
+
+.grid-row:hover {
+    background-color: rgba(200, 200, 200, 0.2);
+    cursor: pointer;
+}
+
+.grid-cell {
+    position: absolute;
+}
+
+.row {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid rgba(200, 200, 200, 0.5);
+}
+
+.row-highlighted {
+    background-color: rgba(200, 200, 200, 0.5);
+}
+
+.col {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    justify-content: center;
+}
+
+.col-content {
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 4px;
+}

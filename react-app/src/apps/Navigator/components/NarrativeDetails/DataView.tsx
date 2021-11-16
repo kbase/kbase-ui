@@ -1,10 +1,12 @@
 import React from 'react';
-import {DataObject} from '../../utils/NarrativeModel';
-import {getWSTypeName} from '../../utils/stringUtils';
-import {TypeIcon} from '../generic/Icon';
-import {Config} from "../../../../types/config";
-import {AuthInfo} from "../../../../contexts/Auth";
+import { DataObject } from '../../utils/NarrativeModel';
+import { getWSTypeName } from '../../utils/stringUtils';
+import { TypeIcon } from '../Icon';
+import { Config } from '../../../../types/config';
+import { AuthInfo } from '../../../../contexts/Auth';
 import './DataView.css';
+import { Container, Row, Col } from 'react-bootstrap';
+import Empty from '../../../../components/Empty';
 
 interface Props {
     accessGroup: number;
@@ -17,13 +19,21 @@ export default class DataView extends React.Component<Props, {}> {
     // View for each row in the data listing for the narrative
     renderRow(workspaceId: number, obj: DataObject) {
         const key = obj.name;
-        const [typeModule, typeName, versionMajor, versionMinor] = obj.obj_type.split(/[.-]/);
+        const [typeModule, typeName, versionMajor, versionMinor] =
+            obj.obj_type.split(/[.-]/);
         return (
             <div key={key} className="row my-3">
                 <div className="col-auto">
-                    <TypeIcon objectType={obj.obj_type} authInfo={this.props.authInfo} config={this.props.config}/>
+                    <TypeIcon
+                        objectType={obj.obj_type}
+                        authInfo={this.props.authInfo}
+                        config={this.props.config}
+                    />
                 </div>
-                <div className="col overflow-hidden" style={{textOverflow: 'ellipsis'}}>
+                <div
+                    className="col overflow-hidden"
+                    style={{ textOverflow: 'ellipsis' }}
+                >
                     <div className="-name">
                         <a
                             href={`/#dataview/${workspaceId}/${obj.name}`}
@@ -35,7 +45,8 @@ export default class DataView extends React.Component<Props, {}> {
                     {/*<div className="">{obj.readableType}</div>*/}
                     <div className="-type">
                         <a href={`/#spec/type/${obj.obj_type}`}>
-                            {typeName} ({typeModule}-{versionMajor}.{versionMinor})
+                            {typeName} ({typeModule}-{versionMajor}.
+                            {versionMinor})
                         </a>
                         {/*{obj.readableType}*/}
                     </div>
@@ -45,13 +56,23 @@ export default class DataView extends React.Component<Props, {}> {
     }
 
     renderEmpty() {
-        return <p style={{textAlign: 'center', fontStyle: 'italic', padding: '20px'}}>
-            This Narrative has no data.
-        </p>;
+        return (
+            <Container fluid className="mt-3 px-0">
+                <Row>
+                    <Col>
+                        <Empty
+                            title="No Cells"
+                            message="This Narrative has no data objects"
+                            icon="database"
+                        />
+                    </Col>
+                </Row>
+            </Container>
+        );
     }
 
     renderDataObjects() {
-        const {accessGroup} = this.props;
+        const { accessGroup } = this.props;
         const rows = this.props.dataObjects
             // why limit to 50? Performance should not be an issue.
             .slice(0, 50)
@@ -72,8 +93,6 @@ export default class DataView extends React.Component<Props, {}> {
     }
 
     render() {
-        return <div className="DataView">
-            {this.renderState()}
-        </div>
+        return <div className="DataView">{this.renderState()}</div>;
     }
 }

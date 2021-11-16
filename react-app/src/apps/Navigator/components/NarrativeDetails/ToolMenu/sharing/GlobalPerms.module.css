@@ -1,0 +1,15 @@
+.GlobalPerms {
+    text-align: center;
+}
+
+.status-private {
+    margin: 0 0.5em;
+    font-weight: bold;
+    color: red;
+}
+
+.status-public {
+    margin: 0 0.5em;
+    font-weight: bold;
+    color: green;
+}

@@ -24,11 +24,11 @@ const styles: { [key: string]: CSSProperties } = {
         // margin: '2px',
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'center',
+        // justifyContent: 'center',
         alignItems: 'center',
     },
     LoadingMessage: {
-        marginLeft: '1em',
+        marginLeft: '0.5em',
     },
 };
 export default styles;

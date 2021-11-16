@@ -23,6 +23,7 @@
     display: flex;
     flex-direction: row;
     min-height: 0;
+    overflow-y: hidden;
 }
 
 .MainWindow .-body > .-nav {
@@ -34,7 +35,6 @@
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
     padding-top: 1em;
 }
 
@@ -42,7 +42,7 @@
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    overflow-y: hidden;
 }
 
 .MainWindow .-body > .-content-area > .-notification-banner {
@@ -147,7 +147,7 @@
     display: flex;
     flex-direction: row;
     background-color: #fff;
-    border-bottom: 5px solid #E0E0E0 !important;
+    border-bottom: 5px solid #e0e0e0 !important;
     height: 70px;
 }
 
@@ -184,7 +184,7 @@
 }
 
 .MainWindow .-navbar .btn.kb-nav-btn {
-    background-color: #FFF;
+    background-color: #fff;
     font-size: 24px;
     border: none;
     text-shadow: none !important;
@@ -203,7 +203,7 @@
 /* Give the menu icons a blue color, whilst leaving the menu text what it is (black) */
 
 .MainWindow .-navbar .fa::before {
-    color: #2196F3;
+    color: #2196f3;
 }
 
 .MainWindow .-navbar .fa.fa-color-warning::before {
@@ -221,7 +221,7 @@
 /* Enable background hover for navbar buttons. It is disabled for other buttons */
 
 .MainWindow .-navbar .kb-nav-btn:hover {
-    background-color: #F5F5F5;
+    background-color: #f5f5f5;
 }
 
 .MainWindow .-navbar .dropdown-menu .navbar-icon {
@@ -242,7 +242,7 @@
 
 .MainWindow .-navbar .navbar-buttons .fa::before {
     /* color nav icons */
-    color: #2196F3;
+    color: #2196f3;
 }
 
 /* Body */
@@ -281,7 +281,6 @@ The content area is normal flow and just needs to have a matching top margin.
 }
 
 /* logo */
-
 
 .MainWindow .widget-logo {
     display: flex;
@@ -346,4 +345,3 @@ The content area is normal flow and just needs to have a matching top margin.
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-

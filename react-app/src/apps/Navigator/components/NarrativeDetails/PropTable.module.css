@@ -1,0 +1,56 @@
+.PropTable {
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    flex: 0 0 auto;
+    border-bottom: 1px solid rgb(200 200 200);
+}
+
+.body {
+    flex: 1 1 0;
+    overflow-y: auto;
+    /* text-overflow: ellipsis; */
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    flex: 0 0 auto;
+    border-top: 1px solid rgb(200 200 200);
+}
+
+.title {
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+}
+
+.row {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.col1 {
+    flex: 1 1 0;
+    white-space: nowrap;
+    overflow-y: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+    color: rgb(150 150 150);
+}
+
+.col2 {
+    flex: 1 1 0;
+    white-space: nowrap;
+    overflow-y: hidden;
+    text-overflow: ellipsis;
+}
+
+.noRowsMessage {
+    padding: 0.5em;
+    font-style: italic;
+    text-align: center;
+}

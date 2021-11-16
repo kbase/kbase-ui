@@ -1,45 +1,55 @@
-import React, {Component} from 'react';
-import {AppCellIcon, DefaultIcon, TypeIcon} from '../generic/Icon';
-import NarrativeModel, {Doc} from '../../utils/NarrativeModel';
-import {AuthInfo} from "../../../../contexts/Auth";
-import {Config} from "../../../../types/config";
-import './Preview.css';
+import { Component } from 'react';
+import NarrativeModel, {
+    AppCell,
+    Cell,
+    CodeCell,
+    DataObjectCell,
+    NarrativeSearchDoc,
+    MarkdownCell,
+    NarrativeObject,
+    OutputObjectCell,
+} from '../../utils/NarrativeModel';
+import { AuthInfo } from '../../../../contexts/Auth';
+import { Config } from '../../../../types/config';
+import styles from './Preview.module.css';
+import { AsyncProcess } from '../../../../lib/AsyncProcess';
+import { AsyncProcessStatus } from '../../../../lib/AsyncProcess';
+import Loading from '../../../../components/Loading';
+import MarkdownCellView from './cells/MarkdownCell';
+import AppCellView from './cells/AppCell';
+import DataObjectCellView from './cells/DataObjectCell';
+import CodeCellView from './cells/CodeCell';
+import OutputObjectCellVew from './cells/OutputObjectCell';
+import UnrecognizedCellView from './cells/UnrecognizedCell';
+import ErrorMessage from '../../../../components/ErrorMessage';
+import AlertMessage from '../../../../components/AlertMessage';
+import { Col, Container, Row } from 'react-bootstrap';
+import Empty from '../../../../components/Empty';
 
 interface Props {
     authInfo: AuthInfo;
     config: Config;
-    narrative: Doc;
+    narrative: NarrativeSearchDoc;
 }
 
 interface State {
-    isLoading: boolean;
-    cells: Array<any>;
-    error: any;
-}
-
-interface PreviewCellProps {
-    cellType: string;
-    title: string;
-    subtitle?: string;
-    metaName: string; // context dependent - either app id, obj type, null
-    tag?: string | null;
-    authInfo: AuthInfo;
-    config: Config;
+    loadingState: AsyncProcess<NarrativeObject, string>;
 }
 
 export default class Preview extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            isLoading: true,
-            cells: [],
-            error: null,
+            loadingState: {
+                status: AsyncProcessStatus.NONE,
+            },
         };
     }
 
     componentDidUpdate(prevProps: Props) {
         if (
-            prevProps.narrative.access_group !== this.props.narrative.access_group ||
+            prevProps.narrative.access_group !==
+                this.props.narrative.access_group ||
             prevProps.narrative.obj_id !== this.props.narrative.obj_id ||
             prevProps.narrative.version !== this.props.narrative.version
         ) {
@@ -52,164 +62,156 @@ export default class Preview extends Component<Props, State> {
     }
 
     async fetchNarrativeObject() {
-        this.setState({isLoading: true});
-        const {narrative} = this.props;
-        const {access_group, obj_id, version} = narrative;
+        this.setState({
+            loadingState: {
+                status: AsyncProcessStatus.PENDING,
+            },
+        });
+        const { narrative } = this.props;
+        const { access_group, obj_id, version } = narrative;
         const upa = `${access_group}/${obj_id}/${version}`;
         try {
             const narrativeModel = new NarrativeModel({
                 workspaceURL: this.props.config.services.Workspace.url,
-                token: this.props.authInfo.token
-
+                token: this.props.authInfo.token,
             });
             const narrative = await narrativeModel.fetchNarrative(upa);
-            const cells = narrative.cells ? narrative.cells : [];
             this.setState({
-                isLoading: false,
-                cells,
-                error: null,
+                loadingState: {
+                    status: AsyncProcessStatus.SUCCESS,
+                    value: narrative,
+                },
             });
         } catch (error) {
-            this.setState({isLoading: false, error: error});
+            this.setState({
+                loadingState: {
+                    status: AsyncProcessStatus.ERROR,
+                    error:
+                        error instanceof Error
+                            ? error.message
+                            : 'Unknown error',
+                },
+            });
         }
     }
 
-    render() {
-        if (this.state.isLoading) {
-            return (
-                <div className="">
-                    <p className="">
-                        <i className="fa fa-cog fa-spin"></i>
-                        Loading...
-                    </p>
-                </div>
-            );
-        } else if (this.state.error) {
-            return this.renderError(this.state.error);
-        }
-        const maxLength = 16;
-
-        const truncated = this.state.cells.slice(0, maxLength);
-
-        const rows = truncated.map((cell, idx) => {
-            const metadata = cell.metadata?.kbase || {};
-            const title = metadata?.attributes?.title;
-            const subtitle = metadata?.attributes?.subtitle || cell.source;
-            const cellType = metadata.type ? metadata.type : cell.cell_type;
-            const info = metadata?.dataCell?.objectInfo || {};
-            let metaName = null;
-            let tag = null;
-            switch (cellType) {
-                case 'app':
-                    metaName = metadata?.appCell?.app?.id;
-                    tag = metadata?.appCell?.app?.tag;
-                    break;
-                case 'data':
-                    metaName = info?.typeName;
-                    if (!metaName) {
-                        metaName = info?.type;
-                    }
-                    break;
-            }
-            return (
-                <PreviewCell
-                    key={idx}
-                    title={title}
-                    cellType={cellType}
-                    metaName={metaName}
-                    subtitle={subtitle}
-                    tag={tag}
-                    authInfo={this.props.authInfo}
-                    config={this.props.config}
-                />
-            );
-        });
-
-        let moreCells = null;
-        if (this.state.cells.length > maxLength) {
-            const extraCells = this.state.cells.length - maxLength;
-            moreCells = (
-                <p>
-                    + {extraCells} more cell{extraCells > 1 ? 's' : ''}
-                </p>
-            );
-        }
-        return (
-            <div>
-                <div>{rows}</div>
-                {moreCells}
-                {this.viewFullNarrativeLink(this.props.narrative.access_group)}
-            </div>
-        );
-    }
-
-    viewFullNarrativeLink(wsid: number) {
+    renderFullNarrativeLink(wsid: number) {
         const narrativeHref = `/narrative/${wsid}`;
         return (
-            <p>
-                <a className="no-underline" href={narrativeHref}>
+            <p style={{ textAlign: 'center' }}>
+                <a className="btn btn-outline-secondary" href={narrativeHref}>
                     View the full narrative
                 </a>
             </p>
         );
     }
 
-    renderError(error: any) {
-        const msg = error?.data?.message;
+    renderError(error: string) {
+        return <ErrorMessage message={error} />;
+    }
+
+    renderAppCell(cell: AppCell) {}
+
+    renderMarkdownCell(cell: MarkdownCell) {}
+
+    renderCodeCell(cell: CodeCell) {}
+
+    renderOutputCell(cell: OutputObjectCell) {}
+
+    renderDataObjectCell(cell: DataObjectCell) {}
+
+    renderCell(cell: Cell) {
+        switch (cell.cell_type) {
+            case 'markdown':
+                return <MarkdownCellView cell={cell} />;
+            case 'code':
+                if ('kbase' in cell.metadata) {
+                    switch (cell.metadata.kbase.type) {
+                        case 'app':
+                            return (
+                                <AppCellView
+                                    cell={cell as AppCell}
+                                    authInfo={this.props.authInfo}
+                                    config={this.props.config}
+                                />
+                            );
+                        case 'code':
+                            return <CodeCellView cell={cell as CodeCell} />;
+                        case 'data':
+                            return (
+                                <DataObjectCellView
+                                    cell={cell as DataObjectCell}
+                                    authInfo={this.props.authInfo}
+                                    config={this.props.config}
+                                />
+                            );
+                        case 'output':
+                            return (
+                                <OutputObjectCellVew
+                                    cell={cell as OutputObjectCell}
+                                />
+                            );
+                    }
+                } else {
+                    return (
+                        <UnrecognizedCellView
+                            title="Unrecognized"
+                            content="Code Cell"
+                        />
+                    );
+                }
+        }
+    }
+
+    renderNarrative(narrative: NarrativeObject) {
+        if (
+            typeof narrative.cells === 'undefined' ||
+            narrative.cells.length === 0
+        ) {
+            return (
+                <Container fluid className="mt-3 px-0">
+                    <Row>
+                        <Col>
+                            <Empty
+                                title="No Cells"
+                                icon="square-o"
+                                message="This Narrative has no cells"
+                            />
+                        </Col>
+                    </Row>
+                </Container>
+            );
+        }
+        const rows = narrative.cells.map((cell, index) => {
+            return <Row key={index}>{this.renderCell(cell)}</Row>;
+        });
         return (
-            <div className="">
-                <div>An error happened while getting narrative info:</div>
-                <pre>{msg}</pre>
-            </div>
+            <Container fluid className="mt-3 px-0">
+                {rows}
+                <Row>
+                    {this.renderFullNarrativeLink(
+                        this.props.narrative.access_group
+                    )}
+                </Row>
+            </Container>
         );
     }
-}
 
-export class PreviewCell extends Component<PreviewCellProps> {
     render() {
-        let icon;
-        const tag = this.props.tag || 'dev';
-        switch (this.props.cellType) {
-            case 'app':
-                icon = <AppCellIcon appId={this.props.metaName} appTag={tag} authInfo={this.props.authInfo}
-                                    config={this.props.config}/>;
-                break;
-            case 'data':
-                icon = <TypeIcon objectType={this.props.metaName} authInfo={this.props.authInfo}
-                                 config={this.props.config}/>;
-                break;
-            default:
-                icon = <DefaultIcon cellType={this.props.cellType}/>;
-                break;
+        switch (this.state.loadingState.status) {
+            case AsyncProcessStatus.NONE:
+            case AsyncProcessStatus.PENDING:
+                return (
+                    <Loading
+                        size="normal"
+                        type="block"
+                        message="Loading Narrative..."
+                    />
+                );
+            case AsyncProcessStatus.ERROR:
+                return <ErrorMessage message={this.state.loadingState.error} />;
+            case AsyncProcessStatus.SUCCESS:
+                return this.renderNarrative(this.state.loadingState.value);
         }
-        // const title = this.props.title;
-        // const subtitleRaw = this.props.subtitle || '';
-        // eslint-disable-next-line new-cap
-        // let subtitle = DOMPurify.sanitize(marked(subtitleRaw), {
-        //   ALLOWED_TAGS: [],
-        // });
-        // if (subtitle.startsWith(title)) {
-        //   subtitle = subtitle.slice(title.length);
-        // }
-        const subtitle = (() => {
-            if (this.props.subtitle) {
-                if (this.props.subtitle.startsWith(this.props.title)) {
-                    return this.props.subtitle.slice(this.props.title.length);
-                }
-                return this.props.subtitle;
-            }
-            return null;
-        })();
-        return (
-            <div className="Preview row my-2">
-                <div className="col-auto">{icon}</div>
-                <div className="col" style={{minWidth: 0}}>
-                    <div className="-title">{this.props.title}</div>
-                    <div className="-subtitle">
-                        {subtitle}
-                    </div>
-                </div>
-            </div>
-        );
     }
 }

@@ -8,7 +8,8 @@ WORKDIR /kb
 
 # This version uses master; otherwise functionally equivalent other than style.
 RUN version=v0.15.1 && \
-    wget -O - https://github.com/powerman/dockerize/releases/download/${version}/dockerize-`uname -s`-`uname -m` | install /dev/stdin /usr/local/bin/dockerize
+    wget -O - https://github.com/powerman/dockerize/releases/download/${version}/dockerize-`uname -s`-`uname -m` | install /dev/stdin /usr/local/bin/dockerize && \
+    mkdir -p /kb/deployment/services/kbase-ui/dist/modules/deploy
 # RUN archive=dockerize-alpine-linux-amd64-v0.6.1.tar.gz && \
 #     wget https://github.com/kbase/dockerize/raw/master/$archive && \
 #     tar xvzf $archive && \
@@ -53,5 +54,5 @@ ENTRYPOINT [ "dockerize" ]
 
 CMD [  \
     "-template", "/kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
-    "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/config.json", \
+    "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json", \
     "bash", "/kb/deployment/scripts/start-server.bash" ]

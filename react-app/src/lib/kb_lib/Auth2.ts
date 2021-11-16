@@ -348,7 +348,7 @@ export class Auth2 {
         donorNode.innerHTML = content;
         document.body.appendChild(donorNode);
 
-        (<HTMLFormElement>document.getElementById(formId)).submit();
+        (document.getElementById(formId) as HTMLFormElement).submit();
     }
 
     linkStart(token: string, config: LinkOptions): void {
@@ -391,7 +391,7 @@ export class Auth2 {
 
         config.node.innerHTML = content;
 
-        (<HTMLFormElement>document.getElementById(formId)).submit();
+        (document.getElementById(formId) as HTMLFormElement).submit();
     }
 
     /*
@@ -402,9 +402,8 @@ export class Auth2 {
     */
 
     decodeError(result: Response): Auth2ApiErrorInfo {
-        let error;
         try {
-            return <Auth2ApiErrorInfo>JSON.parse(result.response);
+            return JSON.parse(result.response) as Auth2ApiErrorInfo;
         } catch (ex) {
             console.error(ex);
             const message = (() => {
@@ -531,7 +530,7 @@ export class Auth2 {
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return <Account>this.processResult(result, 200);
+                return this.processResult(result, 200) as Account;
             });
     }
 
@@ -576,7 +575,7 @@ export class Auth2 {
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return <Tokens>this.processResult(result, 200);
+                return this.processResult(result, 200) as Tokens;
             });
     }
 
@@ -599,7 +598,7 @@ export class Auth2 {
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return <NewTokenInfo>this.processResult(result, 200);
+                return this.processResult(result, 200) as NewTokenInfo;
             });
     }
 
@@ -618,7 +617,7 @@ export class Auth2 {
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return <LoginChoice>this.processResult(result, 200);
+                return this.processResult(result, 200) as LoginChoice;
             });
     }
 
@@ -740,7 +739,7 @@ export class Auth2 {
                 // over time, so we normalize it to a structure easier to digest by the
                 // front end.
                 if (response.haslinks) {
-                    return <LinkChoice>{
+                    return {
                         id: response.idents[0].id,
                         expires: response.expires,
                         cancelurl: response.cancelurl,
@@ -750,9 +749,9 @@ export class Auth2 {
                         provusername: response.idents[0].provusername,
                         linkeduser: undefined,
                         user: response.user,
-                    };
+                    } as LinkChoice;
                 } else {
-                    return <LinkChoice>{
+                    return {
                         id: response.linked[0].id,
                         expires: response.expires,
                         cancelurl: response.cancelurl,
@@ -762,7 +761,7 @@ export class Auth2 {
                         provusername: response.linked[0].provusername,
                         linkeduser: response.linked[0].user,
                         user: response.user,
-                    };
+                    } as LinkChoice;
                 }
             });
     }

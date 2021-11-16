@@ -1,0 +1,25 @@
+.Narrative {
+    padding: 0.5em;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(200, 200, 200, 0.5);
+}
+
+.Narrative.-selected {
+    background-color: rgba(200, 200, 200, 0.3);
+}
+
+.Narrative:hover {
+    background-color: rgba(200, 200, 200, 0.3);
+}
+
+.Narrative .-title {
+    font-weight: bold;
+    overflow-y: auto;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.Narrative .-subtitle {
+    font-size: 90%;
+    font-style: italic;
+}

@@ -1,9 +1,9 @@
-import {Component} from 'react';
-import {RouteComponentProps} from 'react-router-dom';
-import {AuthenticationState} from '../../contexts/Auth';
-import {RuntimeContext} from '../../contexts/RuntimeContext';
-import Plugin, {Params} from '../../pluginSupport/Plugin';
-import {Config} from '../../types/config';
+import { Component } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+import { AuthenticationState } from '../../contexts/Auth';
+import { RuntimeContext } from '../../contexts/RuntimeContext';
+import Plugin, { Params } from '../../pluginSupport/Plugin';
+import { Config } from '../../types/config';
 
 export interface PluginWrapperProps extends RouteComponentProps {
     name: string;
@@ -13,11 +13,12 @@ export interface PluginWrapperProps extends RouteComponentProps {
     authState: AuthenticationState;
 }
 
-interface PluginWrapperState {
-}
+interface PluginWrapperState {}
 
-export default class PluginWrapper extends Component<PluginWrapperProps,
-    PluginWrapperState> {
+export default class PluginWrapper extends Component<
+    PluginWrapperProps,
+    PluginWrapperState
+> {
     render() {
         // calculate the classic kbase-ui routing info from the react-router props.
 
@@ -51,8 +52,6 @@ export default class PluginWrapper extends Component<PluginWrapperProps,
         const originalHash = this.props.location.pathname;
 
         // setTitle(`Loading ${this.props.name}:${this.props.view}...`);
-
-        console.log('yes, loading...', originalHash, this.props.view, params);
 
         return (
             <RuntimeContext.Consumer>

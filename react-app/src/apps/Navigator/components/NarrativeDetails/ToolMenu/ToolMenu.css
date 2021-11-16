@@ -1,0 +1,19 @@
+.ToolMenu .dropdown .dropdown-menu .dropdown-item .navbar-icon {
+    display: inline-block;
+    width: 26px;
+    text-align: center;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.ToolMenuModal .modal-content {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.ToolMenuModal .modal-header {
+    background-color: rgba(220, 220, 220, 0.9);
+}
+
+.ToolMenuModal .modal-footer {
+    background-color: rgba(220, 220, 220, 0.9);
+}

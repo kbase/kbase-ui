@@ -10,7 +10,7 @@ export interface ConfigInfo {
     config: Config;
 }
 
-export type ConfigState = AsyncProcess<ConfigInfo>;
+export type ConfigState = AsyncProcess<ConfigInfo, string>;
 
 // Context
 
@@ -70,7 +70,11 @@ export default class ConfigWrapper extends React.Component<
             },
         });
         try {
-            const rawConfig = await (await fetch('/config.json')).json();
+            // NB the location of the config file is based on the old location; it is preserved
+            // in order to avoid the need to update KBase deploy tools.
+            const rawConfig = await (
+                await fetch('/modules/deploy/config.json')
+            ).json();
             this.setState({
                 configState: {
                     status: AsyncProcessStatus.SUCCESS,
@@ -83,7 +87,7 @@ export default class ConfigWrapper extends React.Component<
             this.setState({
                 configState: {
                     status: AsyncProcessStatus.ERROR,
-                    message: (() => {
+                    error: (() => {
                         if (ex instanceof Error) {
                             return ex.message;
                         }

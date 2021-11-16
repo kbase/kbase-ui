@@ -1,17 +1,17 @@
-import {Component} from 'react';
-import {HashRouter, Redirect, Route, Switch} from 'react-router-dom';
+import { Component } from 'react';
+import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 import './Body.css';
 import NotFound from './NotFoundChecked/NotFoundChecked';
 import PluginWrapper from './PluginWrapper/PluginWrapper';
-import {Config} from '../types/config';
-import {AuthenticationState} from '../contexts/Auth';
+import { Config } from '../types/config';
+import { AuthenticationState } from '../contexts/Auth';
 import About from '../applets/about';
 import Organizations from '../apps/Organizations';
 import Catalog from '../apps/Catalog';
 import Auth from '../apps/Auth';
 import Developer from '../applets/developer';
 import DevelopmentAuth from '../applets/development/DevelopmentAuth';
-import Navigator from "../apps/Navigator/Navigator";
+import Navigator from '../apps/Navigator/Navigator';
 
 export interface BodyProps {
     config: Config;
@@ -19,8 +19,7 @@ export interface BodyProps {
     setTitle: (title: string) => void;
 }
 
-interface BodyState {
-}
+interface BodyState {}
 
 export default class Body extends Component<BodyProps, BodyState> {
     renderRouting() {
@@ -41,23 +40,13 @@ export default class Body extends Component<BodyProps, BodyState> {
                     <Route
                         path="/navigator"
                         render={(props) => {
-                            return (
-                                <Navigator
-                                    {...props}
-                                    {...this.props}
-                                />
-                            );
+                            return <Navigator {...props} {...this.props} />;
                         }}
                     />
                     <Route
                         path="/dashboard"
                         render={(props) => {
-                            return (
-                                <Navigator
-                                    {...props}
-                                    {...this.props}
-                                />
-                            );
+                            return <Navigator {...props} {...this.props} />;
                         }}
                     />
                     <Route
@@ -116,24 +105,14 @@ export default class Body extends Component<BodyProps, BodyState> {
                     <Route
                         path="/orgs"
                         render={(props) => {
-                            return (
-                                <Organizations
-                                    {...props}
-                                    {...this.props}
-                                />
-                            );
+                            return <Organizations {...props} {...this.props} />;
                         }}
                     />
 
                     <Route
                         path="/(catalog|appcatalog)"
                         render={(props) => {
-                            return (
-                                <Catalog
-                                    {...props}
-                                    {...this.props}
-                                />
-                            );
+                            return <Catalog {...props} {...this.props} />;
                         }}
                     />
 
@@ -180,12 +159,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     <Route
                         path="/(auth2|account|signup)"
                         render={(props) => {
-                            return (
-                                <Auth
-                                    {...props}
-                                    {...this.props}
-                                />
-                            );
+                            return <Auth {...props} {...this.props} />;
                         }}
                     />
                     <Route
@@ -194,18 +168,9 @@ export default class Body extends Component<BodyProps, BodyState> {
                             switch (process.env.NODE_ENV) {
                                 case 'development':
                                 case 'test':
-                                    return (
-                                        <DevelopmentAuth
-                                            {...this.props}
-                                        />
-                                    );
+                                    return <DevelopmentAuth {...this.props} />;
                                 case 'production':
-                                    return (
-                                        <Auth
-                                            {...props}
-                                            {...this.props}
-                                        />
-                                    );
+                                    return <Auth {...props} {...this.props} />;
                             }
                         }}
                     />
@@ -409,25 +374,17 @@ export default class Body extends Component<BodyProps, BodyState> {
                     <Route
                         path="/about"
                         render={(props) => {
-                            return (
-                                <About
-                                    {...this.props}
-                                />
-                            );
+                            return <About {...this.props} />;
                         }}
                     />
                     <Route
                         path="/developer/:tab?"
                         render={(props) => {
-                            return (
-                                <Developer
-                                    {...this.props}
-                                />
-                            );
+                            return <Developer {...this.props} />;
                         }}
                     />
                     <Route exact path="/">
-                        <Redirect to="/dashboard"/>
+                        <Redirect to="/dashboard" />
                     </Route>
                     <Route
                         exact={true}

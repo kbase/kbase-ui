@@ -17,9 +17,9 @@ export interface AsyncProcessPending extends AsyncProcessBase {
     status: AsyncProcessStatus.PENDING;
 }
 
-export interface AsyncProcessError extends AsyncProcessBase {
+export interface AsyncProcessError<E> extends AsyncProcessBase {
     status: AsyncProcessStatus.ERROR;
-    message: string;
+    error: E;
 }
 
 export interface AsyncProcessSuccess<T> extends AsyncProcessBase {
@@ -27,8 +27,8 @@ export interface AsyncProcessSuccess<T> extends AsyncProcessBase {
     value: T;
 }
 
-export type AsyncProcess<T> =
+export type AsyncProcess<T, E> =
     | AsyncProcessNone
     | AsyncProcessPending
-    | AsyncProcessError
+    | AsyncProcessError<E>
     | AsyncProcessSuccess<T>;

@@ -1,0 +1,34 @@
+.name {
+    font-weight: bold;
+}
+
+.title {
+    flex: 1 1 0;
+    font-weight: bold;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.version {
+    flex: 0 0 auto;
+    color: rgb(150, 150, 150);
+}
+
+.subtitle {
+    font-style: italic;
+}
+
+.description {
+    margin-top: 1em;
+    /* max-height: 10em; */
+    /* overflow-y: auto; */
+    /* border: 1px solid rgb(200, 200, 200, 0.3); */
+    /* border-radius: 1em; */
+    /* padding: 1em; */
+}
+
+.id {
+    font-family: monospace;
+    white-space: pre;
+}

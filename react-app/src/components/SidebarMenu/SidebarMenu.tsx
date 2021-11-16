@@ -10,7 +10,9 @@ export interface SidebarMenuProps {
     // feedStatus: FeedsNotification;
 }
 
-interface SidebarMenuState {}
+interface SidebarMenuState {
+    activeKey: string | null;
+}
 
 export interface MenuButton {
     icon: string;
@@ -36,18 +38,28 @@ export default class SidebarMenu extends Component<
 
         this.ref = createRef<HTMLDivElement>();
 
+        this.state = {
+            activeKey: null,
+        };
+
         // this.state = {
         //     feedsNotificationCount: null,
         //     feedsError: null,
         // };
     }
 
-    // componentDidMount() {
-    //     const feeds = this.props.runtime.db().get('feeds', null);
-    //     this.processFeeds(feeds);
-    //     // (this.ref.current).tooltip({ selector: '[data-toggle="tooltip"]' });
-    // }
+    componentDidMount() {
+        this.updateActiveKey();
+        // const feeds = this.props.runtime.db().get('feeds', null);
+        // this.processFeeds(feeds);
+        // (this.ref.current).tooltip({ selector: '[data-toggle="tooltip"]' });
+    }
 
+    updateActiveKey() {
+        this.setState({
+            activeKey: this.getActiveKey(),
+        });
+    }
     // processFeeds(feeds: FeedsNotification) {
     //     this.setState({
     //         feedsNotificationCount: feeds.unseenNotificationsCount || null,
@@ -109,11 +121,9 @@ export default class SidebarMenu extends Component<
     // }
 
     renderButton(menuItem: MenuItemInternal) {
-        // const activeClass = menuItem.isActive ? ' -active' : '';
-        const activeClass = '';
         return (
             <button
-                className={'SidebarMenu -button' + activeClass}
+                className="SidebarMenu -button"
                 data-k-b-testhook-element="menu-item"
                 data-k-b-testhook-button={menuItem.name}
                 data-toggle="tooltip"
@@ -132,11 +142,9 @@ export default class SidebarMenu extends Component<
     }
 
     renderInternalItem(menuItem: MenuItemInternal) {
-                return (
+        return (
             <Nav.Item key={menuItem.name}>
-                <Nav.Link
-                    eventKey={menuItem.name}
-                >
+                <Nav.Link eventKey={menuItem.name}>
                     {this.renderIcon(menuItem)}
                     <div>{menuItem.label}</div>
                 </Nav.Link>
@@ -165,14 +173,14 @@ export default class SidebarMenu extends Component<
         );
     }
 
-    renderMenu(): [Array<JSX.Element>,Map<string, () => void> ] {
+    renderMenu(): [Array<JSX.Element>, Map<string, () => void>] {
         const buttons: Array<JSX.Element> = [];
         const handlers: Map<string, () => void> = new Map();
         for (const item of this.props.menu) {
             if (item.type === 'internal') {
                 buttons.push(this.renderInternalItem(item));
                 handlers.set(item.name, () => {
-                    this.onNavClick(item.path)
+                    this.onNavClick(item.path);
                 });
             } else {
                 buttons.push(this.renderExternalItem(item));
@@ -188,15 +196,16 @@ export default class SidebarMenu extends Component<
         return [buttons, handlers];
     }
 
-    getActiveKey(): string | undefined {
+    getActiveKey(): string | null {
         const path = document.location.hash.substring(1).replace(/^\/+/, '');
         for (const item of this.props.menu) {
             if (item.type === 'internal') {
                 if (path.startsWith(item.path)) {
-                    return item.label;
+                    return item.name;
                 }
             }
         }
+        return null;
     }
 
     render() {
@@ -204,13 +213,14 @@ export default class SidebarMenu extends Component<
         return (
             <Nav
                 className="flex-column SidebarMenu"
-                activeKey={this.getActiveKey()}
-                onSelect={(selectedKey: string|null) => {
+                activeKey={this.state.activeKey || undefined}
+                onSelect={(selectedKey: string | null) => {
                     if (selectedKey) {
                         const handler = handlers.get(selectedKey);
                         if (handler) {
                             handler();
                         }
+                        this.updateActiveKey();
                     }
                 }}
             >

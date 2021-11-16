@@ -33,7 +33,11 @@ export default class AboutPlugins extends Component<
                         </td>
                         <td>{plugin.gitAccount}</td>
                         <td>
-                            <a href={plugin.url} target="_blank">
+                            <a
+                                href={plugin.url}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
                                 {plugin.globalName}
                             </a>
                         </td>

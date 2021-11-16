@@ -1,0 +1,27 @@
+.Navigator .container-fluid {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.Navigator .col,
+.Navigator [class*='col-'].-fullheight {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.Navigator .tab-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    height: 100%;
+}
+
+.Navigator .tab-content > .active {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    overflow-y: auto;
+}

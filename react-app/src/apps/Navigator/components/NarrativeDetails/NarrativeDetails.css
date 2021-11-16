@@ -1,3 +1,11 @@
+.NarrativeDetails {
+    padding: 1em;
+    border: 1px solid rgba(200, 200, 200, 0.5);
+    border-radius: 1em;
+    box-shadow: 4px 4px 4px rgb(200 200 200);
+    margin-bottom: 1em;
+}
+
 .NarrativeDetails .-title-row {
     font-size: 150%;
 }
@@ -7,7 +15,6 @@
 }
 
 .NarrativeDetails .-title-row .-title {
-
 }
 
 .NarrativeDetails .-title-row .-version {

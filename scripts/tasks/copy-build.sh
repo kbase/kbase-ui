@@ -1,1 +1,1 @@
-cp -pr react-app/build build/app
+cp -pr react-app/build build/dist

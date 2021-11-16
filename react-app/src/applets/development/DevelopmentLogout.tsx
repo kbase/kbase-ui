@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import ErrorAlert from '../../components/ErrorAlert';
 import Loading from '../../components/Loading';
-import MessageAlert from '../../components/MessageAlert';
+import MessageAlert from '../../components/AlertMessage';
 import { AuthenticationStateAuthenticated } from '../../contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from '../../lib/AsyncProcess';
 import { Config } from '../../types/config';
@@ -12,7 +12,7 @@ export interface DevelopmentLogoutProps {
 }
 
 interface DevelopmentLogoutState {
-    logoutState: AsyncProcess<null>;
+    logoutState: AsyncProcess<null, string>;
 }
 
 export default class DevelopmentLogout extends Component<
@@ -46,7 +46,7 @@ export default class DevelopmentLogout extends Component<
             this.setState({
                 logoutState: {
                     status: AsyncProcessStatus.ERROR,
-                    message: ex instanceof Error ? ex.message : 'Unknown error',
+                    error: ex instanceof Error ? ex.message : 'Unknown error',
                 },
             });
         }
@@ -74,7 +74,7 @@ export default class DevelopmentLogout extends Component<
         switch (logoutState.status) {
             case AsyncProcessStatus.NONE:
                 return (
-                    <div style={{marginTop: '10px'}}>
+                    <div style={{ marginTop: '10px' }}>
                         <MessageAlert message="Ready to logout" type="info" />
                     </div>
                 );
@@ -87,7 +87,7 @@ export default class DevelopmentLogout extends Component<
                     />
                 );
             case AsyncProcessStatus.ERROR:
-                return <ErrorAlert message={logoutState.message} />;
+                return <ErrorAlert message={logoutState.error} />;
             case AsyncProcessStatus.SUCCESS:
                 return (
                     <div>

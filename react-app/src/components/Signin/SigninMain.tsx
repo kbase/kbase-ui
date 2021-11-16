@@ -39,10 +39,9 @@ export default class Login extends Component<LoginProps, LoginState> {
         }
         try {
             await this.props.authState.logout();
-            console.log('logged out!');
             document.location.hash = 'login';
         } catch (ex) {
-            console.log('YIKES AHOY!', ex);
+            console.error('YIKES AHOY!', ex);
         }
 
         // authSession.setSessionCookie(tokenInfo.token, tokenInfo.expires);

@@ -23,8 +23,8 @@ services:
             - /kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf
             # - '-wait'
             # - 'file://kb/deployment/services/kbase-ui/app/index.html'
-            # - '-template'
-            # - /kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/app/config.json
+            - '-template'
+            - /kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json
             - bash
             - /kb/deployment/scripts/start-server.bash
     kbase-ui-proxy:

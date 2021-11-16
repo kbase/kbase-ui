@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import ErrorAlert from '../../components/ErrorAlert';
 import Loading from '../../components/Loading';
-import MessageAlert from '../../components/MessageAlert';
+import MessageAlert from '../../components/AlertMessage';
 import { AuthenticationStateUnauthenticated } from '../../contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from '../../lib/AsyncProcess';
 import { Auth2 } from '../../lib/kb_lib/Auth2';
@@ -14,11 +14,14 @@ export interface DevelopmentLoginProps {
 }
 
 interface DevelopmentLoginState {
-    loginState: AsyncProcess<{
-        token: string;
-        username: string;
-        realname: string;
-    }>;
+    loginState: AsyncProcess<
+        {
+            token: string;
+            username: string;
+            realname: string;
+        },
+        string
+    >;
 }
 
 export default class DevelopmentLogin extends Component<
@@ -44,13 +47,12 @@ export default class DevelopmentLogin extends Component<
     }
 
     async doSetToken(token: string) {
-        console.log('hmm', token);
         // check token;
         const auth = new Auth2({
             baseUrl: this.props.config.services.Auth2.url,
         });
         try {
-            const tokenInfo = await auth.getTokenInfo(token);
+            // const tokenInfo = await auth.getTokenInfo(token);
             const meInfo = await auth.getMe(token);
             this.setState({
                 loginState: {
@@ -66,7 +68,7 @@ export default class DevelopmentLogin extends Component<
             this.setState({
                 loginState: {
                     status: AsyncProcessStatus.ERROR,
-                    message: ex instanceof Error ? ex.message : 'Unknown error',
+                    error: ex instanceof Error ? ex.message : 'Unknown error',
                 },
             });
         }
@@ -92,7 +94,7 @@ export default class DevelopmentLogin extends Component<
                     />
                 );
             case AsyncProcessStatus.ERROR:
-                return <ErrorAlert message={loginState.message} />;
+                return <ErrorAlert message={loginState.error} />;
             case AsyncProcessStatus.SUCCESS:
                 return (
                     <div>
@@ -119,8 +121,8 @@ export default class DevelopmentLogin extends Component<
         return (
             <div>
                 <DevelopmentLoginForm onLogin={this.doSetToken.bind(this)} />
-                <div style={{marginTop: '10px'}}>
-                {this.renderLoginStatus()}
+                <div style={{ marginTop: '10px' }}>
+                    {this.renderLoginStatus()}
                 </div>
             </div>
         );

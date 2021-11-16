@@ -72,7 +72,7 @@ http {
             # this ensures that a downstream cache service will revalidate.
             add_header Cache-Control 'no-cache';
 
-            root /kb/deployment/services/kbase-ui/app;
+            root /kb/deployment/services/kbase-ui/dist;
         }
 
         # Format is /__poke/https://www.example.com/some/path

@@ -1,0 +1,14 @@
+.AlertMessage {
+    margin: 0 auto;
+    :global {
+    }
+}
+
+.AlertMessage :global .alert-title {
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.AlertMessage :global .fa {
+    margin-right: 0.5em;
+}

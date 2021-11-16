@@ -7,7 +7,7 @@ services:
         build:
             context: .
         # there is only one proxy image, for local development, so just call it :dev
-        image: kbase/kbase-ui-proxy:dev
+        image: kbase/kbase-ui-proxy-standalone:dev
         networks:
             - kbase-dev
         container_name: kbase-ui-proxy-standalone

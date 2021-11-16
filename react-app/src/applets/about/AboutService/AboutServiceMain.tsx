@@ -26,7 +26,7 @@ export interface AboutServiceMainProps {
 }
 
 interface AboutServiceMainState {
-    load: AsyncProcess<VersionInfo>;
+    load: AsyncProcess<VersionInfo, string>;
 }
 
 export interface VersionInfo {
@@ -233,7 +233,7 @@ export default class AboutServiceMain extends Component<
             this.setState({
                 load: {
                     status: AsyncProcessStatus.ERROR,
-                    message: ex instanceof Error ? ex.message : 'Unknown error',
+                    error: ex instanceof Error ? ex.message : 'Unknown error',
                 },
             });
         }
@@ -251,8 +251,8 @@ export default class AboutServiceMain extends Component<
         );
     }
 
-    renderError(state: AsyncProcessError) {
-        return <ErrorAlert message={state.message} />;
+    renderError(state: AsyncProcessError<string>) {
+        return <ErrorAlert message={state.error} />;
     }
 
     render() {

@@ -1,9 +1,12 @@
 import { Component } from 'react';
 import styles from './Loading.styles';
 
+export type Size = 'small' | 'normal' | 'large';
+export type Type = 'inline' | 'block';
+
 export interface LoadingProps {
-    size: 'small' | 'normal' | 'large';
-    type: 'inline' | 'block';
+    size?: Size;
+    type?: Type;
     message: string;
 }
 
@@ -12,7 +15,7 @@ interface LoadingState {}
 export default class Loading extends Component<LoadingProps, LoadingState> {
     render() {
         const spinner = (() => {
-            switch (this.props.size) {
+            switch (this.props.size || 'normal') {
                 case 'small':
                     return (
                         <span className="fa fa-sm fa-spinner fa-pulse"></span>
