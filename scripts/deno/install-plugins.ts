@@ -106,6 +106,9 @@ async function main() {
   const destinationDir = Deno.args[1];
   const downloadDest = `${destinationDir}/download`;
   const installDest = `${destinationDir}/plugins`;
+    
+  console.log(`Downloading into ${downloadDest}`);
+  console.log(`Installing into ${installDest}`);
 
   ensureDirSync(downloadDest);
   ensureDirSync(installDest);
