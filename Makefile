@@ -237,9 +237,9 @@ clean-build:
 	rm -rf build/dist
 
 build: 
-	sh scripts/tasks/build.sh
-	sh scripts/tasks/copy-build.sh
-	sh scripts/tasks/install-plugins.sh
+	sh scripts/shell/build.sh
+	sh scripts/shell/copy-build.sh
+	sh scripts/shell/install-plugins.sh
 	
 build-image:
 	sh scripts/shell/build-image.sh
