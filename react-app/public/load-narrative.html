@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>KBase Narrative Interface</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+
+<body>
+    <script>
+
+    function main() {
+        /*
+        Just intercepts the load-narrative.html request and redirects to 
+        kbase-ui proper.
+        */
+
+        // Get the "n" parameter
+        const url = new URL(window.location.href);
+        const n = url.searchParams.get('n');
+        if (!n) {
+            alert('No "n"!!!');
+            return;
+        }
+
+        for (const key of Array.from(url.searchParams.keys())) {
+            url.searchParams.delete(key);
+        }
+
+
+        url.pathname = '';
+        url.hash = `#load-narrative?n=${n}`;
+        console.log('here', url);
+        window.history.pushState(null, '', url);
+    } 
+    main();
+
+    </script>
+</body>
+</html>

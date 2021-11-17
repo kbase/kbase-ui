@@ -2,7 +2,7 @@ import { JSONObject } from '@kbase/ui-lib/lib/json';
 import { Component } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { AuthInfo } from '../../../contexts/Auth';
-import { AsyncProcessStatus } from '../../../lib/AsyncProcess';
+import { AsyncProcessStatus } from '../../../lib/AsyncProcess2';
 import { Config } from '../../../types/config';
 import Tasks from '../components/NarrativeList/Tasks';
 
@@ -59,6 +59,7 @@ export default class NavigatorContextWrapper extends Component<
                 },
                 selectedNarrative: {
                     status: AsyncProcessStatus.NONE,
+                    initialValue: this.props.detailOptions,
                 },
                 userInteractions: {
                     narrativeSelectedBy: NarrativeSelectedBy.NONE,
@@ -321,6 +322,8 @@ export default class NavigatorContextWrapper extends Component<
                         narratives.length > 0
                     ) {
                         nextState.navigatorContextState.selectedNarrative = {
+                            ...nextState.navigatorContextState
+                                .selectedNarrative,
                             status: AsyncProcessStatus.SUCCESS,
                             value: {
                                 narrativeDoc: narratives[0],
@@ -775,6 +778,7 @@ export default class NavigatorContextWrapper extends Component<
             navigatorContextState: {
                 ...this.state.navigatorContextState,
                 selectedNarrative: {
+                    ...this.state.navigatorContextState.selectedNarrative,
                     status: AsyncProcessStatus.PENDING,
                 },
             },
@@ -797,6 +801,7 @@ export default class NavigatorContextWrapper extends Component<
                         narrativeSelectedBy: NarrativeSelectedBy.USER,
                     },
                     selectedNarrative: {
+                        ...this.state.navigatorContextState.selectedNarrative,
                         status: AsyncProcessStatus.SUCCESS,
                         value: {
                             narrativeDoc,
@@ -809,6 +814,7 @@ export default class NavigatorContextWrapper extends Component<
                 navigatorContextState: {
                     ...this.state.navigatorContextState,
                     selectedNarrative: {
+                        ...this.state.navigatorContextState.selectedNarrative,
                         status: AsyncProcessStatus.ERROR,
                         error:
                             ex instanceof Error ? ex.message : 'Unknown error',
@@ -870,6 +876,7 @@ export default class NavigatorContextWrapper extends Component<
                     narratives.length > 0
                 ) {
                     nextState.navigatorContextState.selectedNarrative = {
+                        ...this.state.navigatorContextState.selectedNarrative,
                         status: AsyncProcessStatus.SUCCESS,
                         value: {
                             narrativeDoc: narratives[0],

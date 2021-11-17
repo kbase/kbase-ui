@@ -127,11 +127,22 @@ export default class NarrativeDetails extends Component<Props, State> {
                         <Tabs
                             variant="tabs"
                             onSelect={this.handleTabSelected.bind(this)}
-                            defaultActiveKey="data"
+                            defaultActiveKey="preview"
                             activeKey={(() => {
                                 return this.state.view || undefined;
                             })()}
                         >
+                            <Tab eventKey="preview" title="Cells">
+                                <div
+                                    style={{ flex: '1 1 0', overflowY: 'auto' }}
+                                >
+                                    <Preview
+                                        authInfo={this.props.authInfo}
+                                        narrative={narrativeDoc}
+                                        config={this.props.config}
+                                    />
+                                </div>
+                            </Tab>
                             <Tab eventKey="data" title="Data">
                                 <div
                                     style={{ flex: '1 1 0', overflowY: 'auto' }}
@@ -140,17 +151,6 @@ export default class NarrativeDetails extends Component<Props, State> {
                                         accessGroup={narrativeDoc.access_group}
                                         dataObjects={narrativeDoc.data_objects}
                                         authInfo={this.props.authInfo}
-                                        config={this.props.config}
-                                    />
-                                </div>
-                            </Tab>
-                            <Tab eventKey="preview" title="Cells">
-                                <div
-                                    style={{ flex: '1 1 0', overflowY: 'auto' }}
-                                >
-                                    <Preview
-                                        authInfo={this.props.authInfo}
-                                        narrative={narrativeDoc}
                                         config={this.props.config}
                                     />
                                 </div>

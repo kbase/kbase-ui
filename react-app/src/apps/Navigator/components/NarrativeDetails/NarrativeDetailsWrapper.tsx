@@ -50,7 +50,12 @@ export default class NarrativeDetailsWrapper extends Component {
                                                         .selectedNarrative.value
                                                         .narrativeDoc
                                                 }
-                                                view="data"
+                                                view={
+                                                    navigatorValue
+                                                        .selectedNarrative
+                                                        .initialValue.view ||
+                                                    'preview'
+                                                }
                                             />
                                         );
                                     case AsyncProcessStatus.ERROR:

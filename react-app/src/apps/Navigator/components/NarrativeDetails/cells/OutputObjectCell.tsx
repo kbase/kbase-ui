@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { Accordion } from 'react-bootstrap';
 import ErrorMessage from '../../../../../components/ErrorMessage';
 import { OutputObjectCell } from '../../../utils/NarrativeModel';
 import { DefaultIcon } from '../../Icon';
@@ -19,15 +20,45 @@ export default class OutputObjectCellView extends Component<OutputObjectCellProp
                 </div>
             );
         }
-        const { name, tag } = this.props.cell.metadata.kbase.outputCell.widget;
+        const { name, tag } = (() => {
+            if (this.props.cell.metadata.kbase.outputCell.widget) {
+                return this.props.cell.metadata.kbase.outputCell.widget;
+            } else {
+                return {
+                    name: 'unknown',
+                    tag: 'unknown',
+                };
+            }
+        })();
+
         return (
             <div className="row my-2">
-                <div className="col-auto d-flex align-items-center">
+                <div className="col-auto d-flex align-items-start">
                     <DefaultIcon cellType="output" />
                 </div>
                 <div className="col" style={{ minWidth: 0 }}>
-                    <div className={styles.name}>{name}</div>
-                    <div className={styles.tag}>{tag}</div>
+                    <Accordion>
+                        <Accordion.Item eventKey="0">
+                            <Accordion.Header>
+                                <div
+                                    style={{
+                                        flex: '1 1 0',
+                                        paddingRight: '2em',
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                    }}
+                                >
+                                    <div className={styles.title}>{name}</div>
+                                    <div className={styles.tag}>{tag}</div>
+                                </div>
+                            </Accordion.Header>
+                            <Accordion.Body>
+                                <div className={styles.content}>
+                                    More info about this output cell ...
+                                </div>
+                            </Accordion.Body>
+                        </Accordion.Item>
+                    </Accordion>
                 </div>
             </div>
         );

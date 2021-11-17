@@ -12,6 +12,7 @@ import Auth from '../apps/Auth';
 import Developer from '../applets/developer';
 import DevelopmentAuth from '../applets/development/DevelopmentAuth';
 import Navigator from '../apps/Navigator/Navigator';
+import NarrativeLoader from '../applets/narrativeLoader';
 
 export interface BodyProps {
     config: Config;
@@ -367,6 +368,15 @@ export default class Body extends Component<BodyProps, BodyState> {
                                     view="about"
                                     {...this.props}
                                 />
+                            );
+                        }}
+                    />
+
+                    <Route
+                        path="/load-narrative"
+                        render={(props) => {
+                            return (
+                                <NarrativeLoader {...this.props} {...props} />
                             );
                         }}
                     />

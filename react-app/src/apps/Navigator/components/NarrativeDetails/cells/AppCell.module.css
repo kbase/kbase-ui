@@ -12,6 +12,7 @@
 
 .version {
     flex: 0 0 auto;
+    font-style: italic;
     color: rgb(150, 150, 150);
 }
 

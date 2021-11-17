@@ -26,7 +26,7 @@ export default class MarkdownCellView extends Component<MarkdownCellProps> {
     render() {
         return (
             <div className="row my-2">
-                <div className="col-auto d-flex align-items-center">
+                <div className="col-auto d-flex align-items-start">
                     <DefaultIcon cellType="markdown" />
                 </div>
                 <div className="col" style={{ minWidth: 0 }}>

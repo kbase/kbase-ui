@@ -1,7 +1,24 @@
+.header {
+    flex: 1 1 0;
+    padding-right: 2em;
+    display: flex;
+    flex-direction: row;
+    min-width: 0;
+}
+
 .title {
+    flex: 3 1 0;
     font-weight: bold;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .type {
     font-style: italic;
+    color: rgb(150, 150, 150);
+    flex: 1 1 0;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }

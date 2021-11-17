@@ -11,7 +11,6 @@ import NarrativeModel, {
 } from '../../utils/NarrativeModel';
 import { AuthInfo } from '../../../../contexts/Auth';
 import { Config } from '../../../../types/config';
-import styles from './Preview.module.css';
 import { AsyncProcess } from '../../../../lib/AsyncProcess';
 import { AsyncProcessStatus } from '../../../../lib/AsyncProcess';
 import Loading from '../../../../components/Loading';
@@ -22,7 +21,6 @@ import CodeCellView from './cells/CodeCell';
 import OutputObjectCellVew from './cells/OutputObjectCell';
 import UnrecognizedCellView from './cells/UnrecognizedCell';
 import ErrorMessage from '../../../../components/ErrorMessage';
-import AlertMessage from '../../../../components/AlertMessage';
 import { Col, Container, Row } from 'react-bootstrap';
 import Empty from '../../../../components/Empty';
 

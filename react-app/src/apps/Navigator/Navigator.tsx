@@ -12,11 +12,11 @@ import { SearchOptions } from './utils/NarrativeSearch';
 import ErrorBoundary from './ErrorBoundary';
 import NavigatorContextWrapper from './context/NavigatorContextWrapper';
 import { DetailOptions } from './context/DataModel';
-import ErrorMessage from '../../components/ErrorMessage';
 
 // Styles
 import styles from './Navigator.module.css';
 import './bootstrapOverrides.css';
+import { pushHistory } from './utils/navigation';
 
 const DEFAULT_CATEGORY = 'own';
 
@@ -187,9 +187,12 @@ export default class Navigator extends React.Component<
         switch (authState.status) {
             case AuthenticationStatus.NONE:
             case AuthenticationStatus.UNAUTHENTICATED:
-                return (
-                    <ErrorMessage message="The Navigator requires authentication" />
-                );
+                pushHistory('login');
+
+                return null;
+            // return (
+            //     <ErrorMessage message="The Navigator requires authentication" />
+            // );
             case AuthenticationStatus.AUTHENTICATED:
                 return this.renderNav(authState.authInfo);
         }

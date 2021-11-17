@@ -3,10 +3,10 @@ import { AppCellIcon } from '../../Icon';
 import { AuthInfo } from '../../../../../contexts/Auth';
 import { Config } from '../../../../../types/config';
 import { AppCell } from '../../../utils/NarrativeModel';
-import styles from './AppCell.module.css';
 import marked from 'marked';
 import DOMPurify from 'dompurify';
 import { Accordion } from 'react-bootstrap';
+import styles from './AppCell.module.css';
 
 interface PreviewCellProps {
     cell: AppCell;
@@ -75,7 +75,7 @@ export default class AppCellView extends Component<PreviewCellProps> {
         // })();
         return (
             <div className="row my-2">
-                <div className="col-auto d-flex align-items-center">{icon}</div>
+                <div className="col-auto d-flex align-items-start">{icon}</div>
                 <div className="col" style={{ minWidth: 0 }}>
                     <Accordion>
                         <Accordion.Item eventKey="0">
@@ -86,6 +86,7 @@ export default class AppCellView extends Component<PreviewCellProps> {
                                         paddingRight: '2em',
                                         display: 'flex',
                                         flexDirection: 'row',
+                                        minWidth: '0',
                                     }}
                                 >
                                     <div className={styles.title}>{name} </div>

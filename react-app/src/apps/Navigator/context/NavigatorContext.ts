@@ -1,7 +1,7 @@
 import React from 'react';
-import { AsyncProcess } from '../../../lib/AsyncProcess';
+import { AsyncProcess2 } from '../../../lib/AsyncProcess2';
 import { NarrativeSearchDoc } from '../utils/NarrativeModel';
-import { SearchState } from './DataModel';
+import { DetailOptions, SearchState } from './DataModel';
 
 export interface NarrativeDetailState {
     narrativeDoc: NarrativeSearchDoc;
@@ -21,7 +21,11 @@ export interface UserInteractions {
 export interface NavigatorContextState {
     searchState: SearchState;
     userInteractions: UserInteractions;
-    selectedNarrative: AsyncProcess<NarrativeDetailState, string>;
+    selectedNarrative: AsyncProcess2<
+        DetailOptions,
+        NarrativeDetailState,
+        string
+    >;
     // Actions
 
     selectNarrative: (narrativeId: number) => void;
