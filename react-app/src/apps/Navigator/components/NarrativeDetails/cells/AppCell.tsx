@@ -7,6 +7,7 @@ import marked from 'marked';
 import DOMPurify from 'dompurify';
 import { Accordion } from 'react-bootstrap';
 import styles from './AppCell.module.css';
+import cellStyles from './cell.module.css';
 
 interface PreviewCellProps {
     cell: AppCell;
@@ -74,23 +75,29 @@ export default class AppCellView extends Component<PreviewCellProps> {
         //     return null;
         // })();
         return (
-            <div className="row my-2">
-                <div className="col-auto d-flex align-items-start">{icon}</div>
+            <div className="row my-2 g-0">
+                <div className="col-md-2 d-flex flex-column align-items-center justify-content-start">
+                    <div>{icon}</div>
+                    <div
+                        style={{
+                            fontSize: '80%',
+                            color: 'rgb(150 150 150)',
+                            fontStyle: 'italic',
+                            textAlign: 'center',
+                        }}
+                    >
+                        app
+                    </div>
+                </div>
                 <div className="col" style={{ minWidth: 0 }}>
                     <Accordion>
                         <Accordion.Item eventKey="0">
                             <Accordion.Header>
-                                <div
-                                    style={{
-                                        flex: '1 1 0',
-                                        paddingRight: '2em',
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        minWidth: '0',
-                                    }}
-                                >
-                                    <div className={styles.title}>{name} </div>
-                                    <div className={styles.version}>
+                                <div className={cellStyles.header}>
+                                    <div className={cellStyles.title}>
+                                        {name}{' '}
+                                    </div>
+                                    <div className={cellStyles.subtitle}>
                                         version {version}
                                     </div>
                                     {/* <div className={styles.title}>{title}</div> */}

@@ -167,31 +167,33 @@ export default class Preview extends Component<Props, State> {
             narrative.cells.length === 0
         ) {
             return (
-                <Container fluid className="mt-3 px-0">
-                    <Row>
-                        <Col>
-                            <Empty
-                                title="No Cells"
-                                icon="square-o"
-                                message="This Narrative has no cells"
-                            />
-                        </Col>
-                    </Row>
-                </Container>
+                <Row>
+                    <Col>
+                        <Empty
+                            title="No Cells"
+                            icon="square-o"
+                            message="This Narrative has no cells"
+                        />
+                    </Col>
+                </Row>
             );
         }
         const rows = narrative.cells.map((cell, index) => {
-            return <Row key={index}>{this.renderCell(cell)}</Row>;
+            return (
+                <Row className="g-0" key={index}>
+                    {this.renderCell(cell)}
+                </Row>
+            );
         });
         return (
-            <Container fluid className="mt-3 px-0">
+            <>
                 {rows}
-                <Row>
+                <Row className="g-0">
                     {this.renderFullNarrativeLink(
                         this.props.narrative.access_group
                     )}
                 </Row>
-            </Container>
+            </>
         );
     }
 

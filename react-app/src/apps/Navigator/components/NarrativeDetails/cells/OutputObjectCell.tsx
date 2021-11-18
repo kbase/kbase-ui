@@ -4,6 +4,7 @@ import ErrorMessage from '../../../../../components/ErrorMessage';
 import { OutputObjectCell } from '../../../utils/NarrativeModel';
 import { DefaultIcon } from '../../Icon';
 import styles from './OutputObject.module.css';
+import cellStyles from './cell.module.css';
 
 interface OutputObjectCellProps {
     cell: OutputObjectCell;
@@ -11,6 +12,7 @@ interface OutputObjectCellProps {
 
 export default class OutputObjectCellView extends Component<OutputObjectCellProps> {
     render() {
+        console.log('output?', this.props.cell);
         if (!('outputCell' in this.props.cell.metadata.kbase)) {
             return (
                 <div className="row my-2">
@@ -20,7 +22,7 @@ export default class OutputObjectCellView extends Component<OutputObjectCellProp
                 </div>
             );
         }
-        const { name, tag } = (() => {
+        const { name } = (() => {
             if (this.props.cell.metadata.kbase.outputCell.widget) {
                 return this.props.cell.metadata.kbase.outputCell.widget;
             } else {
@@ -30,26 +32,44 @@ export default class OutputObjectCellView extends Component<OutputObjectCellProp
                 };
             }
         })();
+        const { title } = (() => {
+            if (this.props.cell.metadata.kbase.attributes) {
+                return this.props.cell.metadata.kbase.attributes;
+            } else {
+                return {
+                    title: 'unknown',
+                };
+            }
+        })();
 
         return (
-            <div className="row my-2">
-                <div className="col-auto d-flex align-items-start">
-                    <DefaultIcon cellType="output" />
+            <div className="row my-2 g-0">
+                <div className="col-md-2 d-flex flex-column align-items-center justify-content-start">
+                    <div>
+                        <DefaultIcon cellType="output" />
+                    </div>
+                    <div
+                        style={{
+                            fontSize: '80%',
+                            color: 'rgb(150 150 150)',
+                            fontStyle: 'italic',
+                            textAlign: 'center',
+                        }}
+                    >
+                        app output
+                    </div>
                 </div>
                 <div className="col" style={{ minWidth: 0 }}>
                     <Accordion>
                         <Accordion.Item eventKey="0">
                             <Accordion.Header>
-                                <div
-                                    style={{
-                                        flex: '1 1 0',
-                                        paddingRight: '2em',
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                    }}
-                                >
-                                    <div className={styles.title}>{name}</div>
-                                    <div className={styles.tag}>{tag}</div>
+                                <div className={cellStyles.header}>
+                                    <div className={cellStyles.title}>
+                                        {title}
+                                    </div>
+                                    <div className={cellStyles.subtitle}>
+                                        {name}
+                                    </div>
                                 </div>
                             </Accordion.Header>
                             <Accordion.Body>
