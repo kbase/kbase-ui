@@ -7,7 +7,7 @@ import SharingItem from './sharing/SharingItem';
 import { NarrativeSearchDoc } from '../../../utils/NarrativeModel';
 import { AuthInfo } from '../../../../../contexts/Auth';
 import { Config } from '../../../../../types/config';
-import { Button, Dropdown, Modal } from 'react-bootstrap';
+import { Dropdown, Modal } from 'react-bootstrap';
 import { UserPermission } from './ToolMenuWrapper';
 import './ToolMenu.css';
 

@@ -5,7 +5,7 @@ import { Config } from '../../../../../types/config';
 import { AppCell } from '../../../utils/NarrativeModel';
 import marked from 'marked';
 import DOMPurify from 'dompurify';
-import { Accordion, Col, Row, Tab, Table, Tabs } from 'react-bootstrap';
+import { Accordion, Tab, Table, Tabs } from 'react-bootstrap';
 import styles from './AppCell.module.css';
 import cellStyles from './cell.module.css';
 import Empty from '../../../../../components/Empty';
@@ -77,11 +77,35 @@ export default class AppCellView extends Component<PreviewCellProps> {
         );
     }
 
+    jobStatus() {
+        if (!('exec' in this.props.cell.metadata.kbase.appCell)) {
+            return null;
+        }
+        return this.props.cell.metadata.kbase.appCell.exec.jobState.status;
+    }
+
+    renderJobStatus() {
+        const jobStatus = this.jobStatus();
+        if (jobStatus === null) {
+            return <span className="text-warning">none</span>;
+        }
+        switch (jobStatus) {
+            case 'queued':
+                return <span className="text-secondary">Queued</span>;
+            case 'running':
+                return <span className="text-primary">Running</span>;
+            case 'error':
+                return <span className="text-danger">Error</span>;
+            case 'completed':
+                return <span className="text-success">Success</span>;
+        }
+    }
+
     renderJobStats() {
         if (!('exec' in this.props.cell.metadata.kbase.appCell)) {
             return <Empty message="No Job Stats" />;
         }
-        const { status, created, queued, running, finished } =
+        const { created, queued, running } =
             this.props.cell.metadata.kbase.appCell.exec.jobState;
 
         return (
@@ -89,7 +113,7 @@ export default class AppCellView extends Component<PreviewCellProps> {
                 <tbody>
                     <tr>
                         <th>Status</th>
-                        <td>{status}</td>
+                        <td>{this.jobStatus()}</td>
                     </tr>
                     <tr>
                         <th>Queued</th>
@@ -167,8 +191,11 @@ export default class AppCellView extends Component<PreviewCellProps> {
                                     <div className={cellStyles.title}>
                                         {name}{' '}
                                     </div>
-                                    <div className={cellStyles.subtitle}>
-                                        version {version}
+                                    <div className={styles.headerStatus}>
+                                        {this.renderJobStatus()}
+                                    </div>
+                                    <div className={styles.headerVersion}>
+                                        {version}
                                     </div>
                                     {/* <div className={styles.title}>{title}</div> */}
                                 </div>

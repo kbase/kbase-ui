@@ -21,7 +21,7 @@ import CodeCellView from './cells/CodeCell';
 import OutputObjectCellVew from './cells/OutputObjectCell';
 import UnrecognizedCellView from './cells/UnrecognizedCell';
 import ErrorMessage from '../../../../components/ErrorMessage';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import Empty from '../../../../components/Empty';
 
 interface Props {

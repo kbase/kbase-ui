@@ -11,40 +11,68 @@ interface Props {
 
 interface State {
     value: string;
+    lastUsedValue: string | null;
+    hasBeenModified: boolean;
+    isDirty: boolean;
 }
 
 // Generic search text input with a loading state
 export class SearchInput extends Component<Props, State> {
-    inputID: string;
     constructor(props: Props) {
         super(props);
-        this.inputID =
-            'search-input' + String(Math.floor(Math.random() * 1000000));
         this.state = {
             value: props.value || '',
+            lastUsedValue: null,
+            isDirty: false,
+            hasBeenModified: true,
         };
     }
 
     componentDidUpdate(prevProps: Props) {
-        if (prevProps.value !== this.props.value) {
-            this.setState({ value: this.props.value || '' });
+        // handle case of props updating.
+        if (
+            prevProps.value !== this.props.value &&
+            !this.state.hasBeenModified
+        ) {
+            console.log(
+                'componentDidUpdate',
+                prevProps.value,
+                this.props.value
+            );
+            this.setState({
+                value: this.props.value || '',
+                isDirty: true,
+            });
         }
     }
 
     handleInput(ev: React.FormEvent<HTMLInputElement>) {
+        console.log('handleInput');
         const value = ev.currentTarget.value;
-        this.setState({ value });
+        const isDirty = value !== this.state.lastUsedValue;
+        this.setState({ ...this.state, value, isDirty, hasBeenModified: true });
     }
 
     handleSubmit(ev: React.FormEvent<HTMLFormElement>) {
         ev.preventDefault();
-        this.props.onSetVal(this.state.value);
+        this.triggerSearch();
         return false;
     }
 
+    triggerSearch() {
+        this.props.onSetVal(this.state.value);
+        console.log('triggerSearch');
+        this.setState({
+            ...this.state,
+            isDirty: false,
+            lastUsedValue: this.state.value,
+        });
+    }
+
     doClear() {
-        this.setState({ value: '' });
-        this.props.onSetVal('');
+        this.setState({ value: '' }, () => {
+            this.triggerSearch();
+        });
     }
 
     render() {
@@ -85,10 +113,14 @@ export class SearchInput extends Component<Props, State> {
                     </div>
                     <input
                         className="form-control"
-                        id={this.inputID}
                         placeholder={this.props.placeholder || 'Search'}
                         onChange={this.handleInput.bind(this)}
                         value={this.state.value}
+                        style={{
+                            backgroundColor: this.state.isDirty
+                                ? 'yellow'
+                                : 'white',
+                        }}
                     />
                     <Button
                         variant="outline-secondary"

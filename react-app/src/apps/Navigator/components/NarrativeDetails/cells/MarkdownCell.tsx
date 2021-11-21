@@ -5,6 +5,7 @@ import styles from './MarkdownCell.module.css';
 import { DefaultIcon } from '../../Icon';
 import { Accordion } from 'react-bootstrap';
 import cellStyles from './cell.module.css';
+import DOMPurify from 'dompurify';
 
 interface MarkdownCellProps {
     cell: MarkdownCell;
@@ -18,7 +19,11 @@ export default class MarkdownCellView extends Component<MarkdownCellProps> {
         return (
             <div
                 dangerouslySetInnerHTML={{
-                    __html: marked(this.props.cell.source),
+                    __html: marked(this.props.cell.source, {
+                        sanitizer: (html: string) => {
+                            return DOMPurify.sanitize(html);
+                        },
+                    }),
                 }}
             />
         );
@@ -26,7 +31,7 @@ export default class MarkdownCellView extends Component<MarkdownCellProps> {
 
     render() {
         return (
-            <div className="row my-2 g-0">
+            <div className={`row my-2 g-0 ${styles.MarkdownCell}`}>
                 <div className="col-md-2 d-flex flex-column align-items-center justify-content-start">
                     <div>
                         <DefaultIcon cellType="markdown" />

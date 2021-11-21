@@ -8,7 +8,7 @@ import Loading from '../../components/Loading';
 
 const MAX_TRIES = 10;
 const TIMEOUT = 60000;
-const RETRY_PAUSE = 1000;
+// const RETRY_PAUSE = 1000;
 
 export class LoadingError extends Error {
     type: string;

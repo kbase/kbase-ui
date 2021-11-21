@@ -157,7 +157,6 @@ export default class ScalableScroller<T> extends Component<
         }
 
         const { firstRow, lastRow } = this.measure();
-        // console.log('** scroller', firstRow, lastRow);
         this.props.onRowRangeChanged(firstRow, lastRow);
     }
 
@@ -221,11 +220,6 @@ export default class ScalableScroller<T> extends Component<
                 );
             case DataProviderStatus.FETCHING:
             case DataProviderStatus.REFETCHING:
-                return (
-                    <div className={styles.overlay}>
-                        <Loading message="Loading Data..." />
-                    </div>
-                );
             case DataProviderStatus.FETCHED:
                 return null;
         }

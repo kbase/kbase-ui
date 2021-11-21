@@ -146,7 +146,7 @@ export class DataModel {
         searchParams: SearchParams
     ): Promise<SearchResults> {
         const searchQueryKey = this.makeSearchQueryKey(searchParams);
-        console.log('cache key?', searchQueryKey, this.searchQueryKey);
+
         if (searchQueryKey !== this.searchQueryKey) {
             this.cache = [];
             this.searchQueryKey = searchQueryKey;
@@ -157,8 +157,6 @@ export class DataModel {
             searchParams.offset,
             searchParams.offset + searchParams.limit
         );
-
-        console.log('cached?', cached);
 
         // Fetch the rest
         const offset = searchParams.offset + cached.length;
@@ -171,7 +169,8 @@ export class DataModel {
         };
 
         let narratives: Array<NarrativeSearchDoc>;
-        if (cached.length < limit) {
+
+        if (cached.length < searchParams.limit) {
             const { count, hits } = await this.searchClient.searchNarratives(
                 actualSearchParams
             );
@@ -181,17 +180,6 @@ export class DataModel {
         } else {
             narratives = cached;
         }
-
-        // const fetchedRows = hits.map((doc, index) => {
-        //     return {
-        //         index: index + offset,
-        //         value: doc,
-        //     };
-        // });
-
-        console.log('now?', this.cache);
-
-        // const narratives = cached.concat(hits);
 
         const totalCount = await (async () => {
             if (

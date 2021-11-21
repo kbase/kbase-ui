@@ -73,7 +73,6 @@
         "karma-jasmine": "4.0.1",
         "karma-requirejs": "1.1.0",
         "karma-webdriver-launcher": "1.0.8",
-        "lodash": "4.17.21",
         "node-dir": "0.1.17",
         "node-ini": "1.0.0",
         "nodemon": "2.0.12",

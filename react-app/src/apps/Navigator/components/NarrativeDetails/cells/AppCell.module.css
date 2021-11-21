@@ -2,22 +2,30 @@
     font-weight: bold;
 }
 
-.title {
-    flex: 1 1 0;
-    font-weight: bold;
-    overflow-x: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
 .version {
     flex: 0 0 auto;
     font-style: italic;
     color: rgb(150, 150, 150);
 }
 
-.subtitle {
+.headerStatus {
     font-style: italic;
+    color: rgb(150, 150, 150);
+    flex: 1 1 0;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: right;
+}
+
+.headerVersion {
+    font-style: italic;
+    color: rgb(150, 150, 150);
+    flex: 0 0 4em;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: right;
 }
 
 .description {

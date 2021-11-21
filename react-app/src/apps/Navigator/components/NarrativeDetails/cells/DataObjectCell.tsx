@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { Accordion, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Accordion } from 'react-bootstrap';
 import ErrorMessage from '../../../../../components/ErrorMessage';
 import { AuthInfo } from '../../../../../contexts/Auth';
 import { Config } from '../../../../../types/config';

@@ -7,8 +7,26 @@
     /* overflow-y: auto; */
     /* border: 1px solid rgb(200, 200, 200, 0.3); */
     /* padding: 1em; */
+    overflow-x: auto;
 }
 
 .content p {
     margin-bottom: 0;
+}
+
+.MarkdownCell tr {
+}
+
+.MarkdownCell th {
+    text-align: left;
+    border: 1px solid silver;
+    vertical-align: top;
+    padding: 0.3em;
+    color: rgba(150 150 150);
+}
+
+.MarkdownCell td {
+    border: 1px solid silver;
+    vertical-align: top;
+    padding: 0.3em;
 }

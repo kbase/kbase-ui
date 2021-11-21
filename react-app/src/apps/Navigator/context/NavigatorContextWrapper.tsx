@@ -15,12 +15,60 @@ import {
 } from '../utils/NarrativeSearch';
 // import ActionQueue from './ActionQueue';
 import { DataModel, SearchStatus, DetailOptions } from './DataModel';
-import MessageQueue from './MessageQueue';
+import MessageQueue, { Queue } from './MessageQueue';
 import {
     NarrativeSelectedBy,
     NavigatorContext,
     NavigatorContextState,
 } from './NavigatorContext';
+
+const BUFFER_INTERVAL = 200;
+
+export class RollupBuffer<T> {
+    interval: number;
+    buffer: Array<T>;
+    handler: (buffer: Array<T>) => void;
+    intervalTimer: number | null;
+    constructor(interval: number, handler: (buffer: Array<T>) => void) {
+        this.interval = interval;
+        this.buffer = [];
+        this.handler = handler;
+        this.intervalTimer = null;
+    }
+
+    add(item: T) {
+        this.buffer.push(item);
+        this.run();
+    }
+
+    run() {
+        if (this.buffer.length === 0) {
+            return;
+        }
+        if (this.intervalTimer !== null) {
+            return;
+        }
+        window.setTimeout(() => {
+            this.intervalTimer = null;
+            this.rollup();
+        }, this.interval);
+    }
+
+    rollup() {
+        const buffer = this.buffer;
+        this.buffer = [];
+        try {
+            this.handler(buffer);
+        } catch (ex) {
+            console.error('ERROR handling buffer', ex);
+        }
+    }
+}
+
+export interface SetRangePayload {
+    from: number;
+    to: number;
+}
 
 export interface NavigatorContextWrapperProps {
     authInfo: AuthInfo;
@@ -43,6 +91,10 @@ export default class NavigatorContextWrapper extends Component<
     // actionQueue: ActionQueue;
     messageQueue: MessageQueue<JSONObject>;
     dataModel: DataModel;
+    setRangeBuffer = new RollupBuffer<SetRangePayload>(
+        BUFFER_INTERVAL,
+        this.handleSetRangeBuffer.bind(this)
+    );
     constructor(props: NavigatorContextWrapperProps) {
         super(props);
         this.cache = [];
@@ -83,8 +135,21 @@ export default class NavigatorContextWrapper extends Component<
 
         this.messageQueue.register({
             name: 'setRange',
-            task: (payload: JSONObject) => {
+            task: (payload: JSONObject, queue: Queue<JSONObject>) => {
                 return new Promise((resolve) => {
+                    let nextQueue: Queue<JSONObject> | null = null;
+                    const lastSuchItem = queue
+                        .filter((item) => {
+                            return item.item.name === 'setRange';
+                        })
+                        .slice(-1)[0];
+                    if (lastSuchItem) {
+                        nextQueue = queue.filter((item) => {
+                            return item.item.name !== 'setRange';
+                        });
+                        payload = lastSuchItem.item.payload;
+                    }
+
                     switch (
                         this.state.navigatorContextState.searchState.status
                     ) {
@@ -112,7 +177,7 @@ export default class NavigatorContextWrapper extends Component<
                             const to = payload['to'] as number;
                             if (offset === from && offset + limit === to) {
                                 console.warn('supressing duplicate');
-                                resolve();
+                                resolve(null);
                                 return;
                             }
                             this.messageQueue.send({
@@ -138,7 +203,7 @@ export default class NavigatorContextWrapper extends Component<
                             break;
                         }
                     }
-                    resolve();
+                    resolve(nextQueue);
                 });
             },
         });
@@ -178,7 +243,7 @@ export default class NavigatorContextWrapper extends Component<
                             },
                         },
                         () => {
-                            resolve();
+                            resolve(null);
                         }
                     );
                 });
@@ -187,7 +252,27 @@ export default class NavigatorContextWrapper extends Component<
 
         this.messageQueue.register({
             name: 're-searching',
-            task: (payload: JSONObject) => {
+            task: (payload: JSONObject, queue: Queue<JSONObject>) => {
+                // condense all the requests of this type to 1.
+                let nextQueue: Queue<JSONObject> | null = null;
+                // const lastSuchItem = queue
+                //     .filter((item) => {
+                //         return item.id === 're-search';
+                //     })
+                //     .slice(-1)[0];
+                // if (lastSuchItem) {
+                //     console.log(
+                //         'hmm',
+                //         queue.filter((item) => {
+                //             return item.id === 're-search';
+                //         }).length
+                //     );
+                //     nextQueue = queue.filter((item) => {
+                //         return item.id !== 're-search';
+                //     });
+                //     payload = lastSuchItem.item.payload;
+                // }
+
                 const to = payload['to'] as number;
                 const from = payload['from'] as number;
                 return new Promise((resolve) => {
@@ -195,6 +280,7 @@ export default class NavigatorContextWrapper extends Component<
                         this.state.navigatorContextState.searchState.status !==
                         SearchStatus.SEARCHED
                     ) {
+                        resolve(null);
                         return;
                     }
                     const searchParams = Object.assign(
@@ -218,7 +304,7 @@ export default class NavigatorContextWrapper extends Component<
                             },
                         },
                         () => {
-                            resolve();
+                            resolve(nextQueue);
                         }
                     );
                 });
@@ -227,7 +313,7 @@ export default class NavigatorContextWrapper extends Component<
 
         this.messageQueue.register({
             name: 'searching',
-            task: (payload: JSONObject) => {
+            task: (payload: JSONObject, queue: Queue<JSONObject>) => {
                 const to = payload['to'] as number;
                 const from = payload['from'] as number;
                 return new Promise((resolve) => {
@@ -262,7 +348,7 @@ export default class NavigatorContextWrapper extends Component<
                             },
                         },
                         () => {
-                            resolve();
+                            resolve(null);
                         }
                     );
                 });
@@ -271,14 +357,15 @@ export default class NavigatorContextWrapper extends Component<
 
         this.messageQueue.register({
             name: 'search',
-            task: (payload: JSONObject) => {
-                return new Promise<void>(async (resolve, reject) => {
+            task: (payload: JSONObject, queue: Queue<JSONObject>) => {
+                return new Promise(async (resolve, reject) => {
                     switch (
                         this.state.navigatorContextState.searchState.status
                     ) {
                         case SearchStatus.NONE:
                         case SearchStatus.INITIAL:
                         case SearchStatus.ERROR:
+                            resolve(null);
                             return;
                         case SearchStatus.MEASURED:
                         case SearchStatus.SEARCHING:
@@ -335,7 +422,7 @@ export default class NavigatorContextWrapper extends Component<
                     }
 
                     this.setState(nextState, () => {
-                        resolve();
+                        resolve(null);
                     });
                 });
             },
@@ -353,229 +440,31 @@ export default class NavigatorContextWrapper extends Component<
         }
     }
 
-    setRange(from: number, to: number) {
-        // First save the category
+    handleSetRangeBuffer(buffer: Array<SetRangePayload>) {
+        // We want to process the buffer to fetch from the
+        // minimal from, to the maximum to.
+        if (buffer.length === 0) {
+            return;
+        }
+
+        let minFrom = buffer[0].from;
+        let maxTo = buffer[0].to;
+
+        for (const { from, to } of buffer) {
+            minFrom = Math.min(minFrom, from);
+            maxTo = Math.max(maxTo, to);
+        }
 
         this.messageQueue.send({
             name: 'setRange',
-            payload: { from, to },
+            payload: { from: minFrom, to: maxTo },
         });
-        // this.messageQueue.send({
-        //     name: 'measured',
-        //     payload: { from, to },
-        // });
-        // this.messageQueue.send({
-        //     name: 'search',
-        //     payload: { from, to },
-        // });
-        // this.actionQueue.add(() => {
-        //     const subQueue = new ActionQueue(0);
-        //     return new Promise((resolve) => {
-        //         switch (this.state.navigatorContextState.searchState.status) {
-        //             case SearchStatus.NONE:
-        //             case SearchStatus.ERROR:
-        //             case SearchStatus.RE_SEARCHING:
-        //             case SearchStatus.SEARCHING:
-        //                 console.log('skipping search...', from, to);
-        //                 return;
-        //             case SearchStatus.INITIAL: {
-        //                 subQueue.add(() => {
-        //                     const searchParams: SearchParams = Object.assign(
-        //                         {},
-        //                         this.state.navigatorContextState.searchState
-        //                             .searchOptions,
-        //                         {
-        //                             offset: from,
-        //                             limit: to - from + 1,
-        //                         }
-        //                     );
-        //                     this.setState(
-        //                         {
-        //                             ...this.state,
-        //                             navigatorContextState: {
-        //                                 ...this.state.navigatorContextState,
-        //                                 searchState: {
-        //                                     ...this.state.navigatorContextState
-        //                                         .searchState,
-        //                                     status: SearchStatus.MEASURED,
-        //                                     searchParams,
-        //                                 },
-        //                             },
-        //                         },
-        //                         () => {
-        //                             this.search(searchParams);
-        //                         }
-        //                     );
-        //                 })
-        //                 const searchParams: SearchParams = Object.assign(
-        //                     {},
-        //                     this.state.navigatorContextState.searchState.searchOptions,
-        //                     {
-        //                         offset: from,
-        //                         limit: to - from + 1,
-        //                     }
-        //                 );
-        //                 this.setState(
-        //                     {
-        //                         ...this.state,
-        //                         navigatorContextState: {
-        //                             ...this.state.navigatorContextState,
-        //                             searchState: {
-        //                                 ...this.state.navigatorContextState.searchState,
-        //                                 status: SearchStatus.MEASURED,
-        //                                 searchParams,
-        //                             },
-        //                         },
-        //                     },
-        //                     () => {
-        //                         this.search(searchParams);
-        //                     }
-        //                 );
-        //                 break;
-        //             }
-        //             case SearchStatus.SEARCHED: {
-        //                 const searchParams = Object.assign(
-        //                     {},
-        //                     this.state.navigatorContextState.searchState.searchParams
-        //                 );
-        //                 searchParams.offset = from;
-        //                 searchParams.limit = to - from + 1;
-        //                 this.setState(
-        //                     {
-        //                         ...this.state,
-        //                         navigatorContextState: {
-        //                             ...this.state.navigatorContextState,
-        //                             searchState: {
-        //                                 ...this.state.navigatorContextState.searchState,
-        //                                 status: SearchStatus.RE_SEARCHING,
-        //                                 searchParams,
-        //                             },
-        //                         },
-        //                     },
-        //                     () => {
-        //                         this.search(searchParams);
-        //                     }
-        //                 );
-        //                 break;
-        //             }
-        //             case SearchStatus.MEASURED:
-        //             case SearchStatus.SEARCHED_NOT_FOUND: {
-        //                 const searchParams = Object.assign(
-        //                     {},
-        //                     this.state.navigatorContextState.searchState.searchParams
-        //                 );
-        //                 searchParams.offset = from;
-        //                 searchParams.limit = to - from + 1;
-        //                 this.setState(
-        //                     {
-        //                         ...this.state,
-        //                         navigatorContextState: {
-        //                             ...this.state.navigatorContextState,
-        //                             searchState: {
-        //                                 ...this.state.navigatorContextState.searchState,
-        //                                 status: SearchStatus.SEARCHING,
-        //                                 searchParams,
-        //                             },
-        //                         },
-        //                     },
-        //                     () => {
-        //                         this.search(searchParams);
-        //                     }
-        //                 );
-        //                 break;
-        //             }
-        //         }
     }
 
-    // xsetRange(from: number, to: number) {
-    //     // First save the category
-    //     switch (this.state.navigatorContextState.searchState.status) {
-    //         case SearchStatus.NONE:
-    //         case SearchStatus.ERROR:
-    //         case SearchStatus.RE_SEARCHING:
-    //         case SearchStatus.SEARCHING:
-    //             console.log('skipping search...', from, to);
-    //             return;
-    //         case SearchStatus.INITIAL: {
-    //             const searchParams: SearchParams = Object.assign(
-    //                 {},
-    //                 this.state.navigatorContextState.searchState.searchOptions,
-    //                 {
-    //                     offset: from,
-    //                     limit: to - from + 1,
-    //                 }
-    //             );
-    //             this.setState(
-    //                 {
-    //                     ...this.state,
-    //                     navigatorContextState: {
-    //                         ...this.state.navigatorContextState,
-    //                         searchState: {
-    //                             ...this.state.navigatorContextState.searchState,
-    //                             status: SearchStatus.MEASURED,
-    //                             searchParams,
-    //                         },
-    //                     },
-    //                 },
-    //                 () => {
-    //                     this.search(searchParams);
-    //                 }
-    //             );
-    //             break;
-    //         }
-    //         case SearchStatus.SEARCHED: {
-    //             const searchParams = Object.assign(
-    //                 {},
-    //                 this.state.navigatorContextState.searchState.searchParams
-    //             );
-    //             searchParams.offset = from;
-    //             searchParams.limit = to - from + 1;
-    //             this.setState(
-    //                 {
-    //                     ...this.state,
-    //                     navigatorContextState: {
-    //                         ...this.state.navigatorContextState,
-    //                         searchState: {
-    //                             ...this.state.navigatorContextState.searchState,
-    //                             status: SearchStatus.RE_SEARCHING,
-    //                             searchParams,
-    //                         },
-    //                     },
-    //                 },
-    //                 () => {
-    //                     this.search(searchParams);
-    //                 }
-    //             );
-    //             break;
-    //         }
-    //         case SearchStatus.MEASURED:
-    //         case SearchStatus.SEARCHED_NOT_FOUND: {
-    //             const searchParams = Object.assign(
-    //                 {},
-    //                 this.state.navigatorContextState.searchState.searchParams
-    //             );
-    //             searchParams.offset = from;
-    //             searchParams.limit = to - from + 1;
-    //             this.setState(
-    //                 {
-    //                     ...this.state,
-    //                     navigatorContextState: {
-    //                         ...this.state.navigatorContextState,
-    //                         searchState: {
-    //                             ...this.state.navigatorContextState.searchState,
-    //                             status: SearchStatus.SEARCHING,
-    //                             searchParams,
-    //                         },
-    //                     },
-    //                 },
-    //                 () => {
-    //                     this.search(searchParams);
-    //                 }
-    //             );
-    //             break;
-    //         }
-    //     }
-    // }
+    setRange(from: number, to: number) {
+        // Buffer set range requests.
+        this.setRangeBuffer.add({ from, to });
+    }
 
     setCategory(category: string) {
         // First save the category

@@ -5,7 +5,6 @@ import Loading from '../../../../../components/Loading';
 import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import GenericClient from '../../../../../lib/kb_lib/comm/JSONRPC11/GenericClient';
 import MessageAlert from '../../../../../components/AlertMessage';
-import { JSXElement } from '@babel/types';
 
 export enum DeleteNarrativeStatus {
     NONE = 'NONE',

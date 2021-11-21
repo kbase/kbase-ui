@@ -10,7 +10,7 @@ export default class RenderJSON extends Component<RenderJSONProps> {
     renderJSONArray(data: JSONArray) {
         const rows = data.map((value, index) => {
             return (
-                <tr>
+                <tr key={index}>
                     <th className="RenderJSON-headerCell">{String(index)}</th>
                     <td>{this.renderJSON(value)}</td>
                 </tr>
@@ -35,7 +35,7 @@ export default class RenderJSON extends Component<RenderJSONProps> {
     renderJSONObject(data: JSONObject) {
         const rows = Object.entries(data).map(([key, value]) => {
             return (
-                <tr>
+                <tr key={key}>
                     <th className="RenderJSON-headerCell">{key}</th>
                     <td>{this.renderJSON(value)}</td>
                 </tr>

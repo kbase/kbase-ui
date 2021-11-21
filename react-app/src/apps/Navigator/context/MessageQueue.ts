@@ -1,6 +1,8 @@
 import * as uuid from 'uuid';
 
-export type QueueItem = () => Promise<void>;
+export type Queue<T> = Array<TaskItemRecord<T>>;
+
+// export type QueueItem<T> = (queue: Queue<T>) => Promise<void>;
 
 export interface TaskItem<T> {
     name: string;
@@ -9,7 +11,7 @@ export interface TaskItem<T> {
 
 export interface ActionTask<T> {
     name: string;
-    task: (payload: T) => Promise<void>;
+    task: (payload: T, queue: Queue<T>) => Promise<Queue<T> | null>;
 }
 
 export interface TaskItemRecord<T> {
@@ -17,8 +19,8 @@ export interface TaskItemRecord<T> {
     item: TaskItem<T>;
 }
 
-export default class ActionQueue<T> {
-    queue: Array<TaskItemRecord<T>> = [];
+export default class MessageQueue<T> {
+    queue: Queue<T> = [];
     interval: number;
     currentTimer: number | null = null;
     registry: Map<string, ActionTask<T>> = new Map();
@@ -54,7 +56,7 @@ export default class ActionQueue<T> {
     }
 
     async processQueue() {
-        const queue = this.queue;
+        let queue = this.queue;
         this.queue = [];
 
         // try processing only the most recent of a set of messages.
@@ -65,7 +67,12 @@ export default class ActionQueue<T> {
             } else {
                 try {
                     const handler = this.registry.get(item.item.name)!;
-                    await handler.task(item.item.payload);
+                    const result = await handler.task(item.item.payload, queue);
+                    if (result === null) {
+                        continue;
+                    } else {
+                        queue = result;
+                    }
                 } catch (ex) {
                     // what to do?
                     console.error('Error processing queue item');
