@@ -5,9 +5,12 @@ import { Config } from '../../../../../types/config';
 import { AppCell } from '../../../utils/NarrativeModel';
 import marked from 'marked';
 import DOMPurify from 'dompurify';
-import { Accordion } from 'react-bootstrap';
+import { Accordion, Col, Row, Tab, Table, Tabs } from 'react-bootstrap';
 import styles from './AppCell.module.css';
 import cellStyles from './cell.module.css';
+import Empty from '../../../../../components/Empty';
+import { niceElapsed } from '../../../../../lib/time';
+import RenderJSON from '../../../../../components/RenderJSON';
 
 interface PreviewCellProps {
     cell: AppCell;
@@ -26,6 +29,82 @@ export default class AppCellView extends Component<PreviewCellProps> {
                     __html: DOMPurify.sanitize(marked(description)),
                 }}
             />
+        );
+    }
+
+    renderInfo() {
+        const {
+            app: {
+                id,
+                version,
+                spec: {
+                    info: { subtitle },
+                    full_info,
+                },
+            },
+        } = this.props.cell.metadata.kbase.appCell;
+        const description = (() => {
+            if (typeof full_info !== 'undefined') {
+                return full_info.description;
+            }
+            return null;
+        })();
+        return (
+            <>
+                <div className={styles.id}>
+                    <a
+                        href={`/#spec/type/${id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        {id} ({version})
+                    </a>
+                </div>
+                <div className={styles.subtitle}>{subtitle}</div>
+                <div className={styles.description}>
+                    {this.renderDescription(description)}
+                </div>
+            </>
+        );
+    }
+
+    renderParams() {
+        if (!('params' in this.props.cell.metadata.kbase.appCell)) {
+            return <Empty message="No Params" />;
+        }
+        return (
+            <RenderJSON value={this.props.cell.metadata.kbase.appCell.params} />
+        );
+    }
+
+    renderJobStats() {
+        if (!('exec' in this.props.cell.metadata.kbase.appCell)) {
+            return <Empty message="No Job Stats" />;
+        }
+        const { status, created, queued, running, finished } =
+            this.props.cell.metadata.kbase.appCell.exec.jobState;
+
+        return (
+            <Table size="sm">
+                <tbody>
+                    <tr>
+                        <th>Status</th>
+                        <td>{status}</td>
+                    </tr>
+                    <tr>
+                        <th>Queued</th>
+                        <td>{niceElapsed(queued - created).label}</td>
+                    </tr>
+                    <tr>
+                        <th>Run</th>
+                        <td>
+                            {running !== null
+                                ? niceElapsed(running - queued).label
+                                : 'n/a'}
+                        </td>
+                    </tr>
+                </tbody>
+            </Table>
         );
     }
 
@@ -49,21 +128,12 @@ export default class AppCellView extends Component<PreviewCellProps> {
         // }
         const {
             app: {
-                id,
                 version,
                 spec: {
-                    info: { name, subtitle },
-                    full_info,
+                    info: { name },
                 },
             },
         } = this.props.cell.metadata.kbase.appCell;
-
-        const description = (() => {
-            if (typeof full_info !== 'undefined') {
-                return full_info.description;
-            }
-            return null;
-        })();
 
         // const theSubtitle = (() => {
         //     if (subtitle) {
@@ -75,7 +145,7 @@ export default class AppCellView extends Component<PreviewCellProps> {
         //     return null;
         // })();
         return (
-            <div className="row my-2 g-0">
+            <div className={`row my-2 g-0 ${styles.AppCell}`}>
                 <div className="col-md-2 d-flex flex-column align-items-center justify-content-start">
                     <div>{icon}</div>
                     <div
@@ -104,21 +174,18 @@ export default class AppCellView extends Component<PreviewCellProps> {
                                 </div>
                             </Accordion.Header>
                             <Accordion.Body>
-                                <div className={styles.id}>
-                                    <a
-                                        href={`/#spec/type/${id}`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        {id} ({version})
-                                    </a>
-                                </div>
-                                <div className={styles.subtitle}>
-                                    {subtitle}
-                                </div>
-                                <div className={styles.description}>
-                                    {this.renderDescription(description)}
-                                </div>
+                                <Tabs variant="tabs" defaultActiveKey="info">
+                                    <Tab eventKey="info" title="Info">
+                                        {this.renderInfo()}
+                                    </Tab>
+                                    <Tab eventKey="params" title="Params">
+                                        {this.renderParams()}
+                                        {/* params here... */}
+                                    </Tab>
+                                    <Tab eventKey="jobstats" title="Job Stats">
+                                        {this.renderJobStats()}
+                                    </Tab>
+                                </Tabs>
                             </Accordion.Body>
                         </Accordion.Item>
                     </Accordion>

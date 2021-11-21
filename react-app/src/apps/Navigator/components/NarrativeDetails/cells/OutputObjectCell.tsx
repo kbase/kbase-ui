@@ -12,7 +12,6 @@ interface OutputObjectCellProps {
 
 export default class OutputObjectCellView extends Component<OutputObjectCellProps> {
     render() {
-        console.log('output?', this.props.cell);
         if (!('outputCell' in this.props.cell.metadata.kbase)) {
             return (
                 <div className="row my-2">

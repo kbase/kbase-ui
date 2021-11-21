@@ -42,7 +42,7 @@ export default class NavigatorContextWrapper extends Component<
     searchTasks: Tasks;
     // actionQueue: ActionQueue;
     messageQueue: MessageQueue<JSONObject>;
-
+    dataModel: DataModel;
     constructor(props: NavigatorContextWrapperProps) {
         super(props);
         this.cache = [];
@@ -74,6 +74,12 @@ export default class NavigatorContextWrapper extends Component<
                 // fetchRows: this.fetchRows.bind(this),
             },
         };
+
+        this.dataModel = new DataModel({
+            searchAPIURL: this.props.config.services.SearchAPI2.url,
+            token: this.props.authInfo.token,
+            username: this.props.authInfo.account.user,
+        });
 
         this.messageQueue.register({
             name: 'setRange',
@@ -285,13 +291,10 @@ export default class NavigatorContextWrapper extends Component<
                         this.state.navigatorContextState.searchState
                             .searchParams;
 
-                    const dataModel = new DataModel({
-                        searchAPIURL: this.props.config.services.SearchAPI2.url,
-                        token: this.props.authInfo.token,
-                        username: this.props.authInfo.account.user,
-                    });
                     const { narratives, totalCount, filterCount } =
-                        await dataModel.searchFromSearchParams(searchParams);
+                        await this.dataModel.searchFromSearchParams(
+                            searchParams
+                        );
 
                     const items = narratives.map((narrative, index) => {
                         return {
@@ -839,13 +842,8 @@ export default class NavigatorContextWrapper extends Component<
                     case SearchStatus.RE_SEARCHING:
                 }
 
-                const dataModel = new DataModel({
-                    searchAPIURL: this.props.config.services.SearchAPI2.url,
-                    token: this.props.authInfo.token,
-                    username: this.props.authInfo.account.user,
-                });
                 const { narratives, totalCount, filterCount } =
-                    await dataModel.searchFromSearchParams(searchParams);
+                    await this.dataModel.searchFromSearchParams(searchParams);
 
                 const items = narratives.map((narrative, index) => {
                     return {

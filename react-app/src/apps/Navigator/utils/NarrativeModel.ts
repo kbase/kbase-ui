@@ -95,6 +95,8 @@ export interface CodeCellBase extends BaseCell {
     source: string;
 }
 
+export type GenericParams = { [key: string]: number | string };
+
 export interface AppCell extends CodeCellBase {
     metadata: {
         kbase: {
@@ -144,6 +146,33 @@ export interface AppCell extends CodeCellBase {
                             tooltip: string;
                             ver: string;
                         };
+                    };
+                };
+                params: GenericParams;
+                exec: {
+                    jobState: {
+                        run_id: string;
+                        authstrat: string;
+                        batch_id: null | string;
+                        batch_job: boolean;
+                        cell_id: string;
+                        child_jobs: Array<any>;
+                        status: string;
+                        created: number;
+                        queued: number;
+                        running: number;
+                        finished: number;
+                        updated: number;
+                        job_id: string;
+                        job_output: {
+                            id: string;
+                            result: any;
+                            version: number;
+                        };
+                        scheduler_id: string;
+                        scheduler_type: string;
+                        user: string;
+                        wsid: number;
                     };
                 };
             };

@@ -33,3 +33,7 @@
     font-family: monospace;
     white-space: pre;
 }
+
+.AppCell table th {
+    color: rgba(150 150 150);
+}
