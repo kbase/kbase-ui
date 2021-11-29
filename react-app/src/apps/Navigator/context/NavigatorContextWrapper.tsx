@@ -407,8 +407,7 @@ export default class NavigatorContextWrapper extends Component<
                         nextState.navigatorContextState.userInteractions
                             .narrativeSelectedBy;
                     if (
-                        (selectedBy === NarrativeSelectedBy.NONE ||
-                            selectedBy === NarrativeSelectedBy.SEARCH) &&
+                        selectedBy === NarrativeSelectedBy.NONE &&
                         narratives.length > 0
                     ) {
                         nextState.navigatorContextState.selectedNarrative = {
@@ -419,6 +418,8 @@ export default class NavigatorContextWrapper extends Component<
                                 narrativeDoc: narratives[0],
                             },
                         };
+                        nextState.navigatorContextState.userInteractions.narrativeSelectedBy =
+                            NarrativeSelectedBy.SEARCH;
                     }
 
                     this.setState(nextState, () => {
@@ -494,6 +495,9 @@ export default class NavigatorContextWrapper extends Component<
                             status: SearchStatus.RE_SEARCHING,
                             searchParams,
                         },
+                        userInteractions: {
+                            narrativeSelectedBy: NarrativeSelectedBy.NONE,
+                        },
                     },
                 });
                 break;
@@ -507,6 +511,9 @@ export default class NavigatorContextWrapper extends Component<
                             ...this.state.navigatorContextState.searchState,
                             status: SearchStatus.SEARCHING,
                             searchParams,
+                        },
+                        userInteractions: {
+                            narrativeSelectedBy: NarrativeSelectedBy.NONE,
                         },
                     },
                 });
@@ -582,6 +589,10 @@ export default class NavigatorContextWrapper extends Component<
             this.state.navigatorContextState.searchState.searchParams
         );
         searchParams.query = query;
+
+        // With a fresh query, reset the view to start at the first
+        // result item.
+        searchParams.offset = 0;
 
         switch (this.state.navigatorContextState.searchState.status) {
             case SearchStatus.SEARCHED:
@@ -758,8 +769,7 @@ export default class NavigatorContextWrapper extends Component<
                     nextState.navigatorContextState.userInteractions
                         .narrativeSelectedBy;
                 if (
-                    (selectedBy === NarrativeSelectedBy.NONE ||
-                        selectedBy === NarrativeSelectedBy.SEARCH) &&
+                    selectedBy === NarrativeSelectedBy.NONE &&
                     narratives.length > 0
                 ) {
                     nextState.navigatorContextState.selectedNarrative = {
@@ -769,6 +779,8 @@ export default class NavigatorContextWrapper extends Component<
                             narrativeDoc: narratives[0],
                         },
                     };
+                    nextState.navigatorContextState.userInteractions.narrativeSelectedBy =
+                        NarrativeSelectedBy.SEARCH;
                 }
 
                 this.setState(nextState, () => {

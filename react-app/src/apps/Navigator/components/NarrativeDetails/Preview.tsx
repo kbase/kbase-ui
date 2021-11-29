@@ -97,7 +97,12 @@ export default class Preview extends Component<Props, State> {
         const narrativeHref = `/narrative/${wsid}`;
         return (
             <p style={{ textAlign: 'center' }}>
-                <a className="btn btn-outline-secondary" href={narrativeHref}>
+                <a
+                    className="btn btn-outline-secondary"
+                    href={narrativeHref}
+                    target="_blank"
+                    rel="noreferrer"
+                >
                     View the full narrative
                 </a>
             </p>

@@ -1,6 +1,6 @@
 # check that the deploy config file is ok.
-DEPLOY_CFG=/kb/deployment/app/modules/deploy/config.json
-NGINX_CFG=/etc/nginx/nginx.conf
+DEPLOY_CFG=/kb/deployment/services/kbase-ui/react-app/public/modules/deploy/config.json
+# NGINX_CFG=/etc/nginx/nginx.conf
 
 echo "Checking config file..."
 
@@ -26,17 +26,19 @@ else
 fi
 
 
-echo "Checking nginx config file..."
-if [ ! -f "${NGINX_CFG}" ]
-then
-    echo "The nginx config was not found"
-    echo "Target file is ${NGINX_CFG}"
-    exit 1
-else 
-    echo "...found!"
-fi
+# echo "Checking nginx config file..."
+# if [ ! -f "${NGINX_CFG}" ]
+# then
+#     echo "The nginx config was not found"
+#     echo "Target file is ${NGINX_CFG}"
+#     exit 1
+# else 
+#     echo "...found!"
+# fi
 
-echo "OK. Execing nginx... Press Control-C to exit."
+echo "OK. Starting CRA dev server... Press Control-C to exit."
 
 # start nginx
-exec nginx -c ${NGINX_CFG}
+# exec nginx -c ${NGINX_CFG}
+cd /kb/deployment/app
+ENV=ci npm run start

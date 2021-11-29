@@ -1,7 +1,7 @@
 import React from 'react';
-import {Messenger} from '../lib/messenger';
-import {Config} from '../types/config';
-import {AuthenticationState} from './Auth';
+import { Messenger } from '../lib/messenger';
+import { Config } from '../types/config';
+import { AuthenticationState } from './Auth';
 
 /**
  * Holds the current config information
@@ -72,8 +72,10 @@ const $GlobalMessageBus = new Messenger();
  * determining the auth state (because we may need to call the auth service),
  * which includes any errors encountered.
  */
-export default class RuntimeWrapper extends React.Component<RuntimeWrapperProps,
-    RuntimeWrapperState> {
+export default class RuntimeWrapper extends React.Component<
+    RuntimeWrapperProps,
+    RuntimeWrapperState
+> {
     constructor(props: RuntimeWrapperProps) {
         super(props);
         this.state = {
@@ -91,6 +93,7 @@ export default class RuntimeWrapper extends React.Component<RuntimeWrapperProps,
         this.setState({
             title,
         });
+        document.title = `${title} | KBase`;
     }
 
     render() {

@@ -191,3 +191,34 @@ ENV=ci docker compose up
 
 # Build image
 
+
+## Development workflow in container:
+
+### Start
+
+Build image:
+
+```bash
+docker build -f tools/run-dev/Dockerfile -t kbase-ui-dev:dev .    
+```
+
+
+```bash
+docker run -it --hostname=kbase-ui --entrypoint=sh --network=kbase-dev -p 3000:3000 -e CHOKIDAR_USEPOLLING=true  -v `pwd`/react-app/src:/kb/deployment/app/src -v `pwd`/build/dist/modules/plugins:/kb/deployment/app/modules/plugins  kbase-ui-dev:dev
+```
+
+Then sh into container:
+
+currently cheese out and use Docker Desktop
+
+then, in container shell:
+
+cd deployment/app
+npm install
+npm run start
+
+
+### Proxy
+
+cd tools/proxy-standalone
+ENV=ci docker compose up

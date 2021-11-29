@@ -323,15 +323,15 @@ export default class NarrativeHeader extends React.Component<
                     </div>
                     <div className="col-4">
                         <PropTable
-                            title="Data Objects"
+                            // title="Data Objects"
                             noRowsMessage="No data objects in this narrative"
                             rows={this.countDataTypes(narrativeDoc).map(
                                 ([key, value]) => {
                                     return [key, value.toString()];
                                 }
                             )}
-                            footer={[
-                                'Total',
+                            header={[
+                                'Data Objects',
                                 narrativeDoc.data_objects.length.toString(),
                             ]}
                             styles={{
@@ -349,7 +349,7 @@ export default class NarrativeHeader extends React.Component<
                     <div className="col-3">
                         <div className="-prop-table">
                             <PropTable
-                                title="Cells"
+                                // title="Cells"
                                 rows={[
                                     [
                                         cellTypesInfo.kbase_app.label,
@@ -372,8 +372,8 @@ export default class NarrativeHeader extends React.Component<
                                         cellTypesInfo.widget.count.toString(),
                                     ],
                                 ]}
-                                footer={[
-                                    'Total',
+                                header={[
+                                    'Cells',
                                     narrativeDoc.total_cells.toString(),
                                 ]}
                                 styles={{

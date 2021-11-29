@@ -169,7 +169,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                             switch (process.env.NODE_ENV) {
                                 case 'development':
                                 case 'test':
-                                    return <DevelopmentAuth {...this.props} />;
+                                // return <DevelopmentAuth {...this.props} />;
                                 case 'production':
                                     return <Auth {...props} {...this.props} />;
                             }

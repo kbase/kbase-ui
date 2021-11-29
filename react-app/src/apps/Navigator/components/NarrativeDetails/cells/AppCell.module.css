@@ -45,3 +45,7 @@
 .AppCell table th {
     color: rgba(150 150 150);
 }
+
+.AppCell .tabContent {
+    margin-top: 10px;
+}

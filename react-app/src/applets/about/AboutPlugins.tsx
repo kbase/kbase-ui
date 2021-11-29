@@ -1,5 +1,10 @@
 import { Component } from 'react';
-import { Config } from '../../types/config';
+import DataBrowser, {
+    ColumnDef,
+    SortState,
+} from '../../components/DataBrowser';
+import { Config, PluginInfo } from '../../types/config';
+import styles from './AboutPlugins.module.css';
 
 export interface AboutPluginsProps {
     config: Config;
@@ -16,7 +21,7 @@ export default class AboutPlugins extends Component<
         this.props.setTitle('About KBase UI Plugins');
     }
 
-    renderPlugins() {
+    renderPluginsx() {
         return this.props.config.plugins
             .sort((pluginA, pluginB) => {
                 return pluginA.name.localeCompare(pluginB.name);
@@ -46,22 +51,108 @@ export default class AboutPlugins extends Component<
             });
     }
 
-    render() {
-        return (
-            <div className="AboutPlugins">
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Version</th>
-                            <th>Date</th>
-                            <th>Github Account</th>
-                            <th>Repo</th>
-                        </tr>
-                    </thead>
-                    <tbody>{this.renderPlugins()}</tbody>
-                </table>
-            </div>
+    renderPlugins() {
+        const columns: Array<ColumnDef<PluginInfo>> = [
+            {
+                id: 'name',
+                label: 'Name',
+                style: {},
+                render: (plugin: PluginInfo) => {
+                    return <span>{plugin.name}</span>;
+                },
+                sort: (sortState: SortState, dataSource: Array<PluginInfo>) => {
+                    if (sortState === SortState.NONE) {
+                        return dataSource;
+                    }
+                    return dataSource.sort((a, b) => {
+                        const direction =
+                            sortState === SortState.ASCENDING ? 1 : -1;
+                        return direction * a.name.localeCompare(b.name);
+                    });
+                },
+            },
+            {
+                id: 'version',
+                label: 'Version',
+                style: {},
+                render: (plugin: PluginInfo) => {
+                    return <span>{plugin.version}</span>;
+                },
+            },
+            {
+                id: 'date',
+                label: 'Date',
+                style: {},
+                render: (plugin: PluginInfo) => {
+                    return (
+                        <span>
+                            {Intl.DateTimeFormat('en-US', {}).format(
+                                new Date(plugin.gitInfo.committerDate)
+                            )}
+                        </span>
+                    );
+                },
+            },
+            {
+                id: 'gitAccount',
+                label: 'GitHub Account',
+                style: {},
+                render: (plugin: PluginInfo) => {
+                    return <span>{plugin.gitAccount}</span>;
+                },
+            },
+            {
+                id: 'repo',
+                label: 'Repo',
+                style: {},
+                render: (plugin: PluginInfo) => {
+                    return (
+                        <a href={plugin.url} target="_blank" rel="noreferrer">
+                            {plugin.globalName}
+                        </a>
+                    );
+                },
+            },
+        ];
+        // return (
+        //     <tr key={index}>
+        //         <td>{plugin.name}</td>
+        //         <td>{plugin.version}</td>
+        //         <td>
+        //             {Intl.DateTimeFormat('en-US', {}).format(
+        //                 new Date(plugin.gitInfo.committerDate)
+        //             )}
+        //         </td>
+        //         <td>{plugin.gitAccount}</td>
+        //         <td>
+        //             <a
+        //                 href={plugin.url}
+        //                 target="_blank"
+        //                 rel="noreferrer"
+        //             >
+        //                 {plugin.globalName}
+        //             </a>
+        //         </td>
+        //     </tr>
+        // );
+        // });
+
+        const data: Array<PluginInfo> = this.props.config.plugins.map(
+            (value) => {
+                return value;
+            }
         );
+
+        return (
+            <DataBrowser
+                columns={columns}
+                heights={{ header: 50, row: 50 }}
+                dataSource={data}
+            />
+        );
+    }
+
+    render() {
+        return <div className={styles.main}>{this.renderPlugins()}</div>;
     }
 }

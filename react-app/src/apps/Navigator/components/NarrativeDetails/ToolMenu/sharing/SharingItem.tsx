@@ -1,5 +1,4 @@
-// as of now eslint cannot detect when imported interfaces are used
-import { Component } from 'react'; // eslint-disable-line no-unused-vars
+import { Component } from 'react';
 import PermSearch from './PermSearch';
 import { UserPerms } from './Definitions';
 import ShareUser from './ShareUser';
@@ -10,6 +9,8 @@ import Loading from '../../../../../../components/Loading';
 import GlobalPerms from './GlobalPerms';
 import GenericClient from '../../../../../../lib/kb_lib/comm/JSONRPC11/GenericClient';
 import MessageAlert from '../../../../../../components/AlertMessage';
+import React from 'react';
+import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
 
 interface State {
     isLoading: boolean;
@@ -243,16 +244,52 @@ export default class SharingItem extends Component<
         );
     }
 
-    render() {
-        const curPerm = this.state.perms.curUserPerm.perm;
-        if (this.state.isLoading) {
-            return (
-                <div style={{ textAlign: 'center' }}>
-                    <Loading message="Loading..." />
+    renderCloseButton() {
+        return (
+            <Button onClick={this.props.cancelFn} variant="secondary">
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                    }}
+                >
+                    <span
+                        className="fa fa-times fa-2x"
+                        style={{ marginRight: '0.25em' }}
+                    />{' '}
+                    Close
                 </div>
-            );
-        }
+            </Button>
+        );
+    }
 
+    renderModal(body: JSX.Element, footer?: JSX.Element) {
+        if (!footer) {
+            footer = this.renderCloseButton();
+        }
+        return (
+            <React.Fragment>
+                <Modal.Body>
+                    <Container fluid>
+                        <Row>
+                            <Col>{body}</Col>
+                        </Row>
+                    </Container>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Container fluid>
+                        <Row className="justify-content-center">
+                            <Col md="auto">{footer}</Col>
+                        </Row>
+                    </Container>
+                </Modal.Footer>
+            </React.Fragment>
+        );
+    }
+
+    renderForm() {
+        const curPerm = this.state.perms.curUserPerm.perm;
         return (
             <div style={{ minHeight: '10rem' }}>
                 <p>
@@ -286,5 +323,13 @@ export default class SharingItem extends Component<
                 </div>
             </div>
         );
+    }
+
+    render() {
+        if (this.state.isLoading) {
+            return this.renderModal(<Loading message="Loading..." />);
+        }
+
+        return this.renderModal(this.renderForm());
     }
 }

@@ -8,6 +8,7 @@ export interface PropTableProps {
     noRowsMessage?: string;
     title?: string;
     footer?: PropTableRow;
+    header?: PropTableRow;
     styles?: {
         col1?: CSSProperties;
         col2?: CSSProperties;
@@ -45,13 +46,24 @@ export default class PropTable extends Component<
         }
     }
 
-    renderHeader() {
+    renderTitle() {
         if (!this.props.title) {
             return null;
         }
         return (
             <div className={styles.header}>
                 <div className={styles.title}>{this.props.title}</div>
+            </div>
+        );
+    }
+
+    renderHeader() {
+        if (!this.props.header) {
+            return null;
+        }
+        return (
+            <div className={styles.header}>
+                {this.renderRow(this.props.header)}
             </div>
         );
     }
@@ -102,6 +114,7 @@ export default class PropTable extends Component<
     render() {
         return (
             <div className={styles.PropTable}>
+                {this.renderTitle()}
                 {this.renderHeader()}
                 {this.renderBody()}
                 {this.renderFooter()}

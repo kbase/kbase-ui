@@ -92,7 +92,6 @@ export interface UIStateMeasured<T> extends UIStateBase {
     status: UIStatus.MEASURED;
     firstRow: number;
     lastRow: number;
-    dataState: DataState<T>;
 }
 
 export type UIState<T> = UIStateNone | UIStateMeasured<T>;
@@ -149,6 +148,32 @@ export default class ScalableScroller<T> extends Component<
         }
 
         this.updateMeasurements();
+    }
+
+    componentDidUpdate(prevProps: ScalableScrollerProps<T>) {
+        if (
+            this.props.dataProviderState.status === DataProviderStatus.FETCHED
+        ) {
+            const { from, to, filterCount, totalCount } =
+                this.props.dataProviderState.value;
+            if (
+                prevProps.dataProviderState.status ===
+                    DataProviderStatus.FETCHED ||
+                prevProps.dataProviderState.status ===
+                    DataProviderStatus.REFETCHING
+            ) {
+                if (
+                    filterCount !==
+                        prevProps.dataProviderState.value.filterCount ||
+                    totalCount !==
+                        prevProps.dataProviderState.value.totalCount ||
+                    from !== prevProps.dataProviderState.value.from ||
+                    to !== prevProps.dataProviderState.value.to
+                ) {
+                    this.updateMeasurements();
+                }
+            }
+        }
     }
 
     updateMeasurements() {
@@ -231,7 +256,7 @@ export default class ScalableScroller<T> extends Component<
             | DataProviderStateRefetching<T>
     ) {
         const containerHeight =
-            scrollerState.value.totalCount * this.props.rowHeight;
+            scrollerState.value.filterCount * this.props.rowHeight;
         return (
             <div className={styles.grid} style={{ height: containerHeight }}>
                 {this.renderRows(scrollerState)}
@@ -246,8 +271,8 @@ export default class ScalableScroller<T> extends Component<
     ) {
         const { rows } = scrollerState.value;
 
-        return rows.map(({ index, value }) => {
-            const top = index * this.props.rowHeight;
+        return rows.map(({ index: rowNumber, value }) => {
+            const top = rowNumber * this.props.rowHeight;
             const style = {
                 top,
                 right: '0',
@@ -257,10 +282,10 @@ export default class ScalableScroller<T> extends Component<
 
             // freeform row
             const row = this.props.renderRow(value);
-            const rowClasses = [styles['grid-row']];
+            const rowClasses = [styles['gridRow']];
             return (
                 <div
-                    key={index}
+                    key={rowNumber}
                     className={rowClasses.join(' ')}
                     style={style}
                     role="row"

@@ -91,10 +91,10 @@ import { exists } from 'https://deno.land/std@0.109.0/fs/mod.ts';
 
 async function mergeConfigDir(configDir: string, config: DockerComposeConfig) {
     //   const gitlabConfigDir = `${root}/dev/gitlab-config`;
-    if (!(await exists(configDir))) {
-        console.log(`Provided config dir ${configDir} does not exist`);
-        Deno.exit(1);
-    }
+    // if (!(await exists(configDir))) {
+    //     console.log(`Provided config dir ${configDir} does not exist`);
+    //     Deno.exit(1);
+    // }
 
     console.log(`using config dir ${configDir}`);
     config.services['kbase-ui'].volumes.push({

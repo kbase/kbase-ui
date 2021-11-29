@@ -12,21 +12,42 @@ services:
         networks:
             - kbase-dev
         container_name: kbase-ui
+        environment:
+          - PORT=5000
+        # stdin_open: true
+        # tty: true
         command:
+            #
+            # Here is where we paramaterize the configuration, via an INI file
+            #
             - '-env'
             # The following line uses the ones provided in this repo
             # Or this one which uses one installed by 'make get-gitlab-config'
             - /kb/deployment/config/${DEPLOY_ENV}_config.ini
             # Want to do this, but our gitlab is both a self-signed cert and expired
             # - https://oauth2:${GITLAB_TOKEN}@gitlab.kbase.lbl.gov:1443/devops/kbase_ui_config/raw/develop/${DEPLOY_ENV}_config.ini
+            # UNCOMMENT if using static build
+            #
+            # Create the nginx config file
+            #
             - '-template'
             - /kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf
             # - '-wait'
             # - 'file://kb/deployment/services/kbase-ui/app/index.html'
+            # UNCOMMENT if using static...
+            #
+            # Create the kbase-ui config file
+            #
             - '-template'
-            - /kb/deployment/templates/config.json.tmpl:/kb/deployment/services/kbase-ui/dist/modules/deploy/config.json
+            - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/modules/deploy/config.json
+            # - '-template'
+            # - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/modules/deploy/config.json
+
+            
+            # UNCOMMENT if using static build
             - bash
             - /kb/deployment/scripts/start-server.bash
+            # - /kb/deployment/services/kbase-ui/deployment/scripts/start-dev-server.bash
     kbase-ui-proxy:
         build:
             context: ../tools/proxy

@@ -220,6 +220,7 @@ export interface DataObjectCell extends CodeCellBase {
                     ref_path: string | null;
                     id: number;
                     checksum: string;
+                    version: number;
                     saveDate: string;
                     save_date: string;
                     saved_by: string;

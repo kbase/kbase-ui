@@ -1,0 +1,9 @@
+version: '3.6'
+services:
+    node:
+        working_dir: /app
+        image: node:14-alpine3.14
+        container_name: node-runner
+        dns: 8.8.8.8
+        volumes:
+            - $DIR:/app

@@ -24,10 +24,11 @@ http {
 	default_type application/octet-stream;
 
     # Define upstream servers, for convenience.
-    # upstream kbase_ui {
-    #     server {{ .Env.kbase_ui_host }}:3000;
-    #     keepalive 16;
-    # }
+    # UNCOMMENT for local kbase-ui in container
+    upstream kbase_ui {
+        server {{ .Env.kbase_ui_host }}:3000;
+        keepalive 16;
+    }
 
     upstream services {
         server {{ .Env.deploy_hostname }}:443;
@@ -132,11 +133,11 @@ http {
             proxy_set_header Host {{ .Env.deploy_ui_hostname }};
         }
 
-        # location / {
-        #     client_max_body_size 300M;
-        #     proxy_pass http://kbase_ui;
-        #     proxy_set_header Connection "";
-        # }
+        location / {
+            client_max_body_size 300M;
+            proxy_pass http://kbase_ui;
+            proxy_set_header Connection "";
+        }
     }
 
     {{ end }}
@@ -277,11 +278,11 @@ http {
             proxy_set_header Host {{ .Env.deploy_hostname }};
         }
 
-        # location / {
-        #     proxy_pass http://kbase_ui;
-        #     proxy_set_header Connection "";
-        #     client_max_body_size 300M;
-        # }
+        location / {
+            proxy_pass http://kbase_ui;
+            proxy_set_header Connection "";
+            client_max_body_size 300M;
+        }
 
         {{ end }}
     }

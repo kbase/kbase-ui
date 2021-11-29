@@ -1,13 +1,15 @@
 import { Component } from 'react';
-import { Accordion } from 'react-bootstrap';
 import ErrorMessage from '../../../../../components/ErrorMessage';
 import { AuthInfo } from '../../../../../contexts/Auth';
 import { Config } from '../../../../../types/config';
 import { DataObjectCell } from '../../../utils/NarrativeModel';
 import EZTooltip from '../../EZTooltip';
 import { TypeIcon } from '../../Icon';
+import { Accordion, Button, Tab, Table, Tabs } from 'react-bootstrap';
+
 import styles from './DataObjectCell.module.css';
 import cellStyles from './cell.module.css';
+import { niceRelativeTime } from '../../../../../lib/time';
 
 interface DataObjectCellProps {
     cell: DataObjectCell;
@@ -16,6 +18,96 @@ interface DataObjectCellProps {
 }
 
 export default class DataObjectCellView extends Component<DataObjectCellProps> {
+    renderObject() {
+        const info = this.props.cell.metadata.kbase.dataCell.objectInfo;
+        return (
+            <div className={styles.ObjectInfo}>
+                <Button
+                    href={`/#dataview/${info.ref}`}
+                    target="_blank"
+                    variant="outline-info"
+                >
+                    Landing Page
+                </Button>
+                <div className={styles.title}>Object</div>
+                <Table size="sm" bordered>
+                    <tbody>
+                        <tr>
+                            <th>ID</th>
+                            <td>{info.id}</td>
+                        </tr>
+                        <tr>
+                            <th>Name</th>
+                            <td>{info.name}</td>
+                        </tr>
+                    </tbody>
+                </Table>
+                <div className={styles.title}>Type</div>
+                <Table size="sm" bordered>
+                    <tbody>
+                        <tr>
+                            <th>Type</th>
+                            <td>
+                                <a
+                                    href={`/#spec/type/${info.type}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    {info.typeName}
+                                </a>{' '}
+                                ({info.typeModule})
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Version</th>
+                            <td>
+                                {info.typeMajorVersion}.{info.typeMinorVersion}
+                            </td>
+                        </tr>
+                    </tbody>
+                </Table>
+                <div className={styles.title}>Saved</div>
+                <Table size="sm" bordered>
+                    <tbody>
+                        <tr>
+                            <th>When</th>
+                            <td>
+                                <EZTooltip
+                                    id="saved-at-tooltip"
+                                    tooltip={Intl.DateTimeFormat(
+                                        'en-US'
+                                    ).format(new Date(info.saveDate))}
+                                >
+                                    <span>
+                                        {niceRelativeTime(
+                                            new Date(info.saveDate)
+                                        )}
+                                    </span>
+                                </EZTooltip>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>By</th>
+                            <td>
+                                <a
+                                    href={`/#user/${info.saved_by}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    {info.saved_by}
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Version</th>
+                            <td>{info.version}</td>
+                        </tr>
+                    </tbody>
+                </Table>
+            </div>
+        );
+    }
+
     render() {
         if (!('dataCell' in this.props.cell.metadata.kbase)) {
             return (
@@ -84,10 +176,13 @@ export default class DataObjectCellView extends Component<DataObjectCellProps> {
                                 </div>
                             </Accordion.Header>
                             <Accordion.Body>
-                                <div className={styles.content}>
-                                    More info about this object and its viewer
-                                    ...
-                                </div>
+                                <Tabs variant="tabs" defaultActiveKey="info">
+                                    <Tab eventKey="info" title="Info">
+                                        <div className={styles.tabContent}>
+                                            {this.renderObject()}
+                                        </div>
+                                    </Tab>
+                                </Tabs>
                             </Accordion.Body>
                         </Accordion.Item>
                     </Accordion>

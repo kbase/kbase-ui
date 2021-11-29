@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { changeHash } from '../../apps/Navigator/utils/navigation';
 import { AuthenticationState, AuthenticationStatus } from '../../contexts/Auth';
 // import { Auth2Session } from '../../lib/kb_lib/Auth2Session';
 import { Config } from '../../types/config';
@@ -38,8 +39,11 @@ export default class Login extends Component<LoginProps, LoginState> {
             return;
         }
         try {
+            console.log('HERE');
             await this.props.authState.logout();
-            document.location.hash = 'login';
+            console.log('HERE 2');
+            changeHash('auth2/signedout');
+            // document.location.hash = '/#login';
         } catch (ex) {
             console.error('YIKES AHOY!', ex);
         }

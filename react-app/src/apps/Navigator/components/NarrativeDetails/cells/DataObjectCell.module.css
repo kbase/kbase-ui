@@ -23,3 +23,19 @@
     text-overflow: ellipsis;
     text-align: right;
 }
+
+.tabContent {
+    margin-top: 10px;
+}
+
+.ObjectInfo th {
+    width: 6em;
+    color: rgb(150 150 150);
+}
+
+.ObjectInfo .title {
+    font-size: 120%;
+    font-weight: bold;
+    color: rgb(150 150 150);
+    padding: 0.25em;
+}

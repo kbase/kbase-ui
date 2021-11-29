@@ -34,11 +34,6 @@ export class SearchInput extends Component<Props, State> {
             prevProps.value !== this.props.value &&
             !this.state.hasBeenModified
         ) {
-            console.log(
-                'componentDidUpdate',
-                prevProps.value,
-                this.props.value
-            );
             this.setState({
                 value: this.props.value || '',
                 isDirty: true,
@@ -47,7 +42,6 @@ export class SearchInput extends Component<Props, State> {
     }
 
     handleInput(ev: React.FormEvent<HTMLInputElement>) {
-        console.log('handleInput');
         const value = ev.currentTarget.value;
         const isDirty = value !== this.state.lastUsedValue;
         this.setState({ ...this.state, value, isDirty, hasBeenModified: true });
@@ -61,7 +55,6 @@ export class SearchInput extends Component<Props, State> {
 
     triggerSearch() {
         this.props.onSetVal(this.state.value);
-        console.log('triggerSearch');
         this.setState({
             ...this.state,
             isDirty: false,

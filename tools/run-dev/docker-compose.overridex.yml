@@ -1,0 +1,18 @@
+version: '3.6'
+services:
+  kbase-ui:
+    volumes:
+      # - type: bind
+      #   source: >-
+      #     /Users/erikpearson/Work/KBase/2021Q3/miniprojects/kbase-ui-crats/kbase-ui/tools/deno-cli/../../dev/gitlab-config
+      #   target: /kb/deployment/config
+      - type: bind
+        source: >-
+          /Users/erikpearson/Work/KBase/2021Q3/miniprojects/kbase-ui-crats/kbase-ui/tools/deno-cli/../../dev/gitlab-config
+        target: /kb/deployment/config
+      - type: bind
+        source: /Users/erikpearson/Work/KBase/2021Q3/miniprojects/kbase-ui-crats/kbase-ui
+        target: /kb/deployment/services/kbase-ui
+  kbase-ui-proxy:
+    environment: []
+volumes: {}

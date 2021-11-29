@@ -1,10 +1,12 @@
 import { Component } from 'react';
-import { Accordion } from 'react-bootstrap';
+import { Accordion, Table } from 'react-bootstrap';
 import ErrorMessage from '../../../../../components/ErrorMessage';
 import { OutputObjectCell } from '../../../utils/NarrativeModel';
 import { DefaultIcon } from '../../Icon';
 import styles from './OutputObject.module.css';
 import cellStyles from './cell.module.css';
+import EZTooltip from '../../EZTooltip';
+import RenderJSON from '../../../../../components/RenderJSON';
 
 interface OutputObjectCellProps {
     cell: OutputObjectCell;
@@ -27,7 +29,6 @@ export default class OutputObjectCellView extends Component<OutputObjectCellProp
             } else {
                 return {
                     name: 'unknown',
-                    tag: 'unknown',
                 };
             }
         })();
@@ -40,6 +41,8 @@ export default class OutputObjectCellView extends Component<OutputObjectCellProp
                 };
             }
         })();
+
+        console.log('OUTPUT', this.props.cell);
 
         return (
             <div className="row my-2 g-0">
@@ -73,7 +76,57 @@ export default class OutputObjectCellView extends Component<OutputObjectCellProp
                             </Accordion.Header>
                             <Accordion.Body>
                                 <div className={styles.content}>
-                                    More info about this output cell ...
+                                    <Table size="sm" bordered>
+                                        <tbody>
+                                            <tr>
+                                                <th>Widget</th>
+                                                <td>
+                                                    <EZTooltip
+                                                        id="saved-at-tooltip"
+                                                        tooltip={
+                                                            this.props.cell
+                                                                .metadata.kbase
+                                                                .outputCell
+                                                                .widget.name
+                                                        }
+                                                    >
+                                                        <span>
+                                                            {
+                                                                this.props.cell
+                                                                    .metadata
+                                                                    .kbase
+                                                                    .outputCell
+                                                                    .widget.name
+                                                            }
+                                                        </span>
+                                                    </EZTooltip>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Tag</th>
+                                                <td>
+                                                    {
+                                                        this.props.cell.metadata
+                                                            .kbase.outputCell
+                                                            .widget.tag
+                                                    }
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Params</th>
+                                                <td>
+                                                    <RenderJSON
+                                                        value={
+                                                            this.props.cell
+                                                                .metadata.kbase
+                                                                .outputCell
+                                                                .widget.params
+                                                        }
+                                                    />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </Table>
                                 </div>
                             </Accordion.Body>
                         </Accordion.Item>

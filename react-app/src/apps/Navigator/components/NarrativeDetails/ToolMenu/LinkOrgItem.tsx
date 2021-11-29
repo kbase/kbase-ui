@@ -184,17 +184,13 @@ export default class LinkOrgItem extends Component<
 
     renderPending() {
         return this.renderModal(
-            <p>
-                <Loading message="Loading..." size="small" type="inline" />
-            </p>
+            <Loading message="Loading..." size="small" type="inline" />
         );
     }
 
     renderLinkPending() {
         return this.renderModal(
-            <p>
-                <Loading message="Linking..." size="small" type="inline" />
-            </p>
+            <Loading message="Linking..." size="small" type="inline" />
         );
     }
 

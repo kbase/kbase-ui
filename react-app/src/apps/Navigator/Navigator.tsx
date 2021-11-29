@@ -12,11 +12,11 @@ import { SearchOptions } from './utils/NarrativeSearch';
 import ErrorBoundary from './ErrorBoundary';
 import NavigatorContextWrapper from './context/NavigatorContextWrapper';
 import { DetailOptions } from './context/DataModel';
+import { pushHistory } from './utils/navigation';
 
 // Styles
-import styles from './Navigator.module.css';
 import './bootstrapOverrides.css';
-import { pushHistory } from './utils/navigation';
+import styles from './Navigator.module.css';
 
 const DEFAULT_CATEGORY = 'own';
 

@@ -291,7 +291,11 @@ export default class NarrativeListing extends Component<
         return (
             <div className={styles.NarrativeListing}>
                 <div className={styles.header}>{this.renderHeader()}</div>
-                <div className={styles.listing}>{this.renderSearchState()}</div>
+                <div className={styles.listing}>
+                    <div className={styles.listingWrapper}>
+                        {this.renderSearchState()}
+                    </div>
+                </div>
             </div>
         );
     }

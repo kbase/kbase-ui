@@ -13,6 +13,7 @@ import { Params } from './Plugin';
 import { Alert } from 'react-bootstrap';
 import './IFrameController.css';
 import { isEqual } from '../lib/kb_lib/Utils';
+import { changeHash, pushHistory } from '../apps/Navigator/utils/navigation';
 
 export enum PluginLoadingStatus {
     NONE = 'NONE',
@@ -284,7 +285,8 @@ export default class IFrameController extends Component<
                 throw new Error('Invalid path');
             })();
 
-            window.location.hash = `#${path}`;
+            // window.location.hash = `#${path}`;
+            changeHash(path);
 
             // this.props.messenger.send({
             //     channel: 'app',
@@ -309,11 +311,31 @@ export default class IFrameController extends Component<
             this.props.setTitle(title);
         });
 
-        this.channel.on('ui-auth-navigate', ({ nextRequest, tokenInfo }) => {
+        this.channel.on('ui-auth-navigate', async (message) => {
+            const {
+                nextRequest,
+                tokenInfo: { token },
+            } = message;
             try {
-                window.location.hash = nextRequest.path || 'about';
+                console.log('hmm', nextRequest, message);
+
+                // Set the auth
+                switch (this.props.authState.status) {
+                    case AuthenticationStatus.NONE:
+                        return;
+                    case AuthenticationStatus.UNAUTHENTICATED:
+                        await this.props.authState.login(token);
+                        break;
+                    case AuthenticationStatus.AUTHENTICATED:
+                        await this.props.authState.logout();
+                        break;
+                }
+
+                // Redirect
+                changeHash(nextRequest.path || 'about');
+                // window.location.hash = nextRequest.path || 'about';
             } catch (ex) {
-                console.error('YIKES! Error logging out.', ex);
+                console.error('YIKES! Error in auth navigation out.', ex);
             }
         });
 

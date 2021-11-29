@@ -1,7 +1,7 @@
-FROM alpine:3.14
+FROM node:14-alpine3.14
 
 RUN apk upgrade --update-cache --available && \
-    apk add --update --no-cache bash ca-certificates nginx && \
+    apk add --update --no-cache npm python3 make && \
     mkdir -p /kb
 
 WORKDIR /kb
@@ -9,7 +9,9 @@ WORKDIR /kb
 # This version uses master; otherwise functionally equivalent other than style.
 RUN version=v0.15.1 && \
     wget -O - https://github.com/powerman/dockerize/releases/download/${version}/dockerize-`uname -s`-`uname -m` | install /dev/stdin /usr/local/bin/dockerize && \
-    mkdir -p /kb/deployment/app/modules/deploy
+    mkdir -p /kb/deployment/app && \
+    mkdir -p /kb/deployment/templates && \
+    mkdir -p /kb/deployment/scripts
 
 # These ARGs values are passed in via the docker build command
 ARG BUILD_DATE
@@ -18,7 +20,7 @@ ARG BRANCH=develop
 ARG TAG
 
 # The main thing -- the kbase-ui built code.
-COPY build/dist /kb/deployment/app
+COPY react-app /kb/deployment/app
 
 # Config templates
 COPY deployment/templates /kb/deployment/templates
@@ -38,7 +40,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.schema-version="1.0.0-rc1" \
     us.kbase.vcs-branch=$BRANCH  \
     us.kbase.vcs-tag=$TAG \
-    maintainer="Steve Chan sychan@lbl.gov"
+    maintainer="Erik Pearson eapearson@lbl.gov"
 
 # Run as a regular user, not root.
 RUN addgroup --system kbmodule && \
@@ -48,6 +50,5 @@ RUN addgroup --system kbmodule && \
 ENTRYPOINT [ "dockerize" ]
 
 CMD [  \
-    "-template", "/kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
-    "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/app/modules/deploy/config.json", \
-    "bash", "/kb/deployment/scripts/start-server.bash" ]
+    "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/modules/deploy/config.json", \
+    "bash", "/kb/deployment/scripts/start-dev-server.bash" ]

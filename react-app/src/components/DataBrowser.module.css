@@ -1,10 +1,10 @@
-/* .container {
-    flex: 1 1 0;
+.main {
+    flex: 1 1 0px;
     display: flex;
     flex-direction: column;
     min-height: 0;
     min-width: 0;
-} */
+}
 
 .header {
     flex: 0 0 auto;
@@ -13,7 +13,7 @@
     font-weight: bold;
     color: gray;
     /* border-top: 1px solid rgba(200, 200, 200, 0.5); */
-    /* border-bottom: 2px solid rgba(200, 200, 200, 0.5); */
+    border-bottom: 2px solid rgba(200, 200, 200, 0.5);
     /* Force scrollbar so it aligns w/body*/
     overflow-y: scroll;
 }
@@ -26,41 +26,41 @@
     background-color: white;
 }
 
-.header-col {
-    flex: 1 1 0;
+.headerCol {
+    flex: 1 1 0px;
     padding: 4px;
+    /* overflow-x: hidden;
+    white-space: nowrap; */
+    text-overflow: ellipsis;
+    display: flex;
+    flex-direction: row;
+    min-width: 0;
+}
+
+.headerCol:hover {
+    background-color: rgba(200, 200, 200, 0.2);
+    cursor: pointer;
+}
+
+.headerTitle {
+    flex: 1 1 0;
     overflow-x: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-.wrapper {
-    flex: 1 1 0;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow-y: hidden;
+.headerSortIndicator {
+    flex: 0 0 2em;
+    background-color: aqua;
 }
+
 .body {
-    flex: 1 1 0;
+    flex: 1 1 0px;
     /* display: flex; */
     /* flex-direction: column; */
     min-height: 0;
     min-width: 0;
     overflow-y: scroll;
-}
-
-.overlay {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    /* background-color: rgba(100, 100, 100, 0.1); */
 }
 
 .grid {
@@ -80,7 +80,7 @@
     cursor: pointer;
 }
 
-.grid-cell {
+.gridCell {
     position: absolute;
 }
 
@@ -91,7 +91,7 @@
     border-bottom: 1px solid rgba(200, 200, 200, 0.5);
 }
 
-.row-highlighted {
+.rowHighlighted {
     background-color: rgba(200, 200, 200, 0.5);
 }
 
@@ -103,7 +103,7 @@
     justify-content: center;
 }
 
-.col-content {
+.colContent {
     overflow-x: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
