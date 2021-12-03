@@ -17,23 +17,38 @@ interface SigninState {}
 
 export default class Signin extends Component<SigninProps, SigninState> {
     renderGravatarUrl(profile: UserProfile) {
-        const gravatarDefault =
-            profile.profile.userdata.gravatarDefault || 'identicon';
-        const gravatarHash = profile.profile.synced.gravatarHash;
-        if (gravatarHash) {
-            return `https://www.gravatar.com/avatar/${gravatarHash}?s=300&r=pg&d=${gravatarDefault}`;
+        if ('userdata' in profile.profile) {
+            const gravatarDefault =
+                profile.profile.userdata.gravatarDefault || 'identicon';
+            if ('synced' in profile.profile) {
+                const gravatarHash = profile.profile.synced.gravatarHash;
+                if (gravatarHash) {
+                    return `https://www.gravatar.com/avatar/${gravatarHash}?s=300&r=pg&d=${gravatarDefault}`;
+                } else {
+                    return '/images/nouserpic.png';
+                }
+            } else {
+                return '/images/nouserpic.png';
+            }
         } else {
             return '/images/nouserpic.png';
         }
     }
     renderAvatarUrl(profile: UserProfile) {
-        switch (profile.profile.userdata.avatarOption || 'gravatar') {
-            case 'gravatar':
-                return this.renderGravatarUrl(profile)
-            case 'silhouette':
-            case 'mysteryman':
-            default:
-                return '/images/nouserpic.png';
+        if (
+            'userdata' in profile.profile &&
+            profile.profile.userdata !== null
+        ) {
+            switch (profile.profile.userdata.avatarOption || 'gravatar') {
+                case 'gravatar':
+                    return this.renderGravatarUrl(profile);
+                case 'silhouette':
+                case 'mysteryman':
+                default:
+                    return '/images/nouserpic.png';
+            }
+        } else {
+            return '/images/nouserpic.png';
         }
     }
 
