@@ -8,7 +8,7 @@ import Loading from '../../components/Loading';
 
 const MAX_TRIES = 10;
 const TIMEOUT = 60000;
-// const RETRY_PAUSE = 1000;
+const RETRY_PAUSE = 1000;
 
 export class LoadingError extends Error {
     type: string;
@@ -118,6 +118,11 @@ export default class NarrativeLoader extends Component<
             status: LoadStatus.NONE,
         },
     };
+
+    urlToCheck() {
+        return `${document.location.origin}/narrative/static/kbase/config/config.json?check=true`;
+    }
+
     componentDidMount() {
         this.props.setTitle('Narrative Loader');
         const searchParams = new URLSearchParams(this.props.location.search);
@@ -148,16 +153,16 @@ export default class NarrativeLoader extends Component<
                 loadState: {
                     status: LoadStatus.POKING,
                     tries: 0,
-                    url:
-                        document.location.origin +
-                        '/narrative/static/kbase/config/config.json?check=true',
+                    url: this.urlToCheck(),
                 },
             },
             () => {
+                console.log('hmm, try loading', narrativeId);
                 this.tryLoading(narrativeId);
             }
         );
     }
+
     renderProgress() {}
 
     async tryLoading(narrativeId: number) {
@@ -176,7 +181,16 @@ export default class NarrativeLoader extends Component<
                 const retry = await this.checkNarrative(
                     this.state.loadState.url
                 );
-                if (!retry) {
+                console.log('try loading', tries);
+                if (retry) {
+                    this.setState({
+                        loadState: {
+                            status: LoadStatus.POKING,
+                            tries,
+                            url: this.urlToCheck(),
+                        },
+                    });
+                } else {
                     this.setState({
                         loadState: {
                             status: LoadStatus.OK,
@@ -191,10 +205,17 @@ export default class NarrativeLoader extends Component<
                     url.hash = '';
                     url.pathname = `/narrative/${narrativeId}`;
                     // window.location.replace(narrativeUrl);
-                    window.history.pushState(null, '', url);
+                    // window.history.pushState(null, '', url);
+                    console.log('REDIRECTING?..', url.toString());
+                    document.location.href = url.toString();
                     return;
                 }
             }
+            await new Promise<void>((resolve) => {
+                window.setTimeout(() => {
+                    resolve();
+                }, RETRY_PAUSE);
+            });
         } catch (ex) {
             this.setState({
                 loadState: {
@@ -205,10 +226,16 @@ export default class NarrativeLoader extends Component<
         }
     }
     checkNarrative(url: string) {
+        console.log('[checkNarrative]', url);
         const startTime = new Date().getTime();
         return new Promise<boolean>((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.onload = () => {
+                console.log(
+                    '[checkNarrative] onload',
+                    xhr.status,
+                    xhr.responseText
+                );
                 switch (xhr.status) {
                     case 200:
                         // For /narrative/ checks, there is no 201 or 401, so we

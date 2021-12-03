@@ -28,10 +28,11 @@
             url.searchParams.delete(key);
         }
 
-
         url.pathname = '';
         url.hash = `#load-narrative?n=${n}`;
-        window.history.pushState(null, '', url);
+
+        window.location.href = url.toString();
+        // window.history.pushState(null, '', url);
     } 
     main();
 
