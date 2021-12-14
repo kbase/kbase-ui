@@ -207,6 +207,12 @@ docker build -f tools/run-dev/Dockerfile -t kbase-ui-dev:dev .
 docker run -it --hostname=kbase-ui --entrypoint=sh --network=kbase-dev -p 3000:3000 -e CHOKIDAR_USEPOLLING=true  -v `pwd`/react-app/src:/kb/deployment/app/src -v `pwd`/build/dist/modules/plugins:/kb/deployment/app/modules/plugins  kbase-ui-dev:dev
 ```
 
+set DEPLOY_ENV for one other than CI.
+
+```bash
+docker run -it --hostname=kbase-ui --entrypoint=sh --network=kbase-dev -p 3000:3000 -e CHOKIDAR_USEPOLLING=true -e DEPLOY_ENV=narrative-dev -v `pwd`/react-app/src:/kb/deployment/app/src -v `pwd`/build/dist/modules/plugins:/kb/deployment/app/modules/plugins  kbase-ui-dev:dev
+```
+
 Then sh into container:
 
 currently cheese out and use Docker Desktop

@@ -1,5 +1,5 @@
 # check that the deploy config file is ok.
-DEPLOY_CFG=/kb/deployment/services/kbase-ui/react-app/public/modules/deploy/config.json
+DEPLOY_CFG=/kb/deployment/app/public/modules/deploy/config.json
 # NGINX_CFG=/etc/nginx/nginx.conf
 
 echo "Checking config file..."
@@ -41,4 +41,5 @@ echo "OK. Starting CRA dev server... Press Control-C to exit."
 # start nginx
 # exec nginx -c ${NGINX_CFG}
 cd /kb/deployment/app
-ENV=ci npm run start
+npm ci
+ENV=narrative-dev npm run start

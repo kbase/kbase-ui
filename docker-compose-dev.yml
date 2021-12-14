@@ -5,7 +5,7 @@ networks:
 services:
     kbase-ui:
         build:
-            context: ../..
+            context: .
             dockerfile: Dockerfile-dev
         # just use dev for the image tag so we can easily clean
         # up afterwards.
@@ -17,7 +17,7 @@ services:
         volumes:
             # - ${APP_DIR}:/kb/deployment/app
             - ${SRC_DIR}:/kb/deployment/app/src
-            # - ${INI_DIR}:/kb/deployment/config
+            - ${INI_DIR}:/kb/deployment/config
             # - ${SCRIPTS_DIR}:/kb/deployment/scripts
 
         # just use dev for the image tag so we can easily clean
@@ -27,9 +27,9 @@ services:
             - kbase-dev
         environment:
           - PORT=5000
-        entrypoint: npm
-        stdin_open: true
-        tty: true
+        # entrypoint: npm
+        # stdin_open: true
+        # tty: true
         command:
             - '-env'
             # The following line uses the ones provided in this repo
@@ -38,7 +38,7 @@ services:
             # Map
             - '-template'
             - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/modules/deploy/config.json
-            - bash
+            - sh
             # UNCOMMENT if using static build
             # - /kb/deployment/scripts/start-server.bash
             - /kb/deployment/scripts/start-dev-server.bash
