@@ -17,7 +17,8 @@ export interface ColumnDef<T> {
     label: string;
     style: CSSProperties;
     render: (row: T) => JSX.Element;
-    sort?: (state: SortState, dataSource: Array<T>) => Array<T>;
+    // sort?: (state: SortState, dataSource: Array<T>) => Array<T>;
+    sorter?: (a: T, b: T) => number;
 }
 
 export enum SortState {
@@ -48,12 +49,19 @@ export interface DataBrowserProps<T> {
     onClick?: (values: T) => void;
 }
 
+export interface Row<T> {
+    rowNumber: number;
+    data: T;
+}
+
 interface DataBrowsereState<T> {
     trigger: boolean;
     triggerRefresh: number;
     columns: Array<ColumnState<T>>;
-    rows: Array<T>;
+    rows: Array<Row<T>>;
 }
+
+export type SortDirection = 1 | -1;
 
 export default class DataBrowser<T> extends Component<
     DataBrowserProps<T>,
@@ -82,7 +90,12 @@ export default class DataBrowser<T> extends Component<
                     },
                 };
             }),
-            rows: this.props.dataSource,
+            rows: this.props.dataSource.map((row: T, index: number) => {
+                return {
+                    rowNumber: index,
+                    data: row,
+                };
+            }),
         };
     }
 
@@ -119,43 +132,108 @@ export default class DataBrowser<T> extends Component<
         }, 100);
     }
 
-    onHeaderClick(column: ColumnState<T>) {
-        if (typeof column.def.sort === 'undefined') {
+    nextSortState(sortState: SortState) {
+        switch (sortState) {
+            case SortState.NONE:
+                return SortState.ASCENDING;
+            case SortState.ASCENDING:
+                return SortState.DESCENDING;
+            case SortState.DESCENDING:
+                return SortState.NONE;
+        }
+    }
+
+    onHeaderClick(columnNumber: number) {
+        console.log('header click', columnNumber);
+        const column = this.state.columns[columnNumber];
+        const sorter = column.def.sorter;
+        if (typeof sorter === 'undefined') {
             return;
         }
-        const nextSortState = (() => {
-            switch (column.state.sort) {
-                case SortState.NONE:
-                    return SortState.ASCENDING;
-                case SortState.ASCENDING:
-                    return SortState.DESCENDING;
-                case SortState.DESCENDING:
-                    return SortState.NONE;
-            }
-        })();
+        const nextSortState = this.nextSortState(column.state.sort);
+        // Unset the sort state for the currently sorted column.
+
+        const columns = this.state.columns.map((column, index) => {
+            return {
+                ...column,
+                state: {
+                    ...column.state,
+                    sort:
+                        index === columnNumber ? nextSortState : SortState.NONE,
+                },
+            };
+        });
 
         if (nextSortState === SortState.NONE) {
             this.setState({
                 ...this.state,
-                rows: this.props.dataSource,
+                columns,
+                rows: this.state.rows.sort((a, b) => {
+                    return a.rowNumber - b.rowNumber;
+                }),
             });
         } else {
-            const newRows = column.def.sort(nextSortState, this.state.rows);
+            // const newRows = column.def.sort(nextSortState, this.state.rows);
+            const direction = nextSortState === SortState.ASCENDING ? 1 : -1;
+            const newRows = this.state.rows.sort((a: Row<T>, b: Row<T>) => {
+                return sorter(a.data, b.data) * direction;
+            });
             this.setState({
                 ...this.state,
+                columns,
                 rows: newRows,
             });
         }
     }
 
+    // onHeaderClick(column: ColumnState<T>) {
+    //     console.log('header click', column);
+    //     const sorter = column.def.sorter;
+    //     if (typeof sorter === 'undefined') {
+    //         return;
+    //     }
+    //     // Unset the sort state for the currently sorted column.
+
+    //     const nextSortState = (() => {
+    //         switch (column.state.sort) {
+    //             case SortState.NONE:
+    //                 return SortState.ASCENDING;
+    //             case SortState.ASCENDING:
+    //                 return SortState.DESCENDING;
+    //             case SortState.DESCENDING:
+    //                 return SortState.NONE;
+    //         }
+    //     })();
+    //     console.log('next state?', column.state.sort, nextSortState);
+    //     column.state.sort = nextSortState;
+    //     if (nextSortState === SortState.NONE) {
+    //         this.setState({
+    //             ...this.state,
+    //             rows: this.state.rows.sort((a, b) => {
+    //                 return a.rowNumber - b.rowNumber;
+    //             }),
+    //         });
+    //     } else {
+    //         // const newRows = column.def.sort(nextSortState, this.state.rows);
+    //         const direction = nextSortState === SortState.ASCENDING ? 1 : -1;
+    //         const newRows = this.state.rows.sort((a: Row<T>, b: Row<T>) => {
+    //             return sorter(a.data, b.data) * direction;
+    //         });
+    //         this.setState({
+    //             ...this.state,
+    //             rows: newRows,
+    //         });
+    //     }
+    // }
+
     renderSortState(sort: SortState) {
         switch (sort) {
             case SortState.NONE:
-                return '-';
+                return <span className="fa fa-sort text-secondary" />;
             case SortState.ASCENDING:
-                return 'Asc';
+                return <span className="fa fa-sort-asc text-primary" />;
             case SortState.DESCENDING:
-                return 'Desc';
+                return <span className="fa fa-sort-desc text-primary" />;
         }
     }
 
@@ -163,18 +241,18 @@ export default class DataBrowser<T> extends Component<
         const style = {
             height: `{this.props.heights.header}px`,
         };
-        const header = this.state.columns.map((column) => {
+        const header = this.state.columns.map((column, index) => {
             const {
-                def: { label, style, sort },
+                def: { label, style, sorter },
             } = column;
-            if (sort) {
+            if (sorter) {
                 return (
                     <div
                         key={column.def.id}
                         className={styles.headerCol}
                         style={style || {}}
                         onClick={() => {
-                            this.onHeaderClick(column);
+                            this.onHeaderClick(index);
                         }}
                     >
                         <div className={styles.headerTitle}>{label}</div>
@@ -234,7 +312,7 @@ export default class DataBrowser<T> extends Component<
                 // TODO: format value
                 const content = (() => {
                     try {
-                        return col.def.render(values);
+                        return col.def.render(values.data);
                     } catch (ex) {
                         return (
                             <span className="text-danger">

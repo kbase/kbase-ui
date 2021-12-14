@@ -6,9 +6,17 @@ import ErrorMessage from '../../components/ErrorMessage';
 import AlertMessage from '../../components/AlertMessage';
 import Loading from '../../components/Loading';
 
-const MAX_TRIES = 10;
+const MAX_TRIES = 20;
 const TIMEOUT = 60000;
 const RETRY_PAUSE = 1000;
+
+export async function waitFor(interval: number) {
+    await new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(null);
+        }, interval);
+    });
+}
 
 export class LoadingError extends Error {
     type: string;
@@ -183,6 +191,7 @@ export default class NarrativeLoader extends Component<
                 );
                 console.log('try loading', tries);
                 if (retry) {
+                    await waitFor(1000);
                     this.setState({
                         loadState: {
                             status: LoadStatus.POKING,

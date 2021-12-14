@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import DataBrowser, {
     ColumnDef,
+    SortDirection,
     SortState,
 } from '../../components/DataBrowser';
 import { Config, PluginInfo } from '../../types/config';
@@ -60,15 +61,19 @@ export default class AboutPlugins extends Component<
                 render: (plugin: PluginInfo) => {
                     return <span>{plugin.name}</span>;
                 },
-                sort: (sortState: SortState, dataSource: Array<PluginInfo>) => {
-                    if (sortState === SortState.NONE) {
-                        return dataSource;
-                    }
-                    return dataSource.sort((a, b) => {
-                        const direction =
-                            sortState === SortState.ASCENDING ? 1 : -1;
-                        return direction * a.name.localeCompare(b.name);
-                    });
+                // sort: (sortState: SortState, dataSource: Array<PluginInfo>) => {
+                //     console.log('sort', sortState);
+                //     if (sortState === SortState.NONE) {
+                //         return dataSource;
+                //     }
+                //     return dataSource.sort((a, b) => {
+                //         const direction =
+                //             sortState === SortState.ASCENDING ? 1 : -1;
+                //         return direction * a.name.localeCompare(b.name);
+                //     });
+                // },
+                sorter: (a: PluginInfo, b: PluginInfo) => {
+                    return a.name.localeCompare(b.name);
                 },
             },
             {
@@ -77,6 +82,9 @@ export default class AboutPlugins extends Component<
                 style: {},
                 render: (plugin: PluginInfo) => {
                     return <span>{plugin.version}</span>;
+                },
+                sorter: (a: PluginInfo, b: PluginInfo) => {
+                    return a.version.localeCompare(b.version);
                 },
             },
             {
@@ -90,6 +98,12 @@ export default class AboutPlugins extends Component<
                                 new Date(plugin.gitInfo.committerDate)
                             )}
                         </span>
+                    );
+                },
+                sorter: (a: PluginInfo, b: PluginInfo) => {
+                    return (
+                        new Date(a.gitInfo.committerDate).getTime() -
+                        new Date(b.gitInfo.committerDate).getTime()
                     );
                 },
             },
