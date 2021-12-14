@@ -78,10 +78,13 @@ export default class AppCellView extends Component<PreviewCellProps> {
     }
 
     jobStatus() {
-        if (!('exec' in this.props.cell.metadata.kbase.appCell)) {
-            return null;
+        if (
+            'exec' in this.props.cell.metadata.kbase.appCell &&
+            'jobState' in this.props.cell.metadata.kbase.appCell.exec
+        ) {
+            return this.props.cell.metadata.kbase.appCell.exec.jobState.status;
         }
-        return this.props.cell.metadata.kbase.appCell.exec.jobState.status;
+        return null;
     }
 
     renderJobStatus() {
@@ -102,7 +105,12 @@ export default class AppCellView extends Component<PreviewCellProps> {
     }
 
     renderJobStats() {
-        if (!('exec' in this.props.cell.metadata.kbase.appCell)) {
+        if (
+            !(
+                'exec' in this.props.cell.metadata.kbase.appCell &&
+                'jobState' in this.props.cell.metadata.kbase.appCell.exec
+            )
+        ) {
             return <Empty message="No Job Stats" />;
         }
         const { created, queued, running } =
