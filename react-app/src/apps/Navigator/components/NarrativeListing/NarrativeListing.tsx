@@ -121,6 +121,10 @@ export default class NarrativeListing extends Component<
         }
     }
 
+    renderNumber(n: number) {
+        return Intl.NumberFormat('en-US', { useGrouping: true }).format(n);
+    }
+
     renderSearchStats() {
         switch (this.props.searchState.status) {
             case SearchStatus.NONE:
@@ -138,14 +142,23 @@ export default class NarrativeListing extends Component<
                 ) {
                     return (
                         <span>
-                            {this.props.searchState.totalCount} Narratives
+                            {this.renderNumber(
+                                this.props.searchState.totalCount
+                            )}{' '}
+                            Narratives
                         </span>
                     );
                 } else {
                     return (
                         <span>
-                            {this.props.searchState.filterCount} Narratives
-                            found (out of {this.props.searchState.totalCount})
+                            {this.renderNumber(
+                                this.props.searchState.filterCount
+                            )}{' '}
+                            Narratives found (out of{' '}
+                            {this.renderNumber(
+                                this.props.searchState.totalCount
+                            )}
+                            )
                         </span>
                     );
                 }
