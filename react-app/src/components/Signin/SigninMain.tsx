@@ -39,9 +39,7 @@ export default class Login extends Component<LoginProps, LoginState> {
             return;
         }
         try {
-            console.log('HERE');
             await this.props.authState.logout();
-            console.log('HERE 2');
             changeHash('auth2/signedout');
             // document.location.hash = '/#login';
         } catch (ex) {
