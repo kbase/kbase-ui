@@ -27,7 +27,7 @@ export default class Deployment extends Component<
                 <div className="Deployment-Label">
                     {environment.toUpperCase()}
                 </div>
-                <div className=".Deployment-Icon">
+                <div className="Deployment-Icon">
                     <span className={'fa fa-2x fa-' + icon}></span>
                 </div>
             </div>
