@@ -144,7 +144,6 @@ export default class DataBrowser<T> extends Component<
     }
 
     onHeaderClick(columnNumber: number) {
-        console.log('header click', columnNumber);
         const column = this.state.columns[columnNumber];
         const sorter = column.def.sorter;
         if (typeof sorter === 'undefined') {
@@ -185,46 +184,6 @@ export default class DataBrowser<T> extends Component<
             });
         }
     }
-
-    // onHeaderClick(column: ColumnState<T>) {
-    //     console.log('header click', column);
-    //     const sorter = column.def.sorter;
-    //     if (typeof sorter === 'undefined') {
-    //         return;
-    //     }
-    //     // Unset the sort state for the currently sorted column.
-
-    //     const nextSortState = (() => {
-    //         switch (column.state.sort) {
-    //             case SortState.NONE:
-    //                 return SortState.ASCENDING;
-    //             case SortState.ASCENDING:
-    //                 return SortState.DESCENDING;
-    //             case SortState.DESCENDING:
-    //                 return SortState.NONE;
-    //         }
-    //     })();
-    //     console.log('next state?', column.state.sort, nextSortState);
-    //     column.state.sort = nextSortState;
-    //     if (nextSortState === SortState.NONE) {
-    //         this.setState({
-    //             ...this.state,
-    //             rows: this.state.rows.sort((a, b) => {
-    //                 return a.rowNumber - b.rowNumber;
-    //             }),
-    //         });
-    //     } else {
-    //         // const newRows = column.def.sort(nextSortState, this.state.rows);
-    //         const direction = nextSortState === SortState.ASCENDING ? 1 : -1;
-    //         const newRows = this.state.rows.sort((a: Row<T>, b: Row<T>) => {
-    //             return sorter(a.data, b.data) * direction;
-    //         });
-    //         this.setState({
-    //             ...this.state,
-    //             rows: newRows,
-    //         });
-    //     }
-    // }
 
     renderSortState(sort: SortState) {
         switch (sort) {
