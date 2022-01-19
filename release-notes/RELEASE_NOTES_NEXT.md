@@ -1,6 +1,6 @@
 # KBase kbase-ui NEXT Release Notes
 
-[ RELEASE SUMMARY HERE]
+[ TODO ]
 
 ## CHANGES
 
@@ -22,7 +22,7 @@ none
 
 ### FIXES
 
-- KBASE-4876: copy button appears for non-authenticated dataview landing page; now it doesn't
+none
 
 ### MAJOR DEPENDENCY CHANGES
 
