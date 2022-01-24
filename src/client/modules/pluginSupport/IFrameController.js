@@ -425,7 +425,7 @@ define([
                 <div class="-cover">
                     <div class="well PluginLoading">
                     <span class="fa fa-rotate-225 fa-2x fa-plug"
-                          style=${{marginRight: '8px', color: color}}></span>
+                          style=${{marginRight: '8px', color}}></span>
                         <span>
                         ${message}
                     </span>
