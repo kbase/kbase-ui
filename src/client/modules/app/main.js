@@ -15,7 +15,7 @@ define([
     'css!font_awesome',
     'css!app/styles/kb-bootstrap',
     'css!app/styles/kb-ui'
-], function (
+], (
     Promise,
     {v4: uuidv4},
     Hub,
@@ -25,7 +25,7 @@ define([
     appletsConfig,
     appConfigBase,
     deployConfig
-) {
+) => {
 
     // Set up global configuration of bluebird promises library.
     // This is the first invocation of bluebird.
@@ -85,7 +85,7 @@ define([
                     serviceConfig.aliases.forEach((alias) => {
                         if (mergedConfig.services[alias]) {
                             throw new Error(
-                                'Service alias for ' + serviceKey + ' already in use: ' + alias
+                                `Service alias for ${  serviceKey  } already in use: ${  alias}`
                             );
                         }
                         mergedConfig.services[alias] = serviceConfig;
