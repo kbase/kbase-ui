@@ -28,6 +28,12 @@ define([
                     return;
                 }
 
+                if (newTitle && newTitle.trim().length > 0) {
+                    document.title = `${newTitle} | KBase`
+                } else {
+                    document.title = 'KBase'
+                }
+
                 this.setState({
                     title: newTitle
                 });
