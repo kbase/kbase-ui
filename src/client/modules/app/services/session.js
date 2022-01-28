@@ -137,32 +137,33 @@ define([
                             state: change
                         });
                         switch (change) {
-                            case 'interrupted':
-                                var description = div([
-                                    p(
-                                        'Your session cannot be verified because the authorization service is currently inaccessible'
+                        case 'interrupted': {
+                            const description = div([
+                                p(
+                                    'Your session cannot be verified because the authorization service is currently inaccessible'
+                                ),
+                                p([
+                                    'You may patiently await it\'s recovery or ',
+                                    a(
+                                        {
+                                            href: '/#signout'
+                                        },
+                                        'signout'
                                     ),
-                                    p([
-                                        'You may patiently await it\'s recovery or ',
-                                        a(
-                                            {
-                                                href: '/#signout'
-                                            },
-                                            'signout'
-                                        ),
-                                        ' and try again later'
-                                    ])
-                                ]);
-                                this.notifyError({
-                                    message: 'Session cannot be verified',
-                                    description: description
-                                });
-                                return;
-                            case 'restored':
-                                this.notifyOk({
-                                    message: 'Communication restored -- session has been verified',
-                                    description: ''
-                                });
+                                    ' and try again later'
+                                ])
+                            ]);
+                            this.notifyError({
+                                message: 'Session cannot be verified',
+                                description
+                            });
+                            return;
+                        }
+                        case 'restored':
+                            this.notifyOk({
+                                message: 'Communication restored -- session has been verified',
+                                description: ''
+                            });
                         }
                         if (this.auth2Session.isAuthorized()) {
                             if (change === 'newuser') {

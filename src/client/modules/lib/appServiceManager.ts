@@ -32,9 +32,10 @@ interface UIServiceConfig {
     module: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface UIServiceDefinition {}
 
-declare var require: AMDRequire;
+declare const require: AMDRequire;
 
 // function AppServiceError(type, message, suggestion) {
 //         this.type = type;
