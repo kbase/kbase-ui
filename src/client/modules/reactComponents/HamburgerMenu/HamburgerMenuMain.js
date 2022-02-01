@@ -12,7 +12,7 @@ define([
     const html = htm.bind(h);
 
     function intersect(a1, a2) {
-        return a1.some(function (a) {
+        return a1.some((a) => {
             return a2.indexOf(a) >= 0;
         });
     }
