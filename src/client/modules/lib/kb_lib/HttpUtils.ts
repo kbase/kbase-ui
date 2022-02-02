@@ -8,11 +8,10 @@
 //     }
 // }
 
-export type QueryMap = {[key:string]: string};
+export type QueryMap = { [key: string]: string };
 
 export class HttpQuery {
-
-    queryMap : QueryMap = {};
+    queryMap: QueryMap = {};
 
     constructor(map?: QueryMap) {
         if (typeof map === 'undefined') {
@@ -21,21 +20,21 @@ export class HttpQuery {
         this.queryMap = map;
     }
 
-    addField(key: string, value: string) {
+    addField(key: string, value: string): void {
         this.queryMap[key] = value;
     }
 
-    removeField(key: string) {
+    removeField(key: string): void {
         delete this.queryMap[key];
     }
 
-    toString() : string {
-        let that = this;
-        return Object.keys(this.queryMap).map(function (key) {
-            return [key, that.queryMap[key]]
-                .map(encodeURIComponent)
-                .join('=');
-        }).join('&');
+    toString(): string {
+        return Object.keys(this.queryMap)
+            .map((key) => {
+                return [key, this.queryMap[key]]
+                    .map(encodeURIComponent)
+                    .join('=');
+            })
+            .join('&');
     }
-
 }

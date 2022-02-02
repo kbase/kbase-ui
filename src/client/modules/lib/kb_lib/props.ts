@@ -1,16 +1,13 @@
-
 type PropPath = Array<string> | string;
 
 export function getProp<T>(obj: any, propPath: PropPath): T | undefined {
     if (typeof propPath === 'string') {
         propPath = propPath.split('.');
     } else if (!(propPath instanceof Array)) {
-        throw new TypeError('Invalid type for key: ' + (typeof propPath));
+        throw new TypeError(`Invalid type for key: ${typeof propPath}`);
     }
     for (let i = 0; i < propPath.length; i += 1) {
-        if ((obj === undefined) ||
-            (typeof obj !== 'object') ||
-            (obj === null)) {
+        if (obj === undefined || typeof obj !== 'object' || obj === null) {
             return undefined;
         }
         obj = obj[propPath[i]];
@@ -21,16 +18,18 @@ export function getProp<T>(obj: any, propPath: PropPath): T | undefined {
     return obj as T;
 }
 
-export function getPropWithDefault<T>(obj: any, propPath: PropPath, defaultValue: T): T {
+export function getPropWithDefault<T>(
+    obj: any,
+    propPath: PropPath,
+    defaultValue: T
+): T {
     if (typeof propPath === 'string') {
         propPath = propPath.split('.');
     } else if (!(propPath instanceof Array)) {
-        throw new TypeError('Invalid type for key: ' + (typeof propPath));
+        throw new TypeError(`Invalid type for key: ${typeof propPath}`);
     }
     for (let i = 0; i < propPath.length; i += 1) {
-        if ((obj === undefined) ||
-            (typeof obj !== 'object') ||
-            (obj === null)) {
+        if (obj === undefined || typeof obj !== 'object' || obj === null) {
             return defaultValue;
         }
         obj = obj[propPath[i]];
@@ -41,17 +40,14 @@ export function getPropWithDefault<T>(obj: any, propPath: PropPath, defaultValue
     return obj as T;
 }
 
-
 export function hasProp(obj: any, propPath: PropPath): boolean {
     if (typeof propPath === 'string') {
         propPath = propPath.split('.');
     } else if (!(propPath instanceof Array)) {
-        throw new TypeError('Invalid type for key: ' + (typeof propPath));
+        throw new TypeError(`Invalid type for key: ${typeof propPath}`);
     }
     for (let i = 0; i < propPath.length; i += 1) {
-        if ((obj === undefined) ||
-            (typeof obj !== 'object') ||
-            (obj === null)) {
+        if (obj === undefined || typeof obj !== 'object' || obj === null) {
             return false;
         }
         obj = obj[propPath[i]];
@@ -62,12 +58,11 @@ export function hasProp(obj: any, propPath: PropPath): boolean {
     return true;
 }
 
-
 export function setProp<T>(obj: any, propPath: PropPath, value: T) {
     if (typeof propPath === 'string') {
         propPath = propPath.split('.');
     } else if (!(propPath instanceof Array)) {
-        throw new TypeError('Invalid type for key: ' + (typeof propPath));
+        throw new TypeError(`Invalid type for key: ${typeof propPath}`);
     }
     if (propPath.length === 0) {
         return;
@@ -87,16 +82,20 @@ export function setProp<T>(obj: any, propPath: PropPath, value: T) {
     obj[propKey] = value;
 }
 
-export function incrProp(obj: any, propPath: PropPath, increment?: number): number {
+export function incrProp(
+    obj: any,
+    propPath: PropPath,
+    increment?: number
+): number {
     if (typeof propPath === 'string') {
         propPath = propPath.split('.');
     } else if (!(propPath instanceof Array)) {
-        throw new TypeError('Invalid type for key: ' + (typeof propPath));
+        throw new TypeError(`Invalid type for key: ${typeof propPath}`);
     }
     if (propPath.length === 0) {
         throw new TypeError('Property path must have at least one element');
     }
-    increment = (typeof increment === 'undefined') ? 1 : increment;
+    increment = typeof increment === 'undefined' ? 1 : increment;
     const propKey = propPath[propPath.length - 1];
     for (let i = 0; i < propPath.length - 1; i += 1) {
         const key = propPath[i];
@@ -107,22 +106,19 @@ export function incrProp(obj: any, propPath: PropPath, increment?: number): numb
     }
     if (typeof obj[propKey] === 'undefined') {
         obj[propKey] = increment;
+    } else if (typeof obj[propKey] === 'number') {
+        obj[propKey] += increment;
     } else {
-        if (typeof obj[propKey] === 'number') {
-            obj[propKey] += increment;
-        } else {
-            throw new Error('Can only increment a number');
-        }
+        throw new Error('Can only increment a number');
     }
     return obj[propKey];
 }
-
 
 export function deleteProp(obj: any, propPath: PropPath) {
     if (typeof propPath === 'string') {
         propPath = propPath.split('.');
     } else if (!(propPath instanceof Array)) {
-        throw new TypeError('Invalid type for key: ' + (typeof propPath));
+        throw new TypeError(`Invalid type for key: ${typeof propPath}`);
     }
     if (propPath.length === 0) {
         return false;
@@ -146,7 +142,7 @@ export function deleteProp(obj: any, propPath: PropPath) {
 
 export class Props {
     obj: any;
-    constructor({ data }: { data?: any; }) {
+    constructor({ data }: { data?: any }) {
         this.obj = typeof data === 'undefined' ? {} : data;
     }
 
@@ -160,7 +156,6 @@ export class Props {
 
     hasItem(propPath: PropPath) {
         return hasProp(this.obj, propPath);
-
     }
 
     setItem(path: PropPath, value: any) {
@@ -179,4 +174,3 @@ export class Props {
         return this.obj;
     }
 }
-
