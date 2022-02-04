@@ -33,7 +33,7 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    padding-top: 1em;
+    padding-top: 10px;
 }
 
 .MainWindow .-body>.-content-area {
