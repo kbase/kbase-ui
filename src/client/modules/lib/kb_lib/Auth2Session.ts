@@ -190,7 +190,7 @@ export class Auth2Session {
         };
     }
 
-    isAuthorized(): boolean {
+    isAuthenticated(): boolean {
         const session = this.getSession();
         if (session) {
             return true;
@@ -199,7 +199,7 @@ export class Auth2Session {
     }
 
     isLoggedIn(): boolean {
-        return this.isAuthorized();
+        return this.isAuthenticated();
     }
 
     getClient(): Auth2 {
@@ -620,13 +620,19 @@ export class Auth2Session {
         serviceLoop();
     }
 
-    start(): Promise<any> {
-        return this.auth2Client.root().then((root) => {
-            this.root = root;
+    async start(): Promise<any> {
+        const root = await this.auth2Client.root();
 
-            // An infinite async loop.
-            this.monitor();
-        });
+        this.root = root;
+
+        try {
+            await this.evaluateSession();
+        } catch (ex) {
+            console.error('Error evaluating session', ex);
+        }
+
+        // An infinite async loop.
+        this.monitor();
     }
 
     stop(): Promise<any> {
