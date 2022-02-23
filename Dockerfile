@@ -1,7 +1,7 @@
 # ------------------------------
 # The build image
 # ------------------------------
-FROM alpine:3.14 as builder
+FROM alpine:3.15 as builder
 
 # add deps for building kbase-ui
 RUN apk upgrade --update-cache --available && \
@@ -26,7 +26,7 @@ LABEL stage=intermediate
 # ------------------------------
 # The product image
 # ------------------------------
-FROM alpine:3.14
+FROM alpine:3.15
 
 RUN apk upgrade --update-cache --available && \
     apk add --update --no-cache bash ca-certificates nginx && \
