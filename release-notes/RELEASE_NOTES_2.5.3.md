@@ -1,4 +1,4 @@
-# KBase kbase-ui NEXT Release Notes
+# KBase kbase-ui 2.5.3 Release Notes
 
 This is primarily a bugfix release (landing page, user profile), with a minor new feature (sampleset landing page).
 
