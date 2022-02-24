@@ -14,6 +14,10 @@ services:
         networks:
             - kbase-dev
         container_name: kbase-ui
+        volumes:
+          - type: bind
+            source: $PWD/../deployment/templates
+            target: /kb/deployment/templates
         command:
             - '-env'
             # The following line uses the ones provided in this repo

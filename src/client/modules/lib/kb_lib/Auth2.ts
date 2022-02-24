@@ -231,6 +231,7 @@ export interface UserSearchInput {
     fields: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface UserSearchOutput {}
 
 export interface PutMeInput {
@@ -262,14 +263,14 @@ export class Auth2 {
         ];
     }
     getProvider(providerId: string): AuthProvider {
-        var providers = this.getProviders();
+        const providers = this.getProviders();
         return providers.filter((provider) => {
             return provider.id === providerId;
         })[0];
     }
 
     root(): Promise<RootInfo> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'GET',
@@ -293,30 +294,28 @@ export class Auth2 {
     */
     loginStart(config: ILoginOptions): void {
         // Set the client state cookie.
-        var state = JSON.stringify(config.state);
 
         // Punt over to the auth service
-        let html = new HTML();
-        let t = html.tagMaker();
-        let form = t('form');
-        let input = t('input');
-        let button = t('button');
+        const html = new HTML();
+        const t = html.tagMaker();
+        const form = t('form');
+        const input = t('input');
 
-        let search = new HttpQuery({
+        const search = new HttpQuery({
             state: JSON.stringify(config.state),
         }).toString();
 
-        var url = document.location.origin + '?' + search;
+        const url = `${document.location.origin}?${search}`;
 
-        let query = {
+        const query = {
             provider: config.provider,
             redirecturl: url,
             stayloggedin: config.stayLoggedIn ? 'true' : 'false',
         };
 
-        let formId = html.genId();
+        const formId = html.genId();
 
-        let content = form(
+        const content = form(
             {
                 method: 'post',
                 id: formId,
@@ -344,7 +343,7 @@ export class Auth2 {
                 ),
             ]
         );
-        var donorNode = document.createElement('div');
+        const donorNode = document.createElement('div');
 
         donorNode.innerHTML = content;
         document.body.appendChild(donorNode);
@@ -353,18 +352,18 @@ export class Auth2 {
     }
 
     linkStart(token: string, config: LinkOptions): void {
-        let html = new HTML();
-        let t = html.tagMaker();
-        let form = t('form');
-        let input = t('input');
+        const html = new HTML();
+        const t = html.tagMaker();
+        const form = t('form');
+        const input = t('input');
 
-        let query = {
+        const query = {
             provider: config.provider,
         };
 
-        let formId = html.genId();
+        const formId = html.genId();
 
-        let content = form(
+        const content = form(
             {
                 method: 'POST',
                 id: formId,
@@ -403,7 +402,6 @@ export class Auth2 {
     */
 
     decodeError(result: Response): Auth2ApiErrorInfo {
-        var error;
         try {
             return <Auth2ApiErrorInfo>JSON.parse(result.response);
         } catch (ex) {
@@ -423,7 +421,7 @@ export class Auth2 {
     }
 
     removeLink(token: string, config: UnlinkOptions): Promise<void> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
 
         return httpClient
             .request({
@@ -443,7 +441,7 @@ export class Auth2 {
     }
 
     logout(token: string): Promise<any> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
 
         return httpClient
             .request({
@@ -463,7 +461,7 @@ export class Auth2 {
     }
 
     revokeToken(token: string, tokenid: string): Promise<any> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
 
         return httpClient
             .request({
@@ -482,7 +480,7 @@ export class Auth2 {
     }
 
     revokeAllTokens(token: string): Promise<any> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
 
         return httpClient
             .request({
@@ -501,7 +499,7 @@ export class Auth2 {
     }
 
     getTokenInfo(token: string): Promise<ITokenInfo> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'GET',
@@ -519,7 +517,7 @@ export class Auth2 {
     }
 
     getMe(token: string): Promise<Account> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'GET',
@@ -537,7 +535,7 @@ export class Auth2 {
     }
 
     putMe(token: string, data: PutMeInput): Promise<any> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'PUT',
@@ -564,7 +562,7 @@ export class Auth2 {
     }
 
     getTokens(token: string): Promise<Tokens> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'GET',
@@ -585,7 +583,7 @@ export class Auth2 {
         token: string,
         create: CreateTokenInput
     ): Promise<NewTokenInfo> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'POST',
@@ -607,7 +605,7 @@ export class Auth2 {
     // Note that the auth2 service will have set cookies
     // in the browser which are implicitly sent.
     getLoginChoice(): Promise<LoginChoice> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'GET',
@@ -624,7 +622,7 @@ export class Auth2 {
     }
 
     loginCancel(): Promise<null> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'DELETE',
@@ -641,7 +639,7 @@ export class Auth2 {
     }
 
     linkCancel(): Promise<null> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'DELETE',
@@ -658,14 +656,14 @@ export class Auth2 {
     }
 
     loginPick(arg: LoginPick): Promise<any> {
-        let data = {
+        const data = {
             id: arg.identityId,
             linkall: arg.linkAll,
             policyids: arg.agreements.map((a) => {
                 return [a.id, a.version].join('.');
             }),
         };
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'POST',
@@ -684,7 +682,7 @@ export class Auth2 {
     }
 
     loginCreate(data: ILoginCreateOptions): Promise<any> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'POST',
@@ -703,7 +701,7 @@ export class Auth2 {
     }
 
     loginUsernameSuggest(username: string): Promise<any> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'GET',
@@ -720,7 +718,7 @@ export class Auth2 {
     }
 
     getLinkChoice(token: string) {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         // console.error('fetching with', token);
         return httpClient
             .request({
@@ -752,27 +750,26 @@ export class Auth2 {
                         linkeduser: undefined,
                         user: response.user,
                     };
-                } else {
-                    return <LinkChoice>{
-                        id: response.linked[0].id,
-                        expires: response.expires,
-                        cancelurl: response.cancelurl,
-                        pickurl: response.pickurl,
-                        canlink: false,
-                        provider: response.provider,
-                        provusername: response.linked[0].provusername,
-                        linkeduser: response.linked[0].user,
-                        user: response.user,
-                    };
                 }
+                return <LinkChoice>{
+                    id: response.linked[0].id,
+                    expires: response.expires,
+                    cancelurl: response.cancelurl,
+                    pickurl: response.pickurl,
+                    canlink: false,
+                    provider: response.provider,
+                    provusername: response.linked[0].provusername,
+                    linkeduser: response.linked[0].user,
+                    user: response.user,
+                };
             });
     }
 
     linkPick(token: string, identityId: string): Promise<any> {
-        let data = {
+        const data = {
             id: identityId,
         };
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'POST',
@@ -796,11 +793,9 @@ export class Auth2 {
             if (expectedResponse !== result.status) {
                 throw new AuthError({
                     code: 'unexpected-response-code',
-                    message:
-                        'Unexpected response code; expected ' +
-                        String(expectedResponse) +
-                        ', received ' +
-                        String(result.status),
+                    message: `Unexpected response code; expected ${String(
+                        expectedResponse
+                    )}, received ${String(result.status)}`,
                 });
             }
             if (result.status === 200 || result.status === 201) {
@@ -822,11 +817,9 @@ export class Auth2 {
             } else {
                 throw new AuthError({
                     code: 'unexpected-response-code',
-                    message:
-                        'Unexpected response code; expected ' +
-                        String(expectedResponse) +
-                        ', received ' +
-                        String(result.status),
+                    message: `Unexpected response code; expected ${String(
+                        expectedResponse
+                    )}, received ${String(result.status)}`,
                 });
             }
         } else {
@@ -837,7 +830,7 @@ export class Auth2 {
             // ServerError - for 500s
             let auth2ErrorData: any;
             let errorResponse: AuthErrorInfo;
-            var errorText = result.response;
+            const errorText = result.response;
             try {
                 const mediaType = (() => {
                     const contentType = result.header.getContentType();
@@ -847,9 +840,9 @@ export class Auth2 {
                     return 'text/plain';
                 })();
                 switch (mediaType) {
-                    case 'application/json':
+                    case 'application/json': {
                         auth2ErrorData = JSON.parse(errorText);
-                        let code =
+                        const code =
                             auth2ErrorData.error.code ||
                             auth2ErrorData.error.appcode ||
                             auth2ErrorData.error.httpcode ||
@@ -863,6 +856,7 @@ export class Auth2 {
                             data: auth2ErrorData,
                         };
                         break;
+                    }
                     default:
                         // A 502 proxy error will almost surely not have a json response
                         if (result.status === 502) {
@@ -900,14 +894,14 @@ export class Auth2 {
                     code: 'decoding-error',
                     status: result.status,
                     message: 'Error decoding error message',
-                    detail: 'Original error code: ' + result.status,
+                    detail: `Original error code: ${result.status}`,
                     data: {
                         text: errorText,
                     },
                 });
             }
             if (auth2ErrorData) {
-                let code =
+                const code =
                     auth2ErrorData.error.code ||
                     auth2ErrorData.error.appcode ||
                     auth2ErrorData.error.httpcode ||
@@ -929,21 +923,21 @@ export class Auth2 {
     }
 
     userSearch(token: string, searchInput: UserSearchInput): Promise<any> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
 
-        let path = this.makePath([endpoints.userSearch, searchInput.prefix]);
+        const path = this.makePath([endpoints.userSearch, searchInput.prefix]);
 
-        let search = new HttpQuery({
+        const search = new HttpQuery({
             fields: searchInput.fields,
         }).toString();
 
-        let url = path + '?' + search;
+        const url = `${path}?${search}`;
 
         return httpClient
             .request({
                 method: 'GET',
                 withCredentials: true,
-                url: url,
+                url,
                 header: new HttpHeader({
                     authorization: token,
                     accept: 'application/json',
@@ -956,22 +950,22 @@ export class Auth2 {
     }
 
     adminUserSearch(token: string, searchInput: UserSearchInput): Promise<any> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
 
-        let search = new HttpQuery({
+        const search = new HttpQuery({
             fields: searchInput.fields,
         }).toString();
 
-        let url =
-            this.makePath([endpoints.adminUserSearch, searchInput.prefix]) +
-            '?' +
-            search;
+        const url = `${this.makePath([
+            endpoints.adminUserSearch,
+            searchInput.prefix,
+        ])}?${search}`;
 
         return httpClient
             .request({
                 method: 'GET',
                 withCredentials: true,
-                url: url,
+                url,
                 header: new HttpHeader({
                     authorization: token,
                     accept: 'application/json',
@@ -984,7 +978,7 @@ export class Auth2 {
     }
 
     getAdminUser(token: string, username: string): Promise<any> {
-        let httpClient = new AuthClient();
+        const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: 'GET',

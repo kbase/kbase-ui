@@ -9,13 +9,14 @@ export class Cookie {
     domain?: string;
     path?: string;
     secure?: boolean;
-    noEncode: boolean = false;
+    noEncode = false;
 
     constructor(name: string, value: string) {
         if (this.reservedKeys.indexOf(name.toLowerCase()) >= 0) {
             throw new Error(
-                'Cookie key invalid, must not be one of ' +
-                    this.reservedKeys.join(', ')
+                `Cookie key invalid, must not be one of ${this.reservedKeys.join(
+                    ', '
+                )}`
             );
         }
         if (name.match(/;/) || name.match(/=/)) {
@@ -106,27 +107,25 @@ export class Cookie {
                     });
                 }
             }
-        } else {
-            if (typeof this.maxAge !== 'undefined') {
-                if (this.maxAge === Infinity) {
-                    cookieProps.push({
-                        key: 'expires',
-                        value: new Date('9999-12-31T23:59:59Z').toUTCString(),
-                    });
-                } else {
-                    // set both expires and max-age. Max-age because it is more accurate
-                    // and expires because it is more compatible (well, with IE).
-                    cookieProps.push({
-                        key: 'expires',
-                        value: new Date(
-                            new Date().getTime() + this.maxAge * 1000
-                        ).toUTCString(),
-                    });
-                    cookieProps.push({
-                        key: 'max-age',
-                        value: String(this.maxAge),
-                    });
-                }
+        } else if (typeof this.maxAge !== 'undefined') {
+            if (this.maxAge === Infinity) {
+                cookieProps.push({
+                    key: 'expires',
+                    value: new Date('9999-12-31T23:59:59Z').toUTCString(),
+                });
+            } else {
+                // set both expires and max-age. Max-age because it is more accurate
+                // and expires because it is more compatible (well, with IE).
+                cookieProps.push({
+                    key: 'expires',
+                    value: new Date(
+                        new Date().getTime() + this.maxAge * 1000
+                    ).toUTCString(),
+                });
+                cookieProps.push({
+                    key: 'max-age',
+                    value: String(this.maxAge),
+                });
             }
         }
         if (typeof this.secure !== 'undefined') {
@@ -140,7 +139,7 @@ export class Cookie {
                 cookieProps.map((prop) => {
                     return [prop.key, prop.value]
                         .filter((item) => {
-                            return typeof item === 'undefined' ? false : true;
+                            return typeof item !== 'undefined';
                         })
                         .join('=');
                 })
@@ -175,20 +174,19 @@ export class CookieManager {
                     name = name.trim();
                     if (pieces.length === 1) {
                         jar.push(<Cookie>{
-                            name: name,
+                            name,
                             value: '',
                         });
                     }
                     const value = pieces[1];
                     jar.push(<Cookie>{
-                        name: name,
+                        name,
                         value: decodeURIComponent(value),
                     });
                     return jar;
                 }, []);
-        } else {
-            return [];
         }
+        return [];
     }
 
     getCookies() {
@@ -223,7 +221,7 @@ export class CookieManager {
         if (cookie.length === 0) {
             return [];
         }
-        return cookie.map(function (item) {
+        return cookie.map((item) => {
             return item.value;
         });
     }
@@ -237,7 +235,7 @@ export class CookieManager {
     }
 
     removeItem(item: Cookie): void {
-        let deletionCookie = new Cookie(item.name, '')
+        const deletionCookie = new Cookie(item.name, '')
             .setPath(item.path || '/')
             .setValue('*')
             .setExpires(new Date('1970-01-01T00:00:00Z').toUTCString());

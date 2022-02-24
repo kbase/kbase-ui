@@ -14,10 +14,6 @@ define([
     const html = htm.bind(h);
 
     class HamburgerMenu extends Component {
-        constructor(props) {
-            super(props);
-        }
-
         renderSection(menuItems) {
             return menuItems.map((menuItem) => {
                 let icon = null;
@@ -30,7 +26,7 @@ define([
                 }
                 return html`
                     <li>
-                        <a href=${menuItem.uri ? menuItem.uri : '/#' + menuItem.path}
+                        <a href=${menuItem.uri ? menuItem.uri : `/#${  menuItem.path}`}
                            target=${menuItem.newWindow ? '_blank' : null}>
                             ${icon}
                             <span>${menuItem.label}</span>

@@ -404,28 +404,28 @@ define([
         renderLoading() {
             let message, color;
             switch (this.state.status) {
-            case 'loading': // don't show anything yet...
-                return;
-            case 'slow':
-                message = 'Loading Plugin...';
-                color = 'black';
-                break;
-            case 'veryslow':
-                message = 'Loading Plugin - still loading ...';
-                color = '#8a6d3b';
-                break;
-            case 'superslow':
-                message = 'Loading Plugin - your connection appears to be slow, still loading ...';
-                color = '#a94442';
-                break;
-            default:
-                return;
+                case 'loading': // don't show anything yet...
+                    return;
+                case 'slow':
+                    message = 'Loading Plugin...';
+                    color = 'black';
+                    break;
+                case 'veryslow':
+                    message = 'Loading Plugin - still loading ...';
+                    color = '#8a6d3b';
+                    break;
+                case 'superslow':
+                    message = 'Loading Plugin - your connection appears to be slow, still loading ...';
+                    color = '#a94442';
+                    break;
+                default:
+                    return;
             }
             return html`
                 <div class="-cover">
                     <div class="well PluginLoading">
                     <span class="fa fa-rotate-225 fa-2x fa-plug"
-                          style=${{marginRight: '8px', color: color}}></span>
+                          style=${{marginRight: '8px', color}}></span>
                         <span>
                         ${message}
                     </span>

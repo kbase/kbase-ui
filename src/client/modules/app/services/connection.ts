@@ -1,5 +1,10 @@
 import { Observed } from '../../lib/kb_lib/observed';
-import { HttpClient, GeneralError, TimeoutError, AbortError } from '../../lib/kb_lib/HttpClient';
+import {
+    HttpClient,
+    GeneralError,
+    TimeoutError,
+    AbortError,
+} from '../../lib/kb_lib/HttpClient';
 import { HTML } from '../../lib/kb_lib/HTML';
 import { Runtime } from '../../lib/types';
 
@@ -8,34 +13,40 @@ const html = new HTML(),
     div = t('div'),
     p = t('p');
 
-function niceDuration(value: number, { resolution }: { resolution: string; }) {
+function niceDuration(value: number, { resolution }: { resolution: string }) {
     const minimized = [];
-    const units = [{
-        unit: 'millisecond',
-        short: 'ms',
-        single: 'm',
-        size: 1000
-    }, {
-        unit: 'second',
-        short: 'sec',
-        single: 's',
-        size: 60
-    }, {
-        unit: 'minute',
-        short: 'min',
-        single: 'm',
-        size: 60
-    }, {
-        unit: 'hour',
-        short: 'hr',
-        single: 'h',
-        size: 24
-    }, {
-        unit: 'day',
-        short: 'day',
-        single: 'd',
-        size: 30
-    }];
+    const units = [
+        {
+            unit: 'millisecond',
+            short: 'ms',
+            single: 'm',
+            size: 1000,
+        },
+        {
+            unit: 'second',
+            short: 'sec',
+            single: 's',
+            size: 60,
+        },
+        {
+            unit: 'minute',
+            short: 'min',
+            single: 'm',
+            size: 60,
+        },
+        {
+            unit: 'hour',
+            short: 'hr',
+            single: 'h',
+            size: 24,
+        },
+        {
+            unit: 'day',
+            short: 'day',
+            single: 'd',
+            size: 30,
+        },
+    ];
     let temp = Math.abs(value);
     const parts = units
         .map((unit) => {
@@ -48,9 +59,10 @@ function niceDuration(value: number, { resolution }: { resolution: string; }) {
             return {
                 name: unit.single,
                 unit: unit.unit,
-                value: unitValue
+                value: unitValue,
             };
-        }).reverse();
+        })
+        .reverse();
 
     parts.pop();
 
@@ -67,8 +79,7 @@ function niceDuration(value: number, { resolution }: { resolution: string; }) {
             }
         } else {
             minimized.push(parts[i]);
-            if (resolution &&
-                resolution === parts[i].unit) {
+            if (resolution && resolution === parts[i].unit) {
                 break;
             }
         }
@@ -77,16 +88,16 @@ function niceDuration(value: number, { resolution }: { resolution: string; }) {
     if (minimized.length === 0) {
         // This means that there is are no time measurements > 1 second.
         return '<1s';
-    } else {
-        // Skip seconds if we are into the hours...
-        // if (minimized.length > 2) {
-        //     minimized.pop();
-        // }
-        return minimized.map((item) => {
+    }
+    // Skip seconds if we are into the hours...
+    // if (minimized.length > 2) {
+    //     minimized.pop();
+    // }
+    return minimized
+        .map((item) => {
             return String(item.value) + item.name;
         })
-            .join(' ');
-    }
+        .join(' ');
 }
 
 const HEARTBEAT_INTERVAL = 1000;
@@ -101,9 +112,8 @@ const INTERVAL_OK_AUTODISMISS = 5000;
 const DISCONNECT_TIMEOUT = 60000;
 const DISCONNECT1_TIMEOUT = 300000;
 
-interface UserProfile {
-
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface UserProfile {}
 
 interface ConnectionServiceParams {
     params: {
@@ -112,7 +122,7 @@ interface ConnectionServiceParams {
 }
 
 interface NotificationMessage {
-    message: string,
+    message: string;
     description?: string | Array<string>;
 }
 
@@ -143,32 +153,32 @@ class ConnectionService {
             normal: INTERVAL_DEFAULT,
             disconnect1: INTERVAL_DISCONNECT1,
             disconnect2: INTERVAL_DISCONNECT2,
-            disconnect3: INTERVAL_DISCONNECT3
+            disconnect3: INTERVAL_DISCONNECT3,
         };
     }
 
-    notifyError(message: NotificationMessage) {
+    notifyError(message: NotificationMessage): void {
         this.runtime.send('notification', 'notify', {
             type: 'warning',
             id: 'connection',
             icon: 'exclamation-triangle',
             message: message.message,
-            description: message.description
+            description: message.description,
         });
     }
 
-    notifyOk(message: NotificationMessage) {
+    notifyOk(message: NotificationMessage): void {
         this.runtime.send('notification', 'notify', {
             type: 'success',
             id: 'connection',
             icon: 'check',
             message: message.message,
             description: message.description,
-            autodismiss: INTERVAL_OK_AUTODISMISS
+            autodismiss: INTERVAL_OK_AUTODISMISS,
         });
     }
 
-    start() {
+    start(): Promise<void> {
         this.timer = window.setInterval(() => {
             if (this.checking) {
                 return;
@@ -178,29 +188,31 @@ class ConnectionService {
                 this.checking = true;
                 const httpClient = new HttpClient();
                 const buster = new Date().getTime();
-                httpClient.request({
-                    method: 'GET',
-                    url: `${document.location.origin}/ping.txt?b=${buster}`,
-                    timeout: 10000
-                })
+                httpClient
+                    .request({
+                        method: 'GET',
+                        url: `${document.location.origin}/ping.txt?b=${buster}`,
+                        timeout: 10000,
+                    })
                     .then(() => {
                         this.lastConnectionAt = new Date().getTime();
                         if (this.lastStatus === 'error') {
                             this.notifyOk({
-                                message: 'Connection Restored (connection to server had been lost)',
-                                description: ''
+                                message:
+                                    'Connection Restored (connection to server had been lost)',
+                                description: '',
                             });
                             this.interval = this.intervals.normal;
                         }
                         this.lastStatus = 'ok';
                     })
                     .catch((ex) => {
-
                         if (ex instanceof GeneralError) {
                             (() => {
                                 this.lastStatus = 'error';
                                 const currentTime = new Date().getTime();
-                                const elapsed = currentTime - this.lastConnectionAt;
+                                const elapsed =
+                                    currentTime - this.lastConnectionAt;
                                 let resolution;
                                 if (elapsed < DISCONNECT_TIMEOUT) {
                                     this.interval = this.intervals.disconnect1;
@@ -219,17 +231,26 @@ class ConnectionService {
                                 } else {
                                     prefix = ' in ';
                                 }
-                                const elapsedDisplay = prefix + niceDuration(elapsed, { resolution: resolution }) + suffix;
+                                const elapsedDisplay =
+                                    prefix +
+                                    niceDuration(elapsed, {
+                                        resolution,
+                                    }) +
+                                    suffix;
                                 this.notifyError({
-                                    message: 'Error connecting to KBase - last response ' + elapsedDisplay,
+                                    message: `Error connecting to KBase - last response ${elapsedDisplay}`,
                                     description: div([
-                                        p('There was a problem connecting to KBase services.'),
-                                        p('The KBase App may not work reliably until a connection is restored'),
+                                        p(
+                                            'There was a problem connecting to KBase services.'
+                                        ),
+                                        p(
+                                            'The KBase App may not work reliably until a connection is restored'
+                                        ),
                                         p([
                                             'You may either wait until a connection is restored, in which case ',
-                                            'this message will notify you, or close the window and try again later.'
-                                        ])
-                                    ])
+                                            'this message will notify you, or close the window and try again later.',
+                                        ]),
+                                    ]),
                                 });
                             })();
                         } else if (ex instanceof TimeoutError) {
@@ -237,25 +258,29 @@ class ConnectionService {
                             this.notifyError({
                                 message: 'Timeout connecting to KBase',
                                 description: [
-                                    p('The attempt to connect KBase services timed out.'),
-                                    p('The KBase App may not work reliably until a connection is restored'),
+                                    p(
+                                        'The attempt to connect KBase services timed out.'
+                                    ),
+                                    p(
+                                        'The KBase App may not work reliably until a connection is restored'
+                                    ),
                                     p([
                                         'You may either wait until a connection is restored, in which case ',
-                                        'this message will notify you, or close the window and try again later.'
-                                    ])
-                                ]
+                                        'this message will notify you, or close the window and try again later.',
+                                    ]),
+                                ],
                             });
                         } else if (ex instanceof AbortError) {
                             (() => {
                                 this.lastStatus = 'error';
                                 this.notifyError({
-                                    message: 'Connection aborted connecting to KBase: ' + ex.message
+                                    message: `Connection aborted connecting to KBase: ${ex.message}`,
                                 });
                             })();
                         } else {
                             this.lastStatus = 'error';
                             this.notifyError({
-                                message: 'Unknown error connecting to KBase: ' + ex.message
+                                message: `Unknown error connecting to KBase: ${ex.message}`,
                             });
                         }
                     })
@@ -270,19 +295,19 @@ class ConnectionService {
         return Promise.resolve();
     }
 
-    stop() {
-        return Promise.resolve(() => {
+    stop(): Promise<void> {
+        return new Promise((resolve) => {
             if (this.timer !== null) {
                 window.clearInterval(this.timer);
             }
             this.userProfile.setValue(null);
-            return null;
+            resolve();
         });
     }
 
     // Send out notifications when there is a change in connection state.
     // function onChange(fun, errFun) {
-    onChange() {
+    onChange(): void {
         // state.listen('userprofile', {
         //     onSet: function(value) {
         //         fun(value);
@@ -297,7 +322,7 @@ class ConnectionService {
         // });
     }
 
-    whenChange() {
+    whenChange(): void {
         // return state.whenItem('userprofile')
     }
 }

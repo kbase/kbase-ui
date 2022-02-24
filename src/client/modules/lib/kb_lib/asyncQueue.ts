@@ -17,7 +17,7 @@ export default class AsyncQueue {
         this.timer = null;
     }
 
-    processQueue() {
+    processQueue(): void {
         const item = this.queue.shift();
         if (item) {
             try {
@@ -34,25 +34,25 @@ export default class AsyncQueue {
         }
     }
 
-    start() {
+    start(): void {
         this.timer = window.setTimeout(() => {
             this.processQueue();
         }, this.queuePauseTime);
     }
 
-    stop() {
+    stop(): void {
         if (this.timer !== null) {
             window.clearTimeout(this.timer);
         }
         this.timer = null;
     }
 
-    nextItemId() {
+    nextItemId(): number {
         this.itemId += 1;
         return this.itemId;
     }
 
-    addItem(callback: () => void, errorCallback?: (error: any) => void) {
+    addItem(callback: () => void, errorCallback?: (error: any) => void): void {
         const item: QueueItem = {
             id: this.nextItemId(),
             callback,

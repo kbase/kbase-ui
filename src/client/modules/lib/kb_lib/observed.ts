@@ -1,4 +1,3 @@
-
 import AsyncQueue from './asyncQueue';
 
 type Listener<T> = (value: T, oldValue: T | undefined) => void;
@@ -24,16 +23,18 @@ export class Observed<T> {
         const oldValue = this.previousValue;
         const newListeners: Array<ListenerRecord<T>> = [];
         this.listeners.forEach((listener: ListenerRecord<T>) => {
-            this.queue.addItem(((listener: Listener<T>, value: T, oldValue: T | undefined) => {
-                return () => {
-                    try {
-                        listener(value, oldValue);
-                    } catch (ex) {
-                        //TODO: need a sensible way to manage exception reporting.
-                        console.error('Error setting value', ex);
-                    }
-                };
-            })(listener.listener, value, oldValue));
+            this.queue.addItem(
+                ((listener: Listener<T>, value: T, oldValue: T | undefined) => {
+                    return () => {
+                        try {
+                            listener(value, oldValue);
+                        } catch (ex) {
+                            //TODO: need a sensible way to manage exception reporting.
+                            console.error('Error setting value', ex);
+                        }
+                    };
+                })(listener.listener, value, oldValue)
+            );
             if (!listener.oneTime) {
                 newListeners.push(listener);
             }
@@ -48,7 +49,7 @@ export class Observed<T> {
     onChange(listener: Listener<T>) {
         this.listeners.push({
             listener,
-            oneTime: false
+            oneTime: false,
         });
     }
 
@@ -62,10 +63,8 @@ export class Observed<T> {
         };
         this.listeners.push({
             listener,
-            oneTime: true
+            oneTime: true,
         });
         return promise;
     }
 }
-
-
