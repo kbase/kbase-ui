@@ -28,8 +28,7 @@ export class ReactiveDB {
         this.timerInterval = 100;
     }
 
-    runOnce() {
-
+    runOnce(): void {
         if (this.timer) {
             return;
         }
@@ -98,7 +97,7 @@ export class ReactiveDB {
             query,
             callback,
             errorCount: 0,
-            lastValue: undefined
+            lastValue: undefined,
         };
         const id = uniqueId();
         this.subscriptions.set(id, subscription);

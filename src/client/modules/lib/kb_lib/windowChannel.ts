@@ -285,7 +285,7 @@ export class WindowChannel {
         const listeners = this.listeners.get(message.name) || [];
         for (const listener of listeners) {
             switch (message.envelope.type) {
-                case 'request':
+                case 'request': {
                     const [ok, err] = (() => {
                         try {
                             return [listener.callback(message.payload), null];
@@ -304,6 +304,7 @@ export class WindowChannel {
                             ];
                         }
                     })();
+
                     const replyEnvelop: ReplyEnvelope = {
                         type: 'reply',
                         from: message.envelope.to,
@@ -319,6 +320,8 @@ export class WindowChannel {
                         payload: ok || err,
                     });
                     this.sendMessage(replyMessage);
+                    break;
+                }
                 case 'plain':
                 default:
                     // default case handles older messages without the envelope type.

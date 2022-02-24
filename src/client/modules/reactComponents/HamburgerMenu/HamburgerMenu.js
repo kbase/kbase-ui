@@ -9,15 +9,10 @@ define([
     preact,
     htm
 ) => {
-
     const {h, Component} = preact;
     const html = htm.bind(h);
 
     class HamburgerMenu extends Component {
-        constructor(props) {
-            super(props);
-        }
-
         renderSection(menuItems) {
             return menuItems.map((menuItem) => {
                 let icon = null;
@@ -30,7 +25,7 @@ define([
                 }
                 return html`
                     <li>
-                        <a href=${menuItem.uri ? menuItem.uri : '/#' + menuItem.path}
+                        <a href=${menuItem.uri ? menuItem.uri : `/#${  menuItem.path}`}
                            target=${menuItem.newWindow ? '_blank' : null}>
                             ${icon}
                             <span>${menuItem.label}</span>
@@ -85,9 +80,11 @@ define([
                 <div className="navbar HamburgerMenu">
                     <button id="kb-nav-menu"
                             className="btn btn-default navbar-btn kb-nav-btn"
+                            style=${{outline: 'none'}}
                             data-toggle="dropdown"
                             aria-haspopup="true">
-                        <span className="fa fa-navicon"></>
+                        <img src="/images/kbase_logo.png" />
+                        <span class="caret" style="margin-left: 5px;" />
                     </button>
                     <ul className="dropdown-menu"
                         role="menu"

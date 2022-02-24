@@ -20,16 +20,6 @@ import { uniqueId } from './Utils';
 
 const SESSION_MONITORING_INTERVAL = 1000;
 
-function tryPromise<T>(fun: () => T) {
-    return new Promise((resolve, reject) => {
-        try {
-            resolve(fun());
-        } catch (ex) {
-            reject(ex);
-        }
-    });
-}
-
 export type SessionStatus =
     | 'loggedout'
     | 'nosession'
@@ -53,6 +43,8 @@ export interface AuthSessionConfig {
     baseUrl: string;
     extraCookies: Array<CookieConfig>;
 }
+
+export type Listener = (x: string) => null;
 
 enum CacheState {
     New = 1, // newly created cache, no token info yet.
@@ -94,7 +86,7 @@ export class Auth2Session {
 
     cookieMaxAge: number;
 
-    changeListeners: { [key: string]: Function };
+    changeListeners: { [key: string]: Listener };
 
     root?: RootInfo;
 
@@ -188,7 +180,7 @@ export class Auth2Session {
         if (!session) {
             return null;
         }
-        let info = session.tokenInfo;
+        const info = session.tokenInfo;
         return {
             un: info.user,
             user_id: info.user,
@@ -198,7 +190,7 @@ export class Auth2Session {
         };
     }
 
-    isAuthorized(): boolean {
+    isAuthenticated(): boolean {
         const session = this.getSession();
         if (session) {
             return true;
@@ -207,7 +199,7 @@ export class Auth2Session {
     }
 
     isLoggedIn(): boolean {
-        return this.isAuthorized();
+        return this.isAuthenticated();
     }
 
     getClient(): Auth2 {
@@ -276,15 +268,15 @@ export class Auth2Session {
         this.auth2Client.loginStart(config);
     }
 
-    linkStart(config: LinkOptions) {
+    linkStart(config: LinkOptions): void {
         return this.auth2Client.linkStart(this.ensureToken(), config);
     }
 
-    removeLink(config: UnlinkOptions) {
+    removeLink(config: UnlinkOptions): Promise<void> {
         return this.auth2Client.removeLink(this.ensureToken(), config);
     }
 
-    getLinkChoice(token: string): Promise<any> {
+    getLinkChoice(): Promise<any> {
         return this.auth2Client.getLinkChoice(this.ensureToken());
     }
 
@@ -296,7 +288,7 @@ export class Auth2Session {
             });
     }
 
-    logout(tokenId?: string): Promise<void> {
+    logout(): Promise<void> {
         return this.auth2Client.logout(this.ensureToken()).then(() => {
             this.removeSessionCookie();
             return this.evaluateSession();
@@ -304,33 +296,31 @@ export class Auth2Session {
     }
 
     revokeToken(tokenId: string): Promise<any> {
-        let that = this;
         return this.getTokenInfo().then((tokenInfo) => {
             return this.auth2Client.revokeToken(this.ensureToken(), tokenId);
         });
     }
 
     revokeAllTokens(): Promise<any> {
-        let that = this;
         return this.getTokenInfo().then((tokenInfo) => {
             return this.auth2Client.revokeAllTokens(this.ensureToken());
         });
     }
 
-    onChange(listener: Function): string {
-        let id = uniqueId();
+    onChange(listener: (x: string) => null): string {
+        const id = uniqueId();
         this.changeListeners[id] = listener;
         return id;
     }
-    offChange(id: string) {
+    offChange(id: string): void {
         delete this.changeListeners[id];
     }
-    notifyListeners(change: string | null) {
+    notifyListeners(change: string | null): void {
         if (change === null) {
             return;
         }
         Object.keys(this.changeListeners).forEach((key) => {
-            let listener = this.changeListeners[key];
+            const listener = this.changeListeners[key];
             try {
                 listener(change);
             } catch (ex) {
@@ -341,7 +331,6 @@ export class Auth2Session {
 
     checkSession(): SessionState {
         const cookieToken = this.getAuthCookie();
-        const currentSession = this.getSession();
         const now = new Date().getTime();
 
         // This handles the token cookie going missing. This may happen
@@ -354,12 +343,11 @@ export class Auth2Session {
                 return {
                     status: 'loggedout',
                 };
-            } else {
-                this.sessionCache.state = CacheState.None;
-                return {
-                    status: 'nosession',
-                };
             }
+            this.sessionCache.state = CacheState.None;
+            return {
+                status: 'nosession',
+            };
         }
 
         // No session, but a cookie has appeared.
@@ -382,7 +370,7 @@ export class Auth2Session {
         }
 
         // Detect expired session
-        let expiresIn = this.sessionCache.session.tokenInfo.expires - now;
+        const expiresIn = this.sessionCache.session.tokenInfo.expires - now;
         if (expiresIn <= 0) {
             this.sessionCache.session = null;
             this.sessionCache.state = CacheState.None;
@@ -400,8 +388,8 @@ export class Auth2Session {
         // We do this once every 5 seconds for one minute,
         // then once every minute.
         if (this.sessionCache.state === CacheState.Interrupted) {
-            let interruptedFor = now - this.sessionCache.interruptedAt!;
-            let checkedFor = now - this.sessionCache.lastCheckedAt!;
+            const interruptedFor = now - this.sessionCache.interruptedAt!;
+            const checkedFor = now - this.sessionCache.lastCheckedAt!;
             if (interruptedFor < 60000) {
                 if (checkedFor > 5000) {
                     return {
@@ -409,13 +397,11 @@ export class Auth2Session {
                         token: cookieToken,
                     };
                 }
-            } else {
-                if (checkedFor > 60000) {
-                    return {
-                        status: 'interrupted-retry',
-                        token: cookieToken,
-                    };
-                }
+            } else if (checkedFor > 60000) {
+                return {
+                    status: 'interrupted-retry',
+                    token: cookieToken,
+                };
             }
             // Note that we don't try to recache the session while in interrupted
             // state, so we just return ok here.
@@ -428,7 +414,7 @@ export class Auth2Session {
         // If we _still_ have a session, see if the cache is stale.
         // Note that we change the cache state but we leave the session intact.
         // TODO: revert back, just testing...
-        let sessionAge = now - this.sessionCache.fetchedAt;
+        const sessionAge = now - this.sessionCache.fetchedAt;
         if (sessionAge > this.sessionCache.session.tokenInfo.cachefor) {
             // this.session = null;
             this.sessionCache.state = CacheState.Stale;
@@ -445,7 +431,7 @@ export class Auth2Session {
     }
 
     getAuthCookie(): string | null {
-        var cookies = this.cookieManager.getItems(this.cookieName);
+        let cookies = this.cookieManager.getItems(this.cookieName);
 
         // Expected case, just a single session cookie.
         if (cookies.length === 1) {
@@ -465,7 +451,7 @@ export class Auth2Session {
         if (cookies.length === 2) {
             this.removeSessionCookie();
         }
-        var cookies = this.cookieManager.getItems(this.cookieName);
+        cookies = this.cookieManager.getItems(this.cookieName);
         if (cookies.length > 0) {
             throw new Error(
                 'Duplicate session cookie detected and cannot remove it. Please delete your browser cookies for this site.'
@@ -476,7 +462,7 @@ export class Auth2Session {
         return null;
     }
 
-    async ensureExtraSessionCookies(token: string) {
+    async ensureExtraSessionCookies(token: string): Promise<void> {
         let repairNeeded = false;
 
         // get backup cookies
@@ -525,7 +511,7 @@ export class Auth2Session {
                     break;
                 default:
                     throw new Error(
-                        'Unexpected session state: ' + sessionState.status
+                        `Unexpected session state: ${sessionState.status}`
                     );
             }
 
@@ -569,6 +555,7 @@ export class Auth2Session {
                         console.error('Invalid Session Cookie Detected', err);
                         this.removeSessionCookie();
                         this.notifyListeners('loggedout');
+                        break;
                     case 'connection-error':
                     case 'timeout-error':
                     case 'abort-error':
@@ -633,13 +620,19 @@ export class Auth2Session {
         serviceLoop();
     }
 
-    start(): Promise<any> {
-        return this.auth2Client.root().then((root) => {
-            this.root = root;
+    async start(): Promise<any> {
+        const root = await this.auth2Client.root();
 
-            // An infinite async loop.
-            this.monitor();
-        });
+        this.root = root;
+
+        try {
+            await this.evaluateSession();
+        } catch (ex) {
+            console.error('Error evaluating session', ex);
+        }
+
+        // An infinite async loop.
+        this.monitor();
     }
 
     stop(): Promise<any> {
@@ -654,29 +647,28 @@ export class Auth2Session {
     // COOKIES
 
     setSessionCookie(token: string, expiration: number) {
-        let sessionCookie = new Cookie(this.cookieName, token)
+        const sessionCookie = new Cookie(this.cookieName, token)
             .setPath('/')
             .setSecure(true);
 
         sessionCookie.setExpires(new Date(expiration).toUTCString());
 
         this.cookieManager.setItem(sessionCookie);
-        let that = this;
         if (this.extraCookies) {
             this.extraCookies.forEach((cookieConfig) => {
-                let extraCookie = new Cookie(cookieConfig.name, token)
+                const extraCookie = new Cookie(cookieConfig.name, token)
                     .setPath('/')
                     .setDomain(cookieConfig.domain)
                     .setSecure(true);
 
                 extraCookie.setExpires(new Date(expiration).toUTCString());
 
-                that.cookieManager.setItem(extraCookie);
+                this.cookieManager.setItem(extraCookie);
             });
         }
     }
 
-    removeSessionCookie() {
+    removeSessionCookie(): void {
         // Remove host-based cookie.
         this.cookieManager.removeItem(
             new Cookie(this.cookieName, '').setPath('/')
@@ -686,9 +678,9 @@ export class Auth2Session {
         // created. This can be a cause for a corrupt token, since the old auth
         // system tokens are invalid, and it could create domain level cookies.
         // New auth code does not (other than the backup cookie.)
-        let domainParts = window.location.hostname.split('.');
-        var domain;
-        for (var len = 2; len <= domainParts.length; len += 1) {
+        const domainParts = window.location.hostname.split('.');
+        let domain;
+        for (let len = 2; len <= domainParts.length; len += 1) {
             domain = domainParts.slice(-len).join('.');
             this.cookieManager.removeItem(
                 new Cookie(this.cookieName, '').setPath('/').setDomain(domain)
@@ -706,7 +698,7 @@ export class Auth2Session {
         }
     }
 
-    ensureToken() {
+    ensureToken(): string {
         const token = this.getToken();
         if (token === null) {
             throw new Error('Cannot get admin user - unauthenticated');
@@ -714,15 +706,15 @@ export class Auth2Session {
         return token;
     }
 
-    userSearch(search: UserSearchInput) {
+    userSearch(search: UserSearchInput): Promise<any> {
         return this.auth2Client.userSearch(this.ensureToken(), search);
     }
 
-    adminUserSearch(search: UserSearchInput) {
+    adminUserSearch(search: UserSearchInput): Promise<any> {
         return this.auth2Client.adminUserSearch(this.ensureToken(), search);
     }
 
-    getAdminUser(username: string) {
+    getAdminUser(username: string): Promise<any> {
         return this.auth2Client.getAdminUser(this.ensureToken(), username);
     }
 }

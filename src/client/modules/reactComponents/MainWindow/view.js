@@ -70,9 +70,7 @@ define([
                     <div className="-cell -menu">
                         <${HamburgerMenu} ...${props} />
                     </div>
-                    <div className="-cell -logo">
-                        <${Logo} ...${props} />
-                    </div>
+
                     <div className="-cell -title">
                         <${Title} ...${props} />
                     </div>

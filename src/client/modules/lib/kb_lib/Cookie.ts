@@ -9,7 +9,7 @@ export class Cookie {
     domain?: string;
     path?: string;
     secure?: boolean;
-    noEncode: boolean = false;
+    noEncode = false;
 
     constructor(name: string, value: string) {
         if (this.reservedKeys.indexOf(name.toLowerCase()) >= 0) {
@@ -106,27 +106,25 @@ export class Cookie {
                     });
                 }
             }
-        } else {
-            if (typeof this.maxAge !== 'undefined') {
-                if (this.maxAge === Infinity) {
-                    cookieProps.push({
-                        key: 'expires',
-                        value: new Date('9999-12-31T23:59:59Z').toUTCString(),
-                    });
-                } else {
-                    // set both expires and max-age. Max-age because it is more accurate
-                    // and expires because it is more compatible (well, with IE).
-                    cookieProps.push({
-                        key: 'expires',
-                        value: new Date(
-                            new Date().getTime() + this.maxAge * 1000
-                        ).toUTCString(),
-                    });
-                    cookieProps.push({
-                        key: 'max-age',
-                        value: String(this.maxAge),
-                    });
-                }
+        } else if (typeof this.maxAge !== 'undefined') {
+            if (this.maxAge === Infinity) {
+                cookieProps.push({
+                    key: 'expires',
+                    value: new Date('9999-12-31T23:59:59Z').toUTCString(),
+                });
+            } else {
+                // set both expires and max-age. Max-age because it is more accurate
+                // and expires because it is more compatible (well, with IE).
+                cookieProps.push({
+                    key: 'expires',
+                    value: new Date(
+                        new Date().getTime() + this.maxAge * 1000
+                    ).toUTCString(),
+                });
+                cookieProps.push({
+                    key: 'max-age',
+                    value: String(this.maxAge),
+                });
             }
         }
         if (typeof this.secure !== 'undefined') {
@@ -237,7 +235,7 @@ export class CookieManager {
     }
 
     removeItem(item: Cookie): void {
-        let deletionCookie = new Cookie(item.name, '')
+        const deletionCookie = new Cookie(item.name, '')
             .setPath(item.path || '/')
             .setValue('*')
             .setExpires(new Date('1970-01-01T00:00:00Z').toUTCString());

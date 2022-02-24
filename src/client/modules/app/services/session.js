@@ -68,12 +68,8 @@ define([
             return this.auth2Session.isLoggedIn();
         }
 
-        isAuthorized() {
-            return this.auth2Session.isAuthorized();
-        }
-
         isAuthenticated() {
-            return this.auth2Session.isAuthorized();
+            return this.auth2Session.isAuthenticated();
         }
 
         getKbaseSession() {
@@ -125,7 +121,7 @@ define([
         start() {
             return this.auth2Session.start()
                 .then(() => {
-                    if (this.auth2Session.isAuthorized()) {
+                    if (this.auth2Session.isAuthenticated()) {
                         this.state.setItem('loggedin', true);
                         this.runtime.send('session', 'loggedin');
                     } else {
@@ -137,35 +133,35 @@ define([
                             state: change
                         });
                         switch (change) {
-                        case 'interrupted': {
-                            const description = div([
-                                p(
-                                    'Your session cannot be verified because the authorization service is currently inaccessible'
-                                ),
-                                p([
-                                    'You may patiently await it\'s recovery or ',
-                                    a(
-                                        {
-                                            href: '/#signout'
-                                        },
-                                        'signout'
+                            case 'interrupted': {
+                                const description = div([
+                                    p(
+                                        'Your session cannot be verified because the authorization service is currently inaccessible'
                                     ),
-                                    ' and try again later'
-                                ])
-                            ]);
-                            this.notifyError({
-                                message: 'Session cannot be verified',
-                                description
-                            });
-                            return;
+                                    p([
+                                        'You may patiently await it\'s recovery or ',
+                                        a(
+                                            {
+                                                href: '/#signout'
+                                            },
+                                            'signout'
+                                        ),
+                                        ' and try again later'
+                                    ])
+                                ]);
+                                this.notifyError({
+                                    message: 'Session cannot be verified',
+                                    description
+                                });
+                                return;
+                            }
+                            case 'restored':
+                                this.notifyOk({
+                                    message: 'Communication restored -- session has been verified',
+                                    description: ''
+                                });
                         }
-                        case 'restored':
-                            this.notifyOk({
-                                message: 'Communication restored -- session has been verified',
-                                description: ''
-                            });
-                        }
-                        if (this.auth2Session.isAuthorized()) {
+                        if (this.auth2Session.isAuthenticated()) {
                             if (change === 'newuser') {
                                 // TODO: do something special...
                             }

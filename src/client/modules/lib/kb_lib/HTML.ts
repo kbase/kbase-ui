@@ -1,13 +1,20 @@
 type HtmlNode = null | string | number | HtmlNodeArray;
 
-interface HtmlNodeArray extends Array<HtmlNode> { };
+type HtmlNodeArray = Array<HtmlNode>;
 
-interface ITag {
-    (attribs: AttribMap, children: HtmlNode): string;
-}
+// interface ITag {
+//     (attribs?: AttribMap, children?: HtmlNode): string;
+// }
+
+// type Tag1 = (attribs: AttribMap, children: HtmlNode) => string;
+// type Tag2 = (attribs: AttribMap) => string;
+// type Tag3 = (children: HtmlNode) => string;
+
+// type Tag = Tag1 | Tag2 | Tag3;
+
+type Tag = (attribs: AttribMap | HtmlNode, children?: HtmlNode) => string;
 
 // type AttribMap = {key:string, value: string | number | boolean}
-
 
 interface StyleAttribMap {
     [key: string]: string;
@@ -18,10 +25,6 @@ interface AttribMap {
 }
 
 export class HTML {
-
-    constructor() {
-    }
-
     renderChildren(children: HtmlNode): string {
         if (children === null) {
             return '';
@@ -33,56 +36,60 @@ export class HTML {
             return String(children);
         }
         if (!(children instanceof Array)) {
-            throw new Error('hmm, not an array? ' + typeof children);
+            throw new Error(`hmm, not an array? ${typeof children}`);
         }
-        let that = this;
-        return children.map((child) => {
-            return that.renderChildren(child);
-        }).join('');
+        return children
+            .map((child) => {
+                return this.renderChildren(child);
+            })
+            .join('');
     }
 
     styleAttribsToString(attribs: StyleAttribMap): string {
-        let that = this;
-
-        return Object.keys(attribs).map((key) => {
-            let value = attribs[key];
-            let attribValue = value;
-            let attribName = key.replace(/[A-Z]/g, (m) => {
-                return '-' + m.toLowerCase();
-            });
-            return [attribName, attribValue].join(': ');
-        }).join('; ');
+        return Object.keys(attribs)
+            .map((key) => {
+                const value = attribs[key];
+                const attribValue = value;
+                const attribName = key.replace(/[A-Z]/g, (m) => {
+                    return `-${m.toLowerCase()}`;
+                });
+                return [attribName, attribValue].join(': ');
+            })
+            .join('; ');
     }
 
     attribsToString(attribs: AttribMap): string {
-        let that = this;
-
-        return Object.keys(attribs).map((key) => {
-            let value = attribs[key];
-            var attribValue;
-            if (typeof value === 'string') {
-                attribValue = '"' + value.replace(/"/, '""') + '"';
-            } else {
-                attribValue = '"' + that.styleAttribsToString(value) + '"';
-            }
-            let attribName = key.replace(/[A-Z]/g, (m) => {
-                return '-' + m.toLowerCase();
-            });
-            return [attribName, attribValue].join('=');
-        }).join(' ');
+        return Object.keys(attribs)
+            .map((key) => {
+                const value = attribs[key];
+                let attribValue;
+                if (typeof value === 'string') {
+                    attribValue = `"${value.replace(/"/, '""')}"`;
+                } else {
+                    attribValue = `"${this.styleAttribsToString(value)}"`;
+                }
+                const attribName = key.replace(/[A-Z]/g, (m) => {
+                    return `-${m.toLowerCase()}`;
+                });
+                return [attribName, attribValue].join('=');
+            })
+            .join(' ');
     }
 
-    mergeAttribs(a: AttribMap | undefined, b: AttribMap | undefined): AttribMap {
+    mergeAttribs(
+        a: AttribMap | undefined,
+        b: AttribMap | undefined
+    ): AttribMap {
         // ensure we can merge even if the base is not mergable...
         if (typeof a === 'undefined') {
             a = {};
         }
-        let merger = (x: any, y: any) => {
+        const merger = (x: any, y: any) => {
             // 0. Only merge if y is an object, otherwise just skip it.
             if (typeof y === 'object' && y !== null) {
                 Object.keys(y).forEach((key) => {
-                    var xval = x[key];
-                    var yval = y[key];
+                    const xval = x[key];
+                    const yval = y[key];
                     // 1. if no target property, just set it.
                     if (typeof xval === 'undefined') {
                         x[key] = yval;
@@ -106,59 +113,75 @@ export class HTML {
     }
 
     // first port will only support strict arguments - attribs, children.
-    tagMaker(): Function {
-        let isHtmlNode = (val: AttribMap | HtmlNode): val is HtmlNode => {
+    tagMaker(): (name: string) => Tag {
+        const isHtmlNode = (val: AttribMap | HtmlNode): val is HtmlNode => {
             return true;
         };
-        let isAttribMap = (val: AttribMap | HtmlNode): val is AttribMap => {
+        const isAttribMap = (val: AttribMap | HtmlNode): val is AttribMap => {
             return true;
         };
-        var notEmpty = (x: undefined | null | string) => {
-            if ((typeof x === 'undefined') ||
-                (x === null) ||
-                x.length === 0) {
+        const notEmpty = (x: undefined | null | string) => {
+            if (typeof x === 'undefined' || x === null || x.length === 0) {
                 return false;
             }
             return true;
         };
-        var maker: any = (name: string, defaultAttribs: AttribMap = <AttribMap>{}): Function => {
-            var tagFun: ITag = (attribs?: AttribMap | HtmlNode, children?: HtmlNode | undefined): string => {
+        const maker: any = (
+            name: string,
+            defaultAttribs: AttribMap = <AttribMap>{}
+        ) => {
+            const tagFun: Tag = (
+                attribs?: AttribMap | HtmlNode,
+                children?: HtmlNode | undefined
+            ): string => {
                 let node = '<';
 
                 // case 1. one argument, first may be attribs or content, but attribs if object.
                 if (typeof children === 'undefined') {
-                    if (typeof attribs === 'object' &&
+                    if (
+                        typeof attribs === 'object' &&
                         !(attribs instanceof Array) &&
-                        isAttribMap(attribs)) {
+                        isAttribMap(attribs)
+                    ) {
                         if (Object.keys(attribs).length === 0) {
                             node += name;
                         } else {
-                            let tagAttribs = this.attribsToString(this.mergeAttribs(attribs, defaultAttribs));
-                            node += [name, tagAttribs].filter(notEmpty).join(' ');
+                            const tagAttribs = this.attribsToString(
+                                this.mergeAttribs(attribs, defaultAttribs)
+                            );
+                            node += [name, tagAttribs]
+                                .filter(notEmpty)
+                                .join(' ');
                         }
                         node += '>';
                         // case 2. arity 1, is undefined
                     } else if (typeof attribs === 'undefined') {
-                        let tagAttribs = this.attribsToString(defaultAttribs);
+                        const tagAttribs = this.attribsToString(defaultAttribs);
                         node += [name, tagAttribs].filter(notEmpty).join(' ');
                         node += '>';
                         // case 3: arity 1, is content
                     } else if (isHtmlNode(attribs)) {
-                        let tagAttribs = this.attribsToString(defaultAttribs);
+                        const tagAttribs = this.attribsToString(defaultAttribs);
                         node += [name, tagAttribs].filter(notEmpty).join(' ');
-                        node += '>' + this.renderChildren(attribs);
+                        node += `>${this.renderChildren(attribs)}`;
                     }
                     // case 4. arity 2 - atribs + content
-                } else if (typeof attribs !== 'undefined' && isAttribMap(attribs) && isHtmlNode(children)) {
+                } else if (
+                    typeof attribs !== 'undefined' &&
+                    isAttribMap(attribs) &&
+                    isHtmlNode(children)
+                ) {
                     if (Object.keys(attribs).length === 0) {
                         node += name;
                     } else {
-                        let tagAttribs = this.attribsToString(this.mergeAttribs(attribs, defaultAttribs));
+                        const tagAttribs = this.attribsToString(
+                            this.mergeAttribs(attribs, defaultAttribs)
+                        );
                         node += [name, tagAttribs].filter(notEmpty).join(' ');
                     }
-                    node += '>' + this.renderChildren(children);
+                    node += `>${this.renderChildren(children)}`;
                 }
-                node += '</' + name + '>';
+                node += `</${name}>`;
                 return node;
             };
             return tagFun;
@@ -166,13 +189,12 @@ export class HTML {
         return maker;
     }
 
-
     // todo: figure out how to get ts packages in here...
-    genIdSerial: number = 0;
+    genIdSerial = 0;
 
     genId(): string {
-        let random = Math.floor(Math.random() * 1000);
-        let time = new Date().getTime();
+        const random = Math.floor(Math.random() * 1000);
+        const time = new Date().getTime();
         if (this.genIdSerial === 1000) {
             this.genIdSerial = 0;
         }

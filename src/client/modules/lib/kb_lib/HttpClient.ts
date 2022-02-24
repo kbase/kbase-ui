@@ -11,16 +11,16 @@ export class HttpHeader {
     header: HttpHeaderFields;
 
     public static fromXHR(xhr: XMLHttpRequest): HttpHeaderFields {
-        let responseHeaders = xhr.getAllResponseHeaders();
+        const responseHeaders = xhr.getAllResponseHeaders();
         if (!responseHeaders) {
             return {};
         }
-        let fieldsArray = responseHeaders.split(/\n/);
+        const fieldsArray = responseHeaders.split(/\n/);
         const fieldsMap: { [key: string]: string } = {};
         fieldsArray.forEach((field) => {
-            let firstColon = field.indexOf(':', 0);
-            let name = field.substr(0, firstColon).trim();
-            let value = field.substr(firstColon + 1).trim();
+            const firstColon = field.indexOf(':', 0);
+            const name = field.substr(0, firstColon).trim();
+            const value = field.substr(firstColon + 1).trim();
             fieldsMap[name.toLowerCase()] = value;
         });
         return fieldsMap;
@@ -86,7 +86,7 @@ export class HttpHeader {
                             return String(value);
                         default:
                             throw new Error(
-                                'Invalid type for header value: ' + typeof value
+                                `Invalid type for header value: ${typeof value}`
                             );
                     }
                 })(this.getHeader(key));
@@ -95,11 +95,11 @@ export class HttpHeader {
     }
 
     getContentType(): ContentType | null {
-        let value = this.header['content-type'];
+        const value = this.header['content-type'];
         if (!value) {
             return null;
         }
-        let values = value.split(';').map((x) => x.trim());
+        const values = value.split(';').map((x) => x.trim());
         return {
             mediaType: values[0],
             charset: values[1],
@@ -192,11 +192,8 @@ export interface Response {
 }
 
 export class HttpClient {
-    constructor() {}
-
     request(options: RequestOptions): Promise<Response> {
-        let startTime = new Date().getTime();
-        let that = this;
+        const startTime = new Date().getTime();
         return <Promise<Response>>new Promise((resolve, reject) => {
             const xhr: XMLHttpRequest = new XMLHttpRequest();
             xhr.onload = () => {
@@ -221,7 +218,7 @@ export class HttpClient {
             xhr.onerror = () => {
                 reject(
                     new GeneralError(
-                        'General request error ' + options.url,
+                        `General request error ${options.url}`,
                         xhr
                     )
                 );
@@ -232,7 +229,7 @@ export class HttpClient {
 
             let url = options.url;
             if (options.query) {
-                url += '?' + new HttpQuery(options.query).toString();
+                url += `?${new HttpQuery(options.query).toString()}`;
             }
 
             const rt = (options.responseType ||
@@ -288,8 +285,7 @@ export class HttpClient {
                 } else {
                     reject(
                         new Error(
-                            'Invalid type of data to send: ' +
-                                typeof options.data
+                            `Invalid type of data to send: ${typeof options.data}`
                         )
                     );
                 }

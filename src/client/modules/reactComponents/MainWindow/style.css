@@ -52,7 +52,7 @@
     overflow: auto;
     display: flex;
     flex-direction: column;
-    padding-top: 1em;
+    padding-top: 10px;
 }
 
 /* Own */
