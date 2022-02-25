@@ -136,7 +136,7 @@ export class UIError extends CustomError {
     }
 }
 
-export function stache(template: string, context: Map<string, string>) {
+export function stache(template: string, context: Map<string, string>): string {
     return template.replace(/{{(.*?)}}/g, (substring: string, key: string) => {
         return context.get(key) || `** ${key} not found **`;
     });

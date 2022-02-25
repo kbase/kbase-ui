@@ -14,8 +14,9 @@ export class Cookie {
     constructor(name: string, value: string) {
         if (this.reservedKeys.indexOf(name.toLowerCase()) >= 0) {
             throw new Error(
-                'Cookie key invalid, must not be one of ' +
-                    this.reservedKeys.join(', ')
+                `Cookie key invalid, must not be one of ${this.reservedKeys.join(
+                    ', '
+                )}`
             );
         }
         if (name.match(/;/) || name.match(/=/)) {
@@ -138,7 +139,7 @@ export class Cookie {
                 cookieProps.map((prop) => {
                     return [prop.key, prop.value]
                         .filter((item) => {
-                            return typeof item === 'undefined' ? false : true;
+                            return typeof item !== 'undefined';
                         })
                         .join('=');
                 })
@@ -173,20 +174,19 @@ export class CookieManager {
                     name = name.trim();
                     if (pieces.length === 1) {
                         jar.push(<Cookie>{
-                            name: name,
+                            name,
                             value: '',
                         });
                     }
                     const value = pieces[1];
                     jar.push(<Cookie>{
-                        name: name,
+                        name,
                         value: decodeURIComponent(value),
                     });
                     return jar;
                 }, []);
-        } else {
-            return [];
         }
+        return [];
     }
 
     getCookies() {
@@ -221,7 +221,7 @@ export class CookieManager {
         if (cookie.length === 0) {
             return [];
         }
-        return cookie.map(function (item) {
+        return cookie.map((item) => {
             return item.value;
         });
     }

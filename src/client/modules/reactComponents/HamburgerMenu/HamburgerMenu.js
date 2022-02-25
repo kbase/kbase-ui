@@ -9,6 +9,7 @@ define([
     preact,
     htm
 ) => {
+
     const {h, Component} = preact;
     const html = htm.bind(h);
 
@@ -80,11 +81,9 @@ define([
                 <div className="navbar HamburgerMenu">
                     <button id="kb-nav-menu"
                             className="btn btn-default navbar-btn kb-nav-btn"
-                            style=${{outline: 'none'}}
                             data-toggle="dropdown"
                             aria-haspopup="true">
-                        <img src="/images/kbase_logo.png" />
-                        <span class="caret" style="margin-left: 5px;" />
+                        <span className="fa fa-navicon"></>
                     </button>
                     <ul className="dropdown-menu"
                         role="menu"

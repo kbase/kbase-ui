@@ -24,11 +24,11 @@
     min-height: 0;
 }
 
-.MainWindow .-body>.-nav {
+.MainWindow .-body > .-nav {
     flex: 0 0 75px;
 }
 
-.MainWindow .-body>.-content {
+.MainWindow .-body > .-content {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
@@ -36,18 +36,18 @@
     padding-top: 1em;
 }
 
-.MainWindow .-body>.-content-area {
+.MainWindow .-body > .-content-area {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
 }
 
-.MainWindow .-body>.-content-area>.-notification-banner {
+.MainWindow .-body > .-content-area > .-notification-banner {
     flex: 0 0 0px;
 }
 
-.MainWindow .-body>.-content-area>.-plugin-content {
+.MainWindow .-body > .-content-area > .-plugin-content {
     flex: 1 1 0px;
     overflow: auto;
     display: flex;
@@ -100,7 +100,8 @@
     text-overflow: ellipsis;
 }
 
-.MainWindow .-navbar .-cell.-menu {}
+.MainWindow .-navbar .-cell.-menu {
+}
 
 .MainWindow .-navbar .-cell.-title {
     padding-left: 10px;
@@ -144,7 +145,7 @@
     display: flex;
     flex-direction: row;
     background-color: #fff;
-    border-bottom: 5px solid #E0E0E0 !important;
+    border-bottom: 5px solid #e0e0e0 !important;
     height: 70px;
 }
 
@@ -181,14 +182,14 @@
 }
 
 .MainWindow .-navbar .btn.kb-nav-btn {
-    background-color: #FFF;
+    background-color: #fff;
     font-size: 24px;
     border: none;
     text-shadow: none !important;
     margin: 0;
 }
 
-.MainWindow .-navbar .btn.kb-nav-btn>div {
+.MainWindow .-navbar .btn.kb-nav-btn > div {
     color: #666 !important;
 }
 
@@ -200,7 +201,7 @@
 /* Give the menu icons a blue color, whilst leaving the menu text what it is (black) */
 
 .MainWindow .-navbar .fa::before {
-    color: #2196F3;
+    color: #2196f3;
 }
 
 .MainWindow .-navbar .fa.fa-color-warning::before {
@@ -218,7 +219,7 @@
 /* Enable background hover for navbar buttons. It is disabled for other buttons */
 
 .MainWindow .-navbar .kb-nav-btn:hover {
-    background-color: #F5F5F5;
+    background-color: #f5f5f5;
 }
 
 .MainWindow .-navbar .dropdown-menu .navbar-icon {
@@ -239,7 +240,7 @@
 
 .MainWindow .-navbar .navbar-buttons .fa::before {
     /* color nav icons */
-    color: #2196F3;
+    color: #2196f3;
 }
 
 /* Body */
@@ -278,7 +279,6 @@ The content area is normal flow and just needs to have a matching top margin.
 }
 
 /* logo */
-
 
 .MainWindow .widget-logo {
     display: flex;

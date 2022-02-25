@@ -114,7 +114,7 @@ export function incrProp(
     return obj[propKey];
 }
 
-export function deleteProp(obj: any, propPath: PropPath) {
+export function deleteProp(obj: any, propPath: PropPath): boolean {
     if (typeof propPath === 'string') {
         propPath = propPath.split('.');
     } else if (!(propPath instanceof Array)) {

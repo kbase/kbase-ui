@@ -55,7 +55,7 @@ export class ReactiveDB {
         return query.filter(dbValue);
     }
 
-    runSubscriptions() {
+    runSubscriptions(): void {
         this.subscriptions.forEach((subscription) => {
             try {
                 const dbValue = this.runQuery(subscription.query);
