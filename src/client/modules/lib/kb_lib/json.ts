@@ -8,6 +8,7 @@ export interface JSONObjectOf<T extends JSONValue> {
 
 export type JSONObject = JSONObjectOf<JSONValue>;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface JSONArrayOf<T extends JSONValue> extends Array<T> {}
 
 export type JSONArray = JSONArrayOf<JSONValue>;

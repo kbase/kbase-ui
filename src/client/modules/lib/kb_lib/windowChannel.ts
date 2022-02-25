@@ -304,6 +304,7 @@ export class WindowChannel {
                             ];
                         }
                     })();
+
                     const replyEnvelop: ReplyEnvelope = {
                         type: 'reply',
                         from: message.envelope.to,

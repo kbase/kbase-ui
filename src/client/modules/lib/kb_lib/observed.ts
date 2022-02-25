@@ -18,7 +18,7 @@ export class Observed<T> {
         this.value = initialValue;
     }
 
-    setValue(value: T) {
+    setValue(value: T): void {
         this.value = value;
         const oldValue = this.previousValue;
         const newListeners: Array<ListenerRecord<T>> = [];
