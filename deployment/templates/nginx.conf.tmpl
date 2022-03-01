@@ -60,7 +60,7 @@ http {
     }
 
     server {
-        listen      {{ default "80" .Env.nginx_listen }} default_server;
+        listen      {{ default "5000" .Env.nginx_listen }} default_server;
         server_name {{ default "localhost" .Env.nginx_server_name }};
 
         location / {
@@ -87,7 +87,7 @@ http {
             proxy_buffer_size 128k;
             proxy_buffers 4 256k;
             proxy_busy_buffers_size 256k;
-            proxy_set_header Host docs.kbase.us; 
+            proxy_set_header Host docs.kbase.us;
             proxy_intercept_errors on;
             recursive_error_pages on;
             error_page 301 302 307 = @handle_redirect_docs;
@@ -106,7 +106,7 @@ http {
             proxy_buffer_size 128k;
             proxy_buffers 4 256k;
             proxy_busy_buffers_size 256k;
-            proxy_set_header Host docs.kbase.us; 
+            proxy_set_header Host docs.kbase.us;
             proxy_pass $saved_redirect_location;
             proxy_intercept_errors on;
             recursive_error_pages on;
@@ -118,7 +118,7 @@ http {
             proxy_http_version 1.1;
             proxy_set_header Connection "";
             client_max_body_size 300M;
-            proxy_set_header Host www.kbase.us;  
+            proxy_set_header Host www.kbase.us;
             proxy_intercept_errors on;
             recursive_error_pages on;
             error_page 301 302 307 = @handle_redirect_marketing;
@@ -131,11 +131,11 @@ http {
             if ($saved_redirect_location ~* ^https://www.kbase.us/(.*)$) {
                 set $path $1;
             }
-            
+
             proxy_http_version 1.1;
             proxy_set_header Connection "";
             client_max_body_size 300M;
-            proxy_set_header Host www.kbase.us;  
+            proxy_set_header Host www.kbase.us;
             proxy_pass https://marketing/$path;
             proxy_intercept_errors on;
             recursive_error_pages on;

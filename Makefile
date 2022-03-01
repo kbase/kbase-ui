@@ -67,9 +67,7 @@ __check_defined = \
 .PHONY: all test build docs
 
 # Standard 'all' target = just do the standard build
-all:
-	@echo Use "make init && make build build=TARGET build"
-	@echo see docs/quick-deploy.md
+all: build install-plugins create-deploy
 
 # See above for 'all' - just running 'make' should locally build
 default:
@@ -198,23 +196,6 @@ integration-tests:
 
 test: unit-tests
 
-# Clean slate
-clean: clean-docs clean-ts
-	$(GRUNT) clean-all
-
-clean-temp:
-	$(GRUNT) clean:temp
-
-clean-build:
-	$(GRUNT) clean-build
-
-clean-docs:
-	@rm -rf ./docs/book/_book
-	@rm -rf ./docs/node_modules
-
-clean-ts:
-	@npm run clean-ts
-
 # If you need more clean refinement, please see Gruntfile.js, in which you will
 # find clean tasks for each major build artifact.
 
@@ -235,13 +216,23 @@ rm-dev-cert:
 clean-build:
 	rm -rf build/dist
 
-build: 
+build:
 	sh scripts/shell/build.sh
-	sh scripts/shell/copy-build.sh
-	sh scripts/shell/install-plugins.sh
-	
+
+create-deploy:
+	sh scripts/shell/create-deploy.sh
+
+install-plugins:
+	sh tools/deno/scripts/install-plugins.sh
+
+remove-plugins:
+	rm -rf build/plugins/*
+
 build-image:
 	sh scripts/shell/build-image.sh
 
 run-image:
 	sh scripts/shell/run-image.sh
+
+start-dev-server:
+	sh scripts/shell/start-dev-server.sh

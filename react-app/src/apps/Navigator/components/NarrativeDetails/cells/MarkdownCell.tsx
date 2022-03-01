@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { MarkdownCell } from '../../../utils/NarrativeModel';
-import marked from 'marked';
+import { marked } from 'marked';
 import styles from './MarkdownCell.module.css';
 import { DefaultIcon } from '../../Icon';
 import { Accordion } from 'react-bootstrap';

@@ -1,0 +1,9 @@
+web:
+  image: nginx
+  volumes:
+   - ../../build/plugins:/var/www/html
+  ports:
+   - "8080:80"
+  environment:
+   - NGINX_HOST=ci.kbase.us
+   - NGINX_PORT=80

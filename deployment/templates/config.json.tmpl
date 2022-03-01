@@ -143,6 +143,10 @@
                 {
                     "id": "redirect-to-www",
                     "title": "Redirect to www.kbase.us if not physical path, ui hash path, or token"
+                },
+                {
+                    "id": "sampleset-data-links",
+                    "title": "Enable data links for sample sets"
                 }
             ]
         },
@@ -357,6 +361,16 @@
                 "method": "version"
             }
         },
+        "execution_engine2": {
+            "module": "execution_engine2",
+            "aliases": [
+                "ee2",
+                "ExecutionEngine2"
+            ],
+            "url": "https://{{ .Env.deploy_hostname }}/services/ee2",
+            "name": "Execution Engine2",
+            "type": "jsonrpc"
+        },
         "Feeds": {
             "module": "Feeds",
             "aliases": [
@@ -475,16 +489,6 @@
             "module": "KBaseSearchEngine",
             "url": "https://{{ .Env.deploy_hostname }}/services/searchapi2/legacy",
             "name": "Search Engine",
-            "type": "jsonrpc"
-        },
-        "execution_engine2": {
-            "module": "execution_engine2",
-            "aliases": [
-                "ee2",
-                "ExecutionEngine2"
-            ],
-            "url": "https://{{ .Env.deploy_hostname }}/services/ee2",
-            "name": "Execution Engine2",
             "type": "jsonrpc"
         }
     },

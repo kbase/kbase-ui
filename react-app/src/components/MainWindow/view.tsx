@@ -4,7 +4,6 @@ import Body from '../Body';
 import HamburgerMenu from '../HamburgerMenu/HamburgerMenuMain';
 import {AuthenticationState} from '../../contexts/Auth';
 import {Config} from '../../types/config';
-import {Logo} from '../Logo/Logo';
 import Title from '../Title.';
 import Deployment from '../Deployment';
 import Signin from '../Signin/SigninMain';
@@ -54,9 +53,9 @@ export default class MainWindow extends Component<MainWindowProps,
                 <div className="-cell -menu">
                     <HamburgerMenu {...this.props} />
                 </div>
-                <div className="-cell -logo">
+                {/* <div className="-cell -logo">
                     <Logo {...this.props} />
-                </div>
+                </div> */}
                 <div className="-cell -title">
                     <RuntimeContext.Consumer>
                         {(value) => {
@@ -125,7 +124,12 @@ export default class MainWindow extends Component<MainWindowProps,
                             <RuntimeContext.Consumer>
                                 {(value) => {
                                     if (value) {
-                                        return <Body {...this.props} setTitle={value.setTitle}/>
+                                        return (
+                                            <Body
+                                                {...this.props}
+                                                setTitle={value.setTitle}
+                                            />
+                                        );
                                     }
                                 }}
                             </RuntimeContext.Consumer>

@@ -1,4 +1,4 @@
-FROM node:14-alpine3.14
+FROM node:16-alpine3.15
 
 RUN apk upgrade --update-cache --available && \
     apk add --update --no-cache npm python3 make && \
@@ -50,5 +50,5 @@ RUN addgroup --system kbmodule && \
 ENTRYPOINT [ "dockerize" ]
 
 CMD [  \
-    "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/modules/deploy/config.json", \
+    "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/deploy/config.json", \
     "bash", "/kb/deployment/scripts/start-dev-server.bash" ]

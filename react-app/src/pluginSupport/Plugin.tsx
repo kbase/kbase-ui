@@ -1,9 +1,9 @@
-import {Component} from 'react';
-import {AuthenticationState} from '../contexts/Auth';
-import {JSONObject} from '../lib/json';
-import {Messenger} from '../lib/messenger';
-import {Config} from '../types/config';
-import IFrameController, {IFrameControllerProps} from './IFrameController';
+import { Component } from 'react';
+import { AuthenticationState } from '../contexts/Auth';
+import { JSONObject } from '../lib/json';
+import { Messenger } from '../lib/messenger';
+import { Config } from '../types/config';
+import IFrameController, { IFrameControllerProps } from './IFrameController';
 import './Plugin.css';
 
 export interface Params {
@@ -27,13 +27,12 @@ export interface PluginProps {
     messenger: Messenger;
 }
 
-interface PluginState {
-}
+interface PluginState {}
 
 export default class Plugin extends Component<PluginProps, PluginState> {
     constructor(props: PluginProps) {
         super(props);
-        const {params} = props;
+        const { params } = props;
 
         if (params.viewParams) {
             params.viewParams = JSON.parse(params.viewParams);
@@ -45,7 +44,10 @@ export default class Plugin extends Component<PluginProps, PluginState> {
     }
 
     render() {
-        const pluginPath = ['modules', 'plugins', this.props.name].join('/');
+        // TODO: document the location of runtime configurations,
+        // which accessed in /deploy, which needs to be mounted into
+        // the container.
+        const pluginPath = ['deploy', 'plugins', this.props.name].join('/');
 
         const props: IFrameControllerProps = {
             pluginPath,

@@ -1,0 +1,27 @@
+LEft off here ...
+trying to get the developer workflow w/in a container working.
+if the modules/plugins is populated before starting, the volume mount doesn't overwrite the internal one
+if the internal one is removed, I can see the volume mounted one, but loading plugins goes into an infinite loop.
+
+I'm thinking of doing a probe for the plugin's presence before mounting.
+
+
+Okay, local developer workflow is working fine now.
+
+Now ... work on the config..
+
+config now lives in /kb/deployment/deploy/config
+
+All deploy artifacts which can be overridden should be placed in "deploy". 
+This facilitates local development, and presumably deployment as well.
+
+extract git info for each plugin 
+place in plugins.json
+note that this should be simulated in the local proxy plugins - 
+which means that the plugin gitinfo should be created during the plugin install
+process and left as a manifest in the plugin directory.
+
+main config is created by dockerize and the gitlab config
+
+build info for kbase-ui itself will be placed into deploy/build.json
+

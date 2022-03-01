@@ -1,99 +1,99 @@
 ## Plugin Build Configuration
 ---
 plugins:
-    - name: typeview
-      globalName: kbase-ui-plugin-typeview
-      version: 3.1.0
-      source:
-          github:
-              account: kbase
-    - name: dataview
-      globalName: kbase-ui-plugin-dataview
-      version: 4.9.0
-      source:
-          github:
-              account: kbase
-    - name: auth2-client
-      globalName: kbase-ui-plugin-auth2-client
-      version: 2.4.8
-      source:
-          github:
-              account: kbase
-    - name: jgi-search
-      globalName: kbase-ui-plugin-jgi-search
-      version: 2.1.3
-      source:
-          github:
-              account: kbase
-    - name: feeds
-      globalName: kbase-ui-plugin-feeds
-      version: 2.1.1
-      source:
-          github:
-              account: kbase
-    - name: catalog
-      globalName: kbase-ui-plugin-catalog
-      version: 2.2.5
-      source:
-          github:
-              account: kbase
-    - name: data-search
-      globalName: kbase-ui-plugin-data-search
-      version: 2.3.3
-      source:
-          github:
-              account: kbase
-    - name: organizations
-      globalName: kbase-ui-plugin-organizations
-      version: 2.1.11
-      source:
-          github:
-              account: kbase
-    - name: biochem-search
-      globalName: kbase-ui-plugin-biochem-search
-      version: 2.2.1
-      source:
-          github:
-              account: kbase
-    - name: job-browser2
-      globalName: kbase-ui-plugin-job-browser2
-      version: 1.6.3
-      source:
-          github:
-              account: kbase
-    - name: react-profile-view
-      globalName: kbase-ui-plugin-react-profile-view
-      version: 1.3.1
-      source:
-          github:
-              account: kbase
-    - name: dashboard4
-      globalName: kbase-ui-plugin-dashboard4
-      version: 0.4.3
-      source:
-          github:
-              account: eapearson
-    - name: samples
-      globalName: kbase-ui-plugin-samples
-      version: 0.13.4
-      source:
-          github:
-              account: kbase
-    - name: ontology
-      globalName: kbase-ui-plugin-ontology
-      version: 1.0.0
-      source:
-          github:
-              account: kbase
-    - name: taxonomy
-      globalName: kbase-ui-plugin-taxonomy
-      version: 0.3.7
-      source:
-          github:
-              account: kbase
-    - name: public-search
-      globalName: kbase-ui-plugin-public-search
-      version: 0.15.6
-      source:
-          github:
-              account: kbase
+  - name: typeview
+    globalName: kbase-ui-plugin-typeview
+    version: 3.1.0
+    source:
+      github:
+        account: kbase
+  - name: dataview
+    globalName: kbase-ui-plugin-dataview
+    version: 4.10.38
+    source:
+      github:
+        account: kbase
+  - name: auth2-client
+    globalName: kbase-ui-plugin-auth2-client
+    version: 2.4.8
+    source:
+      github:
+        account: kbase
+  - name: jgi-search
+    globalName: kbase-ui-plugin-jgi-search
+    version: 2.1.3
+    source:
+      github:
+        account: kbase
+  - name: feeds
+    globalName: kbase-ui-plugin-feeds
+    version: 2.1.1
+    source:
+      github:
+        account: kbase
+  - name: catalog
+    globalName: kbase-ui-plugin-catalog
+    version: 2.2.5
+    source:
+      github:
+        account: kbase
+  - name: data-search
+    globalName: kbase-ui-plugin-data-search
+    version: 2.3.3
+    source:
+      github:
+        account: kbase
+  - name: organizations
+    globalName: kbase-ui-plugin-organizations
+    version: 2.1.11
+    source:
+      github:
+        account: kbase
+  - name: biochem-search
+    globalName: kbase-ui-plugin-biochem-search
+    version: 2.2.1
+    source:
+      github:
+        account: kbase
+  - name: job-browser2
+    globalName: kbase-ui-plugin-job-browser2
+    version: 1.6.3
+    source:
+      github:
+        account: kbase
+  - name: react-profile-view
+    globalName: kbase-ui-plugin-react-profile-view
+    version: 1.3.3
+    source:
+      github:
+        account: kbase
+  - name: dashboard4
+    globalName: kbase-ui-plugin-dashboard4
+    version: 0.4.3
+    source:
+      github:
+        account: eapearson
+  - name: samples
+    globalName: kbase-ui-plugin-samples
+    version: 0.13.5
+    source:
+      github:
+        account: kbase
+  - name: ontology
+    globalName: kbase-ui-plugin-ontology
+    version: 1.0.1
+    source:
+      github:
+        account: kbase
+  - name: taxonomy
+    globalName: kbase-ui-plugin-taxonomy
+    version: 0.3.7
+    source:
+      github:
+        account: kbase
+  - name: public-search
+    globalName: kbase-ui-plugin-public-search
+    version: 0.15.6
+    source:
+      github:
+        account: kbase

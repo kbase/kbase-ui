@@ -1,18 +1,20 @@
-import { Component } from 'react';
-import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
+import {Component} from 'react';
+import {HashRouter, Redirect, Route, Switch} from 'react-router-dom';
 import './Body.css';
 import NotFound from './NotFoundChecked/NotFoundChecked';
 import PluginWrapper from './PluginWrapper/PluginWrapper';
-import { Config } from '../types/config';
-import { AuthenticationState } from '../contexts/Auth';
+import {Config} from '../types/config';
+import {AuthenticationState} from '../contexts/Auth';
 import About from '../applets/about';
 import Organizations from '../apps/Organizations';
 import Catalog from '../apps/Catalog';
 import Auth from '../apps/Auth';
 import Developer from '../applets/developer';
-import DevelopmentAuth from '../applets/development/DevelopmentAuth';
+// import DevelopmentAuth from '../applets/development/DevelopmentAuth';
 import Navigator from '../apps/Navigator/Navigator';
 import NarrativeLoader from '../applets/narrativeLoader';
+import NarrativeManager from '../apps/NarrativeManager';
+import ExternalRedirect, {RedirectKind} from './ExternalRedirect';
 
 export interface BodyProps {
     config: Config;
@@ -20,36 +22,40 @@ export interface BodyProps {
     setTitle: (title: string) => void;
 }
 
-interface BodyState {}
+interface BodyState {
+}
 
 export default class Body extends Component<BodyProps, BodyState> {
     renderRouting() {
         return (
             <HashRouter>
                 <Switch>
-                    {/*<Route*/}
-                    {/*    path="/navigator"*/}
-                    {/*    render={() => {*/}
-                    {/*        return (*/}
-                    {/*            <ExternalRedirect*/}
-                    {/*                url={`${this.props.config.deploy.ui.origin}/narratives`}*/}
-                    {/*                kind={RedirectKind.REPLACE}*/}
-                    {/*            />*/}
-                    {/*        );*/}
-                    {/*    }}*/}
-                    {/*/>*/}
+                    <Route
+                        path="/narratives"
+                        render={() => {
+                            return (
+                                <ExternalRedirect
+                                    url={`${this.props.config.deploy.ui.origin}/narratives`}
+                                    kind={RedirectKind.REPLACE}
+                                />
+                            );
+                        }}
+                    />
                     <Route
                         path="/navigator"
                         render={(props) => {
                             return <Navigator {...props} {...this.props} />;
                         }}
                     />
-                    <Route
+                    {/* <Route
                         path="/dashboard"
                         render={(props) => {
                             return <Navigator {...props} {...this.props} />;
                         }}
-                    />
+                    /> */}
+                    <Route path="/dashboard">
+                        <Redirect to="/navigator"/>
+                    </Route>
                     <Route
                         path="/dashboard4"
                         render={(props) => {
@@ -383,22 +389,33 @@ export default class Body extends Component<BodyProps, BodyState> {
 
                     <Route
                         path="/about"
-                        render={(props) => {
+                        render={() => {
                             return <About {...this.props} />;
                         }}
                     />
+
+                    <Route
+                        path="/narrativemanager"
+                        render={(props) => {
+                            return (
+                                <NarrativeManager {...props} {...this.props} />
+                            );
+                        }}
+                    />
+
                     <Route
                         path="/developer/:tab?"
-                        render={(props) => {
+                        render={() => {
                             return <Developer {...this.props} />;
                         }}
                     />
                     <Route exact path="/">
-                        <Redirect to="/dashboard" />
+                        <Redirect to="/navigator"/>
                     </Route>
                     <Route
                         exact={true}
                         render={(props) => {
+                            console.log('not found??');
                             return (
                                 <NotFound
                                     {...this.props}
@@ -412,7 +429,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                                 />
                             );
                         }}
-                    ></Route>
+                    />
                 </Switch>
             </HashRouter>
         );

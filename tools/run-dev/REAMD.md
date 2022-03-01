@@ -4,9 +4,10 @@ Runs the kbase-ui web app behind nginx in a container.
 
 ## Docker container method
 
-export SRC_DIR=`pwd`/react-app/src
-export DEPLOY_ENV=narrative-dev
-export INI_DIR=`pwd`/dev/gitlab-config
+export SRC_DIR=${PWD}/react-app/src
+export DEPLOY_ENV=ci
+export INI_DIR=${PWD}/dev/gitlab-config
+export PLUGIN_DIR=${PWD}/build/plugins
 docker-compose -f docker-compose-dev.yml up
 
 TODO:

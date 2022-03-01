@@ -30,7 +30,7 @@ for local consumption:
   - `sh scripts/shell/build-image.sh`
 
 - run the image:
-    - `sh scripts/shell/run-image.sh`
+  - `sh scripts/shell/run-image.sh`
 
 
 
@@ -189,7 +189,7 @@ tools/proxy-standalone
 ENV=ci docker compose up
 
 
-# Build image
+## Build image
 
 
 ## Development workflow in container:
@@ -220,11 +220,40 @@ currently cheese out and use Docker Desktop
 then, in container shell:
 
 cd deployment/app
-npm install
+npm ci
 npm run start
 
 
 ### Proxy
 
 cd tools/proxy-standalone
+ENV=ci docker compose up
+
+
+
+## Manually?
+
+Build image:
+
+```bash
+docker build -f Dockerfile-dev -t kbase-ui-dev:dev .    
+```
+
+Run bash in image to play with it.
+
+
+```bash
+docker run -it --hostname=kbase-ui --entrypoint=sh --network=kbase-dev -p 3000:3000 -v ${PWD}/react-app:/kb/deployment/app -v ${PWD}/deployment/config:/kb/deployment/config -v ${PWD}/build/dist/deploy:/kb/deployment/app/public/deploy kbase-ui-dev:dev
+```
+
+in container DEPLOY_ENV=ci /kb/deployment/scripts/start-dev-server.bash
+
+```bash
+docker run -it --hostname=kbase-ui --entrypoint=sh --network=kbase-dev -p 3000:3000 -e CHOKIDAR_USEPOLLING=true  -v ${PWD}/react-app:/kb/deployment/app  kbase-ui-dev:dev
+```
+
+
+proxy to ci?
+
+tools/proxy-standalone
 ENV=ci docker compose up

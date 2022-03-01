@@ -1,20 +1,33 @@
 ---
-name: Build and Push Up Main Branch Image
+name: Build & Test
 on:
   push:
     branches:
-      - main
+      - 'feature-*'
+      - 'fix-*'
+      - master
+  pull_request:
+    branches:
+      - master
+  release:
+    branches:
+      - master
+    types: [ published ]
+  workflow_dispatch:
 jobs:
-  docker_build:
+  build_test_push:
     runs-on: ubuntu-latest
     steps:
       - name: Check out GitHub Repo
         uses: actions/checkout@v2
+
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
       - uses: FranzDiebold/github-env-vars-action@v2
-      - name: Print environment variables
+
+      - name: Print environment variables; helps diagnosing issues with a workflow
         run: |
           echo "CI_REPOSITORY_SLUG=$CI_REPOSITORY_SLUG"
           echo "CI_REPOSITORY_OWNER=$CI_REPOSITORY_OWNER"
@@ -40,15 +53,43 @@ jobs:
           echo "CI_RUN_NUMBER=$CI_RUN_NUMBER"
           echo "CI_WORKFLOW=$CI_WORKFLOW"
           echo "CI_ACTION=$CI_ACTION"
+          echo "BUILD_DATE=${{ env.BUILD_DATE }}"
+
+
+      # Build the web app locally; the docker image build below
+      # will incorporate the build artifacts.
+      - name: Build
+        run: make build
+      #
+      # Create friendly image tags
+      # Cases we handle:
+      # - push to "main" - name "main"
+      # - any activity in PR against "main" - name "pull_request-#""
+      # - release created - name "release", tag "release-v#.#.#""
+      #
+      - name: Create friendly tag for push to a triggering branch (main, feature-*, fix-*)
+        if: github.event_name == 'push'
+        run: echo IMAGE_TAG_NAME=${{ env.CI_REF_NAME_SLUG }} >> $GITHUB_ENV
+
+      - name: Create friendly tag for pull request
+        if: github.event_name == 'pull_request'
+        run: echo IMAGE_TAG_NAME=pull_request-${{github.event.pull_request.number}} >> $GITHUB_ENV
+
+      - name: Create friendly tag for a release against main
+        if: github.event_name == 'release'
+        run: |
+          echo IMAGE_TAG_NAME=release-${{ github.event.release.tag_name }} >> $GITHUB_ENV
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Login to DockerHub
+
+      - name: Login to GHCR
         uses: docker/login-action@v1
         with:
-          # hmm, try this.
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }}
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -61,4 +102,5 @@ jobs:
             VCS_REF=${{ github.sha }}
             BRANCH=${{ github.ref }}
             TAG=${{ github.ref }}
-          tags: ghcr.io/${{ github.repository_owner }}/kbase-ui:main
+          tags: ghcr.io/${{ env.CI_REPOSITORY_OWNER }}/${{ env.CI_REPOSITORY_NAME }}:${{ env.IMAGE_TAG_NAME }}
+

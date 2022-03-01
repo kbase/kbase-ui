@@ -1,7 +1,7 @@
-FROM node:14-alpine3.14
+FROM node:16-alpine3.15
 
 RUN apk upgrade --update-cache --available && \
-    apk add --update --no-cache npm python3 make && \
+    apk add --update --no-cache npm python3 make bash && \
     mkdir -p /kb
 
 WORKDIR /kb
@@ -20,6 +20,9 @@ ARG BRANCH=develop
 ARG TAG
 
 # The main thing -- the kbase-ui built code.
+# Copies entire react-app since we will be developing directly with it.
+# However, we will also volume mount it!
+# TODO: can we remove this copy, please??
 COPY react-app /kb/deployment/app
 
 # Config templates
@@ -47,10 +50,13 @@ RUN addgroup --system kbmodule && \
     adduser --system --ingroup kbmodule kbmodule && \
     chown -R kbmodule:kbmodule /kb
 
-RUN cd /kb/deployment/app && npm ci
+# RUN cd /kb/deployment/app && npm ci
 
-ENTRYPOINT [ "dockerize" ]
+ENTRYPOINT ["/kb/deployment/scripts/start-dev-server.bash"]
+# ENTRYPOINT ["sh"]
 
-CMD [  \
-    "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/modules/deploy/config.json", \
-    "bash", "/kb/deployment/scripts/start-dev-server.bash" ]
+# ENTRYPOINT [ "dockerize" ]
+
+# CMD [  \
+#     "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/deploy/config.json", \
+#     "bash", "/kb/deployment/scripts/start-dev-server.bash" ]

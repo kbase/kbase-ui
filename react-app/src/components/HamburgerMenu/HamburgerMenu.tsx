@@ -1,6 +1,7 @@
-import { Component } from 'react';
-import { MenuItem } from '../../types/menu';
-import { Dropdown } from 'react-bootstrap';
+import {Component} from 'react';
+import {MenuItem} from '../../types/menu';
+import {Dropdown} from 'react-bootstrap';
+import logo from './kbase_logo.png';
 import './styles.css';
 
 export interface HamburgerMenuProps {
@@ -11,19 +12,18 @@ export interface HamburgerMenuProps {
     };
 }
 
-interface HamburgerMenuState {}
+interface HamburgerMenuState {
+}
 
-export default class HamburgerMenu extends Component<
-    HamburgerMenuProps,
-    HamburgerMenuState
-> {
+export default class HamburgerMenu extends Component<HamburgerMenuProps,
+    HamburgerMenuState> {
     renderSection(menu: Array<MenuItem>) {
         return menu.map((menuItem) => {
             let icon = null;
             if (menuItem.icon) {
                 icon = (
                     <div className="navbar-icon" key={menuItem.name}>
-                        <span className={`fa fa-${menuItem.icon}`}></span>
+                        <span className={`fa fa-${menuItem.icon}`}/>
                     </div>
                 );
             }
@@ -62,7 +62,7 @@ export default class HamburgerMenu extends Component<
     renderDivider(id: string) {
         return (
             <div key={id}>
-                <Dropdown.Divider key={id} />
+                <Dropdown.Divider key={id}/>
             </div>
         );
     }
@@ -90,7 +90,7 @@ export default class HamburgerMenu extends Component<
         return (
             <Dropdown>
                 <Dropdown.Toggle variant="default">
-                    <span className="fa fa-navicon fa-2x"></span>
+                    <img src={logo} alt="KBase Logo"/>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>{menuContent}</Dropdown.Menu>
             </Dropdown>

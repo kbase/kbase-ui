@@ -70,10 +70,9 @@ export default class ConfigWrapper extends React.Component<
             },
         });
         try {
-            // NB the location of the config file is based on the old location; it is preserved
-            // in order to avoid the need to update KBase deploy tools.
+            console.log('HMM');
             const rawConfig = await (
-                await fetch('/modules/deploy/config.json')
+                await fetch(process.env.PUBLIC_URL + '/deploy/config.json')
             ).json();
             this.setState({
                 configState: {

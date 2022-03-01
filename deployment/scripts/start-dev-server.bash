@@ -1,6 +1,15 @@
+#!/bin/bash
+
 # check that the deploy config file is ok.
-DEPLOY_CFG=/kb/deployment/app/public/modules/deploy/config.json
-# NGINX_CFG=/etc/nginx/nginx.conf
+DEPLOY_CFG="/kb/deployment/app/public/deploy/config.json"
+DEPLOY_CFG_TEMPLATE="/kb/deployment/templates/config.json.tmpl"
+
+echo "About to dockerize..."
+
+dockerize \
+    -env "/kb/deployment/config/${DEPLOY_ENV}_config.ini" \
+    -template "${DEPLOY_CFG_TEMPLATE}:${DEPLOY_CFG}"
+
 
 echo "Checking config file..."
 
@@ -13,7 +22,7 @@ else
     echo "...found!"
 fi
 
-if grep -q "<no value>" ${DEPLOY_CFG}
+if grep -q "<no value>" "${DEPLOY_CFG}"
 then
     echo "Deployment config contains <no value>, indicating that the docker run"
     echo "environment is missing a key used in the config template."
@@ -24,22 +33,8 @@ then
 else
     echo "...and valid!"
 fi
-
-
-# echo "Checking nginx config file..."
-# if [ ! -f "${NGINX_CFG}" ]
-# then
-#     echo "The nginx config was not found"
-#     echo "Target file is ${NGINX_CFG}"
-#     exit 1
-# else 
-#     echo "...found!"
-# fi
-
 echo "OK. Starting CRA dev server... Press Control-C to exit."
 
-# start nginx
-# exec nginx -c ${NGINX_CFG}
 cd /kb/deployment/app
 npm ci
-ENV=narrative-dev npm run start
+ENV=ci npm run start

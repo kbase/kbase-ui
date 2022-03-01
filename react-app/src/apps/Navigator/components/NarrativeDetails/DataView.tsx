@@ -37,6 +37,7 @@ export default class DataView extends React.Component<Props, {}> {
                     <div className="-name">
                         <a
                             href={`/#dataview/${workspaceId}/${obj.name}`}
+                            target="_blank"
                             rel="noopener noreferrer"
                         >
                             {obj.name}
@@ -44,7 +45,11 @@ export default class DataView extends React.Component<Props, {}> {
                     </div>
                     {/*<div className="">{obj.readableType}</div>*/}
                     <div className="-type">
-                        <a href={`/#spec/type/${obj.obj_type}`}>
+                        <a
+                            href={`/#spec/type/${obj.obj_type}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
                             {typeName} ({typeModule}-{versionMajor}.
                             {versionMinor})
                         </a>

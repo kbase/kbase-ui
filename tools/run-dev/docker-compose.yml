@@ -17,6 +17,7 @@ services:
         volumes:
             # - ${APP_DIR}:/kb/deployment/app
             - ${SRC_DIR}:/kb/deployment/app/src
+            - ${PLUGIN_DIR}:/kb/deployment/app/static/plugins
             # - ${INI_DIR}:/kb/deployment/config
             # - ${SCRIPTS_DIR}:/kb/deployment/scripts
 
@@ -37,7 +38,7 @@ services:
             - /kb/deployment/config/${DEPLOY_ENV}_config.ini
             # Map
             - '-template'
-            - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/modules/deploy/config.json
+            - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/deploy/config.json
             - bash
             # UNCOMMENT if using static build
             # - /kb/deployment/scripts/start-server.bash

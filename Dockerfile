@@ -1,7 +1,7 @@
 FROM alpine:3.15
 
 RUN apk upgrade --update-cache --available && \
-    apk add --update --no-cache bash ca-certificates nginx && \
+    apk add --update --no-cache bash ca-certificates nginx bash && \
     mkdir -p /kb
 
 WORKDIR /kb
@@ -38,7 +38,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.schema-version="1.0.0-rc1" \
     us.kbase.vcs-branch=$BRANCH  \
     us.kbase.vcs-tag=$TAG \
-    maintainer="Steve Chan sychan@lbl.gov"
+    maintainer="Erik Pearson eapearson@lbl.gov"
 
 # Run as a regular user, not root.
 RUN addgroup --system kbmodule && \
@@ -49,5 +49,5 @@ ENTRYPOINT [ "dockerize" ]
 
 CMD [  \
     "-template", "/kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
-    "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/app/modules/deploy/config.json", \
+    "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/app/deploy/config.json", \
     "bash", "/kb/deployment/scripts/start-server.bash" ]

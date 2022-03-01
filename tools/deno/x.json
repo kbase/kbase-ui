@@ -1,0 +1,11 @@
+{
+  "hash": {
+    "full": "965dcd668189321bd368703f402256ff409dfa7a",
+    "abbreviated": "965dcd66"
+  },
+  "author": { "name": "Erik Pearson", "date": "2022-01-05T22:54:15.000Z" },
+  "committer": { "name": "Erik Pearson", "date": "2022-01-05T22:54:15.000Z" },
+  "originURL": "ssh://git@github.com/kbase/kbase-ui",
+  "branch": "feature-crats-refactor",
+  "tag": ""
+}

@@ -3,7 +3,7 @@ import { AppCellIcon } from '../../Icon';
 import { AuthInfo } from '../../../../../contexts/Auth';
 import { Config } from '../../../../../types/config';
 import { AppCell } from '../../../utils/NarrativeModel';
-import marked from 'marked';
+import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import { Accordion, Tab, Table, Tabs } from 'react-bootstrap';
 import styles from './AppCell.module.css';

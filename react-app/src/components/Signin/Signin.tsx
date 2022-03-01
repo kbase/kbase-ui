@@ -1,11 +1,8 @@
-import { AuthenticationStatus } from '@kbase/ui-lib';
-import { UserProfile } from '@kbase/ui-lib/lib/comm/coreServices/UserProfile';
-import { Component } from 'react';
-import { Dropdown } from 'react-bootstrap';
-import {
-    AuthenticationState,
-    AuthenticationStateAuthenticated,
-} from '../../contexts/Auth';
+import {AuthenticationStatus} from '@kbase/ui-lib';
+import {UserProfile} from '@kbase/ui-lib/lib/comm/coreServices/UserProfile';
+import {Component} from 'react';
+import {Dropdown} from 'react-bootstrap';
+import {AuthenticationState, AuthenticationStateAuthenticated,} from '../../contexts/Auth';
 
 export interface SigninProps {
     authState: AuthenticationState;
@@ -13,7 +10,8 @@ export interface SigninProps {
     signout: () => void;
 }
 
-interface SigninState {}
+interface SigninState {
+}
 
 export default class Signin extends Component<SigninProps, SigninState> {
     renderGravatarUrl(profile: UserProfile) {
@@ -25,15 +23,16 @@ export default class Signin extends Component<SigninProps, SigninState> {
                 if (gravatarHash) {
                     return `https://www.gravatar.com/avatar/${gravatarHash}?s=300&r=pg&d=${gravatarDefault}`;
                 } else {
-                    return '/images/nouserpic.png';
+                    return `${process.env.PUBLIC_URL}/images/nouserpic.png`;
                 }
             } else {
-                return '/images/nouserpic.png';
+                return `${process.env.PUBLIC_URL}/images/nouserpic.png`;
             }
         } else {
-            return '/images/nouserpic.png';
+            return `${process.env.PUBLIC_URL}/images/nouserpic.png`;
         }
     }
+
     renderAvatarUrl(profile: UserProfile) {
         if (
             'userdata' in profile.profile &&
@@ -45,10 +44,10 @@ export default class Signin extends Component<SigninProps, SigninState> {
                 case 'silhouette':
                 case 'mysteryman':
                 default:
-                    return '/images/nouserpic.png';
+                    return `${process.env.PUBLIC_URL}/images/nouserpic.png`;
             }
         } else {
-            return '/images/nouserpic.png';
+            return `${process.env.PUBLIC_URL}/images/nouserpic.png`;
         }
     }
 
@@ -58,7 +57,7 @@ export default class Signin extends Component<SigninProps, SigninState> {
         return (
             <img
                 src={avatarURL}
-                style={{ width: '40px' }}
+                style={{width: '40px'}}
                 className="login-button-avatar"
                 alt={`Avatar for user ${userProfile.user.username}`}
                 data-element="avatar"
@@ -229,7 +228,7 @@ export default class Signin extends Component<SigninProps, SigninState> {
                 <Dropdown.Menu>
                     <Dropdown.ItemText>
                         <div
-                            style={{ textAlign: 'center' }}
+                            style={{textAlign: 'center'}}
                             data-element="user-label"
                         >
                             <div data-k-b-testhook-label="realname">
@@ -237,29 +236,29 @@ export default class Signin extends Component<SigninProps, SigninState> {
                             </div>
                             <div
                                 data-k-b-testhook-label="username"
-                                style={{ fontStyle: 'italic' }}
+                                style={{fontStyle: 'italic'}}
                             >
                                 {authState.userProfile.user.username}
                             </div>
                         </div>
                     </Dropdown.ItemText>
-                    <Dropdown.Divider />
+                    <Dropdown.Divider/>
                     <Dropdown.Item href="/#people">
                         <div className="navbar-icon">
-                            <span className="fa fa-user"></span>
+                            <span className="fa fa-user"/>
                         </div>
                         <span>Your Profile</span>
                     </Dropdown.Item>
                     <Dropdown.Item href="/#account">
                         <div className="navbar-icon">
-                            <span className="fa fa-drivers-license"></span>
+                            <span className="fa fa-drivers-license"/>
                         </div>
                         <span>Your Account</span>
                     </Dropdown.Item>
-                    <Dropdown.Divider />
+                    <Dropdown.Divider/>
                     <Dropdown.Item onClick={this.handleSignout.bind(this)}>
                         <div className="navbar-icon">
-                            <span className="fa fa-sign-out"></span>
+                            <span className="fa fa-sign-out"/>
                         </div>
                         <span>Sign Out</span>
                     </Dropdown.Item>
@@ -302,8 +301,8 @@ export default class Signin extends Component<SigninProps, SigninState> {
                 >
                     <div
                         className="fa fa-sign-in fa-inverse"
-                        style={{ marginRight: '5px' }}
-                    ></div>
+                        style={{marginRight: '5px'}}
+                    />
                     <div className="kb-nav-btn-txt">Sign In</div>
                 </a>
             </span>

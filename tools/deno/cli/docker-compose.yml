@@ -1,0 +1,12 @@
+version: '3.6'
+services:
+    deno:
+        build:
+            # context is tools/deno;
+            # scripts are made available via the volume mount.
+            context: .
+        image: kbase/deno:dev
+        container_name: kbase-deno
+        dns: 8.8.8.8
+        volumes:
+            - $HOST_APP_DIR:/app:rw

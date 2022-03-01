@@ -1,13 +1,8 @@
-FROM denoland/deno:alpine-1.16.1
+FROM denoland/deno:alpine-1.19.0
 
 RUN apk upgrade --update-cache --available && \
     apk add --update --no-cache bash git make 
 
-# The port that your application listens to.
-# EXPOSE 1993
-# RUN mkdir /app
-# RUN chown deno:deno /app
-# RUN chmod a+rwx -R /app
 WORKDIR /app
 
 # Prefer not to run as root.

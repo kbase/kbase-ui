@@ -1,0 +1,89 @@
+version: '3.6'
+networks:
+    kbase-dev:
+        name: kbase-dev
+services:
+    kbase-ui:
+        build:
+            context: .
+            dockerfile: Dockerfile-dev
+        # just use dev for the image tag so we can easily clean
+        # up afterwards.
+        
+        image: kbase/kbase-ui:dev
+
+        container_name: kbase-ui
+        dns: 8.8.8.8
+        volumes:
+            # - ${APP_DIR}:/kb/deployment/app
+            # Map local source into expected location within container
+            - ${APP_DIR}:/kb/deployment/app
+            # Map local configuration directory into expected location within container
+            - ${CONFIG_DIR}:/kb/deployment/config
+            - ${PWD}/deployment/scripts:/kb/deployment/scripts
+            # Map locally installed plugins into the expected location within container
+            - ${PLUGINS_DIR}:/kb/deployment/app/public/deploy/plugins
+            # - ${SCRIPTS_DIR}:/kb/deployment/scripts
+
+        # just use dev for the image tag so we can easily clean
+        # up afterwards.
+        # image: kbase/kbase-ui:dev
+        networks:
+            - kbase-dev
+        environment:
+          - PORT=5000
+          - DEPLOY_ENV=ci
+        # entrypoint: npm
+        # stdin_open: true
+        # tty: true
+        entrypoint:
+        # - '/kb/deployment/scripts/test.sh'
+          # - sh
+          - '/kb/deployment/scripts/start-dev-server.bash'
+          # - 
+        # command:
+        #     # - '-env'
+        #     # # The following line uses the ones provided in this repo
+        #     # # Or this one which uses one installed by 'make get-gitlab-config'
+        #     # - /kb/deployment/config/${DEPLOY_ENV}_config.ini
+        #     # # Map
+        #     # - '-template'
+        #     # - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/deploy/config.json
+        #     # - sh
+        #     # UNCOMMENT if using static build
+        #     # - /kb/deployment/scripts/start-server.bash
+        #     - /kb/deployment/scripts/start-dev-server.bash
+    kbase-ui-deploy:
+        image: nginx:1.21.6-alpine
+        container_name: kbase-ui-deploy
+        volumes:
+          - ./build/dist:/usr/share/nginx/html
+        networks:
+            - kbase-dev
+        ports:
+            - "8081:80"
+        environment:
+          # um, does nothing?
+          # for now, set the proxy port to 80 to match the default
+          # nginx config.
+          # TODO: use the templating built into the nginx image.
+          # or switch to a custom image using dockerize.
+          - NGINX_HOST=kbase-ui-deploy.ci.kbase.us
+          - NGINX_PORT=5000
+    kbase-ui-proxy:
+        build:
+            context: tools/proxy
+        # there is only one proxy image, for local development, so just call it :dev
+        image: kbase/kbase-ui-proxy:dev
+        depends_on:
+            - kbase-ui
+            - kbase-ui-plugin-proxy
+        networks:
+            - kbase-dev
+        container_name: kbase-ui-proxy
+        ports:
+            - '80:80'
+            - '443:443'
+        dns: 8.8.8.8
+        # note that this is really a docker env file and is relative to the docker-compose file
+        env_file: tools/proxy/conf/${DEPLOY_ENV}.env

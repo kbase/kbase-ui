@@ -1,7 +1,7 @@
-import { Component, createRef } from 'react';
+import {Component, createRef} from 'react';
 // import { FeedsNotification } from '../../services/feeds';
-import { MenuItem, MenuItemExternal, MenuItemInternal } from '../../types/menu';
-import { Nav } from 'react-bootstrap';
+import {MenuItem, MenuItemExternal, MenuItemInternal} from '../../types/menu';
+import {Nav} from 'react-bootstrap';
 import './SidebarMenu.css';
 
 export interface SidebarMenuProps {
@@ -19,11 +19,10 @@ export interface MenuButton {
     beta: boolean;
 }
 
-export default class SidebarMenu extends Component<
-    SidebarMenuProps,
-    SidebarMenuState
-> {
+export default class SidebarMenu extends Component<SidebarMenuProps,
+    SidebarMenuState> {
     ref: React.RefObject<HTMLDivElement>;
+
     constructor(props: SidebarMenuProps) {
         super(props);
 
@@ -53,6 +52,15 @@ export default class SidebarMenu extends Component<
         // const feeds = this.props.runtime.db().get('feeds', null);
         // this.processFeeds(feeds);
         // (this.ref.current).tooltip({ selector: '[data-toggle="tooltip"]' });
+        window.addEventListener("hashchange", this.onHashChange.bind(this));
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("hashchange", this.onHashChange.bind(this));
+    }
+
+    onHashChange() {
+        this.updateActiveKey();
     }
 
     updateActiveKey() {
@@ -60,6 +68,7 @@ export default class SidebarMenu extends Component<
             activeKey: this.getActiveKey(),
         });
     }
+
     // processFeeds(feeds: FeedsNotification) {
     //     this.setState({
     //         feedsNotificationCount: feeds.unseenNotificationsCount || null,
@@ -76,7 +85,7 @@ export default class SidebarMenu extends Component<
     }
 
     renderIcon(button: MenuItem) {
-        return <div className={'fa fa-3x fa-' + button.icon}></div>;
+        return <div className={'fa fa-3x fa-' + button.icon}/>;
     }
 
     // renderBadge(menuItem: MenuItemInternal) {
@@ -197,7 +206,10 @@ export default class SidebarMenu extends Component<
     }
 
     getActiveKey(): string | null {
+        // Fetch the "path" in the hash
         const path = document.location.hash.substring(1).replace(/^\/+/, '');
+
+        // Determine if the current menu item is a prefix for the current browser (hash) path.
         for (const item of this.props.menu) {
             if (item.type === 'internal') {
                 if (path.startsWith(item.path)) {
