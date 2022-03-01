@@ -59,7 +59,7 @@ jobs:
       # Build the web app locally; the docker image build below
       # will incorporate the build artifacts.
       - name: Build
-        run: make build
+        run: make
       #
       # Create friendly image tags
       # Cases we handle:
