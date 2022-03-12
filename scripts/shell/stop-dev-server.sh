@@ -40,4 +40,5 @@ echo "CONFIG_DIR=$CONFIG_DIR"
 echo "PLUGINS_DIR=$PLUGINS_DIR"
 echo "DEPLOY_ENV=$DEPLOY_ENV"
 
-docker compose -f docker-compose-dev.yml up
+docker compose -f docker-compose-dev.yml stop
+docker compose -f docker-compose-dev.yml rm --force

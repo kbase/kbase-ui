@@ -11,7 +11,7 @@ export DEFAULT_DEPLOY_ENV=ci
 
 # These resources are built into the codebase
 export DEFAULT_APP_DIR="${PWD}/react-app"
-# export DEFAULT_SCRIPTS_DIR="${PWD}/deployment/scripts/plugins"
+export DEFAULT_SCRIPTS_DIR="${PWD}/deployment/scripts/plugins"
 
 # These are generated
 
@@ -34,10 +34,10 @@ export PLUGINS_DIR="${PLUGINS_DIR:-$DEFAULT_PLUGINS_DIR}"
 export DEPLOY_ENV="${ENV:-$DEFAULT_DEPLOY_ENV}"
 
 # Inform the user; helpful for debugging any startup issues.
-echo "Starting Dev Server"
+echo "Starting Dev Support Server"
 echo "APP_DIR=$APP_DIR"
 echo "CONFIG_DIR=$CONFIG_DIR"
 echo "PLUGINS_DIR=$PLUGINS_DIR"
 echo "DEPLOY_ENV=$DEPLOY_ENV"
 
-docker compose -f docker-compose-dev.yml up
+docker-compose -f docker-compose-dev-support.yml up

@@ -1,0 +1,36 @@
+version: '3.6'
+networks:
+  kbase-dev:
+    name: kbase-dev
+services:
+  kbase-ui-deploy:
+    image: nginx:1.21.6-alpine
+    container_name: kbase-ui-deploy
+    volumes:
+      - ./build/dist/deploy/plugins:/usr/share/nginx/html
+    networks:
+      - kbase-dev
+    ports:
+      - "8081:80"
+    environment:
+      # um, does nothing?
+      # for now, set the proxy port to 80 to match the default
+      # nginx config.
+      # TODO: use the templating built into the nginx image.
+      # or switch to a custom image using dockerize.
+      - NGINX_HOST=kbase-ui-deploy.ci.kbase.us
+      - NGINX_PORT=5000
+  kbase-ui-proxy:
+    build:
+      context: tools/proxy
+    # there is only one proxy image, for local development, so just call it :dev
+    image: kbase/kbase-ui-proxy:dev
+    networks:
+      - kbase-dev
+    container_name: kbase-ui-proxy
+    ports:
+      - '80:80'
+      - '443:443'
+    dns: 8.8.8.8
+    # note that this is really a docker env file and is relative to the docker-compose file
+    env_file: tools/proxy/conf/${DEPLOY_ENV}.env

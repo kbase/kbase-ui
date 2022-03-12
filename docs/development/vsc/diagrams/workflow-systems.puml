@@ -1,0 +1,61 @@
+@startuml workflow-systems
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Devcontainer Workflow Systems
+
+Person(developer, "Developer")
+
+System_Boundary(host, "Host", "Developer host machine") {
+    Container(browser, "Browser", "User's web browser")
+    Container(vsc_host, "VSC - host") {
+         Container(vsc_host_terminal, "Terminal", "running in host")
+    }
+    Container(kbase_ui_repo, "kbase-ui repo", "github.com/kbase/kbase-ui")
+    Container(hosts_file, "Hosts File", "/etc/hosts")
+}
+
+System_Boundary(docker, "Docker", "Docker machine") {
+    Container(vsc_workspace, "Workspace") {
+        Container(vsc_remote, "VSC - remote") {
+            Container(vsc_remote_terminal, "VSC - remote -terminal")
+        }
+        Container(kbase_ui_dev_server, "KBase UI Dev Server", "port 3000") {
+            Container(kbase_ui_dev_server_proxy, "Dev Server Proxy", "/index.html/deploy, /deploy, /modules")
+        }
+        Container(kbase_ui_repo_remote, "KBase UI Repo", "remotely mounted from host")
+    }
+    Container(service_proxy, "Service Proxy")
+    Container(deploy_proxy, "Deploy Proxy")
+}
+
+' Relations for developer
+Rel(developer, browser, "invokes kbase-ui view")
+Rel(developer, vsc_host, "edits files")
+Rel(developer, vsc_host_terminal, "interacts", "instal deps, start dev server")
+
+' Relations for vsc itself
+Rel(vsc_host, vsc_remote, "communicates")
+Rel(kbase_ui_repo_remote, kbase_ui_repo, "mounted")
+Rel(kbase_ui_dev_server, kbase_ui_repo_remote, "serves")
+Rel(vsc_host_terminal, vsc_remote_terminal, "mirrors")
+
+' Browser communcations
+Rel(browser, hosts_file, "looks up ci.kbase.us", "maps to localhost")
+Rel(browser, service_proxy, "requests from")
+
+Rel(kbase_ui_dev_server_proxy, browser, "proxy redirect", "/index.html/deploy, /deploy, /modules")
+
+Rel(kbase_ui_dev_server, kbase_ui_dev_server_proxy, "forwards", "all other paths")
+
+Rel(browser, kbase_ui_dev_server, "requests resource", "index.html, js, css, etc.")
+
+Rel(browser, deploy_proxy, "requests from", "/index.html/deploy/plugins, /modules/plugins")
+' Rel(browser, deploy_proxy, "requests from", "/modules/plugins", "(legacy path)")
+
+
+' service proxy
+Rel(service_proxy, kbase_ui_dev_server, "proxies to", "port 3000")
+Rel(service_proxy, browser, "redirect for localhost, /services, /deploy")
+
+' deploy proxy
+Rel(deploy_proxy, kbase_ui_repo_remote, "plugins")

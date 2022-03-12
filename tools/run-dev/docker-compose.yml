@@ -9,7 +9,7 @@ services:
             dockerfile: Dockerfile-dev
         # just use dev for the image tag so we can easily clean
         # up afterwards.
-        
+
         image: kbase/kbase-ui:dev
 
         container_name: kbase-ui
@@ -27,7 +27,7 @@ services:
         networks:
             - kbase-dev
         environment:
-          - PORT=5000
+            - PORT=80
         entrypoint: npm
         stdin_open: true
         tty: true

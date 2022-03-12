@@ -13,7 +13,7 @@ services:
             - kbase-dev
         container_name: kbase-ui
         environment:
-          - PORT=5000
+            - PORT=80
         # stdin_open: true
         # tty: true
         command:
@@ -43,7 +43,7 @@ services:
             # - '-template'
             # - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/modules/deploy/config.json
 
-            
+
             # UNCOMMENT if using static build
             - bash
             - /kb/deployment/scripts/start-server.bash

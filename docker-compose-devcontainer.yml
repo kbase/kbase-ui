@@ -6,7 +6,7 @@ services:
   kbase-ui:
     build:
       context: .
-      dockerfile: Dockerfile-dev
+      dockerfile: Dockerfile-devcontainer
     # just use dev for the image tag so we can easily clean
     # up afterwards.
 
@@ -14,20 +14,20 @@ services:
 
     container_name: kbase-ui
     dns: 8.8.8.8
-    volumes:
-      # - ${APP_DIR}:/kb/deployment/app
-      # Map local source into expected location within container
-      - "${PWD}/react-app:/kb/deployment/app"
-      # Map local configuration directory into expected location within container
-      - "${PWD}/dev/gitlab-config:/kb/deployment/config"
-      - ${PWD}/deployment/scripts:/kb/deployment/scripts
-      # Map locally installed plugins into the expected location within container
-      - ${PWD}/build/dist/deploy/plugins:/kb/deployment/app/public/deploy/plugins
-      # - ${SCRIPTS_DIR}:/kb/deployment/scripts
+    #    volumes:
+    #      # - ${APP_DIR}:/kb/deployment/app
+    #      # Map local source into expected location within container
+    #      - ${APP_DIR}:/kb/deployment/app
+    #      # Map local configuration directory into expected location within container
+    #      - ${CONFIG_DIR}:/kb/deployment/config
+    #      - ${PWD}/deployment/scripts:/kb/deployment/scripts
+    #      # Map locally installed plugins into the expected location within container
+    #      - ${PLUGINS_DIR}:/kb/deployment/app/public/deploy/plugins
+    #      # - ${SCRIPTS_DIR}:/kb/deployment/scripts
 
-      # just use dev for the image tag so we can easily clean
-      # up afterwards.
-      # image: kbase/kbase-ui:dev
+    # just use dev for the image tag so we can easily clean
+    # up afterwards.
+    # image: kbase/kbase-ui:dev
     networks:
       - kbase-dev
     environment:
@@ -36,14 +36,10 @@ services:
       # entrypoint: npm
       # stdin_open: true
       # tty: true
-      # entrypoint: ""
-      # - '/kb/deployment/scripts/test.sh'
-      # - sh
-      ## COMMENTED OUT FOR WORKING WITH DEVCONTAINER
-      ## Uncomment for running without devcontainer
-      # - '/kb/deployment/scripts/start-dev-server.bash'
-      ## For devcontainer
-      # - ""
+      # entrypoint:
+      #   # - '/kb/deployment/scripts/test.sh'
+      #   # - sh
+      #   - '/kb/deployment/scripts/start-dev-server.bash'
       # -
       # command:
       #     # - '-env'
@@ -74,9 +70,9 @@ services:
       # or switch to a custom image using dockerize.
       - NGINX_HOST=kbase-ui-deploy.ci.kbase.us
       - NGINX_PORT=5000
-  kbase-ui-proxy:
+  kbase-ui-service-proxy:
     build:
-      context: tools/proxy
+      context: tools/service-proxy
     # there is only one proxy image, for local development, so just call it :dev
     image: kbase/kbase-ui-proxy:dev
     depends_on:
@@ -84,10 +80,10 @@ services:
       - kbase-ui-plugin-proxy
     networks:
       - kbase-dev
-    container_name: kbase-ui-proxy
+    container_name: kbase-ui-service-proxy
     ports:
       - '80:80'
       - '443:443'
     dns: 8.8.8.8
     # note that this is really a docker env file and is relative to the docker-compose file
-    env_file: tools/proxy/conf/ci.env
+    env_file: tools/service-proxy/conf/ci.env

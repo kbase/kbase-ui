@@ -20,6 +20,9 @@ ARG TAG
 # The main thing -- the kbase-ui built code.
 COPY build/dist /kb/deployment/app
 
+# And the templates
+COPY build/plugins /kb/deployment/plugins
+
 # Config templates
 COPY deployment/templates /kb/deployment/templates
 

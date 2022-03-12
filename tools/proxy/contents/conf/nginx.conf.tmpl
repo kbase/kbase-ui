@@ -25,7 +25,9 @@ http {
 
     # Define upstream servers, for convenience.
     upstream kbase_ui {
-        server {{ .Env.kbase_ui_host }}:5000;
+        # server {{ .Env.kbase_ui_host }}:80;
+        server {{ .Env.kbase_ui_host }}:3000;
+        server {{ .Env.kbase_ui_host }}:80 backup;
         keepalive 16;
     }
 
