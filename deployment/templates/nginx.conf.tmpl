@@ -60,7 +60,7 @@ http {
     }
 
     server {
-        listen      {{ default "5000" .Env.nginx_listen }} default_server;
+        listen      {{ default "80" .Env.nginx_listen }} default_server;
         server_name {{ default "localhost" .Env.nginx_server_name }};
 
         location / {
@@ -73,6 +73,30 @@ http {
             add_header Cache-Control 'no-cache';
 
             root /kb/deployment/app;
+        }
+
+        location /modules/plugins {
+            # Ensure that index.html is invoked even if a path is
+            # specified and doesn't exist.
+            # try_files $uri /$uri /index.html;
+            ssi_silent_errors off;
+            allow all;
+            # this ensures that a downstream cache service will revalidate.
+            add_header Cache-Control 'no-cache';
+
+            root /kb/deployment/plugins;
+        }
+
+        location /plugins {
+            # Ensure that index.html is invoked even if a path is
+            # specified and doesn't exist.
+            # try_files $uri /$uri /index.html;
+            ssi_silent_errors off;
+            allow all;
+            # this ensures that a downstream cache service will revalidate.
+            add_header Cache-Control 'no-cache';
+
+            root /kb/deployment/plugins;
         }
 
         # Format is /__poke/https://www.example.com/some/path
