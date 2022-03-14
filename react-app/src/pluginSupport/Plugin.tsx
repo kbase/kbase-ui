@@ -47,7 +47,7 @@ export default class Plugin extends Component<PluginProps, PluginState> {
         // TODO: document the location of runtime configurations,
         // which accessed in /deploy, which needs to be mounted into
         // the container.
-        const pluginPath = ['deploy', 'plugins', this.props.name].join('/');
+        const pluginPath = ['plugins', this.props.name].join('/');
 
         const props: IFrameControllerProps = {
             pluginPath,

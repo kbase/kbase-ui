@@ -9,14 +9,14 @@ The build process is not significantly simplified, from the KBase point of view 
 - clean out:
   - build
   - build the web app, creating a bundled web app linked into the initial index html file.
-  - `sh scripts/shell/build.sh`
+  - `sh scripts/host/build.sh`
   - this runs tests at the same time
   - note that this does a clean-install.
 - copy built web app to the `build` directory.
-  - `sh scripts/shell/copy-build.sh`
+  - `sh scripts/host/copy-build.sh`
   - all build assets are placed in the `build` directory.
 - download and prepare plugins, installing into the public root of the web app
-  - `sh scripts/shell/install-plugins.sh`
+  - `sh scripts/host/install-plugins.sh`
 - build a docker image containing the web app, an nginx server, and config templates
 - config templates for:
   - nginx server
@@ -27,10 +27,10 @@ in the GHA build, the workflow takes care of building the image.
 for local consumption:
 
 - make the image:
-  - `sh scripts/shell/build-image.sh`
+  - `sh scripts/host/build-image.sh`
 
 - run the image:
-  - `sh scripts/shell/run-image.sh`
+  - `sh scripts/host/run-image.sh`
 
 
 
@@ -104,7 +104,7 @@ For local development, docker compose is used to launch the web app server in co
 Local development involves additional steps:
 
 - process local development options to extend the base `docker-compose.yml`:
-    - `scripts/shell/build-docker-compose-override.sh`
+    - `scripts/host/build-docker-compose-override.sh`
 
 The overall cli command is:
 

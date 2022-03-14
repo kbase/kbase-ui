@@ -1,0 +1,28 @@
+@startuml local-deployment-context
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title KBase-UI Deployment
+
+Person(developer, "Developer")
+
+System(browser, "web browser")
+
+System(kbase_ui_app, "kbase-ui app", "runtime")
+
+System(kbase_ui, "kbase-ui container", "local deployment")
+
+System(kbase_environment, "KBase Environment", "services for ci, narrative-dev, next, appdev, prod")
+
+Rel(developer, browser, "uses")
+
+Rel(browser, kbase_ui_app, "runs")
+Rel(browser, kbase_ui, "loads (direct)", "app files, plugins")
+Rel(browser, kbase_ui, "loads (proxied)", "narrative, navigator, auth, etc.")
+
+Rel(kbase_ui_app, kbase_ui, "calls (proxied)", "services, dynamic services, narrative")
+
+Rel(kbase_ui, kbase_environment, "proxies calls", "services, dynamic services, narrative")
+Rel(kbase_ui, kbase_environment, "proxies loads", "narrative, navigator, auth, etc.")
+
+@enduml

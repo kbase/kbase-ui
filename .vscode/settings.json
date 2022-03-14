@@ -5,5 +5,9 @@
     "editor.formatOnSave": true,
     "eslint.alwaysShowStatus": true,
     "eslint.packageManager": "yarn",
-    "prettier.requireConfig": true
+    "prettier.requireConfig": true,
+    "plantuml.exportOutDir": "docs/diagrams/out",
+    "plantuml.exportSubFolder": false,
+    "plantuml.exportFormat": "png",
+    "plantuml.diagramsRoot": "docs/diagrams"
 }

@@ -1,1 +1,0 @@
-cp -pr react-app/build build/dist

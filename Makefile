@@ -125,11 +125,6 @@ docker-ignore:
 	@echo "> Syncing .dockerignore from .gitignore"
 	@$(TOPDIR)/node_modules/.bin/dockerignore
 
-# Build the docker image, assumes that make init and make build have been done already
-docker-image:
-	@echo "> Building docker image for this branch; assuming we are on Travis CI"
-	@bash $(TOPDIR)/deployment/tools/build-travis.bash
-
 docker-compose-override:
 	@echo "> Creating docker compose override..."
 	@echo "> With options:"
@@ -205,7 +200,7 @@ clean-gitlab-config:
 dev-cert:
 	bash tools/make-dev-cert.sh
 
-rm-dev-cert:
+remove-dev-cert:
 	rm tools/proxy/contents/ssl/*
 
 clean-build:
@@ -216,12 +211,12 @@ clean-build:
 # Results end up in the build directory
 #
 build:
-	sh scripts/shell/build.sh
+	sh scripts/host/build.sh
 
 
 
 create-deploy:
-	sh scripts/shell/create-deploy.sh
+	sh scripts/host/create-deploy.sh
 
 #
 # Standalone plugin fetcher. For local development one should
@@ -270,22 +265,22 @@ remove-plugins:
 # Builds the production app image
 #
 build-image:
-	sh scripts/shell/build-image.sh
+	sh scripts/host/build-image.sh
 
 #
 # Runs just the image. Can be used in concert with a 
 # separate proxy; cannot be used alone.
 #
 run-image:
-	sh scripts/shell/run-image.sh
+	sh scripts/host/run-image.sh
 
 # The development server; runs CRA dev server in container
 
 start-dev-server:
-	sh scripts/shell/start-dev-server.sh
+	sh scripts/host/start-dev-server.sh
 
 stop-dev-server:
-	sh scripts/shell/stop-dev-server.sh
+	sh scripts/host/stop-dev-server.sh
 
 start-dev-support-server:
-	sh scripts/shell/start-dev-support-server.sh
+	sh scripts/host/start-dev-support-server.sh

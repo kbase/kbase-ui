@@ -1,1 +1,0 @@
-deno run --unstable --allow-run --allow-write --allow-read scripts/deno/install-plugins.ts config/plugins.yaml build/dist/modules

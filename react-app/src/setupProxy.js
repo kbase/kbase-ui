@@ -35,4 +35,12 @@ module.exports = function (app) {
             pathRewrite: {'^/deploy/plugins': ''}
         })
     );
+    app.use(
+        '/plugins',
+        createProxyMiddleware({
+            target: 'http://kbase-ui-deploy:80/deploy/plugins/',
+            changeOrigin: true,
+            pathRewrite: {'^/plugins': ''}
+        })
+    );
 };

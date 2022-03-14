@@ -1,66 +1,57 @@
 version: '3.6'
 networks:
-    kbase-dev:
-        name: kbase-dev
+  kbase-dev:
+    name: kbase-dev
 services:
-    kbase-ui:
-        build:
-            context: ../
-        # just use dev for the image tag so we can easily clean
-        # up afterwards.
-        image: kbase/kbase-ui:dev
-        networks:
-            - kbase-dev
-        container_name: kbase-ui
-        environment:
-            - PORT=80
-        # stdin_open: true
-        # tty: true
-        command:
-            #
-            # Here is where we paramaterize the configuration, via an INI file
-            #
-            - '-env'
-            # The following line uses the ones provided in this repo
-            # Or this one which uses one installed by 'make get-gitlab-config'
-            - /kb/deployment/config/${DEPLOY_ENV}_config.ini
-            # Want to do this, but our gitlab is both a self-signed cert and expired
-            # - https://oauth2:${GITLAB_TOKEN}@gitlab.kbase.lbl.gov:1443/devops/kbase_ui_config/raw/develop/${DEPLOY_ENV}_config.ini
-            # UNCOMMENT if using static build
-            #
-            # Create the nginx config file
-            #
-            - '-template'
-            - /kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf
-            # - '-wait'
-            # - 'file://kb/deployment/services/kbase-ui/app/index.html'
-            # UNCOMMENT if using static...
-            #
-            # Create the kbase-ui config file
-            #
-            - '-template'
-            - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/modules/deploy/config.json
-            # - '-template'
-            # - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/modules/deploy/config.json
+  kbase-ui:
+    build:
+      context: ../
+    # just use dev for the image tag so we can easily clean
+    # up afterwards.
+    image: kbase/kbase-ui:dev
+    networks:
+      - kbase-dev
+    container_name: kbase-ui
+    environment:
+      - PORT=80
+    # stdin_open: true
+    # tty: true
+    command:
+      #
+      # Here is where we paramaterize the configuration, via an INI file
+      #
+      - '-env'
+      # The following line uses the ones provided in this repo
+      # Or this one which uses one installed by 'make get-gitlab-config'
+      - /kb/deployment/config/${DEPLOY_ENV}_config.ini
+      # Want to do this, but our gitlab is both a self-signed cert and expired
+      # - https://oauth2:${GITLAB_TOKEN}@gitlab.kbase.lbl.gov:1443/devops/kbase_ui_config/raw/develop/${DEPLOY_ENV}_config.ini
+      # UNCOMMENT if using static build
+      #
+      # Create the nginx config file
+      #
+      - '-template'
+      - /kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf
+      #
+      # Create the kbase-ui config file
+      #
+      - '-template'
+      - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/modules/deploy/config.json
 
-
-            # UNCOMMENT if using static build
-            - bash
-            - /kb/deployment/scripts/start-server.bash
-            # - /kb/deployment/services/kbase-ui/deployment/scripts/start-dev-server.bash
-    kbase-ui-proxy:
-        build:
-            context: ../tools/proxy
-        # there is only one proxy image, for local development, so just call it :dev
-        image: kbase/kbase-ui-proxy:dev
-        depends_on:
-            - kbase-ui
-        networks:
-            - kbase-dev
-        container_name: kbase-ui-proxy
-        ports:
-            - '80:80'
-            - '443:443'
-        dns: 8.8.8.8
-        # note that this is really a docker env file and is relative to the docker-compose file
-        env_file: ../tools/proxy/conf/${DEPLOY_ENV}.env
+      # Starts nginx and serves up kbase-ui
+      - bash
+      - /kb/deployment/scripts/start-server.bash
+  kbase-ui-proxy:
+    build:
+      context: ../tools/proxy
+    image: kbase/kbase-ui-proxy:dev
+    depends_on:
+      - kbase-ui
+    networks:
+      - kbase-dev
+    container_name: kbase-ui-proxy
+    ports:
+      - '80:80'
+      - '443:443'
+    dns: 8.8.8.8
+    env_file: ../tools/proxy/conf/${DEPLOY_ENV}.env

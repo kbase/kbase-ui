@@ -14,7 +14,7 @@ export DENO_SCRIPT_HOME="/app/tools/deno/scripts"
 export DENO_SCRIPT="install-plugins.ts"
 
 # Arguments for the script
-export PLUGINS_CONFIG_PATH="/app/config/plugins.yaml"
+export PLUGINS_CONFIG_PATH="/app/config/plugins.yml"
 export PLUGINS_INSTALL_DEST="/app/build"
 
 # assume we are run from the root of the project.

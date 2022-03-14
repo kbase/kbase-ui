@@ -26,7 +26,7 @@ export DEFAULT_CONFIG_DIR="${PWD}/dev/gitlab-config"
 #
 # The plugins are installed via make install-plugins
 #
-export DEFAULT_PLUGINS_DIR="${PWD}/build/dist/deploy/plugins"
+export DEFAULT_PLUGINS_DIR="${PWD}/build/plugins"
 
 export APP_DIR="${APP_DIR:-$DEFAULT_APP_DIR}"
 export CONFIG_DIR="${CONFIG_DIR:-$DEFAULT_CONFIG_DIR}"

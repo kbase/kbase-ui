@@ -1,0 +1,91 @@
+@startuml workflow-systems
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title KBase-UI Deployment
+
+Person(developer, "Developer")
+
+System_Boundary(host, "Host (macOS, Linux, Windows)", "developer host machine") {
+    Container(browser, "Browser", "user's web browser")
+    Container(kbase_ui_app, "kbase-ui", "web app")
+    Container(hosts_mapping, "host mapping", "/etc/hosts")
+}
+
+System_Boundary(kbase_ui, "KBase UI (docker container)", "container serving kbase-ui") {
+    Container(kbase_ui_server, "kbase-ui server", "nginx")
+    Container(kbase_ui_files, "app files", "directory of files")
+    Container(kbase_ui_plugins, "plugins", "directory of files")
+}
+
+' System_Boundary(container, "UI Container") {
+'     Container(nginx, "NGinx", "Serve static files")
+'     Container(kbaseui, "KBase UI", "kbase-ui files")
+'     Container(plugins, "UI Plugins", "Plugin files")
+' }
+
+' System_Boundary(kbase_envirnoment, "KBase Environment Pubilc Interface", "proxied") {
+'     Container(proxy, "KBase Proxy")
+'     ' Container(dynamicservices, "KBase Dynamic Services")
+'     ' Container(navigator, "Navigator")
+'     ' Container(narrative, "Narrative")
+' }
+
+System_Boundary(local_proxy, "Local Proxy (docker container)") {
+    Container(proxy, "KBase Proxy")
+}
+
+System_Boundary(kbase_envirnoment_internal, "KBase Proxy and Infrastructure (ci, narrative-dev, next, appdev, prod)", "proxied") {
+    Container(services, "KBase Core Services", "docker container per service")
+    Container(dynamic_services, "KBase Dynamic Services", "docker container per service")
+    Container(navigator, "Navigator", "docker container?")
+    Container(narrative, "Narrative", "docker container")
+    ' Container(kbase_ui, "KBase UI", "docker container")
+    ' Container(kbase_ui_files, "KBase UI Files", "directory of files")
+    ' Container(kbase_ui_plugins, "UI Plugins", "directory of files")
+}
+
+Rel(developer, browser, "uses")
+
+Rel(browser, hosts_mapping, "lookup", "e.g. ci.kbase.us")
+
+' Rel(browser, kbase_ui_server, "loads")
+Rel(browser, kbase_ui_app, "runs")
+
+Rel(kbase_ui_server, kbase_ui_files, "serves")
+Rel(kbase_ui_server, kbase_ui_plugins, "serves")
+
+Rel(kbase_ui_app, proxy, "calls (services, dynamic services, narrative)")
+
+Rel(browser, proxy, "loads (kbase-ui, narrative, navigator)")
+
+Rel(proxy, kbase_ui_server, "proxies")
+Rel(proxy, narrative, "proxies")
+Rel(proxy, navigator, "proxies")
+Rel(proxy, services, "proxies")
+Rel(proxy, dynamic_services, "proxies")
+
+' Rel(kbase_ui_app, narrative, "links_to")
+' Rel(kbase_ui_app, navigator, "links_to")
+
+' Rel(kbase_ui, kbase_ui_files, "serves")
+' Rel(kbase_ui, kbase_ui_plugins, "serves")
+
+' Rel(browser, kbaseuiapp, "runs")
+
+' Rel(browser, nginx, "requests")
+
+' Rel(nginx, kbaseui, "serves")
+' Rel(nginx, plugins, "services")
+
+' Rel(kbaseuiapp, proxy, "calls")
+
+' Rel(proxy, services, "proxies")
+' Rel(proxy, dynamicservices, "proxies")
+' Rel(proxy, narrative, "proxies")
+' Rel(proxy, narrative, "proxies")
+
+' Rel(kbaseuiapp, narrative, "calls", "narrative loader")
+
+' Rel(browser, narrative, "serves")
+' Rel(browser, navigator, "serves")
+
