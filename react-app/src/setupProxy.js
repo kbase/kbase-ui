@@ -14,7 +14,7 @@ module.exports = function (app) {
     app.use(
         pluginsRoot,
         createProxyMiddleware({
-            target: 'http://kbase-ui-deploy:80/deploy/plugins/',
+            target: 'http://kbase-ui-deploy:80/plugins/',
             changeOrigin: true,
             pathRewrite: {[`^${pluginsRoot}`]: ''}
         })
@@ -22,7 +22,7 @@ module.exports = function (app) {
     app.use(
         '/modules/plugins',
         createProxyMiddleware({
-            target: 'http://kbase-ui-deploy:80/deploy/plugins/',
+            target: 'http://kbase-ui-deploy:80/plugins/',
             changeOrigin: true,
             pathRewrite: {'^/modules/plugins': ''}
         })
@@ -30,7 +30,7 @@ module.exports = function (app) {
     app.use(
         '/deploy/plugins',
         createProxyMiddleware({
-            target: 'http://kbase-ui-deploy:80/deploy/plugins/',
+            target: 'http://kbase-ui-deploy:80/plugins/',
             changeOrigin: true,
             pathRewrite: {'^/deploy/plugins': ''}
         })
@@ -38,7 +38,7 @@ module.exports = function (app) {
     app.use(
         '/plugins',
         createProxyMiddleware({
-            target: 'http://kbase-ui-deploy:80/deploy/plugins/',
+            target: 'http://kbase-ui-deploy:80/plugins/',
             changeOrigin: true,
             pathRewrite: {'^/plugins': ''}
         })
