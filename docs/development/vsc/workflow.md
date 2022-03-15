@@ -11,7 +11,7 @@ This creates a development workspace and also launches associated support servic
 - reopen the project with devcontainer enabled:
     - macOS: <shift><command><P>
     - type: "reopen"
-    - select "Remote-Containers: Reopen in Devcontainer"
+    - select "Remote-Containers: Reopen in Container"
     - if this is the first time, the container will need to be built
 - open a VSC terminal
     - the terminal will be opened inside the container
