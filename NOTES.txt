@@ -133,3 +133,8 @@ make build-docker-compose-override
 make build-image
 make start-local-server 
 
+
+
+NEWS!
+
+local devcontainer workflow ... works!

@@ -22,7 +22,7 @@ services:
       - "${PWD}/dev/gitlab-config:/kb/deployment/config"
       - ${PWD}/deployment/scripts:/kb/deployment/scripts
       # Map locally installed plugins into the expected location within container
-      - ${PWD}/build/dist/deploy/plugins:/kb/deployment/app/public/deploy/plugins
+      - ${PWD}/build/plugins:/kb/deployment/app/public/deploy/plugins
       # - ${SCRIPTS_DIR}:/kb/deployment/scripts
 
       # just use dev for the image tag so we can easily clean
@@ -61,7 +61,7 @@ services:
     image: nginx:1.21.6-alpine
     container_name: kbase-ui-deploy
     volumes:
-      - ./build/dist:/usr/share/nginx/html
+      - ./build:/usr/share/nginx/html
     networks:
       - kbase-dev
     ports:

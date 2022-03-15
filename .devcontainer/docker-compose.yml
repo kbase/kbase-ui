@@ -49,7 +49,7 @@ services:
     image: nginx:1.21.6-alpine
     container_name: kbase-ui-deploy
     volumes:
-      - ../build/dist:/usr/share/nginx/html
+      - ../build:/usr/share/nginx/html
     networks:
       - kbase-dev
     ports:
@@ -64,12 +64,12 @@ services:
       - NGINX_PORT=5000
   kbase-ui-proxy:
     build:
-      context: tools/proxy
+      context: ../tools/proxy
     # there is only one proxy image, for local development, so just call it :dev
     image: kbase/kbase-ui-proxy:dev
     depends_on:
       - kbase-ui
-      - kbase-ui-plugin-proxy
+      - kbase-ui-deploy
     networks:
       - kbase-dev
     container_name: kbase-ui-proxy
