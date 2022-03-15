@@ -151,7 +151,7 @@ export default class NavigatorContextWrapper extends Component<
                     }
 
                     switch (
-                        this.state.navigatorContextState.searchState.status
+                    this.state.navigatorContextState.searchState.status
                     ) {
                         case SearchStatus.NONE:
                         case SearchStatus.ERROR:
@@ -360,7 +360,7 @@ export default class NavigatorContextWrapper extends Component<
             task: (payload: JSONObject, queue: Queue<JSONObject>) => {
                 return new Promise(async (resolve, reject) => {
                     switch (
-                        this.state.navigatorContextState.searchState.status
+                    this.state.navigatorContextState.searchState.status
                     ) {
                         case SearchStatus.NONE:
                         case SearchStatus.INITIAL:
@@ -378,53 +378,83 @@ export default class NavigatorContextWrapper extends Component<
                         this.state.navigatorContextState.searchState
                             .searchParams;
 
-                    const { narratives, totalCount, filterCount } =
-                        await this.dataModel.searchFromSearchParams(
-                            searchParams
-                        );
+                    try {
+                        const { narratives, totalCount, filterCount } =
+                            await this.dataModel.searchFromSearchParams(
+                                searchParams
+                            );
 
-                    const items = narratives.map((narrative, index) => {
-                        return {
-                            index: index + searchParams.offset,
-                            value: narrative,
-                        };
-                    });
+                        const items = narratives.map((narrative, index) => {
+                            return {
+                                index: index + searchParams.offset,
+                                value: narrative,
+                            };
+                        });
 
-                    const nextState: NavigatorContextWrapperState = {
-                        ...this.state,
-                        navigatorContextState: {
-                            ...this.state.navigatorContextState,
-                            searchState: {
-                                ...this.state.navigatorContextState.searchState,
-                                status: SearchStatus.SEARCHED,
-                                items,
-                                filterCount,
-                                totalCount,
-                            },
-                        },
-                    };
-                    const selectedBy =
-                        nextState.navigatorContextState.userInteractions
-                            .narrativeSelectedBy;
-                    if (
-                        selectedBy === NarrativeSelectedBy.NONE &&
-                        narratives.length > 0
-                    ) {
-                        nextState.navigatorContextState.selectedNarrative = {
-                            ...nextState.navigatorContextState
-                                .selectedNarrative,
-                            status: AsyncProcessStatus.SUCCESS,
-                            value: {
-                                narrativeDoc: narratives[0],
+                        const nextState: NavigatorContextWrapperState = {
+                            ...this.state,
+                            navigatorContextState: {
+                                ...this.state.navigatorContextState,
+                                searchState: {
+                                    ...this.state.navigatorContextState.searchState,
+                                    status: SearchStatus.SEARCHED,
+                                    items,
+                                    filterCount,
+                                    totalCount,
+                                },
                             },
                         };
-                        nextState.navigatorContextState.userInteractions.narrativeSelectedBy =
-                            NarrativeSelectedBy.SEARCH;
+                        const selectedBy =
+                            nextState.navigatorContextState.userInteractions
+                                .narrativeSelectedBy;
+                        if (
+                            selectedBy === NarrativeSelectedBy.NONE &&
+                            narratives.length > 0
+                        ) {
+                            nextState.navigatorContextState.selectedNarrative = {
+                                ...nextState.navigatorContextState
+                                    .selectedNarrative,
+                                status: AsyncProcessStatus.SUCCESS,
+                                value: {
+                                    narrativeDoc: narratives[0],
+                                },
+                            };
+                            nextState.navigatorContextState.userInteractions.narrativeSelectedBy =
+                                NarrativeSelectedBy.SEARCH;
+                        }
+
+                        this.setState(nextState, () => {
+                            resolve(null);
+                        });
+                    } catch (ex) {
+                        if (ex instanceof Error) {
+                            this.setState({
+                                ...this.state,
+                                navigatorContextState: {
+                                    ...this.state.navigatorContextState,
+                                    searchState: {
+                                        status: SearchStatus.ERROR,
+                                        error: {
+                                            message: ex.message
+                                        }
+                                    }
+                                }
+                            })
+                        } else {
+                            this.setState({
+                                ...this.state,
+                                navigatorContextState: {
+                                    ...this.state.navigatorContextState,
+                                    searchState: {
+                                        status: SearchStatus.ERROR,
+                                        error: {
+                                            message: 'Unknown Error'
+                                        }
+                                    }
+                                }
+                            })
+                        }
                     }
-
-                    this.setState(nextState, () => {
-                        resolve(null);
-                    });
                 });
             },
         });
@@ -742,50 +772,64 @@ export default class NavigatorContextWrapper extends Component<
                     case SearchStatus.RE_SEARCHING:
                 }
 
-                const { narratives, totalCount, filterCount } =
-                    await this.dataModel.searchFromSearchParams(searchParams);
+                try {
+                    const { narratives, totalCount, filterCount } =
+                        await this.dataModel.searchFromSearchParams(searchParams);
 
-                const items = narratives.map((narrative, index) => {
-                    return {
-                        index: index + searchParams.offset,
-                        value: narrative,
-                    };
-                });
+                    const items = narratives.map((narrative, index) => {
+                        return {
+                            index: index + searchParams.offset,
+                            value: narrative,
+                        };
+                    });
 
-                const nextState: NavigatorContextWrapperState = {
-                    ...this.state,
-                    navigatorContextState: {
-                        ...this.state.navigatorContextState,
-                        searchState: {
-                            ...this.state.navigatorContextState.searchState,
-                            status: SearchStatus.SEARCHED,
-                            items,
-                            filterCount,
-                            totalCount,
-                        },
-                    },
-                };
-                const selectedBy =
-                    nextState.navigatorContextState.userInteractions
-                        .narrativeSelectedBy;
-                if (
-                    selectedBy === NarrativeSelectedBy.NONE &&
-                    narratives.length > 0
-                ) {
-                    nextState.navigatorContextState.selectedNarrative = {
-                        ...this.state.navigatorContextState.selectedNarrative,
-                        status: AsyncProcessStatus.SUCCESS,
-                        value: {
-                            narrativeDoc: narratives[0],
+                    const nextState: NavigatorContextWrapperState = {
+                        ...this.state,
+                        navigatorContextState: {
+                            ...this.state.navigatorContextState,
+                            searchState: {
+                                ...this.state.navigatorContextState.searchState,
+                                status: SearchStatus.SEARCHED,
+                                items,
+                                filterCount,
+                                totalCount,
+                            },
                         },
                     };
-                    nextState.navigatorContextState.userInteractions.narrativeSelectedBy =
-                        NarrativeSelectedBy.SEARCH;
+                    const selectedBy =
+                        nextState.navigatorContextState.userInteractions
+                            .narrativeSelectedBy;
+                    if (
+                        selectedBy === NarrativeSelectedBy.NONE &&
+                        narratives.length > 0
+                    ) {
+                        nextState.navigatorContextState.selectedNarrative = {
+                            ...this.state.navigatorContextState.selectedNarrative,
+                            status: AsyncProcessStatus.SUCCESS,
+                            value: {
+                                narrativeDoc: narratives[0],
+                            },
+                        };
+                        nextState.navigatorContextState.userInteractions.narrativeSelectedBy =
+                            NarrativeSelectedBy.SEARCH;
+                    }
+
+                    this.setState(nextState, () => {
+                        resolve();
+                    });
+                } catch (ex) {
+                    this.setState({
+                        navigatorContextState: {
+                            ...this.state.navigatorContextState,
+                            selectedNarrative: {
+                                ...this.state.navigatorContextState.selectedNarrative,
+                                status: AsyncProcessStatus.ERROR,
+                                error:
+                                    ex instanceof Error ? ex.message : 'Unknown error',
+                            },
+                        },
+                    });
                 }
-
-                this.setState(nextState, () => {
-                    resolve();
-                });
             });
         });
     }
