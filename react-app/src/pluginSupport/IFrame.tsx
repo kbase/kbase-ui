@@ -101,8 +101,4 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
             ></iframe>
         );
     }
-
-    // render() {
-    //     return <iframe src="https://www.youtube.com/embed/cWDJoK8zw58" />;
-    // }
 }
