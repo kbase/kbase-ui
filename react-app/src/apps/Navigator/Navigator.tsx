@@ -26,7 +26,7 @@ export interface NavigatorProps extends RouteComponentProps {
     setTitle: (title: string) => void;
 }
 
-interface NavigatorState {}
+interface NavigatorState { }
 
 export interface NavigatorRouteParams {
     category?: string;
@@ -188,7 +188,6 @@ export default class Navigator extends React.Component<
             case AuthenticationStatus.NONE:
             case AuthenticationStatus.UNAUTHENTICATED:
                 pushHistory('login');
-
                 return null;
             // return (
             //     <ErrorMessage message="The Navigator requires authentication" />
