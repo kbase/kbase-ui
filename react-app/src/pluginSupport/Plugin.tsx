@@ -27,9 +27,8 @@ export interface PluginProps {
     messenger: Messenger;
 }
 
-interface PluginState {}
 
-export default class Plugin extends Component<PluginProps, PluginState> {
+export default class Plugin extends Component<PluginProps> {
     constructor(props: PluginProps) {
         super(props);
         const { params } = props;
