@@ -1,4 +1,4 @@
-import { Component, createRef, RefObject } from 'react';
+import { Component } from 'react';
 import * as uuid from 'uuid';
 import { BuildInfo, Config } from '../types/config';
 import './IFrame.css';
@@ -14,24 +14,16 @@ export interface IFrameProps {
     whenMounted: (el: Window | null) => Promise<void>;
 }
 
-interface IFrameState {}
+interface IFrameState { }
 
 export default class IFrame extends Component<IFrameProps, IFrameState> {
     id: string;
-    ref: RefObject<HTMLIFrameElement>;
     url: string;
     constructor(props: IFrameProps) {
         super(props);
 
-        // const {
-        //     origin, pathRoot, channelId, hostId,
-        //     params, runtime
-        // } = props;
-
         const id = uuid.v4();
         this.id = `frame_ ${id}`;
-
-        this.ref = createRef();
 
         const indexPath = [
             this.props.pathRoot,
@@ -60,23 +52,19 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         return '?cb=' + this.cacheBusterKey(this.props.config.build, false);
     }
 
-    componentDidMount() {
-        if (this.ref.current === null) {
-            return;
-        }
+    loaded(element: HTMLIFrameElement) {
         window.addEventListener('hashchange', (ev: Event) => {
             if (
-                this.ref.current === null ||
-                this.ref.current.contentWindow === null
+                element.contentWindow === null
             ) {
                 return;
             }
             const path = document.location.hash
                 .substring(1)
                 .replace(/^\/+/, '');
-            this.ref.current.contentWindow.location.hash = path;
+            element.contentWindow.location.hash = path;
         });
-        this.props.whenMounted(this.ref.current.contentWindow);
+        this.props.whenMounted(element.contentWindow);
     }
 
     render() {
@@ -106,9 +94,15 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
                 className="IFrame -iframe"
                 frameBorder="0"
                 scrolling="no"
-                ref={this.ref}
+                onLoad={(el) => {
+                    this.loaded(el.target as HTMLIFrameElement);
+                }}
                 src={this.url}
             ></iframe>
         );
     }
+
+    // render() {
+    //     return <iframe src="https://www.youtube.com/embed/cWDJoK8zw58" />;
+    // }
 }
