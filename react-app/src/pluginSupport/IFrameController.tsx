@@ -1,19 +1,19 @@
-import {Component} from 'react';
-import {render} from 'react-dom';
+import { Component } from 'react';
+import { render } from 'react-dom';
 import * as uuid from 'uuid';
-import {AuthenticationState, AuthenticationStatus} from '../contexts/Auth';
-import {WindowChannel, WindowChannelInit} from '../lib/kb_lib/windowChannel';
-import {Messenger} from '../lib/messenger';
+import { AuthenticationState, AuthenticationStatus } from '../contexts/Auth';
+import { WindowChannel, WindowChannelInit } from '../lib/kb_lib/windowChannel';
+import { Messenger } from '../lib/messenger';
 import AutoPostForm from './AutoPostForm';
-import ErrorView, {ErrorInfo} from '../components/ErrorView';
-import IFrame, {IFrameProps} from './IFrame';
+import ErrorView, { ErrorInfo } from '../components/ErrorView';
+import IFrame, { IFrameProps } from './IFrame';
 // import { Auth2Session } from '../lib/kb_lib/Auth2Session';
-import {Config} from '../types/config';
-import {Params} from './Plugin';
-import {Alert} from 'react-bootstrap';
+import { Config } from '../types/config';
+import { Params } from './Plugin';
+import { Alert } from 'react-bootstrap';
 import './IFrameController.css';
-import {isEqual} from '../lib/kb_lib/Utils';
-import {changeHash} from '../apps/Navigator/utils/navigation';
+import { isEqual } from '../lib/kb_lib/Utils';
+import { changeHash } from '../apps/Navigator/utils/navigation';
 
 export enum PluginLoadingStatus {
     NONE = 'NONE',
@@ -216,9 +216,8 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 loadingState: {
                     status: PluginLoadingStatus.ERROR,
                     error: {
-                        message: `Loading timed out after ${
-                            Date.now() - start
-                        }ms`,
+                        message: `Loading timed out after ${Date.now() - start
+                            }ms`,
                         description: [],
                     },
                 },
@@ -256,7 +255,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
             });
         });
 
-        this.channel.on('open-window', ({url}) => {
+        this.channel.on('open-window', ({ url }) => {
             window.location.href = url;
             // window.open(url, name);
         });
@@ -305,14 +304,14 @@ export default class IFrameController extends Component<IFrameControllerProps,
             window.document.body.click();
         });
 
-        this.channel.on('set-title', ({title}) => {
+        this.channel.on('set-title', ({ title }) => {
             this.props.setTitle(title);
         });
 
         this.channel.on('ui-auth-navigate', async (message) => {
             const {
                 nextRequest,
-                tokenInfo: {token},
+                tokenInfo: { token },
             } = message;
             try {
                 console.log('hmm', nextRequest, message);
@@ -390,14 +389,14 @@ export default class IFrameController extends Component<IFrameControllerProps,
             case AuthenticationStatus.AUTHENTICATED:
                 const {
                     token,
-                    account: {user, display, email, roles},
+                    account: { user, display, email, roles },
                 } = this.props.authState.authInfo;
                 return {
                     token,
                     username: user,
                     realname: display,
                     email,
-                    roles: roles.map(({id}) => {
+                    roles: roles.map(({ id }) => {
                         return id;
                     }),
                 };
@@ -416,7 +415,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                     if (authInfo === null) {
                         return;
                     }
-                    const {token, username, realname, email} = authInfo;
+                    const { token, username, realname, email } = authInfo;
                     this.channel!.send('loggedin', {
                         token,
                         username,
@@ -450,7 +449,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
             this.channel!.once(
                 'ready',
                 PLUGIN_STARTUP_TIMEOUT,
-                ({channelId}: { channelId?: string }) => {
+                ({ channelId }: { channelId?: string }) => {
                     this.channel!.setPartner(channelId || this.pluginChannelId);
 
                     const params = Object.assign({}, this.props.routeParams);
@@ -464,14 +463,14 @@ export default class IFrameController extends Component<IFrameControllerProps,
                             case AuthenticationStatus.AUTHENTICATED:
                                 const {
                                     token,
-                                    account: {user, display, email, roles},
+                                    account: { user, display, email, roles },
                                 } = this.props.authState.authInfo;
                                 return {
                                     token,
                                     username: user,
                                     realname: display,
                                     email,
-                                    roles: roles.map(({id}) => {
+                                    roles: roles.map(({ id }) => {
                                         return id;
                                     }),
                                 };
@@ -534,7 +533,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 ) {
                     const {
                         token,
-                        account: {user: username, display: realname, email},
+                        account: { user: username, display: realname, email },
                     } = this.props.authState.authInfo;
                     this.channel!.send('loggedin', {
                         token,
@@ -699,6 +698,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                             },
                         },
                     });
+                    return;
                 }
 
                 this.setState({
@@ -742,12 +742,12 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 <Alert variant="warning" className="PluginLoading">
                     <span
                         className="fa fa-rotate-225 fa-2x fa-plug"
-                        style={{marginRight: '8px', color: color}}
+                        style={{ marginRight: '8px', color: color }}
                     />
                     <span> {message} </span>
                     <span
                         className="fa fa-2x fa-spinner fa-pulse"
-                        style={{marginLeft: '8px'}}
+                        style={{ marginLeft: '8px' }}
                     />
                 </Alert>
             </div>
