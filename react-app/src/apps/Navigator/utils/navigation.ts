@@ -66,6 +66,5 @@ export function changeHash(
         }
     }
 
-    // window.history.pushState(null, '', url);
     window.location.hash = url.hash;
 }
