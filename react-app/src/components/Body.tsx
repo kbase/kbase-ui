@@ -1,10 +1,10 @@
-import {Component} from 'react';
-import {HashRouter, Redirect, Route, Switch} from 'react-router-dom';
+import { Component } from 'react';
+import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 import './Body.css';
 import NotFound from './NotFoundChecked/NotFoundChecked';
 import PluginWrapper from './PluginWrapper/PluginWrapper';
-import {Config} from '../types/config';
-import {AuthenticationState} from '../contexts/Auth';
+import { Config } from '../types/config';
+import { AuthenticationState } from '../contexts/Auth';
 import About from '../applets/about';
 import Organizations from '../apps/Organizations';
 import Catalog from '../apps/Catalog';
@@ -14,7 +14,7 @@ import Developer from '../applets/developer';
 import Navigator from '../apps/Navigator/Navigator';
 import NarrativeLoader from '../applets/narrativeLoader';
 import NarrativeManager from '../apps/NarrativeManager';
-import ExternalRedirect, {RedirectKind} from './ExternalRedirect';
+import ExternalRedirect, { RedirectKind } from './ExternalRedirect';
 
 export interface BodyProps {
     config: Config;
@@ -54,7 +54,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                         }}
                     /> */}
                     <Route path="/dashboard">
-                        <Redirect to="/navigator"/>
+                        <Redirect to="/navigator" />
                     </Route>
                     <Route
                         path="/dashboard4"
@@ -409,8 +409,16 @@ export default class Body extends Component<BodyProps, BodyState> {
                             return <Developer {...this.props} />;
                         }}
                     />
+                    {/* <Route exact path="/" render={() => {
+                        console.log('redirecting??');
+                        window.location.hash = "#navigator";
+                        window.dispatchEvent(new HashChangeEvent("hashchange"));
+                        return <div />;
+                    }}>
+
+                    </Route> */}
                     <Route exact path="/">
-                        <Redirect to="/navigator"/>
+                        <Redirect to="navigator" />
                     </Route>
                     <Route
                         exact={true}
