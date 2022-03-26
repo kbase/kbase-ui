@@ -25,6 +25,7 @@ interface PluginsConfig {
   plugins: Array<PluginConfig>;
 }
 
+// TODO: clone with depth 1
 function fetchRepo(account: string, name: string, dest: string) {
   return new Git(`${dest}`).clone(
     `https://github.com/${account}/kbase-ui-plugin-${name}`,
