@@ -70,7 +70,6 @@ export default class ConfigWrapper extends React.Component<
             },
         });
         try {
-            console.log('HMM');
             const rawConfig = await (
                 await fetch(process.env.PUBLIC_URL + '/deploy/config.json')
             ).json();
