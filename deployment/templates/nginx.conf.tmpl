@@ -87,6 +87,14 @@ http {
             alias /kb/deployment/plugins/;
         }
 
+        location /ws/ {
+            client_max_body_size 300M;
+            proxy_pass http://localhost:3000/ws/;
+            proxy_set_header Upgrade $http_upgrade; 
+            proxy_set_header Connection "Upgrade";
+            proxy_set_header Host {{ .Env.deploy_ui_hostname }};
+        }
+  
         location / {
             # Ensure that index.html is invoked even if a path is
             # specified and doesn't exist.
