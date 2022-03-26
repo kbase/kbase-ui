@@ -31,7 +31,7 @@ LABEL org.label-schema.vcs-url="https://github.com/kbase/kbase-ui.git" \
     org.label-schema.schema-version="1.0.0-rc1" \
     us.kbase.vcs-branch=$BRANCH  \
     us.kbase.vcs-tag=$TAG \
-    maintainer="Steve Chan sychan@lbl.gov"
+    maintainer="Erik Pearson eapearson@lbl.gov"
 
 ENTRYPOINT [ "dockerize" ]
 
