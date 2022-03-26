@@ -15,6 +15,8 @@ import { Account, TokenInfo, Auth2 } from '../lib/kb_lib/Auth2';
 import { JSONRPC11Exception } from '../lib/kb_lib/comm/JSONRPC11/JSONRPC11';
 import * as Cookie from 'es-cookie';
 import { Config } from '../types/config';
+import { AuthError } from '../lib/kb_lib/Auth2Error';
+import { changeHash } from '../apps/Navigator/utils/navigation';
 
 /**
  * Holds the current authentication information
@@ -110,6 +112,9 @@ export default class AuthWrapper extends React.Component<
     AuthWrapperProps,
     AuthWrapperState
 > {
+    tokenListener: number | null;
+    tokenChangeInterval: number;
+    tokenValidationInterval: number;
     constructor(props: AuthWrapperProps) {
         super(props);
         this.state = {
@@ -117,10 +122,108 @@ export default class AuthWrapper extends React.Component<
                 status: AsyncProcessStatus.NONE,
             },
         };
+
+        this.tokenListener = null;
+        // this.tokenMonitoringInterval = props.config.ui.constants.authMonitorInterval;
+        this.tokenChangeInterval = 1000;
+        this.tokenValidationInterval = 10000;
     }
 
     componentDidMount() {
-        this.fetchTokenInfo();
+        this.syncTokenInfo();
+        // this.tokenListener = window.setInterval(() => {
+        //     this.tokenChangeMonitor();
+        // }, this.tokenChangeInterval);
+
+        // this.tokenListener = window.setInterval(() => {
+        //     this.tokenValidationMonitor();
+        // }, this.tokenValidationInterval);
+    }
+
+    async tokenChangeMonitor() {
+        // console.log('token change monitor called!', Date.now());
+        /*
+        cases to handle:
+        - have token, token changes: ignore new token, simply logout
+        - have token, no token: logout
+        - no token, have token: fetch token info
+        */
+        const token = BrowserAuth.getToken();
+        const state = this.state;
+        switch (state.authState.status) {
+            case AsyncProcessStatus.NONE:
+                // ignore
+                break;
+            case AsyncProcessStatus.PENDING:
+                // ignore
+                break;
+            case AsyncProcessStatus.SUCCESS: {
+                switch (state.authState.value.status) {
+                    case AuthenticationStatus.NONE:
+                    case AuthenticationStatus.UNAUTHENTICATED:
+                        return this.checkAuth();
+                    case AuthenticationStatus.AUTHENTICATED: {
+                        const token = BrowserAuth.getToken();
+                        if (token === null) {
+                            // Handles case in which the ui had been logged in, but now there is no token!
+                            this.setState({ authState: this.unauthenticatedState() }, () => {
+                                changeHash('auth2/signedout');
+                            });
+                        } else if (token !== state.authState.value.authInfo.token) {
+                            // Handles case in which the browser is logged out and logged in 
+                            // before the above case can be handled. Not impossible, but not
+                            // probable for a human operator.
+                            await this.logout();
+                            changeHash('auth2/signedout');
+                        }
+                    }
+                }
+                break;
+            }
+            case AsyncProcessStatus.ERROR:
+                this.syncTokenInfo();
+                break;
+        }
+    }
+
+    /**
+     * Validate the current token, if any.
+     * 
+     * Note that this only handles the case of an authenticated session, ensuring that the
+     * current cookie is valid by checking with the auth server.
+     * 
+     * See the token change monitor for other cases.
+     */
+    async tokenValidationMonitor() {
+        const state = this.state;
+        switch (state.authState.status) {
+            case AsyncProcessStatus.NONE:
+                // ignore
+                break;
+            case AsyncProcessStatus.PENDING:
+                // ignore
+                break;
+            case AsyncProcessStatus.SUCCESS: {
+                switch (state.authState.value.status) {
+                    case AuthenticationStatus.NONE:
+                    case AuthenticationStatus.UNAUTHENTICATED:
+                        return this.checkAuth();
+                    case AuthenticationStatus.AUTHENTICATED: {
+                        return this.ensureValidToken();
+                    }
+                }
+                break;
+            }
+            case AsyncProcessStatus.ERROR:
+                this.syncTokenInfo();
+                break;
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.tokenListener !== null) {
+            window.clearTimeout(this.tokenListener);
+        }
     }
 
     async fetchUserProfile(token: string, username: string) {
@@ -153,7 +256,30 @@ export default class AuthWrapper extends React.Component<
         };
     }
 
-    async fetchTokenInfo() {
+    async ensureValidToken() {
+        const token = BrowserAuth.getToken();
+
+        if (token === null) {
+            this.setState({ authState: this.unauthenticatedState() });
+            return;
+        }
+
+        const auth = new Auth2({
+            baseUrl: this.props.config.services.Auth2.url,
+        });
+        // TODO: need a call like auth.validateToken(token);
+        const tokenInfo = await auth.getTokenInfo(token);
+        if (tokenInfo === null) {
+            BrowserAuth.removeToken();
+            this.setState({
+                authState: this.unauthenticatedState(),
+            }, () => {
+                changeHash('auth2/signedout');
+            });
+        }
+    }
+
+    async syncTokenInfo() {
         const token = BrowserAuth.getToken();
 
         if (token === null) {
@@ -204,10 +330,131 @@ export default class AuthWrapper extends React.Component<
                             authState: this.errorState(ex.error.message),
                         });
                 }
+            } else if (ex instanceof AuthError) {
+                // BrowserAuth.removeToken();
+                switch (ex.code) {
+                    case '10020':
+                        BrowserAuth.removeToken();
+                        this.setState({
+                            authState: this.unauthenticatedState(),
+                        });
+                        break;
+                    default:
+                        BrowserAuth.removeToken();
+                        this.setState({
+                            authState: this.unauthenticatedState(),
+                        });
+                }
+                // console.log('AUTH error', ex.code);
+                // this.setState({ authState: this.errorState(ex.message) });
             } else if (ex instanceof Error) {
-                this.setState({ authState: this.errorState(ex.message) });
+                this.setState({
+                    authState: this.unauthenticatedState(),
+                });
+                // this.setState({ authState: this.errorState(ex.message) });
             } else {
-                this.setState({ authState: this.errorState('Unknown') });
+                this.setState({
+                    authState: this.unauthenticatedState(),
+                });
+                // this.setState({ authState: this.errorState('Unknown') });
+            }
+        }
+    }
+
+    async asyncSetState(newState: AuthWrapperState): Promise<void> {
+        return new Promise((resolve) => {
+            this.setState(newState, () => {
+                resolve();
+            });
+        });
+    }
+
+    async checkAuth() {
+        const token = BrowserAuth.getToken();
+
+        if (token === null) {
+            await this.asyncSetState({ authState: this.unauthenticatedState() });
+            return;
+        }
+
+        const auth = new Auth2({
+            baseUrl: this.props.config.services.Auth2.url,
+        });
+
+        try {
+            const tokenInfo = await auth.getTokenInfo(token);
+            const account = await auth.getMe(token);
+            if (tokenInfo === null) {
+                await this.asyncSetState({ authState: this.unauthenticatedState() });
+                changeHash('auth2/signedout');
+            } else {
+                const userProfile = await this.fetchUserProfile(
+                    token,
+                    tokenInfo.user
+                );
+                await this.asyncSetState({
+                    authState: {
+                        status: AsyncProcessStatus.SUCCESS,
+                        value: {
+                            status: AuthenticationStatus.AUTHENTICATED,
+                            authInfo: {
+                                token,
+                                tokenInfo,
+                                account,
+                            },
+                            userProfile,
+                            logout: this.logout.bind(this),
+                        },
+                    },
+                });
+                changeHash('navigator');
+            }
+        } catch (ex) {
+            if (ex instanceof JSONRPC11Exception) {
+                switch (ex.error.code) {
+                    case 10020:
+                        await this.asyncSetState({
+                            authState: this.unauthenticatedState(),
+                        });
+                        changeHash('auth2/signedout');
+                        break;
+                    default:
+                        // what happens here?
+                        this.setState({
+                            authState: this.errorState(ex.error.message),
+                        });
+                }
+            } else if (ex instanceof AuthError) {
+                // BrowserAuth.removeToken();
+                switch (ex.code) {
+                    case '10020':
+                        BrowserAuth.removeToken();
+                        await this.asyncSetState({
+                            authState: this.unauthenticatedState(),
+                        });
+                        changeHash('auth2/signedout');
+                        break;
+                    default:
+                        BrowserAuth.removeToken();
+                        await this.asyncSetState({
+                            authState: this.unauthenticatedState(),
+                        });
+                        changeHash('auth2/signedout');
+                }
+                // console.log('AUTH error', ex.code);
+                // this.setState({ authState: this.errorState(ex.message) });
+            } else if (ex instanceof Error) {
+                await this.asyncSetState({
+                    authState: this.unauthenticatedState(),
+                });
+                changeHash('auth2/signedout');
+                // this.setState({ authState: this.errorState(ex.message) });
+            } else {
+                await this.asyncSetState({
+                    authState: this.unauthenticatedState(),
+                });
+                changeHash('auth2/signedout');
+                // this.setState({ authState: this.errorState('Unknown') });
             }
         }
     }
@@ -243,6 +490,10 @@ export default class AuthWrapper extends React.Component<
                             authState: this.errorState(ex.error.message),
                         });
                 }
+            } else if (ex instanceof AuthError) {
+                // BrowserAuth.removeToken();
+                console.log('AUTH error', ex);
+                this.setState({ authState: this.errorState(ex.message) });
             } else if (ex instanceof Error) {
                 this.setState({ authState: this.errorState(ex.message) });
             } else {
@@ -262,7 +513,7 @@ export default class AuthWrapper extends React.Component<
             path: '/',
             sameSite: 'strict',
         });
-        await this.fetchTokenInfo();
+        await this.syncTokenInfo();
     }
 
     render() {
