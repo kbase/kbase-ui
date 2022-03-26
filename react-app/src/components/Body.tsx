@@ -1,6 +1,5 @@
 import { Component } from 'react';
 import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
-import './Body.css';
 import NotFound from './NotFoundChecked/NotFoundChecked';
 import PluginWrapper from './PluginWrapper/PluginWrapper';
 import { Config } from '../types/config';
@@ -15,6 +14,9 @@ import Navigator from '../apps/Navigator/Navigator';
 import NarrativeLoader from '../applets/narrativeLoader';
 import NarrativeManager from '../apps/NarrativeManager';
 import ExternalRedirect, { RedirectKind } from './ExternalRedirect';
+
+import styles from './Body.module.css';
+import { changeHash } from '../apps/Navigator/utils/navigation';
 
 export interface BodyProps {
     config: Config;
@@ -181,7 +183,6 @@ export default class Body extends Component<BodyProps, BodyState> {
                             }
                         }}
                     />
-
                     <Route
                         path="/feeds"
                         render={(props) => {
@@ -417,8 +418,10 @@ export default class Body extends Component<BodyProps, BodyState> {
                     }}>
 
                     </Route> */}
-                    <Route exact path="/">
-                        <Redirect to="navigator" />
+                    <Route exact path="/" render={() => {
+                        changeHash('navigator')
+                        return null;
+                    }}>
                     </Route>
                     <Route
                         exact={true}
@@ -445,7 +448,7 @@ export default class Body extends Component<BodyProps, BodyState> {
 
     render() {
         return (
-            <div className="Body" data-k-b-testhook-component="body">
+            <div className={styles.Body} data-k-b-testhook-component="body">
                 {this.renderRouting()}
             </div>
         );
