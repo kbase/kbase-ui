@@ -7,13 +7,13 @@ import { Messenger } from '../lib/messenger';
 import AutoPostForm from './AutoPostForm';
 import ErrorView, { ErrorInfo } from '../components/ErrorView';
 import IFrame, { IFrameProps } from './IFrame';
-// import { Auth2Session } from '../lib/kb_lib/Auth2Session';
 import { Config } from '../types/config';
 import { Params } from './Plugin';
 import { Alert } from 'react-bootstrap';
-import './IFrameController.css';
 import { isEqual } from '../lib/kb_lib/Utils';
 import { changeHash } from '../apps/Navigator/utils/navigation';
+
+import styles from './IFrameController.module.css';
 
 export enum PluginLoadingStatus {
     NONE = 'NONE',
@@ -108,13 +108,9 @@ export default class IFrameController extends Component<IFrameControllerProps,
     constructor(props: IFrameControllerProps) {
         super(props);
 
-        const id = uuid.v4();
-        this.id = `host_ ${id}`;
-
+        this.id = `host_${uuid.v4()}`;
         this.receivers = [];
-
         this.channel = null;
-
         this.hostChannelId = uuid.v4();
         this.pluginChannelId = uuid.v4();
 
@@ -282,7 +278,6 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 throw new Error('Invalid path');
             })();
 
-            // window.location.hash = `#${path}`;
             changeHash(path);
 
             // this.props.messenger.send({
@@ -293,6 +288,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
         });
 
         this.channel.on('post-form', (config) => {
+            console.log('hmm, on post-form', config);
             this.formPost(config);
         });
 
@@ -314,8 +310,6 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 tokenInfo: { token },
             } = message;
             try {
-                console.log('hmm', nextRequest, message);
-
                 // Set the auth
                 switch (this.props.authState.status) {
                     case AuthenticationStatus.NONE:
@@ -329,6 +323,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 }
 
                 // Redirect
+                console.log('hmm, auth navigate???', nextRequest.path);
                 changeHash(nextRequest.path || 'about');
                 // window.location.hash = nextRequest.path || 'about';
             } catch (ex) {
@@ -450,6 +445,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 'ready',
                 PLUGIN_STARTUP_TIMEOUT,
                 ({ channelId }: { channelId?: string }) => {
+                    console.log('READY');
                     this.channel!.setPartner(channelId || this.pluginChannelId);
 
                     const params = Object.assign({}, this.props.routeParams);
@@ -525,6 +521,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
 
             // Sent by the plugin to indicate that the plugin has finished loading.
             this.channel!.once('started', PLUGIN_STARTUP_TIMEOUT, () => {
+                console.log('started');
                 this.stopLoadingMonitor();
                 // send an additional message according to the auth state.
                 if (
@@ -582,11 +579,16 @@ export default class IFrameController extends Component<IFrameControllerProps,
         }
     }
 
-    iframeMounted(w: Window) {
-        return this.setupCommunication(w).then(() => {
-            const params = Object.assign({}, this.props.routeParams);
-            params.view = this.props.view;
-        });
+    async iframeMounted(w: Window) {
+        console.log('setting up comm...');
+        try {
+            await this.setupCommunication(w);
+        } catch (ex) {
+            console.log('Error setting up communication!!', ex);
+        }
+        console.log('communications setup...');
+        const params = Object.assign({}, this.props.routeParams);
+        params.view = this.props.view;
     }
 
     renderError(state: PluginLoadingStateError) {
@@ -738,8 +740,8 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 return;
         }
         return (
-            <div className="-cover">
-                <Alert variant="warning" className="PluginLoading">
+            <div className={styles['-cover']}>
+                <Alert variant="warning" className={styles.PluginLoading}>
                     <span
                         className="fa fa-rotate-225 fa-2x fa-plug"
                         style={{ marginRight: '8px', color: color }}
@@ -773,7 +775,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
 
     render() {
         return (
-            <div className="IFrameController">
+            <div className={styles.IFrameController}>
                 {this.renderState()}
                 {this.renderIFrame()}
             </div>
