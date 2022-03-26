@@ -23,7 +23,7 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         super(props);
 
         const id = uuid.v4();
-        this.id = `frame_ ${id}`;
+        this.id = `frame_${id}`;
 
         const indexPath = [
             this.props.pathRoot,
@@ -35,6 +35,18 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
 
         // Make an absolute url to this.
         this.url = process.env.PUBLIC_URL + '/' + indexPath;
+    }
+
+    componentDidMount() {
+        // NB cannot use react ref for this, because react under Safari
+        // has a bug which prevents the iframe from loading when
+        // a ref is placed on it.
+        const element = document.getElementById(this.id);
+        if (element === null) {
+            console.warn('yikes!');
+            return;
+        }
+        this.loaded(element as HTMLIFrameElement);
     }
 
     cacheBusterKey(buildInfo: BuildInfo, developMode: boolean) {
@@ -53,6 +65,7 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
     }
 
     loaded(element: HTMLIFrameElement) {
+        console.log('LOADED', element);
         window.addEventListener('hashchange', (ev: Event) => {
             if (
                 element.contentWindow === null
@@ -80,7 +93,7 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         };
 
         const paramString = window.encodeURIComponent(JSON.stringify(params));
-
+        console.log('iframe render', this.url, params, window.location);
         return (
             <iframe
                 title="Plugin IFrame"
@@ -94,9 +107,6 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
                 className="IFrame -iframe"
                 frameBorder="0"
                 scrolling="no"
-                onLoad={(el) => {
-                    this.loaded(el.target as HTMLIFrameElement);
-                }}
                 src={this.url}
             ></iframe>
         );
