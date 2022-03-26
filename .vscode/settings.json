@@ -9,5 +9,9 @@
     "plantuml.exportOutDir": "docs/diagrams/out",
     "plantuml.exportSubFolder": false,
     "plantuml.exportFormat": "png",
-    "plantuml.diagramsRoot": "docs/diagrams"
+    "plantuml.diagramsRoot": "docs/diagrams",
+    "deno.enablePaths": [
+        "./tools/deno"
+    ],
+    "deno.lint": true
 }
