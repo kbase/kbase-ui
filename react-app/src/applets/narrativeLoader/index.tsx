@@ -36,9 +36,9 @@ export class LoadingHttpError extends Error {
     }
 }
 
-export class UnauthenticatedError extends Error {}
+export class UnauthenticatedError extends Error { }
 
-export class UIError extends Error {}
+export class UIError extends Error { }
 
 export class TimeoutError extends Error {
     elapsed: number;
@@ -165,13 +165,12 @@ export default class NarrativeLoader extends Component<
                 },
             },
             () => {
-                console.log('hmm, try loading', narrativeId);
                 this.tryLoading(narrativeId);
             }
         );
     }
 
-    renderProgress() {}
+    renderProgress() { }
 
     async tryLoading(narrativeId: number) {
         const narrativeUrl =
