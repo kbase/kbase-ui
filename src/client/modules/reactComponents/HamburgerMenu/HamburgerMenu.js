@@ -72,8 +72,6 @@ define([
                     }
                     menuContent.push(this.renderSection(menu));
                     hasContent = true;
-                } else {
-                    hasContent = false;
                 }
             });
 
@@ -90,7 +88,6 @@ define([
                         aria-labeledby="kb-nav-menu">
                         ${menuContent}
                         </ul>
-                    
                 </div>
             `;
         }
