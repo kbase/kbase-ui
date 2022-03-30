@@ -22,7 +22,7 @@ none
 
 ### FIXES
 
-none
+- Fix developer menu appearing for non-devs [UFI-12]
 
 ### MAJOR DEPENDENCY CHANGES
 
