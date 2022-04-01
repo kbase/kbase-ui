@@ -71,9 +71,17 @@ define([
                 });
             };
 
+            const developerMenu = (() => {
+                if (userRoles.includes('DevToken')) {
+                    return filterMenu(hamburgerMenu.developer);
+                } else {
+                    return [];
+                }
+            })();
+
             return {
                 main: filterMenu(hamburgerMenu.main),
-                developer: filterMenu(hamburgerMenu.developer),
+                developer: developerMenu,
                 help: filterMenu(hamburgerMenu.help)
             };
         }
