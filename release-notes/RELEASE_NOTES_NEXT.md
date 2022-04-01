@@ -23,6 +23,7 @@ none
 ### FIXES
 
 - Fix developer menu appearing for non-devs [UFI-12]
+- Fix dropdown menu alignment on right side of sample set viewer [SAM-168]
 
 ### MAJOR DEPENDENCY CHANGES
 
