@@ -25,6 +25,7 @@ none
 - Fix developer menu appearing for non-devs [UFI-12]
 - Fix dropdown menu alignment on right side of sample set viewer [SAM-168]
 - Fix provenance viewer [UFI-13]
+- Fix data search [UFI-14]
 
 ### MAJOR DEPENDENCY CHANGES
 
