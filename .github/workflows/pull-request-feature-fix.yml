@@ -10,4 +10,4 @@ jobs:
     uses: ./.github/workflows/reusable_test.yml
   build:
     needs: test
-    uses: ./.github/workflows/reusable_build.yml
+    uses: ./.github/workflows/reusable_build-push.yml
