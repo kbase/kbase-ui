@@ -1,8 +1,4 @@
-import { Git } from "./common.ts";
-
-function log(message: string) {
-  console.log(message);
-}
+import { Git, log } from "./common.ts";
 
 async function getGitInfo(
   dir: string,

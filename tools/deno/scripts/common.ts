@@ -1,3 +1,7 @@
+export function log(message: string): void {
+  console.log(message);
+}
+
 export interface PluginConfig {
   name: string;
   globalName: string;
@@ -47,26 +51,26 @@ export class Runner {
 export type ISODateTimeString = string;
 
 export interface GitInfo {
-    hash: {
-        full: string,
-        abbreviated: string 
-    },
-    subject: string,
-    notes: string,
-    author: {
-        name: string,
-        date: ISODateTimeString
-    },
-    committer: {
-        name: string,
-        date: ISODateTimeString
-    },
-    originURL: string,
-    account: string,
-    repoName: string,
-    branch: string,
-    tag?: string,
-    version?: string
+  hash: {
+    full: string;
+    abbreviated: string;
+  };
+  subject: string;
+  notes: string;
+  author: {
+    name: string;
+    date: ISODateTimeString;
+  };
+  committer: {
+    name: string;
+    date: ISODateTimeString;
+  };
+  originURL: string;
+  account: string;
+  repoName: string;
+  branch: string;
+  tag?: string;
+  version?: string;
 }
 
 export class Git {
@@ -76,7 +80,7 @@ export class Git {
     this.directory = directory;
     this.runner = new Runner(directory);
   }
-  async gitTag(): Promise<{tag?: string, version?: string}> {
+  async gitTag(): Promise<{ tag?: string; version?: string }> {
     const rawTag = await this.runner.run([
       "git",
       "describe",
@@ -91,10 +95,10 @@ export class Git {
       if (m) {
         return { tag, version: m.slice(1).join(".") };
       } else {
-          if (tag.length > 0) {
-            return { tag };
-          } 
-          return {};
+        if (tag.length > 0) {
+          return { tag };
+        }
+        return {};
       }
     }
   }
@@ -138,9 +142,12 @@ export class Git {
       (await this.runner.run(["git", "config", "--get", "remote.origin.url"]))
         .trim();
 
+    log("Origin URL");
+    log(originURL);
+
     const url = new URL(originURL);
     const path = url.pathname;
-    const [_ignore, account, repoName] = path.split('/');
+    const [_ignore, account, repoName] = path.split("/");
 
     const branch =
       (await this.runner.run(["git", "rev-parse", "--abbrev-ref", "HEAD"]))
