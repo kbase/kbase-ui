@@ -8,7 +8,7 @@ import * as fflate from "https://cdn.skypack.dev/fflate?min";
 import { Buffer } from "https://deno.land/std@0.125.0/io/buffer.ts";
 import { Untar } from "https://deno.land/std@0.125.0/archive/tar.ts";
 import { copy } from "https://deno.land/std@0.125.0/io/util.ts";
-import { Git } from "./common.ts";
+import { Git, log } from "./common.ts";
 
 interface PluginConfig {
   name: string;
@@ -33,16 +33,13 @@ function fetchRepo(account: string, name: string, dest: string) {
   );
 }
 
-function log(message: string) {
-  console.log(message);
-}
-
 async function fetchPlugins(config: string, dest: string) {
   const pluginsRaw = await Deno.readTextFile(config);
   const pluginsConfig = parse(pluginsRaw) as unknown as PluginsConfig;
   for (const pluginConfig of pluginsConfig.plugins) {
     log(
       `Fetching ${pluginConfig.source.github.account}/${pluginConfig.name}...`,
+      "fetchPlugins",
     );
     await fetchRepo(
       pluginConfig.source.github.account,
@@ -66,8 +63,11 @@ async function unpackPlugins(source: string, dest: string) {
     const uncompressed = fflate.gunzipSync(archive);
     const reader = new Buffer(uncompressed);
     const untar = new Untar(reader);
-    log(`   tar package: ${installationPackage}, size: ${archive.byteLength}`);
-    log("   untarring...");
+    log(
+      `tar package: ${installationPackage}, size: ${archive.byteLength}`,
+      "unpackPlugins",
+    );
+    log("untarring...", "unpackPlugins");
     for await (const entry of untar) {
       // Handle directory entry
       if (!entry.fileName.startsWith(pluginPathPrefix)) {
@@ -84,7 +84,7 @@ async function unpackPlugins(source: string, dest: string) {
       const outputFile = await Deno.open(destFileOrDir, { write: true });
       await copy(entry, outputFile);
     }
-    log("    done!");
+    log("done!", "unpackPlugins");
   }
 }
 
@@ -105,7 +105,10 @@ async function generatePluginsManifest(
   // const pluginsRaw = await Deno.readTextFile(uiConfig);
   // const pluginsConfig = parse(pluginsRaw) as unknown as PluginsConfig;
 
-  log(`writing to manifest file ${manifestFileName}...`);
+  log(
+    `writing to manifest file ${manifestFileName}...`,
+    "generatePluginsManifest",
+  );
   const manifest = [];
   for await (const uiPluginConfig of pluginsConfig.plugins) {
     // Config is in the dest (also the source)
@@ -118,7 +121,7 @@ async function generatePluginsManifest(
     const pluginConfig = parse(pluginConfigRaw);
 
     // Need to get git info from the source.
-    log(`Getting git info from ${pluginSourceDir}`);
+    log(`Getting git info from ${pluginSourceDir}`, "generatePluginsManifest");
     const gitInfo = await new Git(pluginSourceDir).getInfo();
     manifest.push({
       install: {
@@ -135,7 +138,7 @@ async function generatePluginsManifest(
     manifestFileName,
     new TextEncoder().encode(JSON.stringify(manifest, null, 4)),
   );
-  log("    done!");
+  log("done!", "generatePluginsManifest");
 }
 
 // async function savePluginManifest(path) {
@@ -157,8 +160,8 @@ async function main() {
   const downloadDest = `${destinationDir}/download`;
   const installDest = `${destinationDir}/plugins`;
 
-  log(`Downloading into ${downloadDest}`);
-  log(`Installing into ${installDest}`);
+  log(`Downloading into ${downloadDest}`, "main");
+  log(`Installing into ${installDest}`, "main");
 
   ensureDirSync(downloadDest);
   ensureDirSync(installDest);

@@ -1,5 +1,10 @@
-export function log(message: string): void {
-  console.log(message);
+export function log(message: string, source?: string): void {
+  const timestamp = Intl.DateTimeFormat("en-US").format(Date.now());
+  let prefix = `[${timestamp}]`;
+  if (source) {
+    prefix += ` [${source}]`;
+  }
+  console.log(`${prefix} ${message}`);
 }
 
 export interface PluginConfig {
@@ -39,16 +44,16 @@ export class Runner {
     ]);
     // TODO: handle errors:
 
-    log("Status?");
-    log(String(status.code));
-    log(String(status.success));
-    log(String(status.signal));
+    // log("Status?");
+    // log(String(status.code));
+    // log(String(status.success));
+    // log(String(status.signal));
 
-    log("Error?");
-    log(decoder.decode(errorOutput));
+    // log("Error?");
+    // log(decoder.decode(errorOutput));
 
-    log("Result?");
-    log(decoder.decode(output));
+    // log("Result?");
+    // log(decoder.decode(output));
 
     return decoder.decode(output);
     // return {
@@ -130,8 +135,7 @@ export class Git {
   }
 
   async getInfo(): Promise<GitInfo> {
-    log("***************");
-    log("make mounted directory 'safe' for git");
+    log("make mounted directory 'safe' for git", "common.ts:GitInfo.getInfo()");
     await this.runner.run([
       "git",
       "config",
@@ -141,8 +145,7 @@ export class Git {
       "/app",
     ]);
 
-    log("***************");
-    log("getting hash, author, committer...");
+    log("getting hash, author, committer...", "common.ts:GitInfo.getInfo()");
     const showOutput = await this.runner.run([
       "git",
       "show",
@@ -158,27 +161,13 @@ export class Git {
       committerDateEpoch,
     ] = showOutput.split("\n").slice(0, 6);
 
-    log("***************");
-    log("Getting subject");
+    log("Getting subject", "common.ts:GitInfo.getInfo()");
     const subject = await this.runner.run(["git", "log", "-1", "--pretty=%s"]);
 
-    log("***************");
-    log("Getting notes");
+    log("Getting notes", "common.ts:GitInfo.getInfo()");
     const notes = await this.runner.run(["git", "log", "-1", "--pretty=%N"]);
 
-    log("***************");
-    log("Getting all config");
-    const allConfig = await this.runner.run([
-      "git",
-      "config",
-      "--local",
-      "--list",
-    ]);
-    log("All Config");
-    log(allConfig);
-
-    log("***************");
-    log("Getting origin url");
+    log("Getting origin url", "common.ts:GitInfo.getInfo()");
     let originURL =
       (await this.runner.run(["git", "config", "--get", "remote.origin.url"]))
         .trim();
@@ -187,19 +176,16 @@ export class Git {
       originURL = originURL.slice(0, -4);
     }
 
-    log("Origin URL");
-    log(originURL);
-
     const url = new URL(originURL);
     const path = url.pathname;
     const [_ignore, account, repoName] = path.split("/");
 
-    log("***************");
-    log("Getting branch");
+    log("Getting branch", "common.ts:GitInfo.getInfo()");
     const branch =
       (await this.runner.run(["git", "rev-parse", "--abbrev-ref", "HEAD"]))
         .trim();
 
+    log("Getting tag", "common.ts:GitInfo.getInfo()");
     const { tag, version } = await this.gitTag();
 
     return {

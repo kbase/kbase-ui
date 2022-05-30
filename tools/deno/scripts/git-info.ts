@@ -15,11 +15,11 @@ async function main() {
   const targetDir = Deno.args[0];
   const destinationFile = Deno.args[1];
 
-  log(`Getting git info from ${targetDir}`);
-  log(`Saving git info info to ${destinationFile}`);
+  log(`Getting git info from ${targetDir}`, "git-info.ts:main()");
+  log(`Saving git info info to ${destinationFile}`, "git-info.ts:main()");
 
   const info = await getGitInfo(targetDir);
-  log(JSON.stringify(info, null, 4));
+  log(JSON.stringify(info, null, 4), "git-info.ts:main()");
 
   await Deno.writeFile(
     destinationFile,

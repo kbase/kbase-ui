@@ -1,5 +1,5 @@
 import { ensureDirSync } from "https://deno.land/std@0.125.0/fs/mod.ts";
-import { Git } from "./common.ts";
+import { Git, log } from "./common.ts";
 
 async function generateBuildInfo(targetDir: string, installDirectory: string) {
   const info = await new Git(targetDir).getInfo();
@@ -21,7 +21,10 @@ async function main() {
   const destinationDir = Deno.args[1];
   // const here = new URL('', import.meta.url).pathname;
 
-  console.log(`Installing build info into ${destinationDir}`);
+  log(
+    `Installing build info into ${destinationDir}`,
+    "generate-build-info.ts:main()",
+  );
 
   ensureDirSync(destinationDir);
 

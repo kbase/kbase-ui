@@ -20,7 +20,7 @@ export INSTALL_DEST="/app/build/build/build-info.json"
 cd tools/deno
 
 echo
-echo "Creating git info"
+echo "Creating build info"
 echo "HOST_APP_DIR=$HOST_APP_DIR"
 echo
 docker compose \

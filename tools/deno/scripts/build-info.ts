@@ -1,6 +1,4 @@
-function log(message: string) {
-  console.log(message);
-}
+import { log } from "./common.ts";
 
 async function getBuildInfo(
   dir: string,
@@ -17,10 +15,10 @@ async function main() {
   }
   const destinationFile = Deno.args[0];
 
-  log(`Saving build info info to ${destinationFile}`);
+  log(`Saving build info info to ${destinationFile}`, "build-info.ts:main()");
 
   const info = await getBuildInfo(destinationFile);
-  log(JSON.stringify(info, null, 4));
+  log(JSON.stringify(info, null, 4), "build-info.ts:main()");
 
   await Deno.writeFile(
     destinationFile,
