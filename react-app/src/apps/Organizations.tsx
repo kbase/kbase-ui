@@ -1,6 +1,4 @@
 import { Component } from 'react';
-// import {Route, RouteComponentProps, Switch} from 'react-router-dom';
-import PluginWrapper from '../components/PluginWrapper/PluginWrapper';
 import PluginWrapper2 from '../components/PluginWrapper/PluginWrapper2';
 import { RouteProps, Router } from '../components/Router2';
 import { AuthenticationState } from '../contexts/Auth';

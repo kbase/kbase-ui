@@ -1,7 +1,7 @@
 import {Component} from 'react';
 import {MenuItem} from '../../types/menu';
 import {Dropdown} from 'react-bootstrap';
-import logo from './kbase_logo.png';
+// import logo from './kbase_logo.png';
 import './styles.css';
 
 export interface HamburgerMenuProps {

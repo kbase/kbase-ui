@@ -5,14 +5,12 @@ import {
     AuthInfo,
 } from '../../contexts/Auth';
 import { Config } from '../../types/config';
-import { Route, Switch } from 'react-router-dom';
-import NotFoundPage from './components/NotFoundPage';
 import Main from './components/Main';
 import { SearchOptions } from './utils/NarrativeSearch';
 import ErrorBoundary from './ErrorBoundary';
 import NavigatorContextWrapper from './context/NavigatorContextWrapper-custom-router';
 import { DetailOptions } from './context/DataModel';
-import { changeHash2, pushHistory } from './utils/navigation';
+import { changeHash2 } from './utils/navigation';
 
 // Styles
 import './bootstrapOverrides.css';

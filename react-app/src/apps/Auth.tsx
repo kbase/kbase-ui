@@ -3,7 +3,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import PluginWrapper2 from '../components/PluginWrapper/PluginWrapper2';
 import { RouteProps, Router } from '../components/Router2';
 import { AuthenticationState } from '../contexts/Auth';
-import RouterWrapper, { HashPath, RouterContext } from '../contexts/RouterContext';
+import { RouterContext } from '../contexts/RouterContext';
 import { AsyncProcessStatus } from '../lib/AsyncProcess2';
 import { Route } from '../lib/Route';
 import { Config } from '../types/config';
