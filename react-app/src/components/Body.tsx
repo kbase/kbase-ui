@@ -372,12 +372,7 @@ export default class Body extends Component<BodyProps, BodyState> {
 
             // Empty route
             new Route('', (props: RouteProps) => {
-                changeHash2('navigator');
-                // // window.location.hash = 'navigator';
-                // const url = new URL(window.location.href);
-                // url.hash = 'navigator';
-                // history.replaceState(null, '', url);
-                // window.dispatchEvent(new HashChangeEvent('hashchange'));
+                changeHash2('narratives');
                 return <div>Redirecting...</div>;
             }),
 
