@@ -39,6 +39,17 @@ export class Runner {
     ]);
     // TODO: handle errors:
 
+    log("Status?");
+    log(String(status.code));
+    log(String(status.success));
+    log(String(status.signal));
+
+    log("Error?");
+    log(decoder.decode(errorOutput));
+
+    log("Result?");
+    log(decoder.decode(output));
+
     return decoder.decode(output);
     // return {
     //   status,
@@ -119,6 +130,8 @@ export class Git {
   }
 
   async getInfo(): Promise<GitInfo> {
+    log("***************");
+    log("getting hash, author, committer...");
     const showOutput = await this.runner.run([
       "git",
       "show",
@@ -134,10 +147,27 @@ export class Git {
       committerDateEpoch,
     ] = showOutput.split("\n").slice(0, 6);
 
-    const subject = await this.runner.run(["git", " log", "-1", "--pretty=%s"]);
+    log("***************");
+    log("Getting subject");
+    const subject = await this.runner.run(["git", "log", "-1", "--pretty=%s"]);
 
-    const notes = await this.runner.run(["git", " log", "-1", "--pretty=%N"]);
+    log("***************");
+    log("Getting notes");
+    const notes = await this.runner.run(["git", "log", "-1", "--pretty=%N"]);
 
+    log("***************");
+    log("Getting all config");
+    const allConfig = await this.runner.run([
+      "git",
+      "config",
+      "--local",
+      "--list",
+    ]);
+    log("All Config");
+    log(allConfig);
+
+    log("***************");
+    log("Getting origin url");
     let originURL =
       (await this.runner.run(["git", "config", "--get", "remote.origin.url"]))
         .trim();
@@ -153,6 +183,8 @@ export class Git {
     const path = url.pathname;
     const [_ignore, account, repoName] = path.split("/");
 
+    log("***************");
+    log("Getting branch");
     const branch =
       (await this.runner.run(["git", "rev-parse", "--abbrev-ref", "HEAD"]))
         .trim();
