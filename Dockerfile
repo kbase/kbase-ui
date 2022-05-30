@@ -31,13 +31,14 @@ COPY deployment/scripts /kb/deployment/scripts
 
 # The BUILD_DATE value seem to bust the docker cache when the timestamp changes, move to
 # the end
-LABEL org.label-schema.build-date=$BUILD_DATE \
-    org.label-schema.vcs-url="https://github.com/kbase/kbase-ui.git" \
-    org.label-schema.vcs-ref=$COMMIT \
-    org.label-schema.schema-version="1.0.0-rc1" \
-    us.kbase.vcs-branch=$BRANCH  \
-    us.kbase.vcs-tag=$TAG \
-    maintainer="Erik Pearson eapearson@lbl.gov"
+LABEL org.opencontainers.image.source=https://github.com/kbase/kbase-ui
+LABEL org.label-schema.build-date=$BUILD_DATE
+LABEL org.label-schema.vcs-url="https://github.com/kbase/kbase-ui"
+LABEL org.label-schema.vcs-ref=$COMMIT
+LABEL org.label-schema.schema-version="1.0.0-rc1"
+LABEL us.kbase.vcs-branch=$BRANCH
+LABEL us.kbase.vcs-tag=$TAG 
+LABEL maintainer="Erik Pearson eapearson@lbl.gov"
 
 # Run as a regular user, not root.
 RUN addgroup --system kbmodule && \
