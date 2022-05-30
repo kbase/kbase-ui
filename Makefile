@@ -71,7 +71,7 @@ __check_defined = \
 all: prepare-build git-info build-info build install-plugins create-deploy
 
 # Standard 'all' target = just do the standard build
-dev: repare-build git-info build-info build pinstall-plugins render-templates create-deploy
+dev: prepare-build git-info build-info build install-plugins render-templates create-deploy
 
 # See above for 'all' - just running 'make' should locally build
 default:
