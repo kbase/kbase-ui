@@ -11,3 +11,7 @@ jobs:
   build:
     needs: test
     uses: ./.github/workflows/reusable_build-push.yml
+    with:
+      name: '${{ github.repository }}'
+      tags: '${{ github.ref_name }}'
+    secrets: inherit
