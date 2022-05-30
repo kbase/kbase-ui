@@ -138,9 +138,13 @@ export class Git {
 
     const notes = await this.runner.run(["git", " log", "-1", "--pretty=%N"]);
 
-    const originURL =
+    let originURL =
       (await this.runner.run(["git", "config", "--get", "remote.origin.url"]))
         .trim();
+
+    if (originURL.endsWith(".git")) {
+      originURL = originURL.slice(0, -4);
+    }
 
     log("Origin URL");
     log(originURL);
