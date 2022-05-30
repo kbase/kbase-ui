@@ -2,10 +2,99 @@ import {Component} from 'react';
 import {arraysIntersect} from '../../lib/utils';
 // import { FeedsNotification } from '../../services/feeds';
 import {Config} from '../../types/config';
-import {Menu, MenuItem} from '../../types/menu';
-import {AuthenticationState, AuthenticationStateAuthenticated, AuthenticationStatus,} from '../../contexts/Auth';
+import { MenuItem} from '../../types/menu';
+import {AuthenticationState, AuthenticationStateAuthenticated, AuthenticationStatus} from '../../contexts/Auth';
 import SidebarMenu from '../SidebarMenu/SidebarMenu';
+import { FeedsBadgeWrapper } from '../SidebarMenu/FeedsBadgeWrapper';
 import './Sidebar.css';
+
+
+const menu: Array<MenuItem> =  [
+    // {
+    //     "name": "navigator",
+    //     "label": "Navigator",
+    //     "type": "internal",
+    //     "tooltip": "Narrative Navigator - browse and search Narratives",
+    //     "path": "navigator",
+    //     "newWindow": false,
+    //     "icon": "compass",
+    //     "requiresAuth": true
+    // },
+    {
+        "name": "narratives",
+        "label": "Narratives",
+        "type": "internal",
+        "tooltip": "Narrative Navigator - browse and search Narratives",
+        "path": "narratives",
+        "newWindow": false,
+        "icon": "compass",
+        "requiresAuth": true
+    },
+    {
+        "name": "orgs",
+        "type": "internal",
+        "tooltip": "Browse, search, join and manage KBase Organizations",
+        "path": "orgs",
+        "newWindow": false,
+        "label": "Orgs",
+        "icon": "users",
+        "requiresAuth": true
+    },
+    {
+        "name": "catalog",
+        "type": "internal",
+        "tooltip": "Browse and search a catalog of KBase Narrative Apps and Workspace Types",
+        "path": "catalog/apps",
+        "newWindow": false,
+        "label": "Catalog",
+        "icon": "book",
+        "requiresAuth": false
+    },
+    {
+        "name": "search",
+        "type": "internal",
+        "tooltip": "Search KBase data objects in Narratives and Reference Workspaces",
+        "path": "search",
+        "newWindow": false,
+        "label": "Search",
+        "icon": "search",
+        "requiresAuth": true
+    },
+    {
+        "name": "jobbrowser",
+        "type": "internal",
+        "tooltip": "Browse and manage jobs spawned in your Narratives",
+        "path": "jobbrowser",
+        "newWindow": false,
+        "label": "Jobs",
+        "icon": "suitcase",
+        "requiresAuth": true
+    },
+    {
+        "name": "account",
+        "type": "internal",
+        "tooltip": "Manage your KBase Account",
+        "path": "auth2/account",
+        "newWindow": false,
+        "label": "Account",
+        "icon": "drivers-license",
+        "requiresAuth": true
+    },
+    {
+        "name": "feeds",
+        "type": "internal",
+        "tooltip": "Browse and manage notifications from your KBase Feeds",
+        "path": "feeds",
+        "newWindow": false,
+        "label": "Feeds",
+        "icon": "bullhorn",
+        "requiresAuth": true,
+        "renderBadge": (menuItem: MenuItem) => {
+            return <FeedsBadgeWrapper />;
+        }
+    }
+];
+
 
 // function routeToPath(route) {
 //     const path = [];
@@ -127,9 +216,9 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
             }
         );
 
-        const filterMenu = (menu: Menu) => {
+        const filterMenu = (menu: Array<MenuItem>) => {
             const allowedTags = this.props.config.ui.allow;
-            return menu.items.filter((item: MenuItem) => {
+            return menu.filter((item: MenuItem) => {
                 if (item.allowedTags) {
                     return arraysIntersect(item.allowedTags, allowedTags);
                 }
@@ -140,19 +229,17 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
             });
         };
 
-        const menu = filterMenu(this.props.config.ui.menus.sidebar);
-
-        return <SidebarMenu menu={menu} path={this.state.path}/>;
+        return <SidebarMenu  path={this.state.path} menu={filterMenu(menu)}/>;
     }
 
     renderUnauthenticated() {
-        const menu = this.props.config.ui.menus.sidebar.items.filter(
+        const unauthenticatedMenu = this.props.config.ui.menus.sidebar.items.filter(
             (item: MenuItem) => {
                 return item.requiresAuth !== true;
             }
         );
 
-        return <SidebarMenu menu={menu} path={this.state.path}/>;
+        return <SidebarMenu  path={this.state.path} menu={unauthenticatedMenu}/>;
     }
 
     render() {

@@ -1,4 +1,4 @@
-FROM denoland/deno:alpine-1.19.0
+FROM denoland/deno:alpine-1.21.1
 
 RUN apk upgrade --update-cache --available && \
     apk add --update --no-cache bash git make 

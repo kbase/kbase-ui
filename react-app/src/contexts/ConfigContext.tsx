@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
 
-import { Config } from '../types/config';
+import { Config, DeployConfig, GitInfo as ConfigGitInfo, BuildInfo as ConfigBuildInfo, PluginInfo as ConfigPluginInfo } from '../types/config';
+import { PluginsInfo, GitInfo, BuildInfo } from '../types/info';
 
 /**
  * Holds the current config information
  */
 export interface ConfigInfo {
-    config: Config;
+    config: Config,
+    pluginsInfo: PluginsInfo,
+    gitInfo: GitInfo,
+    buildInfo: BuildInfo
 }
 
 export type ConfigState = AsyncProcess<ConfigInfo, string>;
@@ -25,12 +29,30 @@ export const ConfigContext = React.createContext<ConfigState>({
 
 // Auth Wrapper Component
 
-export interface ConfigWrapperProps {
+export type ConfigWrapperProps = PropsWithChildren<{
     // config: Config;
-}
+}>;
 
 interface ConfigWrapperState {
     configState: ConfigState;
+}
+
+function gitInfoToConfig(gitInfo: GitInfo): ConfigGitInfo {
+    return {
+        authorDate: gitInfo.author.date,
+        authorName: gitInfo.author.name,
+        committerDate: gitInfo.committer.date,
+        committerName: gitInfo.committer.name,
+        branch: "foo", // unused?
+        commitAbbreviatedHash: gitInfo.hash.abbreviated,
+        commitHash: gitInfo.hash.full,
+        commitNotes: "",
+        originUrl: gitInfo.originURL,
+        reflogSelector: "",
+        subject: "",
+        tag: gitInfo.tag || "n/a",
+        version: gitInfo.version || "n/a"
+    }
 }
 
 /**
@@ -72,12 +94,53 @@ export default class ConfigWrapper extends React.Component<
         try {
             const rawConfig = await (
                 await fetch(process.env.PUBLIC_URL + '/deploy/config.json')
-            ).json();
+            ).json() as DeployConfig;
+
+            const gitInfo = await (
+                await fetch(process.env.PUBLIC_URL + '/build/git-info.json')
+            ).json() as GitInfo
+
+            const buildInfo = await (
+                await fetch(process.env.PUBLIC_URL + '/build/build-info.json')
+            ).json() as BuildInfo;
+
+            const pluginsInfo = await (
+                await fetch(process.env.PUBLIC_URL + '/plugins/plugin-manifest.json')
+            ).json() as PluginsInfo;
+
+
+            // Note that this build info is used by plugins, so we have to maintain it.
+            const configBuildInfo: ConfigBuildInfo = {
+                builtAt: buildInfo.builtAt,
+                // These are unused, but may be necessary (TODO: determine if we can remove them.)
+                hostInfo: null,
+                target: "",
+                stats: {
+                    start: 0
+                },
+                git: gitInfoToConfig(gitInfo)
+            }
+            const configPluginsInfo: Array<ConfigPluginInfo> = pluginsInfo.map((pluginInfo) => {
+                return {
+                    name: pluginInfo.configs.plugin.package.name,
+                    globalName: pluginInfo.configs.ui.globalName,
+                    repoName: "need repo name!",
+                    branch: pluginInfo.git.branch,
+                    gitAccount: "need account",
+                    gitInfo: gitInfoToConfig(pluginInfo.git),
+                    url: pluginInfo.git.originURL,
+                    version: pluginInfo.git.tag || "n/a"
+                }
+            });
+            const config: Config = {...rawConfig, build: configBuildInfo, plugins: configPluginsInfo};
             this.setState({
                 configState: {
                     status: AsyncProcessStatus.SUCCESS,
                     value: {
-                        config: rawConfig as unknown as Config,
+                        config,
+                        pluginsInfo,
+                        gitInfo,
+                        buildInfo
                     },
                 },
             });

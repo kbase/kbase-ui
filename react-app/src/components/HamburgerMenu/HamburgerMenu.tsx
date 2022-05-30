@@ -90,7 +90,7 @@ export default class HamburgerMenu extends Component<HamburgerMenuProps,
         return (
             <Dropdown>
                 <Dropdown.Toggle variant="default">
-                    <img src={logo} alt="KBase Logo"/>
+                    <span className="fa fa-navicon fa-2x"></span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>{menuContent}</Dropdown.Menu>
             </Dropdown>

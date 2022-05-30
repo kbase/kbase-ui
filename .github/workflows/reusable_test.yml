@@ -1,0 +1,23 @@
+---
+name: Test (unit, integration)
+on:
+  workflow_call:
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out GitHub Repo
+        uses: actions/checkout@v2
+
+      # Run tests
+      - name: Run all tests
+        run: make test
+
+      # # Display a coverage report for inspection in the workflow logs
+      # - name: Coverage summary
+      #   run: make coverage-summary
+
+      # - name: Send to Codecov
+      #   uses: codecov/codecov-action@v2
+      #   with:
+      #     files: ./cov_profile.lcov

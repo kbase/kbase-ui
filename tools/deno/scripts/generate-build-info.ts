@@ -14,7 +14,7 @@ async function generateBuildInfo(targetDir: string, installDirectory: string) {
 
 async function main() {
   if (Deno.args.length !== 2) {
-    console.log("Usage: install-plugins.ts <config> <dest>");
+    console.log("Usage: generate-build-info.ts <config> <dest>");
     Deno.exit(1);
   }
   const targetDir = Deno.args[0];

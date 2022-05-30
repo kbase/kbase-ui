@@ -1,0 +1,16 @@
+---
+name: PR to develop opened
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - opened
+      - reopened
+      - synchronize
+jobs:
+  test:
+    uses: ./.github/workflows/reusable_test.yml
+  build:
+    needs: test
+    uses: ./.github/workflows/reusable_build.yml

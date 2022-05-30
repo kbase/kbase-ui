@@ -63,36 +63,12 @@ http {
         listen      {{ default "80" .Env.nginx_listen }} default_server;
         server_name {{ default "localhost" .Env.nginx_server_name }};
        
-        location /modules/plugins/ {
-            # Ensure that index.html is invoked even if a path is
-            # specified and doesn't exist.
-            # try_files $uri /$uri /index.html;
-            ssi_silent_errors off;
-            allow all;
-            # this ensures that a downstream cache service will revalidate.
-            add_header Cache-Control 'no-cache';
-
-            alias /kb/deployment/plugins/;
-        }
-
-        location /plugins/ {
-            # Ensure that index.html is invoked even if a path is
-            # specified and doesn't exist.
-            # try_files $uri /$uri /index.html;
-            ssi_silent_errors off;
-            allow all;
-            # this ensures that a downstream cache service will revalidate.
-            add_header Cache-Control 'no-cache';
-
-            alias /kb/deployment/plugins/;
-        }
-
         location /ws/ {
             client_max_body_size 300M;
             proxy_pass http://localhost:3000/ws/;
             proxy_set_header Upgrade $http_upgrade; 
             proxy_set_header Connection "Upgrade";
-            proxy_set_header Host {{ .Env.deploy_ui_hostname }};
+            proxy_set_header Host {{ default .Env.deploy_hostname .Env.deploy_ui_hostname }};
         }
   
         location / {
@@ -107,6 +83,12 @@ http {
             root /kb/deployment/app;
         }
 
+        location /modules/plugins/ {
+            ssi_silent_errors off;
+            allow all;
+            add_header Cache-Control 'no-cache';
+            alias /kb/deployment/app/plugins/;
+        }
 
         # Format is /__poke/https://www.example.com/some/path
         location ~* ^/__poke/docs/(.*)$ {

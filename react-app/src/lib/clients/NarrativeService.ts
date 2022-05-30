@@ -1,5 +1,6 @@
 import {DynamicServiceClient} from "../kb_lib/comm/JSONRPC11/DynamicServiceClient";
-import {JSONObject} from "@kbase/ui-lib/lib/json";
+import {JSONObject, JSONObjectOf, objectToJSONObject} from "@kbase/ui-lib/lib/json";
+import { JSONLikeObject } from "../kb_lib/jsonLike";
 
 export interface RenameNarrativeParams extends JSONObject {
     narrative_ref: string;
@@ -21,6 +22,63 @@ export interface CopyNarrativeResult extends JSONObject {
     newNarId: number;
 }
 
+export type AppParam = [number, string, string];
+
+export interface CreateNewNarrativeParams extends JSONLikeObject {
+    app?: string;
+    method?: string;
+    appparam?: string;
+    appData?: Array<AppParam>;
+    markdown?: string;
+    copydata?: string;
+    importData?: Array<string>;
+    includeIntroCell?: number;
+    title?: string;
+}
+
+export type Metadata = JSONObjectOf<string>;
+
+export interface WorkspaceInfo extends JSONObject {
+    id: number;
+    name: string;
+    owner: string
+    moddate: string,
+    object_count: number;
+    user_permission: string;
+    globalread: string;
+    lockstat: string;
+    metadata: Metadata;
+    modDateMs: string;
+}
+
+export interface ObjectInfo extends JSONObject {
+    id: number;
+    name: string;
+    type: string;
+    save_date: string;
+    version: number;
+    saved_by: string;
+    wsid: number;
+    ws: string;
+    checksum: string;
+    size: number;
+    metadata: Metadata,
+    ref: string;
+    obj_id: string;
+    typeModule: string;
+    typeName: string;
+    typeMajorVersion: string;
+    typeMinorVersion: string;
+    saveDateMs: string;
+    
+}
+
+
+export interface CreateNewNarrativeResult extends JSONObject {
+    workspaceInfo: WorkspaceInfo;
+    narrativeInfo: ObjectInfo;
+}
+
 export class NarrativeService extends DynamicServiceClient {
     module:string = 'NarrativeService'
 
@@ -34,6 +92,13 @@ export class NarrativeService extends DynamicServiceClient {
     async copy_narrative(params: CopyNarrativeParams): Promise<CopyNarrativeResult> {
         const [result] = await this.callFunc<[CopyNarrativeParams], [CopyNarrativeResult]>('copy_narrative', [
             params
+        ]);
+        return result;
+    }
+
+    async create_new_narrative(params: CreateNewNarrativeParams): Promise<CreateNewNarrativeResult> {
+        const [result] = await this.callFunc<[JSONObject], [CreateNewNarrativeResult]>('create_new_narrative', [
+            objectToJSONObject(params)
         ]);
         return result;
     }

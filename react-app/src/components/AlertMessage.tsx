@@ -1,12 +1,13 @@
-import { Component } from 'react';
+import React, { Component, PropsWithChildren } from 'react';
 import styles from './AlertMessage.module.css';
 
-export interface AlertMessageProps {
+export type AlertMessageProps = PropsWithChildren<{
     title?: string;
     type: 'error' | 'info' | 'warning' | 'success';
     message?: string;
+    style?: React.CSSProperties;
     render?: () => JSX.Element;
-}
+}>;
 
 export default class AlertMessage extends Component<AlertMessageProps> {
     renderIcon() {
@@ -63,9 +64,8 @@ export default class AlertMessage extends Component<AlertMessageProps> {
         })();
         return (
             <div
-                className={`alert alert-${this.renderAlertTypeClass()} ${
-                    styles.AlertMessage
-                }`}
+                className={`alert alert-${this.renderAlertTypeClass()} ${styles.AlertMessage}`}
+                style={this.props.style}
             >
                 {this.renderTitle()}
                 {content}

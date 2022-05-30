@@ -6,6 +6,6 @@ services:
     image: kbase/kbase-ui:dev
     volumes:
       - type: bind
-        source: /Users/erikpearson/Work/KBase/2021Q3/miniprojects/kbase-ui-crats/kbase-ui/build/dist/modules/plugins
+        source: /Users/erikpearson/Work/KBase/2021Q3/miniprojects/kbase-ui-crats/kbase-ui/build/dist/plugins
         target: /kb/deployment/app/modules/plugins
 

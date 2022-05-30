@@ -16,7 +16,7 @@ module.exports = function (app) {
         createProxyMiddleware({
             target: 'http://kbase-ui-deploy:80/plugins/',
             changeOrigin: true,
-            pathRewrite: {[`^${pluginsRoot}`]: ''}
+            pathRewrite: { [`^${pluginsRoot}`]: '' }
         })
     );
     app.use(
@@ -24,7 +24,7 @@ module.exports = function (app) {
         createProxyMiddleware({
             target: 'http://kbase-ui-deploy:80/plugins/',
             changeOrigin: true,
-            pathRewrite: {'^/modules/plugins': ''}
+            pathRewrite: { '^/modules/plugins': '' }
         })
     );
     app.use(
@@ -32,7 +32,7 @@ module.exports = function (app) {
         createProxyMiddleware({
             target: 'http://kbase-ui-deploy:80/plugins/',
             changeOrigin: true,
-            pathRewrite: {'^/deploy/plugins': ''}
+            pathRewrite: { '^/deploy/plugins': '' }
         })
     );
     app.use(
@@ -40,7 +40,23 @@ module.exports = function (app) {
         createProxyMiddleware({
             target: 'http://kbase-ui-deploy:80/plugins/',
             changeOrigin: true,
-            pathRewrite: {'^/plugins': ''}
+            pathRewrite: { '^/plugins': '' }
+        })
+    );
+    app.use(
+        '/deploy',
+        createProxyMiddleware({
+            target: 'http://kbase-ui-deploy:80/deploy/',
+            changeOrigin: true,
+            pathRewrite: { '^/deploy': '' }
+        })
+    );
+    app.use(
+        '/build',
+        createProxyMiddleware({
+            target: 'http://kbase-ui-deploy:80/build/',
+            changeOrigin: true,
+            pathRewrite: { '^/build': '' }
         })
     );
 };

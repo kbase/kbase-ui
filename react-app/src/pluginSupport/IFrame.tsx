@@ -25,16 +25,29 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         const id = uuid.v4();
         this.id = `frame_${id}`;
 
-        const indexPath = [
-            this.props.pathRoot,
-            '/iframe_root/index.html',
-            this.cacheBuster(),
-            '#',
-            this.props.original,
-        ].join('');
+        const hashPath = this.props.original
+            .split('/')
+            .filter((pathElement) => {
+                return pathElement.length > 0;
+            })
+            .join('/')
+
+        // const indexPath = `${this.props.pathRoot}/iframe_root/index.html${this.cacheBuster()}#/${hashPath}`
+
+        const indexPath = `${this.props.pathRoot}/iframe_root/index.html${this.cacheBuster()}#${hashPath}`
+
+        // const indexPath = [
+        //     this.props.pathRoot,
+        //     '/iframe_root/index.html',
+        //     this.cacheBuster(),
+        //     '#/',
+        //     this.props.original,
+        // ].join('');
 
         // Make an absolute url to this.
-        this.url = process.env.PUBLIC_URL + '/' + indexPath;
+        const url = `${document.location.origin}/${indexPath}`;
+        // this.url = '/' + indexPath;
+        this.url = url;
     }
 
     componentDidMount() {
@@ -52,11 +65,14 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
     cacheBusterKey(buildInfo: BuildInfo, developMode: boolean) {
         // NB developMode not implemented yet, so always defaults
         // to the gitCommitHash
-        if (developMode) {
-            return String(new Date().getTime());
-        } else {
-            return buildInfo.git.commitHash;
-        }
+
+        return 'foo';
+
+        // if (developMode) {
+        //     return String(new Date().getTime());
+        // } else {
+        //     return buildInfo.git.hash.abbreviated;
+        // }
     }
 
     cacheBuster() {
@@ -65,7 +81,6 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
     }
 
     loaded(element: HTMLIFrameElement) {
-        console.log('LOADED', element);
         window.addEventListener('hashchange', (ev: Event) => {
             if (
                 element.contentWindow === null
@@ -93,7 +108,7 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         };
 
         const paramString = window.encodeURIComponent(JSON.stringify(params));
-        console.log('iframe render', this.url, params, window.location);
+        // console.log('iframe render', this.url, params, window.location);
         return (
             <iframe
                 title="Plugin IFrame"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropsWithChildren} from 'react';
 import { Messenger } from '../lib/messenger';
 import { Config } from '../types/config';
 import { AuthenticationState } from './Auth';
@@ -34,10 +34,10 @@ export const RuntimeContext = React.createContext<RuntimeState | null>(null);
 
 // Runtime Wrapper Component
 
-export interface RuntimeWrapperProps {
+export type RuntimeWrapperProps = PropsWithChildren<{
     config: Config;
     authState: AuthenticationState;
-}
+}>;
 
 type RuntimeWrapperState = {
     title: string;

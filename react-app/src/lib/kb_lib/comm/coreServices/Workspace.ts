@@ -55,7 +55,7 @@ export interface GetObjectInfo3Params {
     ignoreErrors?: number; // bool
 }
 
-export type ObjectInfo = [
+export type ObjectInfoRaw = [
     number, // objid
     string, // object name
     string, // object type
@@ -69,7 +69,29 @@ export type ObjectInfo = [
     Metadata // metadata
 ];
 
-export type WorkspaceInfo = [
+export interface ObjectInfo {
+    id: number;
+    name: string;
+    type: string;
+    save_date: string;
+    version: number;
+    saved_by: string;
+    wsid: number;
+    ws: string;
+    checksum: string;
+    size: number;
+    metadata: Metadata,
+    ref: string;
+    obj_id: string;
+    typeModule: string;
+    typeName: string;
+    typeMajorVersion: string;
+    typeMinorVersion: string;
+    saveDate: string;
+    
+}
+
+export type WorkspaceInfoRaw = [
     number, // workspace id
     string, // workspace name
     string, // workspace owner (username)
@@ -81,10 +103,23 @@ export type WorkspaceInfo = [
     Metadata // metadata
 ];
 
+export interface WorkspaceInfo {
+    id: number;
+    name: string;
+    owner: string
+    moddate: string,
+    object_count: number;
+    user_permission: string;
+    globalread: string;
+    lockstat: string;
+    metadata: Metadata;
+    modDate: string;
+}
+
 export type Metadata = JSONObjectOf<string>;
 
 export interface GetObjectInfo3Result extends JSONObject {
-    infos: Array<ObjectInfo>;
+    infos: Array<ObjectInfoRaw>;
     paths: Array<Array<string>>;
 }
 
@@ -156,7 +191,7 @@ export interface ProvenanceAction extends JSONLikeObject {
 
 export interface ObjectData extends JSONLikeObject {
     data: JSONObject;
-    info: ObjectInfo;
+    info: ObjectInfoRaw;
     path: Array<ObjectRef>;
     provenance: Array<ProvenanceAction>;
     creator: Username;
@@ -169,6 +204,48 @@ export interface ObjectData extends JSONLikeObject {
     extracted_ids: Mapping<IDType, Array<string>>;
     handle_error: string;
     handle_stacktrace: string;
+}
+
+// Utils
+
+export function workspaceInfoToObject (wsInfo: WorkspaceInfoRaw): WorkspaceInfo {
+    return {
+        id: wsInfo[0],
+        name: wsInfo[1],
+        owner: wsInfo[2],
+        moddate: wsInfo[3],
+        object_count: wsInfo[4],
+        user_permission: wsInfo[5],
+        globalread: wsInfo[6],
+        lockstat: wsInfo[7],
+        metadata: wsInfo[8],
+        modDate: new Date(wsInfo[3]).toISOString()
+    };
+}
+
+export function objectInfoToObject (objInfo: ObjectInfoRaw): ObjectInfo {
+        const type = objInfo[2].split(/[-.]/);
+
+        return {
+            id: objInfo[0],
+            name: objInfo[1],
+            type: objInfo[2],
+            save_date: objInfo[3],
+            version: objInfo[4],
+            saved_by: objInfo[5],
+            wsid: objInfo[6],
+            ws: objInfo[7],
+            checksum: objInfo[8],
+            size: objInfo[9],
+            metadata: objInfo[10],
+            ref: objInfo[6] + '/' + objInfo[0] + '/' + objInfo[4],
+            obj_id: 'ws.' + objInfo[6] + '.obj.' + objInfo[0],
+            typeModule: type[0],
+            typeName: type[1],
+            typeMajorVersion: type[2],
+            typeMinorVersion: type[3],
+            saveDate: new Date(objInfo[3]).toISOString()
+        };
 }
 
 // get_objects2
@@ -194,22 +271,28 @@ export default class WorkspaceClient extends ServiceClient {
 
     async get_object_info3(
         params: GetObjectInfo3Params
-    ): Promise<GetObjectInfo3Result> {
-        const [objectInfo] = await this.callFunc<
+    ) {
+        const [result] = await this.callFunc<
             [JSONObject],
             [GetObjectInfo3Result]
         >('get_object_info3', [objectToJSONObject(params)]);
-        return objectInfo;
+
+        return {
+            infos: result.infos.map((info) => {
+                return objectInfoToObject(info);
+            }),
+            paths: result.paths
+        };
     }
 
     async get_workspace_info(
         params: GetWorkspaceInfoParams
     ): Promise<WorkspaceInfo> {
-        const [result] = await this.callFunc<[JSONObject], [WorkspaceInfo]>(
+        const [result] = await this.callFunc<[JSONObject], [WorkspaceInfoRaw]>(
             'get_workspace_info',
             [objectToJSONObject(params)]
         );
-        return result;
+        return workspaceInfoToObject(result as unknown as WorkspaceInfoRaw);
     }
 
     async list_workspace_info(
@@ -217,9 +300,11 @@ export default class WorkspaceClient extends ServiceClient {
     ): Promise<ListWorkspaceInfoResult> {
         const [result] = await this.callFunc<
             [JSONObject],
-            [ListWorkspaceInfoResult]
+            [Array<WorkspaceInfoRaw>]
         >('list_workspace_info', [objectToJSONObject(params)]);
-        return result;
+        return result.map((item) => {
+            return workspaceInfoToObject(item);
+        })
     }
 
     async get_objects2(params: GetObjects2Param): Promise<GetObjects2Result> {

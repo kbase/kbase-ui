@@ -1,13 +1,12 @@
-import {Component, createRef} from 'react';
-// import { FeedsNotification } from '../../services/feeds';
-import {MenuItem, MenuItemExternal, MenuItemInternal} from '../../types/menu';
-import {Nav} from 'react-bootstrap';
+import { Component, createRef } from 'react';
+import { MenuItem, MenuItemExternal, MenuItemInternal } from '../../types/menu';
+import { Nav } from 'react-bootstrap';
 import './SidebarMenu.css';
+import { changeHash } from '../../apps/Navigator/utils/navigation';
 
 export interface SidebarMenuProps {
     menu: Array<MenuItem>;
     path: string;
-    // feedStatus: FeedsNotification;
 }
 
 interface SidebarMenuState {
@@ -26,32 +25,16 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
     constructor(props: SidebarMenuProps) {
         super(props);
 
-        // props.runtime.db().subscribe(
-        //     {
-        //         path: 'feeds',
-        //     },
-        //     (feeds: unknown) => {
-        //         this.processFeeds(feeds as FeedsNotification);
-        //     }
-        // );
-
         this.ref = createRef<HTMLDivElement>();
 
         this.state = {
             activeKey: null,
         };
-
-        // this.state = {
-        //     feedsNotificationCount: null,
-        //     feedsError: null,
-        // };
     }
 
     componentDidMount() {
         this.updateActiveKey();
-        // const feeds = this.props.runtime.db().get('feeds', null);
-        // this.processFeeds(feeds);
-        // (this.ref.current).tooltip({ selector: '[data-toggle="tooltip"]' });
+
         window.addEventListener("hashchange", this.onHashChange.bind(this));
     }
 
@@ -69,65 +52,34 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
         });
     }
 
-    // processFeeds(feeds: FeedsNotification) {
-    //     this.setState({
-    //         feedsNotificationCount: feeds.unseenNotificationsCount || null,
-    //         feedsError: feeds.error || null,
-    //     });
-    // }
+    onNavClick(path: string) {
+        // Explain ourselves here ... is this the problem?
+        // I don't think so, because simple external links would fail...
+        // but perhaps after the router rewrite it is ??
 
-    onNavClick(path?: string) {
-        const oldHref = window.location.href;
-        window.location.href = '/#' + path;
-        if (oldHref === window.location.href) {
-            window.dispatchEvent(new HashChangeEvent('hashchange'));
-        }
+        // OLD
+        // const oldHref = window.location.href;
+        // window.location.href = '/#' + path;
+        // if (oldHref === window.location.href) {
+        //     window.dispatchEvent(new HashChangeEvent('hashchange'));
+        // }
+
+        // NEW
+        // Umm, was this it the whole time???
+        // Next: rewind the custom router (leave new code in place, just restore the code
+        // in Body.tsx ... see if this, or a better fix perhaps in "changehash" fixes safari)
+        changeHash("/" + path)
     }
 
     renderIcon(button: MenuItem) {
-        return <div className={'fa fa-3x fa-' + button.icon}/>;
+        return <div className={'fa fa-3x fa-' + button.icon} />;
     }
-
-    // renderBadge(menuItem: MenuItemInternal) {
-    //     if (menuItem.name !== 'feeds') {
-    //         return;
-    //     }
-    //     const notificationCount =
-    //         this.props.feedStatus.unseenNotificationsCount;
-    //     const notificationError = this.props.feedStatus.error;
-    //     let content;
-    //     if (notificationCount) {
-    //         content = <span> {notificationCount} </span>;
-    //     } else if (notificationError) {
-    //         content = <span className="fa fa-ban"></span>;
-    //     } else {
-    //         return;
-    //     }
-
-    //     return (
-    //         <div
-    //             style={{
-    //                 position: 'absolute',
-    //                 top: '0',
-    //                 right: '0',
-    //             }}
-    //         >
-    //             <div
-    //                 style={{
-    //                     padding: '4px',
-    //                     color: 'white',
-    //                     backgroundColor: 'rgba(255, 0, 0, 0.8)',
-    //                     textAlign: 'center',
-    //                     fontWeight: 'bold',
-    //                     fontStyle: 'italic',
-    //                     borderRadius: '3px',
-    //                 }}
-    //             >
-    //                 ${content}
-    //             </div>
-    //         </div>
-    //     );
-    // }
+    renderBadge(menuItem: MenuItemInternal) {
+        if (!menuItem.renderBadge) {
+            return null;
+        }
+        return menuItem.renderBadge(menuItem);
+    }
 
     renderButton(menuItem: MenuItemInternal) {
         return (
@@ -143,9 +95,11 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
                     this.onNavClick(menuItem.path);
                 }}
             >
-                {this.renderIcon(menuItem)}
+                <div className="-icon">
+                    {this.renderIcon(menuItem)}
+                    <div className="-badge">{this.renderBadge(menuItem)}</div>
+                </div>
                 <div>{menuItem.label}</div>
-                {/* {this.renderBadge(menuItem)} */}
             </button>
         );
     }
@@ -154,7 +108,10 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
         return (
             <Nav.Item key={menuItem.name}>
                 <Nav.Link eventKey={menuItem.name}>
-                    {this.renderIcon(menuItem)}
+                    <div className="-icon">
+                        {this.renderIcon(menuItem)}
+                        <div className="-badge">{this.renderBadge(menuItem)}</div>
+                    </div>
                     <div>{menuItem.label}</div>
                 </Nav.Link>
             </Nav.Item>
@@ -186,6 +143,10 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
         const buttons: Array<JSX.Element> = [];
         const handlers: Map<string, () => void> = new Map();
         for (const item of this.props.menu) {
+            // if (item.requiresAuth && 
+            //     this.props.authState.status !== AuthenticationStatus.AUTHENTICATED) {
+            //     continue;
+            // }
             if (item.type === 'internal') {
                 buttons.push(this.renderInternalItem(item));
                 handlers.set(item.name, () => {

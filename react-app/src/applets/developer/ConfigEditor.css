@@ -1,3 +1,7 @@
-.path {
+.ConfigEditor {
+    overflow-y: auto;
+}
+
+.ConfigEditor .path {
     font-style: italic;
 }

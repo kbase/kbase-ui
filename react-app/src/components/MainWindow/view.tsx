@@ -1,14 +1,15 @@
-import {Component} from 'react';
+import { Component } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import Body from '../Body';
 import HamburgerMenu from '../HamburgerMenu/HamburgerMenuMain';
-import {AuthenticationState} from '../../contexts/Auth';
-import {Config} from '../../types/config';
+import { AuthenticationState } from '../../contexts/Auth';
+import { Config } from '../../types/config';
 import Title from '../Title.';
 import Deployment from '../Deployment';
 import Signin from '../Signin/SigninMain';
 import './style.css';
-import {RuntimeContext} from '../../contexts/RuntimeContext';
+import { RuntimeContext } from '../../contexts/RuntimeContext';
+import { Logo } from '../Logo/Logo';
 
 export interface MainWindowProps {
     authState: AuthenticationState;
@@ -49,18 +50,18 @@ export default class MainWindow extends Component<MainWindowProps,
 
     renderHeader() {
         return (
-            <div className="-navbar" style={{padding: '0'}}>
+            <div className="-navbar" style={{ padding: '0' }}>
                 <div className="-cell -menu">
                     <HamburgerMenu {...this.props} />
                 </div>
-                {/* <div className="-cell -logo">
+                <div className="-cell -logo">
                     <Logo {...this.props} />
-                </div> */}
+                </div>
                 <div className="-cell -title">
                     <RuntimeContext.Consumer>
                         {(value) => {
                             if (value) {
-                                return <Title title={value.title}/>;
+                                return <Title title={value.title} />;
                             }
                         }}
                     </RuntimeContext.Consumer>

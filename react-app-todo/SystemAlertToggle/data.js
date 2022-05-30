@@ -1,136 +1,202 @@
 define([
-    'preact',
-    'htm',
-    'kb_lib/poller',
-    './view',
-    'css!./style.css'
-], (
-    preact,
-    htm,
-    poller,
-    SystemAlertToggle
-) => {
+    'bluebird',
+    'knockout',
+    'uuid',
+    '../../lib/searchApi',
+    'yaml!../../data/stopWords.yml'
+], function (
+    Promise,
+    ko,
+    Uuid,
+    SearchAPI,
+    stopWordsDb
+) {
+    'use strict';
 
-    const {h, Component } = preact;
-    const html = htm.bind(h);
-
-    const POLL_INTERVAL = 10000;
-
-    class LoadNotificationsJob extends poller.Job {
-        constructor({callback}) {
-            super({
-                description: 'Load notifications'
-            });
-            this.callback = callback;
-            this.state = {
-                alerts: null,
-                hideAlerts: true,
-                error: null
-            };
+    function isStopWord(word) {
+        if (stopWordsDb.warn.indexOf(word) >= 0) {
+            return true;
         }
-        run() {
-            return this.callback();
+        if (stopWordsDb.ignore.indexOf(word) >= 0) {
+            return true;
         }
+        return false;
     }
 
-    class SystemAlertData extends Component {
-        constructor(props) {
-            super(props);
-            this.state = {
-                alerts: null,
-                hideAlerts: false,
-                error: null
-            };
-        }
+    // TODO: configure this somewhere
+    function isBlacklistedHighlightField(fieldName) {
+        return ['tags'].includes(fieldName);
+    }
 
-        componentDidMount() {
-            const job = new LoadNotificationsJob({
-                callback: () => {
-                    this.loadNotifications();
+    function encodeHTML(possibleHTML) {
+        const node = document.createElement('div');
+        node.innerHTML = possibleHTML;
+        return node.innerText;
+    }
+
+
+    // For now, this fakes the search...
+    function factory(params) {
+        const maxSearchResults = params.maxSearchItems;
+
+        const types = params.types;
+
+        const searchConfig = {
+            // max number of search result items to hold in the buffer
+            // before we start removing those out of view
+            maxBufferSize: params.maxBufferSize || 100,
+            // number of search items to fetch at one time.
+            fetchSize: params.pageSize || 20
+        };
+
+        function objectToViewModel(obj) {
+            const type = types.getTypeForObject(obj);
+            if (!type) {
+                console.error('ERROR cannot type object', obj);
+                throw new Error('Cannot type this object');
+            }
+
+            const icon = type.getIcon(type);
+
+            const ref = type.getRef();
+            const detail = type.detail();
+            const detailMap = detail.reduce(function (m, field) {
+                m[field.id] = field;
+                return m;
+            }, {});
+
+            const matches = Object.keys(obj.highlight).reduce((matches, field) => {
+                if (isBlacklistedHighlightField(field)) {
+                    console.warn('highlight field ' + field + ' ignored');
+                    return matches;
                 }
-            });
 
-            const task = new poller.Task({
-                interval: POLL_INTERVAL,
-                runInitially: true
-            });
-            task.addJob(job);
-
-            this.newAlertsPoller = new poller.Poller();
-            this.newAlertsPoller.addTask(task);
-            this.newAlertsPoller.start();
-        }
-
-        getActiveAlerts() {
-            return Promise.resolve([
-                {
-                    type: 'maintenance',
-                    startAt: new Date(),
-                    endAt: new Date(Date.now() + 1000 * 60 * 60)
-                },
-                {
-                    type: 'maintenance',
-                    startAt: new Date(Date.now() + 1000 * 60 * 60),
-                    endAt: new Date(Date.now() + 1000 * 60 * 60 * 2)
+                let label = type.getSearchFieldLabel(field);
+                if (!label) {
+                    label = field;
+                    console.warn('highlight field ' + field + ' not found in type spec', obj);
                 }
-            ]);
-            // const client = this.props.runtime.service('rpc').newClient({
-            //     module: 'UIService'
+
+                const emStart = new Uuid(4).format();
+                const emFinish = new Uuid(4).format();
+
+                matches
+                    .push({
+                        id: field,
+                        label: label,
+                        highlights: obj.highlight[field]
+                            .map((highlight) => {
+                                const safe1 = highlight.replace('<em>', emStart).replace('</em>', emFinish);
+                                const safe2 = encodeHTML(safe1);
+                                const safe3 = safe2.replace(emStart, '<em>').replace(emFinish, '</em>');
+                                console.log('safe3', safe3);
+                                return {
+                                    highlight: safe3
+                                };
+                            })
+                    });
+                return matches;
+            }, []);
+
+            // Uncomment to re-enable highlights merging into details
+            // detail.forEach(function (field) {
+            //     if (matchMap[field.id]) {
+            //         field.highlights = matchMap[field.id].highlights;
+            //     }
             // });
 
-            // return client.callFunc('get_active_alerts', [])
-            //     .spread((result) => {
-            //         return result;
-            //     });
+            const vm = {
+                type: {
+                    id: obj.type,
+                    label: type.getLabel(),
+                    icon: icon
+                },
+                // TODO: I don't remember why I named this "matchClass", but it confuses me now.
+                matchClass: {
+                    id: type.getUIClass(),
+                    copyable: type.isCopyable(),
+                    viewable: type.isViewable(),
+                    ref
+                },
+
+                // Detail, type-specific
+                detail: detail,
+
+                url: window.location.origin + '#dataview/' + ref.workspaceId + '/' + ref.objectId + '/' + ref.version,
+
+                // should be different per object type? E.g. narrative - nice name, others object name??
+                // Generic fields
+                name: obj.object_name,
+                date: new Date(obj.modified_at),
+                scientificName: detailMap.scientificName ? detailMap.scientificName.value || '' : '',
+
+                matches: matches,
+                selected: ko.observable(),
+                showMatches: ko.observable(false),
+                showDetails: ko.observable(false),
+                active: ko.observable(false)
+            };
+            return vm;
         }
 
-        calcSummary(alerts) {
-            const now = Date.now();
-            return alerts.reduce((acc, alert) => {
-                if ((alert.startAt.getTime() <= now) &&
-                        ((alert.endAt === null || alert.endAt.getTime() >= now))) {
-                    acc.present += 1;
-                } else if (alert.startAt.getTime() > now) {
-                    acc.future += 1;
-                }
-                return acc;
-            }, {
-                present: 0,
-                future: 0
+        function search(query) {
+            const searchApi = SearchAPI.make({
+                runtime: params.runtime
             });
-        }
-
-        loadNotifications() {
-            return this.getActiveAlerts()
-                .then((data) => {
-                    const summary = this.calcSummary(data);
-                    this.setState({
-                        alerts: data,
-                        summary,
-                        error: null
-                    });
+            return Promise.all([
+                searchApi.referenceObjectSearch({
+                    query: query.terms.join(' '),
+                    page: query.start || 0,
+                    pageSize: searchConfig.fetchSize
+                }),
+                searchApi.typeSearch({
+                    query: query.terms.join(' '),
+                    withPrivateData: 0,
+                    withPublicData: 1,
+                    dataSource: 'referenceData'
                 })
-                .catch((err) => {
-                    console.error('ERROR', err);
-                    this.setState({
-                        alerts: null,
-                        summary: null,
-                        error: err.message
+            ])
+                .then(([objectResults, typeResults]) => {
+                    const objects = objectResults.objects.map((object) => {
+                        return objectToViewModel(object);
                     });
+                    const totalByType = Object.keys(typeResults.type_to_count).map(function (typeName) {
+                        return {
+                            id: typeName.toLowerCase(),
+                            count: typeResults.type_to_count[typeName]
+                        };
+                    });
+                    let totalSearchHits;
+                    if (objectResults.total > maxSearchResults) {
+                        totalSearchHits = maxSearchResults;
+                    } else {
+                        totalSearchHits = objectResults.total;
+                    }
+                    return {
+                        items: objects,
+                        first: query.start,
+                        isTruncated: true,
+                        summary: {
+                            totalByType: totalByType,
+                            totalSearchHits: totalSearchHits,
+                            totalSearchSpace: objectResults.total,
+                            isTruncated: totalSearchHits < objectResults.total
+                        },
+                        stats: {
+                            objectSearch: objectResults.search_time,
+                            typeSearch: typeResults.search_time
+                        }
+                    };
                 });
         }
 
-
-        render() {
-            const props = {
-                runtime: this.props.runtime,
-                alerts: this.state.alerts,
-                summary: this.state.summary,
-                hideAlerts: this.state.hideAlerts
-            };
-            return html`<${SystemAlertToggle} ...${props}/>`;
-        }
+        return {
+            search,
+            isStopWord
+        };
     }
 
-    return SystemAlertData;
+    return {
+        make: factory
+    };
 });

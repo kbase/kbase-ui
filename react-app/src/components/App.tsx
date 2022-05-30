@@ -54,7 +54,7 @@ export default class App extends Component<AppProps, AppState> {
                                                     case AsyncProcessStatus.ERROR:
                                                         return (
                                                             <div>
-                                                                Error!{' '}
+                                                                Error [AuthContext.Consumer]!{' '}
                                                                 {value.error}
                                                             </div>
                                                         );

@@ -209,12 +209,7 @@ export default class AppCellView extends Component<PreviewCellProps> {
                                 </div>
                             </Accordion.Header>
                             <Accordion.Body>
-                                <Tabs variant="tabs" defaultActiveKey="info">
-                                    <Tab eventKey="info" title="Info">
-                                        <div className={styles.tabContent}>
-                                            {this.renderInfo()}
-                                        </div>
-                                    </Tab>
+                                <Tabs variant="tabs" defaultActiveKey="params">
                                     <Tab eventKey="params" title="Params">
                                         <div className={styles.tabContent}>
                                             {this.renderParams()}
@@ -224,6 +219,11 @@ export default class AppCellView extends Component<PreviewCellProps> {
                                     <Tab eventKey="jobstats" title="Job Stats">
                                         <div className={styles.tabContent}>
                                             {this.renderJobStats()}
+                                        </div>
+                                    </Tab>
+                                    <Tab eventKey="info" title="Info">
+                                        <div className={styles.tabContent}>
+                                            {this.renderInfo()}
                                         </div>
                                     </Tab>
                                 </Tabs>

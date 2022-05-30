@@ -1,21 +1,19 @@
 import { Component } from 'react';
-import { Config } from '../../types/config';
+import { Config } from '../../../types/config';
+import { BuildInfo, GitInfo } from '../../../types/info';
 
 export interface AboutKBaseUIProps {
     config: Config;
-    setTitle: (title: string) => void;
+    gitInfo: GitInfo;
+    buildInfo: BuildInfo;
 }
 
-interface AboutKBaseUIState {}
+interface AboutKBaseUIState { }
 
 export default class AboutKBaseUI extends Component<
     AboutKBaseUIProps,
     AboutKBaseUIState
 > {
-    componentDidMount() {
-        this.props.setTitle('About');
-    }
-
     renderHub() {
         return (
             <span style={{ whiteSpace: 'nowrap' }}>
@@ -85,10 +83,10 @@ export default class AboutKBaseUI extends Component<
     }
 
     renderGitInfo(): [JSX.Element, string, string] {
-        const buildInfo = this.props.config.build;
+        const gitInfo = this.props.gitInfo;
 
-        let repoUrl = buildInfo.git.originUrl; // 'https://github.com/kbase/kbase-ui';
-        const hash = buildInfo.git.commitHash;
+        let repoUrl = gitInfo.originURL; // 'https://github.com/kbase/kbase-ui';
+        const hash = gitInfo.hash.full;
         if (/^ssh:/.test(repoUrl)) {
             const m = /^ssh:\/\/git@(.*?)\/(.*?)$/.exec(repoUrl);
             if (m) {
@@ -96,19 +94,19 @@ export default class AboutKBaseUI extends Component<
             }
         }
 
-        const commitHash = buildInfo.git.commitHash;
+        const commitHash = gitInfo.hash.full
 
         let relNotesUrl;
         let githubUrl;
-        if (buildInfo.git.tag) {
+        if (gitInfo.tag) {
             relNotesUrl = [
                 repoUrl,
                 'blob',
                 hash,
                 'release-notes',
-                'RELEASE_NOTES_' + buildInfo.git.version + '.md',
+                'RELEASE_NOTES_' + gitInfo.version + '.md',
             ].join('/');
-            githubUrl = [repoUrl, 'tree', buildInfo.git.tag].join('/');
+            githubUrl = [repoUrl, 'tree', gitInfo.tag].join('/');
 
             return [
                 <p>
@@ -119,7 +117,7 @@ export default class AboutKBaseUI extends Component<
                         rel="noreferrer"
                         style={{ fontWeight: 'bold' }}
                     >
-                        {buildInfo.git.version}
+                        {gitInfo.version}
                     </a>{' '}
                     of {this.renderHub()}.
                 </p>,
@@ -154,28 +152,34 @@ export default class AboutKBaseUI extends Component<
         }
     }
 
+
     renderVersionInfo() {
-        const buildInfo = this.props.config.build;
-        const buildDate = Intl.DateTimeFormat('en-US', {
+        const buildInfo = this.props.buildInfo;
+
+        const buildDate = new Date(buildInfo.builtAt);
+
+        const buildDateString = Intl.DateTimeFormat('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
-        }).format(new Date(buildInfo.builtAt));
-        const buildTime = Intl.DateTimeFormat('en-US', {
+        }).format(buildDate);
+
+        const buildTimeString = Intl.DateTimeFormat('en-US', {
             hour: 'numeric',
             minute: 'numeric',
             second: 'numeric',
             timeZoneName: 'short',
-        }).format(new Date(buildInfo.builtAt));
+        }).format(buildDate);
+
         const contactUrl = this.props.config.ui.urls.contact.url;
-        // const helpUrl = this.props.runtime.config('resources.help.url');
+
         const aboutKBase = this.props.config.ui.urls.aboutKBase.url;
 
         const uiDocumentationUrl =
             'http://kbaseincubator.github.io/kbase-ui-docs';
         const documentationURL = this.props.config.ui.urls.documentation.url;
 
-        const [githubContent, githubUrl, relNotesUrl] = this.renderGitInfo();
+        const [githubContent, githubUrl,relNotesUrl]  = this.renderGitInfo();
 
         const kbaseGithubOrgURL = 'https://github.com/kbase';
 
@@ -183,7 +187,7 @@ export default class AboutKBaseUI extends Component<
             <div>
                 {githubContent}
                 <p>
-                    It was built on {buildDate} at {buildTime}.
+                    It was built on {buildDateString} at {buildTimeString}.
                 </p>
                 <h3>You may also be interested in:</h3>
                 <ul>

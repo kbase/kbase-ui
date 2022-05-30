@@ -1,7 +1,7 @@
 import UserProfileClient, {
     UserProfile,
 } from '@kbase/ui-lib/lib/comm/coreServices/UserProfile';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import {
     AsyncProcess,
     AsyncProcessError,
@@ -87,9 +87,9 @@ export const AuthContext = React.createContext<AuthState>({
 
 // Auth Wrapper Component
 
-export interface AuthWrapperProps {
+export type AuthWrapperProps = PropsWithChildren<{
     config: Config;
-}
+}>;
 
 interface AuthWrapperState {
     authState: AuthState;

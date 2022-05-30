@@ -96,6 +96,16 @@ const SHOW_SLOW_LOADING_AFTER = 5000;
 const SHOW_SUPER_SLOW_LOADING_AFTER = 30000;
 const PLUGIN_STARTUP_TIMEOUT = 60000;
 
+
+// TODO: improve this - should only be the struct ever sent, but could survey all
+// plugins to ensure they comply.
+export type NavigationString = string;
+export type NavigationStruct = {
+    path: string,
+    params: {[x: string]: string}
+}
+export type Navigation = NavigationString | NavigationStruct;
+
 export default class IFrameController extends Component<IFrameControllerProps,
     IFrameControllerState> {
     id: string;
@@ -155,6 +165,9 @@ export default class IFrameController extends Component<IFrameControllerProps,
 
     monitorLoad(start: number) {
         this.loadingTimer = window.setTimeout(() => {
+            if (this.loadingTimer === null) {
+                return;
+            }
             this.setState(
                 {
                     loadingState: {
@@ -171,6 +184,9 @@ export default class IFrameController extends Component<IFrameControllerProps,
 
     monitorSlowLoad(start: number) {
         this.loadingTimer = window.setTimeout(() => {
+            if (this.loadingTimer === null) {
+                return;
+            }
             this.setState(
                 {
                     loadingState: {
@@ -187,6 +203,9 @@ export default class IFrameController extends Component<IFrameControllerProps,
 
     monitorSuperSlowLoad(start: number) {
         this.loadingTimer = window.setTimeout(() => {
+            if (this.loadingTimer === null) {
+                return;
+            }
             this.setState(
                 {
                     loadingState: {
@@ -208,12 +227,14 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 SHOW_SLOW_LOADING_AFTER +
                 SHOW_SUPER_SLOW_LOADING_AFTER);
         this.loadingTimer = window.setTimeout(() => {
+            if (this.loadingTimer === null) {
+                return;
+            }
             this.setState({
                 loadingState: {
                     status: PluginLoadingStatus.ERROR,
                     error: {
-                        message: `Loading timed out after ${Date.now() - start
-                            }ms`,
+                        message: `Loading timed out after ${Date.now() - start}ms`,
                         description: [],
                     },
                 },
@@ -260,7 +281,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
         //     this.runtime.service('instrumentation').send(instrumentation);
         // });
 
-        this.channel.on('ui-navigate', (to) => {
+        this.channel.on('ui-navigate', (to: Navigation) => {
             //
             // OK. here we need to translation the navigation
             // request to an actual navigation.
@@ -275,10 +296,19 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 if (typeof to === 'string') {
                     return to;
                 }
-                throw new Error('Invalid path');
+                // throw new Error('Invalid path');
+                return to.path;
             })();
 
-            changeHash(path);
+            const params = ((): {[x: string]: string} => {
+                if (typeof to === 'string') {
+                    return {};
+                }
+                // throw new Error('Invalid path');
+                return to.params;
+            })();
+
+            changeHash(path, params);
 
             // this.props.messenger.send({
             //     channel: 'app',
@@ -288,7 +318,6 @@ export default class IFrameController extends Component<IFrameControllerProps,
         });
 
         this.channel.on('post-form', (config) => {
-            console.log('hmm, on post-form', config);
             this.formPost(config);
         });
 
@@ -323,10 +352,9 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 }
 
                 // Redirect
-                console.log('hmm, auth navigate???', nextRequest.path);
                 changeHash(nextRequest.path || 'about');
-                // window.location.hash = nextRequest.path || 'about';
             } catch (ex) {
+                // TODO: something
                 console.error('YIKES! Error in auth navigation out.', ex);
             }
         });
@@ -445,7 +473,6 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 'ready',
                 PLUGIN_STARTUP_TIMEOUT,
                 ({ channelId }: { channelId?: string }) => {
-                    console.log('READY');
                     this.channel!.setPartner(channelId || this.pluginChannelId);
 
                     const params = Object.assign({}, this.props.routeParams);
@@ -521,7 +548,6 @@ export default class IFrameController extends Component<IFrameControllerProps,
 
             // Sent by the plugin to indicate that the plugin has finished loading.
             this.channel!.once('started', PLUGIN_STARTUP_TIMEOUT, () => {
-                console.log('started');
                 this.stopLoadingMonitor();
                 // send an additional message according to the auth state.
                 if (
@@ -580,13 +606,12 @@ export default class IFrameController extends Component<IFrameControllerProps,
     }
 
     async iframeMounted(w: Window) {
-        console.log('setting up comm...');
         try {
             await this.setupCommunication(w);
         } catch (ex) {
-            console.log('Error setting up communication!!', ex);
+            // TODO: something
+            console.error('Error setting up communication!!', ex);
         }
-        console.log('communications setup...');
         const params = Object.assign({}, this.props.routeParams);
         params.view = this.props.view;
     }

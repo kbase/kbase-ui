@@ -20,9 +20,7 @@ export default class Title extends Component<TitleProps, TitleState> {
         // html.
         return (
             <div className="Title" data-k-b-testhook-component="title">
-                <span
-                    dangerouslySetInnerHTML={{ __html: this.props.title }}
-                ></span>
+                {this.props.title}
             </div>
         );
     }

@@ -5,22 +5,23 @@ import {
     AuthInfo,
 } from '../../contexts/Auth';
 import { Config } from '../../types/config';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import NotFoundPage from './components/NotFoundPage';
 import Main from './components/Main';
 import { SearchOptions } from './utils/NarrativeSearch';
 import ErrorBoundary from './ErrorBoundary';
-import NavigatorContextWrapper from './context/NavigatorContextWrapper';
+import NavigatorContextWrapper from './context/NavigatorContextWrapper-custom-router';
 import { DetailOptions } from './context/DataModel';
-import { pushHistory } from './utils/navigation';
+import { changeHash2, pushHistory } from './utils/navigation';
 
 // Styles
 import './bootstrapOverrides.css';
 import styles from './Navigator.module.css';
+import { RouteProps } from '../../components/Router2';
 
 const DEFAULT_CATEGORY = 'own';
 
-export interface NavigatorProps extends RouteComponentProps {
+export interface NavigatorProps extends RouteProps {
     authState: AuthenticationState;
     config: Config;
     setTitle: (title: string) => void;
@@ -64,8 +65,8 @@ export default class Navigator extends React.Component<
      * @param props
      * @returns The captured paramters
      */
-    searchParamsFromSearch(props: RouteComponentProps): NavigatorSearchParams {
-        const queryParams = new URLSearchParams(props.location.search);
+    searchParamsFromSearch(props: RouteProps): NavigatorSearchParams {
+        const queryParams = props.hashPath.query;
 
         const params: NavigatorSearchParams = {};
 
@@ -92,8 +93,8 @@ export default class Navigator extends React.Component<
         return params;
     }
 
-    detailParamsFromSearch(props: RouteComponentProps): NarrativeDetailParams {
-        const queryParams = new URLSearchParams(props.location.search);
+    detailParamsFromSearch(props: RouteProps): NarrativeDetailParams {
+        const queryParams = props.hashPath.query;
 
         const params: NarrativeDetailParams = {};
 
@@ -121,7 +122,7 @@ export default class Navigator extends React.Component<
      * @returns Search options captured from the url.
      */
     paramsToSearchOptions(
-        props: RouteComponentProps<NavigatorRouteParams>
+        props: RouteProps
     ): SearchOptions {
         const searchParams = this.searchParamsFromSearch(props);
         return {
@@ -133,7 +134,7 @@ export default class Navigator extends React.Component<
     }
 
     paramsToDetailOptions(
-        props: RouteComponentProps<NavigatorRouteParams>
+        props: RouteProps
     ): DetailOptions {
         const detailParams = this.detailParamsFromSearch(props);
         return { ...detailParams };
@@ -141,43 +142,30 @@ export default class Navigator extends React.Component<
 
     makePath(extraPath?: string) {
         if (extraPath) {
-            return `${this.props.match.path}/${extraPath}`;
+            return `${this.props.hashPath.path}/${extraPath}`;
         } else {
-            return this.props.match.path;
+            return this.props.hashPath.path;
         }
     }
     // narrativeId;
     renderNav(authInfo: AuthInfo) {
         return (
             <div className={`${styles.Navigator} Navigator`}>
-                <Switch>
-                    <Route
-                        exact
-                        path={this.makePath()}
-                        render={(props: RouteComponentProps) => {
-                            return (
-                                <ErrorBoundary>
-                                    <NavigatorContextWrapper
-                                        authInfo={authInfo}
-                                        config={this.props.config}
-                                        routeProps={props}
-                                        searchOptions={this.paramsToSearchOptions(
-                                            props
-                                        )}
-                                        detailOptions={this.paramsToDetailOptions(
-                                            props
-                                        )}
-                                    >
-                                        <Main authInfo={authInfo} />
-                                    </NavigatorContextWrapper>
-                                </ErrorBoundary>
-                            );
-                        }}
-                    />
-                    <Route path="*">
-                        <NotFoundPage />
-                    </Route>
-                </Switch>
+                <ErrorBoundary>
+                    <NavigatorContextWrapper
+                        authInfo={authInfo}
+                        config={this.props.config}
+                        routeProps={this.props}
+                        searchOptions={this.paramsToSearchOptions(
+                            this.props
+                        )}
+                        detailOptions={this.paramsToDetailOptions(
+                            this.props
+                        )}
+                    >
+                        <Main authInfo={authInfo} />
+                    </NavigatorContextWrapper>
+                </ErrorBoundary>
             </div>
         );
     }
@@ -187,7 +175,9 @@ export default class Navigator extends React.Component<
         switch (authState.status) {
             case AuthenticationStatus.NONE:
             case AuthenticationStatus.UNAUTHENTICATED:
-                pushHistory('login');
+                // pushHistory('login');
+                // TODO: add the next route to this navigation.
+                changeHash2('login');
                 return null;
             // return (
             //     <ErrorMessage message="The Navigator requires authentication" />

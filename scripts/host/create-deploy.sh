@@ -4,7 +4,9 @@ rm -rf build/dist
 # Copy the react build
 cp -pr react-app/build build/dist
 
-# ensure the deploy directory is available
-mkdir -p build/dist/deploy
+# Copy the deploy configs into the dist
+cp -pr build/build build/dist/build
 
-# cp -pr build/plugins build/dist/deploy
+# Copy the plugins into the dist
+cp -pr build/plugins build/dist/plugins
+

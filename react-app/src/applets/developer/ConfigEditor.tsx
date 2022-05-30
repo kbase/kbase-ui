@@ -85,7 +85,7 @@ export default class ConfigEditor extends Component<
         const rows = value.map((arrayValue, index) => {
             const nextPath = [...path, index];
             return (
-                <tr>
+                <tr key={index}>
                     <td>{this.renderJSONValue(arrayValue, nextPath)}</td>
                 </tr>
             );
@@ -100,7 +100,7 @@ export default class ConfigEditor extends Component<
         const rows = Object.entries(value).map(([key, propertyValue]) => {
             const nextPath = [...path, key];
             return (
-                <tr>
+                <tr key={key}>
                     <th>{key}</th>
                     <td>{this.renderJSONValue(propertyValue, nextPath)}</td>
                 </tr>
@@ -141,7 +141,7 @@ export default class ConfigEditor extends Component<
     }
     render() {
         return (
-            <div>
+            <div className="ConfigEditor">
                 <div>{this.renderEditor()}</div>
             </div>
         );

@@ -66,8 +66,12 @@ __check_defined = \
 
 .PHONY: all test build docs
 
+
+# Standard 'all' target 
+all: build prepare-build install-plugins git-info build-info create-deploy
+
 # Standard 'all' target = just do the standard build
-all: build install-plugins create-deploy
+dev: build prepare-build install-plugins git-info build-info render-templates create-deploy
 
 # See above for 'all' - just running 'make' should locally build
 default:
@@ -206,6 +210,12 @@ remove-dev-cert:
 clean-build:
 	rm -rf build/dist
 
+prepare-build:
+	sh scripts/host/prepare-build.sh
+
+render-templates:
+	DIR=$(TOPDIR) ENV=$(env) bash tools/dockerize/scripts/render-templates.sh
+
 #
 # Builds the app on the host, via docker containers
 # Results end up in the build directory
@@ -213,7 +223,8 @@ clean-build:
 build:
 	sh scripts/host/build.sh
 
-
+# Build and copy to dist
+build-dist: build create-deploy
 
 create-deploy:
 	sh scripts/host/create-deploy.sh
@@ -225,6 +236,11 @@ create-deploy:
 install-plugins:
 	sh tools/deno/scripts/install-plugins.sh
 
+git-info:
+	sh tools/deno/scripts/git-info.sh
+
+build-info:
+	sh tools/deno/scripts/build-info.sh
 #
 # TODO May get rid of, need at least for now for testing.
 # Should create a docker compose override file in the location
@@ -238,7 +254,7 @@ start-local-server: # docker-network # docker-compose-override
 	@:$(call check_defined, env, "the runtime (deploy) environment: defaults to 'dev'")
 	@echo "> Building and running docker image for development"
 	@echo ">   DEPLOY_ENV=$(env)"
-	$(eval cmd = cd dev; DEPLOY_ENV=$(env) docker-compose up \
+	$(eval cmd = cd dev && DEPLOY_ENV=$(env) docker compose up \
 		$(if $(findstring t,$(build-image)),--build))
 	@echo "> Issuing $(cmd)"
 	$(cmd)
@@ -249,7 +265,7 @@ stop-local-server: # docker-network # docker-compose-override
 	@:$(call check_defined, env, "the runtime (deploy) environment: defaults to 'dev'")
 	@echo "> Building and running docker image for development"
 	@echo ">   DEPLOY_ENV=$(env)"
-	$(eval cmd = cd dev; DEPLOY_ENV=$(env) docker compose rm -v -f -s)
+	$(eval cmd = cd dev && DEPLOY_ENV=$(env) docker compose rm -v -f -s)
 	@echo "> Issuing $(cmd)"
 	$(cmd)
 
@@ -284,3 +300,8 @@ stop-dev-server:
 
 start-dev-support-server:
 	sh scripts/host/start-dev-support-server.sh
+
+# Testing
+
+test:
+	@echo Testing yet to be done...

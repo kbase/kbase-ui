@@ -6,6 +6,16 @@ import { Config } from '../types/config';
 import IFrameController, { IFrameControllerProps } from './IFrameController';
 import './Plugin.css';
 
+/**
+ * TODO:
+ * let us try this:
+ * treat this as an async component
+ * first, it is NONE, then we check for existence of the plugin's index file by 
+ * attempting to load it. If that succeeds we will then proceed to load
+ * the iframe controller.
+ * z
+ */
+
 export interface Params {
     [key: string]: string;
 }
@@ -40,6 +50,13 @@ export default class Plugin extends Component<PluginProps> {
 
     componentDidMount() {
         this.props.setTitle('');
+    }
+
+    componentDidUpdate(prevProps: PluginProps) {
+        if (prevProps.name !== this.props.name) {
+            // this.forceUpdate();
+            // If the plugin name changed, we want to check that it has 
+        }
     }
 
     render() {

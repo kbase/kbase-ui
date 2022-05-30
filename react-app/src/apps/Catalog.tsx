@@ -1,10 +1,11 @@
-import {Component} from 'react';
-import {Route, RouteComponentProps, Switch} from 'react-router-dom';
-import PluginWrapper from '../components/PluginWrapper/PluginWrapper';
-import {AuthenticationState} from '../contexts/Auth';
-import {Config} from '../types/config';
+import { Component } from 'react';
+import { AuthenticationState } from '../contexts/Auth';
+import { Route } from '../lib/Route';
+import { Config } from '../types/config';
+import PluginWrapper2 from '../components/PluginWrapper/PluginWrapper2';
+import { RouteProps, Router } from '../components/Router2';
 
-export interface CatalogProps extends RouteComponentProps {
+export interface CatalogProps extends RouteProps {
     config: Config;
     authState: AuthenticationState;
     setTitle: (title: string) => void;
@@ -14,231 +15,111 @@ interface CatalogState {
 }
 
 export default class Catalog extends Component<CatalogProps, CatalogState> {
-    makePath(extraPath?: string) {
-        if (extraPath) {
-            return `${this.props.match.path}/${extraPath}`;
-        } else {
-            return this.props.match.path;
-        }
-    }
+
 
     render() {
-        return (
-            <Switch>
-                <Route
-                    path={this.makePath('admin')}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="catalogAdmin"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
-                />
-                <Route
-                    path={this.makePath('(app|apps)/:namespace/:id/:tag?')}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="appView"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
-                />
-                <Route
-                    path={this.makePath('apps/:tag?')}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="appsBrowser"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
-                />
-                <Route
-                    path={this.makePath('(module|modules)/:module_name')}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="moduleView"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
-                />
-                <Route
-                    path={this.makePath('modules')}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="moduleBrowser"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
-                />
-                <Route
-                    path={this.makePath('services')}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="serviceCatalog"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
-                />
-                <Route
-                    path={this.makePath(
-                        '(function|functions)/:module/:function_id/:ver?'
-                    )}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="functionView"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
-                />
-                <Route
-                    path={this.makePath('functions/:tag?')}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="functionBrowser"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
-                />
-                <Route
-                    path={this.makePath('datatypes')}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="datatypeBrowser"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
-                />
-                <Route
-                    path={this.makePath('register/:registration_id?')}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="catalogRegistration"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
-                />
-                <Route
-                    path={this.makePath('stats')}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="catalogStatus"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
-                />
+        const common = {
+            name: "catalog",
+            setTitle: this.props.setTitle,
+            authState: this.props.authState,
+            config: this.props.config
+        };
 
-                <Route
-                    path={this.makePath('status/:module_names?')}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="catalogStatus"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
+        const routes = [
+            new Route('^catalog/admin$', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="catalogAdmin"
                 />
-                <Route
-                    path={this.makePath('queue')}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="catalogQueue"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
+            }), new Route('^catalog$/(app|apps)/:namspace/:id:tag?', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="appView"
                 />
-                <Route
-                    path={this.makePath()}
-                    render={(props) => {
-                        return (
-                            <PluginWrapper
-                                {...props}
-                                name="catalog"
-                                view="catalogIndex"
-                                setTitle={this.props.setTitle}
-                                authState={this.props.authState}
-                                config={this.props.config}
-                            />
-                        );
-                    }}
+            }), new Route('^catalog$/app', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="appsBrowser"
                 />
-            </Switch>
-        );
+            }), new Route('^catalog$/app/:tag?', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="appsBrowser"
+                />
+            }), new Route('^catalog$/(module|modules)/:module_name', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="moduleView"
+                />
+            }), new Route('^catalog$/^modules$', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="moduleBrowser"
+                />
+            }), new Route('^catalog$/^services$', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="serviceBrowser"
+                />
+            }), new Route('^catalog$/^(function|functions)/:module/:function_id/:ver?', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="functionView"
+                />
+            }), new Route('^catalog$/^functions$/:tag?', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="functionBrowser"
+                />
+            }), new Route('^catalog$/^datatypes?', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="datatypeBrowser"
+                />
+            }), new Route('^catalog$/^register$/:registration_id?', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="catalogRegistration"
+                />
+            }), new Route('^catalog$/^stats$', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="catalogStatus"
+                />
+            }), new Route('^catalog$/^status$/:module_names?', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="catalogStatus"
+                />
+            }), new Route('^catalog$/^queue$', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="catalogQueue"
+                />
+            }), new Route('^catalog$', (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...common}
+                    view="catalogIndex"
+                />
+            })
+        ];
+
+        return <Router routes={routes} hashPath={this.props.hashPath} />
+
     }
 }

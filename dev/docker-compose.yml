@@ -36,7 +36,7 @@ services:
       # Create the kbase-ui config file
       #
       - '-template'
-      - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/modules/deploy/config.json
+      - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/deploy/config.json
 
       # Starts nginx and serves up kbase-ui
       - bash

@@ -3,6 +3,7 @@
         "id": "kbase-ui",
         "target": "/kb/deployment/app",
         "environment": "{{ .Env.deploy_environment }}",
+        "displayEnvironment": {{ eq .Env.deploy_environment "prod" | ternary true false }},
         "hostname": "{{ .Env.deploy_hostname }}",
         "icon": "{{ .Env.deploy_icon }}",
         "name": "{{ .Env.deploy_name }}",
@@ -107,8 +108,8 @@
             "beta"
         ],
         "featureSwitches": {
-            "enabled": [{{ range $i, $v := splitList "," .Env.ui_featureSwitches_enabled }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
-            "disabled": [{{ range $i, $v := splitList "," .Env.ui_featureSwitches_disabled }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+            "enabled": [{{ range $i, $v := splitList "," (default "" .Env.ui_featureSwitches_enabled) }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+            "disabled": [{{ range $i, $v := splitList "," (default "" .Env.ui_featureSwitches_disabled) }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
             "available": [
                 {
                     "id": "orcid_auth_provider",
@@ -179,6 +180,22 @@
                             "newWindow": true,
                             "label": "New Narrative",
                             "icon": "plus"
+                        },
+                        {
+                            "name": "biochem-search",
+                            "type": "internal",
+                            "path": "biochem-search",
+                            "newWindow": false,
+                            "label": "Biochem Search",
+                            "icon": "search"
+                        },
+                        {
+                            "name": "jgi-search",
+                            "type": "internal",
+                            "path": "jgi-search",
+                            "newWindow": false,
+                            "label": "JGI Search",
+                            "icon": "search"
                         }
                     ]
                 },
@@ -206,6 +223,18 @@
                             "label": "Dashboard 4",
                             "type": "internal",
                             "path": "dashboard4",
+                            "newWindow": false,
+                            "icon": "compass",
+                            "requiresAuth": true,
+                            "allowedRoles": [
+                                "DevToken"
+                            ]
+                        },
+                        {
+                            "name": "navigator",
+                            "label": "Navigator",
+                            "type": "internal",
+                            "path": "navigator",
                             "newWindow": false,
                             "icon": "compass",
                             "requiresAuth": true,
@@ -316,7 +345,7 @@
                         "name": "account",
                         "type": "internal",
                         "tooltip": "Manage your KBase Account",
-                        "path": "auth2/account",
+                        "path": "account",
                         "newWindow": false,
                         "label": "Account",
                         "icon": "drivers-license",

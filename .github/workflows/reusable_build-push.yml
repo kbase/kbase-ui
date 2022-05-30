@@ -1,0 +1,64 @@
+---
+name: Build & Push Image to GHCR
+on:
+  workflow_call:
+    inputs:
+      name:
+        description: The image name
+        required: true
+        type: string
+      tags:
+        description: The image tags
+        required: true
+        type: string
+jobs:
+  build-push-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out GitHub Repo
+        uses: actions/checkout@v2
+
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+      - name: Build the app
+        run: make
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GHCR
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          # note that the calling workflow must set `secrets: inherit`
+          username: '${{ secrets.GHCR_USERNAME }}'
+          password: '${{ secrets.GHCR_TOKEN }}'
+
+      - name: Create github action tags from image tags
+        id: tags
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            const tags = '${{ inputs.tags }}'.split(',');
+            const username = '${{ github.event.repository.owner.login }}';
+            const repoName = '${{ inputs.name }}';
+            return tags.map((tag) => {
+              return `ghcr.io/${username}/${repoName}:${tag}`;
+            }).join(',');
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          pull: true
+          push: true
+          build-args: |
+            BUILD_DATE=${{ steps.date.outputs.date }}
+            VCS_REF=${{ github.sha }}
+            BRANCH='${{ github.ref }}'
+            TAG='${{ github.ref }}'
+          tags: '${{ steps.tags.outputs.result }}'

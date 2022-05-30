@@ -3,6 +3,7 @@ import './ErrorMessage.css';
 
 export interface ErrorMessageProps {
     title?: string;
+    style?: React.CSSProperties;
     message: string;
 }
 
@@ -14,7 +15,7 @@ export default class ErrorMessage extends React.Component<
 > {
     render() {
         return (
-            <div className="alert alert-danger ErrorMessage">
+            <div className="alert alert-danger ErrorMessage" style={this.props.style} >
                 <div className="-title">
                     <span className="fa fa-exclamation-triangle"></span>
                     <span className="-text">

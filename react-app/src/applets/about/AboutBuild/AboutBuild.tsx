@@ -1,46 +1,43 @@
 import { Component } from 'react';
-import { BuildInfo, Config } from '../../types/config';
+import { BuildInfo, GitInfo } from '../../../types/info';
 
 export interface AboutBuildProps {
-    config: Config;
-    setTitle: (title: string) => void;
+    gitInfo: GitInfo;
+    buildInfo: BuildInfo;
 }
 
-interface AboutBuildState {}
+interface AboutBuildState { }
 
 export default class AboutBuild extends Component<
     AboutBuildProps,
     AboutBuildState
 > {
-    componentDidMount() {
-        this.props.setTitle('About the kbase-ui build');
-    }
-
-    renderCommit(buildInfo: BuildInfo) {
+   
+    renderCommit() {
         return (
             <table className="table">
                 <tbody>
                     <tr>
                         <th>hash</th>
-                        <td>{buildInfo.git.commitHash}</td>
+                        <td>{this.props.gitInfo.hash.full}</td>
                     </tr>
                     <tr>
                         <th>shortHash</th>
-                        <td>{buildInfo.git.commitAbbreviatedHash}</td>
+                        <td>{this.props.gitInfo.hash.abbreviated}</td>
                     </tr>
                     <tr>
                         <th>message</th>
-                        <td>{buildInfo.git.subject}</td>
+                        <td>{this.props.gitInfo.subject}</td>
                     </tr>
                     <tr>
                         <th>by</th>
-                        <td>{buildInfo.git.committerName}</td>
+                        <td>{this.props.gitInfo.committer.name}</td>
                     </tr>
                     <tr>
                         <th>date</th>
                         <td>
                             {new Date(
-                                buildInfo.git.committerDate
+                                this.props.gitInfo.committer.date
                             ).toLocaleString()}
                         </td>
                     </tr>
@@ -49,19 +46,19 @@ export default class AboutBuild extends Component<
         );
     }
 
-    renderAuthor(buildInfo: BuildInfo) {
+    renderAuthor() {
         return (
             <table className="table">
                 <tbody>
                     <tr>
                         <th>author</th>
-                        <td>{buildInfo.git.authorName}</td>
+                        <td>{this.props.gitInfo.author.name}</td>
                     </tr>
                     <tr>
                         <th>authorDate</th>
                         <td>
                             {new Date(
-                                buildInfo.git.authorDate
+                                this.props.gitInfo.author.date
                             ).toLocaleString()}
                         </td>
                     </tr>
@@ -70,25 +67,25 @@ export default class AboutBuild extends Component<
         );
     }
 
-    renderGit(buildInfo: BuildInfo) {
+    renderGit() {
         return (
             <table className="table">
                 <tbody>
                     <tr>
                         <th>branch</th>
-                        <td>{buildInfo.git.branch}</td>
+                        <td>{this.props.gitInfo.branch}</td>
                     </tr>
                     <tr>
                         <th>url</th>
-                        <td>{buildInfo.git.originUrl}</td>
+                        <td>{this.props.gitInfo.originURL}</td>
                     </tr>
                     <tr>
                         <th>commit</th>
-                        <td>{this.renderCommit(buildInfo)}</td>
+                        <td>{this.renderCommit()}</td>
                     </tr>
                     <tr>
                         <th>author</th>
-                        <td>{this.renderAuthor(buildInfo)}</td>
+                        <td>{this.renderAuthor()}</td>
                     </tr>
                 </tbody>
             </table>
@@ -96,17 +93,16 @@ export default class AboutBuild extends Component<
     }
 
     renderBuildInfo() {
-        const buildInfo = this.props.config.build;
         return (
             <table className="table">
                 <tbody>
                     <tr>
                         <th>builtAt</th>
-                        <td>{new Date(buildInfo.builtAt).toLocaleString()}</td>
+                        <td>{new Date(this.props.buildInfo.builtAt).toLocaleString()}</td>
                     </tr>
                     <tr>
                         <th>git</th>
-                        <td>{this.renderGit(buildInfo)}</td>
+                        <td>{this.renderGit()}</td>
                     </tr>
                 </tbody>
             </table>

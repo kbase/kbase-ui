@@ -1,5 +1,5 @@
 import { JSONValue } from '@kbase/ui-lib/lib/json';
-import { Component } from 'react';
+import { Component, PropsWithChildren } from 'react';
 import { Card } from 'react-bootstrap';
 import styles from './ErrorView.styles';
 import PresentableJSON from './PresentableJSON';
@@ -18,15 +18,15 @@ export interface Remedy {
     url?: string;
 }
 
-export interface ErrorViewProps {
+export type ErrorViewProps = PropsWithChildren<{
     title: string;
-    errorInfo: ErrorInfo;
+    errorInfo?: ErrorInfo;
     render?: () => JSX.Element;
-}
+}>;
 
 export default class ErrorView extends Component<ErrorViewProps> {
     renderInfo() {
-        if (!this.props.errorInfo.info) {
+        if (typeof this.props.errorInfo === 'undefined' || !this.props.errorInfo.info) {
             return;
         }
         return (
@@ -40,7 +40,7 @@ export default class ErrorView extends Component<ErrorViewProps> {
         );
     }
     renderRemedies() {
-        if (!this.props.errorInfo.remedies) {
+        if (typeof this.props.errorInfo === 'undefined' || !this.props.errorInfo.remedies) {
             return;
         }
         const remedies = this.props.errorInfo.remedies.map((remedy) => {
@@ -81,7 +81,7 @@ export default class ErrorView extends Component<ErrorViewProps> {
         if (this.props.render) {
             return this.props.render();
         }
-        if (!this.props.errorInfo.message) {
+        if (typeof this.props.errorInfo === 'undefined' || !this.props.errorInfo.message) {
             return this.props.children;
         }
         return (

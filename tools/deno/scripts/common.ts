@@ -44,6 +44,31 @@ export class Runner {
   }
 }
 
+export type ISODateTimeString = string;
+
+export interface GitInfo {
+    hash: {
+        full: string,
+        abbreviated: string 
+    },
+    subject: string,
+    notes: string,
+    author: {
+        name: string,
+        date: ISODateTimeString
+    },
+    committer: {
+        name: string,
+        date: ISODateTimeString
+    },
+    originURL: string,
+    account: string,
+    repoName: string,
+    branch: string,
+    tag?: string,
+    version?: string
+}
+
 export class Git {
   directory: string;
   runner: Runner;
@@ -51,7 +76,7 @@ export class Git {
     this.directory = directory;
     this.runner = new Runner(directory);
   }
-  async gitTag() {
+  async gitTag(): Promise<{tag?: string, version?: string}> {
     const rawTag = await this.runner.run([
       "git",
       "describe",
@@ -66,7 +91,10 @@ export class Git {
       if (m) {
         return { tag, version: m.slice(1).join(".") };
       } else {
-        return { tag };
+          if (tag.length > 0) {
+            return { tag };
+          } 
+          return {};
       }
     }
   }
@@ -86,7 +114,7 @@ export class Git {
     return this.runner.run(cmd);
   }
 
-  async getInfo() {
+  async getInfo(): Promise<GitInfo> {
     const showOutput = await this.runner.run([
       "git",
       "show",
@@ -110,6 +138,10 @@ export class Git {
       (await this.runner.run(["git", "config", "--get", "remote.origin.url"]))
         .trim();
 
+    const url = new URL(originURL);
+    const path = url.pathname;
+    const [_ignore, account, repoName] = path.split('/');
+
     const branch =
       (await this.runner.run(["git", "rev-parse", "--abbrev-ref", "HEAD"]))
         .trim();
@@ -132,6 +164,8 @@ export class Git {
         date: new Date(parseInt(committerDateEpoch) * 1000).toISOString(),
       },
       originURL,
+      account,
+      repoName,
       branch,
       tag,
       version,

@@ -9,12 +9,16 @@ export interface AboutKBaseUIProps {
     authState: AuthenticationState;
 }
 
-interface AboutKBaseUIState {}
+interface AboutKBaseUIState { }
 
 export default class AboutKBaseUI extends Component<
     AboutKBaseUIProps,
     AboutKBaseUIState
 > {
+    componentDidMount() {
+        this.props.setTitle('About KBase Core Services');
+    }
+
     render() {
         return <AboutCoreServices {...this.props} />;
     }

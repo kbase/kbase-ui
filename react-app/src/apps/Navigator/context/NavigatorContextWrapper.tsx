@@ -1,5 +1,5 @@
 import { JSONObject } from '@kbase/ui-lib/lib/json';
-import { Component } from 'react';
+import { Component, PropsWithChildren } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { AuthInfo } from '../../../contexts/Auth';
 import { AsyncProcessStatus } from '../../../lib/AsyncProcess2';
@@ -70,13 +70,13 @@ export interface SetRangePayload {
     to: number;
 }
 
-export interface NavigatorContextWrapperProps {
+export type NavigatorContextWrapperProps = PropsWithChildren<{
     authInfo: AuthInfo;
     config: Config;
     routeProps: RouteComponentProps;
     searchOptions: SearchOptions;
     detailOptions: DetailOptions;
-}
+}>;
 
 interface NavigatorContextWrapperState {
     navigatorContextState: NavigatorContextState;

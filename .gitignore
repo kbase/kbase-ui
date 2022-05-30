@@ -8,6 +8,8 @@ _attic/
 # IDEs
 # put your ide here
 .idea
+.vscode/*.log
+
 
 # OS artifacts
 .DS_Store
@@ -41,6 +43,13 @@ docker-compose.override.yml
 
 /tools/service-proxy/contents/ssl/*
 !/tools/service-proxy/contents/ssl/README.md
+
+
+/tools/dist-proxy/contents/ssl/*
+!/tools/dist-proxy/contents/ssl/README.md
+
+# dev certs
+
 
 # can be left over with a manual npm install with --no-cache (I think)
 /false

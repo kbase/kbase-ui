@@ -1,11 +1,11 @@
-import { Component } from 'react';
+import { Component, PropsWithChildren } from 'react';
 import './ErrorAlert.css';
 
-export interface ErrorAlertProps {
+export type ErrorAlertProps = PropsWithChildren<{
     title?: string;
     message: string;
     render?: () => JSX.Element;
-}
+}>;
 
 export default class ErrorAlert extends Component<ErrorAlertProps> {
     renderTitle() {

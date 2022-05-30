@@ -1,9 +1,9 @@
 import { Component } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
-// import Tabs from '../../components/Tabs';
 import { Config } from '../../types/config';
 import ConfigEditor from './ConfigEditor';
 import Main from './Main';
+import './index.css';
 
 export interface DeveloperProps {
     tab?: string;

@@ -1,0 +1,29 @@
+{{ if .Env.deploy_ui_hostname }}
+    
+    proxy_hide_header 'Access-Control-Max-Age,';
+    proxy_hide_header 'Access-Control-Allow-Headers';
+    proxy_hide_header 'Access-Control-Allow-Methods';
+    proxy_hide_header 'Access-Control-Allow-Origin';
+    proxy_hide_header 'Access-Control-Allow-Credentials';
+ 
+    if ($request_method = 'OPTIONS') {
+        add_header 'Access-Control-Max-Age' 1728000;
+        add_header 'Access-Control-Allow-Headers' 'Authorization,Content-Type';
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
+        add_header 'Access-Control-Allow-Origin' 'https://{{ .Env.deploy_ui_hostname }}';
+        # add_header 'Access-Control-Allow-Origin' '*';
+        add_header 'Access-Control-Allow-Credentials' 'true';
+        add_header 'Content-Type' 'text/plain charset=UTF-8';
+        add_header 'Content-Length' 0 always;
+        return 204;
+    }
+    
+    add_header 'Access-Control-Allow-Origin' 'https://{{ .Env.deploy_ui_hostname }}' always;
+    # add_header 'Access-Control-Allow-Origin' '*' always;
+    add_header 'Access-Control-Allow-Credentials' 'true' always;
+    add_header 'Access-Control-Expose-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization,Cookie'  always;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+
+{{ end }}
+    

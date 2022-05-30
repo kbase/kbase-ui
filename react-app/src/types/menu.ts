@@ -10,6 +10,7 @@ export interface MenuItemBase {
     requiresAuth?: boolean;
     allowedTags?: Array<string>;
     allowedRoles?: Array<string>;
+    renderBadge?: (menuItem: MenuItem) => JSX.Element;
 }
 
 export interface MenuItemInternal extends MenuItemBase {

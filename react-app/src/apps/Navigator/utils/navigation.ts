@@ -64,7 +64,21 @@ export function changeHash(
                 url.searchParams.set(key, value);
             }
         }
+
+        const searchString = url.searchParams.toString();
+        if (searchString.length > 0) {
+            url.hash += `?${searchString}`;
+        }
     }
 
     window.location.hash = url.hash;
+}
+
+
+export function changeHash2(hashPath: string) {
+    const url = new URL(window.location.href);
+    url.hash = hashPath;
+    window.history.replaceState(null, '', url);
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    console.log('changeHash2!!', url, url.hash);
 }

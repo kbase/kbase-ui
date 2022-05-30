@@ -17,7 +17,7 @@ export default class AsyncUnwrapper<T> extends Component<
             case AsyncProcessStatus.PENDING:
                 return <div>Loading...</div>;
             case AsyncProcessStatus.ERROR:
-                return <div>Error! {this.props.value.error}</div>;
+                return <div>Error [AsyncUnwrapper]! {this.props.value.error}</div>;
             case AsyncProcessStatus.SUCCESS:
                 // TODO: render children with value passed...
                 return <div>here...</div>;

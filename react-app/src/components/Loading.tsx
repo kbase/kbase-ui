@@ -7,12 +7,23 @@ export type Type = 'inline' | 'block';
 export interface LoadingProps {
     size?: Size;
     type?: Type;
-    message: string;
+    message?: string;
 }
 
 interface LoadingState {}
 
 export default class Loading extends Component<LoadingProps, LoadingState> {
+    renderMessage() {
+        if (!this.props.message) {
+            return null;
+        }
+        return <>
+            {' '}
+            <span style={styles.LoadingMessage}>
+                {this.props.message}
+            </span>
+        </>;
+    }
     render() {
         const spinner = (() => {
             switch (this.props.size || 'normal') {
@@ -31,20 +42,14 @@ export default class Loading extends Component<LoadingProps, LoadingState> {
         if (this.props.type === 'inline') {
             return (
                 <div style={styles.LoadingInline}>
-                    {spinner}{' '}
-                    <span style={styles.LoadingMessage}>
-                        {this.props.message}
-                    </span>
+                    {spinner}{this.renderMessage()}
                 </div>
             );
         } else {
             return (
                 <div style={styles.LoadingContainer}>
                     <div style={styles.Loading}>
-                        {spinner}{' '}
-                        <span style={styles.LoadingMessage}>
-                            {this.props.message}
-                        </span>
+                        {spinner}{this.renderMessage()}
                     </div>
                 </div>
             );

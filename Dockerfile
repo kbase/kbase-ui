@@ -8,8 +8,7 @@ WORKDIR /kb
 
 # This version uses master; otherwise functionally equivalent other than style.
 RUN version=v0.15.1 && \
-    wget -O - https://github.com/powerman/dockerize/releases/download/${version}/dockerize-`uname -s`-`uname -m` | install /dev/stdin /usr/local/bin/dockerize && \
-    mkdir -p /kb/deployment/app/modules/deploy
+    wget -O - https://github.com/powerman/dockerize/releases/download/${version}/dockerize-`uname -s`-`uname -m` | install /dev/stdin /usr/local/bin/dockerize
 
 # These ARGs values are passed in via the docker build command
 ARG BUILD_DATE
@@ -19,9 +18,6 @@ ARG TAG
 
 # The main thing -- the kbase-ui built code.
 COPY build/dist /kb/deployment/app
-
-# And the templates
-COPY build/plugins /kb/deployment/plugins
 
 # Config templates
 COPY deployment/templates /kb/deployment/templates

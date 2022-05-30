@@ -15,7 +15,7 @@ export interface ColumnDef {
     id: string;
     label: string;
     style: CSSProperties;
-    render: (value: any, values: Array<any>) => Element;
+    render: (value: any, values: Array<any>) => JSX.Element;
 }
 
 export interface DataTableProps {
@@ -25,8 +25,8 @@ export interface DataTableProps {
     };
     columns: Array<ColumnDef>;
     render: {
-        header: () => HTMLElement;
-        row: (values: Array<any>) => HTMLElement;
+        header: () => JSX.Element;
+        row: (values: Array<any>) => JSX.Element;
     };
     dataSource: Array<any>;
     onClick: (values: Array<any>) => void;
