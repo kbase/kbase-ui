@@ -131,6 +131,17 @@ export class Git {
 
   async getInfo(): Promise<GitInfo> {
     log("***************");
+    log("make mounted directory 'safe' for git");
+    await this.runner.run([
+      "git",
+      "config",
+      "--global",
+      "--add",
+      "safe.directory",
+      "/app",
+    ]);
+
+    log("***************");
     log("getting hash, author, committer...");
     const showOutput = await this.runner.run([
       "git",
