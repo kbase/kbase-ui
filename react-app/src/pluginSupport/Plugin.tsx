@@ -31,6 +31,7 @@ export interface PluginProps {
     view: string;
     original: string; // original what?
     params: Params;
+    syncHash: boolean;
     // hmm
     config: Config;
     authState: AuthenticationState;
@@ -68,6 +69,7 @@ export default class Plugin extends Component<PluginProps> {
         const props: IFrameControllerProps = {
             pluginPath,
             pluginName: this.props.name,
+            syncHash: this.props.syncHash,
             key: this.props.name,
             original: this.props.original,
             view: this.props.view,

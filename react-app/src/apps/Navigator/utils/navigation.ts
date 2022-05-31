@@ -1,5 +1,6 @@
 export function updateHistory(key: string, value: string | null) {
     const url = new URL(window.location.href);
+    console.log('[updateHistory]', key, value);
 
     // A little hack for react router, which expects the search to be appended
     // to the hash.
@@ -42,15 +43,12 @@ export function pushHistory(
     window.history.pushState(null, '', url);
 }
 
-export function changeHash(
+export function changeHash2(
     hashPath: string,
     search?: { [key: string]: string }
-) {
+): void {
     const url = new URL(window.location.href);
-
-    // A little hack for react router, which expects the search to be appended
-    // to the hash.
-    url.hash = `#${hashPath}`;
+    url.hash = hashPath;
 
     if (search) {
         for (const key of Array.from(url.searchParams.keys())) {
@@ -71,14 +69,6 @@ export function changeHash(
         }
     }
 
-    window.location.hash = url.hash;
-}
-
-
-export function changeHash2(hashPath: string) {
-    const url = new URL(window.location.href);
-    url.hash = hashPath;
-    window.history.replaceState(null, '', url);
+    window.history.pushState(null, '', url);
     window.dispatchEvent(new HashChangeEvent('hashchange'));
-    console.log('changeHash2!!', url, url.hash);
 }

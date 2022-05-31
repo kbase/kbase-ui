@@ -11,6 +11,7 @@ export interface IFrameProps {
     params: { [k: string]: string };
     hostChannelId: string;
     pluginChannelId: string;
+    syncHash: boolean;
     whenMounted: (el: Window | null) => Promise<void>;
 }
 
@@ -81,17 +82,22 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
     }
 
     loaded(element: HTMLIFrameElement) {
-        window.addEventListener('hashchange', (ev: Event) => {
-            if (
-                element.contentWindow === null
-            ) {
-                return;
-            }
-            const path = document.location.hash
-                .substring(1)
-                .replace(/^\/+/, '');
-            element.contentWindow.location.hash = path;
-        });
+        // This will update the hash for the iframe url to match
+        // that of the parent kbase-ui window, which may trigger
+        // navigation if the plugin handles that by itself.
+        if (this.props.syncHash) {
+            window.addEventListener('hashchange', (ev: Event) => {
+                if (
+                    element.contentWindow === null
+                ) {
+                    return;
+                }
+                const path = document.location.hash
+                    .substring(1)
+                    .replace(/^\/+/, '');
+                element.contentWindow.location.hash = path;
+            });
+        }
         this.props.whenMounted(element.contentWindow);
     }
 
@@ -108,7 +114,6 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         };
 
         const paramString = window.encodeURIComponent(JSON.stringify(params));
-        // console.log('iframe render', this.url, params, window.location);
         return (
             <iframe
                 title="Plugin IFrame"

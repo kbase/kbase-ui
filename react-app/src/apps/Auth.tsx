@@ -39,6 +39,7 @@ export default class Catalog extends Component<AuthProps, AuthState> {
                     {...props}
                     {...common}
                     view="account"
+                    syncHash={false}
                 />
             }),
             new Route('auth2/account', (props: RouteProps) => {
@@ -46,6 +47,7 @@ export default class Catalog extends Component<AuthProps, AuthState> {
                     {...props}
                     {...common}
                     view="account"
+                    syncHash={false}
                 />
             }),
             new Route('login', (props: RouteProps) => {
@@ -53,6 +55,7 @@ export default class Catalog extends Component<AuthProps, AuthState> {
                     {...props}
                     {...common}
                     view="login"
+                    syncHash={false}
                 />
             }),
             new Route('signup', (props: RouteProps) => {
@@ -60,6 +63,7 @@ export default class Catalog extends Component<AuthProps, AuthState> {
                     {...props}
                     {...common}
                     view="signup"
+                    syncHash={false}
                 />
             }),
             new Route('auth2/signedout', (props: RouteProps) => {
@@ -67,6 +71,7 @@ export default class Catalog extends Component<AuthProps, AuthState> {
                     {...props}
                     {...common}
                     view="signedout"
+                    syncHash={false}
                 />
             }),
             new Route('auth2/login/continue', (props: RouteProps) => {
@@ -74,6 +79,7 @@ export default class Catalog extends Component<AuthProps, AuthState> {
                     {...props}
                     {...common}
                     view="loginContinue"
+                    syncHash={false}
                 />
             }),
             new Route('auth2/link/continue', (props: RouteProps) => {
@@ -81,6 +87,7 @@ export default class Catalog extends Component<AuthProps, AuthState> {
                     {...props}
                     {...common}
                     view="linkContinue"
+                    syncHash={false}
                 />
             })
         ];

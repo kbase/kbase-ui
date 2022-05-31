@@ -16,7 +16,7 @@ import { JSONRPC11Exception } from '../lib/kb_lib/comm/JSONRPC11/JSONRPC11';
 import * as Cookie from 'es-cookie';
 import { Config } from '../types/config';
 import { AuthError } from '../lib/kb_lib/Auth2Error';
-import { changeHash } from '../apps/Navigator/utils/navigation';
+import { changeHash2 } from '../apps/Navigator/utils/navigation';
 
 /**
  * Holds the current authentication information
@@ -167,14 +167,14 @@ export default class AuthWrapper extends React.Component<
                         if (token === null) {
                             // Handles case in which the ui had been logged in, but now there is no token!
                             this.setState({ authState: this.unauthenticatedState() }, () => {
-                                changeHash('auth2/signedout');
+                                changeHash2('auth2/signedout');
                             });
                         } else if (token !== state.authState.value.authInfo.token) {
                             // Handles case in which the browser is logged out and logged in 
                             // before the above case can be handled. Not impossible, but not
                             // probable for a human operator.
                             await this.logout();
-                            changeHash('auth2/signedout');
+                            changeHash2('auth2/signedout');
                         }
                     }
                 }
@@ -274,7 +274,7 @@ export default class AuthWrapper extends React.Component<
             this.setState({
                 authState: this.unauthenticatedState(),
             }, () => {
-                changeHash('auth2/signedout');
+                changeHash2('auth2/signedout');
             });
         }
     }
@@ -386,7 +386,7 @@ export default class AuthWrapper extends React.Component<
             const account = await auth.getMe(token);
             if (tokenInfo === null) {
                 await this.asyncSetState({ authState: this.unauthenticatedState() });
-                changeHash('auth2/signedout');
+                changeHash2('auth2/signedout');
             } else {
                 const userProfile = await this.fetchUserProfile(
                     token,
@@ -407,7 +407,7 @@ export default class AuthWrapper extends React.Component<
                         },
                     },
                 });
-                changeHash('navigator');
+                changeHash2('navigator');
             }
         } catch (ex) {
             if (ex instanceof JSONRPC11Exception) {
@@ -416,7 +416,7 @@ export default class AuthWrapper extends React.Component<
                         await this.asyncSetState({
                             authState: this.unauthenticatedState(),
                         });
-                        changeHash('auth2/signedout');
+                        changeHash2('auth2/signedout');
                         break;
                     default:
                         // what happens here?
@@ -432,14 +432,14 @@ export default class AuthWrapper extends React.Component<
                         await this.asyncSetState({
                             authState: this.unauthenticatedState(),
                         });
-                        changeHash('auth2/signedout');
+                        changeHash2('auth2/signedout');
                         break;
                     default:
                         BrowserAuth.removeToken();
                         await this.asyncSetState({
                             authState: this.unauthenticatedState(),
                         });
-                        changeHash('auth2/signedout');
+                        changeHash2('auth2/signedout');
                 }
                 // console.log('AUTH error', ex.code);
                 // this.setState({ authState: this.errorState(ex.message) });
@@ -447,13 +447,13 @@ export default class AuthWrapper extends React.Component<
                 await this.asyncSetState({
                     authState: this.unauthenticatedState(),
                 });
-                changeHash('auth2/signedout');
+                changeHash2('auth2/signedout');
                 // this.setState({ authState: this.errorState(ex.message) });
             } else {
                 await this.asyncSetState({
                     authState: this.unauthenticatedState(),
                 });
-                changeHash('auth2/signedout');
+                changeHash2('auth2/signedout');
                 // this.setState({ authState: this.errorState('Unknown') });
             }
         }

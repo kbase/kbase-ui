@@ -87,11 +87,6 @@ export default class RouterWrapper extends React.Component<
         window.addEventListener('hashchange', () => {
             this.setState({
                 routerState: {
-                    status: AsyncProcessStatus.PENDING
-                }
-            });
-            this.setState({
-                routerState: {
                     status: AsyncProcessStatus.SUCCESS,
                     value: {
                         hashPath: this.getHashPath()

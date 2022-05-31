@@ -11,7 +11,7 @@ import { Config } from '../types/config';
 import { Params } from './Plugin';
 import { Alert } from 'react-bootstrap';
 import { isEqual } from '../lib/kb_lib/Utils';
-import { changeHash } from '../apps/Navigator/utils/navigation';
+import { changeHash2 } from '../apps/Navigator/utils/navigation';
 
 import styles from './IFrameController.module.css';
 
@@ -81,6 +81,7 @@ export interface IFrameControllerProps {
     messenger: Messenger;
     pluginPath: string;
     pluginName: string;
+    syncHash: boolean;
     view: string;
     original: string;
     routeParams: Params;
@@ -290,6 +291,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
             // (e.g. require auth) -- that was the old default behavior,
             // we should probably readdress that.
             //
+            console.log('[ui-navigate]', to);
 
             // TODO: extract this to runtime.
             const path = ((): string => {
@@ -308,7 +310,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 return to.params;
             })();
 
-            changeHash(path, params);
+            changeHash2(path, params);
 
             // this.props.messenger.send({
             //     channel: 'app',
@@ -352,7 +354,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 }
 
                 // Redirect
-                changeHash(nextRequest.path || 'about');
+                changeHash2(nextRequest.path || 'about');
             } catch (ex) {
                 // TODO: something
                 console.error('YIKES! Error in auth navigation out.', ex);
@@ -593,7 +595,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
         const currentLocation = window.location.toString();
         const currentURL = new URL(currentLocation);
         currentURL.search = '';
-        window.history.replaceState(null, '', currentURL.toString());
+        // window.history.replaceState(null, '', currentURL.toString());
 
         this.receivers.forEach((receiver) => {
             this.props.messenger.drop(receiver);
@@ -738,6 +740,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
             // original is the full hash string
             original: this.props.original,
             config: this.props.config,
+            syncHash: this.props.syncHash
         };
 
         return <IFrame {...props} />;

@@ -80,6 +80,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                         {...this.props}
                         name="feeds"
                         view="feeds"
+                        syncHash={false}
                     />
                 );
             }),
@@ -89,6 +90,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     {...this.props}
                     name="job-browser2"
                     view="browse"
+                    syncHash={false}
                 />
             }),
             new Route('^(people|user)$/:username?', (props: RouteProps) => {
@@ -97,6 +99,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     {...this.props}
                     name="react-profile-view"
                     view="user-profile"
+                    syncHash={false}
                 />
             }),
             new Route('^(auth2|account|signup|login|logout)$/*', (props: RouteProps) => {
@@ -117,6 +120,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     {...this.props}
                     name="data-search"
                     view="search"
+                    syncHash={false}
                 />
             }),
             new Route('^jgi-search$', (props: RouteProps) => {
@@ -125,6 +129,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     {...this.props}
                     name="jgi-search"
                     view="search"
+                    syncHash={false}
                 />
             }),
             new Route('^dashboard4$', (props: RouteProps) => {
@@ -133,6 +138,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     {...this.props}
                     name="dashboard4"
                     view="main"
+                    syncHash={false}
                 />
             }),
             new Route('^biochem-search$', (props: RouteProps) => {
@@ -141,6 +147,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     {...this.props}
                     name="biochem-search"
                     view="search"
+                    syncHash={false}
                 />
             }),
             // Type and module views
@@ -150,6 +157,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     {...this.props}
                     name="typeview"
                     view="type"
+                    syncHash={false}
                 />
             }),
             new Route('^spec$/^module$/:moduleid', (props: RouteProps) => {
@@ -158,6 +166,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     {...this.props}
                     name="typeview"
                     view="module"
+                    syncHash={false}
                 />
             }),
             // Object views
@@ -167,6 +176,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     {...this.props}
                     name="dataview"
                     view="dataView"
+                    syncHash={false}
                 />
             }),
             new Route('^jsonview$/:workspaceId/:objectId/:objectVersion?', (props: RouteProps) => {
@@ -175,6 +185,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     {...this.props}
                     name="dataview"
                     view="jsonView"
+                    syncHash={false}
                 />
             }),
 
@@ -184,14 +195,18 @@ export default class Body extends Component<BodyProps, BodyState> {
                 {...props}
                 {...this.props}
                 name="samples"
-                view="view" />
+                view="view" 
+                syncHash={false}
+                />
             }),
             new Route('samples/about$', (props: RouteProps) => {
                 return <PluginWrapper2
                 {...props}
                 {...this.props}
                 name="samples"
-                view="about" />
+                view="about" 
+                syncHash={false}
+                />
             }),
 
             // Ontology
@@ -201,21 +216,27 @@ export default class Body extends Component<BodyProps, BodyState> {
                 {...props}
                 {...this.props}
                 name="ontology"
-                view="term" />
+                view="term" 
+                syncHash={false}
+                />
             }),
             new Route('^ontology/about$', (props: RouteProps) => {
                 return <PluginWrapper2
                 {...props}
                 {...this.props}
                 name="ontology"
-                view="about" />
+                view="about" 
+                syncHash={false}
+                />
             }),
             new Route('^ontology/help$', (props: RouteProps) => {
                 return <PluginWrapper2
                 {...props}
                 {...this.props}
                 name="ontology"
-                view="help" />
+                view="help" 
+                syncHash={false}
+                />
             }),
 
              // Taxonomy
@@ -225,21 +246,24 @@ export default class Body extends Component<BodyProps, BodyState> {
                 {...props}
                 {...this.props}
                 name="taxonomy"
-                view="taxon" />
+                view="taxon" 
+                syncHash={false} />
             }),
             new Route('^taxonomy/about$', (props: RouteProps) => {
                 return <PluginWrapper2
                 {...props}
                 {...this.props}
                 name="taxonomy"
-                view="about" />
+                view="about" 
+                syncHash={false} />
             }),
             new Route('^taxonomy/help$', (props: RouteProps) => {
                 return <PluginWrapper2
                 {...props}
                 {...this.props}
                 name="taxonomy"
-                view="help" />
+                view="help"
+                syncHash={false} />
             }),
 
             // <Route

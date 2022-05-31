@@ -31,90 +31,105 @@ export default class Catalog extends Component<CatalogProps, CatalogState> {
                     {...props}
                     {...common}
                     view="catalogAdmin"
+                    syncHash={true}
                 />
             }), new Route('^catalog$/(app|apps)/:namspace/:id:tag?', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="appView"
+                    syncHash={true}
                 />
             }), new Route('^catalog$/app', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="appsBrowser"
+                    syncHash={true}
                 />
             }), new Route('^catalog$/app/:tag?', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="appsBrowser"
+                    syncHash={true}
                 />
             }), new Route('^catalog$/(module|modules)/:module_name', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="moduleView"
+                    syncHash={true}
                 />
             }), new Route('^catalog$/^modules$', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="moduleBrowser"
+                    syncHash={true}
                 />
             }), new Route('^catalog$/^services$', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="serviceBrowser"
+                    syncHash={true}
                 />
             }), new Route('^catalog$/^(function|functions)/:module/:function_id/:ver?', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="functionView"
+                    syncHash={true}
                 />
             }), new Route('^catalog$/^functions$/:tag?', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="functionBrowser"
+                    syncHash={true}
                 />
             }), new Route('^catalog$/^datatypes?', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="datatypeBrowser"
+                    syncHash={true}
                 />
             }), new Route('^catalog$/^register$/:registration_id?', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="catalogRegistration"
+                    syncHash={true}
                 />
             }), new Route('^catalog$/^stats$', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="catalogStatus"
+                    syncHash={true}
                 />
             }), new Route('^catalog$/^status$/:module_names?', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="catalogStatus"
+                    syncHash={true}
                 />
             }), new Route('^catalog$/^queue$', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="catalogQueue"
+                    syncHash={true}
                 />
             }), new Route('^catalog$', (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
                     view="catalogIndex"
+                    syncHash={true}
                 />
             })
         ];

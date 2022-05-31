@@ -40,6 +40,7 @@ export default class Organizations extends Component<OrganizationsProps,
                     {...props}
                     {...common}
                     view="newOrg"
+                    syncHash={false}
                 />
             }),
             new Route('^orgs$/:organizationId', (props: RouteProps) => {
@@ -47,6 +48,7 @@ export default class Organizations extends Component<OrganizationsProps,
                     {...props}
                     {...common}
                     view="viewOrg"
+                    syncHash={false}
                 />
             }),
             new Route('^orgs$', (props: RouteProps) => {
@@ -54,6 +56,7 @@ export default class Organizations extends Component<OrganizationsProps,
                     {...props}
                     {...common}
                     view="browseOrgs"
+                    syncHash={false}
                 />
             })
         ];

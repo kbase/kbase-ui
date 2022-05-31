@@ -4,6 +4,7 @@ export interface MenuItemBase {
     name: string;
     type: MenuType;
     label: string;
+    syncHash?: boolean;
     icon: string;
     newWindow?: boolean;
     tooltip?: string;

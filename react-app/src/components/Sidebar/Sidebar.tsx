@@ -48,7 +48,8 @@ const menu: Array<MenuItem> =  [
         "newWindow": false,
         "label": "Catalog",
         "icon": "book",
-        "requiresAuth": false
+        "requiresAuth": false,
+        "syncHash": true
     },
     {
         "name": "search",
@@ -154,6 +155,11 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
         //             menu: this.computeMenu(path)
         //         });
         //     });
+
+        // catch hash change in order to update the sidebar menu props, 
+        // which will then higlight the current menu item.
+        // TODO: base this on a context.
+        
         window.addEventListener('hashchange', (ev: Event) => {
             const path = document.location.hash
                 .substring(1)

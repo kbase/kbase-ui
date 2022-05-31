@@ -4,13 +4,14 @@ import { AuthenticationState } from '../../contexts/Auth';
 import { RuntimeContext } from '../../contexts/RuntimeContext';
 import Plugin, { Params } from '../../pluginSupport/Plugin';
 import { Config } from '../../types/config';
-import { RouteProps, RouterProps } from '../Router2';
+import { RouteProps } from '../Router2';
 
 
 
 export interface PluginWrapperProps extends RouteProps {
     name: string;
     view: string;
+    syncHash: boolean;
     setTitle: (title: string) => void;
     config: Config;
     authState: AuthenticationState;
@@ -61,7 +62,6 @@ export default class PluginWrapper extends Component<
                         return null;
                     }
                     // value.setTitle(`Loading ${this.props.name}:${this.props.view}...`);
-                    // console.log('rendering plugin', value.config);
                     return (
                         <Plugin
                             setTitle={value.setTitle}
@@ -69,6 +69,7 @@ export default class PluginWrapper extends Component<
                             config={value.config}
                             messenger={value.messenger}
                             name={this.props.name}
+                            syncHash={this.props.syncHash}
                             original={originalHash}
                             params={params}
                             view={this.props.view}

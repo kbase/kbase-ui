@@ -2,7 +2,7 @@ import { Component, createRef } from 'react';
 import { MenuItem, MenuItemExternal, MenuItemInternal } from '../../types/menu';
 import { Nav } from 'react-bootstrap';
 import './SidebarMenu.css';
-import { changeHash } from '../../apps/Navigator/utils/navigation';
+import { changeHash2 } from '../../apps/Navigator/utils/navigation';
 
 export interface SidebarMenuProps {
     menu: Array<MenuItem>;
@@ -43,6 +43,8 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
     }
 
     onHashChange() {
+        // In order to highlight the correct menu item.
+        // Perhaps hook into a context for this instead?
         this.updateActiveKey();
     }
 
@@ -68,7 +70,7 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
         // Umm, was this it the whole time???
         // Next: rewind the custom router (leave new code in place, just restore the code
         // in Body.tsx ... see if this, or a better fix perhaps in "changehash" fixes safari)
-        changeHash("/" + path)
+        changeHash2("/" + path)
     }
 
     renderIcon(button: MenuItem) {
