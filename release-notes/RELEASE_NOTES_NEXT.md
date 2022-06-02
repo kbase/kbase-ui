@@ -18,7 +18,7 @@ none
 
 ### IMPROVEMENTS
 
-none
+- UIP-6: replace GHA workflows with improved, KBase-compliant workflows
 
 ### FIXES
 
