@@ -57,6 +57,7 @@ jobs:
           pull: true
           push: true
           build-args: |
+            BUILD_CONFIG=prod
             BUILD_DATE=${{ steps.date.outputs.date }}
             VCS_REF=${{ github.sha }}
             BRANCH='${{ github.ref }}'
