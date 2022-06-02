@@ -1,0 +1,19 @@
+---
+name: PR to main (or master) opened
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+    types:
+      - opened
+jobs:
+  test:
+    uses: ./.github/workflows/reusable_test.yml
+  build-push:
+    needs: test
+    uses: ./.github/workflows/reusable_build-push.yml
+    with:
+      name: '${{ github.event.repository.name }}'
+      tags: pr${{ github.event.number }}
+    secrets: inherit
