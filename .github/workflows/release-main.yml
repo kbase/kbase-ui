@@ -1,0 +1,24 @@
+---
+name: Release - Test, Build & Push Image
+on:
+  release:
+    branches:
+      - main
+      - master
+    types: [ published ]
+jobs:
+  validate-release-tag:
+    uses: ./.github/workflows/reusable_validate-release-tag.yml
+    with:
+      release_tag: '${{ github.event.release.tag_name }}'
+  test:
+    needs: validate-release-tag
+    uses: ./.github/workflows/reusable_test.yml
+  build-push:
+    needs: test
+    uses: ./.github/workflows/reusable_build-push.yml
+    with:
+      name: '${{ github.event.repository.name }}'
+      tags: '${{ github.event.release.tag_name }},latest'
+      buildConfig: prod
+    secrets: inherit

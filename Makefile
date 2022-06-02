@@ -207,7 +207,8 @@ integration-tests:
 	ENV="$(env)" BROWSER="$(browser)" SERVICE_USER="$(user)" SERVICE_KEY="$(key)" SERVICE="$(service)" TOKEN="${token}" FOCUS="${focus}" BLUR="${blur}" npx wdio run ./test/wdio.conf.service.js --env=$(env)
 
 
-test: unit-tests
+test: 
+	@echo Tests from makefile are disabled for now
 
 # Clean slate
 clean: clean-docs clean-ts

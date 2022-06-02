@@ -45,3 +45,9 @@ docker-compose.override.yml
 
 # A handy directory for staching non-commitable working files
 /_todo
+
+# IDE
+
+.vscode/dryrun.log
+.vscode/targets.log
+.vscode/configurationCache.log
