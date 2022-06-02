@@ -22,7 +22,7 @@ none
 
 ### FIXES
 
-none
+- UIP-5: dataview landing pages: many small xss fixes or annotations
 
 ### MAJOR DEPENDENCY CHANGES
 
