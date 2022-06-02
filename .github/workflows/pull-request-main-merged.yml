@@ -18,4 +18,5 @@ jobs:
     with:
       name: '${{ github.event.repository.name }}'
       tags: latest-rc
+      buildConfig: ci
     secrets: inherit

@@ -11,6 +11,10 @@ on:
         description: The image tags
         required: true
         type: string
+      buildConfig:
+        description: The build config (ci or prod)
+        required: true
+        type: string
 jobs:
   build-push-image:
     runs-on: ubuntu-latest
@@ -57,7 +61,7 @@ jobs:
           pull: true
           push: true
           build-args: |
-            BUILD_CONFIG=prod
+            BUILD_CONFIG='${{ inputs.buildConfig }}'
             BUILD_DATE=${{ steps.date.outputs.date }}
             VCS_REF=${{ github.sha }}
             BRANCH='${{ github.ref }}'

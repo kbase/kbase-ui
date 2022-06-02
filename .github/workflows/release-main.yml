@@ -20,4 +20,5 @@ jobs:
     with:
       name: '${{ github.event.repository.name }}'
       tags: '${{ github.event.release.tag_name }},latest'
+      buildConfig: prod
     secrets: inherit

@@ -16,4 +16,5 @@ jobs:
     with:
       name: '${{ github.event.repository.name }}'
       tags: pr${{ github.event.number }}
+      buildConfig: ci
     secrets: inherit
