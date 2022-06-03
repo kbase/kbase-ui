@@ -1,10 +1,14 @@
 define([
     'preact',
     'htm',
+    "dompurify",
+
+    // For effect
     'css!./Title.css'
 ], (
     preact,
-    htm
+    htm,
+    DOMPurify
 ) => {
 
     const {h, Component } = preact;
@@ -46,7 +50,7 @@ define([
             return html`
                 <div className="Title"
                      data-k-b-testhook-component="title">
-                     <span dangerouslySetInnerHTML=${{ __html: this.state.title }}></span>
+                     <span dangerouslySetInnerHTML=${{ __html: DOMPurify.sanitize(this.state.title) }}></span>
                 </div>
             `;
         }
