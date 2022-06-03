@@ -23,6 +23,7 @@ none
 ### FIXES
 
 - UIP-5: dataview landing pages: many small xss fixes or annotations
+- UIP-5: annotate safe usage in kbase-ui
 
 ### MAJOR DEPENDENCY CHANGES
 
