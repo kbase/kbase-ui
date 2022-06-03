@@ -345,6 +345,7 @@ export class Auth2 {
         );
         const donorNode = document.createElement('div');
 
+        // xss safe (all values provided internally)
         donorNode.innerHTML = content;
         document.body.appendChild(donorNode);
 
@@ -389,6 +390,7 @@ export class Auth2 {
             ]
         );
 
+        // xss safe (all values provided internally)
         config.node.innerHTML = content;
 
         (<HTMLFormElement>document.getElementById(formId)).submit();

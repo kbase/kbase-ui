@@ -2158,6 +2158,7 @@
             //to a reference to this node, but clear after the DOM insertion.
             currentlyAddingScript = node;
             if (baseElement) {
+                // xss safe
                 head.insertBefore(node, baseElement);
             } else {
                 head.appendChild(node);

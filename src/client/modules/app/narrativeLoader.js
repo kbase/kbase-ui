@@ -1,12 +1,15 @@
 define([
     'bluebird',
     'kb_lib/html',
+    'lib/utils',
+
+    // For effect
     'bootstrap',
     'css!font_awesome',
     'css!app/styles/kb-bootstrap',
     'css!app/styles/kb-ui',
     'domReady'
-], (Promise, html) => {
+], (Promise, html, {domSafeText}) => {
 
     const t = html.tag,
         div = t('div'),
@@ -15,6 +18,7 @@ define([
         li = t('li'),
         a = t('a');
 
+    // TODO: refactor to preact?
     function setContent(element, content) {
         if (!content) {
             return;
@@ -23,6 +27,7 @@ define([
         if (!node) {
             return;
         }
+        // xss safe (all input generated internally)
         node.innerHTML = content;
     }
 
@@ -63,8 +68,8 @@ define([
             arg.description = arg.description.map(p).join('\n');
         }
 
-        setContent('code', arg.code);
-        setContent('message', arg.message);
+        setContent('code', domSafeText(arg.code));
+        setContent('message', domSafeText(arg.message));
         setContent('description', arg.description);
         setContent('suggestions', arg.suggestions);
 
@@ -340,6 +345,7 @@ define([
                             if (err.responseText) {
                                 // scrub the error html.
                                 const temp = document.createElement('div');
+                                // xss safe (only used for temporary detached node in order to extract content, which is extracted safely below)
                                 temp.innerHTML = err.responseText;
                                 const msg = temp.querySelector('#error-message > h3');
                                 if (!msg) {
