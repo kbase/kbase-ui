@@ -56,3 +56,7 @@ npmFiles:
       - semver-umd.js
   - dir: spark-md5
     name: spark-md5
+  - dir: dompurify
+    cwd: dist
+    src:
+      - purify.js
