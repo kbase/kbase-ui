@@ -65,6 +65,13 @@ export function prequire(dependencies: Array<string>) {
 
 export function domSafeText(rawContent: string): string {
   const donorNode = document.createElement("div");
+  // xss safe
+  donorNode.innerHTML = rawContent;
+  return donorNode.innerText;
+}
+
+export function domEncodedText(rawContent: string): string {
+  const donorNode = document.createElement("div");
   donorNode.innerText = rawContent;
   // xss safe
   return donorNode.innerHTML;

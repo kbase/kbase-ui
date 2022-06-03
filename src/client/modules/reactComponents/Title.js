@@ -2,13 +2,15 @@ define([
     'preact',
     'htm',
     "dompurify",
+    "lib/utils",
 
     // For effect
     'css!./Title.css'
 ], (
     preact,
     htm,
-    DOMPurify
+    DOMPurify,
+    {domSafeText}
 ) => {
 
     const {h, Component } = preact;
@@ -33,7 +35,7 @@ define([
                 }
 
                 if (newTitle && newTitle.trim().length > 0) {
-                    document.title = `${newTitle} | KBase`
+                    document.title = `${domSafeText(newTitle)} | KBase`
                 } else {
                     document.title = 'KBase'
                 }
