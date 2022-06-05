@@ -1,0 +1,39 @@
+.AuthProblem {
+    display: flex;
+    flex-direction: row;
+    /* from bootstrap ext-danger */
+    border: 5px dashed rgba(220, 53, 69, 0.5);
+    border-radius: 0.5em;
+}
+
+.AuthProblem-graphic {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    margin-right: 2em;
+    color: rgba(220, 53, 69);
+}
+
+.AuthProblem-content {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.AuthProblem-header {
+    flex: 1 1 0;
+    font-size: 150%;
+    font-weight: bold;
+    margin-top: 0.5em;
+    color: rgba(220, 53, 69);
+}
+
+.AuthProblem-message {
+    flex: 1 1 0;
+    margin-top: 0.5em;
+}
+
+.AuthProblem-body {}

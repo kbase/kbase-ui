@@ -2,7 +2,7 @@ import { Component } from 'react';
 import PluginWrapper2 from '../components/PluginWrapper/PluginWrapper2';
 import { RouteProps, Router } from '../components/Router2';
 import { AuthenticationState } from '../contexts/Auth';
-import { Route } from '../lib/Route';
+import { Route, SimplePluginRouteSpec } from '../lib/Route';
 import { Config } from '../types/config';
 
 export interface OrganizationsProps extends RouteProps {
@@ -14,18 +14,7 @@ export interface OrganizationsProps extends RouteProps {
 interface OrganizationsState {
 }
 
-export default class Organizations extends Component<OrganizationsProps,
-    OrganizationsState> {
-    // makePath(extraPath?: string) {
-    //     if (extraPath) {
-    //         return `${this.props.path}/${extraPath}`;
-    //     } else {
-    //         return this.props.path;
-    //     }
-    // }
-
-
-
+export default class Organizations extends Component<OrganizationsProps, OrganizationsState> {
     render() {
         const common = {
             name: "organizations",
@@ -34,32 +23,34 @@ export default class Organizations extends Component<OrganizationsProps,
             config: this.props.config
         };
 
-        const routes: Array<Route> = [
-            new Route('^orgs/new$', (props: RouteProps) => {
+        const routeSpecs: Array<SimplePluginRouteSpec> = [
+            {
+                path: '^orgs/new$',
+                auth: true,
+                view: 'newOrg'
+            },
+            {
+                path: '^orgs$/:organizationId',
+                auth: true,
+                view: 'newOrg'
+            },
+            {
+                path: '^orgs$',
+                auth: true,
+                view: 'browseOrgs'
+            }
+        ]
+
+        const routes = routeSpecs.map(({path, view, auth}) => {
+            return  new Route(path, {authenticationRequired: auth}, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
-                    view="newOrg"
+                    view={view}
                     syncHash={false}
                 />
-            }),
-            new Route('^orgs$/:organizationId', (props: RouteProps) => {
-                return <PluginWrapper2
-                    {...props}
-                    {...common}
-                    view="viewOrg"
-                    syncHash={false}
-                />
-            }),
-            new Route('^orgs$', (props: RouteProps) => {
-                return <PluginWrapper2
-                    {...props}
-                    {...common}
-                    view="browseOrgs"
-                    syncHash={false}
-                />
-            })
-        ];
+            });
+        });
 
         return <Router routes={routes} hashPath={this.props.hashPath} />
         // return (

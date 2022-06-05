@@ -1,3 +1,4 @@
+import { Role } from "@kbase/ui-lib/lib/Auth";
 import { RouteProps } from "../components/Router2";
 import { HashPath } from "../contexts/RouterContext";
 
@@ -37,13 +38,29 @@ export type RouteRenderer = (props: RouteProps) => JSX.Element;
 
 export type Params = Map<string, string>;
 
+export interface RouteOptions {
+    authenticationRequired?: boolean;
+    rolesRequired?: Array<Role>;
+}
+
+export interface SimpleRouteSpec {
+    path: string,
+    auth: boolean,
+}
+
+export interface SimplePluginRouteSpec extends SimpleRouteSpec {
+    view: string
+}
+
 export class Route {
   rawRouteSpec: string;
   routeSpec: RouteSpec;
   render: RouteRenderer;
-  constructor(rawRouteSpec: string, render: RouteRenderer) {
+  routeOptions: RouteOptions;
+  constructor(rawRouteSpec: string, routeOptions: RouteOptions, render: RouteRenderer) {
     this.rawRouteSpec = rawRouteSpec;
     this.render = render;
+    this.routeOptions = routeOptions;
     this.routeSpec = this.parseRouteSpec();
   }
 
@@ -82,6 +99,13 @@ export class Route {
             required: true,
           });
         }
+      } else if (/[a-z][A-Z][0-9]/.test(element)) {
+        // just alphas and numbers, treat as literal.
+        routeSpec.push({
+            type: RouteSpecElementType.REGEXP,
+            regexp: new RegExp(`^${element}$`, "i"),
+          });
+
       } else {
         routeSpec.push({
           type: RouteSpecElementType.REGEXP,

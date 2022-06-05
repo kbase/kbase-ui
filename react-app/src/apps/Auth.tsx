@@ -5,7 +5,7 @@ import { RouteProps, Router } from '../components/Router2';
 import { AuthenticationState } from '../contexts/Auth';
 import { RouterContext } from '../contexts/RouterContext';
 import { AsyncProcessStatus } from '../lib/AsyncProcess2';
-import { Route } from '../lib/Route';
+import { Route, SimplePluginRouteSpec } from '../lib/Route';
 import { Config } from '../types/config';
 
 export interface AuthProps extends RouteProps {
@@ -33,64 +33,60 @@ export default class Catalog extends Component<AuthProps, AuthState> {
             authState: this.props.authState,
             config: this.props.config
         };
-        const routes = [
-            new Route('account', (props: RouteProps) => {
+
+        const routeSpecs: Array<SimplePluginRouteSpec> = [
+            {
+                path: 'account',
+                auth: true,
+                view: 'account'
+            },
+            {
+                path: 'auth2/account',
+                auth: true,
+                view: 'account'
+            },
+            {
+                path: 'login',
+                auth: false,
+                view: 'login'
+            },
+            {
+                path: 'signup',
+                auth: false,
+                view: 'signup'
+            },
+            {
+                path: 'auth2/signedout',
+                auth: false,
+                view: 'signedout'
+            },
+            {
+                path: 'auth2/login/continue',
+                auth: true,
+                view: 'loginContinue'
+            },
+            {
+                path: 'auth2/login/continue',
+                auth: true,
+                view: 'loginContinue'
+            },
+            {
+                path: 'auth2/link/continue',
+                auth: true,
+                view: 'linkContinue'
+            },
+        ]
+
+        const routes = routeSpecs.map(({path, view, auth}) => {
+            return  new Route(path, {authenticationRequired: auth}, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}
-                    view="account"
+                    view={view}
                     syncHash={false}
                 />
-            }),
-            new Route('auth2/account', (props: RouteProps) => {
-                return <PluginWrapper2
-                    {...props}
-                    {...common}
-                    view="account"
-                    syncHash={false}
-                />
-            }),
-            new Route('login', (props: RouteProps) => {
-                return <PluginWrapper2
-                    {...props}
-                    {...common}
-                    view="login"
-                    syncHash={false}
-                />
-            }),
-            new Route('signup', (props: RouteProps) => {
-                return <PluginWrapper2
-                    {...props}
-                    {...common}
-                    view="signup"
-                    syncHash={false}
-                />
-            }),
-            new Route('auth2/signedout', (props: RouteProps) => {
-                return <PluginWrapper2
-                    {...props}
-                    {...common}
-                    view="signedout"
-                    syncHash={false}
-                />
-            }),
-            new Route('auth2/login/continue', (props: RouteProps) => {
-                return <PluginWrapper2
-                    {...props}
-                    {...common}
-                    view="loginContinue"
-                    syncHash={false}
-                />
-            }),
-            new Route('auth2/link/continue', (props: RouteProps) => {
-                return <PluginWrapper2
-                    {...props}
-                    {...common}
-                    view="linkContinue"
-                    syncHash={false}
-                />
-            })
-        ];
+            });
+        });
 
         return (
             <RouterContext.Consumer>

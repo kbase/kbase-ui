@@ -3,10 +3,12 @@ import {UserProfile} from '@kbase/ui-lib/lib/comm/coreServices/UserProfile';
 import {Component} from 'react';
 import {Dropdown} from 'react-bootstrap';
 import {AuthenticationState, AuthenticationStateAuthenticated,} from '../../contexts/Auth';
+import SigninButton from './SigninButton';
 
 export interface SigninProps {
     authState: AuthenticationState;
     isLoginView: boolean;
+    nextRequest?: string;
     signout: () => void;
 }
 
@@ -290,23 +292,7 @@ export default class Signin extends Component<SigninProps, SigninState> {
     }
 
     renderNotLoggedIn() {
-        return (
-            <span data-k-b-testhook-widget="signin">
-                <a
-                    className="btn btn-primary navbar-btn kb-nav-btn"
-                    // disabled={this.props.isLoginView}
-                    data-button="signin"
-                    data-k-b-testhook-button="signin"
-                    href="/#login"
-                >
-                    <div
-                        className="fa fa-sign-in fa-inverse"
-                        style={{marginRight: '5px'}}
-                    />
-                    <div className="kb-nav-btn-txt">Sign In</div>
-                </a>
-            </span>
-        );
+        return <SigninButton isLoginView={true}/>;
     }
 
     render() {

@@ -57,7 +57,7 @@ export default class Body extends Component<BodyProps, BodyState> {
             //         />
             //     );
             // }),
-            new Route('^catalog$/*', (props: RouteProps) => {
+            new Route('catalog/*', {authenticationRequired: false}, (props: RouteProps) => {
                 return (
                     <Catalog
                         {...props}
@@ -65,7 +65,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     />
                 );
             }),
-            new Route('^(catalog|appcatalog)$/*', (props: RouteProps) => {
+            new Route('^(catalog|appcatalog)$/*', {authenticationRequired: false}, (props: RouteProps) => {
                 return (
                     <Catalog
                         {...props}
@@ -73,7 +73,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     />
                 );
             }),
-            new Route('^feeds$', (props: RouteProps) => {
+            new Route('feeds', {authenticationRequired: true}, (props: RouteProps) => {
                 return (
                     <PluginWrapper2
                         {...props}
@@ -84,7 +84,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     />
                 );
             }),
-            new Route('^jobbrowser$', (props: RouteProps) => {
+            new Route('jobbrowser', {authenticationRequired: true}, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...this.props}
@@ -93,7 +93,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     syncHash={false}
                 />
             }),
-            new Route('^(people|user)$/:username?', (props: RouteProps) => {
+            new Route('^(people|user)$/:username?', {authenticationRequired: true}, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...this.props}
@@ -102,19 +102,19 @@ export default class Body extends Component<BodyProps, BodyState> {
                     syncHash={false}
                 />
             }),
-            new Route('^(auth2|account|signup|login|logout)$/*', (props: RouteProps) => {
+            new Route('^(auth2|account|signup|login|logout)$/*', {authenticationRequired: false}, (props: RouteProps) => {
                 return <Auth
                     {...props}
                     {...this.props}
                 />
             }),
-            new Route('^orgs$/*', (props: RouteProps) => {
+            new Route('orgs/*', {authenticationRequired: true}, (props: RouteProps) => {
                 return <Organizations
                     {...props}
                     {...this.props}
                 />
             }),
-            new Route('^search$', (props: RouteProps) => {
+            new Route('search', {authenticationRequired: true}, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...this.props}
@@ -123,7 +123,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     syncHash={false}
                 />
             }),
-            new Route('^jgi-search$', (props: RouteProps) => {
+            new Route('jgi-search', {authenticationRequired: true}, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...this.props}
@@ -132,7 +132,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     syncHash={false}
                 />
             }),
-            new Route('^dashboard4$', (props: RouteProps) => {
+            new Route('dashboard4', {authenticationRequired: true}, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...this.props}
@@ -141,7 +141,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     syncHash={false}
                 />
             }),
-            new Route('^biochem-search$', (props: RouteProps) => {
+            new Route('biochem-search', {authenticationRequired: true}, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...this.props}
@@ -151,7 +151,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                 />
             }),
             // Type and module views
-            new Route('^(spec|typeview)$/^type$/:typeid', (props: RouteProps) => {
+            new Route('^(spec|typeview)$/type/:typeid', {authenticationRequired: false}, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...this.props}
@@ -160,7 +160,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     syncHash={false}
                 />
             }),
-            new Route('^spec$/^module$/:moduleid', (props: RouteProps) => {
+            new Route('spec/module/:moduleid', {authenticationRequired: false}, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...this.props}
@@ -170,7 +170,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                 />
             }),
             // Object views
-            new Route('^dataview$/:workspaceId/:objectId/:objectVersion?', (props: RouteProps) => {
+            new Route('dataview/:workspaceId/:objectId/:objectVersion?', {authenticationRequired: true}, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...this.props}
@@ -179,7 +179,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     syncHash={false}
                 />
             }),
-            new Route('^jsonview$/:workspaceId/:objectId/:objectVersion?', (props: RouteProps) => {
+            new Route('jsonview/:workspaceId/:objectId/:objectVersion?', {authenticationRequired: true}, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...this.props}
@@ -190,7 +190,7 @@ export default class Body extends Component<BodyProps, BodyState> {
             }),
 
             // Samples
-            new Route('^samples/view$/:sampleId/:sampleVersion?', (props: RouteProps) => {
+            new Route('samples/view/:sampleId/:sampleVersion?', {authenticationRequired: true}, (props: RouteProps) => {
                 return <PluginWrapper2
                 {...props}
                 {...this.props}
@@ -199,7 +199,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                 syncHash={false}
                 />
             }),
-            new Route('samples/about$', (props: RouteProps) => {
+            new Route('samples/about', {authenticationRequired: false}, (props: RouteProps) => {
                 return <PluginWrapper2
                 {...props}
                 {...this.props}
@@ -211,7 +211,7 @@ export default class Body extends Component<BodyProps, BodyState> {
 
             // Ontology
             // ontology/term/:namespace/:id/:-timestamp?tab=:-tab
-            new Route('^ontology/term$/:naespace/:id?', (props: RouteProps) => {
+            new Route('ontology/term/:namespace/:id?', {authenticationRequired: true}, (props: RouteProps) => {
                 return <PluginWrapper2
                 {...props}
                 {...this.props}
@@ -220,7 +220,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                 syncHash={false}
                 />
             }),
-            new Route('^ontology/about$', (props: RouteProps) => {
+            new Route('ontology/about', {authenticationRequired: false}, (props: RouteProps) => {
                 return <PluginWrapper2
                 {...props}
                 {...this.props}
@@ -229,7 +229,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                 syncHash={false}
                 />
             }),
-            new Route('^ontology/help$', (props: RouteProps) => {
+            new Route('ontology/help', {authenticationRequired: false}, (props: RouteProps) => {
                 return <PluginWrapper2
                 {...props}
                 {...this.props}
@@ -241,7 +241,7 @@ export default class Body extends Component<BodyProps, BodyState> {
 
              // Taxonomy
             // taxonomy/taxon/:namespace/:id/:-timestamp?tab=:-tab
-            new Route('^taxonomy/taxon$/:namespace/:id/:timestamp?', (props: RouteProps) => {
+            new Route('taxonomy/taxon/:namespace/:id/:timestamp?', {authenticationRequired: true}, (props: RouteProps) => {
                 return <PluginWrapper2
                 {...props}
                 {...this.props}
@@ -249,7 +249,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                 view="taxon" 
                 syncHash={false} />
             }),
-            new Route('^taxonomy/about$', (props: RouteProps) => {
+            new Route('taxonomy/about', {authenticationRequired: false}, (props: RouteProps) => {
                 return <PluginWrapper2
                 {...props}
                 {...this.props}
@@ -257,7 +257,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                 view="about" 
                 syncHash={false} />
             }),
-            new Route('^taxonomy/help$', (props: RouteProps) => {
+            new Route('taxonomy/help', {authenticationRequired: false}, (props: RouteProps) => {
                 return <PluginWrapper2
                 {...props}
                 {...this.props}
@@ -294,7 +294,7 @@ export default class Body extends Component<BodyProps, BodyState> {
             //                 />
 
             // Redirects
-            new Route('(dashboard|narratives)', (props: RouteProps) => {
+            new Route('^(dashboard|narratives)$', {authenticationRequired: true}, (props: RouteProps) => {
                 window.location.pathname = '/narratives';
                 return <div>Redirecting...</div>;
             }),
@@ -343,32 +343,32 @@ export default class Body extends Component<BodyProps, BodyState> {
             //                     }}
             //                 />
             // Internal Apps
-            new Route('navigator', (props: RouteProps) => {
+            new Route('navigator', {authenticationRequired: true}, (props: RouteProps) => {
                 return (
                     <Navigator {...props} {...this.props} />
                 );
             }),
-            new Route('^about$/*', (props: RouteProps) => {
+            new Route('about/*', {authenticationRequired: false}, (props: RouteProps) => {
                 return (
                     <About {...this.props} {...props} />
                 );
             }),
-            new Route('^about$', (props: RouteProps) => {
+            new Route('about', {authenticationRequired: false}, (props: RouteProps) => {
                 return (
                     <About {...this.props} {...props} />
                 );
             }),
-            new Route('developer', (props: RouteProps) => {
+            new Route('developer', {authenticationRequired: true, rolesRequired: ['DevToken']}, (props: RouteProps) => {
                 return (
                     <Developer {...this.props} />
                 );
             }),
-            new Route('load-narrative', (props: RouteProps) => {
+            new Route('load-narrative', {authenticationRequired: true}, (props: RouteProps) => {
                 return (
                     <NarrativeLoader {...this.props} {...props} />
                 );
             }),
-            new Route('narrativemanager/new', (props: RouteProps) => {
+            new Route('narrativemanager/new', {authenticationRequired: true}, (props: RouteProps) => {
                 if (this.props.authState.status !== AuthenticationStatus.AUTHENTICATED) {
                     throw new Error('May only access a Narrative if authenticated');
                 }
@@ -380,7 +380,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                         {...props} />
                 );
             }),
-            new Route('narrativemanager/start', (props: RouteProps) => {
+            new Route('narrativemanager/start', {authenticationRequired: true}, (props: RouteProps) => {
                 if (this.props.authState.status !== AuthenticationStatus.AUTHENTICATED) {
                     throw new Error('May only access a Narrative if authenticated');
                 }
@@ -395,7 +395,7 @@ export default class Body extends Component<BodyProps, BodyState> {
 
 
             // Empty route
-            new Route('', (props: RouteProps) => {
+            new Route('', {authenticationRequired: true}, (props: RouteProps) => {
                 changeHash2('narratives');
                 return <div>Redirecting...</div>;
             }),

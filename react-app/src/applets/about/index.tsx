@@ -20,34 +20,33 @@ interface AboutState {
 
 export default class About extends Component<AboutProps, AboutState> {
     render() {
+
         const routes: Array<Route> = [
-            new Route('^about$', (props: RouteProps) => {
+            new Route('about', {authenticationRequired: false}, (props: RouteProps) => {
                 return (
                     <AboutKBaseUI {...this.props} />
                 );
             }),
-            new Route('^about/services$', (props: RouteProps) => {
+            new Route('about/services', {authenticationRequired: false}, (props: RouteProps) => {
                 return (
                     <AboutServices {...this.props} />
                 );
             }),
-            new Route('^about/build$', (props: RouteProps) => {
+            new Route('about/build', {authenticationRequired: false}, (props: RouteProps) => {
                 return (
                     <AboutBuild {...this.props} />
                 );
             }),
-            new Route('^about/plugins$', (props: RouteProps) => {
+            new Route('about/plugins', {authenticationRequired: false}, (props: RouteProps) => {
                 return (
                     <AboutPlugins {...this.props} />
                 );
             }),
-            new Route('^about$/*', (props: RouteProps) => {
+            new Route('about/*', {authenticationRequired: false}, (props: RouteProps) => {
                 return (
                     <NotFound
                         {...this.props}
-                        realPath={props.hashPath.realPath}
-                        hashPath={props.hashPath.hash}
-                        params={props.hashPath.query}
+                        hashPath={props.hashPath}
                     />
                 );
             }),
