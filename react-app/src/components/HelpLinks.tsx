@@ -1,8 +1,6 @@
 import {Component, Fragment} from 'react';
 import { ConfigContext } from '../contexts/ConfigContext';
 import { AsyncProcessStatus } from '../lib/AsyncProcess';
-import {Config} from '../types/config';
-import flapjack from './flapjack.png';
 
 export interface AuthProblemProps {
 }

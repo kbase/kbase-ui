@@ -1,6 +1,5 @@
-import {Component, Fragment} from 'react';
+import {Component} from 'react';
 import { HashPath } from '../../contexts/RouterContext';
-import {Config} from '../../types/config';
 import HelpLinks from '../HelpLinks';
 import flapjack from './flapjack.png';
 import './NotFound.css'
