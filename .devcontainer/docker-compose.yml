@@ -43,7 +43,7 @@ services:
       - kbase-dev
     environment:
       # - PORT=80
-      - DEPLOY_ENV=narrative-dev
+      - DEPLOY_ENV=ci
     command: /bin/sh -c "while sleep 1000; do :; done"
   kbase-ui-deploy:
     image: nginx:1.21.6-alpine
@@ -60,7 +60,7 @@ services:
       # nginx config.
       # TODO: use the templating built into the nginx image.
       # or switch to a custom image using dockerize.
-      - NGINX_HOST=kbase-ui-deploy.narrative-dev.kbase.us
+      - NGINX_HOST=kbase-ui-deploy.ci.kbase.us
       - NGINX_PORT=5000
   kbase-ui-proxy:
     build:
@@ -78,4 +78,4 @@ services:
       - '443:443'
     dns: 8.8.8.8
     # note that this is really a docker env file and is relative to the docker-compose file
-    env_file: ../tools/proxy/conf/narrative-dev.env
+    env_file: ../tools/proxy/conf/ci.env
