@@ -1,4 +1,4 @@
-a.SigninButton {
+.SigninButton {
     background-color: #fff;
     border: none;
     text-shadow: none !important;
@@ -14,22 +14,34 @@ a.SigninButton {
     padding: 0.25em 0.5em;
 }
 
+.SigninButton.-disabled,
+.SigninButton.-disabled .-icon.fa-inverse:before,
+a.SigninButton.-disabled {
+    color: rgba(150, 150, 150, 1);
+}
+
+a.SigninButton {
+    color: #2196f3;
+    text-decoration: none;
+}
+
+
 .SigninButton.-bordered {
     border: 1px solid rgba(33, 149, 243, 0.5);
     padding: 0.25em;
     border-radius: 0.25em;
 }
 
-a.SigninButton .-label {}
+.SigninButton .-label {}
 
-a.SigninButton .-icon {
+.SigninButton .-icon {
     font-size: 24px;
 }
 
-a.SigninButton .-icon.fa-inverse {
+.SigninButton .-icon.fa-inverse {
     color: #2196f3;
 }
 
-a.SigninButton:hover {
+.SigninButton:hover {
     background-color: #f5f5f5;
 }

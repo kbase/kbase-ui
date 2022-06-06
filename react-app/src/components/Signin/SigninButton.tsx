@@ -13,55 +13,24 @@ interface SigninState {
 }
 
 export default class Signin extends Component<SigninProps, SigninState> {
-    renderGravatarUrl(profile: UserProfile) {
-        if ('userdata' in profile.profile) {
-            const gravatarDefault =
-                profile.profile.userdata.gravatarDefault || 'identicon';
-            if ('synced' in profile.profile) {
-                const gravatarHash = profile.profile.synced.gravatarHash;
-                if (gravatarHash) {
-                    return `https://www.gravatar.com/avatar/${gravatarHash}?s=300&r=pg&d=${gravatarDefault}`;
-                } else {
-                    return `${process.env.PUBLIC_URL}/images/nouserpic.png`;
-                }
-            } else {
-                return `${process.env.PUBLIC_URL}/images/nouserpic.png`;
-            }
-        } else {
-            return `${process.env.PUBLIC_URL}/images/nouserpic.png`;
+
+    makeNextRequstFromHere(): NextRequest | null {
+        const rawHash = window.location.hash.substring(1);
+        if (/auth2/.test(rawHash)) {
+            // skip next request...
+            return null;
         }
-    }
-
-    renderAvatarUrl(profile: UserProfile) {
-        if (
-            'userdata' in profile.profile &&
-            profile.profile.userdata !== null
-        ) {
-            switch (profile.profile.userdata.avatarOption || 'gravatar') {
-                case 'gravatar':
-                    return this.renderGravatarUrl(profile);
-                case 'silhouette':
-                case 'mysteryman':
-                default:
-                    return `${process.env.PUBLIC_URL}/images/nouserpic.png`;
-            }
-        } else {
-            return `${process.env.PUBLIC_URL}/images/nouserpic.png`;
-        }
-    }
-
-    renderAvatar(userProfile: UserProfile) {
-        const avatarURL = this.renderAvatarUrl(userProfile);
-
-        return (
-            <img
-                src={avatarURL}
-                style={{width: '40px'}}
-                className="login-button-avatar"
-                alt={`Avatar for user ${userProfile.user.username}`}
-                data-element="avatar"
-            />
-        );
+        const currentURL = new URL(window.location.href);
+        const path = rawHash.split('/').filter((pathElement) => {
+            return pathElement.length > 0;
+        })
+        const hash = `#${path.join('/')}`;
+        return new NextRequest('login', {
+            hash,
+            path,
+            query: currentURL.searchParams,
+            realPath: currentURL.pathname
+        })
     }
 
 
@@ -70,34 +39,39 @@ export default class Signin extends Component<SigninProps, SigninState> {
         url.pathname = '';
         url.hash = '#login';
 
-        if (this.props.nextRequest) {
-            for (const [key, value] of this.props.nextRequest.toSearchParams()) {
+        const nextRequest = this.props.nextRequest || this.makeNextRequstFromHere();
+        if (nextRequest) {
+            for (const [key, value] of nextRequest.toSearchParams()) {
                 url.searchParams.set(key, value);
             }
-            // params.set('nextrequest', this.props.nextRequest);
         }
-
-        // url.hash = (() => {
-        //     if (this.props.nextRequest) {
-        //         const queryString = this.props.nextRequest.toSearchParams().toString();
-        //         // for (const [key, value] of this.props.nextRequest.toSearchParams()) {
-        //         //     url.searchParams.set(key, value);
-        //         // }
-        //         // params.set('nextrequest', this.props.nextRequest);
-        //         return `#login?${queryString}`
-        //     }
-        //     return '#login'
-        // })();
 
         const classList = ['SigninButton'];
         if (this.props.bordered) {
             classList.push('-bordered');
         }
+        if (this.props.isLoginView) {
+            classList.push('-disabled');
+            return (
+                <span
+                    className={classList.join(' ')}
+                    data-k-b-testhook-widget="signin"
+                    data-button="signin"
+                    data-k-b-testhook-button="signin"
+                >
+                    <span
+                        className="fa fa-sign-in fa-inverse -icon"
+                        style={{marginRight: '5px'}}
+                    />
+                    <span className="-label">Sign In</span>
+                </span>
+            );
+
+        } 
         return (
             <a
                 className={classList.join(' ')}
                 data-k-b-testhook-widget="signin"
-                // disable={this.props.isLoginView}
                 data-button="signin"
                 data-k-b-testhook-button="signin"
                 href={url.toString()}

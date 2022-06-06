@@ -292,7 +292,8 @@ export default class Signin extends Component<SigninProps, SigninState> {
     }
 
     renderNotLoggedIn() {
-        return <SigninButton isLoginView={true}/>;
+        const isLoginView = /login/.test(window.location.hash);
+        return <SigninButton isLoginView={isLoginView}/>;
     }
 
     render() {

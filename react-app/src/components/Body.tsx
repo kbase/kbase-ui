@@ -395,7 +395,7 @@ export default class Body extends Component<BodyProps, BodyState> {
 
 
             // Empty route
-            new Route('', {authenticationRequired: true}, (props: RouteProps) => {
+            new Route('', {authenticationRequired: false}, (props: RouteProps) => {
                 changeHash2('narratives');
                 return <div>Redirecting...</div>;
             }),
