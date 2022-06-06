@@ -492,7 +492,7 @@ export default class AuthWrapper extends React.Component<
                 }
             } else if (ex instanceof AuthError) {
                 // BrowserAuth.removeToken();
-                console.log('AUTH error', ex);
+                console.error('AUTH error', ex);
                 this.setState({ authState: this.errorState(ex.message) });
             } else if (ex instanceof Error) {
                 this.setState({ authState: this.errorState(ex.message) });

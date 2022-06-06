@@ -97,7 +97,7 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
                             Sorry, the resource <em>"{this.props.hashPath.hash}"</em> requires that you be logged into KBase.
                         </p>
 
-                        <p>If you use this <SigninButton isLoginView={false} nextRequest={nextRequest} bordered={true}/> button, you will be redirected there after you sign in.</p>
+                        <p>You may use the <b>Sign In</b> button on the upper right of this page. After logging in you will be returned to this page.</p>
                     </div>
                     <div className="AuthProblem-body">
                         <hr></hr>

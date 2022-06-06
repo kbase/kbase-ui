@@ -89,7 +89,6 @@ define([
                                 const safe1 = highlight.replace('<em>', emStart).replace('</em>', emFinish);
                                 const safe2 = encodeHTML(safe1);
                                 const safe3 = safe2.replace(emStart, '<em>').replace(emFinish, '</em>');
-                                console.log('safe3', safe3);
                                 return {
                                     highlight: safe3
                                 };

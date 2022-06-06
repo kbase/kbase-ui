@@ -63,7 +63,6 @@ export default class AboutPlugins extends Component<
                 label: 'GitHub Account',
                 style: {},
                 render: (plugin: PluginInfo) => {
-                    console.log('plugin', plugin);
                     return <span>{plugin.git.account}</span>;
                 },
             },

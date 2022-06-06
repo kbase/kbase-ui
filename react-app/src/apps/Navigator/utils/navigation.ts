@@ -1,6 +1,5 @@
 export function updateHistory(key: string, value: string | null) {
     const url = new URL(window.location.href);
-    console.log('[updateHistory]', key, value);
 
     // A little hack for react router, which expects the search to be appended
     // to the hash.

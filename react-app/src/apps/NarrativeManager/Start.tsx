@@ -66,7 +66,6 @@ export default class NarrativeManagerStart extends Component<
             config: this.props.config
         })
         const narrative = await narrativeManager.getMostRecentNarrative();
-        console.log('narrative?', narrative);
 
         if (narrative === null) {
             return this.createNewNarrative()

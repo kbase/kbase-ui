@@ -62,12 +62,7 @@ export default class Catalog extends Component<AuthProps, AuthState> {
             },
             {
                 path: 'auth2/login/continue',
-                auth: true,
-                view: 'loginContinue'
-            },
-            {
-                path: 'auth2/login/continue',
-                auth: true,
+                auth: false,
                 view: 'loginContinue'
             },
             {

@@ -42,8 +42,6 @@ export default class OutputObjectCellView extends Component<OutputObjectCellProp
             }
         })();
 
-        console.log('OUTPUT', this.props.cell);
-
         return (
             <div className="row my-2 g-0">
                 <div className="col-md-2 d-flex flex-column align-items-center justify-content-start">

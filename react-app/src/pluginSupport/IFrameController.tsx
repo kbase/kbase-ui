@@ -291,7 +291,6 @@ export default class IFrameController extends Component<IFrameControllerProps,
             // (e.g. require auth) -- that was the old default behavior,
             // we should probably readdress that.
             //
-            console.log('[ui-navigate]', to);
 
             // TODO: extract this to runtime.
             const path = ((): string => {
@@ -354,7 +353,15 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 }
 
                 // Redirect
-                changeHash2(nextRequest.path || 'about');
+                // TODO: respect search query too
+                const path = (() => {
+                    if (typeof nextRequest.path === 'string') {
+                        return nextRequest.path;
+                    } else {
+                        return nextRequest.path.join();
+                    }
+                })();
+                changeHash2(path || 'about');
             } catch (ex) {
                 // TODO: something
                 console.error('YIKES! Error in auth navigation out.', ex);
