@@ -99,7 +99,7 @@ export class Route {
             required: true,
           });
         }
-      } else if (/[a-z][A-Z][0-9]/.test(element)) {
+      } else if (/[a-zA-Z0-9]+/.test(element)) {
         // just alphas and numbers, treat as literal.
         routeSpec.push({
             type: RouteSpecElementType.REGEXP,
