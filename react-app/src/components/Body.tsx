@@ -123,6 +123,15 @@ export default class Body extends Component<BodyProps, BodyState> {
                     syncHash={false}
                 />
             }),
+            new Route('public-search', {authenticationRequired: false}, (props: RouteProps) => {
+                return <PluginWrapper2
+                    {...props}
+                    {...this.props}
+                    name="public-search"
+                    view="main"
+                    syncHash={false}
+                />
+            }),
             new Route('jgi-search', {authenticationRequired: true}, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
