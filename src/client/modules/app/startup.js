@@ -17,6 +17,7 @@
     }
 
     function domEncodedText(rawContent) {
+        const donorNode = document.createElement("div");
         donorNode.innerText = rawContent;
         // xss safe
         return donorNode.innerHTML;
