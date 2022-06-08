@@ -1,5 +1,6 @@
 define([
     'bluebird',
+    'dompurify',
     'kb_lib/html',
     'lib/utils',
 
@@ -9,7 +10,7 @@ define([
     'css!app/styles/kb-bootstrap',
     'css!app/styles/kb-ui',
     'domReady'
-], (Promise, html, {domSafeText}) => {
+], (Promise, DOMPurify, html, {domSafeText, domEncodedText}) => {
 
     const t = html.tag,
         div = t('div'),
@@ -27,8 +28,8 @@ define([
         if (!node) {
             return;
         }
-        // xss safe (all input generated internally)
-        node.innerHTML = content;
+        // xss safe (all input generated internally, but sanitized just in case)
+        node.innerHTML = DOMPurify.sanitize(content);
     }
 
     function showElement(element) {
@@ -68,7 +69,7 @@ define([
             arg.description = arg.description.map(p).join('\n');
         }
 
-        setContent('code', domSafeText(arg.code));
+        setContent('code', domEncodedText(arg.code));
         setContent('message', domSafeText(arg.message));
         setContent('description', arg.description);
         setContent('suggestions', arg.suggestions);
@@ -582,7 +583,7 @@ define([
                 showError({
                     code: 'unexpected-error',
                     message: 'Unexpected error',
-                    description: [err.message]
+                    description: [domEncodedText(err.message)]
                 });
             });
     }
