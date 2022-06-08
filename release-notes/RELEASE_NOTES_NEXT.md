@@ -24,7 +24,8 @@ none
 
 - UIP-5: dataview landing pages: many small xss fixes or annotations
 - UIP-5: annotate safe usage in kbase-ui
+- UIP-7: data-search: xss tweaks, primarily annotations, removed (old) widget library as it is knockoutjs-based
 
 ### MAJOR DEPENDENCY CHANGES
 
-none
+- alpine linux 3.15 -> 3.16 
