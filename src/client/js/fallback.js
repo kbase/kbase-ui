@@ -88,13 +88,6 @@
         return errorCount;
     }
 
-    function domSafeText(rawContent) {
-        const donorNode = document.createElement("div");
-        donorNode.innerText = rawContent;
-        // xss safe
-        return donorNode.innerHTML;
-    }
-
     function showError(arg) {
         if (!errorCount) {
             renderLayout();
