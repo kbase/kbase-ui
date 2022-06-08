@@ -102,6 +102,9 @@ compile:
 	@echo "> Compiling TypeScript files."
 	npm run compile
 
+watch:
+	@echo "> Watching and recompiling TypeScript files."
+	npm run watch
 
 # Perform the build. Build scnearios are supported through the config option
 # which is passed in like "make build build=ci"
