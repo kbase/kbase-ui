@@ -29,6 +29,7 @@
             bootstrap_css: 'node_modules/bootstrap/css/bootstrap',
             bootstrap: 'node_modules/bootstrap/js/bootstrap',
             css: 'node_modules/require-css/css',
+            dompurify: 'node_modules/dompurify/purify',
             domReady: 'node_modules/requirejs-domready/domReady',
             font_awesome: 'node_modules/font-awesome/css/font-awesome',
             'js-yaml': 'node_modules/js-yaml/js-yaml',

@@ -1,10 +1,16 @@
 define([
     'preact',
     'htm',
+    "dompurify",
+    "lib/utils",
+
+    // For effect
     'css!./Title.css'
 ], (
     preact,
-    htm
+    htm,
+    DOMPurify,
+    {domSafeText}
 ) => {
 
     const {h, Component } = preact;
@@ -29,7 +35,7 @@ define([
                 }
 
                 if (newTitle && newTitle.trim().length > 0) {
-                    document.title = `${newTitle} | KBase`
+                    document.title = `${domSafeText(newTitle)} | KBase`
                 } else {
                     document.title = 'KBase'
                 }
@@ -46,7 +52,7 @@ define([
             return html`
                 <div className="Title"
                      data-k-b-testhook-component="title">
-                     <span dangerouslySetInnerHTML=${{ __html: this.state.title }}></span>
+                     <span dangerouslySetInnerHTML=${{ __html: DOMPurify.sanitize(this.state.title) }}></span>
                 </div>
             `;
         }

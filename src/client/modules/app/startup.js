@@ -16,6 +16,13 @@
         throw err;
     }
 
+    function domEncodedText(rawContent) {
+        const donorNode = document.createElement("div");
+        donorNode.innerText = rawContent;
+        // xss safe
+        return donorNode.innerHTML;
+    }
+
     require(['app/main'], (main) => {
         if (root.KBaseFallback.getErrorState()) {
             return;
@@ -27,7 +34,7 @@
                     title: 'KBase UI Startup Error',
                     content: [
                         'An error has occurred while starting the KBase UI.',
-                        err.message
+                        domEncodedText(err.message)
                     ],
                     references: [{
                         title: 'Reporting Errors',

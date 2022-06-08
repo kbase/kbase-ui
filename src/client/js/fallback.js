@@ -22,6 +22,7 @@
     function renderLayout() {
         cleanBrowser();
         root.document.title = 'Application Error - KBase';
+        // xss safe 
         root.document.getElementById('root').innerHTML =
             '<div style="font-size: 16px; font-family: Arial,sans-serif;">' +
             // header with kbase icon, title, and menu
@@ -61,6 +62,7 @@
             '  <div>' + referencesSection + '</div></div>' +
             '</div>',
             div = root.document.createElement('div');
+        // xss safe (all usages are internal)
         div.innerHTML = errorBody;
         root.document.getElementById('content').appendChild(div);
     }
