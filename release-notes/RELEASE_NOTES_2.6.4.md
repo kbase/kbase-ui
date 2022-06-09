@@ -29,3 +29,5 @@ none
 ### MAJOR DEPENDENCY CHANGES
 
 - alpine linux 3.15 -> 3.16 
+- npm dependencies:
+    - add DOMPurify 2.3.8
