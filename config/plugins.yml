@@ -39,7 +39,7 @@ plugins:
               account: kbase
     - name: data-search
       globalName: kbase-ui-plugin-data-search
-      version: 2.4.1
+      version: 2.4.2
       source:
           github:
               account: kbase
