@@ -27,7 +27,7 @@ plugins:
               account: kbase
     - name: feeds
       globalName: kbase-ui-plugin-feeds
-      version: 2.1.1
+      version: 2.1.2
       source:
           github:
               account: kbase
