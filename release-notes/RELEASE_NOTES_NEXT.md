@@ -22,7 +22,7 @@ none
 
 ### FIXES
 
-none
+- UIP-10: address any potential xss exposures, no user visible changes
 
 ### MAJOR DEPENDENCY CHANGES
 
