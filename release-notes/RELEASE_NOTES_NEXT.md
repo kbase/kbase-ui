@@ -22,7 +22,8 @@ none
 
 ### FIXES
 
-- UIP-10: address any potential xss exposures, no user visible changes
+- UIP-10: feeds plugin: address any potential xss exposures, no user visible changes
+- UIP-11: auth plugin: address any potential xss exposures; no user visible changes, but some functionality fixes (not reported)
 
 ### MAJOR DEPENDENCY CHANGES
 
