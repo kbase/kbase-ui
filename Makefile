@@ -192,7 +192,6 @@ integration-tests:
 	@:$(call check_defined, service, the testing service)
 	@:$(call check_defined, token, the testing user auth tokens)
 	ENV="$(env)" BROWSER="$(browser)" SERVICE_USER="$(user)" SERVICE_KEY="$(key)" SERVICE="$(service)" TOKEN="${token}" FOCUS="${focus}" BLUR="${blur}" npx wdio run ./test/wdio.conf.service.js --env=$(env)
-fy=false clone https://oauth2:s5TDQnKk4kpHXCVdUNfh@gitlab.kbase.lbl.gov:1443/devops/kbase_ui_config.git
 
 get-gitlab-config:
 	mkdir -p dev/gitlab-config; \

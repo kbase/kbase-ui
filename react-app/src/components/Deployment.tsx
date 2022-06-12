@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { Config } from '../types/config';
-import './Deployment.css';
+import styles from './Deployment.module.css';
 
 export interface DeploymentProps {
     config: Config;
@@ -21,13 +21,13 @@ export default class Deployment extends Component<
         }
         return (
             <div
-                className="Deployment"
+                className={styles.main}
                 data-k-b-testhook-component="deployment"
             >
-                <div className="Deployment-Label" title={name}>
+                <div className={styles.label} title={name}>
                     {environment}
                 </div>
-                <div className="Deployment-Icon">
+                <div className={styles.icon}>
                     <span className={'fa fa-2x fa-' + icon}></span>
                 </div>
             </div>

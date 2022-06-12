@@ -834,7 +834,7 @@ export default class Body extends Component<BodyProps, BodyState> {
 
     render() {
         return (
-            <div className={styles.Body} data-k-b-testhook-component="body">
+            <div className={styles.main} data-k-b-testhook-component="body">
                 <RouterWrapper>
                     <RouterContext.Consumer>
                         {(value) => {

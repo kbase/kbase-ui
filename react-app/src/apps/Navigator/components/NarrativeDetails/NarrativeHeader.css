@@ -1,4 +1,4 @@
-.NarrativeHeader .-prop-table {
+/* .NarrativeHeader .-prop-table {
     display: flex;
     flex-direction: column;
 }
@@ -28,13 +28,14 @@
     font-weight: bold;
     color: rgb(100 100 100);
     flex: 0 0 8em;
-}
+} */
 
 /* Bootstrap BS */
 
 .NarrativeHeader .container-fluid {
     padding: 0;
 }
+
 .NarrativeHeader .-well {
     border: 1px solid silver;
     border-radius: 4px;

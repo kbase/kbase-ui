@@ -1,0 +1,23 @@
+.toggleIcon {
+    font-size: 180% !important;
+}
+
+.toggleIcon::before {
+    color: #2196f3 !important;
+}
+
+.button::after {
+    color: #2196f3 !important;
+}
+
+.navbarIconWrapper {
+    display: inline-block;
+    width: 26px;
+    text-align: center;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.navbarIcon {
+    font-size: 150% !important;
+}

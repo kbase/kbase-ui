@@ -22,10 +22,12 @@
     flex: 0 0 auto;
     border-top: 1px solid rgb(100 100 100);
 }
+
 .header .col1 {
     color: white;
     background-color: rgb(100 100 100);
 }
+
 .header .col2 {
     color: white;
     font-weight: bold;
@@ -36,10 +38,12 @@
     flex: 0 0 auto;
     border-top: 1px solid rgb(100 100 100);
 }
+
 .footer .col1 {
     color: white;
     background-color: rgb(100 100 100);
 }
+
 .footer .col2 {
     color: white;
     background-color: rgb(100 100 100);
@@ -63,7 +67,7 @@
 .col1 {
     flex: 1 1 0;
     white-space: nowrap;
-    overflow-y: hidden;
+    overflow-x: hidden;
     text-overflow: ellipsis;
     font-weight: bold;
     color: rgb(150 150 150);
@@ -76,13 +80,13 @@
 .col2 {
     flex: 1 1 0;
     white-space: nowrap;
-    overflow-y: hidden;
+    overflow-x: hidden;
     text-overflow: ellipsis;
     padding: 2px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: end;
+    justify-content: flex-end;
 }
 
 .noRowsMessage {

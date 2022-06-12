@@ -1,15 +1,16 @@
-import { Component } from 'react';
+import {Component} from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import Body from '../Body';
 import HamburgerMenu from '../HamburgerMenu/HamburgerMenuMain';
-import { AuthenticationState } from '../../contexts/Auth';
-import { Config } from '../../types/config';
-import Title from '../Title.';
+import {AuthenticationState} from '../../contexts/Auth';
+import {Config} from '../../types/config';
+import Title from '../Title';
 import Deployment from '../Deployment';
 import Signin from '../Signin/SigninMain';
-import './style.css';
-import { RuntimeContext } from '../../contexts/RuntimeContext';
-import { Logo } from '../Logo/Logo';
+import {RuntimeContext} from '../../contexts/RuntimeContext';
+import {Logo} from '../Logo/Logo';
+// import './style.css';
+import styles from './style.module.css';
 
 export interface MainWindowProps {
     authState: AuthenticationState;
@@ -50,18 +51,18 @@ export default class MainWindow extends Component<MainWindowProps,
 
     renderHeader() {
         return (
-            <div className="-navbar" style={{ padding: '0' }}>
-                <div className="-cell -menu">
+            <div className={styles.navbar} style={{padding: '0'}}>
+                <div>
                     <HamburgerMenu {...this.props} />
                 </div>
-                <div className="-cell -logo">
+                <div className={styles.cellLogo}>
                     <Logo {...this.props} />
                 </div>
-                <div className="-cell -title">
+                <div className={styles.cellTitle}>
                     <RuntimeContext.Consumer>
                         {(value) => {
                             if (value) {
-                                return <Title title={value.title} />;
+                                return <Title title={value.title}/>;
                             }
                         }}
                     </RuntimeContext.Consumer>
@@ -73,10 +74,10 @@ export default class MainWindow extends Component<MainWindowProps,
                 {/* <div className="-notification">
                     <${Notification} ...${props} />
                 </div> */}
-                <div className="-cell -deployment">
+                <div className={styles.cellDeployment}>
                     <Deployment {...this.props} />
                 </div>
-                <div className="-login -cell">
+                <div className={styles.cellLogin}>
                     <Signin {...this.props} />
                 </div>
             </div>
@@ -111,17 +112,17 @@ export default class MainWindow extends Component<MainWindowProps,
     render() {
         return (
             <div
-                className="MainWindow"
+                className={styles.main}
                 data-k-b-testhook-component="mainwindow"
             >
-                <div className="-header">{this.renderHeader()}</div>
-                <div className="-body">
+                <div className={styles.header}>{this.renderHeader()}</div>
+                <div className={styles.body}>
                     <div className="-nav">
                         <Sidebar {...this.props} />
                     </div>
-                    <div className="-content-area">
+                    <div className={styles.contentArea}>
                         {/* ${this.renderSystemAlertBanner()} */}
-                        <div className="-content">
+                        <div className={styles.content}>
                             <RuntimeContext.Consumer>
                                 {(value) => {
                                     if (value) {

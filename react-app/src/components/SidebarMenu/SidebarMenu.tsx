@@ -1,12 +1,14 @@
 import { Component, createRef } from 'react';
 import { MenuItem, MenuItemExternal, MenuItemInternal } from '../../types/menu';
 import { Nav } from 'react-bootstrap';
-import './SidebarMenu.css';
 import { changeHash2 } from '../../apps/Navigator/utils/navigation';
+import './SidebarMenu.css';
+import styles from './SidebarMenu.module.css';
 
 export interface SidebarMenuProps {
     menu: Array<MenuItem>;
     path: string;
+    showLabel?: boolean;
 }
 
 interface SidebarMenuState {
@@ -74,7 +76,9 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
     }
 
     renderIcon(button: MenuItem) {
-        return <div className={'fa fa-3x fa-' + button.icon} />;
+        return <div className={styles.iconWrapper}>
+            <span className={`fa fa-3x fa-${button.icon}`} />
+        </div>;
     }
     renderBadge(menuItem: MenuItemInternal) {
         if (!menuItem.renderBadge) {
@@ -83,10 +87,20 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
         return menuItem.renderBadge(menuItem);
     }
 
+    showLabel() {
+        return (this.props.showLabel !== false);
+    }
+
     renderButton(menuItem: MenuItemInternal) {
+        const label = (() => {
+            if (this.showLabel()) {
+                return <div>{menuItem.label}</div>
+            }
+            return null;
+        })();
         return (
             <button
-                className="SidebarMenu -button"
+                className={styles.button}
                 data-k-b-testhook-element="menu-item"
                 data-k-b-testhook-button={menuItem.name}
                 data-toggle="tooltip"
@@ -97,30 +111,42 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
                     this.onNavClick(menuItem.path);
                 }}
             >
-                <div className="-icon">
+                <div className={styles.icon}>
                     {this.renderIcon(menuItem)}
-                    <div className="-badge">{this.renderBadge(menuItem)}</div>
+                    <div className={styles.badge}>{this.renderBadge(menuItem)}</div>
                 </div>
-                <div>{menuItem.label}</div>
+                {label}
             </button>
         );
     }
 
     renderInternalItem(menuItem: MenuItemInternal) {
+        const label = (() => {
+            if (this.showLabel()) {
+                return <div className={styles.label}>{menuItem.label}</div>
+            }
+            return null;
+        })();
         return (
             <Nav.Item key={menuItem.name}>
-                <Nav.Link eventKey={menuItem.name}>
-                    <div className="-icon">
+                <Nav.Link eventKey={menuItem.name} className={styles.navLink}>
+                    <div className={styles.icon}>
                         {this.renderIcon(menuItem)}
-                        <div className="-badge">{this.renderBadge(menuItem)}</div>
+                        <div className={styles.badge}>{this.renderBadge(menuItem)}</div>
                     </div>
-                    <div>{menuItem.label}</div>
+                    {label}
                 </Nav.Link>
             </Nav.Item>
         );
     }
 
     renderExternalItem(menuItem: MenuItemExternal) {
+        const label = (() => {
+            if (this.showLabel()) {
+                return <div>{menuItem.label}</div>
+            }
+            return null;
+        })();
         return (
             <Nav.Item key={menuItem.name}>
                 <Nav.Link
@@ -135,7 +161,7 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
                     }}
                 >
                     {this.renderIcon(menuItem)}
-                    <div>{menuItem.label}</div>
+                    {label}
                 </Nav.Link>
             </Nav.Item>
         );
@@ -172,9 +198,13 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
         // Fetch the "path" in the hash
         const path = document.location.hash.substring(1).replace(/^\/+/, '');
 
+        console.log('hmm?', path);
+
         // Determine if the current menu item is a prefix for the current browser (hash) path.
         for (const item of this.props.menu) {
+           
             if (item.type === 'internal') {
+                console.log(`    ${item.path}`)
                 if (path.startsWith(item.path)) {
                     return item.name;
                 }
@@ -185,10 +215,15 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
 
     render() {
         const [menu, handlers] = this.renderMenu();
+        console.log('active key',this.state.activeKey);
         return (
             <Nav
-                className="flex-column SidebarMenu"
-                activeKey={this.state.activeKey || undefined}
+                className={`flex-column SidebarMenuBSTweaks ${styles.main}`}
+                // NOTE: the api allows activeKey of null to indicate no active key,
+                // but the TS typing does not allow null, so we fool TS into by saying 
+                // it is always a string.
+                // TODO: file a ticket with the bootstrap-react project.
+                activeKey={this.state.activeKey as string}
                 onSelect={(selectedKey: string | null) => {
                     if (selectedKey) {
                         const handler = handlers.get(selectedKey);

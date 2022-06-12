@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import './Title.css';
+import styles from './Title.module.css';
 
 export interface TitleProps {
     title: string;
@@ -19,7 +19,7 @@ export default class Title extends Component<TitleProps, TitleState> {
         // Note that this allows html to be set in the title. This allows plugins to set
         // html.
         return (
-            <div className="Title" data-k-b-testhook-component="title">
+            <div className={styles.main} data-k-b-testhook-component="title">
                 {this.props.title}
             </div>
         );

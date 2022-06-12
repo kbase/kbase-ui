@@ -4,6 +4,7 @@ import {Component} from 'react';
 import {Dropdown} from 'react-bootstrap';
 import {AuthenticationState, AuthenticationStateAuthenticated,} from '../../contexts/Auth';
 import SigninButton from './SigninButton';
+import styles from './Signin.module.css';
 
 export interface SigninProps {
     authState: AuthenticationState;
@@ -221,6 +222,10 @@ export default class Signin extends Component<SigninProps, SigninState> {
     //     );
     // }
 
+    iconClass(iconClassFragment: string) {
+        return `fa fa-${iconClassFragment} ${styles.iconFont}`;
+    }
+
     renderLoggedIn(authState: AuthenticationStateAuthenticated) {
         return (
             <Dropdown>
@@ -246,21 +251,21 @@ export default class Signin extends Component<SigninProps, SigninState> {
                     </Dropdown.ItemText>
                     <Dropdown.Divider/>
                     <Dropdown.Item href="/#people">
-                        <div className="navbar-icon">
-                            <span className="fa fa-user"/>
+                        <div className={styles.icon}>
+                            <span className={this.iconClass('user')}/>
                         </div>
                         <span>Your Profile</span>
                     </Dropdown.Item>
                     <Dropdown.Item href="/#account">
-                        <div className="navbar-icon">
-                            <span className="fa fa-drivers-license"/>
+                        <div className={styles.icon}>
+                            <span className={this.iconClass('drivers-license')}/>
                         </div>
                         <span>Your Account</span>
                     </Dropdown.Item>
                     <Dropdown.Divider/>
                     <Dropdown.Item onClick={this.handleSignout.bind(this)}>
-                        <div className="navbar-icon">
-                            <span className="fa fa-sign-out"/>
+                        <div className={styles.icon}>
+                            <span className={this.iconClass('sign-out')}/>
                         </div>
                         <span>Sign Out</span>
                     </Dropdown.Item>

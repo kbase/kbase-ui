@@ -1,0 +1,95 @@
+/* MainWindow component */
+.main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    min-height: 0;
+}
+
+.header {
+    flex: 0 0 70px;
+}
+
+.body {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: row;
+    min-height: 0;
+    overflow-y: hidden;
+}
+
+.contentArea {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+}
+
+.content {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    padding-top: 1em;
+    overflow-y: hidden;
+}
+
+.cellLogo {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.cellTitle {
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: left;
+    display: flex;
+    width: 0;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-left: 10px;
+}
+
+
+/* Navbar */
+
+/*
+ *  Main Navigation Bar
+*/
+
+.navbar {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: row;
+    background-color: #fff;
+    border-bottom: 5px solid #e0e0e0 !important;
+    height: 70px;
+    align-items: center;
+}
+
+.cellTitle {
+    flex: 1 1 0px;
+    align-items: center;
+    justify-content: left;
+    display: flex;
+    width: 0px;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-left: 10px;
+}
+
+.cellDeployment {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    margin-right: 4px;
+}
+
+.cellLogin {
+    margin-right: 4px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}

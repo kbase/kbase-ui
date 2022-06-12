@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { arraysIntersect } from '../../lib/utils';
-import { Config } from '../../types/config';
+import { Config, HamburgerMenuDefintion } from '../../types/config';
 import { Menu, MenuItem } from '../../types/menu';
 import {
     AuthenticationState,
@@ -119,7 +119,8 @@ export default class HamburgerMenuMain extends Component<
         const menuDefinition = this.props.config.ui.menus.hamburger;
 
         const menu = {
-            main: filterMenu(menuDefinition.main),
+            narrative: filterMenu(menuDefinition.narrative),
+            search: filterMenu(menuDefinition.search),
             developer: filterMenu(menuDefinition.developer),
             help: filterMenu(menuDefinition.help),
         };
@@ -145,7 +146,8 @@ export default class HamburgerMenuMain extends Component<
         const menuDefinition = this.props.config.ui.menus.hamburger;
 
         const menu = {
-            main: filterMenu(menuDefinition.main),
+            narrative: filterMenu(menuDefinition.narrative),
+            search: filterMenu(menuDefinition.search),
             developer: filterMenu(menuDefinition.developer),
             help: filterMenu(menuDefinition.help),
         };

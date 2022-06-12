@@ -1,7 +1,7 @@
 import {UserProfile} from '@kbase/ui-lib/lib/comm/coreServices/UserProfile';
 import {Component} from 'react';
 import { NextRequest } from '../AuthProblem';
-import './SigninButton.css';
+import styles from './SigninButton.module.css';
 
 export interface SigninProps {
     isLoginView: boolean;
@@ -46,12 +46,12 @@ export default class Signin extends Component<SigninProps, SigninState> {
             }
         }
 
-        const classList = ['SigninButton'];
+        const classList = [styles.main];
         if (this.props.bordered) {
-            classList.push('-bordered');
+            classList.push(styles.bordered);
         }
         if (this.props.isLoginView) {
-            classList.push('-disabled');
+            classList.push(styles.disabled);
             return (
                 <span
                     className={classList.join(' ')}
@@ -59,11 +59,8 @@ export default class Signin extends Component<SigninProps, SigninState> {
                     data-button="signin"
                     data-k-b-testhook-button="signin"
                 >
-                    <span
-                        className="fa fa-sign-in fa-inverse -icon"
-                        style={{marginRight: '5px'}}
-                    />
-                    <span className="-label">Sign In</span>
+                    <span className={`fa fa-sign-in fa-inverse ${styles.iconDisabled}`} />
+                    <span>Sign In</span>
                 </span>
             );
 
@@ -76,11 +73,8 @@ export default class Signin extends Component<SigninProps, SigninState> {
                 data-k-b-testhook-button="signin"
                 href={url.toString()}
             >
-                <span
-                    className="fa fa-sign-in fa-inverse -icon"
-                    style={{marginRight: '5px'}}
-                />
-                <span className="-label">Sign In</span>
+                <span className={`fa fa-sign-in fa-inverse ${styles.iconNormal}`} />
+                <span>Sign In</span>
             </a>
         );
     }

@@ -1,0 +1,37 @@
+.icon {
+    display: inline-block;
+    width: 26px;
+    text-align: center;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.iconFont {
+    font-size: 150% !important;
+}
+
+/* .MainWindow .-navbar .dropdown-menu .navbar-icon {
+    display: inline-block;
+    width: 26px;
+    text-align: center;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.MainWindow .-navbar .dropdown-menu .navbar-icon .fa {
+    font-size: 150%;
+}
+
+
+
+.MainWindow .widget-menu .dropdown-menu .navbar-icon {
+    display: inline-block;
+    width: 26px;
+    text-align: center;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.MainWindow .widget-menu .dropdown-menu .navbar-icon .fa {
+    font-size: 150%;
+} */

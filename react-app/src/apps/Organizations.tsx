@@ -32,7 +32,7 @@ export default class Organizations extends Component<OrganizationsProps, Organiz
             {
                 path: '^orgs$/:organizationId',
                 auth: true,
-                view: 'newOrg'
+                view: 'viewOrg'
             },
             {
                 path: '^orgs$',

@@ -6,7 +6,6 @@ import { MenuItem} from '../../types/menu';
 import {AuthenticationState, AuthenticationStateAuthenticated, AuthenticationStatus} from '../../contexts/Auth';
 import SidebarMenu from '../SidebarMenu/SidebarMenu';
 import { FeedsBadgeWrapper } from '../SidebarMenu/FeedsBadgeWrapper';
-import './Sidebar.css';
 
 
 const menu: Array<MenuItem> =  [

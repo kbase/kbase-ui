@@ -1,0 +1,47 @@
+.main {
+    background-color: #fff;
+    border: none;
+    text-shadow: none !important;
+    margin: 0;
+    color: #2196f3;
+
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-decoration: none;
+    padding: 0.25em 0.5em;
+}
+
+.main:hover {
+    background-color: #f5f5f5;
+}
+
+.normal {
+    color: #2196f3;
+}
+
+.disabled {
+    color: rgba(150, 150, 150, 1);
+}
+
+.bordered {
+    border: 1px solid rgba(33, 149, 243, 0.5);
+    padding: 0.25em;
+    border-radius: 0.25em;
+}
+
+.icon {
+    font-size: 24px !important;
+    margin-right: 5px;
+}
+
+.iconNormal {
+    composes: icon;
+    color: #2196f3 !important;
+}
+
+.iconDisabled {
+    composes: icon;
+    color: rgba(150, 150, 150, 1) !important;
+}

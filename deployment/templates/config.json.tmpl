@@ -163,7 +163,7 @@
         },
         "menus": {
             "hamburger": {
-                "main": {
+                "narrative": {
                     "items": [
                         {
                             "name": "narrative",
@@ -180,7 +180,11 @@
                             "newWindow": true,
                             "label": "New Narrative",
                             "icon": "plus"
-                        },
+                        }
+                    ]
+                },
+                "search": {
+                    "items": [
                         {
                             "name": "biochem-search",
                             "type": "internal",
@@ -196,6 +200,17 @@
                             "newWindow": false,
                             "label": "JGI Search",
                             "icon": "search"
+                        },
+                        {
+                            "name": "public-search",
+                            "type": "internal",
+                            "path": "public-search",
+                            "newWindow": false,
+                            "label": "Public Search",
+                            "icon": "search",
+                            "allowedRoles": [
+                                "DevToken"
+                            ]
                         }
                     ]
                 },

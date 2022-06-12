@@ -1,12 +1,13 @@
 import {Component} from 'react';
 import {MenuItem} from '../../types/menu';
 import {Dropdown} from 'react-bootstrap';
-// import logo from './kbase_logo.png';
-import './styles.css';
+import styles from './HamburgerMenu.module.css';
+
 
 export interface HamburgerMenuProps {
     menu: {
-        main: Array<MenuItem>;
+        narrative: Array<MenuItem>;
+        search: Array<MenuItem>;
         developer: Array<MenuItem>;
         help: Array<MenuItem>;
     };
@@ -22,8 +23,8 @@ export default class HamburgerMenu extends Component<HamburgerMenuProps,
             let icon = null;
             if (menuItem.icon) {
                 icon = (
-                    <div className="navbar-icon" key={menuItem.name}>
-                        <span className={`fa fa-${menuItem.icon}`}/>
+                    <div className={styles.navbarIconWrapper} key={menuItem.name}>
+                        <span className={`fa fa-${menuItem.icon} ${styles.navbarIcon}`}/>
                     </div>
                 );
             }
@@ -71,7 +72,8 @@ export default class HamburgerMenu extends Component<HamburgerMenuProps,
         const menuContent: Array<JSX.Element> = [];
         let isPreviousSection = false;
         [
-            this.props.menu.main,
+            this.props.menu.narrative,
+            this.props.menu.search,
             this.props.menu.developer,
             this.props.menu.help,
         ].forEach((menu, index) => {
@@ -89,8 +91,8 @@ export default class HamburgerMenu extends Component<HamburgerMenuProps,
 
         return (
             <Dropdown>
-                <Dropdown.Toggle variant="default">
-                    <span className="fa fa-navicon fa-2x"></span>
+                <Dropdown.Toggle variant="default" className={styles.button}>
+                    <span className={`fa fa-navicon fa-2x ${styles.toggleIcon}`}></span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>{menuContent}</Dropdown.Menu>
             </Dropdown>

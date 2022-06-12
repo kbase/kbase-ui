@@ -8,7 +8,7 @@ import RuntimeWrapper, { RuntimeContext } from '../contexts/RuntimeContext';
 import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
 import { Config } from '../types/config';
 import Loading from './Loading';
-import MainWindow from './MainWindow/view';
+import MainWindow from './MainWindow';
 
 export type AppLoadState = AsyncProcess<Config, string>;
 

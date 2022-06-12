@@ -2,7 +2,7 @@ import {Component} from 'react';
 import { HashPath } from '../../contexts/RouterContext';
 import HelpLinks from '../HelpLinks';
 import flapjack from './flapjack.png';
-import './NotFound.css'
+import styles from './NotFound.module.css'
 
 export interface NotFoundProps {
     hashPath: HashPath;
@@ -18,33 +18,29 @@ export default class NotFound extends Component<NotFoundProps, NotFoundState> {
         this.props.setTitle(`Not Found - ${this.props.hashPath.hash}`);
     }
 
-    renderNotFound() {
+    render() {
         return (
-            <div className="NotFound" >
-                <div className="NotFound-graphic">
+            <div className={styles.main} >
+                <div className={styles.graphic}>
                     <img src={flapjack} alt="The Flapjack"/>
                 </div>
-                <div className="NotFound-content">
-                    <div className="NotFound-header" style={{flex: '1 1 0px'}}>
+                <div className={styles.content}>
+                    <div className={styles.header}>
                         <p>
                             Not Found
                         </p>
                     </div>
-                    <div className="NotFound-message"style={{flex: '1 1 0px'}}>
+                    <div className={styles.message}>
                         <p>
                             Sorry, this resource, <em>"{this.props.hashPath.hash}"</em> was not found.
                         </p>
                         
                     </div>
-                    <div className="NotFound-body">
+                    <div className={styles.body}>
                         <HelpLinks />
                     </div>
                 </div>
             </div>
         );
-    }
-
-    render() {
-        return <div style={{margin: '0 10px'}}>{this.renderNotFound()}</div>;
     }
 }

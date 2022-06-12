@@ -13,5 +13,8 @@
     "deno.enablePaths": [
         "./tools/deno"
     ],
-    "deno.lint": true
+    "deno.lint": true,
+    "css.customData": [
+        "./.vscode/custom.css-data.json"
+    ]
 }

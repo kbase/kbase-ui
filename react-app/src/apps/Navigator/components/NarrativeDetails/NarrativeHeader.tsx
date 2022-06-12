@@ -292,34 +292,52 @@ export default class NarrativeHeader extends React.Component<
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-5">
-                        <div className="-well">
-                            <div className="-prop-table">
-                                {this.renderDetailsHeaderItem('Author', [
-                                    profileLink(
-                                        narrativeDoc.creator,
-                                        authorName
-                                    ),
-                                ])}
-                                {this.renderDetailsHeaderItem(
-                                    'Created on',
-                                    readableDate(narrativeDoc.creation_date)
-                                )}
-                                {this.renderDetailsHeaderItem(
-                                    'Last saved',
-                                    readableDate(narrativeDoc.timestamp)
-                                )}
-                                {this.renderDetailsHeaderItem(
-                                    'Version',
-                                    String(narrativeDoc.version)
-                                )}
-                                {this.renderDetailsHeaderItem(
-                                    'Visibility',
-                                    narrativeDoc.is_public
-                                        ? 'Public'
-                                        : 'Private'
-                                )}
-                            </div>
-                        </div>
+                        <PropTable
+                            // title="Data Objects"
+                            noRowsMessage="No data objects in this narrative"
+                            rows={
+                                [
+                                    ['Author', () => {
+                                        return  profileLink(
+                                            narrativeDoc.creator,
+                                            authorName
+                                        )
+                                    }],
+                                    [
+                                        'Created on',
+                                        readableDate(narrativeDoc.creation_date)
+                                    ],
+                                    [
+                                        'Last saved',
+                                        readableDate(narrativeDoc.timestamp)
+                                    ],
+                                    [
+                                        'Version',
+                                        String(narrativeDoc.version)
+                                    ],
+                                    [
+                                        'Visibility',
+                                        narrativeDoc.is_public
+                                            ? 'Public'
+                                            : 'Private'
+                                            ]
+                                ]
+                            }
+                            styles={{
+                                col1: {
+                                    flex: '0 0 7em',
+                                    // textAlign: 'right',
+                                    // fontFamily: 'monospace',
+                                },
+                                col2: {
+                                    justifyContent: 'flex-start'
+                                },
+                                body: {
+                                    // maxHeight: '7em',
+                                },
+                            }}
+                        />
+                            
                     </div>
                     <div className="col-4">
                         <PropTable

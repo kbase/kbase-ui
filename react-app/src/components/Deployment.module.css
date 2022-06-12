@@ -1,4 +1,4 @@
-.Deployment {
+.main {
     padding: 3px;
     margin: 0;
     display: flex;
@@ -8,7 +8,7 @@
     border-radius: 0.5em;
 }
 
-.Deployment-Label {
+.label {
     text-align: center;
     font-weight: bold;
     margin-right: 0.2em;
@@ -16,6 +16,6 @@
     font-size: 120%;
 }
 
-.Deployment-Icon {
+.icon {
     text-align: center;
 }

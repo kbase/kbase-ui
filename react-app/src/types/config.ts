@@ -126,6 +126,13 @@ export interface PluginInfo {
   gitInfo: GitInfo;
 }
 
+export interface HamburgerMenuDefintion {
+    narrative: Menu;
+    search: Menu;
+    developer: Menu;
+    help: Menu;
+}
+
 export interface DeployConfig {
   deploy: {
     id: string;
@@ -200,11 +207,7 @@ export interface DeployConfig {
       };
     };
     menus: {
-      hamburger: {
-        main: Menu;
-        developer: Menu;
-        help: Menu;
-      };
+      hamburger: HamburgerMenuDefintion;
       sidebar: Menu;
     };
   };
