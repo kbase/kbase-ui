@@ -15,13 +15,13 @@ plugins:
               account: kbase
     - name: auth2-client
       globalName: kbase-ui-plugin-auth2-client
-      version: 2.4.10
+      version: 2.4.11
       source:
           github:
               account: kbase
     - name: jgi-search
       globalName: kbase-ui-plugin-jgi-search
-      version: 2.1.4
+      version: 2.1.5
       source:
           github:
               account: kbase
