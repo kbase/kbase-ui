@@ -171,7 +171,11 @@ define([
 
             this.channel.on('ui-auth-navigate', ({nextRequest, tokenInfo}) => {
                 const authSession = this.runtime.service('session').getClient();
-                authSession.setSessionCookie(tokenInfo.token, tokenInfo.expires);
+                if (tokenInfo) {
+                    authSession.setSessionCookie(tokenInfo.token, tokenInfo.expires);
+                } else {
+                    authSession.removeSessionCookie();
+                }
                 return authSession.evaluateSession().then(() => {
                     this.runtime.send('app', 'navigate', nextRequest);
                 });
