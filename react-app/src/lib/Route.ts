@@ -132,8 +132,6 @@ export class Route {
     const literalPathElements: Array<string> = [];
     const params: Params = new Map();
 
-    // console.log('hmm', this.rawRouteSpec, hashPath, this.routeSpec);
-
     for (const [index, routeElement] of this.routeSpec.entries()) {
       const pathElement = hashPath.path[index];
       switch (routeElement.type) {

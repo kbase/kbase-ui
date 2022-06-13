@@ -86,7 +86,6 @@ export default class Catalog extends Component<AuthProps, AuthState> {
         return (
             <RouterContext.Consumer>
                 {(value) => {
-                    // console.log('VALUE is', value);
                     switch (value.status) {
                         case AsyncProcessStatus.NONE:
                             return <div />;

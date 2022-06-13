@@ -198,13 +198,10 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
         // Fetch the "path" in the hash
         const path = document.location.hash.substring(1).replace(/^\/+/, '');
 
-        console.log('hmm?', path);
-
         // Determine if the current menu item is a prefix for the current browser (hash) path.
         for (const item of this.props.menu) {
            
             if (item.type === 'internal') {
-                console.log(`    ${item.path}`)
                 if (path.startsWith(item.path)) {
                     return item.name;
                 }
@@ -215,7 +212,6 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
 
     render() {
         const [menu, handlers] = this.renderMenu();
-        console.log('active key',this.state.activeKey);
         return (
             <Nav
                 className={`flex-column SidebarMenuBSTweaks ${styles.main}`}
