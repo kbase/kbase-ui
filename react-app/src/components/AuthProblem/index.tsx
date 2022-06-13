@@ -50,24 +50,9 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
         // this.props.setTitle(`Auth Problem - ${this.props.hashPath}`);
     }
 
-    renderAuthProblem() {
+    redirectToLogin() {
         const nextRequest: NextRequest = new NextRequest('authorization', this.props.hashPath);
-        //     {
-        //         realPath: this.props.hashPath.realPath,
-        //         path: this.props.hashPath.path,
-        //         original: this.props.hashPath.hash,
-        //         query: this.props.hashPath.query
-        //     }
-        // );
-        // const url = new URL(window.location.href);
-        // url.pathname = '';
-        // url.hash = '#/login';
-        // const params = url.searchParams;
-        // params.set('source', 'authorization');
-        // params.set('nextrequest', JSON.stringify(nextRequest));
-        // console.log('nextrequest', nextRequest);
 
-        // const nextrequest = JSON.stringify(nextRequest);
 
         const url = new URL(window.location.href);
         url.pathname = '';
@@ -76,8 +61,20 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
         for (const [key, value] of nextRequest.toSearchParams()) {
             url.searchParams.set(key, value);
         }
-        // params.set('nextrequest', this.props.nextRequest);
+        window.location.href = url.toString();
+    }
 
+    renderAuthProblem() {
+        const nextRequest: NextRequest = new NextRequest('authorization', this.props.hashPath);
+
+
+        const url = new URL(window.location.href);
+        url.pathname = '';
+        url.hash = '#login';
+        
+        for (const [key, value] of nextRequest.toSearchParams()) {
+            url.searchParams.set(key, value);
+        }
 
         return (
             <div className="AuthProblem" >
@@ -111,5 +108,7 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
    
     render() {
         return <div style={{margin: '0 10px'}}>{this.renderAuthProblem()}</div>;
+        // this.redirectToLogin();
+        // return null;
     }
 }
