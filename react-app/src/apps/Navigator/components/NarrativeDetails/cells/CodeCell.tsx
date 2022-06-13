@@ -11,6 +11,12 @@ interface CodeCellProps {
 
 export default class CodeCellView extends Component<CodeCellProps> {
     render() {
+        const title = (() => {
+            if (this.props.cell.metadata.kbase.attributes) {
+                return this.props.cell.metadata.kbase.attributes.title;
+            }
+            return null;
+        })();
         return (
             <div className="row my-2 g-0">
                 <div className="col-md-2 d-flex flex-column align-items-center justify-content-start">
@@ -34,10 +40,7 @@ export default class CodeCellView extends Component<CodeCellProps> {
                             <Accordion.Header>
                                 <div className={cellStyles.header}>
                                     <div className={cellStyles.title}>
-                                        {
-                                            this.props.cell.metadata.kbase
-                                                .attributes.title
-                                        }
+                                        {title || 'n/a'}
                                     </div>
                                 </div>
                             </Accordion.Header>
