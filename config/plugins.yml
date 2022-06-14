@@ -15,7 +15,7 @@ plugins:
               account: kbase
     - name: auth2-client
       globalName: kbase-ui-plugin-auth2-client
-      version: 2.4.11
+      version: 2.4.12
       source:
           github:
               account: kbase
@@ -33,7 +33,7 @@ plugins:
               account: kbase
     - name: catalog
       globalName: kbase-ui-plugin-catalog
-      version: 2.2.5
+      version: 2.3.0
       source:
           github:
               account: kbase
