@@ -29,6 +29,7 @@ none
 - UIP-13: catalog - get a foothold with preact; replacing all that jquery append() usage addresses potential xss vulnerabilities
 - UIP-13: typeview - update dependencies, make html binding more secure
 - UIP-13: dataview - update dependencies, make html binding more secure
+- UIP-13: public-search - update dependencies, make html binding more secure, fix result selection for copy
 
 ### MAJOR DEPENDENCY CHANGES
 

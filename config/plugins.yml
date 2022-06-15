@@ -93,7 +93,7 @@ plugins:
               account: kbase
     - name: public-search
       globalName: kbase-ui-plugin-public-search
-      version: 0.15.6
+      version: 0.15.7
       source:
           github:
               account: kbase
