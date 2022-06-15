@@ -3,7 +3,7 @@
 plugins:
     - name: typeview
       globalName: kbase-ui-plugin-typeview
-      version: 3.1.0
+      version: 3.1.1
       source:
           github:
               account: kbase
@@ -33,7 +33,7 @@ plugins:
               account: kbase
     - name: catalog
       globalName: kbase-ui-plugin-catalog
-      version: 2.3.1
+      version: 2.3.2
       source:
           github:
               account: kbase

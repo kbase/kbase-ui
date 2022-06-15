@@ -27,6 +27,7 @@ none
 - UIP-12: jgi-search plugin: addresses any potential xss exposures
 - UIP-13: xss finishing work - auth2-client, just fix title
 - UIP-13: catalog - get a foothold with preact; replacing all that jquery append() usage addresses potential xss vulnerabilities
+- UIP-13: typeview - update dependencies, make html binding more secure
 
 ### MAJOR DEPENDENCY CHANGES
 
