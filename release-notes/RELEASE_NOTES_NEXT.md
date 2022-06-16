@@ -30,6 +30,7 @@ none
 - UIP-13: typeview - update dependencies, make html binding more secure
 - UIP-13: dataview - update dependencies, make html binding more secure
 - UIP-13: public-search - update dependencies, make html binding more secure, fix result selection for copy
+- UIP-13: organizations - fix dependency issue, internal updates
 
 ### MAJOR DEPENDENCY CHANGES
 
