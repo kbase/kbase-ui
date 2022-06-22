@@ -4,6 +4,8 @@ define([
     '../reactComponents/AboutCoreServices',
     '../reactComponents/AboutDynamicServices',
     'reactComponents/Tabs',
+
+    // For effect
     'css!./style.css'
 ], (
     preact,
