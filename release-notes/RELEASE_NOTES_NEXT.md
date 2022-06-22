@@ -31,6 +31,7 @@ none
 - UIP-13: dataview - update dependencies, make html binding more secure
 - UIP-13: public-search - update dependencies, make html binding more secure, fix result selection for copy
 - UIP-13: organizations - fix dependency issue, internal updates
+- UIP-14: dataview - refactor genome landing page for efficiency; new layout in tabs
 
 ### MAJOR DEPENDENCY CHANGES
 
