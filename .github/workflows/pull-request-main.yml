@@ -1,18 +1,22 @@
 ---
-name: Push to Feature/Fix Branch
+name: PR to main (or master) opened
 on:
-  push:
+  pull_request:
     branches:
-      - feature-*
-      - fix-*
+      - main
+      - master
+    types:
+      - opened
+      - reopened
+      - synchronize
 jobs:
   test:
     uses: ./.github/workflows/reusable_test.yml
-  build:
+  build-push:
     needs: test
     uses: ./.github/workflows/reusable_build-push.yml
     with:
       name: '${{ github.event.repository.name }}'
-      tags: '${{ github.ref_name }}'
+      tags: pr${{ github.event.number }}
       buildConfig: ci
     secrets: inherit
