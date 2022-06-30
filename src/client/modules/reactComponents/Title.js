@@ -51,7 +51,7 @@ define([
             // html.
             return html`
                 <div className="Title"
-                     data-k-b-testhook-component="title">
+                     role="heading" aria-level="1">
                      <span dangerouslySetInnerHTML=${{ __html: DOMPurify.sanitize(this.state.title) }}></span>
                 </div>
             `;
