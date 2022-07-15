@@ -192,6 +192,8 @@ define([
             // this.notificationMap[notification.id] = notification;
             this.setState({
                 notifications, summary
+            }, () => {
+                this.autoDismisser.run();
             });
         }
 
