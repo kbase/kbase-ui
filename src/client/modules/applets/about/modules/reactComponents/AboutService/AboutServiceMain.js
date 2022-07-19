@@ -130,8 +130,8 @@ define([
                 try {
                     return JSON.parse(await response.text());
                 } catch (ex) {
-                    console.error('[renderAuth]', ex);
-                    throw new Error(ex);
+                    console.error('[restClient]', ex);
+                    throw new Error(`Error parsing response, service down? ${response.status}: ${ex.message}`);
                 }
             };
         }
@@ -142,7 +142,6 @@ define([
                     return this.jsonrpc11Client();
                 case 'jsonrpc20':
                     return this.jsonrpc20Client();
-
                 case 'rest':
                     return this.restClient();
             }

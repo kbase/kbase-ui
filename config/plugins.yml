@@ -9,13 +9,13 @@ plugins:
               account: kbase
     - name: dataview
       globalName: kbase-ui-plugin-dataview
-      version: 4.11.7
+      version: 4.12.8
       source:
           github:
               account: kbase
     - name: auth2-client
       globalName: kbase-ui-plugin-auth2-client
-      version: 2.4.12
+      version: 2.4.15
       source:
           github:
               account: kbase
@@ -93,7 +93,7 @@ plugins:
               account: kbase
     - name: public-search
       globalName: kbase-ui-plugin-public-search
-      version: 0.15.7
+      version: 0.15.8
       source:
           github:
               account: kbase
