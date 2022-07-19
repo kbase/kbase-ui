@@ -18,7 +18,7 @@ none
 
 ### IMPROVEMENTS
 
-none
+- CE-19: auth2-client: refactored to preact, few user-visible changes 
 
 ### FIXES
 
