@@ -181,6 +181,10 @@ define([
                 });
             });
 
+            this.channel.on('reload-profile', () => {
+                this.runtime.send('profile', 'reload', null);
+            });
+
             /*
             examples:
             {
