@@ -17,6 +17,7 @@ import * as Cookie from 'es-cookie';
 import { Config } from '../types/config';
 import { AuthError } from '../lib/kb_lib/Auth2Error';
 import { changeHash2 } from '../apps/Navigator/utils/navigation';
+import { Monitor } from '../lib/Monitor';
 
 /**
  * Holds the current authentication information
@@ -113,9 +114,8 @@ export default class AuthWrapper extends React.Component<
     AuthWrapperProps,
     AuthWrapperState
 > {
-    tokenListener: number | null;
-    tokenChangeInterval: number;
-    tokenValidationInterval: number;
+    tokenChangeMonitor: Monitor;
+    tokenValidationMonitor: Monitor;
     constructor(props: AuthWrapperProps) {
         super(props);
         this.state = {
@@ -124,25 +124,32 @@ export default class AuthWrapper extends React.Component<
             },
         };
 
-        this.tokenListener = null;
-        // this.tokenMonitoringInterval = props.config.ui.constants.authMonitorInterval;
-        this.tokenChangeInterval = 1000;
-        this.tokenValidationInterval = 10000;
+        this.tokenChangeMonitor = new Monitor({
+            callback: () => {
+                return this.checkTokenChange();
+            },
+            interval: this.props.config.ui.constants.tokenCookieChangeDetectionInterval
+        });
+         this.tokenValidationMonitor = new Monitor({
+             callback: () => {
+                return this.checkTokenValidity();
+            },
+            interval: this.props.config.ui.constants.tokenValidationInterval
+        });
     }
 
     componentDidMount() {
         this.syncTokenInfo();
-        // this.tokenListener = window.setInterval(() => {
-        //     this.tokenChangeMonitor();
-        // }, this.tokenChangeInterval);
-
-        // this.tokenListener = window.setInterval(() => {
-        //     this.tokenValidationMonitor();
-        // }, this.tokenValidationInterval);
+        this.tokenChangeMonitor.start();
+        this.tokenValidationMonitor.start();
     }
 
-    async tokenChangeMonitor() {
-        // console.log('token change monitor called!', Date.now());
+    componentWillUnmount() {
+        this.tokenValidationMonitor.stop();
+        this.tokenChangeMonitor.stop();
+    }
+
+    async checkTokenChange() {
         /*
         cases to handle:
         - have token, token changes: ignore new token, simply logout
@@ -195,7 +202,7 @@ export default class AuthWrapper extends React.Component<
      * 
      * See the token change monitor for other cases.
      */
-    async tokenValidationMonitor() {
+    async checkTokenValidity() {
         const state = this.state;
         switch (state.authState.status) {
             case AsyncProcessStatus.NONE:
@@ -218,12 +225,6 @@ export default class AuthWrapper extends React.Component<
             case AsyncProcessStatus.ERROR:
                 this.syncTokenInfo();
                 break;
-        }
-    }
-
-    componentWillUnmount() {
-        if (this.tokenListener !== null) {
-            window.clearTimeout(this.tokenListener);
         }
     }
 
@@ -260,6 +261,15 @@ export default class AuthWrapper extends React.Component<
     async ensureValidToken() {
         const token = BrowserAuth.getToken();
 
+        const removeToken = () => {
+            BrowserAuth.removeToken();
+            this.setState({
+                authState: this.unauthenticatedState(),
+            }, () => {
+                changeHash2('auth2/signedout');
+            });
+        }
+
         if (token === null) {
             this.setState({ authState: this.unauthenticatedState() });
             return;
@@ -269,15 +279,25 @@ export default class AuthWrapper extends React.Component<
             baseUrl: this.props.config.services.Auth2.url,
         });
         // TODO: need a call like auth.validateToken(token);
-        const tokenInfo = await auth.getTokenInfo(token);
-        if (tokenInfo === null) {
-            BrowserAuth.removeToken();
-            this.setState({
-                authState: this.unauthenticatedState(),
-            }, () => {
-                changeHash2('auth2/signedout');
-            });
+        try {
+            const tokenInfo = await auth.getTokenInfo(token);
+            if (tokenInfo === null) {
+                removeToken();
+            }
+        } catch (ex) {
+            if (ex instanceof AuthError) {
+                if (ex.code === '10020') {
+                    console.warn('token invalid');
+                    removeToken();
+                }
+            } else if (ex instanceof Error) {
+                // what to do?
+                console.error('ERROR', ex);
+            } else {
+                console.error('UNKNOWN ERROR', ex);
+            }
         }
+       
     }
 
     async syncTokenInfo() {

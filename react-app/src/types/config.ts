@@ -205,6 +205,8 @@ export interface DeployConfig {
         slow: number;
         hard: number;
       };
+        tokenCookieChangeDetectionInterval: number;
+        tokenValidationInterval: number;
     };
     menus: {
       hamburger: HamburgerMenuDefintion;
