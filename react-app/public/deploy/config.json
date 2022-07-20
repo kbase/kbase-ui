@@ -107,7 +107,14 @@
             "beta"
         ],
         "featureSwitches": {
-            "enabled": ["search_features", "system_alert_notification", "new_provenance_widget", "similar_genomes", "re-lineage", "linked-samples"],
+            "enabled": [
+                "search_features",
+                "system_alert_notification",
+                "new_provenance_widget",
+                "similar_genomes",
+                "re-lineage",
+                "linked-samples"
+            ],
             "disabled": [],
             "available": [
                 {
@@ -316,7 +323,7 @@
                         "name": "account",
                         "type": "internal",
                         "tooltip": "Manage your KBase Account",
-                        "path": "auth2/account",
+                        "path": "account",
                         "newWindow": false,
                         "label": "Account",
                         "icon": "drivers-license",

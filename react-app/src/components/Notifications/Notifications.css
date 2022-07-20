@@ -1,0 +1,174 @@
+.Notifications {
+    position: relative;
+    display: inline-block;
+    height: 100%;
+    vertical-align: top;
+    border: 1px silver solid;
+    font-size: 90%;
+    width: 80px
+}
+
+.Notifications .-summary {
+    cursor: pointer;
+    font-size: 10px;
+    padding: 0;
+    margin: 0;
+}
+
+.Notifications .-summary .-item {
+    padding: 0;
+    margin: 0;
+}
+
+.Notifications .-summary .-item>.-count {
+    display: inline-block;
+    width: 30%;
+    text-align: right;
+    padding-right: 3px;
+    line-height: 1
+}
+
+.Notifications .-summary .-item>.-label {
+    display: inline-block;
+    width: 60%;
+}
+
+.Notifications .-container {
+    background-color: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.Notifications .-notification-set {
+    padding: 3px;
+    position: relative;
+    background-color: silver;
+
+    position: absolute;
+    top: 0px;
+    right: 20px;
+    z-index: 100;
+    width: 200px;
+    text-align: center
+}
+
+.Notifications .-notification-set .-triangle {
+    position: absolute;
+    top: -3px;
+    left: 196px;
+    font-size: 25px;
+    color: silver;
+}
+
+.Notifications .-notification-set .-pointer {
+    position: absolute;
+    top: 0px;
+    left: 200px;
+    height: 25px;
+    width: 25px;
+}
+
+.Notifications .-notification-set .-notifications-container {
+    max-height: 50vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    text-align: left;
+}
+
+.Notifications .-notification {
+    padding: 4px;
+    color: black;
+    margin: 2px;
+    position: relative;
+}
+
+.Notifications .-notification .-message {
+    padding-right: 1em;
+}
+
+.Notifications .-button {
+    padding: 0 4px;
+    background-color: rgba(255, 255, 255, 0.5);
+    color: black;
+    user-select: none;
+}
+
+.Notifications .-notification a.-close-button .fa::before {
+    color: rgb(143, 46, 46);
+}
+
+.Notifications .-notification .-close-button {
+    position: absolute;
+    right: 2px;
+    top: 2px;
+}
+
+.Notifications .-button {
+    text-decoration: none;
+    color: black;
+}
+
+.Notifications .-button:hover,
+.Notifications .-button:hover {
+    color: black;
+}
+
+.Notifications .-button:hover,
+.Notifications .-button:active {
+    background-color: rgba(255, 255, 255, 1);
+    color: black;
+}
+
+
+/* new */
+
+.Notifications .-notification.-success {
+    /* bootstrap is dff0d8 */
+    background-color: #dff0d8;
+}
+
+.Notifications .-notification.-success:hover {
+    /* bootstrap is #c1e2b3 */
+    background-color: #c1e2b3;
+}
+
+.Notifications .-item.-success.-has-items {
+    background-color: #c1e2b3;
+}
+
+.Notifications .-notification.-info {
+    background-color: #d9edf7;
+}
+
+.Notifications .-notification.-info:hover {
+    background-color: #afd9ee;
+}
+
+.Notifications .-item.-info.-has-items {
+    background-color: #afd9ee;
+}
+
+.Notifications .-notification.-warning {
+    background-color: #fcf8e3;
+}
+
+.Notifications .-notification.-warning:hover {
+    background-color: #f7ecb5;
+}
+
+.Notifications .-item.-warning.-has-items {
+    background-color: #f7ecb5;
+}
+
+.Notifications .-notification.-error {
+    background-color: #f2dede;
+}
+
+.Notifications .-notification.-error:hover {
+    background-color: #e4b9b9;
+}
+
+.Notifications .-item.-error.-has-items {
+    background-color: #e4b9b9;
+}

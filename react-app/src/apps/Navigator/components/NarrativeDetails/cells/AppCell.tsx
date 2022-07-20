@@ -203,11 +203,11 @@ export default class AppCellView extends Component<PreviewCellProps> {
                                     <div className={cellStyles.title}>
                                         {name}{' '}
                                     </div>
+                                    <div className={styles.headerVersion}>
+                                        v{version}
+                                    </div>
                                     <div className={styles.headerStatus}>
                                         {this.renderJobStatus()}
-                                    </div>
-                                    <div className={styles.headerVersion}>
-                                        {version}
                                     </div>
                                     {/* <div className={styles.title}>{title}</div> */}
                                 </div>

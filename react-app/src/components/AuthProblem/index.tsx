@@ -107,8 +107,8 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
 
    
     render() {
-        return <div style={{margin: '0 10px'}}>{this.renderAuthProblem()}</div>;
-        // this.redirectToLogin();
-        // return null;
+        // return <div style={{margin: '0 10px'}}>{this.renderAuthProblem()}</div>;
+        this.redirectToLogin();
+        return null;
     }
 }

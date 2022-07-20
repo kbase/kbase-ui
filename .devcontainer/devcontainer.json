@@ -5,9 +5,7 @@
     "name": "Existing Docker Compose (Extend)",
     // Update the 'dockerComposeFile' list if you have more compose files or use different names.
     // The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
-    "dockerComposeFile": [
-        "docker-compose.yml"
-    ],
+    "dockerComposeFile": ["docker-compose.yml"],
     // The 'service' property is the name of the service for the container that VS Code should
     // use. Update this value and .devcontainer/docker-compose.yml to the real service name.
     "service": "kbase-ui",
@@ -17,13 +15,13 @@
     // Set *default* container specific settings.json values on container create.
     "settings": {},
     // Add the IDs of extensions you want installed when the container is created.
-    "extensions": []
+    "extensions": [],
     // "containerEnv": {
     //     "DEPLOY_ENV": "narrative-dev"
     // }
-    // "remoteEnv": {
-    //     "DEPLOY_ENV": "narrative-dev"
-    // }
+    "remoteEnv": {
+        "DEPLOY_ENV": "ci"
+    }
     // "remoteEnv": {
     //     "APP_DIR": "{PWD}/react-app",
     //     "CONFIG_DIR": "{PWD}/dev/gitlab-config",

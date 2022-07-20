@@ -117,6 +117,19 @@ http {
         ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
         proxy_http_version 1.1;
 
+        location /__ping__ {
+            default_type "text/html";
+            return 204;
+        }
+
+        location /data/__perf__ {
+            gzip off;
+            gunzip on;
+            add_header Cache-Control 'no-cache, no-transform';
+            client_max_body_size 300M;
+            proxy_pass http://kbase_ui;
+        }
+
         # Needed for running narratives
         location /narrative/ {
             access_log /var/log/nginx/narrative.log upstream_log;
@@ -172,8 +185,6 @@ http {
             proxy_set_header Origin  https://{{ .Env.deploy_ui_hostname }};
             proxy_set_header Host {{ .Env.deploy_ui_hostname }};
         }
-      
-        
 
         location / {
             client_max_body_size 300M;
@@ -311,6 +322,11 @@ http {
         # Repeat the ui proxying for the case in which they reside on the same
         # host name as services.
         {{ if not .Env.deploy_ui_hostname }}
+
+        location /__ping__ {
+            default_type "text/html";
+            return 204;
+        }
 
         location /narrative/ {
             {{ if .Env.local_narrative }}

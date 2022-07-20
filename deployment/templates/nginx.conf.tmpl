@@ -82,6 +82,17 @@ http {
 
             root /kb/deployment/app;
         }
+        
+        location /__ping__ {
+            default_type text/html;
+            return 204;
+        }
+
+        location /data/__perf__ {
+            gzip off;
+            add_header Cache-Control 'no-cache';
+            root /kb/deployment/app;
+        }
 
         location /modules/plugins/ {
             ssi_silent_errors off;

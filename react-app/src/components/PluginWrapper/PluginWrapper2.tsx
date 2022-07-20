@@ -1,12 +1,9 @@
 import { Component } from 'react';
-// import { RouteComponentProps } from 'react-router-dom';
 import { AuthenticationState } from '../../contexts/Auth';
 import { RuntimeContext } from '../../contexts/RuntimeContext';
 import Plugin, { Params } from '../../pluginSupport/Plugin';
 import { Config } from '../../types/config';
 import { RouteProps } from '../Router2';
-
-
 
 export interface PluginWrapperProps extends RouteProps {
     name: string;

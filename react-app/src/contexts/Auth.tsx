@@ -59,6 +59,7 @@ export interface AuthenticationStateAuthenticated
     authInfo: AuthInfo;
     userProfile: UserProfile;
     logout: () => Promise<void>;
+    sync: () => Promise<void>;
 }
 
 export interface AuthenticationStateUnauthenticated
@@ -313,6 +314,7 @@ export default class AuthWrapper extends React.Component<
                             },
                             userProfile,
                             logout: this.logout.bind(this),
+                            sync: this.syncTokenInfo.bind(this)
                         },
                     },
                 });
@@ -404,6 +406,7 @@ export default class AuthWrapper extends React.Component<
                             },
                             userProfile,
                             logout: this.logout.bind(this),
+                            sync: this.syncTokenInfo.bind(this)
                         },
                     },
                 });

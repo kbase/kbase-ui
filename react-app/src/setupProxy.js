@@ -1,4 +1,4 @@
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const { createProxyMiddleware, re } = require('http-proxy-middleware');
 
 // Strangely, /index.html is the root path that CRA dev container sets.
 const pluginsRoot = '/index.html/deploy/plugins/';

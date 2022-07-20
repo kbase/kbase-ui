@@ -25,13 +25,14 @@ export default class App extends Component<AppProps, AppState> {
                         switch (configValue.status) {
                             case AsyncProcessStatus.NONE:
                             case AsyncProcessStatus.PENDING:
-                                return (
-                                    <Loading
-                                        message="Loading Config..."
-                                        size="large"
-                                        type="block"
-                                    />
-                                );
+                                return;
+                                // return (
+                                //     <Loading
+                                //         message="Loading Config..."
+                                //         size="large"
+                                //         type="block"
+                                //     />
+                                // );
                             case AsyncProcessStatus.ERROR:
                                 return <div>Error! {configValue.error}</div>;
                             case AsyncProcessStatus.SUCCESS:
@@ -44,13 +45,14 @@ export default class App extends Component<AppProps, AppState> {
                                                 switch (value.status) {
                                                     case AsyncProcessStatus.NONE:
                                                     case AsyncProcessStatus.PENDING:
-                                                        return (
-                                                            <Loading
-                                                                message="Loading Auth..."
-                                                                size="large"
-                                                                type="block"
-                                                            />
-                                                        );
+                                                        return;
+                                                        // return (
+                                                        //     <Loading
+                                                        //         message="Loading Auth..."
+                                                        //         size="large"
+                                                        //         type="block"
+                                                        //     />
+                                                        // );
                                                     case AsyncProcessStatus.ERROR:
                                                         return (
                                                             <div>

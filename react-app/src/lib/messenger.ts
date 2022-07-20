@@ -145,9 +145,9 @@ export class Messenger {
         }
 
         messageHandler.subscriptions.forEach((subscription) => {
-            this.queue.addItem(() => {
+            this.queue.addItem(async () => {
                 try {
-                    subscription.handler(publishDef.payload);
+                    return subscription.handler(publishDef.payload);
                 } catch (ex) {
                     console.error(ex);
                     throw new UIError({
@@ -197,7 +197,7 @@ export class Messenger {
                 subscriptions.map((subscription) => {
                     return new Promise((resolve, reject) => {
                         this.queue.addItem(
-                            () => {
+                            async () => {
                                 try {
                                     resolve(
                                         subscription.handler(publishDef.payload)
@@ -221,7 +221,7 @@ export class Messenger {
                                     );
                                 }
                             },
-                            (err) => {
+                            async (err) => {
                                 reject(err);
                             }
                         );

@@ -25,7 +25,7 @@ export class Observed<T> {
         const newListeners: Array<ListenerRecord<T>> = [];
         this.listeners.forEach((listener: ListenerRecord<T>) => {
             this.queue.addItem(((listener: Listener<T>, value: T, oldValue: T | undefined) => {
-                return () => {
+                return async () => {
                     try {
                         listener(value, oldValue);
                     } catch (ex) {

@@ -394,6 +394,13 @@ export default class IFrameController extends Component<IFrameControllerProps,
             });
         });
 
+        this.channel.on('reload-profile', () => {
+            // this.runtime.send('profile', 'reload', null);
+            if (this.props.authState.status === AuthenticationStatus.AUTHENTICATED) {
+                this.props.authState.sync();
+            }
+        });
+
         this.channel.start();
     }
 

@@ -27,8 +27,8 @@ report.*.json
 /dev/temp
 /dev/test
 yarn.lock
-/react-app/public/data
-!/react-app/public/data/README.md
+# /react-app/public/data
+# !/react-app/public/data/README.md
 _working/
 
 # General purpose temp directory

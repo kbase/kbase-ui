@@ -9,8 +9,9 @@ import Deployment from '../Deployment';
 import Signin from '../Signin/SigninMain';
 import {RuntimeContext} from '../../contexts/RuntimeContext';
 import {Logo} from '../Logo/Logo';
-// import './style.css';
 import styles from './style.module.css';
+import Notifications from '../Notifications/NotificationsMain';
+import { Ping } from '../Ping';
 
 export interface MainWindowProps {
     authState: AuthenticationState;
@@ -52,7 +53,7 @@ export default class MainWindow extends Component<MainWindowProps,
     renderHeader() {
         return (
             <div className={styles.navbar} style={{padding: '0'}}>
-                <div>
+                <div className={styles.hamburgerMenu}>
                     <HamburgerMenu {...this.props} />
                 </div>
                 <div className={styles.cellLogo}>
@@ -71,8 +72,33 @@ export default class MainWindow extends Component<MainWindowProps,
                     <ButtonBar ...${props} />
                 </div> */}
                 {/* ${this.renderSystemAlertToggle()} */}
-                {/* <div className="-notification">
-                    <${Notification} ...${props} />
+                <div className={styles.cellNotification}>
+                    <RuntimeContext.Consumer>
+                        {(value) => {
+                            if (!value) {
+                                return;
+                            }
+                            return <Notifications 
+                                notificationState={value.notificationState}
+                                addNotification={value.addNotification}
+                                removeNotification={value.removeNotification}
+                            />
+                        }}
+                    </RuntimeContext.Consumer>
+                    
+                </div>
+                {/* <div className={styles.connectionStatus}>
+                    <ConnectionStatus />
+                </div> */}
+                {/* <div className={styles.connectionStatus}>
+                    <RuntimeContext.Consumer>
+                        {(value) => {
+                            if (!value) {
+                                return;
+                            }
+                            return <Ping pingStats={value.pingStats} />
+                        }}
+                    </RuntimeContext.Consumer>
                 </div> */}
                 <div className={styles.cellDeployment}>
                     <Deployment {...this.props} />

@@ -70,60 +70,20 @@ __check_defined = \
 # Standard 'all' target 
 all: prepare-build git-info build-info build install-plugins create-deploy
 
-# Standard 'all' target = just do the standard build
-dev: prepare-build git-info build-info build install-plugins render-templates create-deploy
+# Makes everything so it can be run locally
+local: prepare-build git-info build-info build install-plugins render-templates create-deploy
+
+# Makes everything so it can be developed locally
+dev: prepare-build git-info build-info install-plugins render-templates
 
 # See above for 'all' - just running 'make' should locally build
 default:
 	@echo Use "make init && make build build=TARGET build"
 	@echo see docs/quick-deploy.md
 
-# Initialization here pulls in all dependencies from Bower and NPM.
-# This is **REQUIRED** before any build process can proceed.
-# bower install is not part of the build process, since the bower
-# config is not known until the parts are assembled...
-
-# setup-dirs:
-# 	@echo "> Setting up directories."
-# 	mkdir -p temp/files
-# 	mkdir -p dev/test
-
-# node_modules:
-# 	@echo "> Installing build and test tools."
-# 	npm install --no-lockfile
-
-# setup: setup-dirs
-
-# init: setup node_modules
-
-# quality:
-# 	@echo "> Checking code quality."
-# 	npm run quality
-
-# compile:
-# 	@echo "> Compiling TypeScript files."
-# 	npm run compile
-
-
-# Perform the build. Build scnearios are supported through the config option
-# which is passed in like "make build build=ci"
-# build-old: quality clean-build compile
-# 	@:$(call check_defined, config, "the build configuration: defaults to 'dev'")
-# 	@echo "> Building."
-# 	npm run build -- --config $(config)
-
-# New build??
-# For now, everything is in static, but we need
-# to compile somewhere else, then start:merge files together
-# for the dist.
-# build: compile
-
-
 docker-network:
 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
 	bash tools/docker/create-docker-network.sh $(net)
-
-# $(if $(value network_exists),$(echo "exists"),$(echo "nope"))
 
 docker-ignore:
 	@echo "> Syncing .dockerignore from .gitignore"
@@ -160,8 +120,6 @@ docker-compose-up: docker-network # docker-compose-override
 	$(cmd)
 	@(eval docker-compose rm -v -f -s)
 
-# @cd dev; BUILD=$(build) DEPLOY_ENV=$(env) docker-compose up --build
-
 docker-compose-clean:
 	@echo "> Cleaning up after docker compose..."
 	@cd dev; BUILD=$(config) DEPLOY_ENV=$(env) docker-compose rm -f -s
@@ -174,24 +132,6 @@ docker-network-clean:
 start: docker-compose-up
 
 stop: docker-compose-clean docker-network-clean
-
-# Tests are managed by grunt, but this also mimics the workflow.
-#init build
-unit-tests:
-	$(KARMA) start test/unit-tests/karma.conf.js
-
-# Filter test files to focus on just selected ones.
-# e.g. dataview/ will match just test files which include a dataview path element, effectively
-# selecting just the dataview plugin tests.
-focus =
-blur =
-
-integration-tests:
-	@:$(call check_defined, env, first component of hostname and kbase environment)
-	@:$(call check_defined, browser, the browser to test against)
-	@:$(call check_defined, service, the testing service)
-	@:$(call check_defined, token, the testing user auth tokens)
-	ENV="$(env)" BROWSER="$(browser)" SERVICE_USER="$(user)" SERVICE_KEY="$(key)" SERVICE="$(service)" TOKEN="${token}" FOCUS="${focus}" BLUR="${blur}" npx wdio run ./test/wdio.conf.service.js --env=$(env)
 
 get-gitlab-config:
 	mkdir -p dev/gitlab-config; \

@@ -74,7 +74,7 @@ const menu: Array<MenuItem> =  [
         "name": "account",
         "type": "internal",
         "tooltip": "Manage your KBase Account",
-        "path": "auth2/account",
+        "path": "account",
         "newWindow": false,
         "label": "Account",
         "icon": "drivers-license",

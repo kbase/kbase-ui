@@ -39,6 +39,13 @@
     display: flex;
 }
 
+.cellNotification {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    margin-right: 1em;
+}
+
 .cellTitle {
     flex: 1 1 0;
     align-items: center;
@@ -65,7 +72,7 @@
     background-color: #fff;
     border-bottom: 5px solid #e0e0e0 !important;
     height: 70px;
-    align-items: center;
+    align-items: stretch;
 }
 
 .cellTitle {
@@ -87,9 +94,23 @@
     margin-right: 4px;
 }
 
+.connectionStatus {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    margin-right: 4px;
+}
+
 .cellLogin {
     margin-right: 4px;
     align-items: center;
     justify-content: center;
     display: flex;
+}
+
+.hamburgerMenu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }

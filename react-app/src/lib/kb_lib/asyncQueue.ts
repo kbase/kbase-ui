@@ -1,6 +1,6 @@
 interface QueueItem {
     id: number;
-    callback: () => void;
+    callback: () => Promise<void>;
     errorCallback?: (error: any) => void;
 }
 
@@ -17,7 +17,7 @@ export default class AsyncQueue {
         this.timer = null;
     }
 
-    processQueue(): void {
+    processNext(): void {
         const item = this.queue.shift();
         if (item) {
             try {
@@ -30,6 +30,22 @@ export default class AsyncQueue {
                 }
             } finally {
                 this.start();
+            }
+        }
+    }
+
+    async processQueue() {
+        const queue = this.queue;
+        this.queue = [];
+        for (const item of queue) {
+            try {
+                await item.callback();
+            } catch (ex) {
+                console.error('Error processing queue item');
+                console.error(ex);
+                if (item.errorCallback) {
+                    item.errorCallback(ex);
+                }
             }
         }
     }
@@ -52,7 +68,7 @@ export default class AsyncQueue {
         return this.itemId;
     }
 
-    addItem(callback: () => void, errorCallback?: (error: any) => void): void {
+    addItem(callback: () => Promise<void>, errorCallback?: (error: any) => Promise<void>): void {
         const item: QueueItem = {
             id: this.nextItemId(),
             callback,

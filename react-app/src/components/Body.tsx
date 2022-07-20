@@ -22,6 +22,7 @@ import { AsyncProcessStatus } from '../lib/AsyncProcess2';
 import ErrorMessage from './ErrorMessage';
 import NarrativeManagerNew from '../apps/NarrativeManager/New';
 import NarrativeManagerStart from '../apps/NarrativeManager/Start';
+import Loading from './Loading';
 
 export interface BodyProps {
     config: Config;
@@ -305,7 +306,7 @@ export default class Body extends Component<BodyProps, BodyState> {
             // Redirects
             new Route('^(dashboard|narratives)$', {authenticationRequired: true}, (props: RouteProps) => {
                 window.location.pathname = '/narratives';
-                return <div>Redirecting...</div>;
+                return <Loading message="Loading Navigator..." />
             }),
 
             //                 <Route

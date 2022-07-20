@@ -119,11 +119,11 @@ export class Git {
     }
   }
 
-  async clone(url: string, name: string, branch = "master") {
+  async clone(url: string, name: string, branch: string) {
     const cmd = [
       "git",
       "clone",
-      "--quiet",
+    //   "--quiet",
       "--depth",
       "1",
       "--branch",
@@ -131,6 +131,7 @@ export class Git {
       url,
       `${this.directory}/${name}`,
     ];
+    console.log('cloning', cmd);
     return this.runner.run(cmd);
   }
 

@@ -1,7 +1,8 @@
 FROM node:16
 
 RUN apt-get update && \
-    apt-get install -y npm python3 git make bash 
+    apt-get install -y npm python3 git make bash && \
+    npm install --location=global npm@8.12.2
 
 # RUN apk upgrade --update-cache --available && \
 #     apk add --update --no-cache npm python3 make bash && \

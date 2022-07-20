@@ -8,6 +8,7 @@ import AboutServices from './AboutServices2';
 import { AuthenticationState } from '../../contexts/Auth';
 import { Route } from '../../lib/Route';
 import { RouteProps, Router } from '../../components/Router2';
+import { ConnectionStatus } from './ConnectionStatus/ConnectionStatus';
 
 export interface AboutProps extends RouteProps {
     config: Config;
@@ -40,6 +41,11 @@ export default class About extends Component<AboutProps, AboutState> {
             new Route('about/plugins', {authenticationRequired: false}, (props: RouteProps) => {
                 return (
                     <AboutPlugins {...this.props} />
+                );
+            }),
+             new Route('about/connection', {authenticationRequired: false}, (props: RouteProps) => {
+                return (
+                    <ConnectionStatus {...this.props} />
                 );
             }),
             new Route('about/*', {authenticationRequired: false}, (props: RouteProps) => {

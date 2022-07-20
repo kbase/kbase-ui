@@ -2,7 +2,7 @@ version: '3.6'
 services:
     node:
         working_dir: /app
-        image: node:16-alpine3.15
+        image: node:16-slim
         container_name: node-builder
         dns: 8.8.8.8
         volumes:
