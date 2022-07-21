@@ -119,12 +119,12 @@ export default class ScalableScroller<T> extends Component<
     bodyRef: RefObject<HTMLDivElement>;
     scrollTimer: number | null;
     resizeTimer: number | null;
-    observer: ResizeObserver;
+    observer: null | ResizeObserver;
 
     constructor(props: ScalableScrollerProps<T>) {
         super(props);
         this.bodyRef = createRef();
-        this.observer = new ResizeObserver(this.bodyObserver.bind(this));
+        this.observer = null;
         this.scrollTimer = null;
         this.resizeTimer = null;
         this.state = {
@@ -136,6 +136,7 @@ export default class ScalableScroller<T> extends Component<
 
     componentDidMount() {
         if (this.bodyRef.current) {
+            this.observer = new ResizeObserver(this.bodyObserver.bind(this));
             this.observer.observe(this.bodyRef.current);
         }
 
@@ -208,7 +209,7 @@ export default class ScalableScroller<T> extends Component<
     measure() {
         const body = this.bodyRef.current;
         if (!body) {
-            throw new Error('doMeasurements called before DOM is ready');
+            throw new Error('measure called before DOM is ready');
         }
 
         // Actual height of the scrolling container
