@@ -50,10 +50,11 @@ define([
             // Note that this allows html to be set in the title. This allows plugins to set
             // html.
             return html`
-                <div className="Title"
-                     role="heading" aria-level="1">
-                     <span dangerouslySetInnerHTML=${{ __html: DOMPurify.sanitize(this.state.title) }}></span>
-                </div>
+                <h1 className="Title"
+                     role="heading" 
+                     aria-level="1"
+                     dangerouslySetInnerHTML=${{ __html: DOMPurify.sanitize(this.state.title) }}>
+                </h1>
             `;
         }
     }
