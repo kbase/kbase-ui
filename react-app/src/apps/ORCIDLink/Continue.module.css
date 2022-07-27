@@ -1,0 +1,13 @@
+.main {
+    margin: 0 1em;
+}
+
+.-col1 {
+    flex: 0 0 11em;
+    font-weight: bold;
+    color: rgba(100, 100, 100);
+}
+
+.-col2 {
+
+}

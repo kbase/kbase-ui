@@ -1,17 +1,17 @@
-import {Component} from 'react';
+import { Component } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import Body from '../Body';
 import HamburgerMenu from '../HamburgerMenu/HamburgerMenuMain';
-import {AuthenticationState} from '../../contexts/Auth';
-import {Config} from '../../types/config';
+import { AuthenticationState } from '../../contexts/Auth';
+import { Config } from '../../types/config';
 import Title from '../Title';
 import Deployment from '../Deployment';
 import Signin from '../Signin/SigninMain';
-import {RuntimeContext} from '../../contexts/RuntimeContext';
-import {Logo} from '../Logo/Logo';
+import { RuntimeContext } from '../../contexts/RuntimeContext';
+// import { Logo } from '../Logo/Logo';
 import styles from './style.module.css';
 import Notifications from '../Notifications/NotificationsMain';
-import { Ping } from '../Ping';
+// import { Ping } from '../Ping';
 
 export interface MainWindowProps {
     authState: AuthenticationState;
@@ -52,18 +52,18 @@ export default class MainWindow extends Component<MainWindowProps,
 
     renderHeader() {
         return (
-            <div className={styles.navbar} style={{padding: '0'}}>
+            <div className={styles.navbar} style={{ padding: '0' }}>
                 <div className={styles.hamburgerMenu}>
                     <HamburgerMenu {...this.props} />
                 </div>
-                <div className={styles.cellLogo}>
+                {/* <div className={styles.cellLogo}>
                     <Logo {...this.props} />
-                </div>
+                </div> */}
                 <div className={styles.cellTitle}>
                     <RuntimeContext.Consumer>
                         {(value) => {
                             if (value) {
-                                return <Title title={value.title}/>;
+                                return <Title title={value.title} />;
                             }
                         }}
                     </RuntimeContext.Consumer>
@@ -78,14 +78,14 @@ export default class MainWindow extends Component<MainWindowProps,
                             if (!value) {
                                 return;
                             }
-                            return <Notifications 
+                            return <Notifications
                                 notificationState={value.notificationState}
                                 addNotification={value.addNotification}
                                 removeNotification={value.removeNotification}
                             />
                         }}
                     </RuntimeContext.Consumer>
-                    
+
                 </div>
                 {/* <div className={styles.connectionStatus}>
                     <ConnectionStatus />
@@ -143,7 +143,7 @@ export default class MainWindow extends Component<MainWindowProps,
             >
                 <div className={styles.header}>{this.renderHeader()}</div>
                 <div className={styles.body}>
-                    <div className="-nav">
+                    <div className={styles.navArea}>
                         <Sidebar {...this.props} />
                     </div>
                     <div className={styles.contentArea}>

@@ -7,14 +7,14 @@ import {
     AuthenticationStateAuthenticated,
     AuthenticationStatus,
 } from '../../contexts/Auth';
-import HamburgerMenu from './HamburgerMenu';
+import HamburgerMenu from './HamburgerMenuLogo';
 
 export interface HamburgerMenuMainProps {
     authState: AuthenticationState;
     config: Config;
 }
 
-interface HamburgerMenuMainState {}
+interface HamburgerMenuMainState { }
 
 export default class HamburgerMenuMain extends Component<
     HamburgerMenuMainProps,

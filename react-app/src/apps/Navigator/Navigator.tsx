@@ -8,7 +8,7 @@ import { Config } from '../../types/config';
 import Main from './components/Main';
 import { SearchOptions } from './utils/NarrativeSearch';
 import ErrorBoundary from './ErrorBoundary';
-import NavigatorContextWrapper from './context/NavigatorContextWrapper-custom-router';
+import NavigatorContextWrapper from './context/NavigatorContextWrapper';
 import { DetailOptions } from './context/DataModel';
 import { changeHash2 } from './utils/navigation';
 

@@ -6,7 +6,7 @@ import { Config } from '../../../../types/config';
 import { AuthInfo } from '../../../../contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from '../../../../lib/AsyncProcess';
 import Loading from '../../../../components/Loading';
-import PropTable from './PropTable';
+import PropTable from 'components/PropTable';
 import ErrorMessage from '../../../../components/ErrorMessage';
 import './NarrativeHeader.css';
 

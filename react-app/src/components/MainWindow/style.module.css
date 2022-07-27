@@ -18,6 +18,11 @@
     overflow-y: hidden;
 }
 
+.navArea {
+    flex: 0 0 6em;
+    overflow-y: auto;
+}
+
 .contentArea {
     flex: 1 1 0;
     display: flex;
@@ -84,7 +89,7 @@
     overflow-x: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    padding-left: 10px;
+    padding-left: 1em;
 }
 
 .cellDeployment {
@@ -110,7 +115,9 @@
 }
 
 .hamburgerMenu {
+    flex: 0 0 6em;
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
 }

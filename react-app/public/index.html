@@ -24,12 +24,27 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <link rel="stylesheet" href="%PUBLIC_URL%/index.css" />
+
+    <script src="%PUBLIC_URL%/js/mustard.js?cb={{buildInfo.git.commitAbbreviatedHash}}"></script>
     <title>React App</title>
 </head>
 
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root" class="root"></div>
+    <div id="root" class="root">
+        <div
+            style="position: absolute; z-index: 1000; top: 0; bottom: 0; left: 0; right: 0; background-color: #FFF; text-align: center; padding-top: 100px; font-size: 20px; font-family: Arial, sans-serif;">
+            <div>
+                <div
+                    style="display: inline-block; background-color: #FFF; padding: 20px; line-height: 20px; vertical-align: middle;">
+                    <div style="margin-bottom: 10px;">Loading KBase UI ...</div>
+                    <img src="%PUBLIC_URL%/images/kbase_animated_logo.gif" alt="KBase animated logo">
+                </div>
+            </div>
+        </div>
+        <div id="error"></div>
+        <div id="status"></div>
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

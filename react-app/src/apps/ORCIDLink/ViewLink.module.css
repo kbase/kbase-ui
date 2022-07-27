@@ -1,0 +1,30 @@
+.main {
+    margin: 0 1em;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.col1 {
+    flex: 1 1 0;
+    margin-right: 0.5em;
+}
+
+.col2 {
+    flex: 1 1 0;
+    margin-left: 0.5em;
+}
+
+
+
+.-col1 {
+    flex: 0 0 11em;
+    font-weight: bold;
+    color: rgba(100, 100, 100);
+}
+
+.-col2 {
+
+}

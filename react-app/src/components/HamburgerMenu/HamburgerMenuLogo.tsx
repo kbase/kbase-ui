@@ -2,7 +2,8 @@ import { Component } from 'react';
 import { MenuItem } from '../../types/menu';
 import { Dropdown } from 'react-bootstrap';
 import logo from './kbase_logo.png';
-import styles from './HamburgerMenu-logo.module.css';
+import styles from './HamburgerMenuLogo.module.css';
+
 
 export interface HamburgerMenuProps {
     menu: {
@@ -23,8 +24,8 @@ export default class HamburgerMenu extends Component<HamburgerMenuProps,
             let icon = null;
             if (menuItem.icon) {
                 icon = (
-                    <div className="navbar-icon" key={menuItem.name}>
-                        <span className={`fa fa-${menuItem.icon}`} />
+                    <div className={styles.navbarIconWrapper} key={menuItem.name}>
+                        <span className={`fa fa-${menuItem.icon} ${styles.navbarIcon}`} />
                     </div>
                 );
             }
@@ -91,7 +92,7 @@ export default class HamburgerMenu extends Component<HamburgerMenuProps,
 
         return (
             <Dropdown>
-                <Dropdown.Toggle variant="default">
+                <Dropdown.Toggle variant="default" className={styles.button}>
                     <img src={logo} alt="KBase Logo" />
                 </Dropdown.Toggle>
                 <Dropdown.Menu>{menuContent}</Dropdown.Menu>
