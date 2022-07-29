@@ -15,7 +15,7 @@ export default class AboutBuildWrapper extends Component<
     AboutBuildWrapperState
 > {
     componentDidMount() {
-        this.props.setTitle('About the kbase-ui build');
+        this.props.setTitle('About the KBase User Interface');
     }
     render() {
         return <ConfigContext.Consumer>
@@ -33,7 +33,7 @@ export default class AboutBuildWrapper extends Component<
                     case AsyncProcessStatus.ERROR:
                         return <div>Error! {configValue.error}</div>;
                     case AsyncProcessStatus.SUCCESS:
-                        return <AboutKBaseUI 
+                        return <AboutKBaseUI
                             config={configValue.value.config}
                             gitInfo={configValue.value.gitInfo}
                             buildInfo={configValue.value.buildInfo}
