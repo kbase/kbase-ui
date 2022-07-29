@@ -1,6 +1,5 @@
 import { Component } from 'react';
-import { Accordion, Button, Image } from 'react-bootstrap';
-import AccordionItem from 'react-bootstrap/esm/AccordionItem';
+import { Button } from 'react-bootstrap';
 import { LinkInfo } from './LinkController';
 import styles from './ViewLink.module.css';
 import { ORCID_URL } from './Model';
@@ -14,8 +13,6 @@ export interface StartProps {
 
 
 export default class ViewLink extends Component<StartProps> {
-
-
     render() {
         return <div className={styles.main}>
             <h1>
@@ -82,7 +79,12 @@ export default class ViewLink extends Component<StartProps> {
                     <p>Note that this link will only be used when you are signed in to KBase. In addition,
                         any tool which uses ORCID® link will inform you.
                     </p>
-
+                    <h3>Demos</h3>
+                    <ul>
+                        <li>
+                            <a href="/#orcidlink/demo/prefill-form">Pre-Fill Form</a>
+                        </li>
+                    </ul>
                 </div>
                 <div className={styles.col2}>
                     <h3>Revocation</h3>

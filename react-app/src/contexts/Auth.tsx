@@ -130,8 +130,8 @@ export default class AuthWrapper extends React.Component<
             },
             interval: this.props.config.ui.constants.tokenCookieChangeDetectionInterval
         });
-         this.tokenValidationMonitor = new Monitor({
-             callback: () => {
+        this.tokenValidationMonitor = new Monitor({
+            callback: () => {
                 return this.checkTokenValidity();
             },
             interval: this.props.config.ui.constants.tokenValidationInterval
@@ -156,7 +156,6 @@ export default class AuthWrapper extends React.Component<
         - have token, no token: logout
         - no token, have token: fetch token info
         */
-        const token = BrowserAuth.getToken();
         const state = this.state;
         switch (state.authState.status) {
             case AsyncProcessStatus.NONE:
@@ -297,7 +296,7 @@ export default class AuthWrapper extends React.Component<
                 console.error('UNKNOWN ERROR', ex);
             }
         }
-       
+
     }
 
     async syncTokenInfo() {

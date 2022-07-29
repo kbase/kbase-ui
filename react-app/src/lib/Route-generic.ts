@@ -35,6 +35,7 @@ export type RouteSpecElement =
 export type RouteSpec = Array<RouteSpecElement>;
 
 export type RouteRenderer = (props: RouteProps) => JSX.Element;
+export type AuthenticatedRouteRenderer = (props: AuthenticatedRouteProps) => JSX.Element;
 
 export type Params = Map<string, string>;
 
@@ -52,12 +53,12 @@ export interface SimplePluginRouteSpec extends SimpleRouteSpec {
     view: string
 }
 
-export class Route {
+export class Route<R = RouteRenderer> {
   rawRouteSpec: string;
   routeSpec: RouteSpec;
-  render: RouteRenderer;
+  render: R;
   routeOptions: RouteOptions;
-  constructor(rawRouteSpec: string, routeOptions: RouteOptions, render: RouteRenderer) {
+  constructor(rawRouteSpec: string, routeOptions: RouteOptions, render: R) {
     this.rawRouteSpec = rawRouteSpec;
     this.render = render;
     this.routeOptions = routeOptions;

@@ -2,9 +2,9 @@ import { Component } from 'react';
 import { Params, Route } from '../lib/Route';
 import { v4 as uuidv4 } from 'uuid'
 import { HashPath } from '../contexts/RouterContext';
-import {ConfigContext} from '../contexts/ConfigContext';
+import { ConfigContext } from '../contexts/ConfigContext';
 import { AsyncProcessStatus } from '../lib/AsyncProcess';
-import { AuthContext, AuthenticationStatus } from '../contexts/Auth';
+import { AuthContext, AuthenticationStateAuthenticated, AuthenticationStatus } from '../contexts/Auth';
 import NotFound from './NotFound/NotFound';
 import AuthProblem from './AuthProblem';
 import { RuntimeContext } from '../contexts/RuntimeContext';
@@ -12,6 +12,9 @@ import { RuntimeContext } from '../contexts/RuntimeContext';
 export interface RouteProps {
     hashPath: HashPath;
     params: Map<string, string>;
+}
+export interface AuthenticatedRouteProps extends RouteProps {
+    auth: AuthenticationStateAuthenticated
 }
 export type Query = Map<string, string>;
 
@@ -53,20 +56,20 @@ export class Router extends Component<RouterProps, RouterState> {
 
     renderRoute(route: Route, hashPath: HashPath, params: Params) {
         return <ConfigContext.Consumer>
-            {(configValue) => { 
+            {(configValue) => {
                 if (configValue.status !== AsyncProcessStatus.SUCCESS) {
                     return null;
                 }
                 return <AuthContext.Consumer>
                     {(authValue) => {
-                         if (authValue.status !== AsyncProcessStatus.SUCCESS) {
+                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
                             return null;
                         }
                         if (route.routeOptions.authenticationRequired) {
                             if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
                                 // TODO: render route auth error message and/or
                                 // route to login with the path.
-                                return <AuthProblem 
+                                return <AuthProblem
                                     hashPath={this.props.hashPath}
                                     message="Access Denied"
 
@@ -76,12 +79,12 @@ export class Router extends Component<RouterProps, RouterState> {
                                 hashPath,
                                 params
                             });
-                        } 
+                        }
                         return route.render({
                             hashPath,
                             params
                         });
-                        
+
                     }}
                 </AuthContext.Consumer>
             }}
@@ -100,9 +103,9 @@ export class Router extends Component<RouterProps, RouterState> {
 
         return <RuntimeContext.Consumer>
             {(value) => {
-                return <NotFound hashPath={hashPath} setTitle={value!.setTitle}/>
+                return <NotFound hashPath={hashPath} setTitle={value!.setTitle} />
             }}
         </RuntimeContext.Consumer>
-        
+
     }
 }

@@ -1,4 +1,4 @@
-import { AuthenticationState } from 'contexts/Auth';
+import { AuthenticationState, AuthenticationStateAuthenticated } from 'contexts/Auth';
 import { Component } from 'react';
 import { Config } from 'types/config';
 import ErrorAlert from '../../components/ErrorAlert';
@@ -16,7 +16,7 @@ const GET_NAME_URL = 'https://ci.kbase.us/services/orcidlink/get_name';
 
 export interface LinkControllerProps {
     config: Config;
-    authState: AuthenticationState;
+    auth: AuthenticationStateAuthenticated;
     setTitle: (title: string) => void;
 }
 
@@ -78,11 +78,16 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     componentDidMount() {
+        this.props.setTitle('ORCID® Link');
         this.loadData();
     }
 
     async getName(): Promise<GetNameResult> {
-        const response = await fetch(GET_NAME_URL);
+        const response = await fetch(GET_NAME_URL, {
+            headers: {
+                authorization: this.props.auth.authInfo.token
+            }
+        });
 
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
@@ -93,7 +98,11 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     async fetchLink(): Promise<LinkInfo | null> {
-        const response = await fetch(LINK_URL);
+        const response = await fetch(LINK_URL, {
+            headers: {
+                authorization: this.props.auth.authInfo.token
+            }
+        });
 
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
@@ -118,7 +127,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         // normalize for ui:
         return {
             createdAt: created_at,
-            expiresAt: Date.now() + expires_in,
+            expiresAt: Date.now() + expires_in * 1000,
             realname: `${first_name} ${last_name}`,
             orcidID: orcid,
             scope
@@ -126,7 +135,11 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     async revokeLink() {
-        const response = await fetch(REVOKE_URL);
+        const response = await fetch(REVOKE_URL, {
+            headers: {
+                authorization: this.props.auth.authInfo.token
+            }
+        });
 
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
@@ -199,10 +212,9 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
 
     renderSuccess({ link }: { link: LinkInfo | null }) {
         if (link === null) {
-            this.props.setTitle('ORCID® Link');
+
             return <CreateLink start={this.startLink.bind(this)} />;
         }
-        this.props.setTitle('ORCID® Link');
         return <ViewLink link={link} revoke={this.revokeLink.bind(this)} />;
     }
 
@@ -212,7 +224,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
             case AsyncProcessStatus.PENDING:
                 return this.renderLoading();
             case AsyncProcessStatus.ERROR:
-                return this.renderError(this.state.linkState.error)
+                return this.renderError(this.state.linkState.error);
             case AsyncProcessStatus.SUCCESS:
                 return this.renderSuccess(this.state.linkState.value);
         }

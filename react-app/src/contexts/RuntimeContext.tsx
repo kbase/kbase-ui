@@ -1,4 +1,4 @@
-import React, {PropsWithChildren} from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Messenger, SubscriptionRef } from '../lib/messenger';
 import { Config } from '../types/config';
 import { AuthenticationState } from './Auth';
@@ -9,7 +9,7 @@ import { ConnectionStatus, PingStatKind, PingStats } from '../lib/ConnectionStat
 export interface NotificationsSummary {
     info: number,
     success: number,
-    warning: number, 
+    warning: number,
     error: number
 }
 
@@ -36,7 +36,7 @@ export interface NotificationNormal extends NotificationBase {
 }
 
 
-export interface NotificationAutodismiss extends NotificationBase{
+export interface NotificationAutodismiss extends NotificationBase {
     kind: NotificationKind.AUTODISMISS;
     startedAt: number;
     dismissAfter: number;
@@ -109,7 +109,7 @@ const AUTODISMISSER_INTERVAL = 1000;
 export class AutoDismisser {
     timeout: number | null;
     runner: () => boolean;
-    constructor({ runner }: { runner: () => boolean}) {
+    constructor({ runner }: { runner: () => boolean }) {
         this.runner = runner;
         this.timeout = null;
     }
@@ -208,9 +208,9 @@ export default class RuntimeWrapper extends React.Component<
     connectionStatus: ConnectionStatus;
     constructor(props: RuntimeWrapperProps) {
         super(props);
-         this.autoDismisser = new AutoDismisser({
+        this.autoDismisser = new AutoDismisser({
             runner: this.autodismissRunner.bind(this),
-         });
+        });
         this.subscriptions = [];
         this.connectionStatus = new ConnectionStatus({
             onPing: this.onPing.bind(this)
@@ -242,7 +242,7 @@ export default class RuntimeWrapper extends React.Component<
         this.subscriptions.push($GlobalMessageBus.receive({
             channel: 'notification',
             message: 'notify',
-            handler: async ({type, message, autodismiss, id}: NotificationMessage) => {
+            handler: async ({ type, message, autodismiss, id }: NotificationMessage) => {
                 if (typeof autodismiss !== 'undefined') {
                     return this.addNotification({
                         id: id || uuid.v4(),
@@ -263,7 +263,7 @@ export default class RuntimeWrapper extends React.Component<
             }
         }));
 
-        this.connectionStatus.start();
+        // this.connectionStatus.start();
 
         // window.setTimeout(() => {
         //     $GlobalMessageBus.send({
@@ -328,7 +328,7 @@ export default class RuntimeWrapper extends React.Component<
         this.setState({
             notificationState: {
                 ...this.state.notificationState,
-                notifications: notifications.filter(({id}) => id !== notification.id),
+                notifications: notifications.filter(({ id }) => id !== notification.id),
                 summary
             }
         })
@@ -344,7 +344,7 @@ export default class RuntimeWrapper extends React.Component<
         existingNotifications.forEach((notificationToRemove) => {
             summary[notificationToRemove.type] -= 1;
         })
-        
+
         this.setState({
             notificationState: {
                 ...this.state.notificationState,

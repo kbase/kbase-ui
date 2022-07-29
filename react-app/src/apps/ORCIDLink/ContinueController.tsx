@@ -1,5 +1,6 @@
 import ErrorAlert from "components/ErrorAlert";
 import Loading from "components/Loading";
+import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
 import { Component } from "react";
 import Continue from "./Continue";
@@ -12,6 +13,7 @@ const CANCEL_LINK_URL = 'https://ci.kbase.us/services/orcidlink/cancel-link';
 
 export interface ContinueControllerProps {
     token: string;
+    auth: AuthenticationStateAuthenticated;
     setTitle: (title: string) => void;
 }
 
@@ -39,7 +41,11 @@ export default class ContinueController extends Component<ContinueControllerProp
     }
 
     async fetchTempLink() {
-        const response = await fetch(`${GET_TEMP_LINK_RECORD_URL}/${this.props.token}`)
+        const response = await fetch(`${GET_TEMP_LINK_RECORD_URL}/${this.props.token}`, {
+            headers: {
+                authorization: this.props.auth.authInfo.token
+            }
+        })
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
         }
@@ -100,7 +106,11 @@ export default class ContinueController extends Component<ContinueControllerProp
     }
 
     async confirmLink() {
-        const response = await fetch(`${FINISH_LINK_URL}/${this.props.token}`)
+        const response = await fetch(`${FINISH_LINK_URL}/${this.props.token}`, {
+            headers: {
+                authorization: this.props.auth.authInfo.token
+            }
+        })
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
         }
@@ -113,7 +123,11 @@ export default class ContinueController extends Component<ContinueControllerProp
     }
 
     async cancelLink() {
-        const response = await fetch(`${CANCEL_LINK_URL}/${this.props.token}`)
+        const response = await fetch(`${CANCEL_LINK_URL}/${this.props.token}`, {
+            headers: {
+                authorization: this.props.auth.authInfo.token
+            }
+        })
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
         }

@@ -44,6 +44,7 @@ export default class Continue extends Component<ContinueProps> {
     }
 
     renderRequestedScopes() {
+        console.log('hmm', this.props.tempLinkRecord);
         const { orcid_auth: { orcid, scope }, created_at, expires_at } = this.props.tempLinkRecord;
         return <div className="well" style={{ marginBottom: '1em' }}>
             <div className="well-body">
