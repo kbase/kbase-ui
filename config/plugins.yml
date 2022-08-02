@@ -33,7 +33,7 @@ plugins:
               account: kbase
     - name: dataview
       globalName: kbase-ui-plugin-dataview
-      version: 4.13.2
+      version: 4.13.3
       source:
           github:
               account: kbase
