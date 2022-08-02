@@ -18,6 +18,51 @@ export interface TempLinkRecord {
     orcid_auth: ORCIDAuth;
 }
 
+export interface Affiliation {
+    name: string;
+    role: string;
+    startYear: string;
+    endYear: string | null;
+}
+
+export interface PublicationID {
+    type: string;
+    value: string;
+    url: string;
+}
+
+export interface ExternalId {
+    type: string;
+    value: string;
+    url: string;
+}
+
+export interface Publication {
+    putCode: string;
+    createdAt: number;
+    updatedAt: number;
+    ids: Array<PublicationID>
+    source: string;
+    title: string;
+    journal: string;
+    date: string;
+    publicationType: string;
+    url: string;
+    // citation
+    citationType: string;
+    citation: string;
+    citationDescription: string;
+    externalIds: Array<ExternalId>
+}
+
+export interface ORCIDProfile {
+    firstName: string;
+    lastName: string;
+    bio: string;
+    affiliations: Array<Affiliation>
+    publications: Array<Publication>
+}
+
 
 export const ORCID_URL = 'https://sandbox.orcid.org';
 
@@ -63,3 +108,5 @@ export const SCOPE_HELP: { [K in SCOPE]: { label: string, orcid: { label: string
         ]
     }
 }
+
+const ORCID_APP_ID = "APP-RC3PM3KSMMV3GKWS";

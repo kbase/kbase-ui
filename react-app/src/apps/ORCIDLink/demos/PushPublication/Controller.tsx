@@ -1,15 +1,12 @@
-import { AuthenticationState, AuthenticationStateAuthenticated } from 'contexts/Auth';
+import { AuthenticationStateAuthenticated } from 'contexts/Auth';
 import { Component } from 'react';
 import { Config } from 'types/config';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import PreFillForm from './PreFillForm';
+import PublicationForm from './PushPublicationForm';
+import { ORCIDProfile, Publication } from 'apps/ORCIDLink/Model';
 
-const START_URL = 'https://ci.kbase.us/services/orcidlink/start';
-const LINK_URL = 'https://ci.kbase.us/services/orcidlink/link';
-const REVOKE_URL = 'https://ci.kbase.us/services/orcidlink/revoke';
-const GET_NAME_URL = 'https://ci.kbase.us/services/orcidlink/get_name';
 const GET_PROFILE_URL = 'https://ci.kbase.us/services/orcidlink/get_profile';
 
 
@@ -24,58 +21,10 @@ export enum LinkStatus {
     LINKED = 'LINKED'
 }
 
-// export interface LinkBase {
-//     kind: LinkStatus
-// }
-
-// export interface Linked extends LinkBase {
-//     kind: LinkStatus.LINKED;
-//     createdAt: number;
-//     expiresAt: number;
-// }
-
-// export interface NotLinked extends LinkBase {
-//     kind: LinkStatus.NONE
-// }
-
-// export type Link = Linked | NotLinked;
-
-// export interface LinkInfo {
-//     createdAt: number;
-//     expiresAt: number;
-//     realname: string;
-//     orcidID: string;
-//     scope: string;
-// }
-
-// export interface LinkResult {
-//     link: LinkRecord | null;
-// }
-
-// export interface GetNameResult {
-//     first_name: string;
-//     last_name: string;
-// }
-
-// export type RevokeResult = null;
-
 export type GetProfileResult = {
     result: ORCIDProfile
 };
 
-export interface Affiliation {
-    name: string;
-    role: string;
-    startYear: string;
-    endYear: string | null;
-}
-
-export interface ORCIDProfile {
-    firstName: string;
-    lastName: string;
-    bio: string;
-    affiliations: Array<Affiliation>
-}
 
 export interface DataState {
     profile: ORCIDProfile
@@ -164,6 +113,33 @@ export default class PreFillFormController extends Component<PreFillFormControll
         }
     }
 
+    // Actions
+
+    async deletePublication(publication: Publication) {
+        if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
+            return;
+        }
+        const publications = this.state.dataState.value.profile.publications.filter(({ putCode }) => {
+            console.log('hmm', putCode, publication.putCode);
+            return putCode !== publication.putCode;
+        });
+        console.log('new publications', publications);
+        this.setState({
+            dataState: {
+                ...this.state.dataState,
+                value: {
+                    ...this.state.dataState.value,
+                    profile: {
+                        ...this.state.dataState.value.profile,
+                        publications
+                    }
+                }
+            }
+        })
+    }
+
+    // Renderers
+
     renderLoading() {
         return <Loading message="Loading ORCID Profile..." />;
     }
@@ -173,8 +149,9 @@ export default class PreFillFormController extends Component<PreFillFormControll
     }
 
     renderSuccess(dataState: DataState) {
-        return <PreFillForm profile={dataState.profile} syncProfile={this.syncProfile.bind(this)} />
+        return <PublicationForm profile={dataState.profile} syncProfile={this.syncProfile.bind(this)} deletePublication={this.deletePublication.bind(this)} />
     }
+
 
     render() {
         switch (this.state.dataState.status) {

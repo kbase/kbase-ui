@@ -82,7 +82,10 @@ export default class ViewLink extends Component<StartProps> {
                     <h3>Demos</h3>
                     <ul>
                         <li>
-                            <a href="/#orcidlink/demo/prefill-form">Pre-Fill Form</a>
+                            <a href="/#orcidlink/demos/prefill-form">Pre-Fill Form</a>
+                        </li>
+                        <li>
+                            <a href="/#orcidlink/demos/push-publication">Push Publication</a>
                         </li>
                     </ul>
                 </div>

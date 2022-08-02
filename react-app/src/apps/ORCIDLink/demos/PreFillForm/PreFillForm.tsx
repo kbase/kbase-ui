@@ -1,8 +1,9 @@
+import { Affiliation, ORCIDProfile } from "apps/ORCIDLink/Model";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
 import { Button, Form } from "react-bootstrap";
 import styles from './PreFillForm.module.css';
-import { Affiliation, DataState, ORCIDProfile } from './PreFillFormController';
+import { DataState } from './PreFillFormController';
 
 export interface PreFillFormProps {
     profile: ORCIDProfile;
@@ -10,6 +11,10 @@ export interface PreFillFormProps {
 }
 
 interface PreFillFormState {
+    profile: ORCIDProfile;
+
+    // TODO: this should be an editable model, with edit
+    // state for each editable thing.
     firstName: string;
     lastName: string;
     name: string;
@@ -26,6 +31,7 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
 
     stateFromProps() {
         return {
+            profile: this.props.profile,
             firstName: this.props.profile.firstName,
             lastName: this.props.profile.lastName,
             name: this.props.profile.firstName + ' ' + this.props.profile.lastName,
@@ -38,7 +44,7 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
         const { firstName, lastName, bio, affiliations } = prevState;
         const prevProfile = { firstName, lastName, bio, affiliations };
 
-        if (!isEqual(prevProfile, this.props.profile)) {
+        if (!isEqual(prevState.profile, this.props.profile)) {
             this.setState(this.stateFromProps());
         }
 
@@ -161,7 +167,7 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
                 </div>
                 <div className="flex-row" style={{ justifyContent: 'center', marginTop: '1em' }}>
 
-                    <Button variant="default" onClick={this.onSyncForm.bind(this)} style={{ marginRight: '0.5em' }}>
+                    <Button variant="secondary" onClick={this.onSyncForm.bind(this)} style={{ marginRight: '0.5em' }}>
                         Sync
                     </Button>
                     <Button variant="danger" onClick={this.onClearForm.bind(this)}>
@@ -202,7 +208,7 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
     }
 
     render() {
-        return <div className="flex-table">
+        return <div className={`${styles.main} flex-table`}>
             <div className="flex-row">
                 <div className="flex-col">
                     {this.renderIntro()}

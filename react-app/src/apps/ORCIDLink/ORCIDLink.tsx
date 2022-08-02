@@ -1,13 +1,14 @@
 import { AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
-import { AuthenticatedRouteProps, RouteProps, Router } from '../../components/Router2';
+import { RouteProps, Router } from '../../components/Router2';
 import { AuthContext, AuthenticationState, AuthenticationStatus } from '../../contexts/Auth';
 import { Route } from '../../lib/Route';
 import { Config } from '../../types/config';
 import Continue from './ContinueController';
-import PreFillFormController from './demo/PreFillFormController';
+import PreFillFormController from './demos/PreFillForm/PreFillFormController';
 import Help from './Help';
 import Link from './LinkController';
+import PushPublication from './demos/PushPublication/Controller';
 
 export interface ORCIDLinkProps extends RouteProps {
     config: Config;
@@ -52,7 +53,7 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                 </AuthContext.Consumer>
 
             }),
-            new Route('orcidlink/demo/prefill-form', { authenticationRequired: true }, (props: RouteProps) => {
+            new Route('orcidlink/demos/prefill-form', { authenticationRequired: true }, (props: RouteProps) => {
                 return <AuthContext.Consumer>
                     {(authValue) => {
                         if (authValue.status !== AsyncProcessStatus.SUCCESS) {
@@ -63,6 +64,22 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                         }
                         const token = props.params.get('token')!;
                         return <PreFillFormController {...this.props} auth={authValue.value} />;
+                        // return <Link {...this.props} auth={authValue.value} />;
+                    }}
+                </AuthContext.Consumer>
+
+            }),
+            new Route('orcidlink/demos/push-publication', { authenticationRequired: true }, (props: RouteProps) => {
+                return <AuthContext.Consumer>
+                    {(authValue) => {
+                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
+                            return null;
+                        }
+                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
+                            return null;
+                        }
+                        const token = props.params.get('token')!;
+                        return <PushPublication {...this.props} auth={authValue.value} />;
                         // return <Link {...this.props} auth={authValue.value} />;
                     }}
                 </AuthContext.Consumer>

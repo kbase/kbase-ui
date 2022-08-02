@@ -121,3 +121,8 @@ p {
 .flex-col:last-child {
     margin-right: 0;
 }
+
+.flex-row.-header .flex-col {
+    font-weight: bold;
+    color: rgba(150, 150, 150, 1)
+}
