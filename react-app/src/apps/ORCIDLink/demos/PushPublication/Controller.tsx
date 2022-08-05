@@ -5,9 +5,7 @@ import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import PublicationForm from './PushPublicationForm';
-import { ORCIDProfile, Publication } from 'apps/ORCIDLink/Model';
-
-const GET_PROFILE_URL = 'https://ci.kbase.us/services/orcidlink/get_profile';
+import { EditablePublication, Model, ORCIDProfile, Publication } from 'apps/ORCIDLink/Model';
 
 
 export interface PreFillFormControllerProps {
@@ -21,9 +19,6 @@ export enum LinkStatus {
     LINKED = 'LINKED'
 }
 
-export type GetProfileResult = {
-    result: ORCIDProfile
-};
 
 
 export interface DataState {
@@ -38,8 +33,13 @@ interface PreFillFormControllerState {
 }
 
 export default class PreFillFormController extends Component<PreFillFormControllerProps, PreFillFormControllerState> {
+    model: Model
     constructor(props: PreFillFormControllerProps) {
         super(props);
+        this.model = new Model({
+            config: this.props.config,
+            auth: this.props.auth
+        })
         this.state = {
             dataState: {
                 status: AsyncProcessStatus.NONE
@@ -52,23 +52,9 @@ export default class PreFillFormController extends Component<PreFillFormControll
         this.loadData();
     }
 
-    async getProfile(): Promise<ORCIDProfile> {
-        const response = await fetch(GET_PROFILE_URL, {
-            headers: {
-                authorization: this.props.auth.authInfo.token
-            }
-        });
-
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
-
-        const result = JSON.parse(await response.text()) as GetProfileResult;
-        return result.result;
-    }
 
     async syncProfile(): Promise<void> {
-        const profile = await this.getProfile();
+        const profile = await this.model.getProfile();
 
         this.setState({
             dataState: {
@@ -115,7 +101,36 @@ export default class PreFillFormController extends Component<PreFillFormControll
 
     // Actions
 
-    async deletePublication(publication: Publication) {
+    async deletePublication(putCodeToDelete: string) {
+        if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
+            return;
+        }
+
+        try {
+            await this.model.deleteWork(putCodeToDelete)
+            const publications = this.state.dataState.value.profile.publications.filter(({ putCode }) => {
+                return putCode !== putCodeToDelete;
+            });
+            console.log('new publications', publications);
+            this.setState({
+                dataState: {
+                    ...this.state.dataState,
+                    value: {
+                        ...this.state.dataState.value,
+                        profile: {
+                            ...this.state.dataState.value.profile,
+                            publications
+                        }
+                    }
+                }
+            })
+        } catch (ex) {
+            console.error('Well, that didn\'t work!', ex);
+        }
+
+    }
+
+    async savePublication(publication: EditablePublication) {
         if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
             return;
         }
@@ -138,6 +153,7 @@ export default class PreFillFormController extends Component<PreFillFormControll
         })
     }
 
+
     // Renderers
 
     renderLoading() {
@@ -149,9 +165,8 @@ export default class PreFillFormController extends Component<PreFillFormControll
     }
 
     renderSuccess(dataState: DataState) {
-        return <PublicationForm profile={dataState.profile} syncProfile={this.syncProfile.bind(this)} deletePublication={this.deletePublication.bind(this)} />
+        return <PublicationForm model={this.model} profile={dataState.profile} syncProfile={this.syncProfile.bind(this)} deletePublication={this.deletePublication.bind(this)} />
     }
-
 
     render() {
         switch (this.state.dataState.status) {

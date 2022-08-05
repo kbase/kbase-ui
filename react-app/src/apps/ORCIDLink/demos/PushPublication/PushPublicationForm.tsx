@@ -1,19 +1,20 @@
-import { Affiliation, ORCIDProfile, Publication } from "apps/ORCIDLink/Model";
+import { EditablePublication, Model, ORCIDProfile, Publication } from "apps/ORCIDLink/Model";
 import AlertMessage from "components/AlertMessage";
 import ErrorAlert from "components/ErrorAlert";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
-import { Button, Form } from "react-bootstrap";
-import AddNewPublication from "./AddNewPublication";
+import { Button, } from "react-bootstrap";
+import AddNewPublication from "./Add/Controller";
 import DeletePublication from "./DeletePublication";
-import EditPublication from "./EditPublication";
-import styles from './PushPublicationForm.module.css';
+import EditPublication from "./Edit/Controller";
 import ViewPublication from "./ViewPublication";
+import styles from './PushPublicationForm.module.css';
 
 export interface PushPublicationFormProps {
     profile: ORCIDProfile;
+    model: Model;
     syncProfile: () => Promise<void>;
-    deletePublication: (publication: Publication) => Promise<void>
+    deletePublication: (putCode: string) => Promise<void>
 }
 
 // Deletion State
@@ -114,7 +115,6 @@ interface PushPublicationFormState {
 }
 
 export default class PushPublicationForm extends Component<PushPublicationFormProps, PushPublicationFormState> {
-
     constructor(props: PushPublicationFormProps) {
         super(props);
         const initialState = this.stateFromProps()
@@ -202,17 +202,27 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
     }
 
     onEdit(publicationIndex: number) {
-        console.log('on edit', publicationIndex);
         this.setState({
             editArea: {
                 type: EditAreaType.UPDATE,
                 publication: this.props.profile.publications[publicationIndex]
             }
         })
+        // this.setState({
+        //     editArea: {
+        //         type: EditAreaType.NONE
+        //     }
+        // }, () => {
+        //     this.setState({
+        //         editArea: {
+        //             type: EditAreaType.UPDATE,
+        //             publication: this.props.profile.publications[publicationIndex]
+        //         }
+        //     })
+        // });
     }
 
     onView(publicationIndex: number) {
-        console.log('on edit', publicationIndex);
         this.setState({
             editArea: {
                 type: EditAreaType.VIEW,
@@ -220,7 +230,6 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
             }
         })
     }
-
 
     onAdd() {
         this.setState({
@@ -234,13 +243,16 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
     }
 
     renderPublications() {
-        const rows = this.state.publications.map(({ ids, createdAt, updatedAt, title, date, journal, publicationType, source, url }, index) => {
+        const rows = this.state.publications.map(({ putCode, createdAt, updatedAt, title, date, journal, publicationType, source, url }, index) => {
             const canEdit = (source === 'KBase CI');
             const button = (() => {
                 if (source === 'KBase CI') {
-                    return <Button variant="primary" onClick={() => { console.log('here'); this.onEdit(index); }} ><span className="fa fa-edit" /> Edit</Button>;
+                    return <div className="btn-group">
+                        <Button variant="primary" onClick={() => { this.onEdit(index); }} ><span className="fa fa-edit" /></Button>
+                        <Button variant="danger" onClick={() => { this.onDelete(index); }} ><span className="fa fa-trash" /></Button>
+                    </div>;
                 }
-                return <Button variant="primary" onClick={() => { console.log('here'); this.onView(index); }} ><span className="fa fa-eye" /> View</Button>
+                return <Button variant="secondary" onClick={() => { this.onView(index); }} ><span className="fa fa-eye" /></Button>
             })();
             //  <td><Button variant="primary" disabled={!canEdit} onClick={() => { console.log('here'); this.onEdit(index); }} ><span className="fa fa-edit" /> Edit</Button></td>
             //     <td><Button variant="danger" disabled={!canEdit} onClick={() => { console.log('here'); this.onDelete(index); }}><span className="fa fa-trash" /> Remove</Button></td>
@@ -248,6 +260,7 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
                 <td>{title}</td>
                 <td>{date}</td>
                 <td>{journal}</td>
+                <td>{putCode}</td>
                 <td>{button}</td>
             </tr>
         });
@@ -257,6 +270,7 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
                     <th>Title</th>
                     <th>Date</th>
                     <th>Journal</th>
+                    <th>Put Code</th>
                     <th></th>
                 </tr>
             </thead>
@@ -306,22 +320,22 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
     renderEditAreaNew(editArea: EditAreaNew) {
         return <div>
             <h2>Add New Publication Record</h2>
-            <AddNewPublication onCancel={this.onDone.bind(this)} />
+            <AddNewPublication model={this.props.model} onClose={this.onDone.bind(this)} />
         </div>
     }
 
-    async onSave() {
+    async onSave(update: EditablePublication) {
 
     }
 
-    async onDelete2() {
-
+    async onDelete2(putCode: string) {
+        this.props.deletePublication(putCode);
     }
 
     renderEditAreaUpdate(editArea: EditAreaUpdate) {
         return <div>
             <h2>Edit Publication Record</h2>
-            <EditPublication publication={editArea.publication} onCancel={this.onDone.bind(this)} onSave={this.onSave.bind(this)} onDelete={this.onDelete2.bind(this)} />
+            <EditPublication model={this.props.model} onClose={this.onDone.bind(this)} putCode={editArea.publication.putCode} />
         </div>
     }
 
@@ -341,38 +355,37 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
         })
     }
 
-    async deletePublication(publication: Publication) {
-        if (this.state.editArea.type !== EditAreaType.DELETE) {
-            return;
-        }
-        try {
+    // async deletePublication(publication: Publication) {
+    //     if (this.state.editArea.type !== EditAreaType.DELETE) {
+    //         return;
+    //     }
+    //     try {
 
-            await this.props.deletePublication(publication);
-            console.log('um');
-            this.setState({
-                editArea: {
-                    ...this.state.editArea,
-                    deletionState: {
-                        status: DeletionStatus.SUCCESS
-                    }
-                }
-            })
-        } catch (ex) {
-            if (ex instanceof Error) {
-                this.setState({
-                    editArea: {
-                        ...this.state.editArea,
-                        deletionState: {
-                            status: DeletionStatus.ERROR,
-                            error: {
-                                message: ex.message
-                            }
-                        }
-                    }
-                })
-            }
-        }
-    }
+    //         await this.props.deletePublication(publication.putCode);
+    //         this.setState({
+    //             editArea: {
+    //                 ...this.state.editArea,
+    //                 deletionState: {
+    //                     status: DeletionStatus.SUCCESS
+    //                 }
+    //             }
+    //         })
+    //     } catch (ex) {
+    //         if (ex instanceof Error) {
+    //             this.setState({
+    //                 editArea: {
+    //                     ...this.state.editArea,
+    //                     deletionState: {
+    //                         status: DeletionStatus.ERROR,
+    //                         error: {
+    //                             message: ex.message
+    //                         }
+    //                     }
+    //                 }
+    //             })
+    //         }
+    //     }
+    // }
 
     onDone() {
         this.setState({
@@ -389,7 +402,7 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
                 return <div>
                     <h2>Confirm Publication Removal from ORCID Record</h2>
                     <DeletePublication publication={deletionState.value}
-                        onDeleteConfirm={() => this.deletePublication(deletionState.value)}
+                        onDeleteConfirm={() => this.props.deletePublication(deletionState.value.putCode)}
                         onCancel={() => this.closeEditArea()}
                     />
                 </div>;

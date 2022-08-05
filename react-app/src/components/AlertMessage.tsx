@@ -17,7 +17,7 @@ export default class AlertMessage extends Component<AlertMessageProps> {
             case 'warning':
                 return 'fa-exclamation-triangle';
             case 'info':
-                return 'fa-info';
+                return 'fa-info-circle';
             case 'success':
                 return 'fa-check';
         }

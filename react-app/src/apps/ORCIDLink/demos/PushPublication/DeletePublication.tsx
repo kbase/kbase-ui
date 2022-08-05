@@ -51,12 +51,14 @@ export default class DeletePublication extends Component<DeletePublicationProps,
                 </div>
 
                 <div className="flex-row" style={{ justifyContent: 'center', marginTop: '1em' }}>
-                    <Button variant="danger" onClick={this.props.onDeleteConfirm} style={{ marginRight: '0.5em' }}>
-                        <span className="fa fa-trash" /> Confirm
-                    </Button>
-                    <Button variant="outline-danger" onClick={this.props.onCancel}>
-                        <span className="fa fa-times-circle" /> Cancel
-                    </Button>
+                    <div className="btn-group">
+                        <Button variant="danger" onClick={this.props.onDeleteConfirm} >
+                            <span className="fa fa-trash" /> Confirm
+                        </Button>
+                        <Button variant="outline-danger" onClick={this.props.onCancel}>
+                            <span className="fa fa-times-circle" /> Cancel
+                        </Button>
+                    </div>
                 </div>
             </div>
         </Form >;

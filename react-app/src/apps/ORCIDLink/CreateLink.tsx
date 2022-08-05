@@ -1,12 +1,27 @@
+import AlertMessage from 'components/AlertMessage';
 import { Component } from 'react';
-import { Button } from 'react-bootstrap';
+import { Alert, Button } from 'react-bootstrap';
 import styles from './CreateLink.module.css';
+import { ReturnLink } from './Model';
 
 export interface CreateLinkProps {
+    returnLink?: ReturnLink;
+    skipPrompt?: boolean;
     start: () => void;
 }
 
+
+
 export default class CreateLink extends Component<CreateLinkProps> {
+    renderReturnURL() {
+        if (!this.props.returnLink) {
+            return;
+        }
+        return <AlertMessage type="info" style={{ marginTop: '1em' }} title="After Linking...">
+            After creating the link, your browser will be returned to <b>{this.props.returnLink.label}</b>.
+        </AlertMessage>;
+    }
+
     render() {
         return <div className={styles.main}>
 
@@ -29,6 +44,16 @@ export default class CreateLink extends Component<CreateLinkProps> {
                 <p>You may <b>revoke</b> this link at any time.</p>
 
                 <p>Revoking the link will not alter any of your data at KBase, nor anything at ORCID®.</p>
+
+                <h3>Demos</h3>
+                <ul>
+                    <li>
+                        <a href="/#orcidlink/demos/interstitial1">Linking via Interstitial Page</a>
+                    </li>
+                    <li>
+                        <a href="/#orcidlink/demos/doi">Request DOI Form</a>
+                    </li>
+                </ul>
             </div>
             <div className={styles.col2}>
 
@@ -40,6 +65,8 @@ export default class CreateLink extends Component<CreateLinkProps> {
                     sign in to your ORCID® account and grant permission to KBase to access certain
                     aspects of your ORCID® account.
                 </p>
+
+                {this.renderReturnURL()}
 
                 <p>
                     <Button variant="primary" onClick={this.props.start}>

@@ -117,7 +117,8 @@ export class Route {
     return routeSpec;
   }
 
-  pathToParams(hashPath: HashPath): null | Params {
+    pathToParams(hashPath: HashPath): null | Params {
+
     // First match the param literals.
 
     // TODO: optional

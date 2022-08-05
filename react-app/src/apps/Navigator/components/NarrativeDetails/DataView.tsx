@@ -66,7 +66,6 @@ export default class DataView extends React.Component<Props, {}> {
                 <Row>
                     <Col>
                         <Empty
-                            title="No Cells"
                             message="This Narrative has no data objects"
                             icon="database"
                         />

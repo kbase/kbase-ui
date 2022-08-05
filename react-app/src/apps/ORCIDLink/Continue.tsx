@@ -1,17 +1,18 @@
 import { Component } from 'react';
-import { ORCID_URL, TempLinkRecord } from './Model';
-import styles from './Continue.module.css';
+import { ORCID_URL, ReturnLink, TempLinkRecord } from './Model';
 import { renderORCIDIcon, renderScope } from './common';
-import { Button } from 'react-bootstrap';
+import { Alert, Button } from 'react-bootstrap';
+import styles from './Continue.module.css';
+import AlertMessage from 'components/AlertMessage';
 
 export interface ContinueProps {
     tempLinkRecord: TempLinkRecord;
+    returnLink?: ReturnLink;
     confirmLink: () => Promise<void>;
     cancelLink: () => Promise<void>;
 }
 
 export default class Continue extends Component<ContinueProps> {
-
     renderORCIDUserRecord() {
         const { orcid_auth: { orcid, scope }, created_at, expires_at } = this.props.tempLinkRecord;
         return <div className="well" style={{ marginBottom: '1em' }}>
@@ -44,7 +45,6 @@ export default class Continue extends Component<ContinueProps> {
     }
 
     renderRequestedScopes() {
-        console.log('hmm', this.props.tempLinkRecord);
         const { orcid_auth: { orcid, scope }, created_at, expires_at } = this.props.tempLinkRecord;
         return <div className="well" style={{ marginBottom: '1em' }}>
             <div className="well-body">
@@ -60,6 +60,17 @@ export default class Continue extends Component<ContinueProps> {
                 </div>
             </div>
         </div>
+    }
+
+
+
+    renderReturnURL() {
+        if (!this.props.returnLink) {
+            return;
+        }
+        return <AlertMessage type="info" style={{ marginTop: '1em' }} title="After Linking...">
+            After creating the link, your browser will be returned to <b>{this.props.returnLink.label}</b>.
+        </AlertMessage>;
     }
 
     render() {
@@ -99,6 +110,7 @@ export default class Continue extends Component<ContinueProps> {
                     By linking the ORCID® account above you will be granting KBase the ability to interact with
                     that account on your behalf. You may revoke this at any time.
                 </p>
+                {this.renderReturnURL()}
                 <div style={{ textAlign: 'center' }}>
                     <Button variant="primary" onClick={this.props.confirmLink}>
                         Create link to ORCID®
@@ -108,10 +120,8 @@ export default class Continue extends Component<ContinueProps> {
                         Cancel
                     </Button>
                 </div>
+
             </div>
-
-
-
         </div>;
     }
 }

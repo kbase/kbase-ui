@@ -1,38 +1,27 @@
-import { ExternalId, Publication } from "apps/ORCIDLink/Model";
+import { EditablePublication, Publication } from "apps/ORCIDLink/Model";
+import Empty from "components/Empty";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
 import { Button, Form } from "react-bootstrap";
 import styles from './EditPublication.module.css';
 
 export interface EditPublicationProps {
-    publication: Publication;
+    publication: EditablePublication;
     // onSave: (publication: Publication) => Promise<void>;
-    onCancel: () => void;
-    onSave: () => Promise<void>;
-    onDelete: () => Promise<void>;
-}
-
-export interface EditablePublication {
-    publicationType: string;
-    title: string;
-    date: string;
-    journal: string;
-    url: string;
-    citationType: string;
-    externalIds: Array<ExternalId>
+    onClose: () => void;
+    onSave: (update: EditablePublication) => Promise<void>;
 }
 
 interface EditPublicationState {
     editState: EditablePublication
 }
 
-
 export default class EditPublication extends Component<EditPublicationProps, EditPublicationState> {
 
     constructor(props: EditPublicationProps) {
         super(props);
         this.state = {
-            editState: this.publicationToEditablePublication(props.publication)
+            editState: props.publication
         }
     }
 
@@ -40,19 +29,20 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
         // const editable = this.publicationToEditablePublication(this.props.publication);
         if (!isEqual(prevProps.publication, this.props.publication)) {
             this.setState({
-                editState: this.publicationToEditablePublication(this.props.publication)
+                editState: this.props.publication
             })
         }
     }
 
-    publicationToEditablePublication(publication: Publication): EditablePublication {
-        const { publicationType, title, date, journal, url, citationType, externalIds } = publication;
-        return {
-            publicationType, title, date, journal: journal || '', url: url || '',
-            citationType: citationType || '',
-            externalIds: externalIds || []
-        }
-    }
+    // publicationToEditablePublication(publication: Publication): EditablePublication {
+    //     const { putCode, publicationType, title, date, journal, url, citationType, externalIds } = publication;
+    //     return {
+    //         putCode,
+    //         publicationType, title, date, journal: journal || '', url: url || '',
+    //         citationType: citationType || '',
+    //         externalIds: externalIds || []
+    //     }
+    // }
 
     changeTitle(title: string) {
         this.setState({
@@ -104,15 +94,15 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
         })
     }
 
-    changeCitationType(citationType: string) {
-        this.setState({
-            ...this.state,
-            editState: {
-                ...this.state.editState,
-                citationType
-            }
-        })
-    }
+    // changeCitationType(citationType: string) {
+    //     this.setState({
+    //         ...this.state,
+    //         editState: {
+    //             ...this.state.editState,
+    //             citationType
+    //         }
+    //     })
+    // }
 
     changeExternalIdType(type: string, index: number) {
         const externalIds = this.state.editState.externalIds.slice();
@@ -140,6 +130,19 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
         })
     }
 
+    changeExternalIdRelationship(value: string, index: number) {
+        const externalIds = this.state.editState.externalIds.slice();
+        externalIds[index].relationship = value;
+
+        this.setState({
+            ...this.state,
+            editState: {
+                ...this.state.editState,
+                externalIds
+            }
+        })
+    }
+
     changeExternalIdURL(url: string, index: number) {
         const externalIds = this.state.editState.externalIds.slice();
         externalIds[index].url = url;
@@ -152,9 +155,38 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
             }
         })
     }
-    renderExternalIds() {
-        const rows = this.state.editState.externalIds.map(({ type, url, value }, index) => {
-            return <div className="flex-row ">
+
+    addExternalIdentifier() {
+        const externalIds = this.state.editState.externalIds.slice();
+        externalIds.push({
+            type: '',
+            relationship: '',
+            url: '',
+            value: ''
+        });
+        this.setState({
+            ...this.state,
+            editState: {
+                ...this.state.editState,
+                externalIds
+            }
+        })
+    }
+
+    doSave() {
+        // Gather the record
+        const update = this.state.editState;
+
+        // Call the props function
+        this.props.onSave(update);
+    }
+
+    renderExternalIdsTable() {
+        if (this.state.editState.externalIds.length === 0) {
+            return <Empty message="No external identifiers ... yet" />
+        }
+        const rows = this.state.editState.externalIds.map(({ type, url, value, relationship }, index) => {
+            return <div className="flex-row" key={index}>
                 <div className="flex-col">
                     <input type="text" className="form-control"
                         value={type}
@@ -169,10 +201,15 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                 </div>
                 <div className="flex-col">
                     <input type="text" className="form-control"
+                        value={relationship}
+                        style={{ margin: '0' }}
+                        onInput={(e) => { this.changeExternalIdRelationship(e.currentTarget.value, index) }} />
+                </div>
+                <div className="flex-col">
+                    <input type="text" className="form-control"
                         value={url}
                         style={{ margin: '0' }}
                         onInput={(e) => { this.changeExternalIdURL(e.currentTarget.value, index) }} />
-                    <a href={url} target="_blank">{url}</a>
                 </div>
             </div>
         });
@@ -185,16 +222,25 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                     Value
                 </div>
                 <div className="flex-col">
+                    Relationship
+                </div>
+                <div className="flex-col">
                     URL
                 </div>
             </div>
-            <tbody>
-                {rows}
-            </tbody>
+            {rows}
+        </div>
+    }
+
+    renderExternalIds() {
+        return <div>
+            {this.renderExternalIdsTable()}
+
         </div>
     }
 
     render() {
+        console.log('hmm', this.props);
         return <Form className={`${styles.main} well`} style={{ padding: '1em' }}>
             <div className="flex-table">
                 <div className="flex-row">
@@ -250,8 +296,10 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                 </div>
 
 
-                <div className="flex-row" style={{ fontWeight: 'bold', color: "rgba(150,150,150)", marginTop: '1em' }}>
-                    IDENTIFIERS
+                <div className="flex-row" style={{ alignItems: 'center', fontWeight: 'bold', color: "rgba(150,150,150)", marginTop: '1em' }}>
+                    EXTERNAL IDENTIFIERS  <Button variant="link" size="sm" onClick={this.addExternalIdentifier.bind(this)}>
+                        <span className="fa fa-plus-circle" />
+                    </Button>
                 </div>
                 <div className="flex-row" style={{ justifyContent: 'center', marginTop: '1em' }}>
                     {this.renderExternalIds()}
@@ -261,14 +309,11 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                         <span className="fa fa-trash" /> Confirm
                     </Button> */}
                     <div className="btn-group">
-                        <Button variant="primary" onClick={this.props.onSave}>
+                        <Button variant="primary" onClick={this.doSave.bind(this)}>
                             <span className="fa fa-pencil" /> Save
                         </Button>
-                        <Button variant="danger" onClick={this.props.onDelete}>
-                            <span className="fa fa-trash" /> Delete
-                        </Button>
-                        <Button variant="outline-danger" onClick={this.props.onCancel}>
-                            <span className="fa fa-times-circle" /> Cancel
+                        <Button variant="outline-danger" onClick={this.props.onClose}>
+                            <span className="fa fa-times-circle" /> Close
                         </Button>
                     </div>
                 </div>

@@ -2,7 +2,6 @@ import React from 'react';
 import styles from './Empty.module.css';
 
 export interface EmptyProps {
-    title?: string;
     icon?: string;
     message: string;
 }
@@ -14,9 +13,8 @@ export default class Empty extends React.Component<EmptyProps> {
                 <div className={styles.icon}>
                     <span className="fa-stack fa-lg">
                         <i
-                            className={`fa fa-stack-1x fa-${
-                                this.props.icon || 'database'
-                            }`}
+                            className={`fa fa-stack-1x fa-${this.props.icon || 'database'
+                                }`}
                         ></i>
                         <i
                             className="fa fa-ban fa-stack-2x text-danger"

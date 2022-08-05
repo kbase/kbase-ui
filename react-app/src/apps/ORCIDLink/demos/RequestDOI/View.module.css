@@ -1,0 +1,23 @@
+.main {
+    margin: 0 1em;
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.-col1 {
+    font-weight: bold;
+    color: rgba(150, 150, 150, 1);
+    flex: 0 0 12em;
+}
+
+.step-content {
+    flex: 1 1 0;
+}
+
+.nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 1em;
+}

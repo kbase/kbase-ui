@@ -47,7 +47,7 @@ export default class Preview extends Component<Props, State> {
     componentDidUpdate(prevProps: Props) {
         if (
             prevProps.narrative.access_group !==
-                this.props.narrative.access_group ||
+            this.props.narrative.access_group ||
             prevProps.narrative.obj_id !== this.props.narrative.obj_id ||
             prevProps.narrative.version !== this.props.narrative.version
         ) {
@@ -113,15 +113,15 @@ export default class Preview extends Component<Props, State> {
         return <ErrorMessage message={error} />;
     }
 
-    renderAppCell(cell: AppCell) {}
+    renderAppCell(cell: AppCell) { }
 
-    renderMarkdownCell(cell: MarkdownCell) {}
+    renderMarkdownCell(cell: MarkdownCell) { }
 
-    renderCodeCell(cell: CodeCell) {}
+    renderCodeCell(cell: CodeCell) { }
 
-    renderOutputCell(cell: OutputObjectCell) {}
+    renderOutputCell(cell: OutputObjectCell) { }
 
-    renderDataObjectCell(cell: DataObjectCell) {}
+    renderDataObjectCell(cell: DataObjectCell) { }
 
     renderCell(cell: Cell) {
         switch (cell.cell_type) {
@@ -175,7 +175,6 @@ export default class Preview extends Component<Props, State> {
                 <Row>
                     <Col>
                         <Empty
-                            title="No Cells"
                             icon="square-o"
                             message="This Narrative has no cells"
                         />

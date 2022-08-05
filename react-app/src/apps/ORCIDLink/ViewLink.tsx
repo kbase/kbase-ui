@@ -87,6 +87,12 @@ export default class ViewLink extends Component<StartProps> {
                         <li>
                             <a href="/#orcidlink/demos/push-publication">Push Publication</a>
                         </li>
+                        <li>
+                            <a href="/#orcidlink/demos/interstitial1">Linked via Interstitial Page</a>
+                        </li>
+                        <li>
+                            <a href="/#orcidlink/demos/doi">Request DOI Form</a>
+                        </li>
                     </ul>
                 </div>
                 <div className={styles.col2}>

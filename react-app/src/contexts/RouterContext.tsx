@@ -98,12 +98,23 @@ export default class RouterWrapper extends React.Component<
 
     getHashPath(): HashPath {
         const hash = document.location.hash.substring(1);
-        const path = hash.split('/')
+
+        // Oddly, sometimes the query appears as part of the hash...
+        const [pathString, queryString] = hash.split('?');
+
+        const path = pathString.split('/')
             .filter((component) => {
                 return component.length > 0;
-            })
+            });
 
-        const query = new URLSearchParams(document.location.search);
+        const hashQuery = new URLSearchParams(queryString);
+
+        const searchQuery = new URLSearchParams(document.location.search);
+
+        const query = new URLSearchParams([
+            ...Array.from(hashQuery.entries()),
+            ...Array.from(searchQuery.entries())
+        ]);
 
         // Some older plugins stick the query into the hash; weird, but we must accomodate.
         if (path.length > 0) {

@@ -6,7 +6,7 @@ import Loading from '../../components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from '../../lib/AsyncProcess';
 
 import CreateLink from './CreateLink';
-import { LinkRecord } from './Model';
+import { LinkRecord, ReturnLink } from './Model';
 import ViewLink from './ViewLink';
 
 const START_URL = 'https://ci.kbase.us/services/orcidlink/start';
@@ -17,6 +17,8 @@ const GET_NAME_URL = 'https://ci.kbase.us/services/orcidlink/get_name';
 export interface LinkControllerProps {
     config: Config;
     auth: AuthenticationStateAuthenticated;
+    returnLink?: ReturnLink;
+    skipPrompt?: boolean;
     setTitle: (title: string) => void;
 }
 
@@ -136,6 +138,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
 
     async revokeLink() {
         const response = await fetch(REVOKE_URL, {
+            method: 'DELETE',
             headers: {
                 authorization: this.props.auth.authInfo.token
             }
@@ -158,7 +161,14 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     startLink() {
-        window.open(START_URL, '_parent');
+        const url = new URL(START_URL);
+        if (this.props.returnLink) {
+            url.searchParams.set('return_link', JSON.stringify(this.props.returnLink));
+        }
+        if (this.props.skipPrompt) {
+            url.searchParams.set('skip_prompt', 'true');
+        }
+        window.open(url, '_parent');
     }
 
     async loadData() {
@@ -212,8 +222,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
 
     renderSuccess({ link }: { link: LinkInfo | null }) {
         if (link === null) {
-
-            return <CreateLink start={this.startLink.bind(this)} />;
+            return <CreateLink start={this.startLink.bind(this)} returnLink={this.props.returnLink} skipPrompt={this.props.skipPrompt} />;
         }
         return <ViewLink link={link} revoke={this.revokeLink.bind(this)} />;
     }
