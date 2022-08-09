@@ -15,7 +15,7 @@ plugins:
               account: kbase
     - name: catalog
       globalName: kbase-ui-plugin-catalog
-      version: 2.3.2
+      version: 2.3.3
       source:
           github:
               account: kbase
@@ -33,7 +33,7 @@ plugins:
               account: kbase
     - name: dataview
       globalName: kbase-ui-plugin-dataview
-      version: 4.13.6
+      version: 4.13.7
       source:
           github:
               account: kbase
