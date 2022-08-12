@@ -16,16 +16,23 @@ export interface JSONObject {
 export type JSONArray = Array<JSONValue>;
 
 export function isJSONObject(value: JSONValue): value is JSONObject {
-    if (typeof value !== 'object') {
-        return false;
+    if (value instanceof {}.constructor) {
+        return true;
     }
-    if (value === null) {
-        return false;
-    }
-    if (Array.isArray(value)) {
-        return false;
-    }
-    return true;
+    return false;
+    // if (typeof value !== 'object') {
+    //     return false;
+    // }
+    // if (value === null) {
+    //     return false;
+    // }
+    // if (Array.isArray(value)) {
+    //     return false;
+    // }
+    // if (!(value instanceof {}.constructor)) {
+    //     return false;
+    // }
+    // return true;
 }
 
 export function isJSONArray(value: JSONValue): value is JSONArray {
