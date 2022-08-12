@@ -1,0 +1,43 @@
+
+.well {
+    border-radius: 1em;
+    border: 3px solid rgba(200, 200, 200, 0.4);
+    display: flex;
+    flex-direction: column;
+}
+
+.well-header {
+    flex: 0 0 auto;
+    border-bottom: 1px solid rgba(200, 200, 200, 0.4);
+    padding: 1em;
+    font-weight: bold;
+    color: rgb(150 150 150);
+}
+
+.well-body {
+    flex: 1 1 0;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.well-section {
+    flex: 0 0 auto;
+    padding: 1em;
+}
+
+.well-title {
+    flex: 0 0 auto;
+    border-top: 1px solid rgba(200, 200, 200, 0.4);
+    border-bottom: 1px solid rgba(200, 200, 200, 0.4);
+    padding: 1em;
+    font-weight: bold;
+    color: rgb(150 150 150);
+}
+
+.well-footer {
+    flex: 0 0 auto;
+    border-top: 1px solid rgba(200, 200, 200, 0.4);
+    padding: 1em;
+}
