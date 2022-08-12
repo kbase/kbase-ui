@@ -1,11 +1,10 @@
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
-import { StaticNarrative } from "lib/clients/StaticNarrative";
-import { DynamicServiceClient } from "lib/kb_lib/comm/JSONRPC11/DynamicServiceClient";
+import { NarrativeService } from "lib/clients/NarrativeService";
+import { isJSONObject, JSONArray } from "lib/json";
+import { ObjectInfo, objectInfoToObject, WorkspaceInfo, workspaceInfoToObject } from "lib/kb_lib/comm/coreServices/Workspace";
+import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { Config } from "types/config";
-
-
-
-const ORCID_APP_ID = "APP-RC3PM3KSMMV3GKWS";
+import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
 // UI URLS
 const START_URL = 'https://ci.kbase.us/services/orcidlink/start';
@@ -16,18 +15,23 @@ const GET_NAME_URL = 'https://ci.kbase.us/services/orcidlink/get_name';
 // Service URLs
 const GET_PROFILE_URL = 'https://ci.kbase.us/services/orcidlink/get_profile';
 const IS_LINKED_URL = 'https://ci.kbase.us/services/orcidlink/is_linked';
-const GET_LINK_URL = 'https://ci.kbase.us/services/orcidlink/get_linked';
+const GET_LINK_URL = 'https://ci.kbase.us/services/orcidlink/get_link';
 const GET_WORK_URL = 'https://ci.kbase.us/services/orcidlink/get_work';
 const SAVE_WORK_URL = 'https://ci.kbase.us/services/orcidlink/save_work';
 const CREATE_WORK_URL = 'https://ci.kbase.us/services/orcidlink/create_work';
 const DELETE_WORK_URL = 'https://ci.kbase.us/services/orcidlink/delete_work';
 
+
+const SAVE_DOI_APPLICATION_URL = 'https://ci.kbase.us/services/orcidlink/save_doi_application';
+const GET_DOI_APPLICATION_URL = 'https://ci.kbase.us/services/orcidlink/get_doi_application';
+
+
 export interface ORCIDAuth {
     access_token: string,
-    expires_in: number,
-    name: string,
-    orcid: string,
     scope: string
+    orcid: string;
+    name: string;
+    expires_in: number;
 }
 
 export interface LinkRecord {
@@ -115,6 +119,62 @@ export interface ReturnLink {
 */
 
 
+export interface NarrativeSelectionResult {
+    narrativeInfo: MinimalNarrativeInfo
+}
+
+export interface MinimalNarrativeInfo {
+    ref: string,
+    title: string
+}
+
+export interface Author {
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    emailAddress: string;
+    orcidId: string;
+    institution: string;
+}
+
+// ORCID Link step
+
+export interface ORCIDLinkResult {
+    orcidLink: {
+        orcidId: string | null
+    }
+}
+
+export type Citation = {
+    citation: string,
+    url?: string,
+    doi?: string | null
+}
+
+export interface AppCitations {
+    id: string;
+    title: string;
+    citations: Array<Citation>;
+}
+
+export interface NarrativeAppCitations {
+    release: Array<AppCitations>;
+    beta: Array<AppCitations>;
+    dev: Array<AppCitations>;
+}
+
+export interface Citations {
+    narrativeAppCitations: NarrativeAppCitations
+    markdownCitations: Array<Citation>
+    manualCitations: Array<Citation>
+}
+
+// In the end, all we can use for citations are
+// the DOI.
+export interface CitationResults {
+    citations: Array<string>
+}
+
 export const ORCID_URL = 'https://sandbox.orcid.org';
 
 
@@ -164,6 +224,166 @@ export type GetProfileResult = {
     result: ORCIDProfile
 };
 
+export interface NarrativeInfo {
+    objectInfo: ObjectInfo
+    workspaceInfo: WorkspaceInfo
+}
+
+export interface CellBase {
+    type: 'markdown' | 'app'
+}
+
+export interface CellMarkdown {
+    type: 'markdown',
+    content: string
+}
+
+export interface CellApp {
+    type: 'app',
+    id: string,
+    tag: string,
+    version: string,
+    gitCommitHash: string
+}
+
+export type Cell =
+    CellMarkdown |
+    CellApp;
+
+export interface AppPublications {
+    id: string;
+    title: string;
+    publications: Array<{
+        text: string,
+        link: string,
+        doi: string | null
+    }>
+}
+
+export interface ContractNumbersResults {
+    contractNumbers: ContractNumbers
+}
+
+export interface ContractNumbers {
+    doe: Array<string>;
+    other: Array<string>
+}
+
+// GEOLOCATION
+
+export interface GeolocationDataResults {
+    geolocationData: GeolocationData;
+}
+
+export enum LocationType {
+    POINT = 'POINT',
+    POLYGON = 'POLYGON',
+    BOUNDING_BOX = 'BOUNDING_BOX'
+}
+
+export interface LocationBase {
+    type: LocationType;
+    place: string;
+}
+
+export interface LatLong {
+    latitude: number;
+    longitude: number;
+}
+
+export interface LocationPoint extends LocationBase {
+    type: LocationType.POINT,
+    point: LatLong
+}
+
+export interface LocationPolygon extends LocationBase {
+    type: LocationType.POLYGON,
+    polygon: Array<LatLong>
+}
+
+export interface LocationBoundingBox extends LocationBase {
+    type: LocationType.BOUNDING_BOX,
+    westLongitude: number,
+    eastLongitude: number,
+    nortLatitutde: number,
+    southLatitude: number
+}
+
+export type Location =
+    LocationPoint |
+    LocationPolygon |
+    LocationBoundingBox;
+
+export interface GeolocationData {
+    locations: Array<Location>
+}
+
+// DESCRIPTION
+
+export interface DescriptionResults {
+    description: Description;
+}
+
+export interface Description {
+    keywords: Array<string>;
+    abstract: string
+}
+
+export interface ReviewAndSubmitData {
+
+}
+
+// DOI FORM
+
+
+export enum StepStatus {
+    NONE = 'NONE',
+    INCOMPLETE = 'INCOMPLETE',
+    COMPLETE = 'COMPLETE'
+}
+
+export interface StepStateBase {
+    status: StepStatus
+}
+
+export interface StepStateNone extends StepStateBase {
+    status: StepStatus.NONE;
+}
+
+export interface StepStateIncomplete<P> extends StepStateBase {
+    status: StepStatus.INCOMPLETE;
+    params: P;
+}
+
+export interface StepStateComplete<R> extends StepStateBase {
+    status: StepStatus.COMPLETE;
+    value: R;
+}
+
+export type StepState<P, R> =
+    StepStateNone |
+    StepStateIncomplete<P> |
+    StepStateComplete<R>;
+
+
+export type STEPS3 = [
+    StepState<null, NarrativeSelectionResult>,
+    StepState<null, ORCIDLinkResult>,
+    StepState<{ narrativeTitle: string }, { title: string, author: Author }>,
+    StepState<null, CitationResults>,
+    StepState<null, ContractNumbersResults>,
+    StepState<null, GeolocationDataResults>,
+    StepState<null, DescriptionResults>,
+    StepState<null, ReviewAndSubmitData>
+]
+
+export interface DOIForm {
+    formId: string;
+    steps: STEPS3
+}
+
+
+// MODEL
 
 export class Model {
     config: Config;
@@ -188,7 +408,7 @@ export class Model {
         const result = JSON.parse(await response.text()) as GetProfileResult;
         return result.result;
     }
-    
+
     async isLinked(): Promise<boolean> {
         const response = await fetch(`${IS_LINKED_URL}`, {
             headers: {
@@ -203,7 +423,7 @@ export class Model {
         const result = JSON.parse(await response.text()) as { result: boolean };
         return result.result;
     }
-    
+
     async getLink(): Promise<LinkRecord | null> {
         const response = await fetch(`${GET_LINK_URL}`, {
             headers: {
@@ -215,7 +435,7 @@ export class Model {
             throw new Error(`Unexpected response: ${response.status}`);
         }
 
-        const result = JSON.parse(await response.text()) as { result: LinkRecord | null};
+        const result = JSON.parse(await response.text()) as { result: LinkRecord | null };
         return result.result;
     }
 
@@ -235,7 +455,6 @@ export class Model {
     }
 
     async saveWork(work: EditablePublication): Promise<Publication> {
-        console.log('saving work', work);
         const temp = {
             putCode: work.putCode,
             title: work.title,
@@ -245,7 +464,6 @@ export class Model {
             url: work.url,
             externalIds: work.externalIds
         };
-        console.log('saving', temp);
         const response = await fetch(SAVE_WORK_URL, {
             method: 'PUT',
             headers: {
@@ -264,7 +482,6 @@ export class Model {
     }
 
     async createWork(work: EditablePublication): Promise<Publication> {
-        console.log('saving work', work);
         const temp = {
             title: work.title,
             date: work.date,
@@ -273,7 +490,6 @@ export class Model {
             url: work.url,
             externalIds: work.externalIds
         };
-        console.log('saving', temp);
         const response = await fetch(CREATE_WORK_URL, {
             method: 'POST',
             headers: {
@@ -305,20 +521,317 @@ export class Model {
         return;
     }
 
-     publicationToEditablePublication(publication: Publication): EditablePublication {
-         const { putCode, publicationType, title, date, journal, url, externalIds } = publication;
-         console.log('CONVERTING', publication);
+    publicationToEditablePublication(publication: Publication): EditablePublication {
+        const { putCode, publicationType, title, date, journal, url, externalIds } = publication;
         return {
             putCode,
             publicationType, title, date, journal: journal || '', url: url || '',
             externalIds: externalIds || []
         }
-     }
-    
+    }
+
     async getEditableWork(putCode: string): Promise<EditablePublication> {
         const work = await this.getWork(putCode);
         return this.publicationToEditablePublication(work);
     }
+
+    async fetchNarratives({ from, to }: { from: number, to: number }): Promise<Array<NarrativeInfo>> {
+        const client = new NarrativeService({
+            url: this.config.services.ServiceWizard.url,
+            timeout: 1000,
+            token: this.auth.authInfo.token
+        });
+        const result = await client.list_narratives({ type: 'mine' })
+
+        return result.narratives
+            .map(({ nar, ws }) => {
+                const objectInfo = objectInfoToObject(nar);
+                const workspaceInfo = workspaceInfoToObject(ws);
+                return { objectInfo, workspaceInfo };
+            })
+            .filter(({ objectInfo, workspaceInfo }) => {
+                return (workspaceInfo.globalread === 'r');
+            })
+            .sort((a, b) => {
+                return -(a.objectInfo.saveDate.localeCompare(b.objectInfo.saveDate));
+            });
+        // .map(({ objectInfo, workspaceInfo }) => {
+        //     const { id: workspaceId, version } = objectInfo;
+        //     const { metadata } = workspaceInfo;
+        //     return {
+        //         workspaceId,
+        //         version,
+        //         title: metadata['narrative_nice_name']!
+        //     }
+        // });
+
+
+        // const narratives: Array<NarrativeInfo> = [];
+        // return narratives;
+    }
+
+    async getNarrativeCitations(narrativeObjectRef: string): Promise<{
+        narrativeAppCitations: NarrativeAppCitations,
+        markdownCitations: Array<Citation>
+    }> {
+        // get apps from narrative
+        const client = new GenericClient({
+            module: 'Workspace',
+            url: this.config.services.Workspace.url,
+            timeout: 1000,
+            token: this.auth.authInfo.token
+        });
+
+        // Sorry, untyped for now...
+        const [result] = await client.callFunc('get_objects2', [
+            {
+                "objects": [
+                    {
+                        "ref": narrativeObjectRef,
+                        "included": [
+                            "cells/[*]/cell_type",
+                            "cells/[*]/metadata/kbase/appCell/app/id",
+                            "cells/[*]/metadata/kbase/appCell/app/tag",
+                            "cells/[*]/metadata/kbase/appCell/app/version",
+                            "cells/[*]/metadata/kbase/appCell/app/gitCommitHash",
+                            "cells/[*]/source"
+                        ]
+                    }
+                ]
+
+            }
+        ]);
+
+        const cells = (result['data'][0]['data']['cells'] as Array<any>).map((cell) => {
+            switch (cell['cell_type']) {
+                case 'code':
+                    if ('appCell' in cell['metadata']['kbase']) {
+                        return {
+                            type: 'app',
+                            id: cell['metadata']['kbase']['appCell']['app']['id'],
+                            tag: cell['metadata']['kbase']['appCell']['app']['tag'],
+                            version: cell['metadata']['kbase']['appCell']['app']['version'],
+                            gitCommitHash: cell['metadata']['kbase']['appCell']['app']['gitCommitHash']
+                        }
+                    }
+                    break;
+                case 'markdown':
+                    return {
+                        type: 'markdown',
+                        content: cell['source']
+                    }
+            }
+            return null;
+        })
+            .filter((cell) => {
+                return cell !== null;
+            }) as Array<Cell>;
+
+
+        // Get app citations.
+
+
+        /*
+            Not sure this is worth it, but mirror the static narrative behavior.
+            By the time the narrative is published, it is possible that a release or beta
+            app will have been updated, so there is not a great reason to be precise about
+            fetching by the tag, rather than the most released.
+            Much better would be to be able to get method info via the git commit hash,
+            or the actual version (if version bumps are really enforced, not sure about that)
+        */
+        // Get all the tags in all the app cells.
+        // collect unique app ids across all app cells.
+
+        const apps: Array<CellApp> = [];
+        for (const cell of cells) {
+            if (cell.type === 'app') {
+                apps.push(cell);
+            }
+        }
+
+        const tags = apps.reduce<{ [k: string]: Set<string> }>((tags, cell) => {
+            if (cell.tag in tags) {
+                tags[cell.tag].add(cell.id);
+            } else {
+                tags[cell.tag] = new Set();
+                tags[cell.tag].add(cell.id);
+            }
+            return tags;
+        }, {});
+
+        const nms = new GenericClient({
+            module: 'NarrativeMethodStore',
+            url: this.config.services.NarrativeMethodStore.url,
+            timeout: 1000,
+            token: this.auth.authInfo.token
+        });
+
+        const narrativeAppCitations: NarrativeAppCitations = {
+            release: [],
+            beta: [],
+            dev: []
+        };
+
+        const appTags: Array<keyof NarrativeAppCitations> = ['release', 'beta', 'dev']
+        for (const tag of appTags) {
+            if (tag in tags) {
+
+                const ids = Array.from(tags[tag]);
+                const appsInfo = await nms.callFunc('get_method_full_info', [{
+                    ids,
+                    tag
+                }]);
+                const appPublications = (appsInfo[0] as unknown as JSONArray).map((appInfo) => {
+                    if (!isJSONObject(appInfo)) {
+                        throw new Error('Not an object');
+                    }
+                    const citations = (() => {
+                        const publications = appInfo['publications'];
+                        if (publications instanceof Array) {
+                            return publications.map<Citation>((publication) => {
+                                if (!isJSONObject(publication)) {
+                                    throw new Error('Publication not object!')
+                                }
+                                const { display_text: text, link } = publication;
+                                const m = /doi:([\S]+)/.exec(text as string);
+                                const doi = m ? m[1] : null;
+                                return {
+                                    citation: (text as unknown as string).trim() as string,
+                                    link: link as string,
+                                    doi: doi as string | null
+                                }
+                            });
+                        } else {
+                            return [];
+                        }
+                    })();
+                    return {
+                        id: appInfo['id'] as string,
+                        title: appInfo['name'] as string,
+                        citations
+                    };
+                });
+                narrativeAppCitations[tag] = appPublications;
+            }
+        }
+
+        // extract dois from markdown cells
+
+        // extract dois from app publications
+        const markdownCitations: Array<Citation> = [];
+        for (const cell of cells) {
+            if (cell.type === 'markdown') {
+                const mardownLines = (cell.content as string).split(/(?:(?:\n\n)|(?:  \n)|(?:\n\s*[-*]\s*))/)
+                    .filter((line) => {
+                        return (line.trim().length > 0);
+                    });
+                if (mardownLines[0].match(/references/i)) {
+                    const citations = mardownLines.slice(1).forEach((line) => {
+                        // remove any leading - or * if a list.
+                        const citation = (() => {
+                            const m = line.match(/^\s*[-*]*\s*(.*)$/);
+                            if (m) {
+                                return m[m.length - 1]
+                            }
+                            return line;
+                        })();
+                        const doi = (() => {
+                            const m = citation.match(/doi:\s*(\S+)/)
+                            if (m) {
+                                return m[1];
+                            }
+                            return null;
+                        })();
+                        markdownCitations.push({
+                            citation,
+                            doi
+                        });
+                    });
+                }
+            }
+        }
+
+        return { narrativeAppCitations, markdownCitations };
+
+        // console.log('extracted refs', refs);
+
+        // done.
+
+    }
+
+    async saveDOIForm(doiForm: DOIForm): Promise<boolean> {
+        // const temp = {
+        //     putCode: work.putCode,
+        //     title: work.title,
+        //     date: work.date,
+        //     publicationType: work.publicationType,
+        //     journal: work.journal,
+        //     url: work.url,
+        //     externalIds: work.externalIds
+        // };
+        const response = await fetch(SAVE_DOI_APPLICATION_URL, {
+            method: 'POST',
+            headers: {
+                Authorization: this.auth.authInfo.token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(doiForm)
+        });
+
+        if (response.status !== 200) {
+            throw new Error(`Unexpected response: ${response.status}`);
+        }
+
+        const result = JSON.parse(await response.text()) as { result: boolean };
+        return result.result;
+    }
+
+    async getDOIForm(formId: string): Promise<DOIForm> {
+        const response = await fetch(`${GET_DOI_APPLICATION_URL}/${formId}`, {
+            headers: {
+                authorization: this.auth.authInfo.token
+            }
+        });
+
+        if (response.status !== 200) {
+            throw new Error(`Unexpected response: ${response.status}`);
+        }
+
+        const result = JSON.parse(await response.text()) as { result: DOIForm };
+        return result.result;
+    }
+
+    // async extractCitationsFromNarrativeApps(objectInfo: ObjectInfo) {
+    //     // get apps from narrative
+    //     const client = new GenericClient({
+    //         module: 'Workspace',
+    //         url: this.config.services.Workspace.url,
+    //         timeout: 1000,
+    //         token: this.auth.authInfo.token
+    //     });
+    //     const [result] = await client.callFunc('get_objects2', [
+    //         {
+    //             "objects": [
+    //                 {
+    //                     "ref": objectInfo.ref,
+    //                     "included": [
+    //                         "cells"
+    //                     ]
+    //                 }
+    //             ]
+
+    //         }
+    //     ]);
+
+
+
+    //     // done.
+
+    // }
+
+    // async extractCitationsFromNarrativeMarkdown() {
+
+    // }
 
     // async getStaticNarrative(staticNarrativeId: string) {
     //     const client = new StaticNarrative({

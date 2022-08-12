@@ -1,30 +1,39 @@
 export enum FieldStatus {
+    NONE = 'NONE',
     INITIAL = 'INITIAL',
     VALID = 'VALID',
     INVALID = 'INVALID'
 }
 
-export interface FieldStateBase<T> {
-    status: FieldStatus,
+export interface FieldStateBase {
+    status: FieldStatus
+}
+export interface FieldStateNone extends FieldStateBase {
+    status: FieldStatus.NONE
+}
+
+export interface FieldStateInitial<R, T> extends FieldStateBase {
+    status: FieldStatus.INITIAL,
+    rawValue: R,
     value: T
 }
 
-export interface FieldStateInitial<T> extends FieldStateBase<T> {
-    status: FieldStatus.INITIAL
-}
-
-export interface FieldStateValid<T> extends FieldStateBase<T> {
-    status: FieldStatus.VALID
-}
-
-export interface FieldStateInvalid<T> extends FieldStateBase<T> {
+export interface FieldStateInvalid<R> extends FieldStateBase {
     status: FieldStatus.INVALID,
+    rawValue: R,
     error: {
         message: string
     }
 }
 
-export type FieldState<T> =
-    FieldStateInitial<T> |
-    FieldStateValid<T> |
-    FieldStateInvalid<T>;
+export interface FieldStateValid<R, T> extends FieldStateBase {
+    status: FieldStatus.VALID,
+    rawValue: R,
+    value: T
+}
+
+export type FieldState<R, T> =
+    FieldStateNone |
+    FieldStateInitial<R, T> |
+    FieldStateValid<R, T> |
+    FieldStateInvalid<R>;

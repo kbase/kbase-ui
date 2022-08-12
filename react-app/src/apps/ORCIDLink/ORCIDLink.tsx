@@ -13,6 +13,7 @@ import InterstitialPage1 from './demos/Interstitial/page1/Controller';
 import RequestDOI from './demos/RequestDOI/Controller';
 import Error from './Error';
 import { ReturnLink } from './Model';
+import { JSONObject } from 'lib/json';
 
 export interface ORCIDLinkProps extends RouteProps {
     config: Config;
@@ -153,11 +154,19 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                         const process = (() => {
                             const params = props.params;
                             if (params.has('process')) {
-                                return JSON.parse(props.params.get('process')!) as { [k: string]: string }
+                                return JSON.parse(props.params.get('process')!) as JSONObject
                             }
                             return;
                         })();
-                        return <RequestDOI {...this.props} auth={authValue.value} process={process} />;
+
+                        const formId = (() => {
+                            const params = props.params;
+                            if (params.has('formId')) {
+                                return props.params.get('formId')!;
+                            }
+                            return;
+                        })();
+                        return <RequestDOI {...this.props} auth={authValue.value} process={process} formId={formId} />;
                     }}
                 </AuthContext.Consumer>
 

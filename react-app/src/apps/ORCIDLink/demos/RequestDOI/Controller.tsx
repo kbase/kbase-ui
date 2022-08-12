@@ -3,9 +3,11 @@ import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import View from './View';
-import { Model, ORCIDProfile } from 'apps/ORCIDLink/Model';
+import { DOIForm, Model, ORCIDProfile, StepStatus } from 'apps/ORCIDLink/Model';
 import { Config } from 'types/config';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
+import { JSONObject } from 'lib/json';
+import * as uuid from 'uuid'
 
 
 export interface ORCIDLinkStateBase {
@@ -29,12 +31,14 @@ export type ORCIDLinkState =
 export interface ControllerProps {
     config: Config;
     auth: AuthenticationStateAuthenticated;
-    process?: { [k: string]: string };
+    process?: JSONObject;
+    formId?: string;
     setTitle: (title: string) => void;
 }
 
 export interface DataState {
-    orcidState: ORCIDLinkState
+    orcidState: ORCIDLinkState,
+    doiForm: DOIForm
 }
 
 interface ControllerState {
@@ -79,6 +83,50 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             });
         });
         try {
+
+            const doiForm = await (async () => {
+                if (this.props.formId) {
+                    return this.model.getDOIForm(this.props.formId);
+                }
+
+                const formId = uuid.v4();
+                const newURL = new URL(document.location.href);
+                newURL.searchParams.set('formId', formId);
+                // document.location.href = newURL.toString();
+                window.history.pushState(null, '', newURL);
+                const doiForm: DOIForm = {
+                    formId,
+                    steps: [
+                        {
+                            status: StepStatus.INCOMPLETE,
+                            params: null
+                        },
+                        {
+                            status: StepStatus.NONE,
+                        },
+                        {
+                            status: StepStatus.NONE,
+                        },
+                        {
+                            status: StepStatus.NONE,
+                        },
+                        {
+                            status: StepStatus.NONE,
+                        },
+                        {
+                            status: StepStatus.NONE,
+                        },
+                        {
+                            status: StepStatus.NONE,
+                        },
+                        {
+                            status: StepStatus.NONE,
+                        }
+                    ]
+                }
+                return doiForm;
+            })();
+
             const isLinked = await this.model.isLinked();
             if (!isLinked) {
                 this.setState({
@@ -87,13 +135,13 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                         value: {
                             orcidState: {
                                 status: ORCIDLinkStatus.NOT_LINKED
-                            }
+                            },
+                            doiForm
                         }
                     }
                 });
             } else {
                 const orcidProfile = await this.model.getProfile();
-                // const params = this.props.
                 this.setState({
                     dataState: {
                         status: AsyncProcessStatus.SUCCESS,
@@ -101,7 +149,8 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                             orcidState: {
                                 status: ORCIDLinkStatus.LINKED,
                                 orcidProfile
-                            }
+                            },
+                            doiForm
                         }
                     }
                 });
@@ -132,7 +181,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     // Renderers
 
     renderLoading() {
-        return <Loading message="Loading ORCID Interstitial Page ..." />;
+        return <Loading message="Loading DOI Request Form ..." />;
     }
 
     renderError({ message }: { message: string }) {
@@ -140,7 +189,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     }
 
     renderSuccess(dataState: DataState) {
-        return <View orcidState={dataState.orcidState} process={this.props.process} model={this.model} />
+        return <View orcidState={dataState.orcidState} process={this.props.process} doiForm={dataState.doiForm} model={this.model} />
     }
 
     render() {
