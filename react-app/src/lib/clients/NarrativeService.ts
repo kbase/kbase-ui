@@ -1,6 +1,7 @@
 import {DynamicServiceClient} from "../kb_lib/comm/JSONRPC11/DynamicServiceClient";
 import {JSONObject, JSONObjectOf, objectToJSONObject} from "@kbase/ui-lib/lib/json";
 import { JSONLikeObject } from "../kb_lib/jsonLike";
+import { ObjectInfoRaw, WorkspaceInfoRaw } from "lib/kb_lib/comm/coreServices/Workspace";
 
 export interface RenameNarrativeParams extends JSONObject {
     narrative_ref: string;
@@ -79,6 +80,24 @@ export interface CreateNewNarrativeResult extends JSONObject {
     narrativeInfo: ObjectInfo;
 }
 
+export interface ListNarrativesParams extends JSONObject {
+    type: 'mine' | 'public' | 'shared'
+}
+
+
+/*
+    Note: the service re-uses the "Narrative" object like this in several 
+    methods, but the property names are different in each one!
+*/
+export interface Narrative extends JSONObject{
+    ws: WorkspaceInfoRaw;
+    nar: ObjectInfoRaw
+}
+
+export interface ListNarrativesResult extends JSONObject {
+    narratives: Array<Narrative>
+}
+
 export class NarrativeService extends DynamicServiceClient {
     module:string = 'NarrativeService'
 
@@ -100,6 +119,14 @@ export class NarrativeService extends DynamicServiceClient {
         const [result] = await this.callFunc<[JSONObject], [CreateNewNarrativeResult]>('create_new_narrative', [
             objectToJSONObject(params)
         ]);
+        return result;
+    }
+
+    async list_narratives(params: ListNarrativesParams): Promise<ListNarrativesResult> {
+         const [result] = await this.callFunc<[ListNarrativesParams], [ListNarrativesResult]>('list_narratives', [
+            params
+         ]);
+        // Unfortunately, list_narratives does not return beautiful objectified infos.
         return result;
     }
 }
