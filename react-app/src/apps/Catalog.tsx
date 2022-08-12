@@ -63,12 +63,12 @@ export default class Catalog extends Component<CatalogProps, CatalogState> {
                 view: 'catalogStatus'
             },
             {
-                path: 'catalog/apps/:namespace/:id/:tag?',
+                path: '^(appcatalog|catalog)$/^(app|apps)$/:namespace/:id/:tag?',
                 auth: false,
                 view: 'appView'
             },
             {
-                path: 'catalog/apps/:tag?',
+                path: '^(appcatalog|catalog)$/apps/:tag?',
                 auth: false,
                 view: 'appsBrowser'
             },
@@ -99,8 +99,8 @@ export default class Catalog extends Component<CatalogProps, CatalogState> {
             }
         ];
 
-        const routes = routeSpecs.map(({path, view, auth}) => {
-            return  new Route(path, {authenticationRequired: auth}, (props: RouteProps) => {
+        const routes = routeSpecs.map(({ path, view, auth }) => {
+            return new Route(path, { authenticationRequired: auth }, (props: RouteProps) => {
                 return <PluginWrapper2
                     {...props}
                     {...common}

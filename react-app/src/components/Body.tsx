@@ -59,14 +59,6 @@ export default class Body extends Component<BodyProps, BodyState> {
             //         />
             //     );
             // }),
-            new Route('catalog/*', { authenticationRequired: false }, (props: RouteProps) => {
-                return (
-                    <Catalog
-                        {...props}
-                        {...this.props}
-                    />
-                );
-            }),
             new Route('orcidlink/*', { authenticationRequired: false }, (props: RouteProps) => {
                 return (
                     <ORCIDLink
