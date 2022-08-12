@@ -156,6 +156,10 @@ export default class Preview extends Component<Props, State> {
                             );
                     }
                 } else {
+                    // TODO: do a better job of showing obsolete cell types.
+                    // E.g. some don't have a metadata.kbase because they are old;
+                    // and rather have a kbstate e.g. see
+                    // https://ci.kbase.us/narrative/2795
                     return (
                         <UnrecognizedCellView
                             title="Unrecognized"

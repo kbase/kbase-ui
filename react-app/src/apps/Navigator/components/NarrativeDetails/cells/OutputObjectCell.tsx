@@ -7,12 +7,26 @@ import styles from './OutputObject.module.css';
 import cellStyles from './cell.module.css';
 import EZTooltip from '../../EZTooltip';
 import RenderJSON from '../../../../../components/RenderJSON';
+import Empty from 'components/Empty';
 
 interface OutputObjectCellProps {
     cell: OutputObjectCell;
 }
 
 export default class OutputObjectCellView extends Component<OutputObjectCellProps> {
+    renderParams() {
+        if (this.props.cell.metadata.kbase.outputCell.widget) {
+            return <RenderJSON
+                value={
+                    this.props.cell
+                        .metadata.kbase
+                        .outputCell
+                        .widget.params
+                }
+            />
+        }
+        return <Empty message="unknown" />
+    }
     render() {
         if (!('outputCell' in this.props.cell.metadata.kbase)) {
             return (
@@ -38,6 +52,15 @@ export default class OutputObjectCellView extends Component<OutputObjectCellProp
             } else {
                 return {
                     title: 'unknown',
+                };
+            }
+        })();
+        const { tag } = (() => {
+            if (this.props.cell.metadata.kbase.outputCell.widget) {
+                return this.props.cell.metadata.kbase.outputCell.widget;
+            } else {
+                return {
+                    tag: 'unknown',
                 };
             }
         })();
@@ -81,21 +104,10 @@ export default class OutputObjectCellView extends Component<OutputObjectCellProp
                                                 <td>
                                                     <EZTooltip
                                                         id="saved-at-tooltip"
-                                                        tooltip={
-                                                            this.props.cell
-                                                                .metadata.kbase
-                                                                .outputCell
-                                                                .widget.name
-                                                        }
+                                                        tooltip={name}
                                                     >
                                                         <span>
-                                                            {
-                                                                this.props.cell
-                                                                    .metadata
-                                                                    .kbase
-                                                                    .outputCell
-                                                                    .widget.name
-                                                            }
+                                                            {name}
                                                         </span>
                                                     </EZTooltip>
                                                 </td>
@@ -103,24 +115,13 @@ export default class OutputObjectCellView extends Component<OutputObjectCellProp
                                             <tr>
                                                 <th>Tag</th>
                                                 <td>
-                                                    {
-                                                        this.props.cell.metadata
-                                                            .kbase.outputCell
-                                                            .widget.tag
-                                                    }
+                                                    {tag}
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <th>Params</th>
                                                 <td>
-                                                    <RenderJSON
-                                                        value={
-                                                            this.props.cell
-                                                                .metadata.kbase
-                                                                .outputCell
-                                                                .widget.params
-                                                        }
-                                                    />
+                                                    {this.renderParams()}
                                                 </td>
                                             </tr>
                                         </tbody>
