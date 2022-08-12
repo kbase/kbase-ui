@@ -20,9 +20,10 @@ export default class GenericClient extends ServiceClient {
         method: string,
         params: GenericClientParams
     ): Promise<GenericClientResult> {
-        return await this.callFunc<GenericClientParams, GenericClientResult>(
+        const result = await this.callFunc<GenericClientParams, GenericClientResult>(
             method,
             params
         );
+        return result;
     }
 }
