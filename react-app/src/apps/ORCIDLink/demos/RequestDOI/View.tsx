@@ -10,7 +10,7 @@ import ORCIDLink from './steps/ORCIDLinkController';
 import { JSONObject } from 'lib/json';
 import ContractNumbersFormController from './steps/ContractNumbersFormController';
 import GeolocationController from './steps/Geolocation/GeolocationController';
-import DescriptionController from './steps/DescriptionController';
+import DescriptionController from './steps/Description/Controller';
 import ReviewAndSubmitController from './steps/ReviewAndSubmitController';
 
 

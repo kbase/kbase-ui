@@ -1,11 +1,12 @@
 import { GeolocationData, Location, LocationBoundingBox, LocationPoint, LocationPolygon, LocationType, Model } from "apps/ORCIDLink/Model";
-import Empty from "components/Empty";
+
 import Well from "components/Well";
 import { Component } from "react";
-import { Stack, Row, Col, Button, FormControl, Form, Table } from "react-bootstrap";
-import { FieldState, FieldStatus } from "../../common";
+import { Stack, Row, Col, Button, Form, Table } from "react-bootstrap";
+
 import LocationPointEditor from './LocationPointEditor/Controller';
-import Select, { StylesConfig } from 'react-select';
+import BoundingBoxEditor from './BoundingBox/Controller';
+
 
 export interface GeolocationFormProps {
     geolocationData: GeolocationData;
@@ -131,7 +132,8 @@ export default class GeolocationForm extends Component<GeolocationFormProps, Geo
     renderLocations() {
         const rows = (() => {
             if (this.props.geolocationData.locations.length === 0) {
-                return <Empty message="No locations" />;
+                // return <Empty message="No locations" />;
+                return <tr><td colSpan={2} style={{ textAlign: 'center' }}><i>No locations yet entered</i></td></tr>
             }
             return this.props.geolocationData.locations.map((location, index) => {
                 const description = (() => {
@@ -187,9 +189,9 @@ export default class GeolocationForm extends Component<GeolocationFormProps, Geo
                             case LocationType.POLYGON:
                                 return <div>Not supported yet</div>
                             case LocationType.BOUNDING_BOX:
-                                return <div>Not supported yet</div>
+                                return <BoundingBoxEditor model={this.props.model}
+                                    onDone={(boundingBox: LocationBoundingBox) => this.props.addLocation(boundingBox)} />
                         }
-
                 }
         }
     }

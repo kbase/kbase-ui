@@ -57,7 +57,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             // TODO: validation
             switch (place.status) {
                 case FieldStatus.NONE:
-                    return place;
+                // return place;
                 case FieldStatus.INITIAL:
                 case FieldStatus.VALID:
                 case FieldStatus.INVALID:
@@ -84,7 +84,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             // TODO: validation
             switch (latitude.status) {
                 case FieldStatus.NONE:
-                    return latitude;
+                // return latitude;
                 case FieldStatus.INITIAL:
                 case FieldStatus.VALID:
                 case FieldStatus.INVALID:
@@ -111,7 +111,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             // TODO: validation
             switch (longitude.status) {
                 case FieldStatus.NONE:
-                    return longitude;
+                // return longitude;
                 case FieldStatus.INITIAL:
                 case FieldStatus.VALID:
                 case FieldStatus.INVALID:
@@ -122,6 +122,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                     }
             }
         })(this.state.editor.form.latitude);
+
         this.setState({
             editor: {
                 ...this.state.editor,
@@ -138,55 +139,10 @@ export default class Controller extends Component<ControllerProps, ControllerSta
 
     onUpdateLatitude(value: string) {
         this.updateLatitude(value);
-        // try {
-        //     this.setState({
-        //         editor: {
-        //             ...this.state.editor,
-        //             form: {
-        //                 ...this.state.editor.form,
-        //                 latitude: {
-        //                     status: FieldStatus.VALID,
-        //                     value: parseInt(latitude, 10)
-        //                 }
-        //             }
-        //         }
-        //     })
-        // } catch (ex) {
-        //     const message = (() => {
-        //         if (ex instanceof Error) {
-        //             return ex.message;
-        //         }
-        //         return 'Unknown error';
-        //     })();
-        //     this.setState({
-        //         editor: {
-        //             ...this.state.editor,
-        //             form: {
-        //                 ...this.state.editor.form,
-        //                 latitude: {
-        //                     status: FieldStatus.INVALID,
-        //                     error: { message }
-        //                 }
-        //             }
-        //         }
-        //     })
-        // }
     }
 
     onUpdateLongitude(value: string) {
         this.updateLongitude(value);
-        // this.setState({
-        //     editor: {
-        //         ...this.state.editor,
-        //         form: {
-        //             ...this.state.editor.form,
-        //             longitude: {
-        //                 status: FieldStatus.VALID,
-        //                 value: parseInt(longitude, 10)
-        //             }
-        //         }
-        //     }
-        // })
     }
 
     transform(): LocationPoint {
@@ -199,8 +155,9 @@ export default class Controller extends Component<ControllerProps, ControllerSta
 
         const { place, latitude, longitude } = this.state.editor.form;
 
+        console.log(place, latitude, longitude);
         if (!(place.status === FieldStatus.VALID && latitude.status === FieldStatus.VALID && longitude.status === FieldStatus.VALID)) {
-            throw new Error('Attempt to transfor fields when one or more are not VALID');
+            throw new Error('Attempt to transform fields when one or more are not VALID');
         }
 
         // const editor = this.state.editor.form

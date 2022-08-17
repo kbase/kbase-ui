@@ -27,7 +27,7 @@ export default class CitationsForm extends Component<CitationsFormProps> {
                 <Col md={4}>{ifEmpty(doi, 'n/a - cannot be sent to OSTI')}</Col>
             </Row>
         });
-        return <Stack gap={1}>
+        return <Stack gap={2}>
             <Row className={styles.header} style={{ borderBottom: '1px dashed rgb(200, 200, 200)' }}>
                 <Col md={8}>Citation</Col>
                 <Col md={4}>DOI</Col>
@@ -147,14 +147,18 @@ export default class CitationsForm extends Component<CitationsFormProps> {
 
     render() {
         return <Well style={{ padding: '1em', marginBottom: '1em' }}>
-            {this.renderAllCitations()}
-            <Row>
-                <Col md={12}>
-                    <Row style={{ justifyContent: 'center' }} >
-                        <Button variant="primary" className="w-auto" onClick={this.props.onDone}>Next <span className="fa fa-hand-o-down" /></Button>
-                    </Row>
-                </Col>
-            </Row>
+            <Stack gap={2}>
+                <Row>
+                    {this.renderAllCitations()}
+                </Row>
+                <Row>
+                    <Col md={12}>
+                        <Row style={{ justifyContent: 'center' }} >
+                            <Button variant="primary" className="w-auto" onClick={this.props.onDone}>Next <span className="fa fa-hand-o-down" /></Button>
+                        </Row>
+                    </Col>
+                </Row>
+            </Stack>
         </Well>
     }
 }

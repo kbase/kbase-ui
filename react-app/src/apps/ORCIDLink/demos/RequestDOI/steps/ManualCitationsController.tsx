@@ -12,7 +12,7 @@ interface ManualCitationsControllerState {
 export default class ManualCitationsController extends Component<ManualCitationsControllerProps, ManualCitationsControllerState> {
     render() {
         return <div>
-            Manual Citations Controller
+            TO BE DONE
         </div>
     }
 }

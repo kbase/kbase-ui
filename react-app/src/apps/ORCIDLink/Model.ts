@@ -301,12 +301,16 @@ export interface LocationPolygon extends LocationBase {
     polygon: Array<LatLong>
 }
 
+export interface BoundingBox {
+    westLongitude: number,
+    southLatitude: number
+    eastLongitude: number,
+    northLatitude: number,
+}
+
 export interface LocationBoundingBox extends LocationBase {
     type: LocationType.BOUNDING_BOX,
-    westLongitude: number,
-    eastLongitude: number,
-    nortLatitutde: number,
-    southLatitude: number
+    boundingBox: BoundingBox
 }
 
 export type Location =
