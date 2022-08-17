@@ -1,6 +1,6 @@
-import {Component} from 'react';
-import {MenuItem} from '../../types/menu';
-import {Dropdown} from 'react-bootstrap';
+import { Component } from 'react';
+import { MenuItem } from '../../types/menu';
+import { Dropdown } from 'react-bootstrap';
 import styles from './HamburgerMenu.module.css';
 
 
@@ -24,7 +24,7 @@ export default class HamburgerMenu extends Component<HamburgerMenuProps,
             if (menuItem.icon) {
                 icon = (
                     <div className={styles.navbarIconWrapper} key={menuItem.name}>
-                        <span className={`fa fa-${menuItem.icon} ${styles.navbarIcon}`}/>
+                        <span className={`fa fa-${menuItem.icon} ${styles.navbarIcon}`} />
                     </div>
                 );
             }
@@ -33,7 +33,7 @@ export default class HamburgerMenu extends Component<HamburgerMenuProps,
                     <div key={menuItem.name}>
                         <Dropdown.Item
                             key={menuItem.name}
-                            href={`/#${menuItem.path}`}
+                            href={`#${menuItem.path}`}
                             target={menuItem.newWindow ? '_blank' : undefined}
                             rel="noreferrer"
                         >
@@ -63,7 +63,7 @@ export default class HamburgerMenu extends Component<HamburgerMenuProps,
     renderDivider(id: string) {
         return (
             <div key={id}>
-                <Dropdown.Divider key={id}/>
+                <Dropdown.Divider key={id} />
             </div>
         );
     }

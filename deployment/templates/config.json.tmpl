@@ -2,6 +2,7 @@
     "deploy": {
         "id": "kbase-ui",
         "target": "/kb/deployment/app",
+        "basePath":  "{{ default "" .Env.deploy_basepath }}",
         "environment": "{{ .Env.deploy_environment }}",
         "displayEnvironment": {{ eq .Env.deploy_environment "prod" | ternary true false }},
         "hostname": "{{ .Env.deploy_hostname }}",

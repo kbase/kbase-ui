@@ -190,7 +190,7 @@ http {
             proxy_set_header Host {{ .Env.deploy_ui_hostname }};
         }
 
-        location / {
+        location {{ .Env.base_path }} {
             client_max_body_size 300M;
             proxy_pass http://kbase_ui;
             proxy_set_header Connection "";
@@ -394,7 +394,7 @@ http {
         #    proxy_set_header Host {{ .Env.deploy_hostname }};
         #}
 
-        location / {
+        location {{ .Env.base_path }} {
             proxy_pass http://kbase_ui;
             proxy_set_header Connection "";
             client_max_body_size 300M;

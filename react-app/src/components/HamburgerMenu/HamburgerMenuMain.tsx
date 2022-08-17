@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { arraysIntersect } from '../../lib/utils';
-import { Config, HamburgerMenuDefintion } from '../../types/config';
+import { Config } from '../../types/config';
 import { Menu, MenuItem } from '../../types/menu';
 import {
     AuthenticationState,

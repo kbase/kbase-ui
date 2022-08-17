@@ -1,12 +1,12 @@
 import React from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
 import { DataObject } from '../../utils/NarrativeModel';
 import { getWSTypeName } from '../../utils/stringUtils';
 import { TypeIcon } from '../Icon';
-import { Config } from '../../../../types/config';
-import { AuthInfo } from '../../../../contexts/Auth';
+import { Config } from 'types/config';
+import { AuthInfo } from 'contexts/Auth';
+import Empty from 'components/Empty';
 import './DataView.css';
-import { Container, Row, Col } from 'react-bootstrap';
-import Empty from '../../../../components/Empty';
 
 interface Props {
     accessGroup: number;
@@ -25,7 +25,7 @@ export default class DataView extends React.Component<Props, {}> {
             <div key={key} className="row my-3">
                 <div className="col-auto">
                     <TypeIcon
-                        objectType={obj.obj_type}
+                        objectType={typeName}
                         authInfo={this.props.authInfo}
                         config={this.props.config}
                     />
@@ -36,7 +36,7 @@ export default class DataView extends React.Component<Props, {}> {
                 >
                     <div className="-name">
                         <a
-                            href={`/#dataview/${workspaceId}/${obj.name}`}
+                            href={`#dataview/${workspaceId}/${obj.name}`}
                             target="_blank"
                             rel="noopener noreferrer"
                         >
@@ -46,7 +46,7 @@ export default class DataView extends React.Component<Props, {}> {
                     {/*<div className="">{obj.readableType}</div>*/}
                     <div className="-type">
                         <a
-                            href={`/#spec/type/${obj.obj_type}`}
+                            href={`#spec/type/${obj.obj_type}`}
                             target="_blank"
                             rel="noopener noreferrer"
                         >

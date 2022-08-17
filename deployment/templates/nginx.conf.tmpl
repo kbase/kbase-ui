@@ -63,7 +63,7 @@ http {
         listen      {{ default "80" .Env.nginx_listen }} default_server;
         server_name {{ default "localhost" .Env.nginx_server_name }};
        
-        location /ws/ {
+        location {{ default "" .Env.base_path }}/ws/ {
             client_max_body_size 300M;
             proxy_pass http://localhost:3000/ws/;
             proxy_set_header Upgrade $http_upgrade; 
@@ -71,7 +71,7 @@ http {
             proxy_set_header Host {{ default .Env.deploy_hostname .Env.deploy_ui_hostname }};
         }
   
-        location / {
+        location {{ default "" .Env.base_path }}/ {
             # Ensure that index.html is invoked even if a path is
             # specified and doesn't exist.
             # try_files $uri /$uri /index.html;
@@ -83,18 +83,18 @@ http {
             root /kb/deployment/app;
         }
         
-        location /__ping__ {
+        location {{ default "" .Env.base_path }}/__ping__ {
             default_type text/html;
             return 204;
         }
 
-        location /data/__perf__ {
+        location {{ default "" .Env.base_path }}/data/__perf__ {
             gzip off;
             add_header Cache-Control 'no-cache';
             root /kb/deployment/app;
         }
 
-        location /modules/plugins/ {
+        location {{ default "" .Env.base_path }}/modules/plugins/ {
             ssi_silent_errors off;
             allow all;
             add_header Cache-Control 'no-cache';
@@ -102,7 +102,7 @@ http {
         }
 
         # Format is /__poke/https://www.example.com/some/path
-        location ~* ^/__poke/docs/(.*)$ {
+        location ~* ^{{ default "" .Env.base_path }}/__poke/docs/(.*)$ {
             proxy_hide_header Content-Security-Policy;
             proxy_hide_header X-Content-Security-Policy;
             proxy_hide_header X-Webkit-Csp;
@@ -139,7 +139,7 @@ http {
             error_page 301 302 307 = @handle_redirect_docs;
         }
 
-        location ~* ^/__poke/marketing/(.*)$ {
+        location ~* ^{{ default "" .Env.base_path }}/__poke/marketing/(.*)$ {
             proxy_pass https://marketing/$1;
             proxy_http_version 1.1;
             proxy_set_header Connection "";

@@ -10,7 +10,7 @@ export interface LoginProps {
     config: Config;
 }
 
-interface LoginState {}
+interface LoginState { }
 
 export default class Login extends Component<LoginProps, LoginState> {
     constructor(props: LoginProps) {
@@ -75,7 +75,7 @@ export default class Login extends Component<LoginProps, LoginState> {
             authState: this.props.authState,
             // plugin: this.props.plugin,
             signout: this.doSignout.bind(this),
-            isLoginView: false,
+            isLoginView: false
         };
         return <Signin {...props} />;
     }

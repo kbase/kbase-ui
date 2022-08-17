@@ -33,7 +33,7 @@ export default class HamburgerMenu extends Component<HamburgerMenuProps,
                     <div key={menuItem.name}>
                         <Dropdown.Item
                             key={menuItem.name}
-                            href={`/#${menuItem.path}`}
+                            href={`#${menuItem.path}`}
                             target={menuItem.newWindow ? '_blank' : undefined}
                             rel="noreferrer"
                         >

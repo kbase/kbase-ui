@@ -132,7 +132,7 @@ export default class ConfigWrapper extends React.Component<
                     version: pluginInfo.git.tag || "n/a"
                 }
             });
-            const config: Config = {...rawConfig, build: configBuildInfo, plugins: configPluginsInfo};
+            const config: Config = { ...rawConfig, build: configBuildInfo, plugins: configPluginsInfo };
             this.setState({
                 configState: {
                     status: AsyncProcessStatus.SUCCESS,

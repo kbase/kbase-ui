@@ -425,7 +425,7 @@ export default class Body extends Component<BodyProps, BodyState> {
 
             // Empty route
             new Route('', { authenticationRequired: false }, (props: RouteProps) => {
-                changeHash2('narratives');
+                window.location.pathname = '/narratives';
                 return <div>Redirecting...</div>;
             }),
 
