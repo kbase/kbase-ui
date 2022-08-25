@@ -1,7 +1,12 @@
 const { createProxyMiddleware, re } = require('http-proxy-middleware');
 
 // Strangely, /index.html is the root path that CRA dev container sets.
-const pluginsRoot = '/index.html/deploy/plugins/';
+
+const basePath = process.env.PUBLIC_URL
+
+const pluginsRoot = `/index.html${basePath}/deploy/plugins/`;
+
+console.log('base path', basePath, pluginsRoot);
 
 module.exports = function (app) {
     //   app.use(
@@ -20,43 +25,43 @@ module.exports = function (app) {
         })
     );
     app.use(
-        '/modules/plugins',
+        `${basePath}/modules/plugins`,
         createProxyMiddleware({
             target: 'http://kbase-ui-deploy:80/plugins/',
             changeOrigin: true,
-            pathRewrite: { '^/modules/plugins': '' }
+            pathRewrite: { [`^${basePath}/modules/plugins`]: '' }
         })
     );
     app.use(
-        '/deploy/plugins',
+        `${basePath}/deploy/plugins`,
         createProxyMiddleware({
             target: 'http://kbase-ui-deploy:80/plugins/',
             changeOrigin: true,
-            pathRewrite: { '^/deploy/plugins': '' }
+            pathRewrite: { [`^${basePath}/deploy/plugins`]: '' }
         })
     );
     app.use(
-        '/plugins',
+        `${basePath}/plugins`,
         createProxyMiddleware({
             target: 'http://kbase-ui-deploy:80/plugins/',
             changeOrigin: true,
-            pathRewrite: { '^/plugins': '' }
+            pathRewrite: { [`^${basePath}/plugins`]: '' }
         })
     );
     app.use(
-        '/deploy',
+        `${basePath}/deploy`,
         createProxyMiddleware({
             target: 'http://kbase-ui-deploy:80/deploy/',
             changeOrigin: true,
-            pathRewrite: { '^/deploy': '' }
+            pathRewrite: {[`^${basePath}/deploy`]: '' }
         })
     );
     app.use(
-        '/build',
+        `${basePath}/build`,
         createProxyMiddleware({
             target: 'http://kbase-ui-deploy:80/build/',
             changeOrigin: true,
-            pathRewrite: { '^/build': '' }
+            pathRewrite: { [`^${basePath}/build`]: '' }
         })
     );
 };
