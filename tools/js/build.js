@@ -35,6 +35,11 @@ const numeral = require('numeral');
 const tar = require('tar');
 const yargs = require('yargs');
 
+// const {createWriteStream} = require('node:fs');
+// const {pipeline} = require('node:stream');
+// const {promisify} = require('node:util');
+const fetch = require('node-fetch');
+
 // UTILS
 function run(command, { ignoreStdErr = false, verbose = false, options = {} } = {}) {
     return new Promise(function(resolve, reject) {
@@ -59,6 +64,44 @@ function gitClone(url, dest, branch = 'master') {
     const commandLine = ['git clone --quiet --depth 1', '--branch', branch, url, dest].join(' ');
     console.log('git cloning...', commandLine);
     return run(commandLine, { ignoreStdErr: true });
+}
+
+async function gitReleaseDist(gitAccount, repoName, dest, tag) {
+    const releaseURL = `https://api.github.com/repos/${gitAccount}/${repoName}/releases/tags/${tag}`
+    // TODO: github token
+    const headers = {
+        Accept: 'application/vnd.github+json'
+    }
+    const response = await fetch(releaseURL, {headers});
+    const release = await response.json();
+
+    // console.log('release', release.assets);
+
+    const {url, content_type} = release.assets.filter(({name}) => {
+        return name === 'dist.tgz';
+    })[0];
+
+    const response2 = await fetch(url, {
+        headers: {
+            Accept: 'application/octet-stream'
+        }
+    });
+
+    console.log('SUPPOSEDLY fetching asset...', url, content_type);
+
+    const stream = fs.createWriteStream(dest);
+    return response2.body.pipe(stream);q
+
+    // const streamPipeline = promisify(pipeline);
+
+    // if (!response2.ok) throw new Error(`unexpected response ${response.statusText}`);
+
+    // await streamPipeline(response2.body, createWriteStream(dest));
+
+
+    // const commandLine = ['git clone --quiet --depth 1', '--branch', branch, url, dest].join(' ');
+    // console.log('git cloning...', commandLine);
+    // return run(commandLine, { ignoreStdErr: true });
 }
 
 function gitInfo(state) {
@@ -221,7 +264,7 @@ function fetchPluginsFromGithub(state) {
             // First generate urls to all the plugin repos.
             const githubPlugins = pluginConfig.plugins
                 .filter(function(plugin) {
-                    return (typeof plugin === 'object' && !plugin.internal && plugin.source.github);
+                    return (typeof plugin === 'object' && !plugin.internal && plugin.source.github && !plugin.source.github.release);
                 });
             return Promise.each(githubPlugins, (plugin) => {
                 const repoName = plugin.source.github.name || plugin.globalName,
@@ -244,6 +287,68 @@ function fetchPluginsFromGithub(state) {
                             branch,
                             gitAccount,
                             url,
+                            gitInfo
+                        });
+                    });
+            });
+        })
+        .then(() => {
+            return state;
+        });
+}
+
+function fetchPluginsFromGithubRelease(state) {
+    // Load plugin config
+    const root = state.environment.path;
+    let pluginConfig;
+    const pluginConfigFile = root.concat(['config', 'plugins.yml']).join('/');
+    const gitDestination = root.concat(['gitReleases']);
+    state.pluginsManifest = [];
+
+    return fs.mkdirsAsync(gitDestination.join('/'))
+        .then(() => {
+            return Promise.all([fs.readFileAsync(pluginConfigFile, 'utf8')]);
+        })
+        .spread(function(pluginFile) {
+            pluginConfig = yaml.load(pluginFile);
+        })
+        .then(async() => {
+            // First generate urls to all the plugin repos.
+            const githubPlugins = pluginConfig.plugins
+                .filter(function(plugin) {
+                    return (typeof plugin === 'object' && !plugin.internal && 
+                            plugin.source.github && plugin.source.github.release);
+                });
+            return Promise.each(githubPlugins, async (plugin) => {
+                const repoName = plugin.source.github.name || plugin.globalName,
+                    version = plugin.version,
+                    tag = 'v' + version,
+                    gitAccount = plugin.source.github.account || 'kbase';
+                    // url = plugin.source.github.url || 'https://github.com/' + gitAccount + '/' + repoName;
+
+                const pluginDir = gitDestination.concat([plugin.name]).join('/');
+
+                await fs.mkdirsAsync(pluginDir);
+
+                const dest = gitDestination.concat([plugin.name, 'dist.tgz']).join('/');
+                mutant.log(`... fetching release dist for ${plugin.globalName}, ag: ${tag}, into ${dest}`);
+                return gitReleaseDist(gitAccount, repoName, dest, tag)
+                    .then(async() => {
+                        
+                        // const gitInfo = await gitInfo2(state, dest);
+                        const gitInfo = {
+                            account: gitAccount,
+                            repo: repoName,
+                            release: tag
+                        }
+                        state.pluginsManifest.push({
+                            name: plugin.name,
+                            globalName: plugin.globalName,
+                            repoName,
+                            version,
+                            tag,
+                            gitAccount,
+                            // url,
                             gitInfo
                         });
                     });
@@ -497,7 +602,10 @@ async function convertCommonJSNodeModules(state) {
 
 function fetchPlugins(state) {
     state.steps = [];
-    return fetchPluginsFromGithub(state)
+    return fetchPluginsFromGithubRelease(state)
+        .then((state) => {
+            return fetchPluginsFromGithub(state);
+        })
         .then((state) => {
             mutant.log('Inject Plugins Into Config');
             return injectPluginsIntoConfig(state);
@@ -531,7 +639,7 @@ function installPlugins(state) {
                     // Supports installing from gitDownloads (which are downloaded prior to this)
                     plugins
                     .filter((plugin) => {
-                        return typeof plugin === 'object' && plugin.source.github;
+                        return typeof plugin === 'object' && plugin.source.github && !plugin.source.github.release;
                     })
                     .map((plugin) => {
                         const pluginDir = root.concat(['gitDownloads', plugin.name]);
@@ -552,6 +660,33 @@ function installPlugins(state) {
                         return mutant.copyFiles(srcDir, destDir, '**/*');
                     })
                 )
+                .then(() => {
+                    Promise.all(
+                        // Supports installing from gitReleases (which are downloaded prior to this)
+                        plugins
+                        .filter((plugin) => {
+                            return typeof plugin === 'object' && plugin.source.github && plugin.source.github.release;
+                        })
+                        .map((plugin) => {
+                            const pluginDir = root.concat(['gitReleases', plugin.name]);
+                            const destDir = root.concat(['build', 'client', 'modules', 'plugins', plugin.name]);
+                            const distFile = pluginDir.concat(['dist.tgz']);
+                            if (!fs.pathExists(distFile.join('/'))) {
+                                throw new Error('git plugin ${plugin.name} does not have a dist.tgz');
+                            }
+
+                            mutant.info(`${plugin.name}: plugin installing from dist.tgz`);
+                            tar.extract({
+                                cwd: pluginDir.join('/'),
+                                file: distFile.join('/'),
+                                sync: true
+                            });
+                            const srcDir = pluginDir.concat(['dist', 'plugin']);
+                            mutant.ensureDir(destDir);
+                            return mutant.copyFiles(srcDir, destDir, '**/*');
+                        })
+                    )
+                })
                 .then(() => {
                     // Supports installing from a directory
                     return Promise.all(
