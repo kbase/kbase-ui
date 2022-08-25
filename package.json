@@ -63,7 +63,7 @@
         "node-dir": "0.1.17",
         "node-ini": "1.0.0",
         "node-fetch": "2.6.7",
-        "nodemon": "2.0.16",
+        "nodemon": "2.0.19",
         "numeral": "2.0.6",
         "prettier": "2.6.2",
         "puppeteer": "10.2.0",
