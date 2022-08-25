@@ -29,5 +29,5 @@ docker compose \
     run \
     --rm \
     deno run \
-    --unstable --allow-run --allow-write --allow-read \
+    --unstable --allow-run --allow-write --allow-read --allow-net \
     ${DENO_SCRIPT_HOME}/${DENO_SCRIPT} ${PLUGINS_CONFIG_PATH} ${PLUGINS_INSTALL_DEST}

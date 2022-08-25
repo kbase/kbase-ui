@@ -2,7 +2,7 @@ import { Component } from 'react';
 import DataBrowser, {
     ColumnDef
 } from '../../../components/DataBrowser';
-import { PluginsInfo, PluginInfo     } from '../../../types/info';
+import { PluginsInfo, PluginInfo } from '../../../types/info';
 
 export interface AboutPluginsProps {
     pluginsInfo: PluginsInfo;
@@ -38,46 +38,46 @@ export default class AboutPlugins extends Component<
                     return a.configs.ui.version.localeCompare(b.configs.ui.version);
                 },
             },
-            {
-                id: 'date',
-                label: 'Date',
-                style: {},
-                render: (plugin: PluginInfo) => {
-                    return (
-                        <span>
-                            {Intl.DateTimeFormat('en-US', {}).format(
-                                new Date(plugin.git.committer.date)
-                            )}
-                        </span>
-                    );
-                },
-                sorter: (a: PluginInfo, b: PluginInfo) => {
-                    return (
-                        new Date(a.git.committer.date).getTime() -
-                        new Date(b.git.committer.date).getTime()
-                    );
-                },
-            },
-            {
-                id: 'account',
-                label: 'GitHub Account',
-                style: {},
-                render: (plugin: PluginInfo) => {
-                    return <span>{plugin.git.account}</span>;
-                },
-            },
-            {
-                id: 'repoName',
-                label: 'Repo',
-                style: {}, 
-                render: (plugin: PluginInfo) => {
-                    return (
-                        <a href={plugin.git.originURL} target="_blank" rel="noreferrer" title={plugin.git.originURL}>
-                            {plugin.git.repoName}
-                        </a>
-                    );
-                },
-            },
+            // {
+            //     id: 'date',
+            //     label: 'Date',
+            //     style: {},
+            //     render: (plugin: PluginInfo) => {
+            //         return (
+            //             <span>
+            //                 {Intl.DateTimeFormat('en-US', {}).format(
+            //                     new Date(plugin.git.committer.date)
+            //                 )}
+            //             </span>
+            //         );
+            //     },
+            //     sorter: (a: PluginInfo, b: PluginInfo) => {
+            //         return (
+            //             new Date(a.git.committer.date).getTime() -
+            //             new Date(b.git.committer.date).getTime()
+            //         );
+            //     },
+            // },
+            // {
+            //     id: 'account',
+            //     label: 'GitHub Account',
+            //     style: {},
+            //     render: (plugin: PluginInfo) => {
+            //         return <span>{plugin.git.account}</span>;
+            //     },
+            // },
+            // {
+            //     id: 'repoName',
+            //     label: 'Repo',
+            //     style: {}, 
+            //     render: (plugin: PluginInfo) => {
+            //         return (
+            //             <a href={plugin.git.originURL} target="_blank" rel="noreferrer" title={plugin.git.originURL}>
+            //                 {plugin.git.repoName}
+            //             </a>
+            //         );
+            //     },
+            // },
         ];
 
         const data: Array<PluginInfo> = this.props.pluginsInfo.map(

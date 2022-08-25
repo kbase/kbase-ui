@@ -125,11 +125,12 @@ export default class ConfigWrapper extends React.Component<
                     name: pluginInfo.configs.plugin.package.name,
                     globalName: pluginInfo.configs.ui.globalName,
                     repoName: "need repo name!",
-                    branch: pluginInfo.git.branch,
+                    branch: "don't always have branch",
                     gitAccount: "need account",
-                    gitInfo: gitInfoToConfig(pluginInfo.git),
-                    url: pluginInfo.git.originURL,
-                    version: pluginInfo.git.tag || "n/a"
+                    // remove for now
+                    // gitInfo: gitInfoToConfig(pluginInfo.git),
+                    url: "url here",
+                    version: pluginInfo.configs.ui.version
                 }
             });
             const config: Config = { ...rawConfig, build: configBuildInfo, plugins: configPluginsInfo };

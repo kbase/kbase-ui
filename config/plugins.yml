@@ -33,10 +33,11 @@ plugins:
               account: kbase
     - name: dataview
       globalName: kbase-ui-plugin-dataview
-      version: 4.13.8
+      version: 4.13.10
       source:
           github:
               account: kbase
+              release: true
     - name: feeds
       globalName: kbase-ui-plugin-feeds
       version: 2.1.2

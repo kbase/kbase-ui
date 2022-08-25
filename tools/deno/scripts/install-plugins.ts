@@ -2,23 +2,15 @@ import { parse } from 'https://deno.land/std@0.125.0/encoding/yaml.ts';
 import { ensureDir, ensureDirSync, ensureFile } from 'https://deno.land/std@0.125.0/fs/mod.ts';
 import * as fflate from 'https://cdn.skypack.dev/fflate?min';
 import { Buffer } from 'https://deno.land/std@0.125.0/io/buffer.ts';
+import { readerFromStreamReader } from 'https://deno.land/std@0.125.0/io/mod.ts';
 import { Untar } from 'https://deno.land/std@0.125.0/archive/tar.ts';
 import { copy } from 'https://deno.land/std@0.125.0/io/util.ts';
 import { Git, log } from './common.ts';
+import { PluginsInfo, PluginInfoType, PluginConfig, PluginUIConfig, UIPluginsConfig, PluginInfoRelease, PluginInfoRepo } from './info.ts';
 
-interface PluginConfig {
-    name: string;
-    globalName: string;
-    version: string;
-    source: {
-        github: {
-            account: string;
-        };
-    };
-}
 
 interface PluginsConfig {
-    plugins: Array<PluginConfig>;
+    plugins: Array<PluginUIConfig>;
 }
 
 // TODO: clone with depth 1
@@ -34,6 +26,9 @@ async function fetchPlugins(config: string, dest: string) {
     const pluginsRaw = await Deno.readTextFile(config);
     const pluginsConfig = parse(pluginsRaw) as unknown as PluginsConfig;
     for (const pluginConfig of pluginsConfig.plugins) {
+        if (pluginConfig.source.github.release === true) {
+            continue;
+        }
         log(
             `Fetching ${pluginConfig.source.github.account}/${pluginConfig.name}...`,
             'fetchPlugins'
@@ -51,6 +46,62 @@ async function fetchPlugins(config: string, dest: string) {
             throw new Error(`Error fetching repo ${pluginConfig.name}: ${ex.message}`);
         }
         log('...done');
+    }
+}
+
+async function fetchPluginsReleaseDist(config: string, dest: string) {
+    const pluginsRaw = await Deno.readTextFile(config);
+    const pluginsConfig = parse(pluginsRaw) as unknown as PluginsConfig;
+    for (const pluginConfig of pluginsConfig.plugins) {
+        if (pluginConfig.source.github.release !== true) {
+            continue;
+        }
+        log(
+            `Fetching ${pluginConfig.source.github.account}/${pluginConfig.name}...`,
+            'fetchPlugins'
+        );
+        const tag = `v${pluginConfig.version}`;
+        try {
+            const result = await fetchReleaseDist(
+                pluginConfig.source.github.account,
+                pluginConfig.name,
+                dest,
+                tag
+            );
+            console.log(`fetch result: ${result}`);
+        } catch (ex) {
+            throw new Error(`Error fetching plugin ${pluginConfig.name}: ${ex.message}`);
+        }
+        log('...done');
+    }
+}
+
+async function fetchReleaseDist(gitAccount: string, pluginName: string, dest: string, tag: string) {
+    const releaseURL = `https://api.github.com/repos/${gitAccount}/kbase-ui-plugin-${pluginName}/releases/tags/${tag}`
+    // TODO: github token
+    const headers = {
+        Accept: 'application/vnd.github+json'
+    }
+    const response = await fetch(releaseURL, { headers });
+    const release = (await response.json()) as { assets: Array<{ name: string, url: string }> }
+
+    const { url } = release.assets.filter(({ name }) => {
+        return name === 'dist.tgz';
+    })[0];;
+
+    const response2 = await fetch(url, {
+        headers: {
+            Accept: 'application/octet-stream'
+        }
+    });
+
+    const rdr = response2.body?.getReader();
+    if (rdr) {
+        await Deno.mkdir(`${dest}/${pluginName}`, { recursive: true })
+        const r = readerFromStreamReader(rdr);
+        const f = await Deno.open(`${dest}/${pluginName}/dist.tgz`, { create: true, write: true });
+        await Deno.copy(r, f);
+        f.close();
     }
 }
 
@@ -95,37 +146,55 @@ async function getYAML(path: string) {
     return parse(pluginsRaw);
 }
 
+export enum PluginType {
+    GIT_REPO
+}
+
 async function generatePluginsManifest(uiConfig: string, source: string, dest: string) {
     const manifestFileName = `${dest}/plugin-manifest.json`;
 
-    const pluginsConfig = (await getYAML(uiConfig)) as unknown as PluginsConfig;
+    const pluginsConfig = (await getYAML(uiConfig)) as unknown as UIPluginsConfig;
 
     // const pluginsRaw = await Deno.readTextFile(uiConfig);
     // const pluginsConfig = parse(pluginsRaw) as unknown as PluginsConfig;
 
     log(`writing to manifest file ${manifestFileName}...`, 'generatePluginsManifest');
-    const manifest = [];
+    const manifest: PluginsInfo = [];
     for await (const uiPluginConfig of pluginsConfig.plugins) {
         // Config is in the dest (also the source)
         const pluginInstallDir = `${dest}/${uiPluginConfig.name}`;
         const pluginSourceDir = `${source}/${uiPluginConfig.name}`;
         const configFileName = `${pluginInstallDir}/config.yml`;
         const pluginConfigRaw = new TextDecoder().decode(Deno.readFileSync(configFileName));
-        const pluginConfig = parse(pluginConfigRaw);
+        const pluginConfig = parse(pluginConfigRaw) as PluginConfig;
 
-        // Need to get git info from the source.
-        log(`Getting git info from ${pluginSourceDir}`, 'generatePluginsManifest');
-        const gitInfo = await new Git(pluginSourceDir).getInfo();
-        manifest.push({
-            install: {
-                directory: pluginSourceDir,
-            },
-            configs: {
-                plugin: pluginConfig,
-                ui: uiPluginConfig,
-            },
-            git: gitInfo,
-        });
+        if (uiPluginConfig.source.github.release === true) {
+            manifest.push({
+                type: PluginInfoType.GITHUB_RELEASE,
+                install: {
+                    directory: pluginSourceDir,
+                },
+                configs: {
+                    plugin: pluginConfig,
+                    ui: uiPluginConfig,
+                },
+            } as PluginInfoRelease);
+        } else {
+            // Need to get git info from the source.
+            log(`Getting git info from ${pluginSourceDir}`, 'generatePluginsManifest');
+            const gitInfo = await new Git(pluginSourceDir).getInfo();
+            manifest.push({
+                type: PluginInfoType.GIT_REPO,
+                install: {
+                    directory: pluginSourceDir,
+                },
+                configs: {
+                    plugin: pluginConfig,
+                    ui: uiPluginConfig,
+                },
+                git: gitInfo,
+            } as PluginInfoRepo);
+        }
     }
     await Deno.writeFile(
         manifestFileName,
@@ -161,6 +230,7 @@ async function main() {
 
     // await deleteDownloads(downloadDest);
     await fetchPlugins(config, downloadDest);
+    await fetchPluginsReleaseDist(config, downloadDest);
     await unpackPlugins(downloadDest, installDest);
     await generatePluginsManifest(config, downloadDest, installDest);
     await deleteDownloads(downloadDest);

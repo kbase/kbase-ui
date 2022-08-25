@@ -123,7 +123,7 @@ export interface PluginInfo {
     branch: string;
     gitAccount: string;
     url: string;
-    gitInfo: GitInfo;
+    // gitInfo: GitInfo;
 }
 
 export interface HamburgerMenuDefintion {
