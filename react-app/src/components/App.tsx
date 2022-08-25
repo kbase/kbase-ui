@@ -7,14 +7,15 @@ import ConfigWrapper, {
 import RuntimeWrapper, { RuntimeContext } from '../contexts/RuntimeContext';
 import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
 import { Config } from '../types/config';
+import ErrorMessage from './ErrorMessage';
 import Loading from './Loading';
 import MainWindow from './MainWindow';
 
 export type AppLoadState = AsyncProcess<Config, string>;
 
-export interface AppProps {}
+export interface AppProps { }
 
-interface AppState {}
+interface AppState { }
 
 export default class App extends Component<AppProps, AppState> {
     render() {
@@ -26,15 +27,15 @@ export default class App extends Component<AppProps, AppState> {
                             case AsyncProcessStatus.NONE:
                             case AsyncProcessStatus.PENDING:
                                 return;
-                                // return (
-                                //     <Loading
-                                //         message="Loading Config..."
-                                //         size="large"
-                                //         type="block"
-                                //     />
-                                // );
+                            // return (
+                            //     <Loading
+                            //         message="Loading Config..."
+                            //         size="large"
+                            //         type="block"
+                            //     />
+                            // );
                             case AsyncProcessStatus.ERROR:
-                                return <div>Error! {configValue.error}</div>;
+                                return <ErrorMessage message={configValue.error} />;
                             case AsyncProcessStatus.SUCCESS:
                                 return (
                                     <AuthWrapper
@@ -46,13 +47,13 @@ export default class App extends Component<AppProps, AppState> {
                                                     case AsyncProcessStatus.NONE:
                                                     case AsyncProcessStatus.PENDING:
                                                         return;
-                                                        // return (
-                                                        //     <Loading
-                                                        //         message="Loading Auth..."
-                                                        //         size="large"
-                                                        //         type="block"
-                                                        //     />
-                                                        // );
+                                                    // return (
+                                                    //     <Loading
+                                                    //         message="Loading Auth..."
+                                                    //         size="large"
+                                                    //         type="block"
+                                                    //     />
+                                                    // );
                                                     case AsyncProcessStatus.ERROR:
                                                         return (
                                                             <div>
