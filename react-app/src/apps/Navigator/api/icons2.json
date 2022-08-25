@@ -1,0 +1,177 @@
+{
+    "defaults": {
+        "method": "fa-cube",
+        "app": "fa-cubes",
+        "data": "fa-file-o"
+    },
+    "dataTypes": {
+        "AssemblyInput": {
+            "icon": "icon icon-reads",
+            "color": "#F44336"
+        },
+        "Assembly": {
+            "icon": "fa-align-justify",
+            "color": "#920D58"
+        },
+        "ChromatographyMatrix": {
+            "icon": "fa-table",
+            "color": "#E91E63"
+        },
+        "Collection": {
+            "icon": "fa-list-ul",
+            "color": "#E91E63"
+        },
+        "ContigSet": {
+            "icon": "fa-align-justify",
+            "color": "#3F51B5"
+        },
+        "DomainAlignment": {
+            "icon": "fa-sliders",
+            "color": "#000000"
+        },
+        "EstimateKResult": {
+            "icon": "fa-area-chart",
+            "color": "#000000"
+        },
+        "ExpressionMatrix": {
+            "icon": "fa-th",
+            "color": "#2196F3"
+        },
+        "ExpressionSample": {
+            "icon": "fa-tachometer",
+            "color": "#2196F3"
+        },
+        "ExpressionSeries": {
+            "icon": "fa-tachometer",
+            "color": "#2196F3"
+        },
+        "FBA": {
+            "icon": "icon icon-metabolism",
+            "color": "#673AB7"
+        },
+        "FBAModel": {
+            "icon": "icon icon-metabolism",
+            "color": "#673AB7"
+        },
+        "FeatureClusters": {
+            "icon": "fa-th-list",
+            "color": "#AEEA00"
+        },
+        "FeatureSet": {
+            "icon": "fa-list-ul",
+            "color": "#AEEA00"
+        },
+        "FunctionalMatrix": {
+            "icon": "fa-table",
+            "color": "#000000"
+        },
+        "Genome": {
+            "icon": "icon icon-genome",
+            "color": "#3F51B5"
+        },
+        "GenomeAnnotation": {
+            "icon": "icon icon-genome",
+            "color": "#920D58"
+        },
+        "GenomeComparison": {
+            "icon": "icon icon-compare",
+            "color": "#3F51B5"
+        },
+        "GenomeSet": {
+            "icon": "fa-list-ul",
+            "color": "#3F51B5"
+        },
+        "Heatmap": {
+            "icon": "fa-th",
+            "color": "#795548"
+        },
+        "Media": {
+            "icon": "fa-flask",
+            "color": "#795548"
+        },
+        "AnnotatedMetagenomeAssembly": {
+            "icon": "icon icon-metagenome",
+            "color": "#1D7EEA"
+        },
+        "Metagenome": {
+            "icon": "icon icon-metagenome",
+            "color": "#795548"
+        },
+        "Network": {
+            "icon": "fa-code-fork",
+            "color": "#795548"
+        },
+        "PairedEndLibrary": {
+            "icon": "icon icon-reads",
+            "color": "#795548"
+        },
+        "Pangenome": {
+            "icon": "fa-bullseye",
+            "color": "#795548"
+        },
+        "PhenotypeSet": {
+            "icon": "fa-list-ul",
+            "color": "#795548"
+        },
+        "PhenotypeSimulationSet": {
+            "icon": "fa-list-ul",
+            "color": "#795548"
+        },
+        "ProteomeComparison": {
+            "icon": "fa-arrows-h",
+            "color": "#795548"
+        },
+        "ReadsSet": {
+            "icon": "icon icon-reads",
+            "color": "#795548"
+        },
+        "ReferenceAssembly": {
+            "icon": "fa-book",
+            "color": "#795548"
+        },
+        "SingleEndLibrary": {
+            "icon": "icon icon-reads",
+            "color": "#795548"
+        },
+        "TaxonomicMatrix": {
+            "icon": "fa-table",
+            "color": "#795548"
+        },
+        "Taxon": {
+            "icon": "fa-table",
+            "color": "#920D58"
+        },
+        "Tree": {
+            "icon": "icon icon-tree",
+            "color": "#795548"
+        },
+        "SampleSet": {
+            "icon": "fa-list-ul",
+            "color": "#316A4E"
+        }
+    },
+    "colors": [
+        "#F44336",
+        "#1D7EEA",
+        "#E91E63",
+        "#9C27B0",
+        "#3F51B5",
+        "#2196F3",
+        "#673AB7",
+        "#FFC107",
+        "#0277BD",
+        "#00BCD4",
+        "#009688",
+        "#4CAF50",
+        "#33691E",
+        "#2E7D32",
+        "#AEEA00",
+        "#03A9F4",
+        "#FF9800",
+        "#FF5722",
+        "#795548",
+        "#006064",
+        "#607D8B",
+        "#316A4E"
+    ]
+}

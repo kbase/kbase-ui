@@ -117,23 +117,31 @@ export default class IconProvider {
     //   return this._instance || (this._instance = new this());
     // }
 
-    public typeIcon(objType: string): IconInfo {
+    public typeColor(typeName: string): string {
+        let code = 0;
+        for (let i = 0; i < typeName.length; i += 1) {
+            code += typeName.charCodeAt(i);
+        }
+        return iconData.colors[code % iconData.colors.length];
+    }
+
+    public typeIcon(objectType: string): IconInfo {
         // TODO: this really isn't valid. An object type should always be present,
         // anything else is nonsensical.
-        if (!objType) {
+        if (!objectType) {
             console.warn(
-                `[typeIcon] Using default type icon for object type "${objType}"`
+                `[typeIcon] Using default type icon for object type "${objectType}"`
             );
             return this.defaultType;
         }
         // TODO: use a regex
-        if (objType.includes('.')) {
-            objType = objType.split('.')[1];
+        if (objectType.includes('.')) {
+            objectType = objectType.split('.')[1];
         }
-        if (objType.includes('-')) {
-            objType = objType.split('-')[0];
+        if (objectType.includes('-')) {
+            objectType = objectType.split('-')[0];
         }
-        const lcObjType = objType.toLowerCase();
+        const lcObjType = objectType.toLowerCase();
         return this.typeIconInfos[lcObjType]
             ? this.typeIconInfos[lcObjType]
             : this.defaultType;
