@@ -2,10 +2,37 @@
 
 ## Current Status
 
-| Branch  | Build                                                              |                                                                | Coverage                                                                         |                                                                 |
-| ------- | ------------------------------------------------------------------ | -------------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| master  | ![travis](https://travis-ci.org/kbase/kbase-ui.svg?branch=master)  | [details](https://travis-ci.org/kbase/kbase-ui?branch=master)  | ![coveralls](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=master)  | [details](https://coveralls.io/r/kbase/kbase-ui?branch=master)  |
-| develop | ![travis](https://travis-ci.org/kbase/kbase-ui.svg?branch=develop) | [details](https://travis-ci.org/kbase/kbase-ui?branch=develop) | ![coveralls](https://coveralls.io/repos/kbase/kbase-ui/badge.svg?branch=develop) | [details](https://coveralls.io/r/kbase/kbase-ui?branch=develop) |
+This would have been the next major release, but see [the release notes](release-notes/RELEASE_NOTES_3.x.x.md).
+
+Since another effort has been underway for the last few months, and by all accounts nearly complete, I've not updated the documentation, though there is a working doc for the [new build process](docs/new-build.md).
+
+The TLDR is:
+- ensure deploy env is mapped to localhost in /etc/hosts; assume CI
+```
+127.0.0.1 ci.kbase.us
+```
+- create the dev environemnt
+```shell
+make dev
+```
+- start VSC session from the command line, setting DEPLOY_ENV to whichever env you developing against, assume CI
+```shell
+DEPLOY_ENV=ci code .
+```
+- reopen the VSC session in the devcontainer
+- the terminal will now be inside the dev container
+- work just like at the local command line:
+```shell
+root@3fd37706bf4d:/workspace# cd react-app
+root@3fd37706bf4d:/workspace/react-app# npm install
+root@3fd37706bf4d:/workspace/react-app# npm run start
+...
+webpack compiled with 19 warnings
+Files successfully emitted, waiting for typecheck results...
+Issues checking in progress...
+No issues found.
+```
+- open browser to https://ci.kbase.us
 
 ## About
 
@@ -45,7 +72,7 @@ The KBase UI is an open source project, managed through GitHub. As such, contrib
 
 ## Release Notes
 
-The current released version is [2.5.1](release-notes/RELEASE_NOTES_2.5.1.md).
+The current released version is [3.x.x](release-notes/RELEASE_NOTES_3.x.x.md).
 
 ## Reporting Bugs
 

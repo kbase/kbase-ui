@@ -2,7 +2,7 @@ import { NarrativeInfo } from 'apps/ORCIDLink/Model';
 import AlertMessage from 'components/AlertMessage';
 import Well from 'components/Well';
 import { Component } from 'react';
-import { Button, ButtonGroup, Col, Form, Row, Stack } from 'react-bootstrap';
+import { Button, Col, Form, Row, Stack } from 'react-bootstrap';
 
 export interface SelectNarrativeProps {
     narratives: Array<NarrativeInfo>;

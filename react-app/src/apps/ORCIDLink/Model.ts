@@ -7,10 +7,10 @@ import { Config } from "types/config";
 import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
 // UI URLS
-const START_URL = 'https://ci.kbase.us/services/orcidlink/start';
-const LINK_URL = 'https://ci.kbase.us/services/orcidlink/link';
-const REVOKE_URL = 'https://ci.kbase.us/services/orcidlink/revoke';
-const GET_NAME_URL = 'https://ci.kbase.us/services/orcidlink/get_name';
+// const START_URL = 'https://ci.kbase.us/services/orcidlink/start';
+// const LINK_URL = 'https://ci.kbase.us/services/orcidlink/link';
+// const REVOKE_URL = 'https://ci.kbase.us/services/orcidlink/revoke';
+// const GET_NAME_URL = 'https://ci.kbase.us/services/orcidlink/get_name';
 
 // Service URLs
 const GET_PROFILE_URL = 'https://ci.kbase.us/services/orcidlink/get_profile';
@@ -176,7 +176,6 @@ export interface CitationResults {
 }
 
 export const ORCID_URL = 'https://sandbox.orcid.org';
-
 
 export type SCOPE = '/read-limited' | '/activities/update' | 'openid';
 
