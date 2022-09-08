@@ -34,6 +34,7 @@ none
 - UIP-14: dataview - refactor genome landing page for efficiency; new layout in tabs
 - UFI-18: auth2-client: fix case of sign-in while auth2/signedout view is showing; some language edits
 - UFI-19: dataview - fix when referencing objects > 50; view single not all versions; add button to view standalone
+- UFI-25: catalog - fix admin menu link 
 - UFI-24: auth2-client: fix Globus signout link
 - PTV-1817: dataview - add CDS landing page, refactor Feature landing page; migrate to release-dist build via GHA
 - PTV-1817: typeview - refactor to preact, fix several bugs, migrate to release-dist build via GHA
