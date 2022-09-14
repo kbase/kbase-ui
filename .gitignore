@@ -54,7 +54,7 @@ docker-compose.override.yml
 # NPM stuff
 # can be left over with a manual npm install with --no-cache (I think)
 /false
-# start.log
+start.log
 
 # A handy directory for staching non-commitable working files
 /_todo
