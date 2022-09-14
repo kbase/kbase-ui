@@ -1,4 +1,5 @@
-import { Affiliation, ORCIDProfile } from "apps/ORCIDLink/Model";
+import { renderORCIDIcon } from "apps/ORCIDLink/common";
+import { Affiliation, ORCIDProfile, ORCID_URL } from "apps/ORCIDLink/Model";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
 import { Button, Form } from "react-bootstrap";
@@ -15,11 +16,7 @@ interface PreFillFormState {
 
     // TODO: this should be an editable model, with edit
     // state for each editable thing.
-    firstName: string;
-    lastName: string;
     name: string;
-    bio: string;
-    affiliations: Array<Affiliation>;
 }
 
 export default class PreFillForm extends Component<PreFillFormProps, PreFillFormState> {
@@ -32,39 +29,31 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
     stateFromProps() {
         return {
             profile: this.props.profile,
-            firstName: this.props.profile.firstName,
-            lastName: this.props.profile.lastName,
             name: this.props.profile.firstName + ' ' + this.props.profile.lastName,
-            bio: this.props.profile.bio,
-            affiliations: this.props.profile.affiliations
         };
     }
 
     componentDidUpdate(prevProps: PreFillFormProps, prevState: PreFillFormState) {
-        const { firstName, lastName, bio, affiliations } = prevState;
-        const prevProfile = { firstName, lastName, bio, affiliations };
-
         if (!isEqual(prevState.profile, this.props.profile)) {
             this.setState(this.stateFromProps());
         }
-
-        // if (prevState.firstName === this.props.profile.firstName &&
-        //     prevState.lastName === this.props.profile.lastName &&
-        //     prevState.bio === this.props.profile.bio) {
-        //     return;
-        // }
-
     }
 
     changeFirstName(firstName: string) {
         this.setState({
-            firstName
+            profile: {
+                ...this.state.profile,
+                firstName
+            }
         });
     }
 
     changeLastName(lastName: string) {
         this.setState({
-            lastName
+            profile: {
+                ...this.state.profile,
+                lastName
+            }
         });
     }
 
@@ -76,17 +65,23 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
 
     changeBio(bio: string) {
         this.setState({
-            bio
+            profile: {
+                ...this.state.profile,
+                bio
+            }
         });
     }
 
     onClearForm() {
         this.setState({
-            firstName: '',
-            lastName: '',
-            name: '',
-            bio: '',
-            affiliations: []
+            profile: {
+                ...this.state.profile,
+                firstName: '',
+                lastName: '',
+                bio: '',
+                affiliations: []
+            },
+            name: ''
         })
     }
 
@@ -95,7 +90,7 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
     }
 
     renderAffiliations() {
-        const rows = this.state.affiliations.map(({ name, role, startYear, endYear }, index) => {
+        const rows = this.state.profile.affiliations.map(({ name, role, startYear, endYear }, index) => {
             return <tr key={index}>
                 <td>{name}</td>
                 <td>{role}</td>
@@ -126,7 +121,7 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
                         First Name
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.firstName}
+                        <input type="text" className="form-control" value={this.state.profile.firstName}
                             onInput={(e) => { this.changeFirstName(e.currentTarget.value) }} />
                     </div>
                 </div>
@@ -135,7 +130,7 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
                         Last Name
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.lastName}
+                        <input type="text" className="form-control" value={this.state.profile.lastName}
                             onInput={(e) => { this.changeLastName(e.currentTarget.value || '') }} />
                     </div>
                 </div>
@@ -153,7 +148,7 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
                         Bio
                     </div>
                     <div className="flex-col">
-                        <textarea className="form-control" value={this.state.bio || ''}
+                        <textarea className="form-control" value={this.state.profile.bio || ''}
                             onInput={(e) => { this.changeBio(e.currentTarget.value) }} />
                     </div>
                 </div>
@@ -178,6 +173,13 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
         </Form >;
     }
 
+    renderORCIDLink(label: string) {
+        return <a href={`${ORCID_URL}/${this.props.profile.orcidId}`} target="_blank">
+            {renderORCIDIcon()}
+            {label}
+        </a>
+    }
+
     renderIntro() {
         return <div>
             <h2>
@@ -198,10 +200,10 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
                     Click clear button, then the Sync button
                 </li>
                 <li>
-                    Modify ORCID profile, <b>then</b> clear, sync
+                    Modify {this.renderORCIDLink("ORCID profile")}, <b>then</b> clear, sync
                 </li>
                 <li>
-                    Make ORCID profile field private, <b>then</b> clear, sync
+                    Make {this.renderORCIDLink("ORCID profile")} field private, <b>then</b> clear, sync
                 </li>
             </ul>
         </div>

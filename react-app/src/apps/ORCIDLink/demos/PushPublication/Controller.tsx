@@ -111,7 +111,6 @@ export default class PreFillFormController extends Component<PreFillFormControll
             const publications = this.state.dataState.value.profile.publications.filter(({ putCode }) => {
                 return putCode !== putCodeToDelete;
             });
-            console.log('new publications', publications);
             this.setState({
                 dataState: {
                     ...this.state.dataState,
@@ -135,10 +134,8 @@ export default class PreFillFormController extends Component<PreFillFormControll
             return;
         }
         const publications = this.state.dataState.value.profile.publications.filter(({ putCode }) => {
-            console.log('hmm', putCode, publication.putCode);
             return putCode !== publication.putCode;
         });
-        console.log('new publications', publications);
         this.setState({
             dataState: {
                 ...this.state.dataState,

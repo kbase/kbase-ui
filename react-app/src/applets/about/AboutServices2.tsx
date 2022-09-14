@@ -25,11 +25,11 @@ export interface ServiceDescriptionWithPerformance {
 
 interface AboutServicesState {
     loadState: AsyncProcess<Array<ServiceDescriptionWithPerformance>, string>
- }
+}
 
 export default class AboutServices extends Component<
-AboutServicesProps,
-AboutServicesState
+    AboutServicesProps,
+    AboutServicesState
 > {
 
     constructor(props: AboutServicesProps) {
@@ -48,11 +48,11 @@ AboutServicesState
     async performMeasurements() {
         const measurements = await Promise.all(SERVICES.map(async (service) => {
             const measurer = new ServicePerformance({
-                config: this.props.config, 
+                config: this.props.config,
                 service,
                 iterations: ITERATIONS
             });
-            const [version, measurement]  = await measurer.measure();
+            const [version, measurement] = await measurer.measure();
             return {
                 description: service,
                 version,
@@ -74,7 +74,8 @@ AboutServicesState
                 label: 'Module',
                 style: {},
                 render: (service: ServiceDescriptionWithPerformance) => {
-                    return <span>{service.description.module}</span>;
+                    // TODO: should manage to get the service's git url 
+                    return <a href="" target="_blank">{service.description.module}</a>;
                 },
                 sorter: (a: ServiceDescriptionWithPerformance, b: ServiceDescriptionWithPerformance) => {
                     return a.description.module.localeCompare(b.description.module);
@@ -150,7 +151,7 @@ AboutServicesState
             case AsyncProcessStatus.ERROR:
                 return this.renderError(this.state.loadState);
             case AsyncProcessStatus.SUCCESS:
-                return this.renderServices(this.state.loadState.value) ;
+                return this.renderServices(this.state.loadState.value);
         }
     }
 

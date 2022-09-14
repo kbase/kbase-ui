@@ -80,7 +80,7 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
 
                         })();
                         return <Continue {...this.props} token={token}
-                            kbaseAuthToken={authValue.value.authInfo.token}
+                            auth={authValue.value}
                             returnLink={returnLink}
                             skipPrompt={props.params.get('skip_prompt') === 'true'}
                         />;

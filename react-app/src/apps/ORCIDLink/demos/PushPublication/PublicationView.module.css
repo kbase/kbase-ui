@@ -1,0 +1,11 @@
+.main {
+    flex: 1 1 0;
+}
+
+.main :global(.flex-col) {
+    margin: 0 0.125em;
+}
+
+.main :global(.flex-col:nth-child(1)) {
+    flex: 0 0 10em;
+}

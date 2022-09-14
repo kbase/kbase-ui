@@ -3,7 +3,8 @@ import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import WorkForm from './EditPublication';
-import { EditablePublication, Model, ORCIDProfile, Publication } from 'apps/ORCIDLink/Model';
+import { EditablePublication, Model, Publication } from 'apps/ORCIDLink/Model';
+import { workExternalIdentifierTypes, workRelationshipIdentifiers } from 'apps/ORCIDLink/data';
 
 
 export interface ControllerProps {
@@ -113,7 +114,6 @@ export default class Controller extends Component<ControllerProps, ControllerSta
 
     async onSave(update: EditablePublication) {
         const updatedWork = await this.model.saveWork(update);
-        console.log('SAVED!', updatedWork);
     }
 
     async onDelete(putCode: string) {
@@ -134,6 +134,8 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     renderSuccess(dataState: DataState) {
         return <WorkForm
             publication={dataState.work}
+            workExternalIdentifierTypes={workExternalIdentifierTypes}
+            workRelationshipIdentifiers={workRelationshipIdentifiers}
             onSave={this.onSave.bind(this)}
             onClose={this.props.onClose} />
     }

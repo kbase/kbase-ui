@@ -5,7 +5,7 @@ import { SCOPE, SCOPE_HELP } from './Model';
 
 
 export function renderORCIDIcon() {
-    return <Image src={orcidIcon} style={{ height: '1em', marginRight: '0.5em' }} />
+    return <Image src={orcidIcon} style={{ height: '1em', marginRight: '0.25em' }} />
 }
 
 export function renderScope(scopes: string) {

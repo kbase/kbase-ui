@@ -1,11 +1,9 @@
-import { ORCIDProfile, ORCID_URL } from 'apps/ORCIDLink/Model';
+import { ORCID_URL } from 'apps/ORCIDLink/Model';
 import { Component } from 'react';
 import { ORCIDLinkState, ORCIDLinkStatus } from './Controller';
 import { renderORCIDIcon } from '../../../common';
 import styles from './View.module.css';
 import { Alert, Button } from 'react-bootstrap';
-
-const START_URL = 'https://ci.kbase.us/services/orcidlink/start';
 
 export interface ViewProps {
     orcidState: ORCIDLinkState

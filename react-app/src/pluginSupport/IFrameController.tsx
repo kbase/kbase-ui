@@ -103,7 +103,7 @@ const PLUGIN_STARTUP_TIMEOUT = 60000;
 export type NavigationString = string;
 export type NavigationStruct = {
     path: string,
-    params: {[x: string]: string}
+    params: { [x: string]: string }
 }
 export type Navigation = NavigationString | NavigationStruct;
 
@@ -275,7 +275,6 @@ export default class IFrameController extends Component<IFrameControllerProps,
 
         this.channel.on('open-window', ({ url }) => {
             window.location.href = url;
-            // window.open(url, name);
         });
 
         // this.channel.on('send-instrumentation', (instrumentation) => {
@@ -301,7 +300,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 return to.path;
             })();
 
-            const params = ((): {[x: string]: string} => {
+            const params = ((): { [x: string]: string } => {
                 if (typeof to === 'string') {
                     return {};
                 }
@@ -355,13 +354,17 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 // Redirect
                 // TODO: respect search query too
                 const path = (() => {
-                    if (typeof nextRequest.path === 'string') {
+                    if (!nextRequest) {
+                        return null;
+                    } else if (typeof nextRequest === 'string') {
+                        return nextRequest;
+                    } else if (typeof nextRequest.path === 'string') {
                         return nextRequest.path;
                     } else {
-                        return nextRequest.path.join();
+                        return nextRequest.path.join('/');
                     }
                 })();
-                changeHash2(path || 'about');
+                changeHash2(path || 'dashboard');
             } catch (ex) {
                 // TODO: something
                 console.error('YIKES! Error in auth navigation out.', ex);

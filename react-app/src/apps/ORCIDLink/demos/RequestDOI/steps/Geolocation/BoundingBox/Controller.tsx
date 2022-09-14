@@ -227,7 +227,6 @@ export default class Controller extends Component<ControllerProps, ControllerSta
 
         const { place, westLongitude, southLatitude, eastLongitude, northLatitude } = this.state.editor.form;
 
-        // console.log(place, eastLatitude, eastLongitude, westLatitude, westLongitude);
         if (!(place.status === FieldStatus.VALID &&
             westLongitude.status === FieldStatus.VALID &&
             southLatitude.status === FieldStatus.VALID &&

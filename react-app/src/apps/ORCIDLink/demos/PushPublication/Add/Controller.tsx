@@ -3,8 +3,42 @@ import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import WorkForm from './EditPublication';
-import { EditablePublication, Model, ORCIDProfile, Publication } from 'apps/ORCIDLink/Model';
-import { isEqual } from 'lib/kb_lib/Utils';
+import { EditablePublication, Model, Publication } from 'apps/ORCIDLink/Model';
+import workTypesRaw from '../../../data/workTypes2.json';
+import { workExternalIdentifierTypes, workRelationshipIdentifiers } from 'apps/ORCIDLink/data';
+
+// Work types
+// TODO: move to external file.
+
+export interface WorkType {
+    category: string;
+    value: string;
+    label: string;
+    description: string;
+}
+
+export interface WorkTypeCategory {
+    value: string;
+    label: string;
+}
+
+export interface WorkTypes {
+    categories: Array<WorkTypeCategory>;
+    values: Array<WorkType>;
+}
+
+
+export interface WorkTypeCategory2 {
+    category: string;
+    label: string;
+    values: Array<WorkType>
+}
+
+export type WorkTypes2 = Array<WorkTypeCategory2>
+
+const workTypes = workTypesRaw as unknown as WorkTypes2;
+
+// Component
 
 
 export interface ControllerProps {
@@ -17,6 +51,7 @@ export interface ControllerProps {
 //     NONE = 'NONE',
 //     LINKED = 'LINKED'
 // }
+
 
 export type GetWorkResult = {
     result: Publication
@@ -57,7 +92,6 @@ export default class Controller extends Component<ControllerProps, ControllerSta
 
     // async syncWork(): Promise<void> {
     //     const work = await this.model.getEditableWork(this.props.putCode);
-    //     console.log('WORK', work);
     //     this.setState({
     //         dataState: {
     //             status: AsyncProcessStatus.SUCCESS,
@@ -120,7 +154,6 @@ export default class Controller extends Component<ControllerProps, ControllerSta
 
     async onSave(update: EditablePublication) {
         const updatedWork = await this.model.createWork(update);
-        console.log('SAVED!', updatedWork);
     }
 
     async onDelete(putCode: string) {
@@ -141,10 +174,12 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     renderSuccess(dataState: DataState) {
         return <WorkForm
             publication={dataState.work}
+            workTypes={workTypes}
+            workExternalIdentifierTypes={workExternalIdentifierTypes}
+            workRelationshipIdentifiers={workRelationshipIdentifiers}
             onSave={this.onSave.bind(this)}
             onClose={this.props.onClose} />
     }
-
 
     render() {
         switch (this.state.dataState.status) {

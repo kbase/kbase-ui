@@ -15,27 +15,21 @@ export interface JSONObject {
 
 export type JSONArray = Array<JSONValue>;
 
-export function isJSONObject(value: JSONValue): value is JSONObject {
+export interface JSONObjectOf<T extends JSONValue> {
+    [x: string]: T;
+}
+
+export interface JSONArrayOf<T extends JSONValue> extends Array<T> {
+}
+
+export function isJSONObject(value: any): value is JSONObject {
     if (value instanceof {}.constructor) {
         return true;
     }
     return false;
-    // if (typeof value !== 'object') {
-    //     return false;
-    // }
-    // if (value === null) {
-    //     return false;
-    // }
-    // if (Array.isArray(value)) {
-    //     return false;
-    // }
-    // if (!(value instanceof {}.constructor)) {
-    //     return false;
-    // }
-    // return true;
 }
 
-export function isJSONArray(value: JSONValue): value is JSONArray {
+export function isJSONArray(value: any): value is JSONArray {
     if (Array.isArray(value)) {
         return true;
     }
@@ -67,4 +61,29 @@ export function isJSONValue(value: unknown): value is JSONValue {
     }
 
     return false;
+}
+
+export type PropPath = Array<string | number>
+
+export function digJSON(
+    value: JSONValue,
+    propPath: PropPath,
+    defaultValue?: JSONValue
+): JSONValue {
+    if (propPath.length === 0) {
+        return value;
+    }
+    const [prop, ...rest] = propPath;
+    switch (typeof prop) {
+        case 'string':
+            if (!(isJSONObject(value))) {
+                throw new TypeError('Not an object');
+            }
+            return digJSON(value[prop], rest, defaultValue)
+        case 'number':
+            if (!(isJSONArray(value))) {
+                throw new TypeError(`Not an array`);
+            }
+            return digJSON(value[prop], rest, defaultValue);
+    }
 }

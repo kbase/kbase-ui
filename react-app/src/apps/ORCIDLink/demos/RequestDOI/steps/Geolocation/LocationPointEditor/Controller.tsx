@@ -155,7 +155,6 @@ export default class Controller extends Component<ControllerProps, ControllerSta
 
         const { place, latitude, longitude } = this.state.editor.form;
 
-        console.log(place, latitude, longitude);
         if (!(place.status === FieldStatus.VALID && latitude.status === FieldStatus.VALID && longitude.status === FieldStatus.VALID)) {
             throw new Error('Attempt to transform fields when one or more are not VALID');
         }

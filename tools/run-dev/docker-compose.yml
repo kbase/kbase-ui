@@ -35,7 +35,7 @@ services:
             - '-env'
             # The following line uses the ones provided in this repo
             # Or this one which uses one installed by 'make get-gitlab-config'
-            - /kb/deployment/config/${DEPLOY_ENV}_config.ini
+            - /kb/deployment/config/${DEPLOY_ENV:-ci}_config.ini
             # Map
             - '-template'
             - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/deploy/config.json
@@ -58,4 +58,4 @@ services:
             - '443:443'
         dns: 8.8.8.8
         # note that this is really a docker env file and is relative to the docker-compose file
-        env_file: tools/proxy/conf/${DEPLOY_ENV}.env
+        env_file: tools/proxy/conf/${DEPLOY_ENV:-ci}.env

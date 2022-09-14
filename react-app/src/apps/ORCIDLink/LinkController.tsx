@@ -1,4 +1,4 @@
-import { AuthenticationState, AuthenticationStateAuthenticated } from 'contexts/Auth';
+import { AuthenticationStateAuthenticated } from 'contexts/Auth';
 import { Component } from 'react';
 import { Config } from 'types/config';
 import ErrorAlert from '../../components/ErrorAlert';
@@ -6,13 +6,8 @@ import Loading from '../../components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from '../../lib/AsyncProcess';
 
 import CreateLink from './CreateLink';
-import { LinkRecord, ReturnLink } from './Model';
+import { Model, ReturnLink } from './Model';
 import ViewLink from './ViewLink';
-
-const START_URL = 'https://ci.kbase.us/services/orcidlink/start';
-const LINK_URL = 'https://ci.kbase.us/services/orcidlink/link';
-const REVOKE_URL = 'https://ci.kbase.us/services/orcidlink/revoke';
-const GET_NAME_URL = 'https://ci.kbase.us/services/orcidlink/get_name';
 
 export interface LinkControllerProps {
     config: Config;
@@ -51,9 +46,9 @@ export interface LinkInfo {
     scope: string;
 }
 
-export interface LinkResult {
-    link: LinkRecord | null;
-}
+// export interface LinkResult {
+//     link: LinkRecord | null;
+// }
 
 export interface GetNameResult {
     first_name: string;
@@ -84,33 +79,26 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         this.loadData();
     }
 
-    async getName(): Promise<GetNameResult> {
-        const response = await fetch(GET_NAME_URL, {
-            headers: {
-                authorization: this.props.auth.authInfo.token
-            }
-        });
+    // async getName(): Promise<GetNameResult> {
+    //     const response = await fetch(GET_NAME_URL, {
+    //         headers: {
+    //             authorization: this.props.auth.authInfo.token
+    //         }
+    //     });
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+    //     if (response.status !== 200) {
+    //         throw new Error(`Unexpected response: ${response.status}`);
+    //     }
 
-        const result = JSON.parse(await response.text()) as { result: GetNameResult };
-        return result.result;
-    }
+    //     const result = JSON.parse(await response.text()) as { result: GetNameResult };
+    //     return result.result;
+    // }
 
     async fetchLink(): Promise<LinkInfo | null> {
-        const response = await fetch(LINK_URL, {
-            headers: {
-                authorization: this.props.auth.authInfo.token
-            }
-        });
+        const model = new Model({ config: this.props.config, auth: this.props.auth });
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        const link = await model.getLink();
 
-        const { link } = JSON.parse(await response.text()) as LinkResult;
 
         if (link === null) {
             return null;
@@ -124,7 +112,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         } = link;
 
         // Name is the one stored from the original linking, may have changed.
-        const { first_name, last_name } = await this.getName();
+        const { first_name, last_name } = await model.getName();
 
         // normalize for ui:
         return {
@@ -137,16 +125,19 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     async revokeLink() {
-        const response = await fetch(REVOKE_URL, {
-            method: 'DELETE',
-            headers: {
-                authorization: this.props.auth.authInfo.token
-            }
-        });
+        const model = new Model({ config: this.props.config, auth: this.props.auth });
+        await model.deleteLink();
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        // const response = await fetch(REVOKE_URL, {
+        //     method: 'DELETE',
+        //     headers: {
+        //         authorization: this.props.auth.authInfo.token
+        //     }
+        // });
+
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
 
         this.setState({
             linkState: {
@@ -160,15 +151,17 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         return null;
     }
 
-    startLink() {
-        const url = new URL(START_URL);
-        if (this.props.returnLink) {
-            url.searchParams.set('return_link', JSON.stringify(this.props.returnLink));
-        }
-        if (this.props.skipPrompt) {
-            url.searchParams.set('skip_prompt', 'true');
-        }
-        window.open(url, '_parent');
+    async startLink() {
+        const model = new Model({ config: this.props.config, auth: this.props.auth });
+        await model.startLink({ returnLink: this.props.returnLink, skipPrompt: this.props.skipPrompt })
+        // const url = new URL(START_URL);
+        // if (this.props.returnLink) {
+        //     url.searchParams.set('return_link', JSON.stringify(this.props.returnLink));
+        // }
+        // if (this.props.skipPrompt) {
+        //     url.searchParams.set('skip_prompt', 'true');
+        // }
+        // window.open(url, '_parent');
     }
 
     async loadData() {

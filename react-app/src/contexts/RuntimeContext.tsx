@@ -275,7 +275,6 @@ export default class RuntimeWrapper extends React.Component<
         //             autodismiss: 3000
         //         }
         //     });
-        //     // console.log('umm...');
         //     // this.addNotification({
         //     //     kind: NotificationKind.AUTODISMISS,
         //     //     type: 'info',

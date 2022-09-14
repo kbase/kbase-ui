@@ -1,30 +1,32 @@
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { NarrativeService } from "lib/clients/NarrativeService";
-import { isJSONObject, JSONArray } from "lib/json";
+import { digJSON, isJSONObject, JSONArray, JSONArrayOf, JSONObject } from "lib/json";
 import { ObjectInfo, objectInfoToObject, WorkspaceInfo, workspaceInfoToObject } from "lib/kb_lib/comm/coreServices/Workspace";
 import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { Config } from "types/config";
-import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
-
-// UI URLS
-// const START_URL = 'https://ci.kbase.us/services/orcidlink/start';
-// const LINK_URL = 'https://ci.kbase.us/services/orcidlink/link';
-// const REVOKE_URL = 'https://ci.kbase.us/services/orcidlink/revoke';
-// const GET_NAME_URL = 'https://ci.kbase.us/services/orcidlink/get_name';
-
-// Service URLs
-const GET_PROFILE_URL = 'https://ci.kbase.us/services/orcidlink/get_profile';
-const IS_LINKED_URL = 'https://ci.kbase.us/services/orcidlink/is_linked';
-const GET_LINK_URL = 'https://ci.kbase.us/services/orcidlink/get_link';
-const GET_WORK_URL = 'https://ci.kbase.us/services/orcidlink/get_work';
-const SAVE_WORK_URL = 'https://ci.kbase.us/services/orcidlink/save_work';
-const CREATE_WORK_URL = 'https://ci.kbase.us/services/orcidlink/create_work';
-const DELETE_WORK_URL = 'https://ci.kbase.us/services/orcidlink/delete_work';
+// import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
 
-const SAVE_DOI_APPLICATION_URL = 'https://ci.kbase.us/services/orcidlink/save_doi_application';
-const GET_DOI_APPLICATION_URL = 'https://ci.kbase.us/services/orcidlink/get_doi_application';
+const GET_PROFILE_PATH = 'get_profile';
+const IS_LINKED_PATH = 'is_linked';
+const GET_LINK_PATH = 'link';
+const GET_WORK_PATH = 'get_work';
+const SAVE_WORK_PATH = 'save_work';
+const CREATE_WORK_PATH = 'create_work';
+const DELETE_WORK_PATH = 'elete_work';
 
+const START_PATH = 'start';
+const LINK_PATH = 'link';
+const REVOKE_PATH = 'revoke';
+const GET_NAME_PATH = 'get_name';
+
+
+const SAVE_DOI_APPLICATION_PATH = 'save_doi_application';
+const GET_DOI_APPLICATION_PATH = 'get_doi_application';
+
+const GET_TEMP_LINK_RECORD_PATH = 'get-temp-link';
+const FINISH_LINK_PATH = 'finish-link';
+const CANCEL_LINK_PATH = 'cancel-link';
 
 export interface ORCIDAuth {
     access_token: string,
@@ -37,6 +39,10 @@ export interface ORCIDAuth {
 export interface LinkRecord {
     created_at: number,
     orcid_auth: ORCIDAuth
+}
+
+export interface LinkResult {
+    link: LinkRecord | null;
 }
 
 export interface TempLinkRecord {
@@ -94,6 +100,10 @@ export interface EditablePublication {
     date: string;
     journal: string;
     url: string;
+    externalIds: Array<ExternalId>
+}
+
+export interface EditableExternalIds {
     externalIds: Array<ExternalId>
 }
 
@@ -386,6 +396,13 @@ export interface DOIForm {
 }
 
 
+export interface GetNameResult {
+    first_name: string;
+    last_name: string;
+}
+
+const USE_DYNAMIC_SERVICE = true;
+
 // MODEL
 
 export class Model {
@@ -397,12 +414,78 @@ export class Model {
         this.auth = auth;
     }
 
-    async getProfile(): Promise<ORCIDProfile> {
-        const response = await fetch(GET_PROFILE_URL, {
+
+    async serviceURL(): Promise<string> {
+        if (USE_DYNAMIC_SERVICE) {
+            const serviceWizard = new GenericClient({
+                module: 'ServiceWizard',
+                timeout: 1000,
+                url: this.config.services.ServiceWizard.url
+            });
+            const [result] = await serviceWizard.callFunc('get_service_status', [{
+                module_name: 'ORCIDLink',
+                version: 'dev'
+            }]);
+            return result.url;
+        }
+        return `https://${this.config.deploy.services.urlBase}/services/orcidlink`;
+    }
+
+    async dsGet(path: string, token: string) {
+        const baseURL = await this.serviceURL();
+        const url = `${baseURL}/${path}`
+        return fetch(url, {
             headers: {
-                authorization: this.auth.authInfo.token
+                authorization: token,
+                accept: 'application/json'
             }
         });
+    }
+
+    async dsDelete(path: string, token: string) {
+        const baseURL = await this.serviceURL();
+        const url = `${baseURL}/${path}`
+        return fetch(url, {
+            method: 'DELETE',
+            headers: {
+                authorization: token
+            }
+        });
+    }
+
+    async dsPut(path: string, token: string, data: JSONObject) {
+        const baseURL = await this.serviceURL();
+        const url = `${baseURL}/${path}`
+        return fetch(url, {
+            method: 'PUT',
+            headers: {
+                authorization: token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+    }
+
+    async dsPost(path: string, token: string, data: JSONObject) {
+        const baseURL = await this.serviceURL();
+        const url = `${baseURL}/${path}`
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                authorization: token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+    }
+
+    async getProfile(): Promise<ORCIDProfile> {
+        const response = await this.dsGet(GET_PROFILE_PATH, this.auth.authInfo.token)
+        // const response = await fetch(GET_PROFILE_URL, {
+        //     headers: {
+        //         authorization: this.auth.authInfo.token
+        //     }
+        // });
 
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
@@ -413,11 +496,7 @@ export class Model {
     }
 
     async isLinked(): Promise<boolean> {
-        const response = await fetch(`${IS_LINKED_URL}`, {
-            headers: {
-                authorization: this.auth.authInfo.token
-            }
-        });
+        const response = await this.dsGet(IS_LINKED_PATH, this.auth.authInfo.token)
 
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
@@ -428,26 +507,79 @@ export class Model {
     }
 
     async getLink(): Promise<LinkRecord | null> {
-        const response = await fetch(`${GET_LINK_URL}`, {
-            headers: {
-                authorization: this.auth.authInfo.token
-            }
-        });
+        const response = await this.dsGet(GET_LINK_PATH, this.auth.authInfo.token)
+        // const response = await fetch(`${GET_LINK_URL}`, {
+        //     headers: {
+        //         authorization: this.auth.authInfo.token
+        //     }
+        // });
 
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
         }
 
-        const result = JSON.parse(await response.text()) as { result: LinkRecord | null };
-        return result.result;
+        const result = JSON.parse(await response.text()) as { link: LinkRecord | null };
+        return result.link;
+
+
+        // const response = await fetch(LINK_URL, {
+        //     headers: {
+        //         authorization: this.props.auth.authInfo.token
+        //     }
+        // });
+
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
+
+        // const { link } = JSON.parse(await response.text()) as LinkResult;
     }
 
+    async deleteLink() {
+        const response = await this.dsDelete(REVOKE_PATH, this.auth.authInfo.token);
+        // const response = await fetch(REVOKE_URL, {
+        //     method: 'DELETE',
+        //     headers: {
+        //         authorization: this.props.auth.authInfo.token
+        //     }
+        // });
+
+        if (response.status !== 200) {
+            throw new Error(`Unexpected response: ${response.status}`);
+        }
+
+        // this.setState({
+        //     linkState: {
+        //         status: AsyncProcessStatus.SUCCESS,
+        //         value: { link: null }
+        //     }
+        // });
+
+        // TODO: notification
+
+        // return null;
+    }
+
+    async startLink({ returnLink, skipPrompt }: { returnLink?: ReturnLink, skipPrompt?: boolean }) {
+        const baseURL = await this.serviceURL();
+        const url = new URL(`${baseURL}/${START_PATH}`);
+        if (returnLink) {
+            url.searchParams.set('return_link', JSON.stringify(returnLink));
+        }
+        if (skipPrompt) {
+            url.searchParams.set('skip_prompt', 'true');
+        }
+        window.open(url, '_parent');
+    }
+
+
     async getWork(putCode: string): Promise<Publication> {
-        const response = await fetch(`${GET_WORK_URL}/${putCode}`, {
-            headers: {
-                authorization: this.auth.authInfo.token
-            }
-        });
+        const response = await this.dsGet(`${GET_WORK_PATH}/${putCode}`, this.auth.authInfo.token)
+        // const response = await fetch(`${GET_WORK_URL}/${putCode}`, {
+        //     headers: {
+        //         authorization: this.auth.authInfo.token
+        //     }
+        // });
 
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
@@ -466,15 +598,18 @@ export class Model {
             journal: work.journal,
             url: work.url,
             externalIds: work.externalIds
-        };
-        const response = await fetch(SAVE_WORK_URL, {
-            method: 'PUT',
-            headers: {
-                Authorization: this.auth.authInfo.token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(temp)
-        });
+        } as unknown as JSONObject;
+
+        const response = await this.dsPut(SAVE_WORK_PATH, this.auth.authInfo.token, temp)
+
+        // const response = await fetch(SAVE_WORK_URL, {
+        //     method: 'PUT',
+        //     headers: {
+        //         Authorization: this.auth.authInfo.token,
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(temp)
+        // });
 
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
@@ -492,15 +627,18 @@ export class Model {
             journal: work.journal,
             url: work.url,
             externalIds: work.externalIds
-        };
-        const response = await fetch(CREATE_WORK_URL, {
-            method: 'POST',
-            headers: {
-                Authorization: this.auth.authInfo.token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(temp)
-        });
+        } as unknown as JSONObject;
+
+        const response = await this.dsPost(CREATE_WORK_PATH, this.auth.authInfo.token, temp)
+
+        // const response = await fetch(CREATE_WORK_URL, {
+        //     method: 'POST',
+        //     headers: {
+        //         Authorization: this.auth.authInfo.token,
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(temp)
+        // });
 
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
@@ -511,13 +649,14 @@ export class Model {
     }
 
     async deleteWork(putCode: string): Promise<void> {
-        const response = await fetch(`${DELETE_WORK_URL}/${putCode}`, {
-            method: 'DELETE',
-            headers: {
-                Authorization: this.auth.authInfo.token,
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await this.dsDelete(`${DELETE_WORK_PATH}/${putCode}`, this.auth.authInfo.token)
+        // const response = await fetch(`${DELETE_WORK_URL}/${putCode}`, {
+        //     method: 'DELETE',
+        //     headers: {
+        //         Authorization: this.auth.authInfo.token,
+        //         'Content-Type': 'application/json'
+        //     }
+        // });
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
         }
@@ -573,6 +712,22 @@ export class Model {
         // return narratives;
     }
 
+    async getName(): Promise<GetNameResult> {
+        const response = await this.dsGet(GET_NAME_PATH, this.auth.authInfo.token);
+        // const response = await fetch(GET_NAME_URL, {
+        //     headers: {
+        //         authorization: this.props.auth.authInfo.token
+        //     }
+        // });
+
+        if (response.status !== 200) {
+            throw new Error(`Unexpected response: ${response.status}`);
+        }
+
+        const result = JSON.parse(await response.text()) as { result: GetNameResult };
+        return result.result;
+    }
+
     async getNarrativeCitations(narrativeObjectRef: string): Promise<{
         narrativeAppCitations: NarrativeAppCitations,
         markdownCitations: Array<Citation>
@@ -586,7 +741,7 @@ export class Model {
         });
 
         // Sorry, untyped for now...
-        const [result] = await client.callFunc('get_objects2', [
+        const [result] = await client.callFunc<JSONArrayOf<JSONObject>, JSONArrayOf<JSONObject>>('get_objects2', [
             {
                 "objects": [
                     {
@@ -605,7 +760,7 @@ export class Model {
             }
         ]);
 
-        const cells = (result['data'][0]['data']['cells'] as Array<any>).map((cell) => {
+        const cells = (digJSON(result, ['data', 0, 'data', 'cells']) as Array<any>).map((cell) => {
             switch (cell['cell_type']) {
                 case 'code':
                     if ('appCell' in cell['metadata']['kbase']) {
@@ -755,11 +910,6 @@ export class Model {
         }
 
         return { narrativeAppCitations, markdownCitations };
-
-        // console.log('extracted refs', refs);
-
-        // done.
-
     }
 
     async saveDOIForm(doiForm: DOIForm): Promise<boolean> {
@@ -772,14 +922,17 @@ export class Model {
         //     url: work.url,
         //     externalIds: work.externalIds
         // };
-        const response = await fetch(SAVE_DOI_APPLICATION_URL, {
-            method: 'POST',
-            headers: {
-                Authorization: this.auth.authInfo.token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(doiForm)
-        });
+
+        const response = await this.dsPost(CREATE_WORK_PATH, this.auth.authInfo.token, doiForm as unknown as JSONObject)
+
+        // const response = await fetch(SAVE_DOI_APPLICATION_URL, {
+        //     method: 'POST',
+        //     headers: {
+        //         Authorization: this.auth.authInfo.token,
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(doiForm)
+        // });
 
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
@@ -790,11 +943,13 @@ export class Model {
     }
 
     async getDOIForm(formId: string): Promise<DOIForm> {
-        const response = await fetch(`${GET_DOI_APPLICATION_URL}/${formId}`, {
-            headers: {
-                authorization: this.auth.authInfo.token
-            }
-        });
+        const response = await this.dsGet(`${GET_DOI_APPLICATION_PATH}/${formId}`, this.auth.authInfo.token)
+
+        // const response = await fetch(`${GET_DOI_APPLICATION_URL}/${formId}`, {
+        //     headers: {
+        //         authorization: this.auth.authInfo.token
+        //     }
+        // });
 
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
@@ -844,4 +999,55 @@ export class Model {
     //     });
     //     return client.get_static_narrative_info(static)
     // }
+
+
+    async fetchTempLink(token: string) {
+        const response = await this.dsGet(`${GET_TEMP_LINK_RECORD_PATH}/${token}`, this.auth.authInfo.token)
+        // const response = await fetch(`${GET_TEMP_LINK_RECORD_URL}/${this.props.token}`, {
+        //     headers: {
+        //         authorization: this.props.kbaseAuthToken
+        //     }
+        // })
+        if (response.status !== 200) {
+            throw new Error(`Unexpected response: ${response.status}`);
+        }
+
+        const rawResult = await response.text();
+        return JSON.parse(rawResult);
+    }
+
+    async confirmLink(token: string) {
+        const response = await this.dsGet(`${FINISH_LINK_PATH}/${token}`, this.auth.authInfo.token);
+        if (response.status !== 200) {
+            throw new Error(`Unexpected response: ${response.status}`);
+        }
+
+        // const result = JSON.parse(await response.text());
+        // // TODO: handle error.
+
+        // if (this.props.returnLink) {
+        //     window.open(this.props.returnLink.url, '_parent');
+        // } else {
+        //     window.open('https://ci.kbase.us/#orcidlink', '_parent');
+        // }
+    }
+
+    async cancelLink(token: string) {
+        const response = await this.dsGet(`${CANCEL_LINK_PATH}/${token}`, this.auth.authInfo.token);
+        // const response = await fetch(`${CANCEL_LINK_URL}/${this.props.token}`, {
+        //     headers: {
+        //         authorization: this.props.kbaseAuthToken
+        //     }
+        // })
+        if (response.status !== 200) {
+            throw new Error(`Unexpected response: ${response.status}`);
+        }
+
+        // const result = JSON.parse(await response.text());
+
+        // TODO: handle error.
+        // window.open('https://ci.kbase.us/#orcidlink', '_parent');
+    }
+
+
 }

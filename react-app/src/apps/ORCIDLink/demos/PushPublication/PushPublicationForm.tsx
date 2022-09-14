@@ -1,14 +1,15 @@
-import { EditablePublication, Model, ORCIDProfile, Publication } from "apps/ORCIDLink/Model";
+import { EditablePublication, Model, ORCIDProfile, ORCID_URL, Publication } from "apps/ORCIDLink/Model";
 import AlertMessage from "components/AlertMessage";
 import ErrorAlert from "components/ErrorAlert";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
-import { Button, } from "react-bootstrap";
+import { Alert, Button, } from "react-bootstrap";
 import AddNewPublication from "./Add/Controller";
 import DeletePublication from "./DeletePublication";
 import EditPublication from "./Edit/Controller";
 import ViewPublication from "./ViewPublication";
 import styles from './PushPublicationForm.module.css';
+import { renderORCIDIcon } from "apps/ORCIDLink/common";
 
 export interface PushPublicationFormProps {
     profile: ORCIDProfile;
@@ -91,14 +92,12 @@ export interface EditAreaView extends EditAreaBase {
     publication: Publication;
 }
 
-
 export type EditArea =
     EditAreaNone |
     EditAreaNew |
     EditAreaUpdate |
     EditAreaDelete |
     EditAreaView;
-
 
 interface PushPublicationFormState {
     profile: ORCIDProfile;
@@ -189,7 +188,6 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
     }
 
     onDelete(publicationIndex: number) {
-        console.log('on delete', publicationIndex);
         this.setState({
             editArea: {
                 type: EditAreaType.DELETE,
@@ -252,15 +250,12 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
                         <Button variant="danger" onClick={() => { this.onDelete(index); }} ><span className="fa fa-trash" /></Button>
                     </div>;
                 }
-                return <Button variant="secondary" onClick={() => { this.onView(index); }} ><span className="fa fa-eye" /></Button>
+                return <Button variant="secondary" onClick={() => { this.onView(index); }} title="This publication may only be viewed at KBase, since it was not created through KBase."><span className="fa fa-eye" /></Button>
             })();
-            //  <td><Button variant="primary" disabled={!canEdit} onClick={() => { console.log('here'); this.onEdit(index); }} ><span className="fa fa-edit" /> Edit</Button></td>
-            //     <td><Button variant="danger" disabled={!canEdit} onClick={() => { console.log('here'); this.onDelete(index); }}><span className="fa fa-trash" /> Remove</Button></td>
             return <tr key={index}>
                 <td>{title}</td>
                 <td>{date}</td>
                 <td>{journal}</td>
-                <td>{putCode}</td>
                 <td>{button}</td>
             </tr>
         });
@@ -270,7 +265,6 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
                     <th>Title</th>
                     <th>Date</th>
                     <th>Journal</th>
-                    <th>Put Code</th>
                     <th></th>
                 </tr>
             </thead>
@@ -282,6 +276,13 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
 
     onPublish() {
         alert('Will publish');
+    }
+
+    renderORCIDLink(label: string) {
+        return <a href={`${ORCID_URL}/${this.props.profile.orcidId}`} target="_blank">
+            {renderORCIDIcon()}
+            {label}
+        </a>
     }
 
     renderIntro() {
@@ -300,21 +301,22 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
             </p>
             <ul>
                 <li>
-                    thing 1
+                    Click the <b>Add Publication</b> button to add a publication to your ORCID profile
                 </li>
                 <li>
-                    thing 2
+                    Click the <b>View</b> button to view the given profile
+                </li>
+                <li>
+                    View {this.renderORCIDLink("your profile")} to confirm that publications are the same as here
                 </li>
             </ul>
         </div>
     }
 
     renderEditAreaNone() {
-        return <div>
-            <p>
-                This area reserved for adding, editing, and deleting a Publication
-            </p>
-        </div>
+        return <Alert variant="info">
+            This area reserved for adding, editing, and deleting a Publication
+        </Alert>
     }
 
     renderEditAreaNew(editArea: EditAreaNew) {
@@ -399,13 +401,10 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
         const deletionState = editArea.deletionState;
         switch (deletionState.status) {
             case DeletionStatus.PENDING:
-                return <div>
-                    <h2>Confirm Publication Removal from ORCID Record</h2>
-                    <DeletePublication publication={deletionState.value}
-                        onDeleteConfirm={() => this.props.deletePublication(deletionState.value.putCode)}
-                        onCancel={() => this.closeEditArea()}
-                    />
-                </div>;
+                return <DeletePublication publication={deletionState.value}
+                    onDeleteConfirm={() => this.props.deletePublication(deletionState.value.putCode)}
+                    onCancel={() => this.closeEditArea()}
+                />
             case DeletionStatus.SUCCESS:
                 return <div>
                     <AlertMessage type="success">Successfully removed this publication from your ORCID record</AlertMessage>
@@ -444,7 +443,7 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
                     {this.renderIntro()}
                     <h4>New Publication</h4>
                     <div className="button-toolbar">
-                        <Button variant="primary" onClick={() => { console.log('here'); this.onAdd(); }} ><span className="fa fa-plus-circle" /> Add Publication</Button>
+                        <Button variant="primary" onClick={() => { this.onAdd(); }} ><span className="fa fa-plus-circle" /> Add Publication</Button>
                     </div>
                     <h4 style={{ marginTop: '2em' }}>Existing Publications</h4>
                     {this.renderPublications()}

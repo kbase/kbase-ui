@@ -1,12 +1,35 @@
-import { EditablePublication, Publication } from "apps/ORCIDLink/Model";
+import { EditablePublication, ExternalId, Publication } from "apps/ORCIDLink/Model";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
 import { Button, Form } from "react-bootstrap";
+import { ROW_HEADER } from "../styles";
 import styles from './EditPublication.module.css';
+import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";
+import EditExternalIdentifiers from "../EditExternalIdentifiers";
+
+const SECTION_HEADER_STYLE = {
+    fontWeight: 'bold',
+    color: "rgba(250,250,250, 1)",
+    backgroundColor: "rgba(125, 125, 125, 1)",
+    borderRadius: '0.25em',
+    marginTop: '1em',
+    padding: '0.25em',
+    paddingLeft: '0.5em',
+    alignItems: 'center'
+};
+
+const SECTION_BODY_STYLE = {
+    justifyContent: 'center',
+    marginTop: '1em',
+    padding: '0.25em',
+    paddingLeft: '0.5em'
+};
 
 export interface EditPublicationProps {
     publication: EditablePublication;
     // onSave: (publication: Publication) => Promise<void>;
+    workExternalIdentifierTypes: WorkExternalIdentifierTypes;
+    workRelationshipIdentifiers: WorkRelationshipIdentifiers;
     onClose: () => void;
     onSave: (update: EditablePublication) => Promise<void>;
 }
@@ -181,61 +204,26 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
     }
 
     renderExternalIds() {
-        const rows = this.state.editState.externalIds.map(({ type, url, value, relationship }, index) => {
-            return <div className="flex-row" key={index}>
-                <div className="flex-col">
-                    <input type="text" className="form-control"
-                        value={type}
-                        style={{ margin: '0' }}
-                        onInput={(e) => { this.changeExternalIdType(e.currentTarget.value, index) }} />
-                </div>
-                <div className="flex-col">
-                    <input type="text" className="form-control"
-                        value={value}
-                        style={{ margin: '0' }}
-                        onInput={(e) => { this.changeExternalIdValue(e.currentTarget.value, index) }} />
-                </div>
-                <div className="flex-col">
-                    <input type="text" className="form-control"
-                        value={relationship}
-                        style={{ margin: '0' }}
-                        onInput={(e) => { this.changeExternalIdRelationship(e.currentTarget.value, index) }} />
-                </div>
-                <div className="flex-col">
-                    <input type="text" className="form-control"
-                        value={url}
-                        style={{ margin: '0' }}
-                        onInput={(e) => { this.changeExternalIdURL(e.currentTarget.value, index) }} />
-                </div>
-            </div>
-        });
-        return <div>
-            <div className="flex-table">
-                <div className="flex-row -header">
-                    <div className="flex-col">
-                        Type
-                    </div>
-                    <div className="flex-col">
-                        Value
-                    </div>
-                    <div className="flex-col">
-                        Relationship
-                    </div>
-                    <div className="flex-col">
-                        URL
-                    </div>
-                </div>
-                {rows}
-            </div>
-        </div>
+        return <EditExternalIdentifiers
+            externalIds={this.state.editState.externalIds}
+            workExternalIdentifierTypes={this.props.workExternalIdentifierTypes}
+            workRelationshipIdentifiers={this.props.workRelationshipIdentifiers}
+            onChanged={(externalIds: Array<ExternalId>) => {
+                this.setState({
+                    editState: {
+                        ...this.state.editState,
+                        externalIds
+                    }
+                });
+            }}
+        />
     }
 
     render() {
-        console.log('hmm', this.props);
         return <Form className={`${styles.main} well`} style={{ padding: '1em' }}>
             <div className="flex-table">
                 <div className="flex-row">
-                    <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >
+                    <div className="flex-col" style={ROW_HEADER} >
                         Publication Type
                     </div>
                     <div className="flex-col">
@@ -244,7 +232,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                     </div>
                 </div>
                 <div className="flex-row">
-                    <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >
+                    <div className="flex-col" style={ROW_HEADER} >
                         Title
                     </div>
                     <div className="flex-col">
@@ -253,7 +241,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                     </div>
                 </div>
                 <div className="flex-row">
-                    <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >
+                    <div className="flex-col" style={ROW_HEADER} >
                         Publisher
                     </div>
                     <div className="flex-col">
@@ -262,7 +250,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                     </div>
                 </div>
                 <div className="flex-row">
-                    <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >
+                    <div className="flex-col" style={ROW_HEADER} >
                         Date
                     </div>
                     <div className="flex-col">
@@ -271,7 +259,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                     </div>
                 </div>
                 <div className="flex-row">
-                    <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >
+                    <div className="flex-col" style={ROW_HEADER} >
                         URL
                     </div>
                     <div className="flex-col">
@@ -279,23 +267,23 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                             onInput={(e) => { this.changeURL(e.currentTarget.value) }} />
                     </div>
                 </div>
-                <div className="flex-row" style={{ fontWeight: 'bold', color: "rgba(150,150,150)", marginTop: '1em' }}>
+                <div className="flex-row" style={SECTION_HEADER_STYLE}>
                     CITATION
                 </div>
-                <div className="flex-row">
+                <div className="flex-row" style={SECTION_BODY_STYLE}>
                     <i>Citation information not provided by ORCID API???</i>
                 </div>
 
 
-                <div className="flex-row" style={{ alignItems: 'center', fontWeight: 'bold', color: "rgba(150,150,150)", marginTop: '1em' }}>
-                    EXTERNAL IDENTIFIERS  <Button variant="link" size="sm" onClick={this.addExternalIdentifier.bind(this)}>
+                <div className="flex-row" style={SECTION_HEADER_STYLE}>
+                    EXTERNAL IDENTIFIERS  <Button variant="secondary" size="sm" onClick={this.addExternalIdentifier.bind(this)} style={{ marginLeft: '1em' }}>
                         <span className="fa fa-plus-circle" />
                     </Button>
                 </div>
-                <div className="flex-row" style={{ justifyContent: 'center', marginTop: '1em' }}>
+                <div className="flex-row" style={SECTION_BODY_STYLE}>
                     {this.renderExternalIds()}
                 </div>
-                <div className="flex-row" style={{ justifyContent: 'center', marginTop: '1em' }}>
+                <div className="flex-row" style={{ justifyContent: 'center', marginTop: '2em' }}>
                     {/* <Button variant="danger" onClick={this.props.onDeleteConfirm} style={{ marginRight: '0.5em' }}>
                         <span className="fa fa-trash" /> Confirm
                     </Button> */}

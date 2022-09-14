@@ -1,0 +1,296 @@
+[
+    {
+        "category": "publications",
+        "label": "Publications",
+        "values": [
+            {
+                "category": "publications",
+                "value": "book",
+                "label": "Book",
+                "description": "Books written by a single author or collaboratively based on research or scholarly findings generally derived from peer reviewed funding."
+            },
+            {
+                "category": "publications",
+                "value": "book-chapter",
+                "label": "Book Chapter",
+                "description": "Texts written by a single author or collaboratively based on research or scholarly findings and expertise in a field."
+            },
+            {
+                "category": "publications",
+                "value": "book-review",
+                "label": "Book Review",
+                "description": "Critical review of works of fiction or non-fiction highlighting the contributions to an art, field or discipline."
+            },
+            {
+                "category": "publications",
+                "value": "dictionary-entry",
+                "label": "Dictionary Entry",
+                "description": "Entries of new words, new meanings of existing words, changes in spelling and hyphenation over a longer period of time, and grammatical changes."
+            },
+            {
+                "category": "publications",
+                "value": "dissertation",
+                "label": "Dissertation",
+                "description": "Treatise advancing an original point of view resulting from research: a requirement for a doctoral degree. This is only available with API v2.x"
+            },
+            {
+                "category": "publications",
+                "value": "dissertation-thesis",
+                "label": "Dissertation Thesis",
+                "description": "A paper that is typically based on original research and that gives evidence of the candidate’s mastery both of their own subject and of scholarly method. This is only available with API v3.0+"
+            },
+            {
+                "category": "publications",
+                "value": "encyclopedia-entry",
+                "label": "Encyclopedia Entry",
+                "description": "Authored entries in a reference work or a compendium focusing on a particular domain or on all branches of knowledge."
+            },
+            {
+                "category": "publications",
+                "value": "edited-book",
+                "label": "Edited Book",
+                "description": "Books edited by a single author or collaboratively for the dissemination of research or scholarly findings that generally result from peer reviewed funding."
+            },
+            {
+                "category": "publications",
+                "value": "journal-article",
+                "label": "Journal Article",
+                "description": "Articles in peer-reviewed publications that disseminate the results of original research and scholarship."
+            },
+            {
+                "category": "publications",
+                "value": "journal-issue",
+                "label": "Journal Issue",
+                "description": "Periodical publications aimed at fostering intellectual debate and inquiry."
+            },
+            {
+                "category": "publications",
+                "value": "magazine-article",
+                "label": "Magazine Article",
+                "description": "Articles in thematic publications published at fixed intervals."
+            },
+            {
+                "category": "publications",
+                "value": "manual",
+                "label": "Manual",
+                "description": "Course and assignment materials produced for teaching purposes."
+            },
+            {
+                "category": "publications",
+                "value": "online-resource",
+                "label": "Online Resource",
+                "description": "Information accessible only on the web via traditional technical methods"
+            },
+            {
+                "category": "publications",
+                "value": "newsletter-article",
+                "label": "Newsletter Article",
+                "description": "Articles in publications aimed at researchers, decision-makers, professionals and the public that report on a research project or on the activities of a research chair or a research center."
+            },
+            {
+                "category": "publications",
+                "value": "newspaper-article",
+                "label": "Newspaper Article",
+                "description": "Articles in a daily, weekly or monthly publication reporting on news and social issues aimed at the public."
+            },
+            {
+                "category": "publications",
+                "value": "preprint",
+                "label": "Preprent",
+                "description": "Version of a paper made publicly available before formal peer review and publication.&nbsp;This is only available with API v3.0+&nbsp;"
+            },
+            {
+                "category": "publications",
+                "value": "report",
+                "label": "Report",
+                "description": "Reports disseminating the outcomes and deliverables of a research contract."
+            },
+            {
+                "category": "publications",
+                "value": "review",
+                "label": "Review",
+                "description": "A formal assessment of another's work. This is only available with API v3.0+&nbsp;"
+            },
+            {
+                "category": "publications",
+                "value": "research-tool",
+                "label": "Research Tool",
+                "description": "Series of observations, measurements or facts identified from the research."
+            },
+            {
+                "category": "publications",
+                "value": "supervised-student-publication",
+                "label": "Supervised Student Publication",
+                "description": "Articles on research findings published jointly with or supervised by the thesis adviser."
+            },
+            {
+                "category": "publications",
+                "value": "test",
+                "label": "Test",
+                "description": "Assessments that include tests designed for general university selection, selection into specific courses or other evaluation purposes."
+            },
+            {
+                "category": "publications",
+                "value": "translation",
+                "label": "Translation",
+                "description": "Translations of books and articles that identify modifications to the original edition, such as a new or revised preface."
+            },
+            {
+                "category": "publications",
+                "value": "website",
+                "label": "Website",
+                "description": "Stand-alone locations on the web where multiple types of information on a specific theme are available."
+            },
+            {
+                "category": "publications",
+                "value": "working-paper",
+                "label": "Working Paper",
+                "description": "Preliminary versions of articles that have not undergone review but that may be shared for comment."
+            }
+        ]
+    },
+    {
+        "category": "conference",
+        "label": "Conference",
+        "values": [
+            {
+                "category": "conference",
+                "value": "conference-abstract",
+                "label": "Conference Abstract",
+                "description": "Texts of a specified length that states the issue to be discussed in a proposed conference paper."
+            },
+            {
+                "category": "conference",
+                "value": "conference-paper",
+                "label": "Conference Paper",
+                "description": "Papers written alone or collaboratively, presented at an academic conference, and published in the proceedings (not in scholarly journals)."
+            },
+            {
+                "category": "conference",
+                "value": "conference-poster",
+                "label": "Conference Poster",
+                "description": "Posters displayed in a conference setting and conveying research highlights in an efficient manner by compelling graphics."
+            }
+        ]
+    },
+    {
+        "category": "intellectual-property",
+        "label": "Intellectional Property",
+        "values": [
+            {
+                "category": "intellectual-property",
+                "value": "disclosure",
+                "label": "Disclosure",
+                "description": "Publications that establish inventions as prior art thereby preventing others from patenting the same invention or concept."
+            },
+            {
+                "category": "intellectual-property",
+                "value": "license",
+                "label": "License",
+                "description": "Signed agreements to exploit a piece of IP such as a process, product, data, or software."
+            },
+            {
+                "category": "intellectual-property",
+                "value": "patent",
+                "label": "Patent",
+                "description": "A form of IP protection that defines the exclusive right by law for inventors and assignees to make use of and exploit their inventions, products or processes, for a limited period of time."
+            },
+            {
+                "category": "intellectual-property",
+                "value": "registered-copyright",
+                "label": "Registered Copyright",
+                "description": "Registered ownership of rights under a system of laws for promoting both the creation of and access to artistic, literary, musical, dramatic and other creative works."
+            },
+            {
+                "category": "intellectual-property",
+                "value": "trademark",
+                "label": "Trademark",
+                "description": "Marks such as a name, word, phrase, logo, symbol, design, image of a product or service that indicates the source and provides the right to control the use of the identifier."
+            }
+        ]
+    },
+    {
+        "category": "other",
+        "label": "Other",
+        "values": [
+            {
+                "category": "other",
+                "value": "annotation",
+                "label": "Annotation",
+                "description": "Annotations contain comments or descriptions about another resource. This is only available with API v3.0+&nbsp;"
+            },
+            {
+                "category": "other",
+                "value": "artistic-performance",
+                "label": "Artistic Performance",
+                "description": "Collection of information records that, in combination, represent a full and up-to-date history of artistic or performance outputs resulting from, or related to, the person's research or scholarly activities."
+            },
+            {
+                "category": "other",
+                "value": "data-management-plan",
+                "label": "Data Management Plan",
+                "description": "A formal statement describing how research data will be managed and documented throughout a research project and the terms regarding the subsequent deposit of the data with a data repository for long-term management and preservation. This is only available with API v3.0+&nbsp;"
+            },
+            {
+                "category": "other",
+                "value": "data-set",
+                "label": "Data Set",
+                "description": "A series of structured observations, measurements or facts identified from the research which can be stored in a database medium."
+            },
+            {
+                "category": "other",
+                "value": "invention",
+                "label": "Invention",
+                "description": "Practical and original outputs arising from research."
+            },
+            {
+                "category": "other",
+                "value": "lecture-speech",
+                "label": "Lecture Speech",
+                "description": "An informative talk related to research delivered to an audience."
+            },
+            {
+                "category": "other",
+                "value": "physical-object",
+                "label": "Phsical Object",
+                "description": "A specimen, sample, or other physical object used for research purposes; an inanimate three-dimensional object or substance. This is only available with API v3.0+&nbsp;"
+            },
+            {
+                "category": "other",
+                "value": "research-technique",
+                "label": "Research Technique",
+                "description": "A practical methods or skills applied to particular tasks identified as part of the research."
+            },
+            {
+                "category": "other",
+                "value": "software",
+                "label": "Software",
+                "description": "A program used to operate a computer or other technical device."
+            },
+            {
+                "category": "other",
+                "value": "spin-off-company",
+                "label": "Spinn-Off Company",
+                "description": "A company set up by a Research Organization to make commercial use of the results and findings of the Research project."
+            },
+            {
+                "category": "other",
+                "value": "standards-and-policy",
+                "label": "Standards and Policy",
+                "description": "The development of a rule or principle that is used as a basis for judgement."
+            },
+            {
+                "category": "other",
+                "value": "technical-standard",
+                "label": "Technical Standard",
+                "description": "Technical Standards (industrial or otherwise) that have originated from the research projects in which new protocols, methods or materials may be developed."
+            },
+            {
+                "category": "other",
+                "value": "other",
+                "label": "Other",
+                "description": "Any other type of work."
+            }
+        ]
+    }
+]

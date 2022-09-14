@@ -28,7 +28,7 @@ export default class Catalog extends Component<CatalogProps, CatalogState> {
 
         const routeSpecs: Array<SimplePluginRouteSpec> = [
             {
-                path: 'catalog/admin',
+                path: '^(appcatalog|catalog)$/admin',
                 auth: true,
                 view: 'catalogAdmin'
             },
@@ -50,7 +50,7 @@ export default class Catalog extends Component<CatalogProps, CatalogState> {
             {
                 path: 'catalog/services',
                 auth: true,
-                view: 'serviceBrowser'
+                view: 'serviceCatalog'
             },
             {
                 path: 'catalog/datatypes',

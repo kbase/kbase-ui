@@ -41,7 +41,6 @@ export default class AuthorsStep extends Component<AuthorsStepProps, AuthorsStep
 
     async importFromORCID() {
         // const profile = await this.props.model.getProfile();
-        // console.log('got profile...', profile);
         // const { firstName, lastName, orcidId } = profile;
         // this.setState({
         //     fields: {
@@ -113,7 +112,6 @@ export default class AuthorsStep extends Component<AuthorsStepProps, AuthorsStep
     }
 
     onDone() {
-        console.log('done??', this.state.fields);
         if ((this.state.fields.title.status !== FieldStatus.VALID &&
             this.state.fields.title.status !== FieldStatus.INITIAL) ||
             this.state.fields.primaryAuthor.status !== FieldStatus.VALID) {

@@ -6,6 +6,7 @@ import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import PreFillForm from './PreFillForm';
 import { ORCIDProfile } from 'apps/ORCIDLink/Model';
+import { rejects } from 'assert';
 
 const START_URL = 'https://ci.kbase.us/services/orcidlink/start';
 const LINK_URL = 'https://ci.kbase.us/services/orcidlink/link';
@@ -88,7 +89,21 @@ export default class PreFillFormController extends Component<PreFillFormControll
 
     componentDidMount() {
         this.props.setTitle('ORCID® Link Demo - Pre Fill a Form from Profile')
+
         this.loadData();
+    }
+
+    async loadData(): Promise<void> {
+        await new Promise<void>((resolve) => {
+            this.setState({
+                dataState: {
+                    status: AsyncProcessStatus.PENDING
+                }
+            }, () => {
+                resolve();
+            })
+        });
+        return this.syncProfile();
     }
 
     async getProfile(): Promise<ORCIDProfile> {
@@ -107,50 +122,87 @@ export default class PreFillFormController extends Component<PreFillFormControll
     }
 
     async syncProfile(): Promise<void> {
-        const profile = await this.getProfile();
-
-        this.setState({
-            dataState: {
-                status: AsyncProcessStatus.SUCCESS,
-                value: { profile }
-            }
-        });
-    }
-
-    async loadData() {
-        await new Promise((resolve) => {
-            this.setState({
-                dataState: {
-                    status: AsyncProcessStatus.PENDING
+        return new Promise(async (resolve) => {
+            try {
+                const profile = await this.getProfile();
+                this.setState({
+                    dataState: {
+                        status: AsyncProcessStatus.SUCCESS,
+                        value: { profile }
+                    }
+                }, () => {
+                    resolve();
+                });
+            } catch (ex) {
+                if (ex instanceof Error) {
+                    this.setState({
+                        dataState: {
+                            status: AsyncProcessStatus.ERROR,
+                            error: {
+                                message: ex.message
+                            }
+                        }
+                    }, () => {
+                        resolve();
+                    });
+                } else {
+                    this.setState({
+                        dataState: {
+                            status: AsyncProcessStatus.ERROR,
+                            error: {
+                                message: `Unknown error: ${String(ex)}`
+                            }
+                        }
+                    }, () => {
+                        resolve();
+                    });
                 }
-            }, () => {
-                resolve(null);
-            });
-        });
-        try {
-            await this.syncProfile();
-        } catch (ex) {
-            if (ex instanceof Error) {
-                this.setState({
-                    dataState: {
-                        status: AsyncProcessStatus.ERROR,
-                        error: {
-                            message: ex.message
-                        }
-                    }
-                });
-            } else {
-                this.setState({
-                    dataState: {
-                        status: AsyncProcessStatus.ERROR,
-                        error: {
-                            message: `Unknown error: ${String(ex)}`
-                        }
-                    }
-                });
             }
-        }
+        });
     }
+
+    // async loadData() {
+    //     await new Promise((resolve) => {
+    //         this.setState({
+    //             dataState: {
+    //                 status: AsyncProcessStatus.PENDING
+    //             }
+    //         }, () => {
+    //             resolve(null);
+    //         });
+    //     })
+    //     try {
+    //         const profile = await this.getProfile();
+    //         this.setState({
+    //             dataState: {
+    //                 status: AsyncProcessStatus.SUCCESS,
+    //                 value: { profile }
+    //             }
+    //         }, () => {
+    //             resolve();
+    //         });
+    //     } catch (ex) {
+    //         if (ex instanceof Error) {
+    //             this.setState({
+    //                 dataState: {
+    //                     status: AsyncProcessStatus.ERROR,
+    //                     error: {
+    //                         message: ex.message
+    //                     }
+    //                 }
+    //             });
+    //         } else {
+    //             this.setState({
+    //                 dataState: {
+    //                     status: AsyncProcessStatus.ERROR,
+    //                     error: {
+    //                         message: `Unknown error: ${String(ex)}`
+    //                     }
+    //                 }
+    //             });
+    //         }
+    //     }
+    // }
 
     renderLoading() {
         return <Loading message="Loading ORCID Profile..." />;

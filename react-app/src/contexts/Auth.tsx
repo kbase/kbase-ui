@@ -366,7 +366,6 @@ export default class AuthWrapper extends React.Component<
                             authState: this.unauthenticatedState(),
                         });
                 }
-                // console.log('AUTH error', ex.code);
                 // this.setState({ authState: this.errorState(ex.message) });
             } else if (ex instanceof Error) {
                 this.setState({
@@ -463,7 +462,6 @@ export default class AuthWrapper extends React.Component<
                         });
                         changeHash2('auth2/signedout');
                 }
-                // console.log('AUTH error', ex.code);
                 // this.setState({ authState: this.errorState(ex.message) });
             } else if (ex instanceof Error) {
                 await this.asyncSetState({

@@ -1,13 +1,21 @@
-import { EditablePublication, Publication } from "apps/ORCIDLink/Model";
-import Empty from "components/Empty";
+import { EditablePublication, ExternalId } from "apps/ORCIDLink/Model";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
 import { Button, Form } from "react-bootstrap";
+import { WorkTypes2 } from "./Controller";
 import styles from './EditPublication.module.css';
+import Select, { SingleValue, } from 'react-select';
+import { ROW_HEADER, SECTION_BODY_STYLE, SECTION_HEADER_STYLE } from "../styles";
+import { Options, Option, OptionsGroups } from "../reactSelectTypes";
+import EditExternalIdentifiers from "../EditExternalIdentifiers";
+import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";
 
 export interface EditPublicationProps {
     publication: EditablePublication;
     // onSave: (publication: Publication) => Promise<void>;
+    workTypes: WorkTypes2;
+    workExternalIdentifierTypes: WorkExternalIdentifierTypes;
+    workRelationshipIdentifiers: WorkRelationshipIdentifiers;
     onClose: () => void;
     onSave: (update: EditablePublication) => Promise<void>;
 }
@@ -104,74 +112,87 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
     //     })
     // }
 
-    changeExternalIdType(type: string, index: number) {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds[index].type = type;
+    // changeExternalIdType(type: string, index: number) {
+    //     const externalIds = this.state.editState.externalIds.slice();
+    //     externalIds[index].type = type;
 
-        this.setState({
-            ...this.state,
-            editState: {
-                ...this.state.editState,
-                externalIds
-            }
-        })
-    }
+    //     this.setState({
+    //         ...this.state,
+    //         editState: {
+    //             ...this.state.editState,
+    //             externalIds
+    //         }
+    //     })
+    // }
 
-    changeExternalIdValue(value: string, index: number) {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds[index].value = value;
+    // handleChangeExternalIdType(type: string, index: number) {
+    //     const externalIds = this.state.editState.externalIds.slice();
+    //     externalIds[index].type = type;
 
-        this.setState({
-            ...this.state,
-            editState: {
-                ...this.state.editState,
-                externalIds
-            }
-        })
-    }
+    //     this.setState({
+    //         ...this.state,
+    //         editState: {
+    //             ...this.state.editState,
+    //             externalIds
+    //         }
+    //     })
+    // }
 
-    changeExternalIdRelationship(value: string, index: number) {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds[index].relationship = value;
+    // changeExternalIdValue(value: string, index: number) {
+    //     const externalIds = this.state.editState.externalIds.slice();
+    //     externalIds[index].value = value;
 
-        this.setState({
-            ...this.state,
-            editState: {
-                ...this.state.editState,
-                externalIds
-            }
-        })
-    }
+    //     this.setState({
+    //         ...this.state,
+    //         editState: {
+    //             ...this.state.editState,
+    //             externalIds
+    //         }
+    //     })
+    // }
 
-    changeExternalIdURL(url: string, index: number) {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds[index].url = url;
+    // changeExternalIdRelationship(value: string, index: number) {
+    //     const externalIds = this.state.editState.externalIds.slice();
+    //     externalIds[index].relationship = value;
 
-        this.setState({
-            ...this.state,
-            editState: {
-                ...this.state.editState,
-                externalIds
-            }
-        })
-    }
+    //     this.setState({
+    //         ...this.state,
+    //         editState: {
+    //             ...this.state.editState,
+    //             externalIds
+    //         }
+    //     })
+    // }
 
-    addExternalIdentifier() {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds.push({
-            type: '',
-            relationship: '',
-            url: '',
-            value: ''
-        });
-        this.setState({
-            ...this.state,
-            editState: {
-                ...this.state.editState,
-                externalIds
-            }
-        })
-    }
+    // changeExternalIdURL(url: string, index: number) {
+    //     const externalIds = this.state.editState.externalIds.slice();
+    //     externalIds[index].url = url;
+
+    //     this.setState({
+    //         ...this.state,
+    //         editState: {
+    //             ...this.state.editState,
+    //             externalIds
+    //         }
+    //     })
+    // }
+
+    // addExternalIdentifier() {
+    //     const externalIds = this.state.editState.externalIds.slice();
+    //     externalIds.push({
+    //         type: '',
+    //         relationship: '',
+    //         url: '',
+    //         value: ''
+    //     });
+    //     this.setState({
+    //         ...this.state,
+    //         editState: {
+    //             ...this.state.editState,
+    //             externalIds
+    //         }
+    //     })
+    // }
 
     doSave() {
         // Gather the record
@@ -181,79 +202,225 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
         this.props.onSave(update);
     }
 
-    renderExternalIdsTable() {
-        if (this.state.editState.externalIds.length === 0) {
-            return <Empty message="No external identifiers ... yet" />
-        }
-        const rows = this.state.editState.externalIds.map(({ type, url, value, relationship }, index) => {
-            return <div className="flex-row" key={index}>
-                <div className="flex-col">
-                    <input type="text" className="form-control"
-                        value={type}
-                        style={{ margin: '0' }}
-                        onInput={(e) => { this.changeExternalIdType(e.currentTarget.value, index) }} />
-                </div>
-                <div className="flex-col">
-                    <input type="text" className="form-control"
-                        value={value}
-                        style={{ margin: '0' }}
-                        onInput={(e) => { this.changeExternalIdValue(e.currentTarget.value, index) }} />
-                </div>
-                <div className="flex-col">
-                    <input type="text" className="form-control"
-                        value={relationship}
-                        style={{ margin: '0' }}
-                        onInput={(e) => { this.changeExternalIdRelationship(e.currentTarget.value, index) }} />
-                </div>
-                <div className="flex-col">
-                    <input type="text" className="form-control"
-                        value={url}
-                        style={{ margin: '0' }}
-                        onInput={(e) => { this.changeExternalIdURL(e.currentTarget.value, index) }} />
-                </div>
-            </div>
-        });
-        return <div className="flex-table">
-            <div className="flex-row -header">
-                <div className="flex-col">
-                    Type
-                </div>
-                <div className="flex-col">
-                    Value
-                </div>
-                <div className="flex-col">
-                    Relationship
-                </div>
-                <div className="flex-col">
-                    URL
-                </div>
-            </div>
-            {rows}
-        </div>
-    }
+    // handleRemoveExternalIdentifier(indexToRemove: number) {
+    //     const externalIds = this.state.editState.externalIds.filter((identifier, index) => {
+    //         return (index !== indexToRemove);
+    //     });
+    //     this.setState({
+    //         editState: {
+    //             ...this.state.editState,
+    //             externalIds
+    //         }
+    //     });
+    // }
+
+    // renderExternalIdsTable() {
+    //     return <EditExternalIdentifiers
+    //         externalIds={this.state.editState.externalIds}
+    //         workExternalIdentifierTypes={this.props.workExternalIdentifierTypes}
+    //         workRelationshipIdentifiers={this.props.workRelationshipIdentifiers}
+    //         onChanged={(externalIds: Array<ExternalId>) => {
+    //             this.setState({
+    //                 editState: {
+    //                     ...this.state.editState,
+    //                     externalIds
+    //                 }
+    //             });
+    //         }}
+
+
+
+    // if (this.state.editState.externalIds.length === 0) {
+    //     return <Empty message="No external identifiers ... yet" />
+    // }
+    // const rows = this.state.editState.externalIds.map(({ type, url, value, relationship }, index) => {
+    //     return <div className="flex-row" key={index}>
+    //         <div className="flex-col">
+    //             <Select<Option<string>>
+    //                 styles={{ menu: (css) => ({ ...css, width: 'max-content', maxWidth: '20em' }) }}
+    //                 isSearchable={false}
+    //                 onChange={(newValue) => { this.handleChangeExternalIdType(newValue!.value, index) }}
+    //                 options={this.getExternalIdentifierTypes()}
+    //             />
+    //         </div>
+    //         <div className="flex-col">
+    //             <input type="text" className="form-control"
+    //                 value={value}
+    //                 style={{ margin: '0' }}
+    //                 onInput={(e) => { this.changeExternalIdValue(e.currentTarget.value, index) }} />
+    //         </div>
+    //         <div className="flex-col">
+    //             <Select<Option<string>>
+    //                 styles={{ menu: (css) => ({ ...css, width: 'max-content', maxWidth: '20em' }) }}
+    //                 isSearchable={false}
+    //                 onChange={(newValue) => { this.changeExternalIdRelationship(newValue!.value, index) }}
+    //                 options={this.getExternalRelationshipIdentifiers()}
+    //             />
+    //             {/* <input type="text" className="form-control"
+    //                 value={relationship}
+    //                 style={{ margin: '0' }}
+    //                 onInput={(e) => { this.changeExternalIdRelationship(e.currentTarget.value, index) }} /> */}
+    //         </div>
+    //         <div className="flex-col">
+    //             <input type="text" className="form-control"
+    //                 value={url}
+    //                 style={{ margin: '0' }}
+    //                 onInput={(e) => { this.changeExternalIdURL(e.currentTarget.value, index) }} />
+    //         </div>
+    //         <div className="flex-col" style={{ alignItems: 'center', flex: '0 0 auto' }}>
+    //             <Button variant="danger">
+    //                 <span className="fa fa-trash" onClick={() => { this.handleRemoveExternalIdentifier(index); }} />
+    //             </Button>
+    //         </div>
+    //     </div>
+    // });
+    // return <div className="flex-table">
+    //     <div className="flex-row -header">
+    //         <div className="flex-col">
+    //             Type
+    //         </div>
+    //         <div className="flex-col">
+    //             Value
+    //         </div>
+    //         <div className="flex-col">
+    //             Relationship
+    //         </div>
+    //         <div className="flex-col">
+    //             URL
+    //         </div>
+    //     </div>
+    //     {rows}
+    // </div>
+    // }
 
     renderExternalIds() {
-        return <div>
-            {this.renderExternalIdsTable()}
-
-        </div>
+        return <EditExternalIdentifiers
+            externalIds={this.state.editState.externalIds}
+            workExternalIdentifierTypes={this.props.workExternalIdentifierTypes}
+            workRelationshipIdentifiers={this.props.workRelationshipIdentifiers}
+            onChanged={(externalIds: Array<ExternalId>) => {
+                this.setState({
+                    editState: {
+                        ...this.state.editState,
+                        externalIds
+                    }
+                });
+            }}
+        />
     }
 
+    handlePublicationTypeChange(option: SingleValue<Option<string>>): void {
+        if (option === null) {
+            // This should not be possible since we do not allow an empty
+            // option, but if it is, we would use "natural order", I suppose.
+            return;
+        }
+        const publicationType = option.value;
+
+        this.setState({
+            ...this.state,
+            editState: {
+                ...this.state.editState,
+                publicationType
+            }
+        })
+    }
+
+    getPublicationTypeOptions(): Options<string> {
+        const options: Options<string> = [];
+
+        this.props.workTypes.forEach(({ category, label, values }) => {
+            options.push({
+                value: category,
+                label
+            });
+            values.forEach(({ value, label }) => {
+                options.push({
+                    value, label
+                });
+            })
+        })
+
+        return options;
+    }
+
+    getPublicationTypeOptions2(): OptionsGroups<string> {
+        return this.props.workTypes.map(({ category, label, values }) => {
+            return {
+                label,
+                options: values.map(({ value, label }) => {
+                    return { value, label };
+                })
+            };
+        });
+    }
+
+    // getExternalIdentifierTypes(): Options<string> {
+    //     return this.props.workExternalIdentifierTypes.map(({ value, description }) => {
+    //         return {
+    //             value,
+    //             label: description
+    //         };
+    //     });
+    // }
+
+    // getExternalRelationshipIdentifiers(): Options<string> {
+    //     return this.props.workRelationshipIdentifiers.map(({ value, label }) => {
+    //         return {
+    //             value,
+    //             label
+    //         };
+    //     });
+    // }
+
+    renderPublicationTypeField() {
+        return <Select<Option<string>>
+            isSearchable={false}
+            onChange={this.handlePublicationTypeChange.bind(this)}
+            options={this.getPublicationTypeOptions2()}
+        />;
+    }
+
+    // renderPublicationTypeField() {
+    //     const x = [1, 2].map((x) => {
+    //         return <div>{x}</div>;
+    //     })
+    //     const options: Array<JSX.Element> = [];
+    //     // const options = this.props.workTypes.values.map(({ value, label }) => {
+    //     //     return <option value={value}>{label}</option>;
+    //     // })
+    //     this.props.workTypes.forEach(({ category, label, values }) => {
+    //         options.push(<option>{label.toUpperCase()}</option>);
+    //         values.forEach(({ value, label }) => {
+    //             options.push(<option value={value}>{label}</option>);
+    //         })
+    //     })
+    //     options.unshift(<option>Select a work type</option>);
+    //     return <Form.Select
+    //         aria-label="Publication Type"
+    //         onChange={(e) => { this.changePublicationType(e.target.value); }}
+    //     >
+    //         {options}
+    //     </Form.Select>
+    // }
+
+
+    // <input type="text" className="form-control" value={this.state.editState.publicationType}
+    // onInput = {(e) => { this.changePublicationType(e.currentTarget.value) }} />
+
     render() {
-        console.log('hmm', this.props);
         return <Form className={`${styles.main} well`} style={{ padding: '1em' }}>
             <div className="flex-table">
                 <div className="flex-row">
-                    <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >
+                    <div className="flex-col" style={ROW_HEADER} >
                         Publication Type
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.editState.publicationType}
-                            onInput={(e) => { this.changePublicationType(e.currentTarget.value) }} />
+                        {this.renderPublicationTypeField()}
                     </div>
                 </div>
                 <div className="flex-row">
-                    <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >
+                    <div className="flex-col" style={ROW_HEADER} >
                         Title
                     </div>
                     <div className="flex-col">
@@ -262,7 +429,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                     </div>
                 </div>
                 <div className="flex-row">
-                    <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >
+                    <div className="flex-col" style={ROW_HEADER} >
                         Publisher
                     </div>
                     <div className="flex-col">
@@ -271,7 +438,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                     </div>
                 </div>
                 <div className="flex-row">
-                    <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >
+                    <div className="flex-col" style={ROW_HEADER} >
                         Date
                     </div>
                     <div className="flex-col">
@@ -280,7 +447,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                     </div>
                 </div>
                 <div className="flex-row">
-                    <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >
+                    <div className="flex-col" style={ROW_HEADER} >
                         URL
                     </div>
                     <div className="flex-col">
@@ -288,20 +455,18 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                             onInput={(e) => { this.changeURL(e.currentTarget.value) }} />
                     </div>
                 </div>
-                <div className="flex-row" style={{ fontWeight: 'bold', color: "rgba(150,150,150)", marginTop: '1em' }}>
+                <div className="flex-row" style={SECTION_HEADER_STYLE}>
                     CITATION
                 </div>
-                <div className="flex-row">
+                <div className="flex-row" style={SECTION_BODY_STYLE}>
                     <i>Citation information not provided by ORCID API???</i>
                 </div>
 
 
-                <div className="flex-row" style={{ alignItems: 'center', fontWeight: 'bold', color: "rgba(150,150,150)", marginTop: '1em' }}>
-                    EXTERNAL IDENTIFIERS  <Button variant="link" size="sm" onClick={this.addExternalIdentifier.bind(this)}>
-                        <span className="fa fa-plus-circle" />
-                    </Button>
+                <div className="flex-row" style={SECTION_HEADER_STYLE}>
+                    EXTERNAL IDENTIFIERS
                 </div>
-                <div className="flex-row" style={{ justifyContent: 'center', marginTop: '1em' }}>
+                <div className="flex-row" style={SECTION_BODY_STYLE}>
                     {this.renderExternalIds()}
                 </div>
                 <div className="flex-row" style={{ justifyContent: 'center', marginTop: '1em' }}>

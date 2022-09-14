@@ -51,11 +51,10 @@ docker-compose.override.yml
 # dev certs
 
 
+# NPM stuff
 # can be left over with a manual npm install with --no-cache (I think)
 /false
-
-# working files when doing gh-pages work
-/_site
+# start.log
 
 # A handy directory for staching non-commitable working files
 /_todo
