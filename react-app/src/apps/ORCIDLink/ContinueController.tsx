@@ -7,15 +7,6 @@ import { Config } from "types/config";
 import Continue from "./Continue";
 import { Model, ReturnLink, TempLinkRecord } from "./Model";
 
-// const GET_TEMP_LINK_RECORD_URL = 'https://ci.kbase.us/services/orcidlink/get-temp-link';
-// const FINISH_LINK_URL = 'https://ci.kbase.us/services/orcidlink/finish-link';
-// const CANCEL_LINK_URL = 'https://ci.kbase.us/services/orcidlink/cancel-link';
-
-// const GET_TEMP_LINK_RECORD_PATH = 'get-temp-link';
-// const FINISH_LINK_PATH = 'finish-link';
-// const CANCEL_LINK_PATH = 'cancel-link';
-
-
 export interface ContinueControllerProps {
     token: string;
     auth: AuthenticationStateAuthenticated;
@@ -52,29 +43,6 @@ export default class ContinueController extends Component<ContinueControllerProp
             this.fetchData();
         }
     }
-
-    // shouldComponentUpdate(prevProps: ContinueControllerProps, prevState: ContinueControllerState) {
-    //     if (prevProps.token === this.props.token &&
-    //         prevProps.kbase_auth_token === this.props.kbase_auth_token &&
-    //         isEqual(prevState, this.state)) {
-    //         return false;
-    //     }
-    //     return true;
-    // }
-
-    // async fetchTempLink() {
-    //     const response = await fetch(`${GET_TEMP_LINK_RECORD_URL}/${this.props.token}`, {
-    //         headers: {
-    //             authorization: this.props.kbaseAuthToken
-    //         }
-    //     })
-    //     if (response.status !== 200) {
-    //         throw new Error(`Unexpected response: ${response.status}`);
-    //     }
-
-    //     const rawResult = await response.text();
-    //     return JSON.parse(rawResult);
-    // }
 
     async fetchData() {
         const model = new Model({ config: this.props.config, auth: this.props.auth });

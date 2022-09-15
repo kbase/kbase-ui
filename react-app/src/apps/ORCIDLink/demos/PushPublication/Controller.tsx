@@ -39,7 +39,7 @@ export default class PreFillFormController extends Component<PreFillFormControll
         this.model = new Model({
             config: this.props.config,
             auth: this.props.auth
-        })
+        });
         this.state = {
             dataState: {
                 status: AsyncProcessStatus.NONE
