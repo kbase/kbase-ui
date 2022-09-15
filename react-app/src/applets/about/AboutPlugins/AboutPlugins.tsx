@@ -58,26 +58,32 @@ export default class AboutPlugins extends Component<
             //         );
             //     },
             // },
-            // {
-            //     id: 'account',
-            //     label: 'GitHub Account',
-            //     style: {},
-            //     render: (plugin: PluginInfo) => {
-            //         return <span>{plugin.git.account}</span>;
-            //     },
-            // },
-            // {
-            //     id: 'repoName',
-            //     label: 'Repo',
-            //     style: {}, 
-            //     render: (plugin: PluginInfo) => {
-            //         return (
-            //             <a href={plugin.git.originURL} target="_blank" rel="noreferrer" title={plugin.git.originURL}>
-            //                 {plugin.git.repoName}
-            //             </a>
-            //         );
-            //     },
-            // },
+            {
+                id: 'account',
+                label: 'GitHub Account',
+                style: {},
+                render: (plugin: PluginInfo) => {
+                    return <span>{plugin.configs.ui.source.github.account}</span>;
+                },
+                sorter: (a: PluginInfo, b: PluginInfo) => {
+                    return a.configs.ui.source.github.account.localeCompare(b.configs.ui.source.github.account);
+                },
+            },
+            {
+                id: 'repoName',
+                label: 'Repo',
+                style: {},
+                render: (plugin: PluginInfo) => {
+                    return (
+                        <a href={`https://github.com/${plugin.configs.ui.source.github.account}/${plugin.configs.ui.globalName}`} target="_blank" rel="noreferrer" title="URL to the plugin's github repo">
+                            {plugin.configs.ui.globalName}
+                        </a>
+                    );
+                },
+                sorter: (a: PluginInfo, b: PluginInfo) => {
+                    return a.configs.ui.globalName.localeCompare(b.configs.ui.globalName);
+                },
+            },
         ];
 
         const data: Array<PluginInfo> = this.props.pluginsInfo.map(
