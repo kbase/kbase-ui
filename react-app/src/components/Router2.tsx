@@ -51,7 +51,7 @@ export class Router extends Component<RouterProps, RouterState> {
                 id: uuidv4(),
                 route
             }
-        })
+        });
     }
 
     renderRoute(route: Route, hashPath: HashPath, params: Params) {
@@ -106,6 +106,5 @@ export class Router extends Component<RouterProps, RouterState> {
                 return <NotFound hashPath={hashPath} setTitle={value!.setTitle} />
             }}
         </RuntimeContext.Consumer>
-
     }
 }

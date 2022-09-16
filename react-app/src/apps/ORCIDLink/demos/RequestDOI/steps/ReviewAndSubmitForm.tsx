@@ -13,7 +13,14 @@ export default class ReviewAndSubmitForm extends Component<ReviewAndSubmitFormPr
         return <Stack gap={2} style={{ marginBottom: '1em' }
         } >
             <Row>
-
+                <Col md={12}>
+                    <p>
+                        Please review the information collected below.
+                    </p>
+                    <p>
+                        Then click the Send button to submit the request.
+                    </p>
+                </Col>
             </Row>
             <Row>
                 <Col md={12}>

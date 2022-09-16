@@ -1,15 +1,14 @@
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
 import { Component } from 'react';
 import { Config } from 'types/config';
-import ErrorAlert from '../../components/ErrorAlert';
-import Loading from '../../components/Loading';
-import { AsyncProcess, AsyncProcessStatus } from '../../lib/AsyncProcess';
+import ErrorAlert from 'components/ErrorAlert';
+import Loading from 'components/Loading';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 
-import CreateLink from './CreateLink';
-import { Model, ReturnLink } from './Model';
-import ViewLink from './ViewLink';
+import { Model, ReturnLink } from '../Model';
+import View from './View';
 
-export interface LinkControllerProps {
+export interface HomeControllerProps {
     config: Config;
     auth: AuthenticationStateAuthenticated;
     returnLink?: ReturnLink;
@@ -22,22 +21,6 @@ export enum LinkStatus {
     LINKED = 'LINKED'
 }
 
-// export interface LinkBase {
-//     kind: LinkStatus
-// }
-
-// export interface Linked extends LinkBase {
-//     kind: LinkStatus.LINKED;
-//     createdAt: number;
-//     expiresAt: number;
-// }
-
-// export interface NotLinked extends LinkBase {
-//     kind: LinkStatus.NONE
-// }
-
-// export type Link = Linked | NotLinked;
-
 export interface LinkInfo {
     createdAt: number;
     expiresAt: number;
@@ -45,10 +28,6 @@ export interface LinkInfo {
     orcidID: string;
     scope: string;
 }
-
-// export interface LinkResult {
-//     link: LinkRecord | null;
-// }
 
 export interface GetNameResult {
     first_name: string;
@@ -60,12 +39,12 @@ export type RevokeResult = null;
 
 export type LinkState = AsyncProcess<{ link: LinkInfo | null }, { message: string }>
 
-interface LinkControllerState {
+interface HomeControllerState {
     linkState: LinkState
 }
 
-export default class LinkController extends Component<LinkControllerProps, LinkControllerState> {
-    constructor(props: LinkControllerProps) {
+export default class HomeController extends Component<HomeControllerProps, HomeControllerState> {
+    constructor(props: HomeControllerProps) {
         super(props);
         this.state = {
             linkState: {
@@ -78,21 +57,6 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         this.props.setTitle('ORCID® Link');
         this.loadData();
     }
-
-    // async getName(): Promise<GetNameResult> {
-    //     const response = await fetch(GET_NAME_URL, {
-    //         headers: {
-    //             authorization: this.props.auth.authInfo.token
-    //         }
-    //     });
-
-    //     if (response.status !== 200) {
-    //         throw new Error(`Unexpected response: ${response.status}`);
-    //     }
-
-    //     const result = JSON.parse(await response.text()) as { result: GetNameResult };
-    //     return result.result;
-    // }
 
     async fetchLink(): Promise<LinkInfo | null> {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
@@ -107,7 +71,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         const {
             created_at,
             orcid_auth: {
-                access_token, expires_in, name, orcid, scope
+                expires_in, name, orcid, scope
             }
         } = link;
 
@@ -127,17 +91,6 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     async revokeLink() {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
         await model.deleteLink();
-
-        // const response = await fetch(REVOKE_URL, {
-        //     method: 'DELETE',
-        //     headers: {
-        //         authorization: this.props.auth.authInfo.token
-        //     }
-        // });
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
 
         this.setState({
             linkState: {
@@ -214,10 +167,11 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     renderSuccess({ link }: { link: LinkInfo | null }) {
-        if (link === null) {
-            return <CreateLink start={this.startLink.bind(this)} returnLink={this.props.returnLink} skipPrompt={this.props.skipPrompt} />;
-        }
-        return <ViewLink link={link} revoke={this.revokeLink.bind(this)} />;
+        return <View link={link} revoke={this.revokeLink.bind(this)} />
+        // if (link === null) {
+        //     return <Unlinked start={this.startLink.bind(this)} returnLink={this.props.returnLink} skipPrompt={this.props.skipPrompt} />;
+        // }
+        // return <Linked link={link} revoke={this.revokeLink.bind(this)} />;
     }
 
     render() {

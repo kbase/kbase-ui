@@ -7,6 +7,7 @@ import { Alert, Button } from 'react-bootstrap';
 
 export interface ViewProps {
     orcidState: ORCIDLinkState
+    baseURL: string;
     process?: { [k: string]: string }
 }
 
@@ -95,7 +96,7 @@ export default class View extends Component<ViewProps, ViewState> {
             const process = JSON.stringify({
                 step: 2
             });
-            const url = new URL("https://ci.kbase.us#orcidlink/demos/interstitial1")
+            const url = new URL(`${this.props.baseURL}#orcidlink/demos/interstitial1`)
             url.searchParams.set('process', process);
             return <div>
                 {this.renderStepTitle(1, 'Enable ORCID Link')}
@@ -116,12 +117,17 @@ export default class View extends Component<ViewProps, ViewState> {
         return <div>
             {this.renderStepTitle(1, 'Enable ORCID Link')}
             <p>
-                This is the first step of some user workflow, some process.
+                This represents the first step of some KBase user workflow, some process.
             </p>
             <p>
                 That process notices that the user does not have an ORCID link and displays a
                 link to the ORCID Link page. That link contains instructions for routing back to
                 the next step of the workflow.
+            </p>
+            <p>
+                The links below each return to a different step in the process. This demonstrates that we can
+                carry any arbitrary information through the linking process in order to be able to
+                return to this page, picking up at either step 2 or 3, depending on the how the <code>return_link</code> is crafted.
             </p>
             <p>
                 {this.renderLinkingLink(2)}
@@ -254,19 +260,19 @@ export default class View extends Component<ViewProps, ViewState> {
         </div>
     }
     renderLinkingLink(step: number) {
-        const url = new URL('https://ci.kbase.us/#orcidlink');
+        const linkingURL = new URL(`${this.props.baseURL}/#orcidlink/link`);
         const process = {
             step,
             time: Date.now()
         };
-        const returnURL = new URL('https://ci.kbase.us#orcidlink/demos/interstitial1');
+        const returnURL = new URL(`${this.props.baseURL}#orcidlink/demos/interstitial1`);
         returnURL.searchParams.set('process', JSON.stringify(process));
         const returnLink = {
             url: returnURL.toString(),
             label: `Some Process, step ${step}`
         }
-        url.searchParams.set('return_link', JSON.stringify(returnLink));
-        return <a href={`${url.toString()}`}>Click here to link your KBase account to your ORCID account <i>(go to step {step})</i></a>
+        linkingURL.searchParams.set('return_link', JSON.stringify(returnLink));
+        return <a href={`${linkingURL.toString()}`}>Click here to link your KBase account to your ORCID account <i>(go to step {step})</i></a>
     }
 
     // renderAutoLinkingLink() {
@@ -284,7 +290,7 @@ export default class View extends Component<ViewProps, ViewState> {
         return <div className={styles.main}>
             <h2>Using linking as an interstitial page</h2>
             <p>
-                <a href="/#orcidlink">Back</a>
+                <Button variant="secondary" href="/#orcidlink"><span className="fa fa-arrow-left" /> Back</Button>
             </p>
             <p>
                 This demo simulates a KBase user process which depends up on an ORCID link to utilize the

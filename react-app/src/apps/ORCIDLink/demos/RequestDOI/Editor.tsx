@@ -1,10 +1,9 @@
 import { Component } from 'react';
-import { ORCIDLinkState } from './Controller';
-import styles from './View.module.css';
-import { Alert, ThemeProvider } from 'react-bootstrap';
+import styles from './Editor.module.css';
+import { Alert, Button } from 'react-bootstrap';
 import AuthorsStep from './steps/AuthorsStep';
 import CitationsStep from './steps/CitationsController';
-import { Author, CitationResults, Citations, ContractNumbers, ContractNumbersResults, Description, DescriptionResults, DOIForm, GeolocationData, GeolocationDataResults, MinimalNarrativeInfo, Model, NarrativeSelectionResult, ORCIDLinkResult, ORCIDProfile, ReviewAndSubmitData, STEPS3, StepStatus } from 'apps/ORCIDLink/Model';
+import { Author, CitationResults, ContractNumbers, Description, DOIForm, GeolocationData, MinimalNarrativeInfo, Model, ReviewAndSubmitData, STEPS3, StepStatus } from 'apps/ORCIDLink/Model';
 import SelectNarrativeController from './steps/SelectNarrativeController';
 import ORCIDLink from './steps/ORCIDLinkController';
 import { JSONObject } from 'lib/json';
@@ -12,68 +11,23 @@ import ContractNumbersFormController from './steps/ContractNumbersFormController
 import GeolocationController from './steps/Geolocation/GeolocationController';
 import DescriptionController from './steps/Description/Controller';
 import ReviewAndSubmitController from './steps/ReviewAndSubmitController';
+import CreateForm from './CreateForm';
+import { ORCIDLinkState } from './EditorController';
 
 
-export interface ViewProps {
+export interface EditorProps {
     orcidState: ORCIDLinkState;
     model: Model;
     process?: JSONObject;
     doiForm: DOIForm;
 }
-interface ViewState {
+interface EditorState {
     doiForm: DOIForm
 }
 
-export default class View extends Component<ViewProps, ViewState> {
-    constructor(props: ViewProps) {
+export default class Editor extends Component<EditorProps, EditorState> {
+    constructor(props: EditorProps) {
         super(props);
-        // if (this.props.process) {
-        //     this.state = {
-        //         doiForm: {
-        //             formId: 'FOO',
-        //             steps: (this.props.process as unknown as STEPS3)
-        //         }
-        //     }
-        // } else if (this.props.doiForm) {
-        //     this.state = {
-        //         doiForm: this.props.doiForm
-        //     }
-        // } else {
-
-        //     console.log('formId!', formId);
-        //     this.state = {
-        //         doiForm: {
-        //             formId,
-        //             steps: [
-        //                 {
-        //                     status: StepStatus.INCOMPLETE,
-        //                     params: null
-        //                 },
-        //                 {
-        //                     status: StepStatus.NONE,
-        //                 },
-        //                 {
-        //                     status: StepStatus.NONE,
-        //                 },
-        //                 {
-        //                     status: StepStatus.NONE,
-        //                 },
-        //                 {
-        //                     status: StepStatus.NONE,
-        //                 },
-        //                 {
-        //                     status: StepStatus.NONE,
-        //                 },
-        //                 {
-        //                     status: StepStatus.NONE,
-        //                 },
-        //                 {
-        //                     status: StepStatus.NONE,
-        //                 }
-        //             ]
-        //         }
-        //     }
-        // }
         const { doiForm } = this.props;
         this.state = { doiForm };
     }
@@ -97,6 +51,7 @@ export default class View extends Component<ViewProps, ViewState> {
     }
 
     syncViewState(steps: STEPS3) {
+        // TODO: move into controller and pass as param
         try {
             this.props.model.saveDOIForm({
                 formId: this.state.doiForm.formId,
@@ -457,7 +412,15 @@ export default class View extends Component<ViewProps, ViewState> {
         }
     }
 
+    createForm() {
+        alert('ok, will create form...');
+    }
+
     render() {
+        if (this.state.doiForm === null) {
+            return <CreateForm createForm={this.createForm.bind(this)} />
+        }
+
         const [
             selectNarrativeStep,
             orcidLinkStep,
@@ -471,7 +434,7 @@ export default class View extends Component<ViewProps, ViewState> {
         return <div className={styles.main}>
             <h2>DOI Request Form</h2>
             <p>
-                <a href="/#orcidlink">Back</a>
+                <Button variant="secondary" href="/#orcidlink"><span className="fa fa-arrow-left" /> Back</Button>
             </p>
             <p>
                 This is a DOI Request form with ORCID linking assistance

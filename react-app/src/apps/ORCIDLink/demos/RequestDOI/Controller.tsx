@@ -2,31 +2,13 @@ import { Component } from 'react';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import View from './View';
-import { DOIForm, Model, ORCIDProfile, StepStatus } from 'apps/ORCIDLink/Model';
+import EditorController from './EditorController';
+import CreateForm from './CreateForm';
+import { DOIForm, Model, StepStatus } from 'apps/ORCIDLink/Model';
 import { Config } from 'types/config';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
 import { JSONObject } from 'lib/json';
 import * as uuid from 'uuid'
-
-
-export interface ORCIDLinkStateBase {
-    status: ORCIDLinkStatus
-}
-
-export interface ORCIDLinkStateLinked {
-    status: ORCIDLinkStatus.LINKED,
-    orcidProfile: ORCIDProfile
-}
-
-export interface ORCIDLinkStateNotLinked {
-    status: ORCIDLinkStatus.NOT_LINKED
-}
-
-export type ORCIDLinkState =
-    ORCIDLinkStateLinked | ORCIDLinkStateNotLinked;
-
-
 
 export interface ControllerProps {
     config: Config;
@@ -37,17 +19,11 @@ export interface ControllerProps {
 }
 
 export interface DataState {
-    orcidState: ORCIDLinkState,
-    doiForm: DOIForm
+    doiForm: DOIForm | null
 }
 
 interface ControllerState {
     dataState: AsyncProcess<DataState, { message: string }>
-}
-
-export enum ORCIDLinkStatus {
-    LINKED = 'LINKED',
-    NOT_LINKED = 'NOT_LINKED'
 }
 
 export default class Controller extends Component<ControllerProps, ControllerState> {
@@ -83,78 +59,22 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             });
         });
         try {
-
             const doiForm = await (async () => {
                 if (this.props.formId) {
                     return this.model.getDOIForm(this.props.formId);
                 }
 
-                const formId = uuid.v4();
-                const newURL = new URL(document.location.href);
-                newURL.searchParams.set('formId', formId);
-                // document.location.href = newURL.toString();
-                window.history.pushState(null, '', newURL);
-                const doiForm: DOIForm = {
-                    formId,
-                    steps: [
-                        {
-                            status: StepStatus.INCOMPLETE,
-                            params: null
-                        },
-                        {
-                            status: StepStatus.NONE,
-                        },
-                        {
-                            status: StepStatus.NONE,
-                        },
-                        {
-                            status: StepStatus.NONE,
-                        },
-                        {
-                            status: StepStatus.NONE,
-                        },
-                        {
-                            status: StepStatus.NONE,
-                        },
-                        {
-                            status: StepStatus.NONE,
-                        },
-                        {
-                            status: StepStatus.NONE,
-                        }
-                    ]
-                }
-                return doiForm;
+                return null;
             })();
 
-            const isLinked = await this.model.isLinked();
-            if (!isLinked) {
-                this.setState({
-                    dataState: {
-                        status: AsyncProcessStatus.SUCCESS,
-                        value: {
-                            orcidState: {
-                                status: ORCIDLinkStatus.NOT_LINKED
-                            },
-                            doiForm
-                        }
+            this.setState({
+                dataState: {
+                    status: AsyncProcessStatus.SUCCESS,
+                    value: {
+                        doiForm
                     }
-                });
-            } else {
-                const orcidProfile = await this.model.getProfile();
-                this.setState({
-                    dataState: {
-                        status: AsyncProcessStatus.SUCCESS,
-                        value: {
-                            orcidState: {
-                                status: ORCIDLinkStatus.LINKED,
-                                orcidProfile
-                            },
-                            doiForm
-                        }
-                    }
-                });
-            }
+                }
+            });
         } catch (ex) {
             if (ex instanceof Error) {
                 this.setState({
@@ -178,6 +98,53 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         }
     }
 
+    async createForm() {
+        const formId = uuid.v4();
+        const doiForm: DOIForm = {
+            formId,
+            steps: [
+                {
+                    status: StepStatus.INCOMPLETE,
+                    params: null
+                },
+                {
+                    status: StepStatus.NONE,
+                },
+                {
+                    status: StepStatus.NONE,
+                },
+                {
+                    status: StepStatus.NONE,
+                },
+                {
+                    status: StepStatus.NONE,
+                },
+                {
+                    status: StepStatus.NONE,
+                },
+                {
+                    status: StepStatus.NONE,
+                },
+                {
+                    status: StepStatus.NONE,
+                }
+            ]
+        }
+        await this.model.saveDOIForm(doiForm);
+        this.setState({
+            dataState: {
+                status: AsyncProcessStatus.SUCCESS,
+                value: {
+                    doiForm
+                }
+            }
+        });
+
+        const newURL = new URL(document.location.href);
+        newURL.searchParams.set('formId', formId);
+        window.history.pushState(null, '', newURL);
+    }
+
     // Renderers
 
     renderLoading() {
@@ -188,8 +155,17 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         return <ErrorAlert message={message} />
     }
 
-    renderSuccess(dataState: DataState) {
-        return <View orcidState={dataState.orcidState} process={this.props.process} doiForm={dataState.doiForm} model={this.model} />
+    renderCreateDOIForm() {
+        return <CreateForm createForm={this.createForm.bind(this)} />
+    }
+
+    renderDOIFOrm(doiForm: DOIForm) {
+        return <EditorController
+            config={this.props.config}
+            auth={this.props.auth}
+            setTitle={this.props.setTitle}
+            process={this.props.process}
+            doiForm={doiForm} />
     }
 
     render() {
@@ -200,7 +176,10 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             case AsyncProcessStatus.ERROR:
                 return this.renderError(this.state.dataState.error)
             case AsyncProcessStatus.SUCCESS:
-                return this.renderSuccess(this.state.dataState.value);
+                if (this.state.dataState.value.doiForm === null) {
+                    return this.renderCreateDOIForm();
+                }
+                return this.renderDOIFOrm(this.state.dataState.value.doiForm);
         }
     }
 }

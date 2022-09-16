@@ -1,9 +1,9 @@
 import { Component } from 'react';
 import { Button } from 'react-bootstrap';
-import { LinkInfo } from './link/LinkController';
+import { LinkInfo } from './LinkController';
 import styles from './ViewLink.module.css';
-import { ORCID_URL } from './Model';
-import { renderORCIDIcon, renderScope } from './common';
+import { ORCID_URL } from '../Model';
+import { renderORCIDIcon, renderScope } from '../common';
 
 
 export interface StartProps {

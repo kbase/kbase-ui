@@ -1,4 +1,4 @@
-import {Component} from 'react';
+import { Component } from 'react';
 import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
 // import ConnectionMonitor from '../lib/ConnectionMonitor';
 import styles from './Ping.module.css'
@@ -15,7 +15,7 @@ export interface Measure {
 
 export enum PingStatType {
     SUCCESS = 'SUCCESS',
-    ERROR= 'ERROR'
+    ERROR = 'ERROR'
 }
 
 export enum PingStatKind {
@@ -70,7 +70,7 @@ export type PingStats = PingStatsNone | PingStatsSome;
 // }
 
 interface PingState {
-   pingStats: PingStats
+    pingStats: PingStats
 }
 
 export class Ping extends Component<PingProps, PingState> {
@@ -87,12 +87,14 @@ export class Ping extends Component<PingProps, PingState> {
 
     async measure(url: string) {
         const start = Date.now();
-        const response = await fetch(url, {cache: 'no-store', headers: {
-            'Accept-Encoding': 'identity;q=0',
-            'Cache-Control': 'no-cache, no-transform'
-        } });
+        const response = await fetch(url, {
+            cache: 'no-store', headers: {
+                'Accept-Encoding': 'identity;q=0',
+                'Cache-Control': 'no-cache, no-transform'
+            }
+        });
         console.log(response);
-        return Date.now() - start; 
+        return Date.now() - start;
     }
 
     async pause(time: number) {
@@ -130,16 +132,16 @@ export class Ping extends Component<PingProps, PingState> {
                     pingStats: {
                         kind: PingStatKind.SOME,
                         type: PingStatType.SUCCESS,
-                            successCount: successCount + 1,
-                            successTotalElapsed: successTotalElapsed + elapsed,
-                            errorCount,
-                            errorTotalElapsed,
-                            elapsed,
-                            lastPingAt
+                        successCount: successCount + 1,
+                        successTotalElapsed: successTotalElapsed + elapsed,
+                        errorCount,
+                        errorTotalElapsed,
+                        elapsed,
+                        lastPingAt
                     }
                 };
             });
-           
+
         } catch (ex) {
             const message = (() => {
                 if (ex instanceof Error) {
@@ -196,7 +198,7 @@ export class Ping extends Component<PingProps, PingState> {
             this.timeout = null;
         }
     }
-    
+
     componentDidMount() {
         this.start();
     }
@@ -206,7 +208,7 @@ export class Ping extends Component<PingProps, PingState> {
     }
 
     formatBytesPerSecond(value: number) {
-        return `${Intl.NumberFormat('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1}).format(value)} b/s`;
+        return `${Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value)} b/s`;
     }
 
     render() {
@@ -225,6 +227,6 @@ export class Ping extends Component<PingProps, PingState> {
                 'ban', 'red'
             ]
         })();
-        return <span className={`fa fa-${icon}`} style={{color}} />
+        return <span className={`fa fa-${icon}`} style={{ color }} />
     }
 }

@@ -61,6 +61,7 @@ export default class RouterWrapper extends React.Component<
     RouterWrapperProps,
     RouterWrapperState
 > {
+    hashListener: (() => void) | null;
     constructor(props: RouterWrapperProps) {
         super(props);
         this.state = {
@@ -68,10 +69,10 @@ export default class RouterWrapper extends React.Component<
                 status: AsyncProcessStatus.NONE,
             },
         };
+        this.hashListener = null;
     }
 
     componentDidMount() {
-        // this.fetchConfig();
         // First time through, seed the navigation context
         this.setState({
             routerState: {
@@ -80,20 +81,30 @@ export default class RouterWrapper extends React.Component<
                     hashPath: this.getHashPath()
                 }
             }
-        });
-
-        // And then listen for hashchanges which are navigation events.
-        // TODO
-        window.addEventListener('hashchange', () => {
-            this.setState({
-                routerState: {
-                    status: AsyncProcessStatus.SUCCESS,
-                    value: {
-                        hashPath: this.getHashPath()
-                    }
+        }, () => {
+            this.hashListener = () => {
+                const hashPath = this.getHashPath();
+                if (this.state.routerState.status === 'SUCCESS' &&
+                    hashPath === this.state.routerState.value.hashPath) {
+                    return;
                 }
-            });
+                this.setState({
+                    routerState: {
+                        status: AsyncProcessStatus.SUCCESS,
+                        value: {
+                            hashPath
+                        }
+                    }
+                });
+            }
+            window.addEventListener('hashchange', this.hashListener);
         });
+    }
+
+    componentWillUnmount() {
+        if (this.hashListener !== null) {
+            window.removeEventListener('hashchange', this.hashListener);
+        }
     }
 
     getHashPath(): HashPath {
@@ -129,51 +140,13 @@ export default class RouterWrapper extends React.Component<
             }
         }
 
-        // const query = Array.from(queryParams.entries()).reduce((query, [key, value]) => {
-        //     query.
-        //     return query;
-        // }, new Map());
         return {
             hash,
             path,
             query,
             realPath: document.location.pathname,
-            // params: new Map()
         }
     }
-
-    // async fetchConfig(): Promise<void> {
-    //     this.setState({
-    //         configState: {
-    //             status: AsyncProcessStatus.PENDING,
-    //         },
-    //     });
-    //     try {
-    //         const rawConfig = await (
-    //             await fetch(process.env.PUBLIC_URL + '/deploy/config.json')
-    //         ).json();
-    //         this.setState({
-    //             configState: {
-    //                 status: AsyncProcessStatus.SUCCESS,
-    //                 value: {
-    //                     config: rawConfig as unknown as Config,
-    //                 },
-    //             },
-    //         });
-    //     } catch (ex) {
-    //         this.setState({
-    //             configState: {
-    //                 status: AsyncProcessStatus.ERROR,
-    //                 error: (() => {
-    //                     if (ex instanceof Error) {
-    //                         return ex.message;
-    //                     }
-    //                     return 'Unknown error';
-    //                 })(),
-    //             },
-    //         });
-    //     }
-    // }
 
     render() {
         return (

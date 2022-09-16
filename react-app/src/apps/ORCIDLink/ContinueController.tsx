@@ -5,10 +5,10 @@ import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
 import { Component } from "react";
 import { Config } from "types/config";
 import Continue from "./Continue";
-import { Model, ReturnLink, TempLinkRecord } from "./Model";
+import { Model, ReturnLink, LinkingSessionInfo } from "./Model";
 
 export interface ContinueControllerProps {
-    token: string;
+    linkingSessionId: string;
     auth: AuthenticationStateAuthenticated;
     config: Config;
     returnLink?: ReturnLink;
@@ -18,11 +18,11 @@ export interface ContinueControllerProps {
 
 export interface ContinueState {
     token: string;
-    tempLinkRecord: TempLinkRecord
+    linkingSessionInfo: LinkingSessionInfo
 }
 
 interface ContinueControllerState {
-    continueState: AsyncProcess<TempLinkRecord, { message: string }>
+    continueState: AsyncProcess<LinkingSessionInfo, { message: string }>
 }
 
 export default class ContinueController extends Component<ContinueControllerProps, ContinueControllerState> {
@@ -58,11 +58,11 @@ export default class ContinueController extends Component<ContinueControllerProp
 
         try {
 
-            const tempLinkRecord = await model.fetchTempLink(this.props.token);
+            const linkingSessionInfo = await model.fetchLinkingSessionInfo(this.props.linkingSessionId);
             this.setState({
                 continueState: {
                     status: AsyncProcessStatus.SUCCESS,
-                    value: tempLinkRecord as TempLinkRecord
+                    value: linkingSessionInfo as LinkingSessionInfo
                 }
             });
         } catch (ex) {
@@ -98,7 +98,7 @@ export default class ContinueController extends Component<ContinueControllerProp
 
     async confirmLink() {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
-        await model.confirmLink(this.props.token);
+        await model.confirmLink(this.props.linkingSessionId);
         // const response = await fetch(`${FINISH_LINK_URL}/${this.props.token}`, {
         //     headers: {
         //         authorization: this.props.kbaseAuthToken
@@ -120,7 +120,7 @@ export default class ContinueController extends Component<ContinueControllerProp
 
     async cancelLink() {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
-        await model.cancelLink(this.props.token);
+        await model.cancelLink(this.props.linkingSessionId);
         // const response = await fetch(`${CANCEL_LINK_URL}/${this.props.token}`, {
         //     headers: {
         //         authorization: this.props.kbaseAuthToken
@@ -136,9 +136,9 @@ export default class ContinueController extends Component<ContinueControllerProp
         window.open('https://ci.kbase.us/#orcidlink', '_parent');
     }
 
-    renderSuccess(tempLinkRecord: TempLinkRecord) {
+    renderSuccess(linkingSessionInfo: LinkingSessionInfo) {
         return <Continue
-            tempLinkRecord={tempLinkRecord}
+            linkingSessionInfo={linkingSessionInfo}
             returnLink={this.props.returnLink}
             confirmLink={this.confirmLink.bind(this)}
             cancelLink={this.cancelLink.bind(this)}

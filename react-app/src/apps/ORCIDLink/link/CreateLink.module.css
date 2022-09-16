@@ -1,0 +1,20 @@
+.main {
+    margin: 0 1em;
+    flex: 1 1 0;
+    overflow-y: auto;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.col1 {
+    flex: 1 1 0;
+    margin-right: 0.5em;
+}
+
+.col2 {
+    flex: 1 1 0;
+    margin-left: 0.5em;
+}

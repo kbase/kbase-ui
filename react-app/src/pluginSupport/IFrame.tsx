@@ -20,6 +20,7 @@ interface IFrameState { }
 export default class IFrame extends Component<IFrameProps, IFrameState> {
     id: string;
     url: string;
+    hashListener: (() => void) | null;
     constructor(props: IFrameProps) {
         super(props);
 
@@ -49,6 +50,7 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         const url = `${document.location.origin}/${indexPath}`;
         // this.url = '/' + indexPath;
         this.url = url;
+        this.hashListener = null;
     }
 
     componentDidMount() {
@@ -86,7 +88,7 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         // that of the parent kbase-ui window, which may trigger
         // navigation if the plugin handles that by itself.
         if (this.props.syncHash) {
-            window.addEventListener('hashchange', (ev: Event) => {
+            const hashListener = () => {
                 if (
                     element.contentWindow === null
                 ) {
@@ -96,9 +98,16 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
                     .substring(1)
                     .replace(/^\/+/, '');
                 element.contentWindow.location.hash = path;
-            });
+            }
+            window.addEventListener('hashchange', hashListener);
         }
         this.props.whenMounted(element.contentWindow);
+    }
+
+    componentWillUnmount() {
+        if (this.hashListener) {
+            window.removeEventListener('hashchange', this.hashListener);
+        }
     }
 
     render() {

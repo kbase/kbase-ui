@@ -2,10 +2,12 @@ import { Component } from 'react';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import View from './View';
-import { Model, ORCIDProfile } from 'apps/ORCIDLink/Model';
+import Editor from './Editor';
+import { DOIForm, Model, ORCIDProfile, StepStatus } from 'apps/ORCIDLink/Model';
 import { Config } from 'types/config';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
+import { JSONObject } from 'lib/json';
+import * as uuid from 'uuid'
 
 
 export interface ORCIDLinkStateBase {
@@ -24,20 +26,20 @@ export interface ORCIDLinkStateNotLinked {
 export type ORCIDLinkState =
     ORCIDLinkStateLinked | ORCIDLinkStateNotLinked;
 
-
-
-export interface ControllerProps {
+export interface EditorControllerProps {
     config: Config;
     auth: AuthenticationStateAuthenticated;
-    process?: { [k: string]: string };
+    process?: JSONObject;
+    doiForm: DOIForm;
     setTitle: (title: string) => void;
 }
 
 export interface DataState {
-    orcidState: ORCIDLinkState
+    orcidState: ORCIDLinkState,
+    doiForm: DOIForm
 }
 
-interface ControllerState {
+interface EditorControllerState {
     dataState: AsyncProcess<DataState, { message: string }>
 }
 
@@ -46,9 +48,9 @@ export enum ORCIDLinkStatus {
     NOT_LINKED = 'NOT_LINKED'
 }
 
-export default class Controller extends Component<ControllerProps, ControllerState> {
+export default class EditorController extends Component<EditorControllerProps, EditorControllerState> {
     model: Model;
-    constructor(props: ControllerProps) {
+    constructor(props: EditorControllerProps) {
         super(props);
         this.model = new Model({
             config: this.props.config,
@@ -62,7 +64,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link Demo - Using linking as an insterstitial page')
+        this.props.setTitle('ORCID® Link Demo - DOI Form with import from ORCID, Narrative')
         this.loadData();
     }
 
@@ -79,6 +81,8 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             });
         });
         try {
+            const doiForm = this.props.doiForm;
+
             const isLinked = await this.model.isLinked();
             if (!isLinked) {
                 this.setState({
@@ -87,13 +91,13 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                         value: {
                             orcidState: {
                                 status: ORCIDLinkStatus.NOT_LINKED
-                            }
+                            },
+                            doiForm
                         }
                     }
                 });
             } else {
                 const orcidProfile = await this.model.getProfile();
-                // const params = this.props.
                 this.setState({
                     dataState: {
                         status: AsyncProcessStatus.SUCCESS,
@@ -101,7 +105,8 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                             orcidState: {
                                 status: ORCIDLinkStatus.LINKED,
                                 orcidProfile
-                            }
+                            },
+                            doiForm
                         }
                     }
                 });
@@ -129,10 +134,61 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         }
     }
 
+    // async createForm() {
+    //     const formId = uuid.v4();
+    //     const doiForm: DOIForm = {
+    //         formId,
+    //         steps: [
+    //             {
+    //                 status: StepStatus.INCOMPLETE,
+    //                 params: null
+    //             },
+    //             {
+    //                 status: StepStatus.NONE,
+    //             },
+    //             {
+    //                 status: StepStatus.NONE,
+    //             },
+    //             {
+    //                 status: StepStatus.NONE,
+    //             },
+    //             {
+    //                 status: StepStatus.NONE,
+    //             },
+    //             {
+    //                 status: StepStatus.NONE,
+    //             },
+    //             {
+    //                 status: StepStatus.NONE,
+    //             },
+    //             {
+    //                 status: StepStatus.NONE,
+    //             }
+    //         ]
+    //     };
+    //     await this.model.saveDOIForm(doiForm);
+    //     this.setState({
+    //         dataState: {
+    //             status: AsyncProcessStatus.SUCCESS,
+    //             value: {
+    //                 orcidState: {
+    //                     status: ORCIDLinkStatus.NOT_LINKED
+    //                 },
+    //                 doiForm
+    //             }
+    //         }
+    //     });
+
+    //     const newURL = new URL(document.location.href);
+    //     newURL.searchParams.set('formId', formId);
+    //     // document.location.href = newURL.toString();
+    //     window.history.pushState(null, '', newURL);
+    // }
+
     // Renderers
 
     renderLoading() {
-        return <Loading message="Loading ORCID Interstitial Page ..." />;
+        return <Loading message="Loading DOI Request Form ..." />;
     }
 
     renderError({ message }: { message: string }) {
@@ -140,10 +196,11 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     }
 
     renderSuccess(dataState: DataState) {
-        return <View
-            baseURL={this.props.config.deploy.ui.origin}
+        return <Editor
             orcidState={dataState.orcidState}
-            process={this.props.process} />
+            process={this.props.process}
+            doiForm={dataState.doiForm}
+            model={this.model} />
     }
 
     render() {

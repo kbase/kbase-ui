@@ -7,13 +7,14 @@ import { Config } from '../../types/config';
 import Continue from './ContinueController';
 import PreFillFormController from './demos/PreFillForm/PreFillFormController';
 import Help from './Help';
-import Link from './LinkController';
+import Link from './link/LinkController';
 import PushPublication from './demos/PushPublication/Controller';
 import InterstitialPage1 from './demos/Interstitial/page1/Controller';
 import RequestDOI from './demos/RequestDOI/Controller';
 import Error from './Error';
 import { ReturnLink } from './Model';
 import { JSONObject } from 'lib/json';
+import HomeController from './home/HomeController';
 
 export interface ORCIDLinkProps extends RouteProps {
     config: Config;
@@ -48,7 +49,7 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                             return { url, label }
 
                         })();
-                        return <Link
+                        return <HomeController
                             {...this.props}
                             auth={authValue.value}
                             returnLink={returnLink}
@@ -58,7 +59,11 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                 </AuthContext.Consumer>
 
             }),
-            new Route('orcidlink/continue/:token', { authenticationRequired: true }, (props: RouteProps) => {
+            /**
+             * This route handles requests to link.
+             */
+            new Route('orcidlink/link', { authenticationRequired: true }, (props: RouteProps) => {
+                // TODO: need to make route support authenticated and unauthenticated invocations
                 return <AuthContext.Consumer>
                     {(authValue) => {
                         if (authValue.status !== AsyncProcessStatus.SUCCESS) {
@@ -67,7 +72,6 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                         if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
                             return null;
                         }
-                        const token = props.params.get('token')!;
                         const returnLink = (() => {
                             const returnLinkRaw = props.params.get('return_link');
                             if (!returnLinkRaw) {
@@ -79,7 +83,38 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                             return { url, label }
 
                         })();
-                        return <Continue {...this.props} token={token}
+                        return <Link
+                            {...this.props}
+                            auth={authValue.value}
+                            returnLink={returnLink}
+                            skipPrompt={props.params.get('skip_prompt') === 'true'}
+                        />;
+                    }}
+                </AuthContext.Consumer>
+
+            }),
+            new Route('orcidlink/continue/:linkingSessionId', { authenticationRequired: true }, (props: RouteProps) => {
+                return <AuthContext.Consumer>
+                    {(authValue) => {
+                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
+                            return null;
+                        }
+                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
+                            return null;
+                        }
+                        const linkingSessionId = props.params.get('linkingSessionId')!;
+                        const returnLink = (() => {
+                            const returnLinkRaw = props.params.get('return_link');
+                            if (!returnLinkRaw) {
+                                return;
+                            }
+                            const {
+                                url, label
+                            } = (JSON.parse(returnLinkRaw) as unknown) as ReturnLink;
+                            return { url, label }
+
+                        })();
+                        return <Continue {...this.props} linkingSessionId={linkingSessionId}
                             auth={authValue.value}
                             returnLink={returnLink}
                             skipPrompt={props.params.get('skip_prompt') === 'true'}

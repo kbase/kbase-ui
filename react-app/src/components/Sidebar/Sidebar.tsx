@@ -1,14 +1,14 @@
-import {Component} from 'react';
-import {arraysIntersect} from '../../lib/utils';
+import { Component } from 'react';
+import { arraysIntersect } from '../../lib/utils';
 // import { FeedsNotification } from '../../services/feeds';
-import {Config} from '../../types/config';
-import { MenuItem} from '../../types/menu';
-import {AuthenticationState, AuthenticationStateAuthenticated, AuthenticationStatus} from '../../contexts/Auth';
+import { Config } from '../../types/config';
+import { MenuItem } from '../../types/menu';
+import { AuthenticationState, AuthenticationStateAuthenticated, AuthenticationStatus } from '../../contexts/Auth';
 import SidebarMenu from '../SidebarMenu/SidebarMenu';
 import { FeedsBadgeWrapper } from '../SidebarMenu/FeedsBadgeWrapper';
 
 
-const menu: Array<MenuItem> =  [
+const menu: Array<MenuItem> = [
     // {
     //     "name": "navigator",
     //     "label": "Navigator",
@@ -121,6 +121,7 @@ interface SidebarState {
 }
 
 export default class Sidebar extends Component<SidebarProps, SidebarState> {
+    hashListener: () => void;
     constructor(props: SidebarProps) {
         super(props);
 
@@ -138,6 +139,7 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
         //         menu: this.computeMenu(this.state.path)
         //     });
         // });
+        this.hashListener = this.onHashChange.bind(this);
     }
 
     componentDidMount() {
@@ -158,18 +160,21 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
         // catch hash change in order to update the sidebar menu props, 
         // which will then higlight the current menu item.
         // TODO: base this on a context.
-        
-        window.addEventListener('hashchange', (ev: Event) => {
-            const path = document.location.hash
-                .substring(1)
-                .replace(/^\/+/, '');
-            this.setState({
-                path,
-            });
-        });
-        // window.onhashchange((ev: Event) => {
 
-        // })
+        window.addEventListener('hashchange', this.hashListener);
+    }
+
+    onHashChange() {
+        const path = document.location.hash
+            .substring(1)
+            .replace(/^\/+/, '');
+        this.setState({
+            path,
+        });
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('hashchange', this.hashListener);
     }
 
     // computeMenu(selectedItemPath) {
@@ -234,7 +239,7 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
             });
         };
 
-        return <SidebarMenu  path={this.state.path} menu={filterMenu(menu)}/>;
+        return <SidebarMenu path={this.state.path} menu={filterMenu(menu)} />;
     }
 
     renderUnauthenticated() {
@@ -244,7 +249,7 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
             }
         );
 
-        return <SidebarMenu  path={this.state.path} menu={unauthenticatedMenu}/>;
+        return <SidebarMenu path={this.state.path} menu={unauthenticatedMenu} />;
     }
 
     render() {

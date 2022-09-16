@@ -15,21 +15,26 @@ const SAVE_WORK_PATH = 'save_work';
 const CREATE_WORK_PATH = 'create_work';
 const DELETE_WORK_PATH = 'elete_work';
 
-const START_PATH = 'start';
+const CREATE_LINKING_SESSION_PATH = 'create-linking-session';
+const START_LINKING_SESSION_PATH = 'start-linking-session';
+const FINISH_LINKING_SESSION_PATH = 'finish-linking-session';
+const CANCEL_LINKING_SESSION_PATH = 'cancel-linking-session';
+const GET_LINKING_SESSION_INFO_PATH = 'get-linking-session-info';
+
+
 const LINK_PATH = 'link';
 const REVOKE_PATH = 'revoke';
 const GET_NAME_PATH = 'get_name';
 
 
-const SAVE_DOI_APPLICATION_PATH = 'save_doi_application';
-const GET_DOI_APPLICATION_PATH = 'get_doi_application';
+const SAVE_DOI_APPLICATION_PATH = 'demos/save_doi_application';
+const GET_DOI_APPLICATION_PATH = 'demos/get_doi_application';
 
-const GET_TEMP_LINK_RECORD_PATH = 'get-temp-link';
-const FINISH_LINK_PATH = 'finish-link';
-const CANCEL_LINK_PATH = 'cancel-link';
+const USE_DYNAMIC_SERVICE = true;
+
+// const GET_TEMP_LINK_RECORD_PATH = 'get-temp-link';
 
 export interface ORCIDAuth {
-    access_token: string,
     scope: string
     orcid: string;
     name: string;
@@ -45,8 +50,15 @@ export interface LinkResult {
     link: LinkRecord | null;
 }
 
-export interface TempLinkRecord {
-    token: string;
+// export interface TempLinkRecord {
+//     token: string;
+//     created_at: number;
+//     expires_at: number;
+//     orcid_auth: ORCIDAuth;
+// }
+
+export interface LinkingSessionInfo {
+    session_id: string;
     created_at: number;
     expires_at: number;
     orcid_auth: ORCIDAuth;
@@ -401,8 +413,6 @@ export interface GetNameResult {
     last_name: string;
 }
 
-const USE_DYNAMIC_SERVICE = true;
-
 // MODEL
 
 export class Model {
@@ -560,16 +570,44 @@ export class Model {
         // return null;
     }
 
+    /**
+     * Begins the ORCID linking journey by redirecting to the ORCIDLink service "/start" 
+     * endpoint, optionally carrying a "return link" and/or "skip prompt" flag.
+     * @param returnLink An object containing a link and label property
+     * @param skipPrompt A boolean flag indicating whether to prompt to confirm linking afterwards
+     */
     async startLink({ returnLink, skipPrompt }: { returnLink?: ReturnLink, skipPrompt?: boolean }) {
         const baseURL = await this.serviceURL();
-        const url = new URL(`${baseURL}/${START_PATH}`);
+
+        // First create a linking session.
+        const createURL = new URL(`${baseURL}/${CREATE_LINKING_SESSION_PATH}`);
+        const response = await fetch(createURL, {
+            method: 'POST',
+            headers: {
+                Authorization: this.auth.authInfo.token,
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // TODO handle errors.
+
+        const result = await response.json() as unknown as {
+            session_id: string
+        };
+
+        const sessionId = result.session_id;
+
+        // Then redirect the browser to start the oauth process
+        const startURL = new URL(`${baseURL}/${START_LINKING_SESSION_PATH}`);
+        startURL.searchParams.set('session_id', sessionId);
         if (returnLink) {
-            url.searchParams.set('return_link', JSON.stringify(returnLink));
+            startURL.searchParams.set('return_link', JSON.stringify(returnLink));
         }
         if (skipPrompt) {
-            url.searchParams.set('skip_prompt', 'true');
+            startURL.searchParams.set('skip_prompt', 'true');
         }
-        window.open(url, '_parent');
+        window.open(startURL, '_parent');
     }
 
 
@@ -913,26 +951,7 @@ export class Model {
     }
 
     async saveDOIForm(doiForm: DOIForm): Promise<boolean> {
-        // const temp = {
-        //     putCode: work.putCode,
-        //     title: work.title,
-        //     date: work.date,
-        //     publicationType: work.publicationType,
-        //     journal: work.journal,
-        //     url: work.url,
-        //     externalIds: work.externalIds
-        // };
-
-        const response = await this.dsPost(CREATE_WORK_PATH, this.auth.authInfo.token, doiForm as unknown as JSONObject)
-
-        // const response = await fetch(SAVE_DOI_APPLICATION_URL, {
-        //     method: 'POST',
-        //     headers: {
-        //         Authorization: this.auth.authInfo.token,
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(doiForm)
-        // });
+        const response = await this.dsPost(SAVE_DOI_APPLICATION_PATH, this.auth.authInfo.token, doiForm as unknown as JSONObject)
 
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
@@ -1001,13 +1020,8 @@ export class Model {
     // }
 
 
-    async fetchTempLink(token: string) {
-        const response = await this.dsGet(`${GET_TEMP_LINK_RECORD_PATH}/${token}`, this.auth.authInfo.token)
-        // const response = await fetch(`${GET_TEMP_LINK_RECORD_URL}/${this.props.token}`, {
-        //     headers: {
-        //         authorization: this.props.kbaseAuthToken
-        //     }
-        // })
+    async fetchLinkingSessionInfo(sessionId: string) {
+        const response = await this.dsGet(`${GET_LINKING_SESSION_INFO_PATH}/${sessionId}`, this.auth.authInfo.token)
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
         }
@@ -1017,36 +1031,18 @@ export class Model {
     }
 
     async confirmLink(token: string) {
-        const response = await this.dsGet(`${FINISH_LINK_PATH}/${token}`, this.auth.authInfo.token);
+        const response = await this.dsGet(`${FINISH_LINKING_SESSION_PATH}/${token}`, this.auth.authInfo.token);
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
         }
-
-        // const result = JSON.parse(await response.text());
-        // // TODO: handle error.
-
-        // if (this.props.returnLink) {
-        //     window.open(this.props.returnLink.url, '_parent');
-        // } else {
-        //     window.open('https://ci.kbase.us/#orcidlink', '_parent');
-        // }
     }
 
     async cancelLink(token: string) {
-        const response = await this.dsGet(`${CANCEL_LINK_PATH}/${token}`, this.auth.authInfo.token);
-        // const response = await fetch(`${CANCEL_LINK_URL}/${this.props.token}`, {
-        //     headers: {
-        //         authorization: this.props.kbaseAuthToken
-        //     }
-        // })
+        const response = await this.dsGet(`${CANCEL_LINKING_SESSION_PATH}/${token}`, this.auth.authInfo.token);
+
         if (response.status !== 200) {
             throw new Error(`Unexpected response: ${response.status}`);
         }
-
-        // const result = JSON.parse(await response.text());
-
-        // TODO: handle error.
-        // window.open('https://ci.kbase.us/#orcidlink', '_parent');
     }
 
 

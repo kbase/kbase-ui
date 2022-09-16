@@ -24,6 +24,7 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
     SidebarMenuState> {
     ref: React.RefObject<HTMLDivElement>;
 
+    hashListener: () => void;
     constructor(props: SidebarMenuProps) {
         super(props);
 
@@ -32,16 +33,17 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
         this.state = {
             activeKey: null,
         };
+        this.hashListener = this.onHashChange.bind(this);
     }
 
     componentDidMount() {
         this.updateActiveKey();
 
-        window.addEventListener("hashchange", this.onHashChange.bind(this));
+        window.addEventListener("hashchange", this.hashListener);
     }
 
     componentWillUnmount() {
-        window.removeEventListener("hashchange", this.onHashChange.bind(this));
+        window.removeEventListener("hashchange", this.hashListener);
     }
 
     onHashChange() {
@@ -200,7 +202,7 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
 
         // Determine if the current menu item is a prefix for the current browser (hash) path.
         for (const item of this.props.menu) {
-           
+
             if (item.type === 'internal') {
                 if (path.startsWith(item.path)) {
                     return item.name;
