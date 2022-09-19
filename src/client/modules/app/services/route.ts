@@ -1,4 +1,4 @@
-import {stache} from "../../lib/kb_lib/Utils";
+import { stache } from "../../lib/kb_lib/Utils";
 import {
     NotFoundException,
     NotFoundHasRealPathException,
@@ -10,7 +10,7 @@ import {
     RouteSpec,
     RoutingLocation,
 } from "./router";
-import {Receiver, Runtime, Service, SimpleMap} from "../../lib/types";
+import { Receiver, Runtime, Service, SimpleMap } from "../../lib/types";
 
 type RouteHandler = RoutedRequest;
 
@@ -34,7 +34,7 @@ interface AppletDefinition {
     };
 }
 
-interface RouteServiceConfig  extends ServiceConfig {
+interface RouteServiceConfig extends ServiceConfig {
     defaultLocation: RoutingLocation;
     urls: SimpleMap<string>;
 }
@@ -61,7 +61,7 @@ export class RouteService extends Service<RouteServiceConfig> {
 
     constructor(param: RouteServiceParams) {
         super();
-        const {config, params} = param;
+        const { config, params } = param;
         this.runtime = params.runtime;
         this.router = new Router({
             runtime: params.runtime,
@@ -333,15 +333,13 @@ export class RouteService extends Service<RouteServiceConfig> {
             // NEW: convert the legacy navigation location to the
             // new easier-to-type one defined in router.ts
             const location: RoutingLocation = ((): RoutingLocation => {
-                if (!data.path && !data.url) {
+                if (!data || !data.path && !data.url) {
                     return {
                         type: "internal",
                         path: "dashboard",
                     };
                 }
 
-                // if (path.match(/^http[s]?:/)) {
-                // }
                 if (data.url) {
                     return {
                         type: "external",
@@ -382,7 +380,7 @@ export class RouteService extends Service<RouteServiceConfig> {
             this.router.navigateTo(location);
         });
 
-        this.runtime.receive("app", "redirect", ({url}) => {
+        this.runtime.receive("app", "redirect", ({ url }) => {
             if (!url) {
                 throw new Error('"url" is required for a "redirect" message');
             }
