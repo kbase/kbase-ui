@@ -6,7 +6,7 @@
         "@kbase/ui-lib": "0.4.12",
         "@types/dompurify": "2.3.4",
         "@types/marked": "4.0.7",
-        "@types/react": "18.0.18",
+        "@types/react": "18.0.20",
         "@types/react-dom": "18.0.6",
         "@types/uuid": "8.3.4",
         "bootstrap": "5.2.1",
@@ -19,7 +19,7 @@
         "react-dom": "18.2.0",
         "react-select": "5.4.0",
         "uuid": "9.0.0",
-        "web-vitals": "2.1.4"
+        "web-vitals": "3.0.2"
     },
     "devDependencies": {
         "@testing-library/jest-dom": "5.16.5",
@@ -31,7 +31,7 @@
         "node-sass": "7.0.3",
         "prettier": "2.7.1",
         "react-scripts": "5.0.1",
-        "typescript": "4.7.4"
+        "typescript": "4.8.3"
     },
     "scripts": {
         "start": "BROWSER=none react-scripts start",

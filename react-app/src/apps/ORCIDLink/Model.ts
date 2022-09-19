@@ -3,6 +3,7 @@ import { NarrativeService } from "lib/clients/NarrativeService";
 import { digJSON, isJSONObject, JSONArray, JSONArrayOf, JSONObject } from "lib/json";
 import { ObjectInfo, objectInfoToObject, WorkspaceInfo, workspaceInfoToObject } from "lib/kb_lib/comm/coreServices/Workspace";
 import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
+import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
@@ -413,6 +414,21 @@ export interface GetNameResult {
     last_name: string;
 }
 
+// This is why having canned clients, even if relatively simply wrappers around
+// GenericClient, is so nice:
+export type AppTag = 'dev' | 'beta' | 'release';
+export interface GetServiceStatusResult {
+    git_commit_hash: string;
+    status: string;
+    version: string;
+    hash: string;
+    release_tags: Array<AppTag>
+    url: string;
+    module_name: string;
+    health: string;
+    up: SDKBoolean;
+}
+
 // MODEL
 
 export class Model {
@@ -435,7 +451,7 @@ export class Model {
             const [result] = await serviceWizard.callFunc('get_service_status', [{
                 module_name: 'ORCIDLink',
                 version: 'dev'
-            }]);
+            }]) as unknown as [GetServiceStatusResult];
             return result.url;
         }
         return `https://${this.config.deploy.services.urlBase}/services/orcidlink`;

@@ -11,6 +11,7 @@ import GenericClient from '../../../../../../lib/kb_lib/comm/JSONRPC11/GenericCl
 import MessageAlert from '../../../../../../components/AlertMessage';
 import React from 'react';
 import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
+import WorkspaceClient from 'lib/kb_lib/comm/coreServices/Workspace';
 
 interface State {
     isLoading: boolean;
@@ -70,10 +71,14 @@ export default class SharingItem extends Component<
     async fetchSharedUsers(): Promise<NarrativePerms> {
         const wsId = this.props.narrative.access_group;
         // get shared perms from workspace
-        const [result] = await this.workspaceClient.callFunc(
-            'get_permissions_mass',
-            [{ workspaces: [{ id: wsId }] }]
-        );
+        const ws = new WorkspaceClient({
+            url: this.props.config.services.Workspace.url,
+            timeout: 1000,
+            token: this.props.authInfo.token
+        });
+        const result = await ws.get_permissions_mass(
+            { workspaces: [{ id: wsId }] },
+        )
         const perms = result.perms[0];
         const isGlobal = '*' in perms && perms['*'] !== 'n';
         const narrativePerms: NarrativePerms = {

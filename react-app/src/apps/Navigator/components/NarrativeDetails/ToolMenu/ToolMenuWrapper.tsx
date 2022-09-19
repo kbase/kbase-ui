@@ -1,4 +1,5 @@
 import GenericClient from '@kbase/ui-lib/lib/comm/JSONRPC11/GenericClient';
+import WorkspaceClient from 'lib/kb_lib/comm/coreServices/Workspace';
 import { Component } from 'react';
 import ErrorMessage from '../../../../../components/ErrorMessage';
 import { AuthInfo } from '../../../../../contexts/Auth';
@@ -68,10 +69,14 @@ export default class ToolMenUWrapper extends Component<
         const workspaceId = this.props.narrative.access_group;
 
         // get shared perms from workspace
-        const [result] = await this.workspaceClient.callFunc(
-            'get_permissions_mass',
-            [{ workspaces: [{ id: workspaceId }] }]
-        );
+        const ws = new WorkspaceClient({
+            url: this.props.config.services.Workspace.url,
+            timeout: 1000,
+            token: this.props.authInfo.token
+        });
+        const result = await ws.get_permissions_mass(
+            { workspaces: [{ id: workspaceId }] },
+        )
         const perms = result.perms[0];
 
         const isGlobal = '*' in perms && perms['*'] !== 'n';

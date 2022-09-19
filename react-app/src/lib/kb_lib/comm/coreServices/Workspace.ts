@@ -88,7 +88,7 @@ export interface ObjectInfo {
     typeMajorVersion: string;
     typeMinorVersion: string;
     saveDate: string;
-    
+
 }
 
 export type WorkspaceInfoRaw = [
@@ -123,9 +123,9 @@ export interface GetObjectInfo3Result extends JSONObject {
     paths: Array<Array<string>>;
 }
 
-export interface GetWorkspaceInfoParams extends WorkspaceIdentity {}
+export interface GetWorkspaceInfoParams extends WorkspaceIdentity { }
 
-export interface GetWorkspaceInfoResult {}
+export interface GetWorkspaceInfoResult { }
 
 export interface ListWorkspaceInfoParams {
     perm?: string;
@@ -208,7 +208,7 @@ export interface ObjectData extends JSONLikeObject {
 
 // Utils
 
-export function workspaceInfoToObject (wsInfo: WorkspaceInfoRaw): WorkspaceInfo {
+export function workspaceInfoToObject(wsInfo: WorkspaceInfoRaw): WorkspaceInfo {
     return {
         id: wsInfo[0],
         name: wsInfo[1],
@@ -223,29 +223,29 @@ export function workspaceInfoToObject (wsInfo: WorkspaceInfoRaw): WorkspaceInfo 
     };
 }
 
-export function objectInfoToObject (objInfo: ObjectInfoRaw): ObjectInfo {
-        const type = objInfo[2].split(/[-.]/);
+export function objectInfoToObject(objInfo: ObjectInfoRaw): ObjectInfo {
+    const type = objInfo[2].split(/[-.]/);
 
-        return {
-            id: objInfo[0],
-            name: objInfo[1],
-            type: objInfo[2],
-            save_date: objInfo[3],
-            version: objInfo[4],
-            saved_by: objInfo[5],
-            wsid: objInfo[6],
-            ws: objInfo[7],
-            checksum: objInfo[8],
-            size: objInfo[9],
-            metadata: objInfo[10],
-            ref: objInfo[6] + '/' + objInfo[0] + '/' + objInfo[4],
-            obj_id: 'ws.' + objInfo[6] + '.obj.' + objInfo[0],
-            typeModule: type[0],
-            typeName: type[1],
-            typeMajorVersion: type[2],
-            typeMinorVersion: type[3],
-            saveDate: new Date(objInfo[3]).toISOString()
-        };
+    return {
+        id: objInfo[0],
+        name: objInfo[1],
+        type: objInfo[2],
+        save_date: objInfo[3],
+        version: objInfo[4],
+        saved_by: objInfo[5],
+        wsid: objInfo[6],
+        ws: objInfo[7],
+        checksum: objInfo[8],
+        size: objInfo[9],
+        metadata: objInfo[10],
+        ref: objInfo[6] + '/' + objInfo[0] + '/' + objInfo[4],
+        obj_id: 'ws.' + objInfo[6] + '.obj.' + objInfo[0],
+        typeModule: type[0],
+        typeName: type[1],
+        typeMajorVersion: type[2],
+        typeMinorVersion: type[3],
+        saveDate: new Date(objInfo[3]).toISOString()
+    };
 }
 
 // get_objects2
@@ -258,6 +258,22 @@ export interface GetObjects2Param extends JSONLikeObject {
 
 export interface GetObjects2Result extends JSONLikeObject {
     data: Array<ObjectData>;
+}
+
+// get permissions mass
+
+export interface GetPermissionsMassParams extends JSONLikeObject {
+    workspaces: Array<ObjectIdentity>;
+}
+
+export type Perm = 'a' | 'w' | 'r' | 'n';
+
+export interface UserPerm {
+    [x: string]: Perm
+}
+
+export interface GetPermissionsMassResult extends JSONLikeObject {
+    perms: Array<UserPerm>;
 }
 
 export default class WorkspaceClient extends ServiceClient {
@@ -313,5 +329,13 @@ export default class WorkspaceClient extends ServiceClient {
             [toJSON(params)]
         );
         return object as GetObjects2Result;
+    }
+
+    async get_permissions_mass(params: GetPermissionsMassParams): Promise<GetPermissionsMassResult> {
+        const [object] = await this.callFunc<[JSONValue], [JSONValue]>(
+            'get_objects2',
+            [toJSON(params)]
+        );
+        return object as GetPermissionsMassResult;
     }
 }

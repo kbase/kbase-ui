@@ -1,5 +1,5 @@
 import iconData from './icons.json';
-import GenericClient from '@kbase/ui-lib/lib/lib/comm/JSONRPC11/GenericClient';
+import NarrativeMethodStoreClient from 'lib/kb_lib/comm/coreServices/NarrativeMethodStore';
 
 export interface IconInfo {
     icon?: string;
@@ -84,19 +84,18 @@ export default class IconProvider {
             return this.defaultApp;
         }
         if (!this.appIconCache[appTag][appId]) {
-            const client = new GenericClient({
-                module: 'NarrativeMethodStore',
+            const nms = new NarrativeMethodStoreClient({
                 url: this.nmsURL,
                 token: this.token,
-                timeout: 1000,
+                timeout: 1000
             });
             try {
-                const [result] = await client.callFunc(
-                    'get_method_brief_info',
-                    [{ ids: [appId], tag: appTag }]
-                );
+                const result = await nms.get_method_brief_info({
+                    ids: [appId],
+                    tag: appTag
+                });
 
-                const icon = result[0].icon.url;
+                const icon = result.icon.url;
                 if (!icon) {
                     this.appIconCache[appTag][appId] = this.defaultApp;
                 } else {
