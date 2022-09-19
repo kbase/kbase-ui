@@ -50,10 +50,10 @@ export default class Continue extends Component<ContinueProps> {
             <div className="well-body">
                 <div className="flex-table">
                     <div className="flex-row">
-                        <div className={`flex-col ${styles['-col1']}`}>
+                        <div className={`flex-col`} style={{ flex: '0 0 5em' }}>
                             Scopes
                         </div>
-                        <div className="flex-col -col2">
+                        <div className={`flex-col`}>
                             {renderScope(scope)}
                         </div>
                     </div>

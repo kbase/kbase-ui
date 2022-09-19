@@ -14,6 +14,20 @@ export interface ViewProps {
 
 export default class View extends Component<ViewProps> {
 
+    renderRevokeMessage() {
+        if (this.props.link !== null) {
+            return;
+        }
+
+        return <div>
+            <h3>Revocation</h3>
+            <p>You may <b>revoke</b> this link at any time.</p>
+            <p>Revoking the link will not alter any of your data stored at KBase or ORCID®. It will simply remove
+                the link to your ORCID account, preventing KBase from accessing your ORCID Profile thereafter.
+            </p>
+        </div>
+    }
+
     renderIntro() {
         return <div>
             <h2>About</h2>
@@ -31,11 +45,10 @@ export default class View extends Component<ViewProps> {
                 how it will use it.
             </p>
 
-            <p>You may <b>revoke</b> this link at any time.</p>
-
-            <p>Revoking the link will not alter any of your data at KBase, nor anything at ORCID®.</p>
+            {this.renderRevokeMessage()}
 
             <h3>More Information</h3>
+
             <p>
                 For further information about KBase and ORCID please consult the following resources:
             </p>
@@ -178,11 +191,11 @@ export default class View extends Component<ViewProps> {
                 <p>You may <b>revoke</b> this link at any time.</p>
 
                 <p>Revoking the link will not alter any of your data stored at KBase or ORCID®. It will simply remove
-                    the link to your ORCID account, preventing KBase from accessing your ORCID Profile.
+                    the link to your ORCID account, preventing KBase from accessing your ORCID Profile thereafter.
                 </p>
 
                 <p>Please note that if you wish to revoke this link at KBase, you may also
-                    want to <a href="https://docs.kbase.us" target="_blank">revoke the permissions granted to KBase at ORCID®</a> as well.</p>
+                    want to <a href="https://sandbox.orcid.org/trusted-parties" target="_blank">revoke the permissions granted to KBase at ORCID®</a> as well.</p>
             </div>
             <div className="well-footer">
                 <ButtonToolbar className="justify-content-center">
