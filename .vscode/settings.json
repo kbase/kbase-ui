@@ -10,11 +10,10 @@
     "plantuml.exportSubFolder": false,
     "plantuml.exportFormat": "png",
     "plantuml.diagramsRoot": "docs/diagrams",
-    "deno.enablePaths": [
-        "./tools/deno"
-    ],
+    "deno.enablePaths": ["./tools/deno"],
     "deno.lint": true,
-    "css.customData": [
-        "./.vscode/custom.css-data.json"
-    ]
+    "css.customData": ["./.vscode/custom.css-data.json"],
+    "[markdown]": {
+        "editor.formatOnSave": true
+    }
 }
