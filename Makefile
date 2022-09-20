@@ -71,10 +71,11 @@ __check_defined = \
 all: prepare-build git-info build-info build install-plugins create-deploy
 
 # Makes everything so it can be run locally
+# TODO: I think redundant with dev
 local: prepare-build git-info build-info build install-plugins render-templates create-deploy
 
 # Makes everything so it can be developed locally
-dev: prepare-build git-info build-info install-plugins render-templates
+dev: prepare-build git-info build-info install-plugins render-templates get-gitlab-config
 
 # See above for 'all' - just running 'make' should locally build
 default:
