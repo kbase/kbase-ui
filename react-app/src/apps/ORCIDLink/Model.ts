@@ -31,7 +31,7 @@ const GET_NAME_PATH = 'get_name';
 const SAVE_DOI_APPLICATION_PATH = 'demos/save_doi_application';
 const GET_DOI_APPLICATION_PATH = 'demos/get_doi_application';
 
-const USE_DYNAMIC_SERVICE = false;
+const USE_DYNAMIC_SERVICE = true;
 
 // const GET_TEMP_LINK_RECORD_PATH = 'get-temp-link';
 
