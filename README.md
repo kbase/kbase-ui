@@ -4,35 +4,49 @@
 
 This would have been the next major release, but see [the release notes](release-notes/RELEASE_NOTES_3.x.x.md).
 
-Since another effort has been underway for the last few months, and by all accounts nearly complete, I've not updated the documentation, though there is a working doc for the [new build process](docs/new-build.md).
+Since another effort has been underway for the last few months, and by all
+accounts nearly complete, I've not updated the documentation, though there is a
+working doc for the [new build process](docs/new-build.md).
 
 The TLDR is:
+
 - ensure deploy env is mapped to localhost in /etc/hosts; assume CI
-```
-127.0.0.1 ci.kbase.us
-```
-- create the dev environemnt
-```shell
-make dev
-```
-- start VSC session from the command line, setting DEPLOY_ENV to whichever env you developing against, assume CI
-```shell
-DEPLOY_ENV=ci code .
-```
-- reopen the VSC session in the devcontainer
-- the terminal will now be inside the dev container
-- work just like at the local command line:
-```shell
-root@3fd37706bf4d:/workspace# cd react-app
-root@3fd37706bf4d:/workspace/react-app# npm install
-root@3fd37706bf4d:/workspace/react-app# npm run start
-...
-webpack compiled with 19 warnings
-Files successfully emitted, waiting for typecheck results...
-Issues checking in progress...
-No issues found.
-```
-- open browser to https://ci.kbase.us
+
+    ```text
+    127.0.0.1 ci.kbase.us
+    ```
+
+- after cloning this repo, open the repo root in VSC (required for dev workflow)
+
+- open a terminal window, create the dev environment
+
+    ```shell
+    make dev
+    ```
+
+- open the project in a devcontainer
+    - Open the command browser: Shift + Command + P
+    - enter "Reopen in Container" or enough until
+      "Remote Containers: Reopen in Container" appears in the list
+    - select "Remote Containers: Reopen in Container"
+    - the first time make take a couple of minutes to fetch the images and build
+      the containers
+    - when complete you'll be in a shell inside the devcontainer (Ubuntu)
+
+- work with the CRA web app just like at the local command line:
+
+    ```shell
+    root@3fd37706bf4d:/workspace# cd react-app
+    root@3fd37706bf4d:/workspace/react-app# npm install
+    root@3fd37706bf4d:/workspace/react-app# npm run start
+    ...
+    webpack compiled with 19 warnings
+    Files successfully emitted, waiting for typecheck results...
+    Issues checking in progress...
+    No issues found.
+    ```
+
+- open browser to <https://ci.kbase.us>
 
 ## About
 
@@ -47,14 +61,17 @@ Current user features include:
 - _Authenticator_, for logging into and out of user's KBase Account and granting authorization to the web app,
 - _Catalog_, for browsing, searching and (for developers) managing KBase Narrative Apps.
 
-> If you have stumbled up on this project, you may first want to [find out about KBase](http://www.kbase.us).
-> The _KBase UI_ is not a general purpose tool -- it is designed to work inside the KBase ecosystem.
+> If you have stumbled up on this project, you may first want to
+> [find out about KBase](http://www.kbase.us). The _KBase UI_ is not a general
+> purpose tool -- it is designed to work inside the KBase ecosystem.
 
 The primary audience for this project is:
 
-- _KBase Developers and Staff_ - who need access to the kbase-ui for development, testing, deployment
+- _KBase Developers and Staff_ - who need access to the kbase-ui for development,
+testing, deployment
 - _KBase Advanced Users_ - who are developing services and plugins for kbase-ui,
-- _KBase Contributors_ - who wish to know more about the architecture and "sausage making" of KBase.
+- _KBase Contributors_ - who wish to know more about the architecture and
+"sausage making" of KBase.
 
 Most KBase users will be exposed to the KBase UI by ... [using KBase](https://narrative.kbase.us) :)
 
@@ -68,7 +85,8 @@ General "ui at kbase" documentation is available at [https://kbaseincubator.gith
 
 ## Contributing
 
-The KBase UI is an open source project, managed through GitHub. As such, contributions, even internally within KBase, are conducted through fork and PR.
+The KBase UI is an open source project, managed through GitHub. As such,
+contributions, even internally within KBase, are conducted through fork and PR.
 
 ## Release Notes
 
@@ -76,7 +94,9 @@ The current released version is [3.x.x](release-notes/RELEASE_NOTES_3.x.x.md).
 
 ## Reporting Bugs
 
-We do not currently use GitHub issues for bug reports. Please visit [KBase Support](http://www.kbase.us/support) for bug reports, questions or feature requests.
+We do not currently use GitHub issues for bug reports. Please visit
+[KBase Support](http://www.kbase.us/support) for bug reports, questions or
+feature requests.
 
 ## License
 
