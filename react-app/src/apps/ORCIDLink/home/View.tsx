@@ -10,10 +10,7 @@ export interface ViewProps {
     revoke: () => void
 }
 
-
-
 export default class View extends Component<ViewProps> {
-
     renderRevokeMessage() {
         if (this.props.link !== null) {
             return;
@@ -250,6 +247,7 @@ export default class View extends Component<ViewProps> {
                         </div>
                         <div className="well-body">
                             <p>This little section only exists temporarily during the development phase.</p>
+                            <p><a href="https://github.com/kbaseIncubator/kbase-credit-engine-docs" target="_blank" rel="noreferrer">Docs</a></p>
                             {this.renderDevInfo()}
                             {this.renderDemoLinks()}
                         </div>

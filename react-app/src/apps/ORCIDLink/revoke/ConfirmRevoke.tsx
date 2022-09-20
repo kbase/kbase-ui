@@ -1,12 +1,12 @@
 import { Component } from "react";
-import { Alert, Button, ButtonGroup, ButtonToolbar, Col, Row, Stack } from "react-bootstrap";
-import { ORCIDLinkInfo } from "../Model";
+import { Button, Col, Row, Stack } from "react-bootstrap";
 import { RevokeState, RevokeStatus } from "./Controller";
 
 export interface ConfirmRevokeProps {
     revokeState: RevokeState;
     revokeLink: () => void;
     cancel: () => void;
+    setTitle: (title: string) => void;
 }
 
 interface ConfirmRevokeState {
@@ -16,6 +16,7 @@ interface ConfirmRevokeState {
 export default class ConfirmRevoke extends Component<ConfirmRevokeProps, ConfirmRevokeState> {
 
     renderNotLinked() {
+        this.props.setTitle('ORCID® Link - Revoke - Not Linked')
         return <div className="well" style={{ maxWidth: '60em', margin: '0 auto' }}>
             <div className="well-header">
                 Warning: Not Linked
@@ -33,6 +34,7 @@ export default class ConfirmRevoke extends Component<ConfirmRevokeProps, Confirm
     }
 
     renderRevoked() {
+        this.props.setTitle('ORCID® Link - Revoke - Successfully Revoked Link')
         return <div className="well" style={{ maxWidth: '60em', margin: '0 auto' }}>
             <div className="well-header">
                 Success!
@@ -50,6 +52,7 @@ export default class ConfirmRevoke extends Component<ConfirmRevokeProps, Confirm
     }
 
     renderLinked() {
+        this.props.setTitle('ORCID® Link - Revoke - Confirm Link Revocation')
         return <Stack>
             <Row>
                 <Col>

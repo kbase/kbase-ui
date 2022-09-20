@@ -5,7 +5,7 @@ import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 
-import { Model, ORCIDLinkInfo, ReturnLink } from '../Model';
+import { Model, ORCIDLinkInfo } from '../Model';
 import ConfirmRevoke from './ConfirmRevoke';
 import { changeHash2 } from 'apps/Navigator/utils/navigation';
 
@@ -60,7 +60,7 @@ export default class HomeController extends Component<ControllerProps, Controlle
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link');
+        this.props.setTitle('ORCID® Link - Revoke');
         this.loadData();
     }
 
@@ -173,7 +173,12 @@ export default class HomeController extends Component<ControllerProps, Controlle
 
     renderSuccess(revokeState: RevokeState) {
 
-        return <ConfirmRevoke revokeState={revokeState} revokeLink={this.revokeLink.bind(this)} cancel={this.cancel.bind(this)} />
+        return <ConfirmRevoke
+            revokeState={revokeState}
+            revokeLink={this.revokeLink.bind(this)}
+            cancel={this.cancel.bind(this)}
+            setTitle={this.props.setTitle}
+        />
     }
 
     render() {
