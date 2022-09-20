@@ -6,7 +6,7 @@
     flex-direction: column;
 }
 
-.well-header {
+.header {
     flex: 0 0 auto;
     border-bottom: 1px solid rgba(200, 200, 200, 0.4);
     padding: 1em;
@@ -14,7 +14,7 @@
     color: rgb(150 150 150);
 }
 
-.well-body {
+.body {
     flex: 1 1 0;
     padding: 1em;
     display: flex;
@@ -22,12 +22,12 @@
     min-height: 0;
 }
 
-.well-section {
+.section {
     flex: 0 0 auto;
     padding: 1em;
 }
 
-.well-title {
+.title {
     flex: 0 0 auto;
     border-top: 1px solid rgba(200, 200, 200, 0.4);
     border-bottom: 1px solid rgba(200, 200, 200, 0.4);
@@ -36,7 +36,7 @@
     color: rgb(150 150 150);
 }
 
-.well-footer {
+.footer {
     flex: 0 0 auto;
     border-top: 1px solid rgba(200, 200, 200, 0.4);
     padding: 1em;

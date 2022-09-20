@@ -4,7 +4,7 @@ import { RouteProps, Router } from '../../components/Router2';
 import { AuthContext, AuthenticationState, AuthenticationStatus } from '../../contexts/Auth';
 import { Route } from '../../lib/Route';
 import { Config } from '../../types/config';
-import Continue from './ContinueController';
+import Continue from './continue/ContinueController';
 import PreFillFormController from './demos/PreFillForm/PreFillFormController';
 import Help from './Help';
 import Link from './link/LinkController';
@@ -15,6 +15,7 @@ import Error from './Error';
 import { ReturnLink } from './Model';
 import { JSONObject } from 'lib/json';
 import HomeController from './home/HomeController';
+import ConfirmRevoke from './revoke/Controller';
 
 export interface ORCIDLinkProps extends RouteProps {
     config: Config;
@@ -88,6 +89,27 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                             auth={authValue.value}
                             returnLink={returnLink}
                             skipPrompt={props.params.get('skip_prompt') === 'true'}
+                        />;
+                    }}
+                </AuthContext.Consumer>
+
+            }), /**
+             * This route handles requests to link.
+             */
+            new Route('orcidlink/revoke', { authenticationRequired: true }, (props: RouteProps) => {
+                // TODO: need to make route support authenticated and unauthenticated invocations
+                return <AuthContext.Consumer>
+                    {(authValue) => {
+                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
+                            return null;
+                        }
+                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
+                            return null;
+                        }
+
+                        return <ConfirmRevoke
+                            {...this.props}
+                            auth={authValue.value}
                         />;
                     }}
                 </AuthContext.Consumer>
@@ -235,6 +257,8 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
             })
         ]
 
-        return <Router routes={routes} hashPath={this.props.hashPath} />
+        return <div style={{ flex: '1 1 0', display: 'flex', flexDirection: 'column', overflowY: 'auto', margin: '0 1em' }}>
+            <Router routes={routes} hashPath={this.props.hashPath} />
+        </div>
     }
 }

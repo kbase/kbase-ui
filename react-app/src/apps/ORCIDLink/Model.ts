@@ -429,6 +429,15 @@ export interface GetServiceStatusResult {
     up: SDKBoolean;
 }
 
+export interface ORCIDLinkInfo {
+    createdAt: number;
+    expiresAt: number;
+    realname: string;
+    orcidID: string;
+    scope: string;
+}
+
+
 // MODEL
 
 export class Model {

@@ -7,6 +7,7 @@ import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 
 import { Model, ReturnLink } from '../Model';
 import View from './View';
+import { changeHash2 } from 'apps/Navigator/utils/navigation';
 
 export interface HomeControllerProps {
     config: Config;
@@ -89,19 +90,20 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     }
 
     async revokeLink() {
-        const model = new Model({ config: this.props.config, auth: this.props.auth });
-        await model.deleteLink();
+        changeHash2('orcidlink/revoke');
+        // const model = new Model({ config: this.props.config, auth: this.props.auth });
+        // await model.deleteLink();
 
-        this.setState({
-            linkState: {
-                status: AsyncProcessStatus.SUCCESS,
-                value: { link: null }
-            }
-        });
+        // this.setState({
+        //     linkState: {
+        //         status: AsyncProcessStatus.SUCCESS,
+        //         value: { link: null }
+        //     }
+        // });
 
-        // TODO: notification
+        // // TODO: notification
 
-        return null;
+        // return null;
     }
 
     async startLink() {

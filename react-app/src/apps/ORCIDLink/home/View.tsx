@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { Accordion, Button, ButtonToolbar, Row } from 'react-bootstrap';
+import { Accordion, Button } from 'react-bootstrap';
 import { renderORCIDIcon, renderScope } from '../common';
 import { ORCID_URL } from '../Model';
 import { LinkInfo } from './HomeController';
@@ -66,8 +66,7 @@ export default class View extends Component<ViewProps> {
     }
 
     renderDevInfo() {
-        return <div><p style={{ fontStyle: 'italic' }}>Development stuff below</p>
-
+        return <div>
             <h3>Extant links</h3>
             <p>
                 These are existing KBase docs related to ORCID
@@ -128,7 +127,7 @@ export default class View extends Component<ViewProps> {
     renderLinkInfo(link: LinkInfo) {
         return <div className="well" style={{ marginBottom: '1em' }}>
             <div className="well-header">
-                ORCID Link
+                ORCID® Link
             </div>
             <div className="well-body">
                 <div className="flex-table">
@@ -197,12 +196,10 @@ export default class View extends Component<ViewProps> {
                 <p>Please note that if you wish to revoke this link at KBase, you may also
                     want to <a href="https://sandbox.orcid.org/trusted-parties" target="_blank">revoke the permissions granted to KBase at ORCID®</a> as well.</p>
             </div>
-            <div className="well-footer">
-                <ButtonToolbar className="justify-content-center">
-                    <Button variant="danger" onClick={this.props.revoke}>
-                        Revoke Link to ORCID®
-                    </Button>
-                </ButtonToolbar>
+            <div className="well-footer" style={{ justifyContent: 'center' }}>
+                <Button variant="danger" onClick={this.props.revoke}>
+                    <span className="fa fa-lg fa-trash" /> Revoke Link to ORCID® …
+                </Button>
             </div>
         </div >
     }
@@ -217,7 +214,7 @@ export default class View extends Component<ViewProps> {
     renderUnlinked() {
         return <div className="well">
             <div className="well-header">
-                Create Link to ORCID®
+                Create ORCID® Link
             </div>
             <div className="well-body">
                 <p>You do not currently have a link from your KBase account to an ORCID® account.</p>
@@ -227,12 +224,10 @@ export default class View extends Component<ViewProps> {
                     aspects of your ORCID® account.
                 </p>
             </div>
-            <div className="well-footer">
-                <ButtonToolbar style={{ justifyContent: 'center' }}>
-                    <Button variant="primary" href="/#orcidlink/link">
-                        Create ORCID® Link
-                    </Button>
-                </ButtonToolbar>
+            <div className="well-footer" style={{ justifyContent: 'center' }}>
+                <Button variant="primary" href="/#orcidlink/link">
+                    <span className="fa fa-lg fa-plus" /> Create ORCID® Link …
+                </Button>
             </div>
         </div>
     }
@@ -249,7 +244,7 @@ export default class View extends Component<ViewProps> {
             <div className={styles.row}>
                 <div className={styles.col1}>
                     {this.renderIntro()}
-                    <div className="well">
+                    <div className="well" style={{ backgroundColor: 'rgba(252, 192, 189, 0.5)' }}>
                         <div className="well-header">
                             Development
                         </div>

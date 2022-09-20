@@ -1,8 +1,10 @@
 import AlertMessage from 'components/AlertMessage';
 import styles from './CreateLink.module.css';
 import { Component } from 'react';
-import { Button, Stack } from 'react-bootstrap';
+import { Accordion, Button, Col, Row, Stack } from 'react-bootstrap';
 import { ReturnLink } from '../Model';
+import orcidSignIn from '../images/ORCID-sign-in.png';
+import AccordionItem from 'react-bootstrap/esm/AccordionItem';
 
 export interface CreateLinkProps {
     returnLink?: ReturnLink;
@@ -21,7 +23,7 @@ export default class CreateLink extends Component<CreateLinkProps> {
         </AlertMessage>;
     }
 
-    render() {
+    renderLinkStart() {
         return <div className={styles.main}>
             <div className={styles.row}>
                 <div className="well" style={{ maxWidth: '60em', margin: '0 auto' }}>
@@ -37,15 +39,19 @@ export default class CreateLink extends Component<CreateLinkProps> {
                             aspects of your ORCID® account.
                         </p>
 
+                        <p>
+                            For more information, <a href="https://www.kbase.us/orcidlink" target="_blank'">consult the ORCID Link documentation</a>.
+                        </p>
+
                         {this.renderReturnURL()}
                     </div>
                     <div className="well-footer">
-                        <Stack direction="horizontal" gap={3} className="justify-content-center">
+                        <Stack direction="horizontal" gap={3} className="justify-content-center" style={{ flex: '1 1 0' }}>
                             <Button variant="primary" onClick={this.props.start}>
-                                Create ORCID® Link
+                                <span className="fa fa-lg fa-plus" /> Start ORCID® Link process...
                             </Button>
                             <Button variant="danger" onClick={this.props.goBack}>
-                                Cancel and Return from Whence You Came
+                                <span className="fa fa-lg fa-mail-reply" /> Cancel
                             </Button>
                         </Stack>
                     </div>
@@ -53,5 +59,45 @@ export default class CreateLink extends Component<CreateLinkProps> {
                 </div>
             </div>
         </div >;
+    }
+
+    renderFAQ() {
+        return <Accordion>
+            <Accordion.Item eventKey='0'>
+                <Accordion.Header>
+                    What if I don't have an ORCID Account?
+                </Accordion.Header>
+                <Accordion.Body>
+                    <p>
+                        The next step in linking your ORCID account to your KBase account is to sign in at ORCID.
+                    </p>
+                    <p>
+                        But what if you don't have an ORCID account yet?
+                    </p>
+                    <p>
+                        When you reach the ORCID Sign In page, you may elect to register for a new account.
+                    </p>
+                    <img src={orcidSignIn} style={{ width: '80%', boxShadow: '4px 4px 4px 4px rgba(100, 100, 100, 1)', marginBottom: '20px' }} />
+                    <p>
+                        After registering the linking process will be resumed, just as if you had simply signed in with an existing ORCID account.
+                    </p>
+                </Accordion.Body>
+
+            </Accordion.Item>
+        </Accordion>
+    }
+
+    render() {
+        return <Stack>
+            <Row>
+                <Col>
+                    {this.renderLinkStart()}
+                </Col>
+                <Col>
+                    <h3>FAQs</h3>
+                    {this.renderFAQ()}
+                </Col>
+            </Row>
+        </Stack>
     }
 }

@@ -5,7 +5,7 @@ import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
 import { Component } from "react";
 import { Config } from "types/config";
 import Continue from "./Continue";
-import { Model, ReturnLink, LinkingSessionInfo } from "./Model";
+import { Model, ReturnLink, LinkingSessionInfo } from "../Model";
 
 export interface ContinueControllerProps {
     linkingSessionId: string;
