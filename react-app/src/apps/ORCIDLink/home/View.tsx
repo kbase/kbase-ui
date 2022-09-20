@@ -54,11 +54,11 @@ export default class View extends Component<ViewProps> {
             </p>
             <ul>
                 <li>
-                    <a href="https://docs.kbase.us" target="_blank">Linking your KBase account to your ORCID account [does not exist yet]</a>
+                    <a href="https://docs.kbase.us" target="_blank" rel="noreferrer">Linking your KBase account to your ORCID account [does not exist yet]</a>
                 </li>
 
                 <li>
-                    <a href="https://info.orcid.org/what-is-orcid/" target="_blank">About ORCID</a>
+                    <a href="https://info.orcid.org/what-is-orcid/" target="_blank" rel="noreferrer">About ORCID</a>
                 </li>
 
             </ul>
@@ -74,7 +74,7 @@ export default class View extends Component<ViewProps> {
             <Accordion>
                 <Accordion.Item eventKey="0">
                     <Accordion.Header>
-                        <a href="https://docs.kbase.us/getting-started/sign-up/linking-orcid" target="_blank">Linking KBase to ORCiD</a>
+                        <a href="https://docs.kbase.us/getting-started/sign-up/linking-orcid" target="_blank" rel="noreferrer">Linking KBase to ORCiD</a>
                     </Accordion.Header>
                     <Accordion.Body>
                         <p>This doc implies that there is something special about linking one's KBase account to an ORCID account. However, the
@@ -95,7 +95,7 @@ export default class View extends Component<ViewProps> {
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item eventKey="1">
-                    <Accordion.Header><a href="https://docs.kbase.us/getting-started/narrative/link-doi" target="_blank">Add Works using the DOE / OSTI Search & Link Wizard</a></Accordion.Header>
+                    <Accordion.Header><a href="https://docs.kbase.us/getting-started/narrative/link-doi" target="_blank" rel="noreferrer">Add Works using the DOE / OSTI Search & Link Wizard</a></Accordion.Header>
                     <Accordion.Body>
                         <p>
                             This doc describes how to link one's OSTI account to ORCID, and use the OSTI interface to add one's OSTI works to one's ORCID works.
@@ -137,7 +137,7 @@ export default class View extends Component<ViewProps> {
                         </div>
                         <div className="flex-col -col2" style={{ flex: '3 1 0' }}>
                             <div className="flex-row" style={{ alignItems: 'center' }}>
-                                <a href={`${ORCID_URL}/${link.orcidID}`} target="_blank">
+                                <a href={`${ORCID_URL}/${link.orcidID}`} target="_blank" rel="noreferrer">
                                     {renderORCIDIcon()}
                                     {link.orcidID}
                                 </a>
@@ -194,7 +194,7 @@ export default class View extends Component<ViewProps> {
                 </p>
 
                 <p>Please note that if you wish to revoke this link at KBase, you may also
-                    want to <a href="https://sandbox.orcid.org/trusted-parties" target="_blank">revoke the permissions granted to KBase at ORCID®</a> as well.</p>
+                    want to <a href="https://sandbox.orcid.org/trusted-parties" target="_blank" rel="noreferrer">revoke the permissions granted to KBase at ORCID®</a> as well.</p>
             </div>
             <div className="well-footer" style={{ justifyContent: 'center' }}>
                 <Button variant="danger" onClick={this.props.revoke}>
