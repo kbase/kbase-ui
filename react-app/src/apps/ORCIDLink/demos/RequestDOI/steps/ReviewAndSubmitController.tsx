@@ -1,4 +1,5 @@
-import { Model, ReviewAndSubmitData } from "apps/ORCIDLink/Model";
+import { Model, } from "apps/ORCIDLink/Model";
+import { ReviewAndSubmitData } from "apps/ORCIDLink/ORCIDLinkClient";
 import { Component } from "react";
 import ReviewAndSubmitForm from './ReviewAndSubmitForm';
 

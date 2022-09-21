@@ -1,4 +1,5 @@
-import { Model, GeolocationData, Location } from "apps/ORCIDLink/Model";
+import { Model } from "apps/ORCIDLink/Model";
+import { GeolocationData, Location } from "apps/ORCIDLink/ORCIDLinkClient";
 import { Component } from "react";
 import GolocationForm from './GeolocationForm';
 

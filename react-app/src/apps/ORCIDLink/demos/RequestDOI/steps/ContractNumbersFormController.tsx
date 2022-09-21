@@ -2,8 +2,9 @@ import { Component } from 'react';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import { ContractNumbers, Model } from 'apps/ORCIDLink/Model';
+import { Model } from 'apps/ORCIDLink/Model';
 import ContractNumbersForm from './ContractNumbersForm';
+import { ContractNumbers } from 'apps/ORCIDLink/ORCIDLinkClient';
 
 export interface ContractNumbersFormControllerProps {
     model: Model;

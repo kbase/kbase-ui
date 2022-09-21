@@ -1,4 +1,4 @@
-import { EditablePublication, Model, ORCIDProfile, ORCID_URL, Publication } from "apps/ORCIDLink/Model";
+import { Model, ORCIDProfile, Publication } from "apps/ORCIDLink/Model";
 import AlertMessage from "components/AlertMessage";
 import ErrorAlert from "components/ErrorAlert";
 import { isEqual } from "lib/kb_lib/Utils";
@@ -10,12 +10,17 @@ import EditPublication from "./Edit/Controller";
 import ViewPublication from "./ViewPublication";
 import styles from './PushPublicationForm.module.css';
 import { renderORCIDIcon } from "apps/ORCIDLink/common";
+import { ORCID_URL } from "apps/ORCIDLink/constants";
+import { EditablePublication, PushPublicationModel } from "./PushPublicationModel";
 
 export interface PushPublicationFormProps {
     profile: ORCIDProfile;
-    model: Model;
+    model: PushPublicationModel;
     syncProfile: () => Promise<void>;
     deletePublication: (putCode: string) => Promise<void>
+    setTitle: (title: string) => void;
+    createPublication: (publication: EditablePublication) => Promise<void>;
+    updatePublication: (publication: EditablePublication) => Promise<void>;
 }
 
 // Deletion State
@@ -291,7 +296,7 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
                 DEMO: Push Publication to ORCID Activity Record
             </h2>
             <p>
-                <a href="/#orcidlink">Back</a>
+                <Button variant="secondary" href="/#orcidlink"><span className="fa fa-arrow-left" /> Back</Button>
             </p>
             <p>
                 This is a demonstration of using form at KBase to push a Narrative publication to ORCID.
@@ -322,7 +327,10 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
     renderEditAreaNew(editArea: EditAreaNew) {
         return <div>
             <h2>Add New Publication Record</h2>
-            <AddNewPublication model={this.props.model} onClose={this.onDone.bind(this)} />
+            <AddNewPublication
+                setTitle={this.props.setTitle}
+                createPublication={this.props.createPublication}
+                onClose={this.onDone.bind(this)} />
         </div>
     }
 
@@ -337,7 +345,12 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
     renderEditAreaUpdate(editArea: EditAreaUpdate) {
         return <div>
             <h2>Edit Publication Record</h2>
-            <EditPublication model={this.props.model} onClose={this.onDone.bind(this)} putCode={editArea.publication.putCode} />
+            <EditPublication
+                model={this.props.model}
+                onClose={this.onDone.bind(this)}
+                setTitle={this.props.setTitle}
+                updatePublication={this.props.updatePublication}
+                putCode={editArea.publication.putCode} />
         </div>
     }
 

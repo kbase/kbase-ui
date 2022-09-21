@@ -2,9 +2,9 @@ import { Component } from 'react';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import { AppCitations, CitationResults, Citations, Model, NarrativeAppCitations } from 'apps/ORCIDLink/Model';
+import { Citations, Model, NarrativeAppCitations } from 'apps/ORCIDLink/Model';
 import CitationsForm from './CitationsForm';
-import { ObjectInfo } from 'lib/kb_lib/comm/coreServices/Workspace';
+import { CitationResults } from 'apps/ORCIDLink/ORCIDLinkClient';
 
 export interface CitationsControllerProps {
     model: Model;

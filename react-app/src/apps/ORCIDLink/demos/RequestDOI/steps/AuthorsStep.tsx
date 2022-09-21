@@ -1,4 +1,5 @@
-import { Author, Model } from 'apps/ORCIDLink/Model';
+import { Model } from 'apps/ORCIDLink/Model';
+import { Author } from 'apps/ORCIDLink/ORCIDLinkClient';
 import Well from 'components/Well';
 import { Component } from 'react';
 import { Button, Col, Form, Row, Stack } from 'react-bootstrap';

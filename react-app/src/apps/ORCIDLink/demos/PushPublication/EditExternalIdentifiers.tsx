@@ -1,4 +1,3 @@
-import { EditableExternalIds, ExternalId } from "apps/ORCIDLink/Model";
 import Empty from "components/Empty";
 import { Component } from "react";
 import { Button } from "react-bootstrap";
@@ -6,27 +5,25 @@ import Select from 'react-select';
 import { Options, Option } from "./reactSelectTypes";
 
 
-import { WorkTypes2 } from "./Add/Controller";
 import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";
+import { EditableExternalId, externalIdToEditableExternalId } from "./PushPublicationModel";
 
 export interface EditExternalIdentifiersProps {
     workExternalIdentifierTypes: WorkExternalIdentifierTypes;
     workRelationshipIdentifiers: WorkRelationshipIdentifiers;
-    externalIds: Array<ExternalId>;
-    onChanged: (editState: Array<ExternalId>) => void;
+    externalIds: Array<EditableExternalId>;
+    onChanged: (editState: Array<EditableExternalId>) => void;
 }
 
 interface EditExternalIdentifiersState {
-    editState: EditableExternalIds;
+    externalIds: Array<EditableExternalId>;
 }
 
 export default class EditExternalIdentifiers extends Component<EditExternalIdentifiersProps, EditExternalIdentifiersState> {
     constructor(props: EditExternalIdentifiersProps) {
         super(props);
         this.state = {
-            editState: {
-                externalIds: this.props.externalIds
-            }
+            externalIds: this.props.externalIds
         }
     }
 
@@ -49,108 +46,89 @@ export default class EditExternalIdentifiers extends Component<EditExternalIdent
     }
 
     handleChangeExternalIdType(type: string, index: number) {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds[index].type = type;
+        const externalIds = this.state.externalIds.slice();
+        externalIds[index].type.editValue = type;
+        externalIds[index].type.value = type;
 
         this.setState({
-            ...this.state,
-            editState: {
-                ...this.state.editState,
-                externalIds
-            }
+            externalIds
         }, () => {
-            this.props.onChanged(this.state.editState.externalIds);
+            this.props.onChanged(this.state.externalIds);
         })
     }
 
     changeExternalIdValue(value: string, index: number) {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds[index].value = value;
+        const externalIds = this.state.externalIds.slice();
+        externalIds[index].value.editValue = value;
+        externalIds[index].value.value = value;
 
         this.setState({
-            ...this.state,
-            editState: {
-                ...this.state.editState,
-                externalIds
-            }
+            externalIds
         }, () => {
-            this.props.onChanged(this.state.editState.externalIds);
+            this.props.onChanged(this.state.externalIds);
         })
     }
 
     changeExternalIdRelationship(value: string, index: number) {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds[index].relationship = value;
+        const externalIds = this.state.externalIds.slice();
+        externalIds[index].relationship.editValue = value;
+        externalIds[index].relationship.value = value;
 
         this.setState({
-            ...this.state,
-            editState: {
-                ...this.state.editState,
-                externalIds
-            }
+            externalIds
         }, () => {
-            this.props.onChanged(this.state.editState.externalIds);
+            this.props.onChanged(this.state.externalIds);
         })
     }
 
     changeExternalIdURL(url: string, index: number) {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds[index].url = url;
+        const externalIds = this.state.externalIds.slice();
+        externalIds[index].url.editValue = url;
+        externalIds[index].url.value = url;
 
         this.setState({
-            ...this.state,
-            editState: {
-                ...this.state.editState,
-                externalIds
-            }
+            externalIds
         }, () => {
-            this.props.onChanged(this.state.editState.externalIds);
+            this.props.onChanged(this.state.externalIds);
         })
     }
 
     handleRemoveExternalIdentifier(indexToRemove: number) {
-        const externalIds = this.state.editState.externalIds.filter((identifier, index) => {
+        const externalIds = this.state.externalIds.filter((_, index) => {
             return (index !== indexToRemove);
         });
         this.setState({
-            editState: {
-                ...this.state.editState,
-                externalIds
-            }
+            externalIds
         }, () => {
-            this.props.onChanged(this.state.editState.externalIds);
+            this.props.onChanged(this.state.externalIds);
         });
     }
 
     addExternalIdentifier() {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds.push({
+        const externalIds = this.state.externalIds.slice();
+        externalIds.push(externalIdToEditableExternalId({
             type: '',
             relationship: '',
             url: '',
             value: ''
-        });
+        }));
         this.setState({
-            ...this.state,
-            editState: {
-                ...this.state.editState,
-                externalIds
-            }
+            externalIds
         })
     }
 
     renderTable() {
-        if (this.state.editState.externalIds.length === 0) {
+        if (this.state.externalIds.length === 0) {
             return <Empty message="No external identifiers ... yet" />
         }
         const relationships = this.getExternalRelationshipIdentifiers();
         const identifierTypes = this.getExternalIdentifierTypes();
-        const rows = this.state.editState.externalIds.map(({ type, url, value, relationship }, index) => {
+        const rows = this.state.externalIds.map(({ type, url, value, relationship }, index) => {
             const currentRelationship = relationships.filter(({ value }) => {
-                return (relationship === value);
+                return (relationship.value === value);
             })[0];
             const currentIdentifierType = identifierTypes.filter(({ value }) => {
-                return (type === value);
+                return (type.value === value);
             })[0];
             return <div className="flex-row" key={index}>
                 <div className="flex-col">
@@ -164,7 +142,7 @@ export default class EditExternalIdentifiers extends Component<EditExternalIdent
                 </div>
                 <div className="flex-col">
                     <input type="text" className="form-control"
-                        value={value}
+                        value={value.editValue}
                         style={{ margin: '0' }}
                         onInput={(e) => { this.changeExternalIdValue(e.currentTarget.value, index) }} />
                 </div>
@@ -183,7 +161,7 @@ export default class EditExternalIdentifiers extends Component<EditExternalIdent
                 </div>
                 <div className="flex-col">
                     <input type="text" className="form-control"
-                        value={url}
+                        value={url.editValue}
                         style={{ margin: '0' }}
                         onInput={(e) => { this.changeExternalIdURL(e.currentTarget.value, index) }} />
                 </div>

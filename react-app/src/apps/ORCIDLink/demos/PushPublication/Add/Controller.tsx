@@ -3,9 +3,10 @@ import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import WorkForm from './EditPublication';
-import { EditablePublication, Model, Publication } from 'apps/ORCIDLink/Model';
+import { Publication } from 'apps/ORCIDLink/Model';
 import workTypesRaw from '../../../data/workTypes2.json';
 import { workExternalIdentifierTypes, workRelationshipIdentifiers } from 'apps/ORCIDLink/data';
+import { EditablePublication, initialEditablePublication, publicationToEditablePublication } from '../PushPublicationModel';
 
 // Work types
 // TODO: move to external file.
@@ -42,8 +43,8 @@ const workTypes = workTypesRaw as unknown as WorkTypes2;
 
 
 export interface ControllerProps {
-    model: Model;
-    // setTitle: (title: string) => void;
+    setTitle: (title: string) => void;
+    createPublication: (publication: EditablePublication) => Promise<void>;
     onClose: () => void;
 }
 
@@ -70,10 +71,8 @@ interface ControllerState {
 }
 
 export default class Controller extends Component<ControllerProps, ControllerState> {
-    model: Model;
     constructor(props: ControllerProps) {
         super(props);
-        this.model = props.model;
         this.state = {
             dataState: {
                 status: AsyncProcessStatus.NONE
@@ -105,15 +104,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             dataState: {
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    work: {
-                        putCode: '',
-                        title: '',
-                        date: '',
-                        journal: '',
-                        publicationType: '',
-                        url: '',
-                        externalIds: []
-                    }
+                    work: initialEditablePublication()
                 }
             }
         })
@@ -151,16 +142,6 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         // }
     }
 
-
-    async onSave(update: EditablePublication) {
-        const updatedWork = await this.model.createWork(update);
-    }
-
-    async onDelete(putCode: string) {
-
-    }
-
-
     // Renderers
 
     renderLoading() {
@@ -177,7 +158,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             workTypes={workTypes}
             workExternalIdentifierTypes={workExternalIdentifierTypes}
             workRelationshipIdentifiers={workRelationshipIdentifiers}
-            onSave={this.onSave.bind(this)}
+            onSave={this.props.createPublication}
             onClose={this.props.onClose} />
     }
 

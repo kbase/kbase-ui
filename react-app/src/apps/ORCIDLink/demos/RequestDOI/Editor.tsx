@@ -3,7 +3,7 @@ import styles from './Editor.module.css';
 import { Alert, Button } from 'react-bootstrap';
 import AuthorsStep from './steps/AuthorsStep';
 import CitationsStep from './steps/CitationsController';
-import { Author, CitationResults, ContractNumbers, Description, DOIForm, GeolocationData, MinimalNarrativeInfo, Model, ReviewAndSubmitData, STEPS3, StepStatus } from 'apps/ORCIDLink/Model';
+import { Model } from 'apps/ORCIDLink/Model';
 import SelectNarrativeController from './steps/SelectNarrativeController';
 import ORCIDLink from './steps/ORCIDLinkController';
 import { JSONObject } from 'lib/json';
@@ -13,6 +13,7 @@ import DescriptionController from './steps/Description/Controller';
 import ReviewAndSubmitController from './steps/ReviewAndSubmitController';
 import CreateForm from './CreateForm';
 import { ORCIDLinkState } from './EditorController';
+import { DOIForm, STEPS3, StepStatus, MinimalNarrativeInfo, Author, CitationResults, ContractNumbers, GeolocationData, Description, ReviewAndSubmitData } from 'apps/ORCIDLink/ORCIDLinkClient';
 
 
 export interface EditorProps {

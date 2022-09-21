@@ -1,4 +1,7 @@
-import { LocationPoint, LocationType, Model, ReviewAndSubmitData } from "apps/ORCIDLink/Model";
+import {
+    Model
+} from "apps/ORCIDLink/Model";
+import { LocationPoint, LocationType } from "apps/ORCIDLink/ORCIDLinkClient";
 import { Component } from "react";
 import { FieldState, FieldStateValid, FieldStatus } from "../../../common";
 import Editor from './Editor';

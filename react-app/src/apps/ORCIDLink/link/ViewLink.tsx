@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { Button } from 'react-bootstrap';
 import { LinkInfo } from './LinkController';
 import styles from './ViewLink.module.css';
-import { ORCID_URL } from '../Model';
+import { ORCID_URL } from '../constants';
 import { renderORCIDIcon, renderScope } from '../common';
 
 

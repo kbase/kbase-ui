@@ -1,4 +1,4 @@
-import { ORCID_URL } from 'apps/ORCIDLink/Model';
+import { ORCID_URL } from 'apps/ORCIDLink/constants';
 import { Component } from 'react';
 import { ORCIDLinkState, ORCIDLinkStatus } from './Controller';
 import { renderORCIDIcon } from '../../../common';

@@ -1,9 +1,10 @@
 import { Component } from 'react';
-import { ORCID_URL, ReturnLink, LinkingSessionInfo } from '../Model';
+import { ReturnLink, LinkingSessionInfo } from '../Model';
 import { renderORCIDIcon, renderScope } from '../common';
 import { Alert, Button, Col, Row, Stack } from 'react-bootstrap';
 import styles from './Continue.module.css';
 import AlertMessage from 'components/AlertMessage';
+import { ORCID_URL } from '../constants';
 
 export interface ContinueProps {
     linkingSessionInfo: LinkingSessionInfo;

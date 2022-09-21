@@ -1,4 +1,4 @@
-import { ContractNumbers, ORCIDProfile } from "apps/ORCIDLink/Model";
+import { ContractNumbers } from "apps/ORCIDLink/ORCIDLinkClient";
 import Well from "components/Well";
 import { Component } from "react";
 import { Button, Col, Form, FormControl, Row, Stack } from "react-bootstrap";

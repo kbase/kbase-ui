@@ -1,4 +1,5 @@
-import { Model, Description } from "apps/ORCIDLink/Model";
+import { Model, } from "apps/ORCIDLink/Model";
+import { Description } from "apps/ORCIDLink/ORCIDLinkClient";
 import { Component } from "react";
 import DescriptionForm from './Form';
 

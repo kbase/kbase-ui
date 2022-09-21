@@ -64,7 +64,6 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
 
         const link = await model.getLink();
 
-
         if (link === null) {
             return null;
         }

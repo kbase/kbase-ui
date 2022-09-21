@@ -3,9 +3,10 @@ import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import AuthorForm from './AuthorForm';
-import { Author, Model } from 'apps/ORCIDLink/Model';
+import { Model } from 'apps/ORCIDLink/Model';
 import { FieldState, FieldStatus } from '../common';
 import { Stack, Row, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
+import { Author } from 'apps/ORCIDLink/ORCIDLinkClient';
 
 
 export interface ControllerProps {

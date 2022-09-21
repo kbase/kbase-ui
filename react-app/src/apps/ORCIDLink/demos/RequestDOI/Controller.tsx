@@ -4,11 +4,12 @@ import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import EditorController from './EditorController';
 import CreateForm from './CreateForm';
-import { DOIForm, Model, StepStatus } from 'apps/ORCIDLink/Model';
+import { Model } from 'apps/ORCIDLink/Model';
 import { Config } from 'types/config';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
 import { JSONObject } from 'lib/json';
 import * as uuid from 'uuid'
+import { DOIForm, StepStatus } from 'apps/ORCIDLink/ORCIDLinkClient';
 
 export interface ControllerProps {
     config: Config;

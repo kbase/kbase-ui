@@ -3,11 +3,12 @@ import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import Editor from './Editor';
-import { DOIForm, Model, ORCIDProfile, StepStatus } from 'apps/ORCIDLink/Model';
+import { Model, ORCIDProfile } from 'apps/ORCIDLink/Model';
 import { Config } from 'types/config';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
 import { JSONObject } from 'lib/json';
 import * as uuid from 'uuid'
+import { DOIForm } from 'apps/ORCIDLink/ORCIDLinkClient';
 
 
 export interface ORCIDLinkStateBase {

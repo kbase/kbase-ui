@@ -1,4 +1,4 @@
-import { EditablePublication, ExternalId } from "apps/ORCIDLink/Model";
+import { ExternalId } from "apps/ORCIDLink/Model";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
 import { Button, Form } from "react-bootstrap";
@@ -9,6 +9,7 @@ import { ROW_HEADER, SECTION_BODY_STYLE, SECTION_HEADER_STYLE } from "../styles"
 import { Options, Option, OptionsGroups } from "../reactSelectTypes";
 import EditExternalIdentifiers from "../EditExternalIdentifiers";
 import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";
+import { EditableExternalId, editableExternalIdsToExternalIds, EditablePublication, EditStatus, ValidationStatus } from "../PushPublicationModel";
 
 export interface EditPublicationProps {
     publication: EditablePublication;
@@ -57,7 +58,14 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
             ...this.state,
             editState: {
                 ...this.state.editState,
-                title
+                title: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID,
+                    },
+                    editValue: title,
+                    value: title
+                }
             }
         })
     }
@@ -67,7 +75,14 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
             ...this.state,
             editState: {
                 ...this.state.editState,
-                date
+                date: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID,
+                    },
+                    editValue: date,
+                    value: date
+                }
             }
         })
     }
@@ -77,7 +92,14 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
             ...this.state,
             editState: {
                 ...this.state.editState,
-                journal
+                journal: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID,
+                    },
+                    editValue: journal,
+                    value: journal
+                }
             }
         })
     }
@@ -87,7 +109,14 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
             ...this.state,
             editState: {
                 ...this.state.editState,
-                publicationType
+                publicationType: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID,
+                    },
+                    editValue: publicationType,
+                    value: publicationType
+                }
             }
         })
     }
@@ -97,7 +126,14 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
             ...this.state,
             editState: {
                 ...this.state.editState,
-                url
+                url: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID,
+                    },
+                    editValue: url,
+                    value: url
+                }
             }
         })
     }
@@ -295,14 +331,21 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
 
     renderExternalIds() {
         return <EditExternalIdentifiers
-            externalIds={this.state.editState.externalIds}
+            externalIds={this.state.editState.externalIds.editValue}
             workExternalIdentifierTypes={this.props.workExternalIdentifierTypes}
             workRelationshipIdentifiers={this.props.workRelationshipIdentifiers}
-            onChanged={(externalIds: Array<ExternalId>) => {
+            onChanged={(externalIds: Array<EditableExternalId>) => {
                 this.setState({
                     editState: {
                         ...this.state.editState,
-                        externalIds
+                        externalIds: {
+                            status: EditStatus.EDITED,
+                            validationState: {
+                                status: ValidationStatus.VALID,
+                            },
+                            editValue: externalIds,
+                            value: editableExternalIdsToExternalIds(externalIds)
+                        }
                     }
                 });
             }}
@@ -321,7 +364,14 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
             ...this.state,
             editState: {
                 ...this.state.editState,
-                publicationType
+                publicationType: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID,
+                    },
+                    editValue: publicationType,
+                    value: publicationType
+                }
             }
         })
     }
@@ -424,7 +474,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                         Title
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.editState.title}
+                        <input type="text" className="form-control" value={this.state.editState.title.editValue}
                             onInput={(e) => { this.changeTitle(e.currentTarget.value) }} />
                     </div>
                 </div>
@@ -433,7 +483,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                         Publisher
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.editState.journal}
+                        <input type="text" className="form-control" value={this.state.editState.journal.editValue}
                             onInput={(e) => { this.changeJournal(e.currentTarget.value) }} />
                     </div>
                 </div>
@@ -442,7 +492,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                         Date
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.editState.date}
+                        <input type="text" className="form-control" value={this.state.editState.date.editValue}
                             onInput={(e) => { this.changeDate(e.currentTarget.value) }} />
                     </div>
                 </div>
@@ -451,7 +501,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                         URL
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.editState.url}
+                        <input type="text" className="form-control" value={this.state.editState.url.editValue}
                             onInput={(e) => { this.changeURL(e.currentTarget.value) }} />
                     </div>
                 </div>
@@ -474,10 +524,10 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                         <span className="fa fa-trash" /> Confirm
                     </Button> */}
                     <div className="btn-group">
-                        <Button variant="primary" onClick={this.doSave.bind(this)}>
+                        <Button variant="primary" type="button" onClick={this.doSave.bind(this)}>
                             <span className="fa fa-pencil" /> Save
                         </Button>
-                        <Button variant="outline-danger" onClick={this.props.onClose}>
+                        <Button variant="outline-danger" type="button" onClick={this.props.onClose}>
                             <span className="fa fa-times-circle" /> Close
                         </Button>
                     </div>

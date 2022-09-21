@@ -1,4 +1,3 @@
-import { EditablePublication, ExternalId, Publication } from "apps/ORCIDLink/Model";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
 import { Button, Form } from "react-bootstrap";
@@ -6,6 +5,7 @@ import { ROW_HEADER } from "../styles";
 import styles from './EditPublication.module.css';
 import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";
 import EditExternalIdentifiers from "../EditExternalIdentifiers";
+import { EditableExternalId, editableExternalIdsToExternalIds, EditablePublication, EditStatus, initialEditableExternalId, ValidationStatus } from "../PushPublicationModel";
 
 const SECTION_HEADER_STYLE = {
     fontWeight: 'bold',
@@ -31,7 +31,7 @@ export interface EditPublicationProps {
     workExternalIdentifierTypes: WorkExternalIdentifierTypes;
     workRelationshipIdentifiers: WorkRelationshipIdentifiers;
     onClose: () => void;
-    onSave: (update: EditablePublication) => Promise<void>;
+    updatePublication: (update: EditablePublication) => Promise<void>;
 }
 
 interface EditPublicationState {
@@ -68,50 +68,80 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
 
     changeTitle(title: string) {
         this.setState({
-            ...this.state,
             editState: {
                 ...this.state.editState,
-                title
+                title: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID
+                    },
+                    editValue: title,
+                    value: title
+                }
             }
         })
     }
 
     changeDate(date: string) {
         this.setState({
-            ...this.state,
             editState: {
                 ...this.state.editState,
-                date
+                date: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID
+                    },
+                    editValue: date,
+                    value: date
+                }
             }
         })
     }
 
     changeJournal(journal: string) {
         this.setState({
-            ...this.state,
             editState: {
                 ...this.state.editState,
-                journal
+                journal: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID
+                    },
+                    editValue: journal,
+                    value: journal
+                }
             }
         })
     }
 
     changePublicationType(publicationType: string) {
         this.setState({
-            ...this.state,
             editState: {
                 ...this.state.editState,
-                publicationType
+                publicationType: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID
+                    },
+                    editValue: publicationType,
+                    value: publicationType
+                }
             }
         })
     }
 
     changeURL(url: string) {
         this.setState({
-            ...this.state,
             editState: {
                 ...this.state.editState,
-                url
+                url: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID
+                    },
+                    editValue: url,
+                    value: url
+                }
             }
         })
     }
@@ -127,70 +157,124 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
     // }
 
     changeExternalIdType(type: string, index: number) {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds[index].type = type;
+        const externalIds = this.state.editState.externalIds.editValue.slice();
+        externalIds[index].type = {
+            status: EditStatus.EDITED,
+            validationState: {
+                status: ValidationStatus.VALID
+            },
+            editValue: type,
+            value: type
+        }
 
         this.setState({
-            ...this.state,
             editState: {
                 ...this.state.editState,
-                externalIds
+                externalIds: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID
+                    },
+                    editValue: externalIds,
+                    value: editableExternalIdsToExternalIds(externalIds)
+                }
             }
         })
     }
 
     changeExternalIdValue(value: string, index: number) {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds[index].value = value;
+        const externalIds = this.state.editState.externalIds.editValue.slice();
+        externalIds[index].value = {
+            status: EditStatus.EDITED,
+            validationState: {
+                status: ValidationStatus.VALID
+            },
+            editValue: value,
+            value: value
+        }
 
         this.setState({
-            ...this.state,
             editState: {
                 ...this.state.editState,
-                externalIds
+                externalIds: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID
+                    },
+                    editValue: externalIds,
+                    value: editableExternalIdsToExternalIds(externalIds)
+                }
             }
         })
     }
 
-    changeExternalIdRelationship(value: string, index: number) {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds[index].relationship = value;
+    changeExternalIdRelationship(relationship: string, index: number) {
+        const externalIds = this.state.editState.externalIds.editValue.slice();
+        externalIds[index].relationship = {
+            status: EditStatus.EDITED,
+            validationState: {
+                status: ValidationStatus.VALID
+            },
+            editValue: relationship,
+            value: relationship
+        }
 
         this.setState({
-            ...this.state,
             editState: {
                 ...this.state.editState,
-                externalIds
+                externalIds: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID
+                    },
+                    editValue: externalIds,
+                    value: editableExternalIdsToExternalIds(externalIds)
+                }
             }
         })
     }
 
     changeExternalIdURL(url: string, index: number) {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds[index].url = url;
+        const externalIds = this.state.editState.externalIds.editValue.slice();
+        externalIds[index].url = {
+            status: EditStatus.EDITED,
+            validationState: {
+                status: ValidationStatus.VALID
+            },
+            editValue: url,
+            value: url
+        }
 
         this.setState({
             ...this.state,
             editState: {
                 ...this.state.editState,
-                externalIds
+                externalIds: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID
+                    },
+                    editValue: externalIds,
+                    value: editableExternalIdsToExternalIds(externalIds)
+                }
             }
         })
     }
 
     addExternalIdentifier() {
-        const externalIds = this.state.editState.externalIds.slice();
-        externalIds.push({
-            type: '',
-            relationship: '',
-            url: '',
-            value: ''
-        });
+        const externalIds = this.state.editState.externalIds.editValue.slice();
+        externalIds.push(initialEditableExternalId());
         this.setState({
-            ...this.state,
             editState: {
                 ...this.state.editState,
-                externalIds
+                externalIds: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID
+                    },
+                    editValue: externalIds,
+                    value: editableExternalIdsToExternalIds(externalIds)
+                }
             }
         })
     }
@@ -200,19 +284,26 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
         const update = this.state.editState;
 
         // Call the props function
-        this.props.onSave(update);
+        this.props.updatePublication(update);
     }
 
     renderExternalIds() {
         return <EditExternalIdentifiers
-            externalIds={this.state.editState.externalIds}
+            externalIds={this.state.editState.externalIds.editValue}
             workExternalIdentifierTypes={this.props.workExternalIdentifierTypes}
             workRelationshipIdentifiers={this.props.workRelationshipIdentifiers}
-            onChanged={(externalIds: Array<ExternalId>) => {
+            onChanged={(externalIds: Array<EditableExternalId>) => {
                 this.setState({
                     editState: {
                         ...this.state.editState,
-                        externalIds
+                        externalIds: {
+                            status: EditStatus.EDITED,
+                            validationState: {
+                                status: ValidationStatus.VALID
+                            },
+                            editValue: externalIds,
+                            value: editableExternalIdsToExternalIds(externalIds)
+                        }
                     }
                 });
             }}
@@ -227,7 +318,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                         Publication Type
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.editState.publicationType}
+                        <input type="text" className="form-control" value={this.state.editState.publicationType.editValue}
                             onInput={(e) => { this.changePublicationType(e.currentTarget.value) }} />
                     </div>
                 </div>
@@ -236,7 +327,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                         Title
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.editState.title}
+                        <input type="text" className="form-control" value={this.state.editState.title.editValue}
                             onInput={(e) => { this.changeTitle(e.currentTarget.value) }} />
                     </div>
                 </div>
@@ -245,7 +336,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                         Publisher
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.editState.journal}
+                        <input type="text" className="form-control" value={this.state.editState.journal.editValue}
                             onInput={(e) => { this.changeJournal(e.currentTarget.value) }} />
                     </div>
                 </div>
@@ -254,7 +345,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                         Date
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.editState.date}
+                        <input type="text" className="form-control" value={this.state.editState.date.editValue}
                             onInput={(e) => { this.changeDate(e.currentTarget.value) }} />
                     </div>
                 </div>
@@ -263,7 +354,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                         URL
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.editState.url}
+                        <input type="text" className="form-control" value={this.state.editState.url.editValue}
                             onInput={(e) => { this.changeURL(e.currentTarget.value) }} />
                     </div>
                 </div>

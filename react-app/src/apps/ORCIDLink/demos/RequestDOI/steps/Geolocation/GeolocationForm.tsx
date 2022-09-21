@@ -1,4 +1,4 @@
-import { GeolocationData, Location, LocationBoundingBox, LocationPoint, LocationPolygon, LocationType, Model } from "apps/ORCIDLink/Model";
+import { Model } from "apps/ORCIDLink/Model";
 
 import Well from "components/Well";
 import { Component } from "react";
@@ -6,6 +6,7 @@ import { Stack, Row, Col, Button, Form, Table } from "react-bootstrap";
 
 import LocationPointEditor from './LocationPointEditor/Controller';
 import BoundingBoxEditor from './BoundingBox/Controller';
+import { GeolocationData, LocationType, LocationPoint, LocationBoundingBox, Location } from "apps/ORCIDLink/ORCIDLinkClient";
 
 
 export interface GeolocationFormProps {

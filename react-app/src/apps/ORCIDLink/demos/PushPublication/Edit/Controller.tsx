@@ -3,14 +3,16 @@ import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import WorkForm from './EditPublication';
-import { EditablePublication, Model, Publication } from 'apps/ORCIDLink/Model';
+import { Publication } from 'apps/ORCIDLink/Model';
 import { workExternalIdentifierTypes, workRelationshipIdentifiers } from 'apps/ORCIDLink/data';
+import { PushPublicationModel, EditablePublication } from '../PushPublicationModel';
 
 
 export interface ControllerProps {
-    model: Model;
+    model: PushPublicationModel;
     putCode: string;
-    // setTitle: (title: string) => void;
+    setTitle: (title: string) => void;
+    updatePublication: (publication: EditablePublication) => Promise<void>;
     onClose: () => void;
 }
 
@@ -36,7 +38,7 @@ interface ControllerState {
 }
 
 export default class Controller extends Component<ControllerProps, ControllerState> {
-    model: Model;
+    model: PushPublicationModel;
     constructor(props: ControllerProps) {
         super(props);
         this.model = props.model;
@@ -54,17 +56,13 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         this.loadData();
     }
 
-
     componentDidUpdate(prevProps: ControllerProps, prevState: ControllerState) {
         if (prevProps.putCode !== this.props.putCode) {
             this.loadData();
         }
     }
 
-
     // Model interaction
-
-
 
     async syncWork(): Promise<void> {
         const work = await this.model.getEditableWork(this.props.putCode);
@@ -89,6 +87,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         try {
             await this.syncWork();
         } catch (ex) {
+            console.error(ex);
             if (ex instanceof Error) {
                 this.setState({
                     dataState: {
@@ -112,9 +111,6 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     }
 
 
-    async onSave(update: EditablePublication) {
-        const updatedWork = await this.model.saveWork(update);
-    }
 
     async onDelete(putCode: string) {
 
@@ -136,7 +132,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             publication={dataState.work}
             workExternalIdentifierTypes={workExternalIdentifierTypes}
             workRelationshipIdentifiers={workRelationshipIdentifiers}
-            onSave={this.onSave.bind(this)}
+            updatePublication={this.props.updatePublication}
             onClose={this.props.onClose} />
     }
 

@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { Accordion, Button } from 'react-bootstrap';
 import { renderORCIDIcon, renderScope } from '../common';
-import { ORCID_URL } from '../Model';
+import { ORCID_URL } from '../constants';
 import { LinkInfo } from './HomeController';
 import styles from './View.module.css';
 
@@ -107,16 +107,31 @@ export default class View extends Component<ViewProps> {
     }
 
     renderDemoLinks() {
+        const linkData = [{
+            url: "#orcidlink/demos/interstitial1",
+            label: 'Linking via Interstitial Page',
+            requiresLink: false
+        }, {
+            url: "#orcidlink/demos/doi",
+            label: 'Request DOI Form',
+            requiresLink: false
+        }, {
+            url: "#orcidlink/demos/push-publication",
+            label: 'Push DOI Publication to ORCID',
+            requiresLink: true
+        }];
+        const menu = linkData.map(({ url, label, requiresLink }, index) => {
+            if (requiresLink && this.props.link === null) {
+                return;
+            }
+            return <li key={index}>
+                <a href={url} key={index}>{label}</a>
+            </li>
+        })
         return <div style={{ marginTop: '1em' }}>
             <h3>Demos</h3>
             <ul>
-                <li>
-                    <a href="#orcidlink/demos/interstitial1">Linking via Interstitial Page</a>
-                </li>
-
-                <li>
-                    <a href="#orcidlink/demos/doi">Request DOI Form</a>
-                </li>
+                {menu}
             </ul>
         </div>
     }
@@ -252,7 +267,6 @@ export default class View extends Component<ViewProps> {
                             {this.renderDemoLinks()}
                         </div>
                     </div>
-
                 </div>
                 <div className={styles.col2}>
                     {this.renderLinkStatus()}

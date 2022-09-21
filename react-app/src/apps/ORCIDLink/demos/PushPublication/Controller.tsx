@@ -5,7 +5,8 @@ import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import PublicationForm from './PushPublicationForm';
-import { EditablePublication, Model, ORCIDProfile, Publication } from 'apps/ORCIDLink/Model';
+import { ORCIDProfile, Model } from 'apps/ORCIDLink/Model';
+import { EditablePublication, PushPublicationModel } from './PushPublicationModel';
 
 
 export interface PreFillFormControllerProps {
@@ -19,12 +20,9 @@ export enum LinkStatus {
     LINKED = 'LINKED'
 }
 
-
-
 export interface DataState {
     profile: ORCIDProfile
 }
-
 
 // export type LinkState = AsyncProcess<{ link: LinkInfo | null }, { message: string }>
 
@@ -33,9 +31,14 @@ interface PreFillFormControllerState {
 }
 
 export default class PreFillFormController extends Component<PreFillFormControllerProps, PreFillFormControllerState> {
-    model: Model
+    pushPublicationModel: PushPublicationModel
+    model: Model;
     constructor(props: PreFillFormControllerProps) {
         super(props);
+        this.pushPublicationModel = new PushPublicationModel({
+            config: this.props.config,
+            auth: this.props.auth
+        });
         this.model = new Model({
             config: this.props.config,
             auth: this.props.auth
@@ -48,7 +51,7 @@ export default class PreFillFormController extends Component<PreFillFormControll
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link Demo - Pre Fill a Form from Profile')
+        this.props.setTitle('ORCID® Link Demo - Push DOI Publication to ORCID Account')
         this.loadData();
     }
 
@@ -129,13 +132,46 @@ export default class PreFillFormController extends Component<PreFillFormControll
 
     }
 
-    async savePublication(publication: EditablePublication) {
+    async savePublication(updatedPublication: EditablePublication) {
         if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
             return;
         }
-        const publications = this.state.dataState.value.profile.publications.filter(({ putCode }) => {
-            return putCode !== publication.putCode;
+
+        const updatedWork = await this.pushPublicationModel.saveWork(updatedPublication);
+
+        const publications = this.state.dataState.value.profile.publications.map((publication) => {
+            if (publication.putCode === updatedPublication.putCode.value) {
+                return updatedWork;
+            }
+            return publication;
         });
+        this.setState({
+            dataState: {
+                ...this.state.dataState,
+                value: {
+                    ...this.state.dataState.value,
+                    profile: {
+                        ...this.state.dataState.value.profile,
+                        publications
+                    }
+                }
+            }
+        })
+    }
+
+    async createPublication(newPublication: EditablePublication) {
+        if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
+            return;
+        }
+        const updatedWork = await this.model.createWork(newPublication);
+
+        const publications = {
+            ...this.state.dataState.value.profile.publications,
+            updatedWork
+        }
+
+        console.log('creating?', newPublication, updatedWork, publications);
+
         this.setState({
             dataState: {
                 ...this.state.dataState,
@@ -162,7 +198,14 @@ export default class PreFillFormController extends Component<PreFillFormControll
     }
 
     renderSuccess(dataState: DataState) {
-        return <PublicationForm model={this.model} profile={dataState.profile} syncProfile={this.syncProfile.bind(this)} deletePublication={this.deletePublication.bind(this)} />
+        return <PublicationForm
+            model={this.pushPublicationModel}
+            profile={dataState.profile}
+            syncProfile={this.syncProfile.bind(this)}
+            setTitle={this.props.setTitle}
+            createPublication={this.createPublication.bind(this)}
+            updatePublication={this.savePublication.bind(this)}
+            deletePublication={this.deletePublication.bind(this)} />
     }
 
     render() {

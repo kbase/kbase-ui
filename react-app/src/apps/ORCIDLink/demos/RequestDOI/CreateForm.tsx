@@ -1,5 +1,3 @@
-import { DOIForm } from 'apps/ORCIDLink/Model';
-import ErrorMessage from 'components/ErrorMessage';
 import { Component } from 'react';
 import { Button } from 'react-bootstrap';
 

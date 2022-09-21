@@ -5,16 +5,16 @@ import { ObjectInfo, objectInfoToObject, WorkspaceInfo, workspaceInfoToObject } 
 import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
+import { SCOPE } from "./constants";
+import { EditablePublication } from "./demos/PushPublication/PushPublicationModel";
+import { DynamicServiceClient } from "./DynamicServiceClient";
+import { DOIForm, GetNameResult, ORCIDLinkServiceClient, Work, WorkUpdate } from "./ORCIDLinkClient";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
 
 const GET_PROFILE_PATH = 'get_profile';
 const IS_LINKED_PATH = 'is_linked';
 const GET_LINK_PATH = 'link';
-const GET_WORK_PATH = 'get_work';
-const SAVE_WORK_PATH = 'save_work';
-const CREATE_WORK_PATH = 'create_work';
-const DELETE_WORK_PATH = 'elete_work';
 
 const CREATE_LINKING_SESSION_PATH = 'create-linking-session';
 const START_LINKING_SESSION_PATH = 'start-linking-session';
@@ -31,7 +31,7 @@ const GET_NAME_PATH = 'get_name';
 const SAVE_DOI_APPLICATION_PATH = 'demos/save_doi_application';
 const GET_DOI_APPLICATION_PATH = 'demos/get_doi_application';
 
-const USE_DYNAMIC_SERVICE = true;
+const USE_DYNAMIC_SERVICE = false;
 
 // const GET_TEMP_LINK_RECORD_PATH = 'get-temp-link';
 
@@ -51,12 +51,6 @@ export interface LinkResult {
     link: LinkRecord | null;
 }
 
-// export interface TempLinkRecord {
-//     token: string;
-//     created_at: number;
-//     expires_at: number;
-//     orcid_auth: ORCIDAuth;
-// }
 
 export interface LinkingSessionInfo {
     session_id: string;
@@ -106,101 +100,18 @@ export interface ORCIDProfile {
     publications: Array<Publication>
 }
 
-export interface EditablePublication {
-    putCode: string;
-    publicationType: string;
-    title: string;
-    date: string;
-    journal: string;
-    url: string;
-    externalIds: Array<ExternalId>
-}
 
-export interface EditableExternalIds {
-    externalIds: Array<ExternalId>
-}
+
 
 export interface ReturnLink {
     url: string;
     label: string;
 }
 
-/*
-{
-            "orcid_auth": {
-                "access_token": "6882fc5b-1185-434f-a309-e364f21a3f9c",
-                "token_type": "bearer",
-                "refresh_token": "7cb48f8b-f685-4948-9443-2874b2fb2fd3",
-                "expires_in": 631138518,
-                "scope": "/read-limited openid /activities/update",
-                "name": "Erik Pearson",
-                "orcid": "0000-0003-4997-3076",
-                "id_token": "eyJraWQiOiJzYW5kYm94LW9yY2lkLW9yZy0zaHBnb3NsM2I2bGFwZW5oMWV3c2dkb2IzZmF3ZXBvaiIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoiSlJpVjVZVGNmSUdnV3ZuUkpsQklOQSIsImF1ZCI6IkFQUC1SQzNQTTNLU01NVjNHS1dTIiwic3ViIjoiMDAwMC0wMDAzLTQ5OTctMzA3NiIsImF1dGhfdGltZSI6MTY1OTAzMzMyOSwiYW1yIjoicHdkIiwiaXNzIjoiaHR0cHM6XC9cL3NhbmRib3gub3JjaWQub3JnIiwiZXhwIjoxNjU5MTE5NzMwLCJnaXZlbl9uYW1lIjoiRXJpayIsImlhdCI6MTY1OTAzMzMzMCwiZmFtaWx5X25hbWUiOiJQZWFyc29uIiwianRpIjoiMjJhOWRmOGYtN2E0ZC00N2RmLTk3NjItNzNkZDVjZjhmZWNkIn0.FaH1s2Wl6TV5I7y1AKNgt4w2lpYMXbDild4qd8Vnovg5l20oXc7HhgrwcpJj_nwJUGKe80PWetzD5tQ6Ayq-eUOnLMIEkLreCLCSjg2UiBiI5O0Y2fTu43dFKSBK6zmiYcbOSj6WeFC7-537OpF9d2oNEjqDREU_1eyXJ9GZFXS8apRGPgcqAGHq1nSH2c12MkFbg_IZPwUU0zsmrxLWCo7i_g_wc-GePMA9a2gu-kLaY-1kmQlvOm17GSaDoJR3dOMR2dOLuR6Zn8dcWv28xZi33jsrQcgLpSX6UsyAJyLdYV-JQNBGlbPKSd_7ab9mEMWoOtjYTPmONvDJbMcjPw"
-            },
-            "created_at": 1659033343893
-        }
-*/
-
-
-export interface NarrativeSelectionResult {
-    narrativeInfo: MinimalNarrativeInfo
-}
-
-export interface MinimalNarrativeInfo {
-    ref: string,
-    title: string
-}
-
-export interface Author {
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    emailAddress: string;
-    orcidId: string;
-    institution: string;
-}
 
 // ORCID Link step
 
-export interface ORCIDLinkResult {
-    orcidLink: {
-        orcidId: string | null
-    }
-}
 
-export type Citation = {
-    citation: string,
-    url?: string,
-    doi?: string | null
-}
-
-export interface AppCitations {
-    id: string;
-    title: string;
-    citations: Array<Citation>;
-}
-
-export interface NarrativeAppCitations {
-    release: Array<AppCitations>;
-    beta: Array<AppCitations>;
-    dev: Array<AppCitations>;
-}
-
-export interface Citations {
-    narrativeAppCitations: NarrativeAppCitations
-    markdownCitations: Array<Citation>
-    manualCitations: Array<Citation>
-}
-
-// In the end, all we can use for citations are
-// the DOI.
-export interface CitationResults {
-    citations: Array<string>
-}
-
-export const ORCID_URL = 'https://sandbox.orcid.org';
-
-export type SCOPE = '/read-limited' | '/activities/update' | 'openid';
 
 const SCOPE_USER = 'KBase';
 
@@ -282,137 +193,34 @@ export interface AppPublications {
     }>
 }
 
-export interface ContractNumbersResults {
-    contractNumbers: ContractNumbers
+
+
+
+export type Citation = {
+    citation: string,
+    url?: string,
+    doi?: string | null
 }
 
-export interface ContractNumbers {
-    doe: Array<string>;
-    other: Array<string>
+export interface AppCitations {
+    id: string;
+    title: string;
+    citations: Array<Citation>;
 }
 
-// GEOLOCATION
-
-export interface GeolocationDataResults {
-    geolocationData: GeolocationData;
+export interface NarrativeAppCitations {
+    release: Array<AppCitations>;
+    beta: Array<AppCitations>;
+    dev: Array<AppCitations>;
 }
 
-export enum LocationType {
-    POINT = 'POINT',
-    POLYGON = 'POLYGON',
-    BOUNDING_BOX = 'BOUNDING_BOX'
-}
-
-export interface LocationBase {
-    type: LocationType;
-    place: string;
-}
-
-export interface LatLong {
-    latitude: number;
-    longitude: number;
-}
-
-export interface LocationPoint extends LocationBase {
-    type: LocationType.POINT,
-    point: LatLong
-}
-
-export interface LocationPolygon extends LocationBase {
-    type: LocationType.POLYGON,
-    polygon: Array<LatLong>
-}
-
-export interface BoundingBox {
-    westLongitude: number,
-    southLatitude: number
-    eastLongitude: number,
-    northLatitude: number,
-}
-
-export interface LocationBoundingBox extends LocationBase {
-    type: LocationType.BOUNDING_BOX,
-    boundingBox: BoundingBox
-}
-
-export type Location =
-    LocationPoint |
-    LocationPolygon |
-    LocationBoundingBox;
-
-export interface GeolocationData {
-    locations: Array<Location>
-}
-
-// DESCRIPTION
-
-export interface DescriptionResults {
-    description: Description;
-}
-
-export interface Description {
-    keywords: Array<string>;
-    abstract: string
-}
-
-export interface ReviewAndSubmitData {
-
-}
-
-// DOI FORM
-
-
-export enum StepStatus {
-    NONE = 'NONE',
-    INCOMPLETE = 'INCOMPLETE',
-    COMPLETE = 'COMPLETE'
-}
-
-export interface StepStateBase {
-    status: StepStatus
-}
-
-export interface StepStateNone extends StepStateBase {
-    status: StepStatus.NONE;
-}
-
-export interface StepStateIncomplete<P> extends StepStateBase {
-    status: StepStatus.INCOMPLETE;
-    params: P;
-}
-
-export interface StepStateComplete<R> extends StepStateBase {
-    status: StepStatus.COMPLETE;
-    value: R;
-}
-
-export type StepState<P, R> =
-    StepStateNone |
-    StepStateIncomplete<P> |
-    StepStateComplete<R>;
-
-
-export type STEPS3 = [
-    StepState<null, NarrativeSelectionResult>,
-    StepState<null, ORCIDLinkResult>,
-    StepState<{ narrativeTitle: string }, { title: string, author: Author }>,
-    StepState<null, CitationResults>,
-    StepState<null, ContractNumbersResults>,
-    StepState<null, GeolocationDataResults>,
-    StepState<null, DescriptionResults>,
-    StepState<null, ReviewAndSubmitData>
-]
-
-export interface DOIForm {
-    formId: string;
-    steps: STEPS3
+export interface Citations {
+    narrativeAppCitations: NarrativeAppCitations
+    markdownCitations: Array<Citation>
+    manualCitations: Array<Citation>
 }
 
 
-export interface GetNameResult {
-    first_name: string;
-    last_name: string;
-}
 
 // This is why having canned clients, even if relatively simply wrappers around
 // GenericClient, is so nice:
@@ -443,10 +251,16 @@ export interface ORCIDLinkInfo {
 export class Model {
     config: Config;
     auth: AuthenticationStateAuthenticated;
+    orcidLinkClient: ORCIDLinkServiceClient;
 
     constructor({ config, auth }: { config: Config, auth: AuthenticationStateAuthenticated }) {
         this.config = config;
         this.auth = auth;
+        this.orcidLinkClient = new ORCIDLinkServiceClient({
+            url: 'https://ci.kbase.us/services/orcidlink',
+            timeout: 1000,
+            token: auth.authInfo.token
+        });
     }
 
 
@@ -466,95 +280,98 @@ export class Model {
         return `https://${this.config.deploy.services.urlBase}/services/orcidlink`;
     }
 
-    async dsGet(path: string, token: string) {
-        const baseURL = await this.serviceURL();
-        const url = `${baseURL}/${path}`
-        return fetch(url, {
-            headers: {
-                authorization: token,
-                accept: 'application/json'
-            }
-        });
-    }
+    // async dsGet(path: string, token: string) {
+    //     const baseURL = await this.serviceURL();
+    //     const url = `${baseURL}/${path}`
+    //     return fetch(url, {
+    //         headers: {
+    //             authorization: token,
+    //             accept: 'application/json'
+    //         }
+    //     });
+    // }
 
-    async dsDelete(path: string, token: string) {
-        const baseURL = await this.serviceURL();
-        const url = `${baseURL}/${path}`
-        return fetch(url, {
-            method: 'DELETE',
-            headers: {
-                authorization: token
-            }
-        });
-    }
+    // async dsDelete(path: string, token: string) {
+    //     const baseURL = await this.serviceURL();
+    //     const url = `${baseURL}/${path}`
+    //     return fetch(url, {
+    //         method: 'DELETE',
+    //         headers: {
+    //             authorization: token
+    //         }
+    //     });
+    // }
 
-    async dsPut(path: string, token: string, data: JSONObject) {
-        const baseURL = await this.serviceURL();
-        const url = `${baseURL}/${path}`
-        return fetch(url, {
-            method: 'PUT',
-            headers: {
-                authorization: token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-    }
+    // async dsPut(path: string, token: string, data: JSONObject) {
+    //     const baseURL = await this.serviceURL();
+    //     const url = `${baseURL}/${path}`
+    //     return fetch(url, {
+    //         method: 'PUT',
+    //         headers: {
+    //             authorization: token,
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify(data)
+    //     });
+    // }
 
-    async dsPost(path: string, token: string, data: JSONObject) {
-        const baseURL = await this.serviceURL();
-        const url = `${baseURL}/${path}`
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                authorization: token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-    }
+    // async dsPost(path: string, token: string, data: JSONObject) {
+    //     const baseURL = await this.serviceURL();
+    //     const url = `${baseURL}/${path}`
+    //     return fetch(url, {
+    //         method: 'POST',
+    //         headers: {
+    //             authorization: token,
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify(data)
+    //     });
+    // }
 
     async getProfile(): Promise<ORCIDProfile> {
-        const response = await this.dsGet(GET_PROFILE_PATH, this.auth.authInfo.token)
+        return this.orcidLinkClient.getProfile();
+        // const response = await this.dsGet(GET_PROFILE_PATH, this.auth.authInfo.token)
         // const response = await fetch(GET_PROFILE_URL, {
         //     headers: {
         //         authorization: this.auth.authInfo.token
         //     }
         // });
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
 
-        const result = JSON.parse(await response.text()) as GetProfileResult;
-        return result.result;
+        // const result = JSON.parse(await response.text()) as GetProfileResult;
+        // return result.result;
     }
 
     async isLinked(): Promise<boolean> {
-        const response = await this.dsGet(IS_LINKED_PATH, this.auth.authInfo.token)
+        return this.orcidLinkClient.isLinked();
+        // const response = await this.dsGet(IS_LINKED_PATH, this.auth.authInfo.token)
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
 
-        const result = JSON.parse(await response.text()) as { result: boolean };
-        return result.result;
+        // const result = JSON.parse(await response.text()) as { result: boolean };
+        // return result.result;
     }
 
     async getLink(): Promise<LinkRecord | null> {
-        const response = await this.dsGet(GET_LINK_PATH, this.auth.authInfo.token)
+        return this.orcidLinkClient.getLink();
+        // const response = await this.dsGet(GET_LINK_PATH, this.auth.authInfo.token)
         // const response = await fetch(`${GET_LINK_URL}`, {
         //     headers: {
         //         authorization: this.auth.authInfo.token
         //     }
         // });
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
 
-        const result = JSON.parse(await response.text()) as { link: LinkRecord | null };
-        return result.link;
+        // const result = JSON.parse(await response.text()) as { link: LinkRecord | null };
+        // return result.link;
 
 
         // const response = await fetch(LINK_URL, {
@@ -571,28 +388,29 @@ export class Model {
     }
 
     async deleteLink() {
-        const response = await this.dsDelete(REVOKE_PATH, this.auth.authInfo.token);
-        // const response = await fetch(REVOKE_URL, {
-        //     method: 'DELETE',
-        //     headers: {
-        //         authorization: this.props.auth.authInfo.token
-        //     }
-        // });
+        return this.orcidLinkClient.deleteLink();
+        // const response = await this.dsDelete(REVOKE_PATH, this.auth.authInfo.token);
+        // // const response = await fetch(REVOKE_URL, {
+        // //     method: 'DELETE',
+        // //     headers: {
+        // //         authorization: this.props.auth.authInfo.token
+        // //     }
+        // // });
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
 
-        // this.setState({
-        //     linkState: {
-        //         status: AsyncProcessStatus.SUCCESS,
-        //         value: { link: null }
-        //     }
-        // });
+        // // this.setState({
+        // //     linkState: {
+        // //         status: AsyncProcessStatus.SUCCESS,
+        // //         value: { link: null }
+        // //     }
+        // // });
 
-        // TODO: notification
+        // // TODO: notification
 
-        // return null;
+        // // return null;
     }
 
     /**
@@ -604,24 +422,24 @@ export class Model {
     async startLink({ returnLink, skipPrompt }: { returnLink?: ReturnLink, skipPrompt?: boolean }) {
         const baseURL = await this.serviceURL();
 
-        // First create a linking session.
-        const createURL = new URL(`${baseURL}/${CREATE_LINKING_SESSION_PATH}`);
-        const response = await fetch(createURL, {
-            method: 'POST',
-            headers: {
-                Authorization: this.auth.authInfo.token,
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            }
-        });
+        // // First create a linking session.
+        // const createURL = new URL(`${baseURL}/${CREATE_LINKING_SESSION_PATH}`);
+        // const response = await fetch(createURL, {
+        //     method: 'POST',
+        //     headers: {
+        //         Authorization: this.auth.authInfo.token,
+        //         Accept: 'application/json',
+        //         'Content-Type': 'application/json'
+        //     }
+        // });
 
-        // TODO handle errors.
+        // // TODO handle errors.
 
-        const result = await response.json() as unknown as {
-            session_id: string
-        };
+        // const result = await response.json() as unknown as {
+        //     session_id: string
+        // };
 
-        const sessionId = result.session_id;
+        const { session_id: sessionId } = await this.orcidLinkClient.createLinkingSession();
 
         // Then redirect the browser to start the oauth process
         const startURL = new URL(`${baseURL}/${START_LINKING_SESSION_PATH}`);
@@ -637,62 +455,65 @@ export class Model {
 
 
     async getWork(putCode: string): Promise<Publication> {
-        const response = await this.dsGet(`${GET_WORK_PATH}/${putCode}`, this.auth.authInfo.token)
-        // const response = await fetch(`${GET_WORK_URL}/${putCode}`, {
-        //     headers: {
-        //         authorization: this.auth.authInfo.token
-        //     }
-        // });
+        return this.orcidLinkClient.getWork(putCode);
+        // const response = await this.dsGet(`${GET_WORK_PATH}/${putCode}`, this.auth.authInfo.token)
+        // // const response = await fetch(`${GET_WORK_URL}/${putCode}`, {
+        // //     headers: {
+        // //         authorization: this.auth.authInfo.token
+        // //     }
+        // // });
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
 
-        const result = JSON.parse(await response.text()) as { result: Publication };
-        return result.result;
+        // const result = JSON.parse(await response.text()) as { result: Publication };
+        // return result.result;
     }
 
-    async saveWork(work: EditablePublication): Promise<Publication> {
-        const temp = {
-            putCode: work.putCode,
-            title: work.title,
-            date: work.date,
-            publicationType: work.publicationType,
-            journal: work.journal,
-            url: work.url,
-            externalIds: work.externalIds
-        } as unknown as JSONObject;
+    // async saveWork(work: EditablePublication): Promise<Publication> {
+    //     const temp: WorkUpdate = {
+    //         putCode: work.putCode.value,
+    //         title: work.title.value,
+    //         date: work.date.value,
+    //         publicationType: work.publicationType.value,
+    //         journal: work.journal.value,
+    //         url: work.url.value,
+    //         externalIds: work.externalIds.value
+    //     };
 
-        const response = await this.dsPut(SAVE_WORK_PATH, this.auth.authInfo.token, temp)
+    //     return this.orcidLinkClient.saveWork(temp);
 
-        // const response = await fetch(SAVE_WORK_URL, {
-        //     method: 'PUT',
-        //     headers: {
-        //         Authorization: this.auth.authInfo.token,
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(temp)
-        // });
+    //     // const response = await this.dsPut(SAVE_WORK_PATH, this.auth.authInfo.token, temp)
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+    //     // // const response = await fetch(SAVE_WORK_URL, {
+    //     // //     method: 'PUT',
+    //     // //     headers: {
+    //     // //         Authorization: this.auth.authInfo.token,
+    //     // //         'Content-Type': 'application/json'
+    //     // //     },
+    //     // //     body: JSON.stringify(temp)
+    //     // // });
 
-        const result = JSON.parse(await response.text()) as { result: Publication };
-        return result.result;
-    }
+    //     // if (response.status !== 200) {
+    //     //     throw new Error(`Unexpected response: ${response.status}`);
+    //     // }
+
+    //     // const result = JSON.parse(await response.text()) as { result: Publication };
+    //     // return result.result;
+    // }
 
     async createWork(work: EditablePublication): Promise<Publication> {
-        const temp = {
-            title: work.title,
-            date: work.date,
-            publicationType: work.publicationType,
-            journal: work.journal,
-            url: work.url,
-            externalIds: work.externalIds
-        } as unknown as JSONObject;
+        const temp: Work = {
+            title: work.title.value,
+            date: work.date.value,
+            publicationType: work.publicationType.value,
+            journal: work.journal.value,
+            url: work.url.value,
+            externalIds: work.externalIds.value
+        };
 
-        const response = await this.dsPost(CREATE_WORK_PATH, this.auth.authInfo.token, temp)
+        return this.orcidLinkClient.createWork(temp);
 
         // const response = await fetch(CREATE_WORK_URL, {
         //     method: 'POST',
@@ -703,16 +524,17 @@ export class Model {
         //     body: JSON.stringify(temp)
         // });
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
 
-        const result = JSON.parse(await response.text()) as { result: Publication };
-        return result.result;
+        // const result = JSON.parse(await response.text()) as { result: Publication };
+        // return result.result;
     }
 
     async deleteWork(putCode: string): Promise<void> {
-        const response = await this.dsDelete(`${DELETE_WORK_PATH}/${putCode}`, this.auth.authInfo.token)
+        return this.orcidLinkClient.deleteWork(putCode);
+        // const response = await this.dsDelete(`${DELETE_WORK_PATH}/${putCode}`, this.auth.authInfo.token)
         // const response = await fetch(`${DELETE_WORK_URL}/${putCode}`, {
         //     method: 'DELETE',
         //     headers: {
@@ -720,25 +542,25 @@ export class Model {
         //         'Content-Type': 'application/json'
         //     }
         // });
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
-        return;
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
+        // return;
     }
 
-    publicationToEditablePublication(publication: Publication): EditablePublication {
-        const { putCode, publicationType, title, date, journal, url, externalIds } = publication;
-        return {
-            putCode,
-            publicationType, title, date, journal: journal || '', url: url || '',
-            externalIds: externalIds || []
-        }
-    }
+    // publicationToEditablePublication(publication: Publication): EditablePublication {
+    //     const { putCode, publicationType, title, date, journal, url, externalIds } = publication;
+    //     return {
+    //         putCode,
+    //         publicationType, title, date, journal: journal || '', url: url || '',
+    //         externalIds: externalIds || []
+    //     }
+    // }
 
-    async getEditableWork(putCode: string): Promise<EditablePublication> {
-        const work = await this.getWork(putCode);
-        return this.publicationToEditablePublication(work);
-    }
+    // async getEditableWork(putCode: string): Promise<EditablePublication> {
+    //     const work = await this.getWork(putCode);
+    //     return this.publicationToEditablePublication(work);
+    // }
 
     async fetchNarratives({ from, to }: { from: number, to: number }): Promise<Array<NarrativeInfo>> {
         const client = new NarrativeService({
@@ -776,19 +598,20 @@ export class Model {
     }
 
     async getName(): Promise<GetNameResult> {
-        const response = await this.dsGet(GET_NAME_PATH, this.auth.authInfo.token);
-        // const response = await fetch(GET_NAME_URL, {
-        //     headers: {
-        //         authorization: this.props.auth.authInfo.token
-        //     }
-        // });
+        return this.orcidLinkClient.getName();
+        // const response = await this.dsGet(GET_NAME_PATH, this.auth.authInfo.token);
+        // // const response = await fetch(GET_NAME_URL, {
+        // //     headers: {
+        // //         authorization: this.props.auth.authInfo.token
+        // //     }
+        // // });
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
 
-        const result = JSON.parse(await response.text()) as { result: GetNameResult };
-        return result.result;
+        // const result = JSON.parse(await response.text()) as { result: GetNameResult };
+        // return result.result;
     }
 
     async getNarrativeCitations(narrativeObjectRef: string): Promise<{
@@ -976,31 +799,33 @@ export class Model {
     }
 
     async saveDOIForm(doiForm: DOIForm): Promise<boolean> {
-        const response = await this.dsPost(SAVE_DOI_APPLICATION_PATH, this.auth.authInfo.token, doiForm as unknown as JSONObject)
+        return this.orcidLinkClient.saveDOIApplication(doiForm);
+        // const response = await this.dsPost(SAVE_DOI_APPLICATION_PATH, this.auth.authInfo.token, doiForm as unknown as JSONObject)
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
 
-        const result = JSON.parse(await response.text()) as { result: boolean };
-        return result.result;
+        // const result = JSON.parse(await response.text()) as { result: boolean };
+        // return result.result;
     }
 
     async getDOIForm(formId: string): Promise<DOIForm> {
-        const response = await this.dsGet(`${GET_DOI_APPLICATION_PATH}/${formId}`, this.auth.authInfo.token)
+        return this.orcidLinkClient.getDOIApplication(formId);
+        // const response = await this.dsGet(`${GET_DOI_APPLICATION_PATH}/${formId}`, this.auth.authInfo.token)
 
-        // const response = await fetch(`${GET_DOI_APPLICATION_URL}/${formId}`, {
-        //     headers: {
-        //         authorization: this.auth.authInfo.token
-        //     }
-        // });
+        // // const response = await fetch(`${GET_DOI_APPLICATION_URL}/${formId}`, {
+        // //     headers: {
+        // //         authorization: this.auth.authInfo.token
+        // //     }
+        // // });
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
 
-        const result = JSON.parse(await response.text()) as { result: DOIForm };
-        return result.result;
+        // const result = JSON.parse(await response.text()) as { result: DOIForm };
+        // return result.result;
     }
 
     // async extractCitationsFromNarrativeApps(objectInfo: ObjectInfo) {
@@ -1046,28 +871,31 @@ export class Model {
 
 
     async fetchLinkingSessionInfo(sessionId: string) {
-        const response = await this.dsGet(`${GET_LINKING_SESSION_INFO_PATH}/${sessionId}`, this.auth.authInfo.token)
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        return this.orcidLinkClient.getLinkingSessionInfo(sessionId);
+        // const response = await this.dsGet(`${GET_LINKING_SESSION_INFO_PATH}/${sessionId}`, this.auth.authInfo.token)
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
 
-        const rawResult = await response.text();
-        return JSON.parse(rawResult);
+        // const rawResult = await response.text();
+        // return JSON.parse(rawResult);
     }
 
     async confirmLink(token: string) {
-        const response = await this.dsGet(`${FINISH_LINKING_SESSION_PATH}/${token}`, this.auth.authInfo.token);
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        return this.orcidLinkClient.finishLink(token);
+        // const response = await this.dsGet(`${FINISH_LINKING_SESSION_PATH}/${token}`, this.auth.authInfo.token);
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
     }
 
     async cancelLink(token: string) {
-        const response = await this.dsGet(`${CANCEL_LINKING_SESSION_PATH}/${token}`, this.auth.authInfo.token);
+        return this.orcidLinkClient.cancelLink(token);
+        // const response = await this.dsGet(`${CANCEL_LINKING_SESSION_PATH}/${token}`, this.auth.authInfo.token);
 
-        if (response.status !== 200) {
-            throw new Error(`Unexpected response: ${response.status}`);
-        }
+        // if (response.status !== 200) {
+        //     throw new Error(`Unexpected response: ${response.status}`);
+        // }
     }
 
 

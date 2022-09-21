@@ -1,4 +1,4 @@
-import { Description } from "apps/ORCIDLink/Model";
+import { Description } from "apps/ORCIDLink/ORCIDLinkClient";
 import Empty from "components/Empty";
 import { Component } from "react";
 import { Stack, Row, Col, Button, Form, FormControl, FormGroup } from "react-bootstrap";

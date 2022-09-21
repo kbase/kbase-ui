@@ -1,10 +1,10 @@
 import { renderORCIDIcon } from "apps/ORCIDLink/common";
-import { Affiliation, ORCIDProfile, ORCID_URL } from "apps/ORCIDLink/Model";
+import { ORCID_URL } from "apps/ORCIDLink/constants";
+import { ORCIDProfile } from "apps/ORCIDLink/Model";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
 import { Button, Form } from "react-bootstrap";
 import styles from './PreFillForm.module.css';
-import { DataState } from './PreFillFormController';
 
 export interface PreFillFormProps {
     profile: ORCIDProfile;
@@ -186,7 +186,7 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
                 DEMO: Pre Fill a Form from Profile
             </h2>
             <p>
-                <a href="/#orcidlink">Back</a>
+                <Button variant="secondary" href="/#orcidlink"><span className="fa fa-arrow-left" /> Back</Button>
             </p>
             <p>
                 This is a demonstration of using a link to ORCID to pre-fill (or fill afterwards) a form using the

@@ -2,8 +2,9 @@ import { Component } from 'react';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import { MinimalNarrativeInfo, Model, NarrativeInfo } from 'apps/ORCIDLink/Model';
+import { Model, NarrativeInfo } from 'apps/ORCIDLink/Model';
 import SelectNarrative from './SelectNarrative';
+import { MinimalNarrativeInfo } from 'apps/ORCIDLink/ORCIDLinkClient';
 
 export interface SelectNarrativeControllerProps {
     model: Model;
