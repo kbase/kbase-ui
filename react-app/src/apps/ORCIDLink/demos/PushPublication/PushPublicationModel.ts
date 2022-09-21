@@ -357,8 +357,15 @@ export class PushPublicationModel {
         this.model = new Model({
             config, auth
         });
+        // this.orcidLinkClient = new ORCIDLinkServiceClient({
+        //     isDynamicService: false,
+        //     url: 'https://ci.kbase.us/services/orcidlink',
+        //     timeout: 1000,
+        //     token: auth.authInfo.token
+        // });
         this.orcidLinkClient = new ORCIDLinkServiceClient({
-            url: 'https://ci.kbase.us/services/orcidlink',
+            isDynamicService: true,
+            url: this.config.services.ServiceWizard.url,
             timeout: 1000,
             token: auth.authInfo.token
         });

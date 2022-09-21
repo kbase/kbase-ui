@@ -247,3 +247,98 @@ export abstract class DynamicServiceClient extends ServiceClientBase {
         return moduleInfo.url;
     }
 }
+
+export interface MultiServiceClientParams extends ServiceClientParams {
+    version?: string;
+    isDynamicService: boolean;
+}
+
+// export enum ServiceClientType {
+//     CORE = "CORE",
+//     DYNAMIC="DYNAMIC"
+// }
+
+// export interface ServiceClientParamsBase {
+//     type: ServiceClientType
+// }
+
+// export interface ServiceClientCoreParams extends ServiceClientBase {
+//     type: ServiceClientType.CORE
+// }
+
+// export interface ServiceClientDynamicParams extends ServiceClientBase {
+//     type: ServiceClientType.DYNAMIC;
+//     version: string | null;
+// }
+
+// export type MultiServiceClientParams = ServiceClientCoreParams | ServiceClientDynamicParams;
+
+// export function getServiceClient(params: MultiServiceClientParams): ServiceClient {
+//     switch (params.type) {
+//         case ServiceClientType.CORE:
+//             return new ServiceClient(params);
+//     }
+// }
+
+
+export abstract class MultiServiceClient extends ServiceClientBase {
+    serviceDiscoveryModule: string = 'ServiceWizard';
+    version: string | null;
+    isDynamicService: boolean;
+
+    constructor(params: MultiServiceClientParams) {
+        super(params);
+        const { version, isDynamicService } = params;
+        this.isDynamicService = isDynamicService;
+
+        this.version = version || null;
+        if (this.version === 'auto') {
+            this.version = null;
+        }
+    }
+
+    private moduleId() {
+        let moduleId;
+        if (!this.version) {
+            moduleId = this.module + ':auto';
+        } else {
+            moduleId = this.module + ':' + this.version;
+        }
+        return moduleId;
+    }
+
+    private getCached(fetcher: () => Promise<ServiceStatus>) {
+        return moduleCache.getItemWithWait({
+            id: this.moduleId(),
+            fetcher: fetcher,
+        });
+    }
+
+    // setCached(value: any) {
+    //     moduleCache.setItem(this.moduleId(), value);
+    // }
+
+    // TODO: Promise<any> -> Promise<ServiceStatusResult>
+    protected async getUrl(): Promise<string> {
+        if (this.isDynamicService) {
+            const moduleInfo = await this.getCached(
+                async (): Promise<ServiceStatus> => {
+                    const client = new ServiceWizardClient({
+                        url: this.url,
+                        token: this.token,
+                        timeout: this.timeout,
+                    });
+                    // NB wrapped in promise.resolve because the promise we have
+                    // here is bluebird, which supports cancellation, which we need.
+                    const status = await client.get_service_status({
+                        module_name: this.module,
+                        version: this.version,
+                    });
+                    return status;
+                }
+            );
+            return moduleInfo.url;
+        }
+        return this.url;
+    }
+}

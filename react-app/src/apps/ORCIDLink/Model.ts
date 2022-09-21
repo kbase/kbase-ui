@@ -7,31 +7,12 @@ import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
 import { SCOPE } from "./constants";
 import { EditablePublication } from "./demos/PushPublication/PushPublicationModel";
-import { DynamicServiceClient } from "./DynamicServiceClient";
 import { DOIForm, GetNameResult, ORCIDLinkServiceClient, Work, WorkUpdate } from "./ORCIDLinkClient";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
 
-const GET_PROFILE_PATH = 'get_profile';
-const IS_LINKED_PATH = 'is_linked';
-const GET_LINK_PATH = 'link';
-
-const CREATE_LINKING_SESSION_PATH = 'create-linking-session';
 const START_LINKING_SESSION_PATH = 'start-linking-session';
-const FINISH_LINKING_SESSION_PATH = 'finish-linking-session';
-const CANCEL_LINKING_SESSION_PATH = 'cancel-linking-session';
-const GET_LINKING_SESSION_INFO_PATH = 'get-linking-session-info';
-
-
-const LINK_PATH = 'link';
-const REVOKE_PATH = 'revoke';
-const GET_NAME_PATH = 'get_name';
-
-
-const SAVE_DOI_APPLICATION_PATH = 'demos/save_doi_application';
-const GET_DOI_APPLICATION_PATH = 'demos/get_doi_application';
-
-const USE_DYNAMIC_SERVICE = false;
+const USE_DYNAMIC_SERVICE = true;
 
 // const GET_TEMP_LINK_RECORD_PATH = 'get-temp-link';
 
@@ -256,8 +237,15 @@ export class Model {
     constructor({ config, auth }: { config: Config, auth: AuthenticationStateAuthenticated }) {
         this.config = config;
         this.auth = auth;
+        // this.orcidLinkClient = new ORCIDLinkServiceClient({
+        //     isDynamicService: false,
+        //     url: 'https://ci.kbase.us/services/orcidlink',
+        //     timeout: 1000,
+        //     token: auth.authInfo.token
+        // });
         this.orcidLinkClient = new ORCIDLinkServiceClient({
-            url: 'https://ci.kbase.us/services/orcidlink',
+            isDynamicService: true,
+            url: this.config.services.ServiceWizard.url,
             timeout: 1000,
             token: auth.authInfo.token
         });

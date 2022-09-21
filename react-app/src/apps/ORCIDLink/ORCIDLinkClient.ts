@@ -1,5 +1,5 @@
 import { toJSON } from "lib/kb_lib/jsonLike";
-import { ServiceClient } from "./DynamicServiceClient";
+import { ServiceClient, DynamicServiceClient, MultiServiceClient } from "./DynamicServiceClient";
 import { ExternalId, LinkingSessionInfo, LinkRecord, ORCIDProfile, Publication } from "./Model";
 
 
@@ -209,7 +209,7 @@ export interface DOIForm {
 }
 
 
-export class ORCIDLinkServiceClient extends ServiceClient {
+export class ORCIDLinkServiceClient extends MultiServiceClient {
     module = 'ORCIDLink';
 
     async getProfile(): Promise<ORCIDProfile> {
