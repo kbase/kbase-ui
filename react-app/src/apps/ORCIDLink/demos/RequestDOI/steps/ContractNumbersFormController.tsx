@@ -8,6 +8,7 @@ import { ContractNumbers } from 'apps/ORCIDLink/ORCIDLinkClient';
 
 export interface ContractNumbersFormControllerProps {
     model: Model;
+    setTitle: (title: string) => void;
     onDone: (contractNumbers: ContractNumbers) => void;
 }
 
@@ -33,9 +34,9 @@ export default class ContractNumbersFormController extends Component<ContractNum
         }
     }
 
-    // componentDidMount() {
-    //     this.loadData();
-    // }
+    componentDidMount() {
+        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 5: Contract Numbers');
+    }
 
     // Actions
 

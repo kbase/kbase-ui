@@ -1,17 +1,17 @@
-import { Model, ORCIDProfile, Publication } from "apps/ORCIDLink/Model";
+import { renderORCIDIcon } from "apps/ORCIDLink/common";
+import { ORCID_URL } from "apps/ORCIDLink/constants";
+import { ORCIDProfile, Publication } from "apps/ORCIDLink/Model";
 import AlertMessage from "components/AlertMessage";
 import ErrorAlert from "components/ErrorAlert";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
-import { Alert, Button, } from "react-bootstrap";
+import { Accordion, Alert, Button } from "react-bootstrap";
 import AddNewPublication from "./Add/Controller";
 import DeletePublication from "./DeletePublication";
 import EditPublication from "./Edit/Controller";
-import ViewPublication from "./ViewPublication";
 import styles from './PushPublicationForm.module.css';
-import { renderORCIDIcon } from "apps/ORCIDLink/common";
-import { ORCID_URL } from "apps/ORCIDLink/constants";
 import { EditablePublication, PushPublicationModel } from "./PushPublicationModel";
+import ViewPublication from "./ViewPublication";
 
 export interface PushPublicationFormProps {
     profile: ORCIDProfile;
@@ -264,7 +264,7 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
                 <td>{button}</td>
             </tr>
         });
-        return <table className="table table-bordered">
+        return <table className="table table-bordered mt-3">
             <thead>
                 <tr>
                     <th>Title</th>
@@ -296,25 +296,49 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
                 DEMO: Push Publication to ORCID Activity Record
             </h2>
             <p>
-                <Button variant="secondary" href="/#orcidlink"><span className="fa fa-arrow-left" /> Back</Button>
+                <Button variant="secondary" href="/#orcidlink/demos"><span className="fa fa-mail-reply" /> Back</Button>
             </p>
             <p>
                 This is a demonstration of using form at KBase to push a Narrative publication to ORCID.
             </p>
-            <p>
-                Here are some things to do:
-            </p>
-            <ul>
-                <li>
-                    Click the <b>Add Publication</b> button to add a publication to your ORCID profile
-                </li>
-                <li>
-                    Click the <b>View</b> button to view the given profile
-                </li>
-                <li>
-                    View {this.renderORCIDLink("your profile")} to confirm that publications are the same as here
-                </li>
-            </ul>
+
+            <Accordion>
+                <Accordion.Item eventKey="0">
+                    <Accordion.Header>
+                        Things to Do
+                    </Accordion.Header>
+                    <Accordion.Body>
+                        <ul>
+                            <li>
+                                Click the <b>Add Publication</b> button to add a publication (work) to your ORCID profile
+                            </li>
+                            <li>
+                                Click the <b>Edit</b> button to edit the given publication
+                            </li>
+                            <li>
+                                Click the <b>View</b> button to view the given publication
+                            </li>
+                            <li>
+                                View {this.renderORCIDLink("your profile")} to confirm that publications are the same as here
+                            </li>
+                        </ul>
+                    </Accordion.Body>
+                </Accordion.Item>
+                <Accordion.Item eventKey="1">
+                    <Accordion.Header>
+                        Why are some view only?
+                    </Accordion.Header>
+                    <Accordion.Body>
+                        <p>
+                            Only publications (works) created by this app are editable by it. Those created
+                            by other means, such as directly on the ORCID site, are not.
+                        </p>
+                        <p>
+                            Conversely, those created by this app are not editable on the ORCID site!
+                        </p>
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
         </div>
     }
 
@@ -325,13 +349,10 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
     }
 
     renderEditAreaNew(editArea: EditAreaNew) {
-        return <div>
-            <h2>Add New Publication Record</h2>
-            <AddNewPublication
-                setTitle={this.props.setTitle}
-                createPublication={this.props.createPublication}
-                onClose={this.onDone.bind(this)} />
-        </div>
+        return <AddNewPublication
+            setTitle={this.props.setTitle}
+            createPublication={this.props.createPublication}
+            onClose={this.onDone.bind(this)} />
     }
 
     async onSave(update: EditablePublication) {
@@ -343,15 +364,12 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
     }
 
     renderEditAreaUpdate(editArea: EditAreaUpdate) {
-        return <div>
-            <h2>Edit Publication Record</h2>
-            <EditPublication
-                model={this.props.model}
-                onClose={this.onDone.bind(this)}
-                setTitle={this.props.setTitle}
-                updatePublication={this.props.updatePublication}
-                putCode={editArea.publication.putCode} />
-        </div>
+        return <EditPublication
+            model={this.props.model}
+            onClose={this.onDone.bind(this)}
+            setTitle={this.props.setTitle}
+            updatePublication={this.props.updatePublication}
+            putCode={editArea.publication.putCode} />
     }
 
     onConfirmDelete() {
@@ -454,11 +472,10 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
             <div className="flex-row">
                 <div className="flex-col">
                     {this.renderIntro()}
-                    <h4>New Publication</h4>
+                    <h4 style={{ marginTop: '2em' }}>Publications</h4>
                     <div className="button-toolbar">
                         <Button variant="primary" onClick={() => { this.onAdd(); }} ><span className="fa fa-plus-circle" /> Add Publication</Button>
                     </div>
-                    <h4 style={{ marginTop: '2em' }}>Existing Publications</h4>
                     {this.renderPublications()}
                 </div>
                 <div className="flex-col">

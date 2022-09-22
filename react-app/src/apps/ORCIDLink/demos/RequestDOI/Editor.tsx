@@ -13,7 +13,10 @@ import DescriptionController from './steps/Description/Controller';
 import ReviewAndSubmitController from './steps/ReviewAndSubmitController';
 import CreateForm from './CreateForm';
 import { ORCIDLinkState } from './EditorController';
-import { DOIForm, STEPS3, StepStatus, MinimalNarrativeInfo, Author, CitationResults, ContractNumbers, GeolocationData, Description, ReviewAndSubmitData } from 'apps/ORCIDLink/ORCIDLinkClient';
+import {
+    DOIForm, STEPS3, StepStatus, MinimalNarrativeInfo, Author,
+    CitationResults, ContractNumbers, GeolocationData, Description, ReviewAndSubmitData
+} from 'apps/ORCIDLink/ORCIDLinkClient';
 
 
 export interface EditorProps {
@@ -21,6 +24,7 @@ export interface EditorProps {
     model: Model;
     process?: JSONObject;
     doiForm: DOIForm;
+    setTitle: (title: string) => void;
 }
 interface EditorState {
     doiForm: DOIForm
@@ -55,7 +59,7 @@ export default class Editor extends Component<EditorProps, EditorState> {
         // TODO: move into controller and pass as param
         try {
             this.props.model.saveDOIForm({
-                formId: this.state.doiForm.formId,
+                form_id: this.state.doiForm.form_id,
                 steps
             });
         } catch (ex) {
@@ -74,40 +78,43 @@ export default class Editor extends Component<EditorProps, EditorState> {
             case StepStatus.NONE:
                 return this.renderStepPendingTitle(1, 'Select Narrative');
             case StepStatus.INCOMPLETE:
+
                 return <div>
                     {this.renderStepTitle(1, 'Select Narrative')}
-                    <SelectNarrativeController model={this.props.model} onDone={(narrativeInfo: MinimalNarrativeInfo) => {
-                        this.syncViewState([
-                            {
-                                ...this.state.doiForm.steps[0],
-                                status: StepStatus.COMPLETE,
-                                value: { narrativeInfo }
-                            },
-                            {
-                                ...this.state.doiForm.steps[1],
-                                status: StepStatus.INCOMPLETE,
-                                params: null
-                            },
-                            {
-                                status: StepStatus.NONE,
-                            },
-                            {
-                                status: StepStatus.NONE,
-                            },
-                            {
-                                status: StepStatus.NONE,
-                            },
-                            {
-                                status: StepStatus.NONE,
-                            },
-                            {
-                                status: StepStatus.NONE,
-                            },
-                            {
-                                status: StepStatus.NONE,
-                            }
-                        ])
-                    }} />
+                    <SelectNarrativeController model={this.props.model}
+                        setTitle={this.props.setTitle}
+                        onDone={(narrativeInfo: MinimalNarrativeInfo) => {
+                            this.syncViewState([
+                                {
+                                    ...this.state.doiForm.steps[0],
+                                    status: StepStatus.COMPLETE,
+                                    value: { narrativeInfo }
+                                },
+                                {
+                                    ...this.state.doiForm.steps[1],
+                                    status: StepStatus.INCOMPLETE,
+                                    params: null
+                                },
+                                {
+                                    status: StepStatus.NONE,
+                                },
+                                {
+                                    status: StepStatus.NONE,
+                                },
+                                {
+                                    status: StepStatus.NONE,
+                                },
+                                {
+                                    status: StepStatus.NONE,
+                                },
+                                {
+                                    status: StepStatus.NONE,
+                                },
+                                {
+                                    status: StepStatus.NONE,
+                                }
+                            ])
+                        }} />
                 </div>
             case StepStatus.COMPLETE:
                 return this.renderStepDoneTitle(1, 'Select Narrative');
@@ -125,6 +132,7 @@ export default class Editor extends Component<EditorProps, EditorState> {
                     {this.renderStepTitle(stepNumber, title)}
                     <ORCIDLink model={this.props.model}
                         stepsState={JSON.stringify(this.state.doiForm.steps)}
+                        setTitle={this.props.setTitle}
                         onDone={(orcidId: string | null) => {
                             if (this.state.doiForm.steps[0].status !== StepStatus.COMPLETE) {
                                 return;
@@ -178,6 +186,7 @@ export default class Editor extends Component<EditorProps, EditorState> {
                     {this.renderStepTitle(stepNumber, title)}
                     <AuthorsStep
                         model={this.props.model}
+                        setTitle={this.props.setTitle}
                         narrativeTitle={step.params.narrativeTitle}
                         onDone={(title: string, author: Author) => {
                             this.syncViewState([
@@ -227,6 +236,7 @@ export default class Editor extends Component<EditorProps, EditorState> {
                     {this.renderStepTitle(stepNumber, title)}
                     <CitationsStep
                         model={this.props.model}
+                        setTitle={this.props.setTitle}
                         narrativeObjectRef={this.state.doiForm.steps[0].value.narrativeInfo.ref}
                         onDone={(citations: CitationResults) => {
                             this.syncViewState([
@@ -272,6 +282,7 @@ export default class Editor extends Component<EditorProps, EditorState> {
                     {this.renderStepTitle(stepNumber, title)}
                     <ContractNumbersFormController
                         model={this.props.model}
+                        setTitle={this.props.setTitle}
                         onDone={(contractNumbers: ContractNumbers) => {
                             this.syncViewState([
                                 this.state.doiForm.steps[0],
@@ -313,6 +324,7 @@ export default class Editor extends Component<EditorProps, EditorState> {
                     {this.renderStepTitle(stepNumber, title)}
                     <GeolocationController
                         model={this.props.model}
+                        setTitle={this.props.setTitle}
                         onDone={(geolocationData: GeolocationData) => {
                             this.syncViewState([
                                 this.state.doiForm.steps[0],
@@ -353,6 +365,7 @@ export default class Editor extends Component<EditorProps, EditorState> {
                     {this.renderStepTitle(stepNumber, title)}
                     <DescriptionController
                         model={this.props.model}
+                        setTitle={this.props.setTitle}
                         onDone={(description: Description) => {
                             this.syncViewState([
                                 this.state.doiForm.steps[0],
@@ -390,6 +403,7 @@ export default class Editor extends Component<EditorProps, EditorState> {
                     {this.renderStepTitle(stepNumber, title)}
                     <ReviewAndSubmitController
                         model={this.props.model}
+                        setTitle={this.props.setTitle}
                         onDone={(reviewAndSubmitData: ReviewAndSubmitData) => {
                             this.syncViewState([
                                 this.state.doiForm.steps[0],
@@ -435,7 +449,7 @@ export default class Editor extends Component<EditorProps, EditorState> {
         return <div className={styles.main}>
             <h2>DOI Request Form</h2>
             <p>
-                <Button variant="secondary" href="/#orcidlink"><span className="fa fa-arrow-left" /> Back</Button>
+                <Button variant="secondary" href="/#orcidlink/demos"><span className="fa fa-mail-reply" /> Back</Button>
             </p>
             <p>
                 This is a DOI Request form with ORCID linking assistance

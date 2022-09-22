@@ -1,13 +1,13 @@
-import { AuthenticationStateAuthenticated } from 'contexts/Auth';
-import { Component } from 'react';
-import { Config } from 'types/config';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
+import { AuthenticationStateAuthenticated } from 'contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
+import { Component } from 'react';
+import { Config } from 'types/config';
 
+import { changeHash2 } from 'apps/Navigator/utils/navigation';
 import { Model, ReturnLink } from '../Model';
 import View from './View';
-import { changeHash2 } from 'apps/Navigator/utils/navigation';
 
 export interface HomeControllerProps {
     config: Config;
@@ -76,13 +76,13 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
         } = link;
 
         // Name is the one stored from the original linking, may have changed.
-        const { first_name, last_name } = await model.getName();
+        const { firstName, lastName } = await model.getName();
 
         // normalize for ui:
         return {
             createdAt: created_at,
             expiresAt: Date.now() + expires_in * 1000,
-            realname: `${first_name} ${last_name}`,
+            realname: `${firstName} ${lastName}`,
             orcidID: orcid,
             scope
         }

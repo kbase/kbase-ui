@@ -1,11 +1,14 @@
+import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
-import { Button, Form } from "react-bootstrap";
-import { ROW_HEADER } from "../styles";
-import styles from './EditPublication.module.css';
-import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";
+import { Button, Form, Stack } from "react-bootstrap";
+import Select, { SingleValue } from 'react-select';
 import EditExternalIdentifiers from "../EditExternalIdentifiers";
 import { EditableExternalId, editableExternalIdsToExternalIds, EditablePublication, EditStatus, initialEditableExternalId, ValidationStatus } from "../PushPublicationModel";
+import { Option, OptionsGroups } from "../reactSelectTypes";
+import { ROW_HEADER } from "../styles";
+import { WorkTypes2 } from "./Controller";
+import styles from './EditPublication.module.css';
 
 const SECTION_HEADER_STYLE = {
     fontWeight: 'bold',
@@ -28,6 +31,8 @@ const SECTION_BODY_STYLE = {
 export interface EditPublicationProps {
     publication: EditablePublication;
     // onSave: (publication: Publication) => Promise<void>;
+
+    workTypes: WorkTypes2;
     workExternalIdentifierTypes: WorkExternalIdentifierTypes;
     workRelationshipIdentifiers: WorkRelationshipIdentifiers;
     onClose: () => void;
@@ -122,6 +127,30 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                     status: EditStatus.EDITED,
                     validationState: {
                         status: ValidationStatus.VALID
+                    },
+                    editValue: publicationType,
+                    value: publicationType
+                }
+            }
+        })
+    }
+
+    handlePublicationTypeChange(option: SingleValue<Option<string>>): void {
+        if (option === null) {
+            // This should not be possible since we do not allow an empty
+            // option, but if it is, we would use "natural order", I suppose.
+            return;
+        }
+        const publicationType = option.value;
+
+        this.setState({
+            ...this.state,
+            editState: {
+                ...this.state.editState,
+                publicationType: {
+                    status: EditStatus.EDITED,
+                    validationState: {
+                        status: ValidationStatus.VALID,
                     },
                     editValue: publicationType,
                     value: publicationType
@@ -310,16 +339,46 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
         />
     }
 
-    render() {
-        return <Form className={`${styles.main} well`} style={{ padding: '1em' }}>
+    getPublicationTypeOptions2(): OptionsGroups<string> {
+        return this.props.workTypes.map(({ category, label, values }) => {
+            return {
+                label,
+                options: values.map(({ value, label }) => {
+                    return { value, label };
+                })
+            };
+        });
+    }
+
+    renderPublicationTypeField() {
+        const editValue = (() => {
+            for (const { options } of this.getPublicationTypeOptions2()) {
+                for (const { value, label } of options) {
+                    if (value === this.state.editState.publicationType.editValue) {
+                        return { value, label }
+                    }
+                }
+            }
+
+        })();
+        return <Select<Option<string>>
+            isSearchable={true}
+            value={editValue}
+            onChange={this.handlePublicationTypeChange.bind(this)}
+            options={this.getPublicationTypeOptions2()}
+        />;
+    }
+
+    renderForm() {
+        return <Form className={`${styles.main}`} style={{ padding: '1em' }}>
             <div className="flex-table">
                 <div className="flex-row">
                     <div className="flex-col" style={ROW_HEADER} >
                         Publication Type
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.editState.publicationType.editValue}
-                            onInput={(e) => { this.changePublicationType(e.currentTarget.value) }} />
+                        {this.renderPublicationTypeField()}
+
                     </div>
                 </div>
                 <div className="flex-row">
@@ -374,20 +433,29 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                 <div className="flex-row" style={SECTION_BODY_STYLE}>
                     {this.renderExternalIds()}
                 </div>
-                <div className="flex-row" style={{ justifyContent: 'center', marginTop: '2em' }}>
-                    {/* <Button variant="danger" onClick={this.props.onDeleteConfirm} style={{ marginRight: '0.5em' }}>
-                        <span className="fa fa-trash" /> Confirm
-                    </Button> */}
-                    <div className="btn-group">
-                        <Button variant="primary" onClick={this.doSave.bind(this)}>
-                            <span className="fa fa-pencil" /> Save
-                        </Button>
-                        <Button variant="outline-danger" onClick={this.props.onClose}>
-                            <span className="fa fa-times-circle" /> Close
-                        </Button>
-                    </div>
-                </div>
+
             </div>
         </Form >;
+    }
+
+    render() {
+        return <div className="well">
+            <div className="well-header">
+                Edit Publication Record
+            </div>
+            <div className="well-body">
+                {this.renderForm()}
+            </div>
+            <div className="well-footer" style={{ justifyContent: 'center' }}>
+                <Stack direction="horizontal" gap={3}>
+                    <Button variant="primary" onClick={this.doSave.bind(this)}>
+                        <span className="fa fa-pencil" /> Save
+                    </Button>
+                    <Button variant="outline-danger" onClick={this.props.onClose}>
+                        <span className="fa fa-times-circle" /> Close
+                    </Button>
+                </Stack>
+            </div>
+        </div>
     }
 }

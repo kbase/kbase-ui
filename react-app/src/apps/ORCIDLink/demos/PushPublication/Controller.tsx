@@ -4,7 +4,7 @@ import { Config } from 'types/config';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import PublicationForm from './PushPublicationForm';
+import PushPublicationForm from './PushPublicationForm';
 import { ORCIDProfile, Model } from 'apps/ORCIDLink/Model';
 import { EditablePublication, PushPublicationModel } from './PushPublicationModel';
 
@@ -186,7 +186,6 @@ export default class PreFillFormController extends Component<PreFillFormControll
         })
     }
 
-
     // Renderers
 
     renderLoading() {
@@ -198,7 +197,7 @@ export default class PreFillFormController extends Component<PreFillFormControll
     }
 
     renderSuccess(dataState: DataState) {
-        return <PublicationForm
+        return <PushPublicationForm
             model={this.pushPublicationModel}
             profile={dataState.profile}
             syncProfile={this.syncProfile.bind(this)}

@@ -2,28 +2,28 @@ import { Component } from 'react';
 // import { HashRouter, Redirect, Switch } from 'react-router-dom';
 import PluginWrapper2 from './PluginWrapper/PluginWrapper2';
 
-import { Config } from '../types/config';
-import { AuthenticationState, AuthenticationStatus } from '../contexts/Auth';
 import About from '../applets/about';
-import Organizations from '../apps/Organizations';
-import Catalog from '../apps/Catalog';
-import Auth from '../apps/Auth';
 import Developer from '../applets/developer';
+import Auth from '../apps/Auth';
+import Catalog from '../apps/Catalog';
+import Organizations from '../apps/Organizations';
+import { AuthenticationState, AuthenticationStatus } from '../contexts/Auth';
+import { Config } from '../types/config';
 // import DevelopmentAuth from '../applets/development/DevelopmentAuth';
-import Navigator from '../apps/Navigator/Navigator';
 import NarrativeLoader from '../applets/narrativeLoader';
+import Navigator from '../apps/Navigator/Navigator';
 
-import styles from './Body.module.css';
-import { changeHash2 } from '../apps/Navigator/utils/navigation';
-import { RouteProps, Router } from './Router2';
-import { Route } from '../lib/Route';
-import RouterWrapper, { RouterContext } from '../contexts/RouterContext';
-import { AsyncProcessStatus } from '../lib/AsyncProcess2';
-import ErrorMessage from './ErrorMessage';
 import NarrativeManagerNew from '../apps/NarrativeManager/New';
 import NarrativeManagerStart from '../apps/NarrativeManager/Start';
-import Loading from './Loading';
+import ORCIDLinkDemos from '../apps/ORCIDLink/demos/Demos';
 import ORCIDLink from '../apps/ORCIDLink/ORCIDLink';
+import RouterWrapper, { RouterContext } from '../contexts/RouterContext';
+import { AsyncProcessStatus } from '../lib/AsyncProcess2';
+import { Route } from '../lib/Route';
+import styles from './Body.module.css';
+import ErrorMessage from './ErrorMessage';
+import Loading from './Loading';
+import { RouteProps, Router } from './Router2';
 
 export interface BodyProps {
     config: Config;
@@ -59,6 +59,14 @@ export default class Body extends Component<BodyProps, BodyState> {
             //         />
             //     );
             // }),
+            new Route('orcidlink/demos/*', { authenticationRequired: false }, (props: RouteProps) => {
+                return (
+                    <ORCIDLinkDemos
+                        {...props}
+                        {...this.props}
+                    />
+                );
+            }),
             new Route('orcidlink/*', { authenticationRequired: false }, (props: RouteProps) => {
                 return (
                     <ORCIDLink

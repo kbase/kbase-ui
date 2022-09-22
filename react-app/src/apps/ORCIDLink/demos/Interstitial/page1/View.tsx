@@ -175,7 +175,7 @@ export default class View extends Component<ViewProps, ViewState> {
                             </div>
                             <div className="flex-col -col2">
                                 <div className="flex-row" style={{ alignItems: 'center' }}>
-                                    <a href={`${ORCID_URL}/${orcidProfile.orcidId}`} target="_blank">
+                                    <a href={`${ORCID_URL}/${orcidProfile.orcidId}`} target="_blank" rel="noreferrer">
                                         {renderORCIDIcon()}
                                         {orcidProfile.orcidId}
                                     </a>
@@ -231,7 +231,7 @@ export default class View extends Component<ViewProps, ViewState> {
                             </div>
                             <div className="flex-col -col2">
                                 <div className="flex-row" style={{ alignItems: 'center' }}>
-                                    <a href={`${ORCID_URL}/${orcidProfile.orcidId}`} target="_blank">
+                                    <a href={`${ORCID_URL}/${orcidProfile.orcidId}`} target="_blank" rel="noreferrer">
                                         {renderORCIDIcon()}
                                         {orcidProfile.orcidId}
                                     </a>
@@ -290,7 +290,7 @@ export default class View extends Component<ViewProps, ViewState> {
         return <div className={styles.main}>
             <h2>Using linking as an interstitial page</h2>
             <p>
-                <Button variant="secondary" href="/#orcidlink"><span className="fa fa-arrow-left" /> Back</Button>
+                <Button variant="secondary" href="/#orcidlink/demos"><span className="fa fa-mail-reply" /> Back</Button>
             </p>
             <p>
                 This demo simulates a KBase user process which depends up on an ORCID link to utilize the

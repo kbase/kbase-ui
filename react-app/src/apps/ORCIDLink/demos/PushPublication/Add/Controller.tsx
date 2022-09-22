@@ -6,7 +6,7 @@ import WorkForm from './EditPublication';
 import { Publication } from 'apps/ORCIDLink/Model';
 import workTypesRaw from '../../../data/workTypes2.json';
 import { workExternalIdentifierTypes, workRelationshipIdentifiers } from 'apps/ORCIDLink/data';
-import { EditablePublication, initialEditablePublication, publicationToEditablePublication } from '../PushPublicationModel';
+import { EditablePublication, initialEditablePublication } from '../PushPublicationModel';
 
 // Work types
 // TODO: move to external file.
@@ -41,7 +41,6 @@ const workTypes = workTypesRaw as unknown as WorkTypes2;
 
 // Component
 
-
 export interface ControllerProps {
     setTitle: (title: string) => void;
     createPublication: (publication: EditablePublication) => Promise<void>;
@@ -53,11 +52,9 @@ export interface ControllerProps {
 //     LINKED = 'LINKED'
 // }
 
-
 export type GetWorkResult = {
     result: Publication
 };
-
 
 export interface DataState {
     work: EditablePublication

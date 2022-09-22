@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { Button } from 'react-bootstrap';
 import styles from './View.module.css';
 
 export interface ViewProps {
@@ -20,7 +21,7 @@ export default class View extends Component<ViewProps, ViewState> {
         return <div className={styles.main}>
             <h2>Using linking as an insterstitial page</h2>
             <p>
-                <a href="/#orcidlink">Back</a>
+                <Button variant="secondary" href="/#orcidlink/demos"><span className="fa fa-mail-reply" /> Back</Button>
             </p>
             <p>
                 Linking page

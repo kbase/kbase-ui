@@ -1,11 +1,12 @@
-import { Component } from 'react';
+import { workExternalIdentifierTypes, workRelationshipIdentifiers } from 'apps/ORCIDLink/data';
+import { Publication } from 'apps/ORCIDLink/Model';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
+import { Component } from 'react';
+import workTypesRaw from '../../../data/workTypes2.json';
+import { EditablePublication, PushPublicationModel } from '../PushPublicationModel';
 import WorkForm from './EditPublication';
-import { Publication } from 'apps/ORCIDLink/Model';
-import { workExternalIdentifierTypes, workRelationshipIdentifiers } from 'apps/ORCIDLink/data';
-import { PushPublicationModel, EditablePublication } from '../PushPublicationModel';
 
 
 export interface ControllerProps {
@@ -20,6 +21,23 @@ export interface ControllerProps {
 //     NONE = 'NONE',
 //     LINKED = 'LINKED'
 // }
+
+
+export interface WorkType {
+    category: string;
+    value: string;
+    label: string;
+    description: string;
+}
+export interface WorkTypeCategory2 {
+    category: string;
+    label: string;
+    values: Array<WorkType>
+}
+
+export type WorkTypes2 = Array<WorkTypeCategory2>
+
+const workTypes = workTypesRaw as unknown as WorkTypes2;
 
 export type GetWorkResult = {
     result: Publication
@@ -110,12 +128,9 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         }
     }
 
-
-
     async onDelete(putCode: string) {
 
     }
-
 
     // Renderers
 
@@ -133,9 +148,9 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             workExternalIdentifierTypes={workExternalIdentifierTypes}
             workRelationshipIdentifiers={workRelationshipIdentifiers}
             updatePublication={this.props.updatePublication}
+            workTypes={workTypes}
             onClose={this.props.onClose} />
     }
-
 
     render() {
         switch (this.state.dataState.status) {

@@ -5,6 +5,7 @@ import ReviewAndSubmitForm from './ReviewAndSubmitForm';
 
 export interface ReviewAndSubmitControllerProps {
     model: Model;
+    setTitle: (title: string) => void;
     onDone: (reviewAndSubmitData: ReviewAndSubmitData) => void;
 }
 
@@ -21,6 +22,10 @@ export default class ReviewAndSubmitController extends Component<ReviewAndSubmit
 
             }
         }
+    }
+    componentDidMount(): void {
+
+        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 8: Review and Submit');
     }
     render() {
         return <ReviewAndSubmitForm onDone={() => {

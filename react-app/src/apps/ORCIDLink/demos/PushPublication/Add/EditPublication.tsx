@@ -1,15 +1,14 @@
-import { ExternalId } from "apps/ORCIDLink/Model";
+import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Stack } from "react-bootstrap";
+import Select, { SingleValue } from 'react-select';
+import EditExternalIdentifiers from "../EditExternalIdentifiers";
+import { EditableExternalId, editableExternalIdsToExternalIds, EditablePublication, EditStatus, ValidationStatus } from "../PushPublicationModel";
+import { Option, Options, OptionsGroups } from "../reactSelectTypes";
+import { ROW_HEADER, SECTION_BODY_STYLE, SECTION_HEADER_STYLE } from "../styles";
 import { WorkTypes2 } from "./Controller";
 import styles from './EditPublication.module.css';
-import Select, { SingleValue, } from 'react-select';
-import { ROW_HEADER, SECTION_BODY_STYLE, SECTION_HEADER_STYLE } from "../styles";
-import { Options, Option, OptionsGroups } from "../reactSelectTypes";
-import EditExternalIdentifiers from "../EditExternalIdentifiers";
-import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";
-import { EditableExternalId, editableExternalIdsToExternalIds, EditablePublication, EditStatus, ValidationStatus } from "../PushPublicationModel";
 
 export interface EditPublicationProps {
     publication: EditablePublication;
@@ -425,7 +424,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
 
     renderPublicationTypeField() {
         return <Select<Option<string>>
-            isSearchable={false}
+            isSearchable={true}
             onChange={this.handlePublicationTypeChange.bind(this)}
             options={this.getPublicationTypeOptions2()}
         />;
@@ -458,8 +457,8 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
     // <input type="text" className="form-control" value={this.state.editState.publicationType}
     // onInput = {(e) => { this.changePublicationType(e.currentTarget.value) }} />
 
-    render() {
-        return <Form className={`${styles.main} well`} style={{ padding: '1em' }}>
+    renderForm() {
+        return <Form className={`${styles.main}`} style={{ padding: '1em' }}>
             <div className="flex-table">
                 <div className="flex-row">
                     <div className="flex-col" style={ROW_HEADER} >
@@ -519,20 +518,28 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
                 <div className="flex-row" style={SECTION_BODY_STYLE}>
                     {this.renderExternalIds()}
                 </div>
-                <div className="flex-row" style={{ justifyContent: 'center', marginTop: '1em' }}>
-                    {/* <Button variant="danger" onClick={this.props.onDeleteConfirm} style={{ marginRight: '0.5em' }}>
-                        <span className="fa fa-trash" /> Confirm
-                    </Button> */}
-                    <div className="btn-group">
-                        <Button variant="primary" type="button" onClick={this.doSave.bind(this)}>
-                            <span className="fa fa-pencil" /> Save
-                        </Button>
-                        <Button variant="outline-danger" type="button" onClick={this.props.onClose}>
-                            <span className="fa fa-times-circle" /> Close
-                        </Button>
-                    </div>
-                </div>
             </div>
         </Form >;
+    }
+
+    render() {
+        return <div className="well">
+            <div className="well-header">
+                Add New Publication Record
+            </div>
+            <div className="well-body">
+                {this.renderForm()}
+            </div>
+            <div className="well-footer" style={{ justifyContent: 'center' }}>
+                <Stack direction="horizontal" gap={3}>
+                    <Button variant="primary" type="button" onClick={this.doSave.bind(this)}>
+                        <span className="fa fa-pencil" /> Save
+                    </Button>
+                    <Button variant="outline-danger" type="button" onClick={this.props.onClose}>
+                        <span className="fa fa-times-circle" /> Close
+                    </Button>
+                </Stack>
+            </div>
+        </div>
     }
 }

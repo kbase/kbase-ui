@@ -5,11 +5,10 @@ import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Config } from 'types/config';
 
-import { Model, ReturnLink } from '../Model';
-import CreateLink from './CreateLink';
-import ViewLink from './ViewLink';
+import { Model, ReturnLink } from '../../Model';
+import Demos from './Home';
 
-export interface LinkControllerProps {
+export interface HomeControllerProps {
     config: Config;
     auth: AuthenticationStateAuthenticated;
     returnLink?: ReturnLink;
@@ -40,12 +39,12 @@ export type RevokeResult = null;
 
 export type LinkState = AsyncProcess<{ link: LinkInfo | null }, { message: string }>
 
-interface LinkControllerState {
+interface HomeControllerState {
     linkState: LinkState
 }
 
-export default class LinkController extends Component<LinkControllerProps, LinkControllerState> {
-    constructor(props: LinkControllerProps) {
+export default class HomeController extends Component<HomeControllerProps, HomeControllerState> {
+    constructor(props: HomeControllerProps) {
         super(props);
         this.state = {
             linkState: {
@@ -55,7 +54,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link - Start Linking Process');
+        this.props.setTitle('ORCID® Link - Demos');
         this.loadData();
     }
 
@@ -64,7 +63,6 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
 
         const link = await model.getLink();
 
-
         if (link === null) {
             return null;
         }
@@ -72,7 +70,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         const {
             created_at,
             orcid_auth: {
-                expires_in, name, orcid, scope
+                expires_in, orcid, scope
             }
         } = link;
 
@@ -87,35 +85,6 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
             orcidID: orcid,
             scope
         }
-    }
-
-    async revokeLink() {
-        const model = new Model({ config: this.props.config, auth: this.props.auth });
-        await model.deleteLink();
-
-        this.setState({
-            linkState: {
-                status: AsyncProcessStatus.SUCCESS,
-                value: { link: null }
-            }
-        });
-
-        // TODO: notification
-
-        return null;
-    }
-
-    async startLink() {
-        const model = new Model({ config: this.props.config, auth: this.props.auth });
-        await model.startLink({ returnLink: this.props.returnLink, skipPrompt: this.props.skipPrompt })
-        // const url = new URL(START_URL);
-        // if (this.props.returnLink) {
-        //     url.searchParams.set('return_link', JSON.stringify(this.props.returnLink));
-        // }
-        // if (this.props.skipPrompt) {
-        //     url.searchParams.set('skip_prompt', 'true');
-        // }
-        // window.open(url, '_parent');
     }
 
     async loadData() {
@@ -167,15 +136,8 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         return <ErrorAlert message={message} />
     }
 
-    goBack() {
-        window.history.go(-1);
-    }
-
     renderSuccess({ link }: { link: LinkInfo | null }) {
-        if (link === null) {
-            return <CreateLink start={this.startLink.bind(this)} goBack={this.goBack.bind(this)} returnLink={this.props.returnLink} skipPrompt={this.props.skipPrompt} />;
-        }
-        return <ViewLink link={link} revoke={this.revokeLink.bind(this)} />;
+        return <Demos link={link} />
     }
 
     render() {

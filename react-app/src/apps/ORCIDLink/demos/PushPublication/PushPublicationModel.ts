@@ -9,7 +9,6 @@
 import { ExternalId, Model, Publication } from "apps/ORCIDLink/Model";
 import { ORCIDLinkServiceClient, Work, WorkUpdate } from "apps/ORCIDLink/ORCIDLinkClient";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
-import { JSONObject } from "lib/json";
 import { Config } from "types/config";
 
 export enum ValidationStatus {
@@ -357,6 +356,7 @@ export class PushPublicationModel {
         this.model = new Model({
             config, auth
         });
+
         // this.orcidLinkClient = new ORCIDLinkServiceClient({
         //     isDynamicService: false,
         //     url: 'https://ci.kbase.us/services/orcidlink',
@@ -415,7 +415,9 @@ export class PushPublicationModel {
             externalIds: work.externalIds.value
         };
 
-        return this.orcidLinkClient.createWork(temp);
+        const result = await this.orcidLinkClient.createWork(temp);
+
+        return this.orcidLinkClient.getWork(result.put_code);
 
         // const response = await this.dsPost(CREATE_WORK_PATH, this.auth.authInfo.token, temp)
 

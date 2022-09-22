@@ -8,6 +8,7 @@ import ORCIDLink from './ORCIDLink';
 export interface ORCIDLinkControllerProps {
     model: Model;
     stepsState: string;
+    setTitle: (title: string) => void;
     onDone: (orcidId: string | null) => void;
 }
 
@@ -33,6 +34,7 @@ export default class ORCIDLinkController extends Component<ORCIDLinkControllerPr
     }
 
     componentDidMount() {
+        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 2: ORCID Link');
         this.loadData();
     }
 

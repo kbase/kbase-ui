@@ -1,15 +1,14 @@
-import { Component } from 'react';
+import { Model } from 'apps/ORCIDLink/Model';
+import { DOIForm, InitialDOIForm, StepStatus } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
-import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import EditorController from './EditorController';
-import CreateForm from './CreateForm';
-import { Model } from 'apps/ORCIDLink/Model';
-import { Config } from 'types/config';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { JSONObject } from 'lib/json';
-import * as uuid from 'uuid'
-import { DOIForm, StepStatus } from 'apps/ORCIDLink/ORCIDLinkClient';
+import { Component } from 'react';
+import { Config } from 'types/config';
+import CreateForm from './CreateForm';
+import EditorController from './EditorController';
 
 export interface ControllerProps {
     config: Config;
@@ -43,7 +42,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link Demo - DOI Form with import from ORCID, Narrative')
+        this.props.setTitle('ORCID® Link - Demos - DOI Request')
         this.loadData();
     }
 
@@ -100,9 +99,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     }
 
     async createForm() {
-        const formId = uuid.v4();
-        const doiForm: DOIForm = {
-            formId,
+        const initialDOIForm: InitialDOIForm = {
             steps: [
                 {
                     status: StepStatus.INCOMPLETE,
@@ -131,7 +128,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                 }
             ]
         }
-        await this.model.saveDOIForm(doiForm);
+        const doiForm = await this.model.createDOIForm(initialDOIForm);
         this.setState({
             dataState: {
                 status: AsyncProcessStatus.SUCCESS,
@@ -142,9 +139,10 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         });
 
         const newURL = new URL(document.location.href);
-        newURL.searchParams.set('formId', formId);
+        newURL.searchParams.set('formId', doiForm.form_id);
         window.history.pushState(null, '', newURL);
     }
+
 
     // Renderers
 

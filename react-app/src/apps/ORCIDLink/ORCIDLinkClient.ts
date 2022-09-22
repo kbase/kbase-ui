@@ -1,11 +1,11 @@
 import { toJSON } from "lib/kb_lib/jsonLike";
-import { ServiceClient, DynamicServiceClient, MultiServiceClient } from "./DynamicServiceClient";
+import { MultiServiceClient } from "./DynamicServiceClient";
 import { ExternalId, LinkingSessionInfo, LinkRecord, ORCIDProfile, Publication } from "./Model";
 
 
 const GET_WORK_PATH = 'work';
 const SAVE_WORK_PATH = 'work';
-const CREATE_WORK_PATH = 'create_work';
+const CREATE_WORK_PATH = 'work';
 const DELETE_WORK_PATH = 'delete_work';
 
 
@@ -23,10 +23,11 @@ const GET_LINKING_SESSION_INFO_PATH = 'get-linking-session-info';
 
 const LINK_PATH = 'link';
 const REVOKE_PATH = 'revoke';
-const GET_NAME_PATH = 'get_name';
+// const GET_NAME_PATH = 'name';
 
-const SAVE_DOI_APPLICATION_PATH = 'demos/save_doi_application';
-const GET_DOI_APPLICATION_PATH = 'demos/get_doi_application';
+const CREATE_DOI_APPLICATION_PATH = 'demos/doi_application';
+const SAVE_DOI_APPLICATION_PATH = 'demos/doi_application';
+const GET_DOI_APPLICATION_PATH = 'demos/doi_application';
 
 export interface CreateLinkingSessionResult {
     session_id: string
@@ -46,8 +47,8 @@ export interface WorkUpdate extends Work {
 }
 
 export interface GetNameResult {
-    first_name: string;
-    last_name: string;
+    firstName: string;
+    lastName: string;
 }
 
 
@@ -203,9 +204,25 @@ export type STEPS3 = [
     StepState<null, ReviewAndSubmitData>
 ]
 
-export interface DOIForm {
-    formId: string;
+export interface InitialDOIForm {
     steps: STEPS3
+}
+
+export interface DOIForm {
+    form_id: string;
+    owner: string;
+    created_at: number;
+    updated_at: number;
+    steps: STEPS3
+}
+
+export interface DOIFormUpdate {
+    form_id: string;
+    steps: STEPS3
+}
+
+export interface CreateWorkResult {
+    put_code: string;
 }
 
 
@@ -240,24 +257,29 @@ export class ORCIDLinkServiceClient extends MultiServiceClient {
         return await this.put<Publication>(`${SAVE_WORK_PATH}`, toJSON(work))
     }
 
-    async createWork(work: Work): Promise<Publication> {
-        return await this.post<Publication>(`${CREATE_WORK_PATH}`, toJSON(work))
+    async createWork(work: Work): Promise<CreateWorkResult> {
+        return await this.post<CreateWorkResult>(`${CREATE_WORK_PATH}`, toJSON(work))
     }
 
     async deleteWork(putCode: string): Promise<void> {
         await this.delete<void>(`${DELETE_WORK_PATH}/${putCode}`);
     }
 
-    async getName(): Promise<GetNameResult> {
-        return await this.get<GetNameResult>(`${GET_NAME_PATH}`)
-    }
+    // async getName(): Promise<GetNameResult> {
+    //     return await this.get<GetNameResult>(`${GET_NAME_PATH}`)
+    // }
 
     async getDOIApplication(formId: string): Promise<DOIForm> {
         return await this.get<DOIForm>(`${GET_DOI_APPLICATION_PATH}/${formId}`)
     }
 
-    async saveDOIApplication(doiForm: DOIForm): Promise<boolean> {
-        return await this.post<boolean>(`${SAVE_DOI_APPLICATION_PATH}`, toJSON(doiForm))
+    async createDOIApplication(doiForm: InitialDOIForm): Promise<DOIForm> {
+        return await this.post<DOIForm>(`${CREATE_DOI_APPLICATION_PATH}`, toJSON(doiForm))
+    }
+
+    async saveDOIApplication(doiForm: DOIFormUpdate): Promise<DOIForm> {
+        console.log('saving?', toJSON(doiForm))
+        return await this.put<DOIForm>(`${SAVE_DOI_APPLICATION_PATH}`, toJSON(doiForm))
     }
 
     async getLinkingSessionInfo(sessionId: string): Promise<LinkingSessionInfo> {

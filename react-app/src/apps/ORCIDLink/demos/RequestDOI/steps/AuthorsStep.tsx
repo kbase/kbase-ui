@@ -9,6 +9,7 @@ import PrimaryAuthor from './AuthorORCIDController';
 export interface AuthorsStepProps {
     model: Model
     narrativeTitle: string;
+    setTitle: (title: string) => void;
     onDone: (title: string, author: Author) => void;
 }
 
@@ -34,6 +35,10 @@ export default class AuthorsStep extends Component<AuthorsStepProps, AuthorsStep
                 },
             }
         }
+    }
+
+    componentDidMount() {
+        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 3: Primary and Other Authors');
     }
 
     // Data 

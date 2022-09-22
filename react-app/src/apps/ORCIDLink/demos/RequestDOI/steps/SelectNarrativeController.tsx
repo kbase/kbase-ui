@@ -8,6 +8,7 @@ import { MinimalNarrativeInfo } from 'apps/ORCIDLink/ORCIDLinkClient';
 
 export interface SelectNarrativeControllerProps {
     model: Model;
+    setTitle: (title: string) => void;
     onDone: (narrative: MinimalNarrativeInfo) => void;
 }
 
@@ -34,6 +35,7 @@ export default class SelectNarrativeController extends Component<SelectNarrative
     }
 
     componentDidMount() {
+        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 1: Select Narrative');
         this.loadData();
     }
 

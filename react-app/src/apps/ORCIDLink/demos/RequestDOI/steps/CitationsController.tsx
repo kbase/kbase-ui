@@ -9,6 +9,7 @@ import { CitationResults } from 'apps/ORCIDLink/ORCIDLinkClient';
 export interface CitationsControllerProps {
     model: Model;
     narrativeObjectRef: string;
+    setTitle: (title: string) => void;
     onDone: (citations: CitationResults) => void;
 }
 
@@ -30,6 +31,8 @@ export default class CitationsController extends Component<CitationsControllerPr
     }
 
     componentDidMount() {
+
+        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 4: Citations');
         this.loadData();
     }
 

@@ -1,9 +1,8 @@
-import {
-    ServiceWizardClient,
-    ServiceStatus,
-} from 'lib/kb_lib/comm/coreServices/ServiceWizard'
-import Cache from 'lib/kb_lib/comm/Cache';
 import { JSONValue } from 'lib/json';
+import Cache from 'lib/kb_lib/comm/Cache';
+import {
+    ServiceStatus, ServiceWizardClient
+} from 'lib/kb_lib/comm/coreServices/ServiceWizard';
 
 const ITEM_LIFETIME = 1800000;
 const MONITORING_FREQUENCY = 60000;
@@ -43,6 +42,42 @@ export interface ServiceClientParams {
  * rpcContext
  */
 
+export interface ServiceErrorResponse {
+    code: string,
+    message: string
+}
+
+export interface FastAPIErrorResponse extends ServiceErrorResponse {
+    data: {
+        'response-code': number,
+        'developer-message': string,
+        'user-message': string,
+        'error-code': number,
+        'more-info': string
+    };
+}
+
+export interface InternalServerErrorResponse extends ServiceErrorResponse {
+    data: {
+        responseText: string
+    }
+}
+
+export class FastAPIError extends Error {
+    data: FastAPIErrorResponse;
+    constructor(message: string, data: FastAPIErrorResponse) {
+        super(message);
+        this.data = data;
+    }
+}
+
+export class InternalServerError extends Error {
+    data: InternalServerErrorResponse;
+    constructor(message: string, data: InternalServerErrorResponse) {
+        super(message);
+        this.data = data;
+    }
+}
 
 
 export abstract class ServiceClientBase {
@@ -61,14 +96,19 @@ export abstract class ServiceClientBase {
     protected abstract getUrl(): Promise<string>;
 
     private async handleResponse<T>(response: Response): Promise<T> {
-        if (response.status !== 200) {
-            // TODO: real RestException
-            throw new Error("Error fetching resource");
-        }
 
         const rawResult = await response.text();
         try {
             const result = JSON.parse(rawResult);
+            if (response.status === 500) {
+                const errorResult = result as unknown as InternalServerErrorResponse;
+                throw new InternalServerError(errorResult.message, errorResult);
+            } else if (response.status !== 200) {
+                // TODO: real RestException
+                const errorResult = result as unknown as FastAPIErrorResponse;
+                throw new FastAPIError(errorResult.message, errorResult);
+            }
+
             return result as unknown as T;
         } catch (ex) {
             if (ex instanceof Error) {

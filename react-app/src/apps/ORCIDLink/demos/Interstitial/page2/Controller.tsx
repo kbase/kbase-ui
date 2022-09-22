@@ -38,7 +38,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link Demo - Using linking as an insterstitial page (page 2)')
+        this.props.setTitle('ORCID® Link - Demos - Using linking as an insterstitial page (page 2)')
         this.loadData();
     }
 

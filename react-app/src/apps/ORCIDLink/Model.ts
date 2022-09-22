@@ -7,7 +7,7 @@ import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
 import { SCOPE } from "./constants";
 import { EditablePublication } from "./demos/PushPublication/PushPublicationModel";
-import { DOIForm, GetNameResult, ORCIDLinkServiceClient, Work, WorkUpdate } from "./ORCIDLinkClient";
+import { DOIForm, DOIFormUpdate, GetNameResult, InitialDOIForm, ORCIDLinkServiceClient, Work } from "./ORCIDLinkClient";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
 
@@ -81,18 +81,12 @@ export interface ORCIDProfile {
     publications: Array<Publication>
 }
 
-
-
-
 export interface ReturnLink {
     url: string;
     label: string;
 }
 
-
 // ORCID Link step
-
-
 
 const SCOPE_USER = 'KBase';
 
@@ -501,7 +495,9 @@ export class Model {
             externalIds: work.externalIds.value
         };
 
-        return this.orcidLinkClient.createWork(temp);
+        const { put_code } = await this.orcidLinkClient.createWork(temp);
+
+        return this.orcidLinkClient.getWork(put_code);
 
         // const response = await fetch(CREATE_WORK_URL, {
         //     method: 'POST',
@@ -586,7 +582,9 @@ export class Model {
     }
 
     async getName(): Promise<GetNameResult> {
-        return this.orcidLinkClient.getName();
+        const { lastName, firstName } = await this.orcidLinkClient.getProfile();
+        return { lastName, firstName };
+
         // const response = await this.dsGet(GET_NAME_PATH, this.auth.authInfo.token);
         // // const response = await fetch(GET_NAME_URL, {
         // //     headers: {
@@ -758,7 +756,7 @@ export class Model {
                         return (line.trim().length > 0);
                     });
                 if (mardownLines[0].match(/references/i)) {
-                    const citations = mardownLines.slice(1).forEach((line) => {
+                    mardownLines.slice(1).forEach((line) => {
                         // remove any leading - or * if a list.
                         const citation = (() => {
                             const m = line.match(/^\s*[-*]*\s*(.*)$/);
@@ -786,16 +784,12 @@ export class Model {
         return { narrativeAppCitations, markdownCitations };
     }
 
-    async saveDOIForm(doiForm: DOIForm): Promise<boolean> {
+    async createDOIForm(doiForm: InitialDOIForm): Promise<DOIForm> {
+        return this.orcidLinkClient.createDOIApplication(doiForm);
+    }
+
+    async saveDOIForm(doiForm: DOIFormUpdate): Promise<DOIForm> {
         return this.orcidLinkClient.saveDOIApplication(doiForm);
-        // const response = await this.dsPost(SAVE_DOI_APPLICATION_PATH, this.auth.authInfo.token, doiForm as unknown as JSONObject)
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-
-        // const result = JSON.parse(await response.text()) as { result: boolean };
-        // return result.result;
     }
 
     async getDOIForm(formId: string): Promise<DOIForm> {

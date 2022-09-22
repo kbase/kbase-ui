@@ -50,7 +50,7 @@ export default class PublicationView extends Component<PublicationViewProps, Pub
                     {value}
                 </div>
                 <div className="flex-col">
-                    <a href={url} target="_blank">{url}</a>
+                    <a href={url} target="_blank" rel="noreferrer">{url}</a>
                 </div>
             </div>
         });
@@ -100,7 +100,7 @@ export default class PublicationView extends Component<PublicationViewProps, Pub
     }
 
     render() {
-        return <div className={`${styles.main} well`} style={{ padding: '1em' }}>
+        return <div className={`${styles.main}`}>
             <div className="flex-table">
                 <div className="flex-row">
                     <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >

@@ -2,7 +2,7 @@ import Empty from "components/Empty";
 import { Component } from "react";
 import { Button } from "react-bootstrap";
 import Select from 'react-select';
-import { Options, Option } from "./reactSelectTypes";
+import { Option, Options } from "./reactSelectTypes";
 
 
 import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";
@@ -134,7 +134,7 @@ export default class EditExternalIdentifiers extends Component<EditExternalIdent
                 <div className="flex-col">
                     <Select<Option<string>>
                         styles={{ menu: (css) => ({ ...css, width: 'max-content', maxWidth: '20em' }) }}
-                        isSearchable={false}
+                        isSearchable={true}
                         defaultValue={currentIdentifierType}
                         onChange={(newValue) => { this.handleChangeExternalIdType(newValue!.value, index) }}
                         options={this.getExternalIdentifierTypes()}
@@ -149,7 +149,7 @@ export default class EditExternalIdentifiers extends Component<EditExternalIdent
                 <div className="flex-col">
                     <Select<Option<string>>
                         styles={{ menu: (css) => ({ ...css, width: 'max-content', maxWidth: '20em' }) }}
-                        isSearchable={false}
+                        isSearchable={true}
                         defaultValue={currentRelationship}
                         onChange={(newValue) => { this.changeExternalIdRelationship(newValue!.value, index) }}
                         options={relationships}

@@ -1,14 +1,13 @@
-import { Component } from 'react';
+import { Model, ORCIDProfile } from 'apps/ORCIDLink/Model';
+import { DOIForm, DOIFormUpdate } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
-import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import Editor from './Editor';
-import { Model, ORCIDProfile } from 'apps/ORCIDLink/Model';
-import { Config } from 'types/config';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { JSONObject } from 'lib/json';
-import * as uuid from 'uuid'
-import { DOIForm } from 'apps/ORCIDLink/ORCIDLinkClient';
+import { Component } from 'react';
+import { Config } from 'types/config';
+import Editor from './Editor';
 
 
 export interface ORCIDLinkStateBase {
@@ -65,7 +64,7 @@ export default class EditorController extends Component<EditorControllerProps, E
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link Demo - DOI Form with import from ORCID, Narrative')
+        this.props.setTitle('ORCID® Link  - Demos - DOI Form');
         this.loadData();
     }
 
@@ -135,56 +134,23 @@ export default class EditorController extends Component<EditorControllerProps, E
         }
     }
 
-    // async createForm() {
-    //     const formId = uuid.v4();
-    //     const doiForm: DOIForm = {
-    //         formId,
-    //         steps: [
-    //             {
-    //                 status: StepStatus.INCOMPLETE,
-    //                 params: null
-    //             },
-    //             {
-    //                 status: StepStatus.NONE,
-    //             },
-    //             {
-    //                 status: StepStatus.NONE,
-    //             },
-    //             {
-    //                 status: StepStatus.NONE,
-    //             },
-    //             {
-    //                 status: StepStatus.NONE,
-    //             },
-    //             {
-    //                 status: StepStatus.NONE,
-    //             },
-    //             {
-    //                 status: StepStatus.NONE,
-    //             },
-    //             {
-    //                 status: StepStatus.NONE,
-    //             }
-    //         ]
-    //     };
-    //     await this.model.saveDOIForm(doiForm);
-    //     this.setState({
-    //         dataState: {
-    //             status: AsyncProcessStatus.SUCCESS,
-    //             value: {
-    //                 orcidState: {
-    //                     status: ORCIDLinkStatus.NOT_LINKED
-    //                 },
-    //                 doiForm
-    //             }
-    //         }
-    //     });
+    async saveForm(doiFormUpdate: DOIFormUpdate) {
+        if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
+            return;
+        }
+        const doiForm = await this.model.saveDOIForm(doiFormUpdate);
 
-    //     const newURL = new URL(document.location.href);
-    //     newURL.searchParams.set('formId', formId);
-    //     // document.location.href = newURL.toString();
-    //     window.history.pushState(null, '', newURL);
-    // }
+        this.setState({
+            dataState: {
+                status: AsyncProcessStatus.SUCCESS,
+                value: {
+                    ...this.state.dataState.value,
+                    doiForm
+                }
+            }
+        });
+    }
+
 
     // Renderers
 
@@ -201,6 +167,7 @@ export default class EditorController extends Component<EditorControllerProps, E
             orcidState={dataState.orcidState}
             process={this.props.process}
             doiForm={dataState.doiForm}
+            setTitle={this.props.setTitle}
             model={this.model} />
     }
 

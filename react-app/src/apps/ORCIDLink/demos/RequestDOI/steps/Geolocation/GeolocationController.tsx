@@ -5,6 +5,7 @@ import GolocationForm from './GeolocationForm';
 
 export interface GeolocationControllerProps {
     model: Model;
+    setTitle: (title: string) => void;
     onDone: (geolocationData: GeolocationData) => void;
 }
 
@@ -20,6 +21,9 @@ export default class GeolocationController extends Component<GeolocationControll
                 locations: []
             }
         }
+    }
+    componentDidMount() {
+        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 6: Geolocation');
     }
     addLocation(location: Location) {
         this.setState({
