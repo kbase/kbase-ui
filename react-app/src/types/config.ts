@@ -213,6 +213,12 @@ export interface DeployConfig {
             hamburger: HamburgerMenuDefintion;
             sidebar: Menu;
         };
+        defaults: {
+            path: {
+                type: "path" | "hash";
+                value: string;
+            }
+        }
     };
     services: {
         Auth2: Auth2ServiceConfig;

@@ -1,0 +1,63 @@
+version: '3.6'
+networks:
+    kbase-dev:
+        name: kbase-dev
+services:
+    kbase-ui:
+        build:
+            context: ../..
+            dockerfile: Dockerfile
+        # just use dev for the image tag so we can easily clean
+        # up afterwards.
+
+        image: local/kbase-ui:dev
+
+        container_name: kbase-ui
+        dns: 8.8.8.8
+        # volumes:
+        #     # - ${APP_DIR}:/kb/deployment/app
+        #     - ${SRC_DIR}:/kb/deployment/app/src
+        #     - ${PLUGIN_DIR}:/kb/deployment/app/static/plugins
+        #     # - ${INI_DIR}:/kb/deployment/config
+        #     # - ${SCRIPTS_DIR}:/kb/deployment/scripts
+
+        # just use dev for the image tag so we can easily clean
+        # up afterwards.
+        # image: kbase/kbase-ui:dev
+        networks:
+            - kbase-dev
+        environment:
+            # - PORT=80
+            - DEPLOY_ENV=${DEPLOY_ENV:-ci}
+        # entrypoint: npm
+        # stdin_open: true
+        # tty: true
+        # command:
+        #     - '-env'
+        #     # The following line uses the ones provided in this repo
+        #     # Or this one which uses one installed by 'make get-gitlab-config'
+        #     - /kb/deployment/config/${DEPLOY_ENV:-ci}_config.ini
+        #     # Map
+        #     # - '-template'
+        #     # - /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/public/deploy/config.json
+        #     # - bash
+        #     # UNCOMMENT if using static build
+        #     # - /kb/deployment/scripts/start-server.bash
+        #     # - /kb/deployment/scripts/start-dev-server.bash
+        env_file: ../../dev/gitlab-config/${DEPLOY_ENV:-ci}_config.ini
+    kbase-ui-proxy:
+        build:
+            context: ../../tools/proxy
+        # there is only one proxy image, for local development, so just call it :dev
+        image: local/kbase-ui-proxy:dev
+        depends_on:
+            - kbase-ui
+        networks:
+            - kbase-dev
+        container_name: kbase-ui-proxy
+        ports:
+            - '80:80'
+            - '443:443'
+        dns: 8.8.8.8
+        # note that this is really a docker env file and is relative to the docker-compose file
+        env_file: ../../tools/proxy/conf/${DEPLOY_ENV:-ci}.env

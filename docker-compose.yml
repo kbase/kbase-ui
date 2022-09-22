@@ -1,0 +1,40 @@
+version: '3.6'
+networks:
+    kbase-dev:
+        name: kbase-dev
+services:
+    kbase-ui:
+        build:
+            context: .
+            dockerfile: Dockerfile
+
+        image: local/kbase-ui:dev
+
+        container_name: kbase-ui
+        dns: 8.8.8.8
+        networks:
+            - kbase-dev
+        command: 
+          - "-template"
+          - "/kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf"
+          - "-template"
+          - "/kb/deployment/templates/config.json.tmpl:/kb/deployment/app/deploy/config.json"
+          - "bash"
+          - "/kb/deployment/scripts/start-server.bash"
+        env_file: dev/gitlab-config/${DEPLOY_ENV:-ci}_config.ini
+    kbase-ui-proxy:
+        build:
+            context: ./tools/proxy
+
+        image: local/kbase-ui-proxy:dev
+        depends_on:
+            - kbase-ui
+        networks:
+            - kbase-dev
+        container_name: kbase-ui-proxy
+        ports:
+            - '80:80'
+            - '443:443'
+        dns: 8.8.8.8
+
+        env_file: tools/proxy/conf/${DEPLOY_ENV:-ci}.env
