@@ -333,7 +333,7 @@ export default class WorkspaceClient extends ServiceClient {
 
     async get_permissions_mass(params: GetPermissionsMassParams): Promise<GetPermissionsMassResult> {
         const [object] = await this.callFunc<[JSONValue], [JSONValue]>(
-            'get_objects2',
+            'get_permissions_mass',
             [toJSON(params)]
         );
         return object as GetPermissionsMassResult;
