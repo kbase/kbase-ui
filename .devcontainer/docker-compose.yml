@@ -79,4 +79,6 @@ services:
     dns: 8.8.8.8
     # note that this is really a docker env file and is relative to the docker-compose file
     
-    env_file: ../tools/proxy/conf/${DEPLOY_ENV:-ci}.env
+    env_file: 
+      - ../tools/proxy/conf/${DEPLOY_ENV:-ci}.env
+      - custom.env
