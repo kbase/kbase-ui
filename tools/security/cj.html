@@ -1,0 +1,54 @@
+<html style="height: 100%; ">
+    <head>
+        <title>Clickjack Test</title>
+    </head>
+    <body style="margin: 0; padding: 0; height: 100%; width: 100%; display: flex; flex-direction: column; font-family: monospace; font-size: 16px;">
+        <iframe id="iframe" src="about:blank"  style="box-sizing: border-box; margin: 0; padding: 0; flex: 1 1 0; border: 3px solid blue" ></iframe>
+        <div id="panel" style="flex: 0 0 auto; display: flex; flex-direction: row; align-items: center; background-color: rgba(200, 200, 200, 0.2); border: 3px solid green; padding: 1em;">
+            <span style="text-decoration: underline; margin-right: 1em;">UI REDRESSING TEST</span>   
+            url:<input id="urlinput" style="width: 20em; font-size: 100%; font-family: monospace;" value="https://ci.kbase.us"> 
+            <button id="loadbutton" style="font-size: 100%; font-family: monospace;" onclick="() => {console.log('here'); kbase.loadurl();}">Load</button> 
+            <span id="message" style="margin-left: 0.5em; font-weight: bold; color: blue;">Loading...</span>
+            
+        </div>
+        <script>
+            // Stash the component references.
+            const urlInput = document.getElementById('urlinput');
+            const messageElement = document.getElementById('message');
+            const iframe = document.getElementById('iframe');
+
+            const say = (message, inColor) => {
+                messageElement.innerText = message;
+                messageElement.style.color = inColor;
+            }
+
+            // track state
+
+            // Handle the Load button being clicked.
+            const loadurl = (e) => {
+                const url = new URL(urlInput.value);
+                say(`loading url "${url}"`, 'orange');
+                iframe.src = url;
+            };
+            const loadButton = document.getElementById("loadbutton");
+            loadButton.addEventListener('click', loadurl);
+
+            // Handle the "Enter" key being pressed in the input.
+            urlInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    loadurl();
+                }
+            });
+
+            // Handle the iframe being loaded
+            const oniframeload = () => {
+                say(`loaded url "${iframe.getAttribute('src')}", check console...`, 'green');
+            }
+            iframe.addEventListener('load', oniframeload);
+
+            // Load the initial url (ci)
+            loadurl();
+        </script>
+
+    </body>
+</html>
