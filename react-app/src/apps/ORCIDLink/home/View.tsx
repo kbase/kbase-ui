@@ -19,7 +19,7 @@ export default class View extends Component<ViewProps> {
             <h3>Revocation</h3>
             <p>You may <b>revoke</b> this link at any time.</p>
             <p>Revoking the link will not alter any of your data stored at KBase or ORCID®. It will simply remove
-                the link to your ORCID account, preventing KBase from accessing your ORCID Profile thereafter.
+                the link to your ORCID® account, preventing KBase from accessing your ORCID® Profile thereafter.
             </p>
         </div>
     }
@@ -54,7 +54,7 @@ export default class View extends Component<ViewProps> {
                 </li>
 
                 <li>
-                    <a href="https://info.orcid.org/what-is-orcid/" target="_blank" rel="noreferrer">About ORCID</a>
+                    <a href="https://info.orcid.org/what-is-orcid/" target="_blank" rel="noreferrer"><span className="fa fa-external-link" /> About ORCID</a>
                 </li>
 
             </ul>
@@ -74,7 +74,7 @@ export default class View extends Component<ViewProps> {
                 <p>You may <b>revoke</b> this link at any time.</p>
 
                 <p>Revoking the link will not alter any of your data stored at KBase or ORCID®. It will simply remove
-                    the link to your ORCID account, preventing KBase from accessing your ORCID Profile thereafter.
+                    the link to your ORCID® account, preventing KBase from accessing your ORCID® Profile thereafter.
                 </p>
 
                 <p>Please note that if you wish to revoke this link at KBase, you may also

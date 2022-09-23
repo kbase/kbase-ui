@@ -9,7 +9,7 @@ export interface LinkViewProps {
 }
 
 const LABEL_COL_STYLE: React.CSSProperties = {
-    flex: '0 0 11em'
+    flex: '0 0 11.5em'
 }
 
 export default class LinkView extends Component<LinkViewProps> {
@@ -60,7 +60,7 @@ export default class LinkView extends Component<LinkViewProps> {
                     </Row>
                     <Row>
                         <Col style={LABEL_COL_STYLE}>
-                            Scopes
+                            Permissions Granted
                         </Col>
                         <Col style={{ flex: '3 1 0' }}>
                             {renderScope(link.scope)}

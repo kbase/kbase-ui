@@ -274,10 +274,6 @@ export function publicationToEditablePublication(publication: Publication): Edit
 }
 
 export function initialEditablePublication(): EditablePublication {
-    // const { putCode, publicationType, title, date, journal, url, externalIds } = publication;
-    // const editableExternalIds = externalIds.map((externalId) => {
-    //     return externalIdToEditableExternalId(externalId);
-    // });
     return {
         putCode: {
             status: EditStatus.INITIAL,
@@ -357,12 +353,6 @@ export class PushPublicationModel {
             config, auth
         });
 
-        // this.orcidLinkClient = new ORCIDLinkServiceClient({
-        //     isDynamicService: false,
-        //     url: 'https://ci.kbase.us/services/orcidlink',
-        //     timeout: 1000,
-        //     token: auth.authInfo.token
-        // });
         this.orcidLinkClient = new ORCIDLinkServiceClient({
             isDynamicService: true,
             url: this.config.services.ServiceWizard.url,
@@ -385,24 +375,6 @@ export class PushPublicationModel {
 
         // return this.model.saveWork(temp);
         return this.orcidLinkClient.saveWork(temp);
-
-        // const response = await this.dsPut(SAVE_WORK_PATH, this.auth.authInfo.token, temp)
-
-        // const response = await fetch(SAVE_WORK_URL, {
-        //     method: 'PUT',
-        //     headers: {
-        //         Authorization: this.auth.authInfo.token,
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(temp)
-        // });
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-
-        // const result = JSON.parse(await response.text()) as { result: Publication };
-        // return result.result;
     }
 
     async createWork(work: EditablePublication): Promise<Publication> {
@@ -418,47 +390,16 @@ export class PushPublicationModel {
         const result = await this.orcidLinkClient.createWork(temp);
 
         return this.orcidLinkClient.getWork(result.put_code);
-
-        // const response = await this.dsPost(CREATE_WORK_PATH, this.auth.authInfo.token, temp)
-
-        // // const response = await fetch(CREATE_WORK_URL, {
-        // //     method: 'POST',
-        // //     headers: {
-        // //         Authorization: this.auth.authInfo.token,
-        // //         'Content-Type': 'application/json'
-        // //     },
-        // //     body: JSON.stringify(temp)
-        // // });
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-
-        // const result = JSON.parse(await response.text()) as { result: Publication };
-        // return result.result;
     }
 
     async deleteWork(putCode: string): Promise<void> {
         return this.orcidLinkClient.deleteWork(putCode);
-        // const response = await this.dsDelete(`${DELETE_WORK_PATH}/${putCode}`, this.auth.authInfo.token)
-        // // const response = await fetch(`${DELETE_WORK_URL}/${putCode}`, {
-        // //     method: 'DELETE',
-        // //     headers: {
-        // //         Authorization: this.auth.authInfo.token,
-        // //         'Content-Type': 'application/json'
-        // //     }
-        // // });
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-        // return;
     }
 
 
 
     async getEditableWork(putCode: string): Promise<EditablePublication> {
         const work = await this.orcidLinkClient.getWork(putCode);
-        // const work = await this.getWork(putCode);
         return publicationToEditablePublication(work);
     }
 

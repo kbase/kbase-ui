@@ -132,7 +132,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     // Renderers
 
     renderLoading() {
-        return <Loading message="Loading ORCID Interstitial Page ..." />;
+        return <Loading message="Loading ORCID® Interstitial Page ..." />;
     }
 
     renderError({ message }: { message: string }) {

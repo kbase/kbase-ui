@@ -20,20 +20,20 @@ export default class View extends Component<ViewProps> {
                         <a href="https://docs.kbase.us/getting-started/sign-up/linking-orcid" target="_blank" rel="noreferrer">Linking KBase to ORCiD</a>
                     </Accordion.Header>
                     <Accordion.Body>
-                        <p>This doc implies that there is something special about linking one's KBase account to an ORCID account. However, the
-                            existing linking capability is just for ORCID as an identity provider. The link to the ORCID account is only
+                        <p>This doc implies that there is something special about linking one's KBase account to an ORCID® account. However, the
+                            existing linking capability is just for ORCID® as an identity provider. The link to the ORCID® account is only
                             useful for sign in.
                         </p>
                         <p>
-                            KBase only stores the user's ORCID Id. During sign in, the auth server obtains the user's ORCID Id, which is looked up in
+                            KBase only stores the user's ORCID® Id. During sign in, the auth server obtains the user's ORCID® Id, which is looked up in
                             auth system, and if there is a match, a KBase login token is created for the matching KBase account.
                         </p>
                         <p>
-                            This process does not store a persistent token for the user's ORCID account.
+                            This process does not store a persistent token for the user's ORCID® account.
                         </p>
                         <p>
-                            The new ORCID Link capability (front end and back end) will store a long-lasting (20 year) ORCID token which allows us to
-                            query and update their ORICD account. We will, of course, have their ORCID Id no matter how they sign in.
+                            The new ORCID® Link capability (front end and back end) will store a long-lasting (20 year) ORCID® token which allows us to
+                            query and update their ORICD account. We will, of course, have their ORCID® Id no matter how they sign in.
                         </p>
                     </Accordion.Body>
                 </Accordion.Item>
@@ -41,7 +41,7 @@ export default class View extends Component<ViewProps> {
                     <Accordion.Header><a href="https://docs.kbase.us/getting-started/narrative/link-doi" target="_blank" rel="noreferrer">Add Works using the DOE / OSTI Search & Link Wizard</a></Accordion.Header>
                     <Accordion.Body>
                         <p>
-                            This doc describes how to link one's OSTI account to ORCID, and use the OSTI interface to add one's OSTI works to one's ORCID works.
+                            This doc describes how to link one's OSTI account to ORCID, and use the OSTI interface to add one's OSTI works to one's ORCID® works.
                         </p>
                         <p>
                             We can also do this from KBase (one of the demos does this). Whether we want to duplicate this effort or not could be an open question?
@@ -126,10 +126,10 @@ export default class View extends Component<ViewProps> {
             <Row>
                 <Col>
                     <div className="well-body">
-                        <p>Demos and help for development of ORCID Link and friends.</p>
+                        <p>Demos and help for development of ORCID® Link and friends.</p>
                         <ul>
                             <li><a href="https://github.com/kbaseIncubator/kbase-credit-engine-docs" target="_blank" rel="noreferrer">Docs</a></li>
-                            <li><a href="#orcidlink" target="_blank" rel="noreferrer">ORCID Link Home</a></li>
+                            <li><a href="#orcidlink" target="_blank" rel="noreferrer">ORCID® Link Home</a></li>
                         </ul>
                         {this.renderDevInfo()}
                         {this.renderDemoLinks()}

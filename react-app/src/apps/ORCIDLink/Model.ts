@@ -12,7 +12,6 @@ import { DOIForm, DOIFormUpdate, GetNameResult, InitialDOIForm, ORCIDLinkService
 
 
 const START_LINKING_SESSION_PATH = 'start-linking-session';
-const USE_DYNAMIC_SERVICE = true;
 
 // const GET_TEMP_LINK_RECORD_PATH = 'get-temp-link';
 
@@ -31,7 +30,6 @@ export interface LinkRecord {
 export interface LinkResult {
     link: LinkRecord | null;
 }
-
 
 export interface LinkingSessionInfo {
     session_id: string;
@@ -231,12 +229,6 @@ export class Model {
     constructor({ config, auth }: { config: Config, auth: AuthenticationStateAuthenticated }) {
         this.config = config;
         this.auth = auth;
-        // this.orcidLinkClient = new ORCIDLinkServiceClient({
-        //     isDynamicService: false,
-        //     url: 'https://ci.kbase.us/services/orcidlink',
-        //     timeout: 1000,
-        //     token: auth.authInfo.token
-        // });
         this.orcidLinkClient = new ORCIDLinkServiceClient({
             isDynamicService: true,
             url: this.config.services.ServiceWizard.url,
@@ -247,152 +239,32 @@ export class Model {
 
 
     async serviceURL(): Promise<string> {
-        if (USE_DYNAMIC_SERVICE) {
-            const serviceWizard = new GenericClient({
-                module: 'ServiceWizard',
-                timeout: 1000,
-                url: this.config.services.ServiceWizard.url
-            });
-            const [result] = await serviceWizard.callFunc('get_service_status', [{
-                module_name: 'ORCIDLink',
-                version: 'dev'
-            }]) as unknown as [GetServiceStatusResult];
-            return result.url;
-        }
-        return `https://${this.config.deploy.services.urlBase}/services/orcidlink`;
+        const serviceWizard = new GenericClient({
+            module: 'ServiceWizard',
+            timeout: 1000,
+            url: this.config.services.ServiceWizard.url
+        });
+        const [result] = await serviceWizard.callFunc('get_service_status', [{
+            module_name: 'ORCIDLink',
+            version: 'dev'
+        }]) as unknown as [GetServiceStatusResult];
+        return result.url;
     }
-
-    // async dsGet(path: string, token: string) {
-    //     const baseURL = await this.serviceURL();
-    //     const url = `${baseURL}/${path}`
-    //     return fetch(url, {
-    //         headers: {
-    //             authorization: token,
-    //             accept: 'application/json'
-    //         }
-    //     });
-    // }
-
-    // async dsDelete(path: string, token: string) {
-    //     const baseURL = await this.serviceURL();
-    //     const url = `${baseURL}/${path}`
-    //     return fetch(url, {
-    //         method: 'DELETE',
-    //         headers: {
-    //             authorization: token
-    //         }
-    //     });
-    // }
-
-    // async dsPut(path: string, token: string, data: JSONObject) {
-    //     const baseURL = await this.serviceURL();
-    //     const url = `${baseURL}/${path}`
-    //     return fetch(url, {
-    //         method: 'PUT',
-    //         headers: {
-    //             authorization: token,
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(data)
-    //     });
-    // }
-
-    // async dsPost(path: string, token: string, data: JSONObject) {
-    //     const baseURL = await this.serviceURL();
-    //     const url = `${baseURL}/${path}`
-    //     return fetch(url, {
-    //         method: 'POST',
-    //         headers: {
-    //             authorization: token,
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(data)
-    //     });
-    // }
 
     async getProfile(): Promise<ORCIDProfile> {
         return this.orcidLinkClient.getProfile();
-        // const response = await this.dsGet(GET_PROFILE_PATH, this.auth.authInfo.token)
-        // const response = await fetch(GET_PROFILE_URL, {
-        //     headers: {
-        //         authorization: this.auth.authInfo.token
-        //     }
-        // });
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-
-        // const result = JSON.parse(await response.text()) as GetProfileResult;
-        // return result.result;
     }
 
     async isLinked(): Promise<boolean> {
         return this.orcidLinkClient.isLinked();
-        // const response = await this.dsGet(IS_LINKED_PATH, this.auth.authInfo.token)
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-
-        // const result = JSON.parse(await response.text()) as { result: boolean };
-        // return result.result;
     }
 
     async getLink(): Promise<LinkRecord | null> {
         return this.orcidLinkClient.getLink();
-        // const response = await this.dsGet(GET_LINK_PATH, this.auth.authInfo.token)
-        // const response = await fetch(`${GET_LINK_URL}`, {
-        //     headers: {
-        //         authorization: this.auth.authInfo.token
-        //     }
-        // });
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-
-        // const result = JSON.parse(await response.text()) as { link: LinkRecord | null };
-        // return result.link;
-
-
-        // const response = await fetch(LINK_URL, {
-        //     headers: {
-        //         authorization: this.props.auth.authInfo.token
-        //     }
-        // });
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-
-        // const { link } = JSON.parse(await response.text()) as LinkResult;
     }
 
     async deleteLink() {
         return this.orcidLinkClient.deleteLink();
-        // const response = await this.dsDelete(REVOKE_PATH, this.auth.authInfo.token);
-        // // const response = await fetch(REVOKE_URL, {
-        // //     method: 'DELETE',
-        // //     headers: {
-        // //         authorization: this.props.auth.authInfo.token
-        // //     }
-        // // });
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-
-        // // this.setState({
-        // //     linkState: {
-        // //         status: AsyncProcessStatus.SUCCESS,
-        // //         value: { link: null }
-        // //     }
-        // // });
-
-        // // TODO: notification
-
-        // // return null;
     }
 
     /**
@@ -403,23 +275,6 @@ export class Model {
      */
     async startLink({ returnLink, skipPrompt }: { returnLink?: ReturnLink, skipPrompt?: boolean }) {
         const baseURL = await this.serviceURL();
-
-        // // First create a linking session.
-        // const createURL = new URL(`${baseURL}/${CREATE_LINKING_SESSION_PATH}`);
-        // const response = await fetch(createURL, {
-        //     method: 'POST',
-        //     headers: {
-        //         Authorization: this.auth.authInfo.token,
-        //         Accept: 'application/json',
-        //         'Content-Type': 'application/json'
-        //     }
-        // });
-
-        // // TODO handle errors.
-
-        // const result = await response.json() as unknown as {
-        //     session_id: string
-        // };
 
         const { session_id: sessionId } = await this.orcidLinkClient.createLinkingSession();
 
@@ -438,52 +293,7 @@ export class Model {
 
     async getWork(putCode: string): Promise<Publication> {
         return this.orcidLinkClient.getWork(putCode);
-        // const response = await this.dsGet(`${GET_WORK_PATH}/${putCode}`, this.auth.authInfo.token)
-        // // const response = await fetch(`${GET_WORK_URL}/${putCode}`, {
-        // //     headers: {
-        // //         authorization: this.auth.authInfo.token
-        // //     }
-        // // });
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-
-        // const result = JSON.parse(await response.text()) as { result: Publication };
-        // return result.result;
     }
-
-    // async saveWork(work: EditablePublication): Promise<Publication> {
-    //     const temp: WorkUpdate = {
-    //         putCode: work.putCode.value,
-    //         title: work.title.value,
-    //         date: work.date.value,
-    //         publicationType: work.publicationType.value,
-    //         journal: work.journal.value,
-    //         url: work.url.value,
-    //         externalIds: work.externalIds.value
-    //     };
-
-    //     return this.orcidLinkClient.saveWork(temp);
-
-    //     // const response = await this.dsPut(SAVE_WORK_PATH, this.auth.authInfo.token, temp)
-
-    //     // // const response = await fetch(SAVE_WORK_URL, {
-    //     // //     method: 'PUT',
-    //     // //     headers: {
-    //     // //         Authorization: this.auth.authInfo.token,
-    //     // //         'Content-Type': 'application/json'
-    //     // //     },
-    //     // //     body: JSON.stringify(temp)
-    //     // // });
-
-    //     // if (response.status !== 200) {
-    //     //     throw new Error(`Unexpected response: ${response.status}`);
-    //     // }
-
-    //     // const result = JSON.parse(await response.text()) as { result: Publication };
-    //     // return result.result;
-    // }
 
     async createWork(work: EditablePublication): Promise<Publication> {
         const temp: Work = {
@@ -498,53 +308,11 @@ export class Model {
         const { put_code } = await this.orcidLinkClient.createWork(temp);
 
         return this.orcidLinkClient.getWork(put_code);
-
-        // const response = await fetch(CREATE_WORK_URL, {
-        //     method: 'POST',
-        //     headers: {
-        //         Authorization: this.auth.authInfo.token,
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(temp)
-        // });
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-
-        // const result = JSON.parse(await response.text()) as { result: Publication };
-        // return result.result;
     }
 
     async deleteWork(putCode: string): Promise<void> {
         return this.orcidLinkClient.deleteWork(putCode);
-        // const response = await this.dsDelete(`${DELETE_WORK_PATH}/${putCode}`, this.auth.authInfo.token)
-        // const response = await fetch(`${DELETE_WORK_URL}/${putCode}`, {
-        //     method: 'DELETE',
-        //     headers: {
-        //         Authorization: this.auth.authInfo.token,
-        //         'Content-Type': 'application/json'
-        //     }
-        // });
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-        // return;
     }
-
-    // publicationToEditablePublication(publication: Publication): EditablePublication {
-    //     const { putCode, publicationType, title, date, journal, url, externalIds } = publication;
-    //     return {
-    //         putCode,
-    //         publicationType, title, date, journal: journal || '', url: url || '',
-    //         externalIds: externalIds || []
-    //     }
-    // }
-
-    // async getEditableWork(putCode: string): Promise<EditablePublication> {
-    //     const work = await this.getWork(putCode);
-    //     return this.publicationToEditablePublication(work);
-    // }
 
     async fetchNarratives({ from, to }: { from: number, to: number }): Promise<Array<NarrativeInfo>> {
         const client = new NarrativeService({
@@ -566,38 +334,11 @@ export class Model {
             .sort((a, b) => {
                 return -(a.objectInfo.saveDate.localeCompare(b.objectInfo.saveDate));
             });
-        // .map(({ objectInfo, workspaceInfo }) => {
-        //     const { id: workspaceId, version } = objectInfo;
-        //     const { metadata } = workspaceInfo;
-        //     return {
-        //         workspaceId,
-        //         version,
-        //         title: metadata['narrative_nice_name']!
-        //     }
-        // });
-
-
-        // const narratives: Array<NarrativeInfo> = [];
-        // return narratives;
     }
 
     async getName(): Promise<GetNameResult> {
         const { lastName, firstName } = await this.orcidLinkClient.getProfile();
         return { lastName, firstName };
-
-        // const response = await this.dsGet(GET_NAME_PATH, this.auth.authInfo.token);
-        // // const response = await fetch(GET_NAME_URL, {
-        // //     headers: {
-        // //         authorization: this.props.auth.authInfo.token
-        // //     }
-        // // });
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-
-        // const result = JSON.parse(await response.text()) as { result: GetNameResult };
-        // return result.result;
     }
 
     async getNarrativeCitations(narrativeObjectRef: string): Promise<{
@@ -794,91 +535,17 @@ export class Model {
 
     async getDOIForm(formId: string): Promise<DOIForm> {
         return this.orcidLinkClient.getDOIApplication(formId);
-        // const response = await this.dsGet(`${GET_DOI_APPLICATION_PATH}/${formId}`, this.auth.authInfo.token)
-
-        // // const response = await fetch(`${GET_DOI_APPLICATION_URL}/${formId}`, {
-        // //     headers: {
-        // //         authorization: this.auth.authInfo.token
-        // //     }
-        // // });
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-
-        // const result = JSON.parse(await response.text()) as { result: DOIForm };
-        // return result.result;
     }
-
-    // async extractCitationsFromNarrativeApps(objectInfo: ObjectInfo) {
-    //     // get apps from narrative
-    //     const client = new GenericClient({
-    //         module: 'Workspace',
-    //         url: this.config.services.Workspace.url,
-    //         timeout: 1000,
-    //         token: this.auth.authInfo.token
-    //     });
-    //     const [result] = await client.callFunc('get_objects2', [
-    //         {
-    //             "objects": [
-    //                 {
-    //                     "ref": objectInfo.ref,
-    //                     "included": [
-    //                         "cells"
-    //                     ]
-    //                 }
-    //             ]
-
-    //         }
-    //     ]);
-
-
-
-    //     // done.
-
-    // }
-
-    // async extractCitationsFromNarrativeMarkdown() {
-
-    // }
-
-    // async getStaticNarrative(staticNarrativeId: string) {
-    //     const client = new StaticNarrative({
-    //         url: this.config.services.ServiceWizard.url,
-    //         timeout: 10000,
-    //         token: this.auth.authInfo.token
-    //     });
-    //     return client.get_static_narrative_info(static)
-    // }
-
 
     async fetchLinkingSessionInfo(sessionId: string) {
         return this.orcidLinkClient.getLinkingSessionInfo(sessionId);
-        // const response = await this.dsGet(`${GET_LINKING_SESSION_INFO_PATH}/${sessionId}`, this.auth.authInfo.token)
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
-
-        // const rawResult = await response.text();
-        // return JSON.parse(rawResult);
     }
 
     async confirmLink(token: string) {
         return this.orcidLinkClient.finishLink(token);
-        // const response = await this.dsGet(`${FINISH_LINKING_SESSION_PATH}/${token}`, this.auth.authInfo.token);
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
     }
 
     async cancelLink(token: string) {
         return this.orcidLinkClient.cancelLink(token);
-        // const response = await this.dsGet(`${CANCEL_LINKING_SESSION_PATH}/${token}`, this.auth.authInfo.token);
-
-        // if (response.status !== 200) {
-        //     throw new Error(`Unexpected response: ${response.status}`);
-        // }
     }
-
-
 }
