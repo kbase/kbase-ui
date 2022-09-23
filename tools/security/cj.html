@@ -17,17 +17,17 @@
             const messageElement = document.getElementById('message');
             const iframe = document.getElementById('iframe');
 
-            const say = (color, message) => {
-                messageElement.style.color = color;
+            const say = (message, inColor) => {
                 messageElement.innerText = message;
+                messageElement.style.color = inColor;
             }
 
             // track state
 
             // Handle the Load button being clicked.
             const loadurl = (e) => {
-                const url = urlInput.value
-                say('orange', `loading url "${url}"`);
+                const url = new URL(urlInput.value);
+                say(`loading url "${url}"`, 'orange');
                 iframe.src = url;
             };
             const loadButton = document.getElementById("loadbutton");
@@ -42,7 +42,7 @@
 
             // Handle the iframe being loaded
             const oniframeload = () => {
-                say('green', `loaded url "${iframe.getAttribute('src')}", check console...`);
+                say(`loaded url "${iframe.getAttribute('src')}", check console...`, 'green');
             }
             iframe.addEventListener('load', oniframeload);
 
