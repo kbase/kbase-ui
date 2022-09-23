@@ -28,8 +28,8 @@ http {
     # Define upstream servers, for convenience.
     upstream kbase_ui {
         # Use 80 for image; 3000 for devcontainer
-        server {{ .Env.kbase_ui_host }}:80;
-        # server {{ .Env.kbase_ui_host }}:3000;
+        # server {{ .Env.kbase_ui_host }}:80;
+        server {{ .Env.kbase_ui_host }}:3000;
         # allows the proxy to start up even though the 
         # dev server may not be running yet
         server {{ .Env.kbase_ui_host }}:80 backup;
@@ -69,10 +69,6 @@ http {
             {{ end }}
         {{ end }}
     }
-
-    # upstream orcidlink {
-    #     server orcidlink:5000;
-    # }
 
     log_format upstream_log '[$time_local] $remote_addr - $remote_user - $server_name to: $upstream_addr: $request upstream_response_time $upstream_response_time proxy_host $proxy_host upstream_status $upstream_status upstream_response_length $upstream_response_length upstream_http_location $upstream_http_location msec $msec request_time $request_time';
 
@@ -230,7 +226,7 @@ http {
         # specified as a list of service modules
         # note should put the service module name in /etc/hosts and map to localhost
         {{ if .Env.service_proxies }}
-        {{ range split .Env.service_proxies " " }}
+        {{ range splitList " " .Env.service_proxies }}
 
         {{ if eq . "searchapi2" }}
             location /services/searchapi2/legacy {
@@ -266,24 +262,7 @@ http {
         {{ end }}
         {{ end }}
 
-        # set $orcidlink "http://orcidlink:5000/";
-
-        # location /services/orcidlink/ {
-        #     {{ if .Env.deploy_ui_hostname }}
-        #     include /etc/nginx/cors.conf;
-        #     {{ end }}
-
-        #     # proxy_pass $orcidlink;
-        #     proxy_pass http://orcidlink/;
-
-        #     access_log /var/log/nginx/orcidlink.log upstream_log;
-
-        #     proxy_set_header Connection "";
-        #     client_max_body_size 300M;
-        #     proxy_read_timeout 10m;
-        # }
-
-
+     
         # Proxy all service calls, including auth2, to the real CI
         location /services {
             # The cookie path rewriting is just for auth2
@@ -306,12 +285,20 @@ http {
         # the service wizard
         # where XXX is a random-appearing string component provided by the service wizard
         # and Module is the dynamic service module name.
+
         {{ if .Env.dynamic_service_proxies }}
-        {{ range split .Env.dynamic_service_proxies " " }}
+        # OH REALLY? {{ .Env.dynamic_service_proxies }}
+        {{ range splitList " " .Env.dynamic_service_proxies }}
+
         # note that the elements of the list must match the service path used in the ui call,
         # and also the hostname assigned to the docker container.
         # SO this means that probably service entries which are more complicated than simple strings
         #    without punctuation will work, but if they contain a / or something, maybe not.
+
+        #
+        # HMM: {{ . }}
+        #
+
         location ~ ^/dynserv/[^.]+[.]{{ . }}.*$ {
             {{ if $.Env.deploy_ui_hostname }}
                 include /etc/nginx/cors.conf;
@@ -320,11 +307,12 @@ http {
             # This handles plain dynamic service calls, which don't have any path following the module name
             rewrite ^/dynserv/[^.]+[.]{{ . }}$ / break;
 
-            # This handles calls into the dynamic service, presumably GET, so the path is propagated.
+            # This handles calls into the dynamic service with the path is propagated.
             rewrite ^/dynserv/[^.]+[.]{{ . }}(.*)$ $1 break;
             proxy_pass http://{{ . }}:5000;
             proxy_read_timeout 10m;
         }
+
         {{ end }}
         {{ end }}
 
