@@ -131,6 +131,9 @@ export class Messenger {
         const channelName = publishDef.channel;
         const message = publishDef.message;
 
+        const console_workaround = console;
+        console_workaround.log("Messenger.send",publishDef)
+
         const channel = this.channels.get(channelName);
         if (!channel) {
             return;
