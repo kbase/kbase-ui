@@ -6,7 +6,7 @@
         "@kbase/ui-lib": "0.4.12",
         "@types/dompurify": "2.3.4",
         "@types/marked": "4.0.7",
-        "@types/react": "18.0.20",
+        "@types/react": "18.0.21",
         "@types/react-dom": "18.0.6",
         "@types/uuid": "8.3.4",
         "bootstrap": "5.2.1",
