@@ -1,13 +1,15 @@
-import { Component } from 'react';
+import { Model } from 'apps/ORCIDLink/Model';
+import { ORCIDProfile } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import { Model, ORCIDProfile } from 'apps/ORCIDLink/Model';
+import { Component } from 'react';
 import ORCIDLink from './ORCIDLink';
 
 export interface ORCIDLinkControllerProps {
     model: Model;
     stepsState: string;
+    formId: string;
     setTitle: (title: string) => void;
     onDone: (orcidId: string | null) => void;
 }
@@ -55,8 +57,14 @@ export default class ORCIDLinkController extends Component<ORCIDLinkControllerPr
             // Get first N narratives.
             // N is ...??
 
-            // const narrativeCitations = await this.props.model.getNarrativeCitations(this.props.narrativeObjectRef);
-            const orcidProfile = await this.props.model.getProfile();
+            const orcidProfile = await (async () => {
+                if (await this.props.model.isLinked()) {
+
+                    // const narrativeCitations = await this.props.model.getNarrativeCitations(this.props.narrativeObjectRef);
+                    return this.props.model.getProfile();
+                }
+                return null;
+            })();
 
             this.setState({
                 dataState: {
@@ -91,7 +99,7 @@ export default class ORCIDLinkController extends Component<ORCIDLinkControllerPr
 
     createLinkStartURL() {
         const returnURL = new URL(document.location.origin);
-        returnURL.hash = '#orcidlink/demos/doi';
+        returnURL.hash = `#orcidlink/demos/doi/${this.props.formId}`;
         // TODO: add the state info for the narrative setp.
         // const process = {
         //     stepsState: this.props.stepsState
@@ -104,10 +112,26 @@ export default class ORCIDLinkController extends Component<ORCIDLinkControllerPr
         }
 
         const url = new URL(document.location.origin);
-        url.hash = '#orcidlink';
+        url.hash = '#orcidlink/link';
         url.searchParams.set('return_link', JSON.stringify(returnLink));
         return url;
     }
+
+    // renderLinkingLink(step: number) {
+    //     const linkingURL = new URL(`${this.props.baseURL}/#orcidlink/link`);
+    //     const process = {
+    //         step,
+    //         time: Date.now()
+    //     };
+    //     const returnURL = new URL(`${this.props.baseURL}#orcidlink/demos/interstitial1`);
+    //     returnURL.searchParams.set('process', JSON.stringify(process));
+    //     const returnLink = {
+    //         url: returnURL.toString(),
+    //         label: `Some Process, step ${step}`
+    //     }
+    //     linkingURL.searchParams.set('return_link', JSON.stringify(returnLink));
+    //     return <a href={`${linkingURL.toString()}`}>Click here to link your KBase account to your ORCID account <i>(go to step {step})</i></a>
+    // }
 
     // Renderers
 

@@ -1,11 +1,12 @@
-import { Component } from 'react';
+import { Model } from 'apps/ORCIDLink/Model';
+import { ORCIDProfile } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
-import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import View from './View';
-import { Model, ORCIDProfile } from 'apps/ORCIDLink/Model';
-import { Config } from 'types/config';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
+import { Component } from 'react';
+import { Config } from 'types/config';
+import View from './View';
 
 
 export interface ORCIDLinkStateBase {

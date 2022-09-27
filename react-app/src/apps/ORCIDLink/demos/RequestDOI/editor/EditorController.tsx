@@ -1,5 +1,5 @@
-import { Model, ORCIDProfile } from 'apps/ORCIDLink/Model';
-import { DOIForm, DOIFormUpdate } from 'apps/ORCIDLink/ORCIDLinkClient';
+import { Model } from 'apps/ORCIDLink/Model';
+import { DOIForm, DOIFormUpdate, ORCIDProfile } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
@@ -26,12 +26,12 @@ export interface ORCIDLinkStateNotLinked {
 export type ORCIDLinkState =
     ORCIDLinkStateLinked | ORCIDLinkStateNotLinked;
 
-export interface EditorControllerProps {
+export interface RequestDOIEditorControllerProps {
     config: Config;
     auth: AuthenticationStateAuthenticated;
-    process?: JSONObject;
-    doiForm: DOIForm;
+    formId: string;
     setTitle: (title: string) => void;
+    process?: JSONObject;
 }
 
 export interface DataState {
@@ -39,7 +39,7 @@ export interface DataState {
     doiForm: DOIForm
 }
 
-interface EditorControllerState {
+interface RequestDOIEditorControllerState {
     dataState: AsyncProcess<DataState, { message: string }>
 }
 
@@ -48,9 +48,9 @@ export enum ORCIDLinkStatus {
     NOT_LINKED = 'NOT_LINKED'
 }
 
-export default class EditorController extends Component<EditorControllerProps, EditorControllerState> {
+export default class RequestDOIEditorController extends Component<RequestDOIEditorControllerProps, RequestDOIEditorControllerState> {
     model: Model;
-    constructor(props: EditorControllerProps) {
+    constructor(props: RequestDOIEditorControllerProps) {
         super(props);
         this.model = new Model({
             config: this.props.config,
@@ -81,7 +81,8 @@ export default class EditorController extends Component<EditorControllerProps, E
             });
         });
         try {
-            const doiForm = this.props.doiForm;
+            const doiForm = await this.model.getDOIForm(this.props.formId);
+            // const doiForm = this.props.doiForm;
 
             const isLinked = await this.model.isLinked();
             if (!isLinked) {

@@ -1,11 +1,12 @@
-import { AuthenticationStateAuthenticated } from 'contexts/Auth';
-import { Component } from 'react';
-import { Config } from 'types/config';
+import { Model } from 'apps/ORCIDLink/Model';
+import { ORCIDProfile } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
+import { AuthenticationStateAuthenticated } from 'contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
+import { Component } from 'react';
+import { Config } from 'types/config';
 import PreFillForm from './PreFillForm';
-import { Model, ORCIDProfile } from 'apps/ORCIDLink/Model';
 
 export interface PreFillFormControllerProps {
     config: Config;

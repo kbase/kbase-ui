@@ -1,4 +1,3 @@
-import { Publication } from "apps/ORCIDLink/Model";
 import { Component } from "react";
 import { Button, Form } from "react-bootstrap";
 import styles from './PushPublicationForm.module.css';

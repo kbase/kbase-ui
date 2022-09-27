@@ -1,4 +1,4 @@
-import { Publication } from "apps/ORCIDLink/Model";
+import { Publication } from "apps/ORCIDLink/ORCIDLinkClient";
 import { Component } from "react";
 import styles from './PublicationView.module.css';
 

@@ -1,6 +1,6 @@
 import { renderORCIDIcon } from "apps/ORCIDLink/common";
 import { ORCID_URL } from "apps/ORCIDLink/constants";
-import { ORCIDProfile, Publication } from "apps/ORCIDLink/Model";
+import { ORCIDProfile, Publication } from "apps/ORCIDLink/ORCIDLinkClient";
 import AlertMessage from "components/AlertMessage";
 import ErrorAlert from "components/ErrorAlert";
 import { isEqual } from "lib/kb_lib/Utils";

@@ -1,4 +1,4 @@
-import { Model, } from "apps/ORCIDLink/Model";
+import { Model } from "apps/ORCIDLink/Model";
 import { Description } from "apps/ORCIDLink/ORCIDLinkClient";
 import { Component } from "react";
 import DescriptionForm from './Form';
@@ -50,11 +50,21 @@ export default class DescriptionController extends Component<DescriptionControll
         })
     }
 
+    setAbstract(abstract: string) {
+        this.setState({
+            description: {
+                ...this.state.description,
+                abstract
+            }
+        });
+    }
+
     render() {
         return <DescriptionForm
             description={this.state.description}
             addKeyword={this.addKeyword.bind(this)}
             removeKeyword={this.removeKeyword.bind(this)}
+            setAbstract={this.setAbstract.bind(this)}
             onDone={() => { this.props.onDone(this.state.description) }} />
     }
 }

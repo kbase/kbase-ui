@@ -7,8 +7,8 @@ import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { JSONObject } from 'lib/json';
 import { Component } from 'react';
 import { Config } from 'types/config';
-import CreateForm from './CreateForm';
-import EditorController from './EditorController';
+import CreateForm from './Home';
+// import EditorController from './EditorController';
 
 export interface ControllerProps {
     config: Config;
@@ -20,6 +20,7 @@ export interface ControllerProps {
 
 export interface DataState {
     doiForm: DOIForm | null
+    doiForms: Array<DOIForm>
 }
 
 interface ControllerState {
@@ -67,11 +68,14 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                 return null;
             })();
 
+            const doiForms = await this.model.getDOIForms();
+
             this.setState({
                 dataState: {
                     status: AsyncProcessStatus.SUCCESS,
                     value: {
-                        doiForm
+                        doiForm,
+                        doiForms
                     }
                 }
             });
@@ -129,20 +133,32 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             ]
         }
         const doiForm = await this.model.createDOIForm(initialDOIForm);
+        const doiForms = await this.model.getDOIForms();
         this.setState({
             dataState: {
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    doiForm
+                    doiForm,
+                    doiForms
                 }
             }
         });
 
         const newURL = new URL(document.location.href);
-        newURL.searchParams.set('formId', doiForm.form_id);
-        window.history.pushState(null, '', newURL);
+        newURL.hash = `${newURL.hash}/${doiForm.form_id}`;
+        document.location.href = newURL.toString();
     }
 
+    async deleteForm(formId: string) {
+        await this.model.deleteDOIForm(formId);
+        return this.loadData();
+    }
+
+    editForm(formId: string) {
+        const url = new URL(document.location.href);
+        url.hash = `#orcidlink/demos/doi/${formId}`;
+        document.location.href = url.toString();
+    }
 
     // Renderers
 
@@ -154,17 +170,12 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         return <ErrorAlert message={message} />
     }
 
-    renderCreateDOIForm() {
-        return <CreateForm createForm={this.createForm.bind(this)} />
-    }
-
-    renderDOIFOrm(doiForm: DOIForm) {
-        return <EditorController
-            config={this.props.config}
-            auth={this.props.auth}
-            setTitle={this.props.setTitle}
-            process={this.props.process}
-            doiForm={doiForm} />
+    renderCreateDOIForm({ doiForms }: DataState) {
+        return <CreateForm
+            createForm={this.createForm.bind(this)}
+            editForm={this.editForm.bind(this)}
+            doiForms={doiForms}
+            deleteForm={this.deleteForm.bind(this)} />
     }
 
     render() {
@@ -175,10 +186,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             case AsyncProcessStatus.ERROR:
                 return this.renderError(this.state.dataState.error)
             case AsyncProcessStatus.SUCCESS:
-                if (this.state.dataState.value.doiForm === null) {
-                    return this.renderCreateDOIForm();
-                }
-                return this.renderDOIFOrm(this.state.dataState.value.doiForm);
+                return this.renderCreateDOIForm(this.state.dataState.value);
         }
     }
 }

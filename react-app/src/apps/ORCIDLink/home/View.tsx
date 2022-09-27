@@ -98,7 +98,7 @@ export default class View extends Component<ViewProps> {
     renderUnlinked() {
         return <div className="well">
             <div className="well-header">
-                Create ORCID® Link
+                No ORCID® Link
             </div>
             <div className="well-body">
                 <p>You do not currently have a link from your KBase account to an ORCID® account.</p>

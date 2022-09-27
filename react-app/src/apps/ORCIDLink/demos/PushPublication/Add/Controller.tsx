@@ -1,12 +1,12 @@
-import { Component } from 'react';
+import { workExternalIdentifierTypes, workRelationshipIdentifiers } from 'apps/ORCIDLink/data';
+import { Publication } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import WorkForm from './EditPublication';
-import { Publication } from 'apps/ORCIDLink/Model';
+import { Component } from 'react';
 import workTypesRaw from '../../../data/workTypes2.json';
-import { workExternalIdentifierTypes, workRelationshipIdentifiers } from 'apps/ORCIDLink/data';
 import { EditablePublication, initialEditablePublication } from '../PushPublicationModel';
+import WorkForm from './EditPublication';
 
 // Work types
 // TODO: move to external file.

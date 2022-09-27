@@ -1,15 +1,16 @@
-import { Component } from 'react';
+import { Model } from 'apps/ORCIDLink/Model';
+import { MinimalNarrativeInfo, NarrativeInfo } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import { Model, NarrativeInfo } from 'apps/ORCIDLink/Model';
+import { Component } from 'react';
 import SelectNarrative from './SelectNarrative';
-import { MinimalNarrativeInfo } from 'apps/ORCIDLink/ORCIDLinkClient';
 
 export interface SelectNarrativeControllerProps {
     model: Model;
+    selectedNarrative?: MinimalNarrativeInfo | null;
     setTitle: (title: string) => void;
-    onDone: (narrative: MinimalNarrativeInfo) => void;
+    onDone: (narrative: NarrativeInfo) => void;
 }
 
 export interface NarrativeSelection {
@@ -26,7 +27,6 @@ interface SelectNarrativeControllerState {
 export default class SelectNarrativeController extends Component<SelectNarrativeControllerProps, SelectNarrativeControllerState> {
     constructor(props: SelectNarrativeControllerProps) {
         super(props);
-
         this.state = {
             dataState: {
                 status: AsyncProcessStatus.NONE
@@ -58,14 +58,25 @@ export default class SelectNarrativeController extends Component<SelectNarrative
             const narratives = await this.props.model.fetchNarratives({
                 from: 0,
                 to: pageSize
-            })
+            });
+
+            const selectedNarrative = await (async () => {
+                if (!this.props.selectedNarrative) {
+                    return null;
+                }
+                return this.props.model.fetchNarrative(
+                    this.props.selectedNarrative.workspaceId,
+                    this.props.selectedNarrative.objectId,
+                    this.props.selectedNarrative.version
+                );
+            })();
 
             this.setState({
                 dataState: {
                     status: AsyncProcessStatus.SUCCESS,
                     value: {
                         narratives,
-                        selectedNarrative: null
+                        selectedNarrative
                     }
                 }
             });
@@ -92,14 +103,28 @@ export default class SelectNarrativeController extends Component<SelectNarrative
         }
     }
 
-    async selectNarrative(narrativeId: string): Promise<void> {
+    /**
+     * Selects the given narrative by setting the state. 
+     * 
+     * Note that it does not sync with the backend at this point. That is dome when the
+     * step is closed by either moving to the next step or the save button is pressed.
+     * 
+     * @param narrativeId 
+     * @returns 
+     */
+    async selectNarrative(narrativeRef: string): Promise<void> {
         if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
             return;
         }
 
-        const selectedNarrative = this.state.dataState.value.narratives.filter(({ objectInfo: { version }, workspaceInfo: { id } }) => {
-            return narrativeId === `${id}/${version}`
+        const selectedNarrative = this.state.dataState.value.narratives.filter(({ objectInfo: { ref } }) => {
+            return narrativeRef === ref
         })[0]!
+
+        // const selectedNarrative: MinimalNarrativeInfo = {
+        //     workspaceId, objectId, version, ref, 
+        //     title: metadata['narrative_nice_name']
+        // }
 
         this.setState({
             dataState: {
@@ -123,10 +148,7 @@ export default class SelectNarrativeController extends Component<SelectNarrative
     }
 
     onDone(narrative: NarrativeInfo) {
-        this.props.onDone({
-            ref: narrative.objectInfo.ref,
-            title: narrative.workspaceInfo.metadata['narrative_nice_name']!
-        });
+        this.props.onDone(narrative);
     }
 
     renderSuccess(narrativeSelection: NarrativeSelection) {

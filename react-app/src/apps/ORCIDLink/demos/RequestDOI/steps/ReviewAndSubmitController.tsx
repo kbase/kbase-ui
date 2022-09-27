@@ -1,10 +1,11 @@
-import { Model, } from "apps/ORCIDLink/Model";
-import { ReviewAndSubmitData } from "apps/ORCIDLink/ORCIDLinkClient";
+import { Model } from "apps/ORCIDLink/Model";
+import { OSTISubmission, ReviewAndSubmitData } from "apps/ORCIDLink/ORCIDLinkClient";
 import { Component } from "react";
 import ReviewAndSubmitForm from './ReviewAndSubmitForm';
 
 export interface ReviewAndSubmitControllerProps {
     model: Model;
+    submission: OSTISubmission;
     setTitle: (title: string) => void;
     onDone: (reviewAndSubmitData: ReviewAndSubmitData) => void;
 }
@@ -19,7 +20,7 @@ export default class ReviewAndSubmitController extends Component<ReviewAndSubmit
         super(props);
         this.state = {
             reviewAndSubmitData: {
-
+                submission: props.submission
             }
         }
     }
@@ -28,8 +29,10 @@ export default class ReviewAndSubmitController extends Component<ReviewAndSubmit
         this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 8: Review and Submit');
     }
     render() {
-        return <ReviewAndSubmitForm onDone={() => {
-            this.props.onDone(this.state.reviewAndSubmitData);
-        }} />
+        return <ReviewAndSubmitForm
+            submission={this.props.submission}
+            onDone={() => {
+                this.props.onDone(this.state.reviewAndSubmitData);
+            }} />
     }
 }

@@ -1,12 +1,15 @@
 import { Description } from "apps/ORCIDLink/ORCIDLinkClient";
 import Empty from "components/Empty";
+import Well from "components/Well";
 import { Component } from "react";
-import { Stack, Row, Col, Button, Form, FormControl, FormGroup } from "react-bootstrap";
+import { Button, Col, Container, Form, FormControl, Row, Stack } from "react-bootstrap";
+import styles from './Form.module.css';
 
 export interface DescriptionFormProps {
     description: Description;
     addKeyword: (keyword: string) => void;
     removeKeyword: (position: number) => void;
+    setAbstract: (abstract: string) => void;
     onDone: () => void;
 }
 
@@ -28,20 +31,22 @@ export default class DescriptionForm extends Component<DescriptionFormProps, Des
             return <Empty message="No keywords yet" />
         }
         const rows = this.props.description.keywords.map((keyword, index) => {
-            return <Row key={index}>
+            return <Row key={index} className={`${styles.bordered} g-0`} >
                 <Col>
                     {keyword}
                 </Col>
                 <Col md="auto">
-                    <Button variant="danger" onClick={(e) => this.props.removeKeyword(index)}>
+                    <Button variant="outline-danger" className={styles.borderless} onClick={(e) => this.props.removeKeyword(index)}>
                         <span className="fa fa-trash" />
                     </Button>
                 </Col>
-            </Row>
+            </Row >
         });
-        return <Stack gap={1}>
-            {rows}
-        </Stack>
+        return <Well style={{ padding: '0.5em' }}>
+            <Container fluid >
+                {rows}
+            </Container>
+        </Well>;
     }
     addKeyword() {
         this.props.addKeyword(this.state.keyword);
@@ -53,42 +58,44 @@ export default class DescriptionForm extends Component<DescriptionFormProps, Des
         this.setState({ keyword: value });
     }
     onAbstractChanged(value: string) {
+        this.props.setAbstract(value);
         this.setState({ abstract: value });
     }
     render() {
         return <Stack gap={2} style={{ marginBottom: '1em' }
         } >
-            <Row>
+            <Row className="g-0">
                 <h3>Keywords</h3>
                 <p>Enter one or more keywords</p>
             </Row>
-            <Row>
-                <Col>
-                    {this.renderKeywords()}
-                </Col>
-                <Col>
-                    <Form onSubmit={(e) => { e.preventDefault(); this.addKeyword(); }}>
-                        <Row>
-                            <Col md="auto">
-                                <Form.Label>Add a keyword</Form.Label>
-                            </Col>
-                            <Col>
-                                <FormControl type="text"
-                                    value={this.state.keyword}
-                                    onChange={(e) => this.onKeywordChanged(e.currentTarget.value)} />
-                            </Col>
-                            <Col md="auto">
-                                <Button variant="primary"><span className="fa fa-plus" /></Button>
-                            </Col>
-                        </Row>
+            <Container fluid>
+                <Row>
+                    <Col style={{ paddingLeft: '0' }}>
+                        {this.renderKeywords()}
+                    </Col>
+                    <Col style={{ paddingRight: '0' }}>
+                        <Form onSubmit={(e) => { e.preventDefault(); this.addKeyword(); }}>
+                            <Row style={{ marginLeft: '0', marginRight: '0' }}>
+                                <Col md="auto" style={{ marginLeft: '0' }}>
+                                    <Form.Label>Add a keyword</Form.Label>
+                                </Col>
+                                <Col>
+                                    <FormControl type="text"
+                                        value={this.state.keyword}
+                                        onChange={(e) => this.onKeywordChanged(e.currentTarget.value)} />
+                                </Col>
+                                <Col md="auto" style={{ marginRight: '0' }}>
+                                    <Button variant="primary" onClick={this.addKeyword.bind(this)}><span className="fa fa-plus" /></Button>
+                                </Col>
+                            </Row>
+                        </Form>
+                    </Col>
 
-                    </Form>
-                </Col>
-
-            </Row>
-            <Row>
+                </Row>
+            </Container>
+            <Row className="g-0">
                 <h3>Abstract</h3>
-                <Col>
+                <Col md={12}>
                     <FormControl as="textarea"
                         value={this.state.abstract}
                         onChange={(e) => this.onAbstractChanged(e.currentTarget.value)}
@@ -96,9 +103,9 @@ export default class DescriptionForm extends Component<DescriptionFormProps, Des
                         style={{ maxWidth: '50em' }} />
                 </Col>
             </Row>
-            <Row>
-                <Col>
-                    <Row style={{ justifyContent: 'center' }} >
+            <Row className="g-0">
+                <Col md={12}>
+                    <Row style={{ justifyContent: 'center' }} className="g-0">
                         <Button variant="primary" className="w-auto" onClick={this.props.onDone}>Next <span className="fa fa-hand-o-down" /></Button>
                     </Row>
                 </Col>

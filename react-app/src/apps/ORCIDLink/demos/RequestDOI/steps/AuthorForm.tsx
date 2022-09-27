@@ -117,57 +117,55 @@ export default class AuthorForm extends Component<AuthorFormProps, AuthorFormSta
     }
 
     render() {
-        return <Form>
-            <Stack gap={2} >
-                <Row>
-                    <Col md={2}>
-                        First (Given) Name
-                    </Col>
-                    <Col md={10}>
-                        {this.renderFirstNameField()}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={2}>
-                        Middle Name
-                    </Col>
-                    <Col md={10}>
-                        {this.renderMiddleNameField()}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={2}>
-                        Last (Family) Name
-                    </Col>
-                    <Col md={10}>
-                        {this.renderLastNameField()}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={2}>
-                        Email Address
-                    </Col>
-                    <Col md={10}>
-                        {this.renderEmailAddressField()}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={2}>
-                        ORCID ID
-                    </Col>
-                    <Col md={10}>
-                        {this.renderORCIDIdField()}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={2}>
-                        Institution(s)
-                    </Col>
-                    <Col md={10}>
-                        {this.renderInstitutionField()}
-                    </Col>
-                </Row>
-            </Stack>
-        </Form>;
+        return <Stack gap={2} >
+            <Row className="g-0">
+                <Col md={2}>
+                    First (Given) Name
+                </Col>
+                <Col md={10}>
+                    {this.renderFirstNameField()}
+                </Col>
+            </Row>
+            <Row className="g-0">
+                <Col md={2}>
+                    Middle Name
+                </Col>
+                <Col md={10}>
+                    {this.renderMiddleNameField()}
+                </Col>
+            </Row>
+            <Row className="g-0">
+                <Col md={2}>
+                    Last (Family) Name
+                </Col>
+                <Col md={10}>
+                    {this.renderLastNameField()}
+                </Col>
+            </Row>
+            <Row className="g-0">
+                <Col md={2}>
+                    Email Address
+                </Col>
+                <Col md={10}>
+                    {this.renderEmailAddressField()}
+                </Col>
+            </Row>
+            <Row className="g-0">
+                <Col md={2}>
+                    ORCID ID
+                </Col>
+                <Col md={10}>
+                    {this.renderORCIDIdField()}
+                </Col>
+            </Row>
+            <Row className="g-0">
+                <Col md={2}>
+                    Institution(s)
+                </Col>
+                <Col md={10}>
+                    {this.renderInstitutionField()}
+                </Col>
+            </Row>
+        </Stack>;
     }
 }

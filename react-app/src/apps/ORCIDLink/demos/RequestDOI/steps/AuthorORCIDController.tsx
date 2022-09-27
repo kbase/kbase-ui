@@ -1,12 +1,12 @@
-import { Component } from 'react';
+import { Model } from 'apps/ORCIDLink/Model';
+import { Author } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import AuthorForm from './AuthorForm';
-import { Model } from 'apps/ORCIDLink/Model';
+import { Component } from 'react';
+import { Button, ButtonGroup, ButtonToolbar, Row, Stack } from 'react-bootstrap';
 import { FieldState, FieldStatus } from '../common';
-import { Stack, Row, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
-import { Author } from 'apps/ORCIDLink/ORCIDLinkClient';
+import AuthorForm from './AuthorForm';
 
 
 export interface ControllerProps {
@@ -128,7 +128,14 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                 });
             } else {
                 const orcidProfile = await this.props.model.getProfile();
-                const { firstName, lastName, orcidId } = orcidProfile;
+                const { firstName, lastName, orcidId, emailAddresses, affiliations } = orcidProfile;
+                const emailAddress = emailAddresses[0] || '';
+
+                const orgs = affiliations.filter(({ endYear }) => {
+                    return !endYear;
+                }).map(({ name }) => {
+                    return name;
+                }).join(', ');
 
                 this.setState({
                     dataState: {
@@ -154,8 +161,8 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                                 },
                                 emailAddress: {
                                     status: FieldStatus.INITIAL,
-                                    rawValue: this.props.emailAddress || '',
-                                    value: this.props.emailAddress || ''
+                                    rawValue: emailAddress,
+                                    value: emailAddress
                                 },
                                 orcidId: {
                                     status: FieldStatus.INITIAL,
@@ -164,8 +171,8 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                                 },
                                 institution: {
                                     status: FieldStatus.INITIAL,
-                                    rawValue: this.props.institution || '',
-                                    value: this.props.institution || ''
+                                    rawValue: orgs,
+                                    value: orgs
                                 }
                             }
                         }
@@ -685,16 +692,29 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         });
     }
 
+
+
     async importFromORCID() {
         if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
             return;
         }
 
         const orcidProfile = await this.props.model.getProfile();
-        const { firstName, lastName, orcidId } = orcidProfile;
+        const { firstName, lastName, orcidId, emailAddresses, affiliations } = orcidProfile;
         await this.updateFirstName(firstName);
         await this.updateLastName(lastName);
         await this.updateORCIDId(orcidId);
+        // TODO: since there may be multiple available email addresses, we need
+        // a more complex control to allow the user to choose the one they want,
+        // or to override.
+        await this.updateEMailAddress(emailAddresses[0] || '')
+        const orgs = affiliations.filter(({ endYear }) => {
+            return !endYear;
+        }).map(({ name }) => {
+            return name;
+        }).join(', ');
+        await (this.updateInstitution(orgs))
+
     }
 
     // async importFromNarrative() {
@@ -792,7 +812,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
 
     renderSuccess(formState: FormState) {
         return <Stack gap={2}>
-            <Row>
+            <Row className="g-0">
                 <AuthorForm
                     fields={formState.fields}
                     onInputFirstName={this.onInputFirstName.bind(this)}
@@ -804,7 +824,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                     onResetForm={this.onResetForm.bind(this)}
                 />
             </Row>
-            <Row>
+            <Row className="g-0">
                 <ButtonToolbar style={{ justifyContent: 'center' }}>
                     <ButtonGroup>
                         <Button variant="outline-primary" onClick={this.onImportToForm.bind(this)}>Import from ORCID</Button>

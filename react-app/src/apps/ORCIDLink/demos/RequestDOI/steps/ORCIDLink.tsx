@@ -1,4 +1,4 @@
-import { ORCIDProfile } from "apps/ORCIDLink/Model";
+import { ORCIDProfile } from "apps/ORCIDLink/ORCIDLinkClient";
 import Well from "components/Well";
 import { Component } from "react";
 import { Button, Col, Row } from "react-bootstrap";
@@ -53,6 +53,7 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
     }
 
     renderState() {
+        console.log('linked?', this.props.orcidProfile);
         if (this.props.orcidProfile) {
             return this.renderIsLinked(this.props.orcidProfile);
         }

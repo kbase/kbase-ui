@@ -359,6 +359,8 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
         }
         const publicationType = option.value;
 
+        console.log('handle pub type', option.value);
+
         this.setState({
             ...this.state,
             editState: {

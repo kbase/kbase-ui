@@ -1,13 +1,13 @@
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { NarrativeService } from "lib/clients/NarrativeService";
 import { digJSON, isJSONObject, JSONArray, JSONArrayOf, JSONObject } from "lib/json";
-import { ObjectInfo, objectInfoToObject, WorkspaceInfo, workspaceInfoToObject } from "lib/kb_lib/comm/coreServices/Workspace";
+import Workspace, { objectInfoToObject, workspaceInfoToObject } from "lib/kb_lib/comm/coreServices/Workspace";
 import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
 import { SCOPE } from "./constants";
 import { EditablePublication } from "./demos/PushPublication/PushPublicationModel";
-import { DOIForm, DOIFormUpdate, GetNameResult, InitialDOIForm, ORCIDLinkServiceClient, Work } from "./ORCIDLinkClient";
+import { DOIForm, DOIFormUpdate, GetNameResult, InitialDOIForm, MinimalNarrativeInfo, NarrativeInfo, ORCIDLinkServiceClient, ORCIDProfile, Publication, Work } from "./ORCIDLinkClient";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
 
@@ -38,46 +38,6 @@ export interface LinkingSessionInfo {
     orcid_auth: ORCIDAuth;
 }
 
-export interface Affiliation {
-    name: string;
-    role: string;
-    startYear: string;
-    endYear: string | null;
-}
-
-export interface ExternalId {
-    type: string;
-    value: string;
-    url: string;
-    relationship: string;
-}
-
-export interface Publication {
-    putCode: string;
-    createdAt: number;
-    updatedAt: number;
-    source: string;
-    title: string;
-    journal: string;
-    date: string;
-    publicationType: string;
-    url: string;
-    // citation
-    citationType: string;
-    citation: string;
-    citationDescription: string;
-    externalIds: Array<ExternalId>
-}
-
-export interface ORCIDProfile {
-    // TODO: split into profile and info? E.g. id in info, profile info in profile...
-    orcidId: string;
-    firstName: string;
-    lastName: string;
-    bio: string;
-    affiliations: Array<Affiliation>
-    publications: Array<Publication>
-}
 
 export interface ReturnLink {
     url: string;
@@ -130,10 +90,6 @@ export type GetProfileResult = {
     result: ORCIDProfile
 };
 
-export interface NarrativeInfo {
-    objectInfo: ObjectInfo
-    workspaceInfo: WorkspaceInfo
-}
 
 export interface CellBase {
     type: 'markdown' | 'app'
@@ -336,12 +292,27 @@ export class Model {
             });
     }
 
+    async fetchNarrative(workspaceId: number, objectId: number, version: number): Promise<NarrativeInfo> {
+        const client = new Workspace({
+            url: this.config.services.Workspace.url,
+            timeout: 1000,
+            token: this.auth.authInfo.token
+        });
+        const objectInfos = await client.get_object_info3({ objects: [{ objid: objectId, wsid: workspaceId, ver: version }] });
+        const objectInfo = objectInfos.infos[0];
+        const workspaceInfo = await client.get_workspace_info({ id: workspaceId });
+
+        return {
+            objectInfo, workspaceInfo
+        };
+    }
+
     async getName(): Promise<GetNameResult> {
         const { lastName, firstName } = await this.orcidLinkClient.getProfile();
         return { lastName, firstName };
     }
 
-    async getNarrativeCitations(narrativeObjectRef: string): Promise<{
+    async getNarrativeCitations(narrativeInfo: MinimalNarrativeInfo): Promise<{
         narrativeAppCitations: NarrativeAppCitations,
         markdownCitations: Array<Citation>
     }> {
@@ -358,7 +329,7 @@ export class Model {
             {
                 "objects": [
                     {
-                        "ref": narrativeObjectRef,
+                        "ref": narrativeInfo.ref,
                         "included": [
                             "cells/[*]/cell_type",
                             "cells/[*]/metadata/kbase/appCell/app/id",
@@ -535,6 +506,14 @@ export class Model {
 
     async getDOIForm(formId: string): Promise<DOIForm> {
         return this.orcidLinkClient.getDOIApplication(formId);
+    }
+
+    async deleteDOIForm(formId: string): Promise<void> {
+        return this.orcidLinkClient.deleteDOIApplication(formId);
+    }
+
+    async getDOIForms(): Promise<Array<DOIForm>> {
+        return this.orcidLinkClient.getDOIApplications();
     }
 
     async fetchLinkingSessionInfo(sessionId: string) {

@@ -131,7 +131,7 @@ export default class AuthorsStep extends Component<AuthorsStepProps, AuthorsStep
 
     render() {
         return <Stack gap={2} style={{ marginBottom: '1em' }}>
-            <Row>
+            <Row className="g-0">
                 <Col md={2}>
                     Title
                 </Col>
@@ -139,7 +139,7 @@ export default class AuthorsStep extends Component<AuthorsStepProps, AuthorsStep
                     {this.renderTitleField()}
                 </Col>
             </Row>
-            <Row>
+            <Row className="g-0">
                 <Col md={2}>
                     Primary Author
                 </Col>
@@ -149,9 +149,9 @@ export default class AuthorsStep extends Component<AuthorsStepProps, AuthorsStep
                     </Well>
                 </Col>
             </Row>
-            <Row>
+            <Row className="g-0">
                 <Col md={12}>
-                    <Row style={{ justifyContent: 'center' }} >
+                    <Row style={{ justifyContent: 'center' }} className="g-0">
                         <Button variant="primary" className="w-auto" onClick={this.onDone.bind(this)}>Next <span className="fa fa-hand-o-down" /></Button>
                     </Row>
                 </Col>

@@ -1,9 +1,9 @@
 import { Component, CSSProperties } from 'react';
 import styles from './PropTable.module.css';
 
-export type PropTableColumnValue = string | JSX.Element | (() => JSX.Element);
+export type PropTableColumnValue = string | JSX.Element | (() => JSX.Element) | undefined;
 
-export type PropTableRow = [string, PropTableColumnValue ];
+export type PropTableRow = [string, PropTableColumnValue];
 
 export interface PropTableProps {
     rows: Array<PropTableRow>;
@@ -18,7 +18,7 @@ export interface PropTableProps {
     };
 }
 
-interface PropTableState {}
+interface PropTableState { }
 
 export default class PropTable extends Component<
     PropTableProps,
@@ -73,6 +73,8 @@ export default class PropTable extends Component<
     renderColumnValue(value: PropTableColumnValue) {
         if (typeof value === 'function') {
             return value();
+        } else if (typeof value === 'undefined') {
+            return 'n/a';
         } else {
             return value;
         }

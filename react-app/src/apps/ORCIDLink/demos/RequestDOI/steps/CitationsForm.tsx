@@ -1,4 +1,5 @@
 import { AppCitations, Citation, Citations } from 'apps/ORCIDLink/Model';
+import Empty from 'components/Empty';
 import Well from 'components/Well';
 import { Component } from 'react';
 import { Form, Stack, Row, Col, Accordion, Button } from 'react-bootstrap';
@@ -21,6 +22,9 @@ function ifEmpty(value: string | null | undefined, defaultValue: string = 'n/a')
 export default class CitationsForm extends Component<CitationsFormProps> {
 
     renderCitations(citations: Array<Citation>) {
+        if (citations.length === 0) {
+            return <Empty message="No citations" />
+        }
         const rows = citations.map(({ citation, url, doi }, index) => {
             return <Row key={index}>
                 <Col md={8}>{citation}</Col>
@@ -37,25 +41,26 @@ export default class CitationsForm extends Component<CitationsFormProps> {
     }
 
     renderAppTagCitations(appCitations: Array<AppCitations>, tagTitle: string) {
-        if (appCitations.length === 0) {
-            return;
-        }
-
-        const app = appCitations.map(({ id, title, citations }) => {
-            return <Stack gap={2} key={id} style={{ margin: '0.5em 0' }}>
-                <Row >
-                    <Row>
-                        <h5>{title} ({id})</h5>
+        const citations = (() => {
+            if (appCitations.length === 0) {
+                return <Empty message={`No ${tagTitle} citations`} />
+            }
+            return appCitations.map(({ id, title, citations }) => {
+                return <Stack gap={2} key={id} style={{ margin: '0.5em 0' }}>
+                    <Row >
+                        <Row>
+                            <h5>{title} ({id})</h5>
+                        </Row>
+                        <Row>
+                            <Col>{this.renderCitations(citations)}</Col>
+                        </Row>
                     </Row>
-                    <Row>
-                        <Col>{this.renderCitations(citations)}</Col>
-                    </Row>
-                </Row>
-            </Stack>
-        });
-        return <div className="well" style={{ padding: '1em', marginBottom: '1em' }}>
+                </Stack>
+            });
+        })();
+        return <div style={{ padding: '1em', marginBottom: '1em' }}>
             <h4>{tagTitle}</h4>
-            {app}
+            {citations}
         </div>
     }
 

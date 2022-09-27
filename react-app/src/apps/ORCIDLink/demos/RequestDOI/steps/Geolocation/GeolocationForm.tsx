@@ -7,6 +7,7 @@ import { Stack, Row, Col, Button, Form, Table } from "react-bootstrap";
 import LocationPointEditor from './LocationPointEditor/Controller';
 import BoundingBoxEditor from './BoundingBox/Controller';
 import { GeolocationData, LocationType, LocationPoint, LocationBoundingBox, Location } from "apps/ORCIDLink/ORCIDLinkClient";
+import Empty from "components/Empty";
 
 
 export interface GeolocationFormProps {
@@ -131,11 +132,14 @@ export default class GeolocationForm extends Component<GeolocationFormProps, Geo
         }
     }
     renderLocations() {
+        if (this.props.geolocationData.locations.length === 0) {
+            return <Empty message="No locations yet entered" />
+        }
         const rows = (() => {
-            if (this.props.geolocationData.locations.length === 0) {
-                // return <Empty message="No locations" />;
-                return <tr><td colSpan={2} style={{ textAlign: 'center' }}><i>No locations yet entered</i></td></tr>
-            }
+            // if (this.props.geolocationData.locations.length === 0) {
+            //     // return <Empty message="No locations" />;
+            //     return <tr><td colSpan={2} style={{ textAlign: 'center' }}><i>No locations yet entered</i></td></tr>
+            // }
             return this.props.geolocationData.locations.map((location, index) => {
                 const description = (() => {
                     switch (location.type) {

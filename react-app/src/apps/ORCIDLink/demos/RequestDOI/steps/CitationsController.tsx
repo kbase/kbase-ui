@@ -1,14 +1,14 @@
-import { Component } from 'react';
+import { Citations, Model, NarrativeAppCitations } from 'apps/ORCIDLink/Model';
+import { CitationResults, MinimalNarrativeInfo } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import { Citations, Model, NarrativeAppCitations } from 'apps/ORCIDLink/Model';
+import { Component } from 'react';
 import CitationsForm from './CitationsForm';
-import { CitationResults } from 'apps/ORCIDLink/ORCIDLinkClient';
 
 export interface CitationsControllerProps {
     model: Model;
-    narrativeObjectRef: string;
+    narrativeInfo: MinimalNarrativeInfo;
     setTitle: (title: string) => void;
     onDone: (citations: CitationResults) => void;
 }
@@ -53,7 +53,7 @@ export default class CitationsController extends Component<CitationsControllerPr
             // Get first N narratives.
             // N is ...??
 
-            const narrativeCitations = await this.props.model.getNarrativeCitations(this.props.narrativeObjectRef);
+            const narrativeCitations = await this.props.model.getNarrativeCitations(this.props.narrativeInfo);
 
 
             this.setState({

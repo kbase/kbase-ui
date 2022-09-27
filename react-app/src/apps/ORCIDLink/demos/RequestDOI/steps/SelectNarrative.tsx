@@ -1,4 +1,4 @@
-import { NarrativeInfo } from 'apps/ORCIDLink/Model';
+import { NarrativeInfo } from 'apps/ORCIDLink/ORCIDLinkClient';
 import AlertMessage from 'components/AlertMessage';
 import Well from 'components/Well';
 import { Component } from 'react';
@@ -12,20 +12,33 @@ export interface SelectNarrativeProps {
 }
 
 interface SelectNarrativeState {
+    selectedNarrativeRef: string | null;
 }
 
 export default class SelectNarrative extends Component<SelectNarrativeProps, SelectNarrativeState> {
-
+    constructor(props: SelectNarrativeProps) {
+        super(props);
+        this.state = {
+            selectedNarrativeRef: props.selectedNarrative ? props.selectedNarrative.objectInfo.ref : null
+        }
+    }
+    selectNarrative(selectedNarrativeRef: string) {
+        this.setState({
+            selectedNarrativeRef
+        })
+        this.props.selectNarrative(selectedNarrativeRef);
+    }
     renderNarrativeSelect() {
-        const options = this.props.narratives.map(({ objectInfo: { version }, workspaceInfo: { id, metadata } }) => {
+        const options = this.props.narratives.map(({ objectInfo: { ref }, workspaceInfo: { metadata } }) => {
             const title = metadata['narrative_nice_name'];
-            const narrativeRef = `${id}/${version}`;
-            return <option value={narrativeRef} key={narrativeRef}>{title}</option>;
+            return <option value={ref} key={ref}>{title}</option>;
         });
         options.unshift(<option value='' key='none'>- Please select a narrative -</option>)
-        return <Form.Select onChange={(e) => {
-            this.props.selectNarrative(e.currentTarget.value)
-        }}>
+        return <Form.Select
+            value={this.state.selectedNarrativeRef || undefined}
+            onChange={(e) => {
+                this.selectNarrative(e.currentTarget.value)
+            }}>
             {options}
         </Form.Select>
     }
@@ -57,8 +70,8 @@ export default class SelectNarrative extends Component<SelectNarrativeProps, Sel
     }
 
     render() {
-        return <Stack gap={2} style={{ marginBottom: '1em' }} >
-            <Row className="gx-2">
+        return <Stack gap={2} style={{ marginBottom: '1em' }}  >
+            <Row className="g-0">
                 <Col md={2}>
                     Narratives
                 </Col>
@@ -66,7 +79,7 @@ export default class SelectNarrative extends Component<SelectNarrativeProps, Sel
                     {this.renderNarrativeSelect()}
                 </Col>
             </Row>
-            <Row>
+            <Row className="g-0">
                 <Col md={2}>
                     Selected Narrative
                 </Col>
@@ -74,9 +87,9 @@ export default class SelectNarrative extends Component<SelectNarrativeProps, Sel
                     {this.renderSelectedNarrative()}
                 </Col>
             </Row>
-            <Row>
+            <Row className="g-0">
                 <Col md={12}>
-                    <Row style={{ justifyContent: 'center' }} >
+                    <Row style={{ justifyContent: 'center' }} className="g-0">
                         <Button variant="primary" className="w-auto" onClick={this.props.onDone}>Next <span className="fa fa-hand-o-down" /></Button>
                     </Row>
                 </Col>

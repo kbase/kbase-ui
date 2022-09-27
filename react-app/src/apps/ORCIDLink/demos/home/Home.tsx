@@ -1,6 +1,6 @@
 import LinkView from 'apps/ORCIDLink/LinkView';
 import { Component } from 'react';
-import { Accordion, Button, Col, Row, Stack } from 'react-bootstrap';
+import { Accordion, Button, Col, ListGroup, Nav, Row, Stack } from 'react-bootstrap';
 import { LinkInfo } from './Controller';
 
 export interface ViewProps {
@@ -9,7 +9,7 @@ export interface ViewProps {
 
 export default class View extends Component<ViewProps> {
     renderDevInfo() {
-        return <div>
+        return <div style={{ marginTop: '1em' }}>
             <h3>Extant links</h3>
             <p>
                 These are existing KBase docs related to ORCID
@@ -53,6 +53,86 @@ export default class View extends Component<ViewProps> {
     }
 
     renderDemoLinks() {
+
+        const linkData = [{
+            url: "#orcidlink/demos/interstitial1",
+            label: 'Linking via Interstitial Page',
+            requiresLink: false,
+            description: [
+                <p>Sometimes a user tool either requires or can utilize the ORCID Link. After a quick call to the
+                    ORCID Link service to determine if the user does have a link, if it is determined that the user
+                    does not have a link, the tool may offer the user the option of creating a link on the fly.
+                    The ORCID Link tool will return the browser to wherever the initial tool specifies.</p>
+            ]
+        }, {
+            url: "#orcidlink/demos/doi",
+            label: 'Request DOI Form',
+            requiresLink: false,
+            description: []
+        }, {
+            url: "#orcidlink/demos/push-publication",
+            label: 'Push Publication to ORCID',
+            requiresLink: true,
+            description: []
+        }];
+        const items = linkData.map(({ url, label, requiresLink, description }, index) => {
+            if (requiresLink && this.props.link === null) {
+                return null;
+            }
+            return <Accordion.Item eventKey="0">
+                <Accordion.Header>
+                    <a href={url}>{label}</a>
+                </Accordion.Header>
+                <Accordion.Body>
+                    {description.map((content) => {
+                        return <p>{content}</p>
+                    })}
+                </Accordion.Body>
+            </Accordion.Item>
+        })
+        return <div style={{ marginTop: '1em' }}>
+            const items =
+            <h3>Demos</h3>
+            <Accordion>
+                <Accordion.Item eventKey="0">
+                    <Accordion.Header>
+                        <a href="#orcidlink/demos/interstitial1">Linking via Interstitial Page</a>
+                    </Accordion.Header>
+                    <Accordion.Body>
+                        <p>
+                            Sometimes a user tool either requires or can utilize the ORCID Link. After a quick call to the
+                            ORCID Link service to determine if the user does have a link, if it is determined that the user
+                            does not have a link, the tool may offer the user the option of creating a link on the fly.
+                            The ORCID Link tool will return the browser to wherever the initial tool specifies.
+                        </p>
+                    </Accordion.Body>
+                </Accordion.Item>
+                <Accordion.Item eventKey="1">
+                    <Accordion.Header>
+                        <a href="#orcidlink/demos/doi">Request DOI Form</a>
+                    </Accordion.Header>
+                    <Accordion.Body>
+                        <p>
+                            This is one approach to creating a DOI request.
+                        </p>
+                    </Accordion.Body>
+                </Accordion.Item>
+                <Accordion.Item eventKey="2">
+                    <Accordion.Header>
+                        <a href="#orcidlink/demos/push-publication">Push Publication to ORCID</a>
+                    </Accordion.Header>
+                    <Accordion.Body>
+                        <p>
+                            This is a demonstration of how to manually add, edit, and delete publications
+                            from one's ORCID account.
+                        </p>
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
+        </div>
+    }
+
+    renderDemoLinksx() {
         const linkData = [{
             url: "#orcidlink/demos/interstitial1",
             label: 'Linking via Interstitial Page',
@@ -63,7 +143,7 @@ export default class View extends Component<ViewProps> {
             requiresLink: false
         }, {
             url: "#orcidlink/demos/push-publication",
-            label: 'Push DOI Publication to ORCID',
+            label: 'Push Publication to ORCID',
             requiresLink: true
         }];
         const menu = linkData.map(({ url, label, requiresLink }, index) => {
@@ -96,21 +176,13 @@ export default class View extends Component<ViewProps> {
     renderUnlinked() {
         return <div className="well">
             <div className="well-header">
-                Create ORCID® Link
+                Not linked
             </div>
             <div className="well-body">
                 <p>You do not currently have a link from your KBase account to an ORCID® account.</p>
 
-                <p>When clicking the button below, you will be redirected to ORCID®, where you may
-                    sign in to your ORCID® account and grant permission to KBase to access certain
-                    aspects of your ORCID® account.
-                </p>
             </div>
-            <div className="well-footer" style={{ justifyContent: 'center' }}>
-                <Button variant="primary" href="/#orcidlink/link">
-                    <span className="fa fa-lg fa-plus" /> Create ORCID® Link …
-                </Button>
-            </div>
+
         </div>
     }
 
@@ -121,19 +193,32 @@ export default class View extends Component<ViewProps> {
         return this.renderUnlinked();
     }
 
+    renderNav() {
+        return <div>
+            <Nav >
+                <Nav.Link href="https://github.com/kbaseIncubator/kbase-credit-engine-docs" target="_blank" rel="noreferrer"><span className="fa fa-file-o" /> Docs</Nav.Link>
+                <Nav.Link href="#orcidlink" target="_blank" rel="noreferrer"><span className="fa fa-home" /> ORCID® Link Home</Nav.Link>
+            </Nav>
+        </div>
+    }
+
+    renderNavx() {
+        return <div>
+            <ListGroup variant="pill">
+                <ListGroup.Item action active={false} href="https://github.com/kbaseIncubator/kbase-credit-engine-docs" target="_blank" rel="noreferrer"><span className="fa fa-file-o" /> Docs</ListGroup.Item>
+                <ListGroup.Item action active={false} href="#orcidlink" target="_blank" rel="noreferrer"><span className="fa fa-home" /> ORCID® Link Home</ListGroup.Item>
+            </ListGroup>
+        </div>
+    }
+
     render() {
         return <Stack gap={3}>
             <Row>
                 <Col>
-                    <div className="well-body">
-                        <p>Demos and help for development of ORCID® Link and friends.</p>
-                        <ul>
-                            <li><a href="https://github.com/kbaseIncubator/kbase-credit-engine-docs" target="_blank" rel="noreferrer">Docs</a></li>
-                            <li><a href="#orcidlink" target="_blank" rel="noreferrer">ORCID® Link Home</a></li>
-                        </ul>
-                        {this.renderDevInfo()}
-                        {this.renderDemoLinks()}
-                    </div>
+                    <p>Demos and help for development of ORCID® Link and friends.</p>
+                    {this.renderNav()}
+                    {this.renderDemoLinks()}
+                    {this.renderDevInfo()}
                 </Col>
                 <Col>
                     {this.renderLinkStatus()}
