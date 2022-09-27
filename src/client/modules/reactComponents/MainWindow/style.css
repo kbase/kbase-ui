@@ -28,6 +28,10 @@
     flex: 0 0 75px;
 }
 
+.MainWindow .-header, .MainWindow .-nav {
+    display: none;
+}
+
 .MainWindow .-body > .-content {
     flex: 1 1 0px;
     display: flex;
@@ -136,7 +140,7 @@
 
 /* Navbar */
 
-/* 
+/*
  *  Main Navigation Bar
 */
 
@@ -245,8 +249,8 @@
 
 /* Body */
 
-/* Tweak navbar, sidebar and main content areas to fit together 
-The navbar and sidebar are fixed -- so out of flow and need absolute positioning 
+/* Tweak navbar, sidebar and main content areas to fit together
+The navbar and sidebar are fixed -- so out of flow and need absolute positioning
 Although the sidebar is partially positioned with part of the navbar.
 The content area is normal flow and just needs to have a matching top margin.
 */
