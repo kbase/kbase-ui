@@ -11,6 +11,7 @@ import {
     RoutingLocation,
 } from "./router";
 import { Receiver, Runtime, Service, SimpleMap } from "../../lib/types";
+import { initEuropaRoutes } from "./europa";
 
 type RouteHandler = RoutedRequest;
 
@@ -71,11 +72,7 @@ export class RouteService extends Service<RouteServiceConfig> {
         this.currentRouteHandler = null;
         this.receivers = [];
         this.eventListeners = [];
-        this.runtime.receive('app', 'route-component', (routed) => {
-          if(window.parent){
-            window.parent.postMessage(routed,'https://ci-europa.kbase.us')
-          }
-        });
+        initEuropaRoutes(this.runtime);
     }
 
     doRoute() {
