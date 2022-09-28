@@ -95,7 +95,7 @@ plugins:
               account: kbase
     - name: typeview
       globalName: kbase-ui-plugin-typeview
-      version: 4.0.1
+      version: 4.1.0
       source:
           github:
               account: kbase
