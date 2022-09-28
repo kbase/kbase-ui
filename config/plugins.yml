@@ -28,10 +28,11 @@ plugins:
               account: eapearson
     - name: data-search
       globalName: kbase-ui-plugin-data-search
-      version: 2.4.3
+      version: 2.5.0
       source:
           github:
               account: kbase
+              release: true
     - name: dataview
       globalName: kbase-ui-plugin-dataview
       version: 4.15.0
