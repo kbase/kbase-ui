@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { DataObject } from '../../utils/NarrativeModel';
 import { getWSTypeName } from '../../utils/stringUtils';
-import { TypeIcon } from '../Icon';
+import TypeIcon from 'components/TypeIcon/TypeIcon';
 import { Config } from 'types/config';
 import { AuthInfo } from 'contexts/Auth';
 import Empty from 'components/Empty';
@@ -25,9 +25,7 @@ export default class DataView extends React.Component<Props, {}> {
             <div key={key} className="row my-3">
                 <div className="col-auto">
                     <TypeIcon
-                        objectType={typeName}
-                        authInfo={this.props.authInfo}
-                        config={this.props.config}
+                        typeName={typeName}
                     />
                 </div>
                 <div

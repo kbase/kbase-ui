@@ -1,0 +1,680 @@
+{
+    "typeIcons": [
+        {
+            "typeName": "AssemblyInput",
+            "classNames": [
+                "icon",
+                "icon-reads"
+            ],
+            "color": "##66B1DB",
+            "iconType": "kbase"
+        },
+        {
+            "typeName": "Assembly",
+            "classNames": [
+                "fa-align-justify"
+            ],
+            "color": "#66B1DB",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ChromatographyMatrix",
+            "classNames": [
+                "fa-table"
+            ],
+            "color": "#006064",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "Collection",
+            "classNames": [
+                "fa-list-ul"
+            ],
+            "color": "#D2232A",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ContigSet",
+            "classNames": [
+                "fa-align-justify"
+            ],
+            "color": "#66B1DB",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "DomainAlignment",
+            "classNames": [
+                "fa-sliders"
+            ],
+            "color": "#00BCD4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "EstimateKResult",
+            "classNames": [
+                "fa-area-chart"
+            ],
+            "color": "#FFDB33",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ExpressionMatrix",
+            "classNames": [
+                "fa-th"
+            ],
+            "color": "#FFDB33",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ExpressionSample",
+            "classNames": [
+                "fa-tachometer"
+            ],
+            "color": "#FFDB33",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ExpressionSeries",
+            "classNames": [
+                "fa-tachometer"
+            ],
+            "color": "#FFDB33",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "FBA",
+            "classNames": [
+                "icon",
+                "icon-metabolism"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "kbase"
+        },
+        {
+            "typeName": "FBAModel",
+            "classNames": [
+                "icon",
+                "icon-metabolism"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "kbase"
+        },
+        {
+            "typeName": "FeatureClusters",
+            "classNames": [
+                "fa-th-list"
+            ],
+            "color": "#D2232A",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "FeatureSet",
+            "classNames": [
+                "fa-list-ul"
+            ],
+            "color": "#D2232A",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "FunctionalMatrix",
+            "classNames": [
+                "fa-table"
+            ],
+            "color": "#C1CD23",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "Genome",
+            "classNames": [
+                "icon",
+                "icon-genome"
+            ],
+            "color": "#D2232A",
+            "iconType": "kbase"
+        },
+        {
+            "typeName": "GenomeAnnotation",
+            "classNames": [
+                "icon",
+                "icon-genome"
+            ],
+            "color": "#3F51B5",
+            "iconType": "kbase"
+        },
+        {
+            "typeName": "GenomeComparison",
+            "classNames": [
+                "icon",
+                "icon-compare"
+            ],
+            "color": "#66489D",
+            "iconType": "kbase"
+        },
+        {
+            "typeName": "GenomeSet",
+            "classNames": [
+                "fa-list-ul"
+            ],
+            "color": "#D2232A",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "Heatmap",
+            "classNames": [
+                "fa-th"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "Media",
+            "classNames": [
+                "fa-flask"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "AnnotatedMetagenomeAssembly",
+            "classNames": [
+                "icon",
+                "icon-metagenome"
+            ],
+            "color": "#006630",
+            "iconType": "kbase"
+        },
+        {
+            "typeName": "Metagenome",
+            "classNames": [
+                "icon",
+                "icon-metagenome"
+            ],
+            "color": "#006630",
+            "iconType": "kbase"
+        },
+        {
+            "typeName": "Network",
+            "classNames": [
+                "fa-code-fork"
+            ],
+            "color": "#795548",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "PairedEndLibrary",
+            "classNames": [
+                "icon",
+                "icon-reads"
+            ],
+            "color": "#EDA7AA",
+            "iconType": "kbase"
+        },
+        {
+            "typeName": "Pangenome",
+            "classNames": [
+                "fa-bullseye"
+            ],
+            "color": "#66489D",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "PhenotypeSet",
+            "classNames": [
+                "fa-list-ul"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "PhenotypeSimulationSet",
+            "classNames": [
+                "fa-list-ul"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ProteomeComparison",
+            "classNames": [
+                "fa-arrows-h"
+            ],
+            "color": "#66489D",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ReadsSet",
+            "classNames": [
+                "icon",
+                "icon-reads"
+            ],
+            "color": "#EDA7AA",
+            "iconType": "kbase"
+        },
+        {
+            "typeName": "ReferenceAssembly",
+            "classNames": [
+                "fa-book"
+            ],
+            "color": "#D2232A",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "SingleEndLibrary",
+            "classNames": [
+                "icon",
+                "icon-reads"
+            ],
+            "color": "#EDA7AA",
+            "iconType": "kbase"
+        },
+        {
+            "typeName": "TaxonomicMatrix",
+            "classNames": [
+                "fa-table"
+            ],
+            "color": "#66489D",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "Taxon",
+            "classNames": [
+                "fa-table"
+            ],
+            "color": "#795548",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "Tree",
+            "classNames": [
+                "icon",
+                "icon-tree"
+            ],
+            "color": "#66489D",
+            "iconType": "kbase"
+        },
+        {
+            "typeName": "SampleSet",
+            "classNames": [
+                "fa-list-ul"
+            ],
+            "color": "#C1CD23",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "AmpliconMatrix",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#C1CD23",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "AssemblyFile",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#66B1DB",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "AssemblyReport",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#795548",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "AssemblySet",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#66B1DB",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "Associations",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#FFDB33",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "AttributeMapping",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#C1CD23",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "BinnedContigs",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#66B1DB",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "Biom",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#006630",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "Bowtie2Indexes",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#B8D4EC",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ChemicalAbundanceMatrix",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ClusterSet",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#66489D",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "CompoundSet",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "DifferentialExpressionMatrix",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#FFDB33",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "DifferentialExpressionMatrixSet",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#FFDB33",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "DomainAnnotation",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#66489D",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "DomainLibrary",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#66489D",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "DomainModelSet",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#66489D",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "EscherMap",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ExpressionSet",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#FFDB33",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "FBAModelAttribureMapping",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "FBAModelSet",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "FBAPathwayAnalysis",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "FeatureSetSet",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#D2232A",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "FigureProperties",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "FloatTable",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#F58423",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "FunctionalProfile",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#C1CD23",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "GFFAnnotation",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#D2232A",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "MetaboliteMatrix",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ModelComparison",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "MSA",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#B8D4EC",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "NewModelTemplate",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "PCAMatrix",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#C1CD23",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "RNASeqAlignment",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#B8D4EC",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "RNASeqAlignmentSet",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#B8D4EC",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "RNASeqExpression",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#FFDB33",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "RNASeqSampleSet",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#FFDB33",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ReactionMatrix",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#AAE0E4",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ReadsAlignmentSet",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#B8D4EC",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "ReferenceAnnotation",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#D2232A",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "Report",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#795548",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "SequenceSet",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#B8D4EC",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "StringDataTable",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#F58423",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "TraitMatrix",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#66489D",
+            "iconType": "fontAwesome"
+        },
+        {
+            "typeName": "Variations",
+            "classNames": [
+                "fa-file-o"
+            ],
+            "color": "#B8D4EC",
+            "iconType": "fontAwesome"
+        }
+    ],
+    "colors": [
+        "#F44336",
+        "#1D7EEA",
+        "#E91E63",
+        "#9C27B0",
+        "#3F51B5",
+        "#2196F3",
+        "#673AB7",
+        "#FFC107",
+        "#0277BD",
+        "#00BCD4",
+        "#009688",
+        "#4CAF50",
+        "#33691E",
+        "#2E7D32",
+        "#AEEA00",
+        "#03A9F4",
+        "#FF9800",
+        "#FF5722",
+        "#795548",
+        "#006064",
+        "#607D8B",
+        "#316A4E"
+    ]
+}
