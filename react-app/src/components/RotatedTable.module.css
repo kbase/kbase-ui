@@ -1,0 +1,96 @@
+.RotatedTable {
+    display: flex;
+    flex-direction: column;
+    /* border: 2px solid rgb(200, 200, 200, 0.5);
+    border-radius: 4px; */
+}
+
+.header {
+    flex: 0 0 auto;
+    border-bottom: 1px solid rgb(100 100 100);
+}
+
+.body {
+    flex: 1 1 0;
+    overflow-y: auto;
+    /* text-overflow: ellipsis; */
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    flex: 0 0 auto;
+    border-top: 1px solid rgb(100 100 100);
+}
+
+.header .col1 {
+    color: white;
+    background-color: rgb(100 100 100);
+}
+
+.header .col2 {
+    color: white;
+    font-weight: bold;
+    background-color: rgb(100 100 100);
+}
+
+.footer {
+    flex: 0 0 auto;
+    border-top: 1px solid rgb(100 100 100);
+}
+
+.footer .col1 {
+    color: white;
+    background-color: rgb(100 100 100);
+}
+
+.footer .col2 {
+    color: white;
+    background-color: rgb(100 100 100);
+}
+
+.title {
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+    color: rgb(150 150 150);
+    text-align: center;
+}
+
+.row {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.col1 {
+    flex: 1 1 0;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+    color: rgb(150 150 150);
+    padding: 0.25em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.col2 {
+    flex: 1 1 0;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    padding: 0.25em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.noRowsMessage {
+    padding: 0.5em;
+    font-style: italic;
+    text-align: center;
+}

@@ -7,7 +7,7 @@ import { JSONObject } from 'lib/json';
 import { Component } from 'react';
 import { Alert, Button, Col, Row, Stack } from 'react-bootstrap';
 import AuthorsStep from '../steps/AuthorsStep';
-import CitationsStep from '../steps/CitationsController';
+import CitationsStep from '../steps/Citations/CitationsController';
 import ContractNumbersFormController from '../steps/ContractNumbersFormController';
 import DescriptionController from '../steps/Description/Controller';
 import GeolocationController from '../steps/Geolocation/GeolocationController';

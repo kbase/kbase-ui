@@ -92,11 +92,16 @@ export type GetProfileResult = {
 
 
 export interface CellBase {
-    type: 'markdown' | 'app'
+    type: 'markdown' | 'app' | 'code'
 }
 
 export interface CellMarkdown {
     type: 'markdown',
+    content: string
+}
+
+export interface CellCode {
+    type: 'code',
     content: string
 }
 
@@ -110,7 +115,8 @@ export interface CellApp {
 
 export type Cell =
     CellMarkdown |
-    CellApp;
+    CellApp |
+    CellCode;
 
 export interface AppPublications {
     id: string;
@@ -123,10 +129,12 @@ export interface AppPublications {
 }
 
 
+export type CitationSource = 'app' | 'markdown' | 'manual';
 
 
 export type Citation = {
     citation: string,
+    source: CitationSource,
     url?: string,
     doi?: string | null
 }
@@ -312,10 +320,7 @@ export class Model {
         return { lastName, firstName };
     }
 
-    async getNarrativeCitations(narrativeInfo: MinimalNarrativeInfo): Promise<{
-        narrativeAppCitations: NarrativeAppCitations,
-        markdownCitations: Array<Citation>
-    }> {
+    async getNarrativeCitations(narrativeInfo: MinimalNarrativeInfo): Promise<Array<Citation>> {
         // get apps from narrative
         const client = new GenericClient({
             module: 'Workspace',
@@ -347,13 +352,20 @@ export class Model {
         const cells = (digJSON(result, ['data', 0, 'data', 'cells']) as Array<any>).map((cell) => {
             switch (cell['cell_type']) {
                 case 'code':
-                    if ('appCell' in cell['metadata']['kbase']) {
+                    if ('kbase' in cell['metadata']) {
+                        if ('appCell' in cell['metadata']['kbase']) {
+                            return {
+                                type: 'app',
+                                id: cell['metadata']['kbase']['appCell']['app']['id'],
+                                tag: cell['metadata']['kbase']['appCell']['app']['tag'],
+                                version: cell['metadata']['kbase']['appCell']['app']['version'],
+                                gitCommitHash: cell['metadata']['kbase']['appCell']['app']['gitCommitHash']
+                            }
+                        }
+                    } else {
                         return {
-                            type: 'app',
-                            id: cell['metadata']['kbase']['appCell']['app']['id'],
-                            tag: cell['metadata']['kbase']['appCell']['app']['tag'],
-                            version: cell['metadata']['kbase']['appCell']['app']['version'],
-                            gitCommitHash: cell['metadata']['kbase']['appCell']['app']['gitCommitHash']
+                            type: 'code',
+                            content: cell['source']
                         }
                     }
                     break;
@@ -414,7 +426,9 @@ export class Model {
             dev: []
         };
 
-        const appTags: Array<keyof NarrativeAppCitations> = ['release', 'beta', 'dev']
+
+        const citations: Array<Citation> = [];
+        const appTags = ['release', 'beta', 'dev'];
         for (const tag of appTags) {
             if (tag in tags) {
 
@@ -423,52 +437,53 @@ export class Model {
                     ids,
                     tag
                 }]);
-                const appPublications = (appsInfo[0] as unknown as JSONArray).map((appInfo) => {
+                const appPublications = (appsInfo[0] as unknown as JSONArray).forEach((appInfo) => {
                     if (!isJSONObject(appInfo)) {
                         throw new Error('Not an object');
                     }
-                    const citations = (() => {
-                        const publications = appInfo['publications'];
-                        if (publications instanceof Array) {
-                            return publications.map<Citation>((publication) => {
-                                if (!isJSONObject(publication)) {
-                                    throw new Error('Publication not object!')
-                                }
-                                const { display_text: text, link } = publication;
-                                const m = /doi:([\S]+)/.exec(text as string);
-                                const doi = m ? m[1] : null;
-                                return {
-                                    citation: (text as unknown as string).trim() as string,
-                                    link: link as string,
-                                    doi: doi as string | null
-                                }
+
+                    const publications = appInfo['publications'];
+                    if (publications instanceof Array) {
+                        return publications.forEach((publication) => {
+                            if (!isJSONObject(publication)) {
+                                throw new Error('Publication not object!')
+                            }
+                            const { display_text: text, link } = publication;
+                            const m = /doi:\s*([\S]+)/.exec(text as string);
+                            const doi = m ? m[1] : undefined;
+                            citations.push({
+                                citation: (text as unknown as string).trim(),
+                                url: link as unknown as string,
+                                doi,
+                                source: 'app'
                             });
-                        } else {
-                            return [];
-                        }
-                    })();
+                        });
+                        return [];
+                    }
                     return {
                         id: appInfo['id'] as string,
                         title: appInfo['name'] as string,
                         citations
                     };
                 });
-                narrativeAppCitations[tag] = appPublications;
+                // narrativeAppCitations[tag] = appPublications;
             }
         }
 
         // extract dois from markdown cells
 
         // extract dois from app publications
-        const markdownCitations: Array<Citation> = [];
         for (const cell of cells) {
             if (cell.type === 'markdown') {
-                const mardownLines = (cell.content as string).split(/(?:(?:\n\n)|(?:  \n)|(?:\n\s*[-*]\s*))/)
+                const markdownLines = (cell.content as string).split(/(?:(?:\n\n)|(?:  \n)|(?:\n\s*[-*]\s*))/)
                     .filter((line) => {
                         return (line.trim().length > 0);
                     });
-                if (mardownLines[0].match(/references/i)) {
-                    mardownLines.slice(1).forEach((line) => {
+                if (markdownLines.length === 0) {
+                    continue;
+                }
+                if (markdownLines[0].match(/references/i)) {
+                    markdownLines.slice(1).forEach((line) => {
                         // remove any leading - or * if a list.
                         const citation = (() => {
                             const m = line.match(/^\s*[-*]*\s*(.*)$/);
@@ -484,17 +499,202 @@ export class Model {
                             }
                             return null;
                         })();
-                        markdownCitations.push({
+                        citations.push({
                             citation,
-                            doi
+                            doi,
+                            source: 'markdown'
                         });
                     });
                 }
             }
         }
 
-        return { narrativeAppCitations, markdownCitations };
+        return citations;
     }
+
+    // async getNarrativeCitations(narrativeInfo: MinimalNarrativeInfo): Promise<{
+    //     narrativeAppCitations: NarrativeAppCitations,
+    //     markdownCitations: Array<Citation>
+    // }> {
+    //     // get apps from narrative
+    //     const client = new GenericClient({
+    //         module: 'Workspace',
+    //         url: this.config.services.Workspace.url,
+    //         timeout: 1000,
+    //         token: this.auth.authInfo.token
+    //     });
+
+    //     // Sorry, untyped for now...
+    //     const [result] = await client.callFunc<JSONArrayOf<JSONObject>, JSONArrayOf<JSONObject>>('get_objects2', [
+    //         {
+    //             "objects": [
+    //                 {
+    //                     "ref": narrativeInfo.ref,
+    //                     "included": [
+    //                         "cells/[*]/cell_type",
+    //                         "cells/[*]/metadata/kbase/appCell/app/id",
+    //                         "cells/[*]/metadata/kbase/appCell/app/tag",
+    //                         "cells/[*]/metadata/kbase/appCell/app/version",
+    //                         "cells/[*]/metadata/kbase/appCell/app/gitCommitHash",
+    //                         "cells/[*]/source"
+    //                     ]
+    //                 }
+    //             ]
+
+    //         }
+    //     ]);
+
+    //     const cells = (digJSON(result, ['data', 0, 'data', 'cells']) as Array<any>).map((cell) => {
+    //         switch (cell['cell_type']) {
+    //             case 'code':
+    //                 if ('appCell' in cell['metadata']['kbase']) {
+    //                     return {
+    //                         type: 'app',
+    //                         id: cell['metadata']['kbase']['appCell']['app']['id'],
+    //                         tag: cell['metadata']['kbase']['appCell']['app']['tag'],
+    //                         version: cell['metadata']['kbase']['appCell']['app']['version'],
+    //                         gitCommitHash: cell['metadata']['kbase']['appCell']['app']['gitCommitHash']
+    //                     }
+    //                 }
+    //                 break;
+    //             case 'markdown':
+    //                 return {
+    //                     type: 'markdown',
+    //                     content: cell['source']
+    //                 }
+    //         }
+    //         return null;
+    //     })
+    //         .filter((cell) => {
+    //             return cell !== null;
+    //         }) as Array<Cell>;
+
+
+    //     // Get app citations.
+
+
+    //     /*
+    //         Not sure this is worth it, but mirror the static narrative behavior.
+    //         By the time the narrative is published, it is possible that a release or beta
+    //         app will have been updated, so there is not a great reason to be precise about
+    //         fetching by the tag, rather than the most released.
+    //         Much better would be to be able to get method info via the git commit hash,
+    //         or the actual version (if version bumps are really enforced, not sure about that)
+    //     */
+    //     // Get all the tags in all the app cells.
+    //     // collect unique app ids across all app cells.
+
+    //     const apps: Array<CellApp> = [];
+    //     for (const cell of cells) {
+    //         if (cell.type === 'app') {
+    //             apps.push(cell);
+    //         }
+    //     }
+
+    //     const tags = apps.reduce<{ [k: string]: Set<string> }>((tags, cell) => {
+    //         if (cell.tag in tags) {
+    //             tags[cell.tag].add(cell.id);
+    //         } else {
+    //             tags[cell.tag] = new Set();
+    //             tags[cell.tag].add(cell.id);
+    //         }
+    //         return tags;
+    //     }, {});
+
+    //     const nms = new GenericClient({
+    //         module: 'NarrativeMethodStore',
+    //         url: this.config.services.NarrativeMethodStore.url,
+    //         timeout: 1000,
+    //         token: this.auth.authInfo.token
+    //     });
+
+    //     const narrativeAppCitations: NarrativeAppCitations = {
+    //         release: [],
+    //         beta: [],
+    //         dev: []
+    //     };
+
+    //     const appTags: Array<keyof NarrativeAppCitations> = ['release', 'beta', 'dev']
+    //     for (const tag of appTags) {
+    //         if (tag in tags) {
+
+    //             const ids = Array.from(tags[tag]);
+    //             const appsInfo = await nms.callFunc('get_method_full_info', [{
+    //                 ids,
+    //                 tag
+    //             }]);
+    //             const appPublications = (appsInfo[0] as unknown as JSONArray).map((appInfo) => {
+    //                 if (!isJSONObject(appInfo)) {
+    //                     throw new Error('Not an object');
+    //                 }
+    //                 const citations = (() => {
+    //                     const publications = appInfo['publications'];
+    //                     if (publications instanceof Array) {
+    //                         return publications.map<Citation>((publication) => {
+    //                             if (!isJSONObject(publication)) {
+    //                                 throw new Error('Publication not object!')
+    //                             }
+    //                             const { display_text: text, link } = publication;
+    //                             const m = /doi:([\S]+)/.exec(text as string);
+    //                             const doi = m ? m[1] : null;
+    //                             return {
+    //                                 citation: (text as unknown as string).trim() as string,
+    //                                 link: link as string,
+    //                                 doi: doi as string | null
+    //                             }
+    //                         });
+    //                     } else {
+    //                         return [];
+    //                     }
+    //                 })();
+    //                 return {
+    //                     id: appInfo['id'] as string,
+    //                     title: appInfo['name'] as string,
+    //                     citations
+    //                 };
+    //             });
+    //             narrativeAppCitations[tag] = appPublications;
+    //         }
+    //     }
+
+    //     // extract dois from markdown cells
+
+    //     // extract dois from app publications
+    //     const markdownCitations: Array<Citation> = [];
+    //     for (const cell of cells) {
+    //         if (cell.type === 'markdown') {
+    //             const mardownLines = (cell.content as string).split(/(?:(?:\n\n)|(?:  \n)|(?:\n\s*[-*]\s*))/)
+    //                 .filter((line) => {
+    //                     return (line.trim().length > 0);
+    //                 });
+    //             if (mardownLines[0].match(/references/i)) {
+    //                 mardownLines.slice(1).forEach((line) => {
+    //                     // remove any leading - or * if a list.
+    //                     const citation = (() => {
+    //                         const m = line.match(/^\s*[-*]*\s*(.*)$/);
+    //                         if (m) {
+    //                             return m[m.length - 1]
+    //                         }
+    //                         return line;
+    //                     })();
+    //                     const doi = (() => {
+    //                         const m = citation.match(/doi:\s*(\S+)/)
+    //                         if (m) {
+    //                             return m[1];
+    //                         }
+    //                         return null;
+    //                     })();
+    //                     markdownCitations.push({
+    //                         citation,
+    //                         doi
+    //                     });
+    //                 });
+    //             }
+    //         }
+    //     }
+
+    //     return { narrativeAppCitations, markdownCitations };
+    // }
 
     async createDOIForm(doiForm: InitialDOIForm): Promise<DOIForm> {
         return this.orcidLinkClient.createDOIApplication(doiForm);

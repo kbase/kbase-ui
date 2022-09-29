@@ -1,10 +1,11 @@
-import { Citations, Model, NarrativeAppCitations } from 'apps/ORCIDLink/Model';
+import { Citation, Citations, Model, NarrativeAppCitations } from 'apps/ORCIDLink/Model';
 import { CitationResults, MinimalNarrativeInfo } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
-import CitationsForm from './CitationsForm';
+import NarrativeCitations from './Citations';
+// import CitationsForm from './CitationsForm';
 
 export interface CitationsControllerProps {
     model: Model;
@@ -13,7 +14,12 @@ export interface CitationsControllerProps {
     onDone: (citations: CitationResults) => void;
 }
 
-export type DataState = AsyncProcess<Citations, { message: string }>
+export interface CitationState {
+    citations: Array<Citation>;
+    // manualCitations: Array<Citation>;
+}
+
+export type DataState = AsyncProcess<CitationState, { message: string }>
 
 interface CitationsControllerState {
     dataState: DataState
@@ -53,15 +59,14 @@ export default class CitationsController extends Component<CitationsControllerPr
             // Get first N narratives.
             // N is ...??
 
-            const narrativeCitations = await this.props.model.getNarrativeCitations(this.props.narrativeInfo);
+            const citations = await this.props.model.getNarrativeCitations(this.props.narrativeInfo);
 
 
             this.setState({
                 dataState: {
                     status: AsyncProcessStatus.SUCCESS,
                     value: {
-                        ...narrativeCitations,
-                        manualCitations: []
+                        citations
                     }
                 }
             });
@@ -119,17 +124,17 @@ export default class CitationsController extends Component<CitationsControllerPr
     //     await this.importFromNarrative();
     // }
 
-    onCitationsUpdate(citations: Citations) {
-        if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
-            return;
-        }
-        this.setState({
-            dataState: {
-                ...this.state.dataState,
-                value: citations
-            }
-        });
-    }
+    // onNarrativeCitationsUpdate(citations: Array<Citation>) {
+    //     if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
+    //         return;
+    //     }
+    //     this.setState({
+    //         dataState: {
+    //             ...this.state.dataState,
+    //             value: citations
+    //         }
+    //     });
+    // }
 
 
     // Renderers
@@ -142,31 +147,31 @@ export default class CitationsController extends Component<CitationsControllerPr
         return <ErrorAlert message={message} />
     }
 
-    renderSuccess(citations: Citations) {
+    renderSuccess({ citations }: CitationState) {
         const doiCitations: Array<string> = [];
-        for (const tag of ['release', 'beta', 'dev'] as unknown as Array<keyof NarrativeAppCitations>) {
-            for (const appCitations of citations.narrativeAppCitations[tag]) {
-                for (const { doi } of appCitations.citations) {
-                    if (doi) {
-                        doiCitations.push(doi);
-                    }
-                }
+        // for (const tag of ['release', 'beta', 'dev'] as unknown as Array<keyof NarrativeAppCitations>) {
+        //     for (const appCitations of citations.narrativeAppCitations[tag]) {
+        //         for (const { doi } of appCitations.citations) {
+        //             if (doi) {
+        //                 doiCitations.push(doi);
+        //             }
+        //         }
 
-            }
-        }
-        for (const { doi } of citations.markdownCitations) {
-            if (doi) {
-                doiCitations.push(doi);
-            }
-        }
-        for (const { doi } of citations.manualCitations) {
-            if (doi) {
-                doiCitations.push(doi);
-            }
-        }
-        return <CitationsForm
+        //     }
+        // }
+        // for (const { doi } of citations.markdownCitations) {
+        //     if (doi) {
+        //         doiCitations.push(doi);
+        //     }
+        // }
+        // for (const { doi } of citations.manualCitations) {
+        //     if (doi) {
+        //         doiCitations.push(doi);
+        //     }
+        // }
+        return <NarrativeCitations
             citations={citations}
-            onUpdate={this.onCitationsUpdate.bind(this)}
+            // onUpdate={this.onCitationsUpdate.bind(this)}
             onDone={() => { this.props.onDone({ citations: doiCitations }) }}
         />;
     }
