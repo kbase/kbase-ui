@@ -1,7 +1,9 @@
 import { Model } from 'apps/ORCIDLink/Model';
 import {
     Author,
-    CitationResults, ContractNumbers, Description, DOIForm, GeolocationData, MinimalNarrativeInfo, NarrativeInfo, OSTISubmission, ReviewAndSubmitData, STEPS3, StepStatus
+    CitationResults, ContractNumbers, Description, DOIForm, GeolocationData,
+    MinimalNarrativeInfo, NarrativeInfo, OSTISubmission, ReviewAndSubmitData,
+    STEPS3, StepStatus
 } from 'apps/ORCIDLink/ORCIDLinkClient';
 import { JSONObject } from 'lib/json';
 import { Component } from 'react';
@@ -13,7 +15,8 @@ import DescriptionController from '../steps/Description/Controller';
 import GeolocationController from '../steps/Geolocation/GeolocationController';
 import ORCIDLink from '../steps/ORCIDLinkController';
 import ReviewAndSubmitController from '../steps/ReviewAndSubmitController';
-import SelectNarrativeController from '../steps/SelectNarrativeController';
+import SelectNarrativeController from '../steps/SelectNarrative/EditorController';
+import SelectNarrativeViewController from '../steps/SelectNarrative/ViewerController';
 import SubmissionController from '../submission/Controller';
 import styles from './Editor.module.css';
 import { ORCIDLinkState } from './EditorController';
@@ -81,7 +84,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
     }
 
     renderStepDoneTitle(step: number, title: string) {
-        return <Alert variant="success" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+        return <Alert variant="success" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '0' }}>
             <span>Step {step}: {title}</span>
             <div style={{ flex: '1 1 0', display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
                 <Button variant="outline-secondary" style={{ border: 'none' }} size="sm" onClick={() => { this.jumpToStep(step); }}><span className="fa fa-edit" /></Button>
@@ -122,6 +125,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                     {this.renderStepTitle(1, 'Select Narrative')}
                     <SelectNarrativeController
                         model={this.props.model}
+                        editMode="edit"
                         setTitle={this.props.setTitle}
                         onDone={(narrativeInfo: NarrativeInfo) => {
                             const nextStep: STEPS3[1] = (() => {
@@ -194,6 +198,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                     {this.renderStepTitle(1, 'Select Narrative')}
                     <SelectNarrativeController
                         model={this.props.model}
+                        editMode="edit"
                         setTitle={this.props.setTitle}
                         selectedNarrative={step.value.narrativeInfo}
                         onDone={({ objectInfo: { wsid: workspaceId, id: objectId, version, ref }, workspaceInfo: { metadata } }: NarrativeInfo) => {
@@ -260,7 +265,10 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                         }} />
                 </div>
             case StepStatus.COMPLETE:
-                return this.renderStepDoneTitle(1, 'Select Narrative');
+                return <div>
+                    {this.renderStepDoneTitle(1, 'Select Narrative')}
+                    <SelectNarrativeViewController model={this.props.model} selectedNarrative={step.value.narrativeInfo} />
+                </div>
         }
     }
 
@@ -359,33 +367,6 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                                 // type narrowing.
                                 throw new Error('Invalid state - expected EDITING');
                             }
-                            // const nextStep: STEPS3[2] = (() => {
-                            //     const nextStep = this.state.doiForm.steps[2];
-                            //     switch (nextStep.status) {
-                            //         case StepStatus.NONE:
-                            //             return {
-                            //                 status: StepStatus.INCOMPLETE,
-                            //                 params: null
-                            //             };
-                            //         case StepStatus.INCOMPLETE:
-                            //             return {
-                            //                 status: StepStatus.INCOMPLETE,
-                            //                 params: nextStep.params,
-                            //             };
-                            //         case StepStatus.COMPLETE:
-                            //             return {
-                            //                 status: StepStatus.INCOMPLETE,
-                            //                 params: nextStep.params,
-                            //                 value: nextStep.value
-                            //             }
-                            //         case StepStatus.EDITING:
-                            //             return {
-                            //                 status: StepStatus.EDITING,
-                            //                 params: nextStep.params,
-                            //                 value: nextStep.value
-                            //             }
-                            //     }
-                            // })();
                             this.syncViewState([
                                 this.state.doiForm.steps[0],
                                 {
@@ -728,7 +709,6 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                         model={this.props.model}
                         setTitle={this.props.setTitle}
                         onDone={(description: Description) => {
-                            console.log('DONE??', description);
                             if (step.status !== StepStatus.INCOMPLETE) {
                                 // should never get here... this is just for 
                                 // type narrowing.
@@ -840,6 +820,131 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                                     value: { description }
                                 },
                                 nextStep
+                            ]
+                            )
+                        }}
+                    />
+                </div>
+            case StepStatus.EDITING:
+                console.log('wtf', step.value.description);
+                return <div>
+                    {this.renderStepTitle(stepNumber, title)}
+                    <DescriptionController
+                        model={this.props.model}
+                        setTitle={this.props.setTitle}
+                        description={step.value.description}
+                        onDone={(description: Description) => {
+                            if (step.status !== StepStatus.EDITING) {
+                                // should never get here... this is just for 
+                                // type narrowing.
+                                throw new Error('Invalid state - expected EDITING');
+                            }
+                            const steps = this.state.doiForm.steps;
+                            // const [selectNarrativeStep, citationsStep, orcidLinkStep, authorsStep, contractStep, geolocationStep, descriptionStep] = steps;
+                            // const enable = (
+                            //     selectNarrativeStep.status === StepStatus.COMPLETE &&
+                            //     citationsStep.status === StepStatus.COMPLETE &&
+                            //     orcidLinkStep.status === StepStatus.COMPLETE &&
+                            //     authorsStep.status === StepStatus.COMPLETE &&
+                            //     contractStep.status === StepStatus.COMPLETE &&
+                            //     geolocationStep.status === StepStatus.COMPLETE
+                            // );
+                            // let nextStep: STEPS3[7];
+                            // if (enable) {
+                            //     const submission: OSTISubmission = {
+                            //         title: selectNarrativeStep.value.narrativeInfo.title,
+                            //         publication_date: 'foo', // TODO: get this from narrative, 
+                            //         contract_nos: contractStep.value.contractNumbers.doe.join('; '),
+                            //         authors: [
+                            //             {
+                            //                 first_name: authorsStep.value.author.firstName,
+                            //                 middle_name: authorsStep.value.author.middleName,
+                            //                 last_name: authorsStep.value.author.lastName,
+                            //                 affiliation_name: authorsStep.value.author.institution,
+                            //                 private_email: authorsStep.value.author.emailAddress,
+                            //                 orcid_id: authorsStep.value.author.orcidId,
+                            //                 contributor_type: 'ProjectLeader' // TODO: make this controlled, at least from the form
+                            //             }
+                            //         ],
+                            //         site_url: `https://kbase.us/n/${selectNarrativeStep.value.narrativeInfo.workspaceId}/${selectNarrativeStep.value.narrativeInfo.version}`, // TODO: this should be the static narrative?
+                            //         dataset_type: 'GD', // TODO: what should it be?
+                            //         // site_input_code // TODO: user?
+                            //         keywords: description.keywords.join('; '),
+                            //         description: description.abstract,
+                            //         // doi_infix // TODO: use?
+                            //         accession_num: selectNarrativeStep.value.narrativeInfo.ref,
+                            //         // sponsor_org // TODO use?
+                            //         // originating_research_org // TODO use?
+
+                            //     }
+                            //     // nextStep = (() => {
+                            //     //     const nextStep = this.state.doiForm.steps[7];
+                            //     //     switch (nextStep.status) {
+                            //     //         case StepStatus.NONE:
+                            //     //             return {
+                            //     //                 status: StepStatus.INCOMPLETE,
+                            //     //                 params: { submission }
+                            //     //             };
+                            //     //         case StepStatus.INCOMPLETE:
+                            //     //             return {
+                            //     //                 status: StepStatus.INCOMPLETE,
+                            //     //                 params: nextStep.params,
+                            //     //             };
+                            //     //         case StepStatus.COMPLETE:
+                            //     //             return {
+                            //     //                 status: StepStatus.INCOMPLETE,
+                            //     //                 params: nextStep.params,
+                            //     //                 value: nextStep.value
+                            //     //             }
+                            //     //         case StepStatus.EDITING:
+                            //     //             return {
+                            //     //                 status: StepStatus.EDITING,
+                            //     //                 params: nextStep.params,
+                            //     //                 value: nextStep.value
+                            //     //             }
+                            //     //     }
+                            //     // })();
+                            // } else {
+                            //     nextStep = (() => {
+                            //         const nextStep = this.state.doiForm.steps[7];
+                            //         switch (nextStep.status) {
+                            //             case StepStatus.NONE:
+                            //                 return {
+                            //                     status: StepStatus.NONE
+                            //                 };
+                            //             case StepStatus.INCOMPLETE:
+                            //                 return {
+                            //                     status: StepStatus.INCOMPLETE,
+                            //                     params: nextStep.params,
+                            //                 };
+                            //             case StepStatus.COMPLETE:
+                            //                 return {
+                            //                     status: StepStatus.INCOMPLETE,
+                            //                     params: nextStep.params,
+                            //                     value: nextStep.value
+                            //                 }
+                            //             case StepStatus.EDITING:
+                            //                 return {
+                            //                     status: StepStatus.EDITING,
+                            //                     params: nextStep.params,
+                            //                     value: nextStep.value
+                            //                 }
+                            //         }
+                            //     })();
+                            // }
+                            this.syncViewState([
+                                this.state.doiForm.steps[0],
+                                this.state.doiForm.steps[1],
+                                this.state.doiForm.steps[2],
+                                this.state.doiForm.steps[3],
+                                this.state.doiForm.steps[4],
+                                this.state.doiForm.steps[5],
+                                {
+                                    status: StepStatus.COMPLETE,
+                                    params: step.params,
+                                    value: { description }
+                                },
+                                this.state.doiForm.steps[7],
                             ]
                             )
                         }}
@@ -980,7 +1085,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                 This is a DOI Request form with ORCID linking assistance
             </p>
             <div className={styles.steps}>
-                <Stack>
+                <Stack gap={3}>
                     <Row className="g-0">
                         <Col>
                             {this.renderSelectNarrativeStep(selectNarrativeStep)}

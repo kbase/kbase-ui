@@ -4,11 +4,14 @@ import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
-import SelectNarrative from './SelectNarrative';
+import SelectNarrative from './Editor';
+
+export type EditMode = 'edit' | 'view';
 
 export interface SelectNarrativeControllerProps {
     model: Model;
     selectedNarrative?: MinimalNarrativeInfo | null;
+    editMode: EditMode;
     setTitle: (title: string) => void;
     onDone: (narrative: NarrativeInfo) => void;
 }

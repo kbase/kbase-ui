@@ -449,8 +449,20 @@ export class Model {
                                 throw new Error('Publication not object!')
                             }
                             const { display_text: text, link } = publication;
-                            const m = /doi:\s*([\S]+)/.exec(text as string);
-                            const doi = m ? m[1] : undefined;
+                            const m = /doi:[\s]*([\S]+)/i.exec(text as string);
+                            const doi = (() => {
+                                if (m) {
+                                    // Sometimes a DOI is followed by punctuation; strip it off.
+                                    const fixed = /(.*?)[.,;:]*$/.exec(m[1]);
+                                    console.log('boo', fixed);
+                                    if (fixed) {
+                                        return fixed[1];
+                                    }
+                                    return m[1];
+                                }
+                                return undefined;
+                            })();
+
                             citations.push({
                                 citation: (text as unknown as string).trim(),
                                 url: link as unknown as string,

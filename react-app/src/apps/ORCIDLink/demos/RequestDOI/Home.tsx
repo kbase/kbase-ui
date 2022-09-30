@@ -85,9 +85,11 @@ export default class CreateForm extends Component<CreateFormProps, CreateFormSta
             return <Empty message="No existing DOI Applications" />
         }
         const rows = this.props.doiForms.map((form, index) => {
-
             return <tr key={index}>
-                <td><Button variant="link" onClick={() => { this.props.editForm(form.form_id); }}>{form.form_id}</Button></td>
+                <td><Button
+                    variant="link"
+                    onClick={() => { this.props.editForm(form.form_id); }}>{form.form_id}</Button>
+                </td>
                 <td>{Intl.DateTimeFormat('en-US', {}).format(form.created_at)}</td>
                 <td>{Intl.DateTimeFormat('en-US', {}).format(form.updated_at)}</td>
                 <td>

@@ -75,7 +75,7 @@ all: prepare-build git-info build-info build install-plugins create-deploy
 local: prepare-build git-info build-info build install-plugins render-templates create-deploy
 
 # Makes everything so it can be developed locally
-dev: prepare-build git-info build-info install-plugins render-templates get-gitlab-config
+dev: prepare-build git-info build-info install-plugins render-templates # clean-gitlab-config get-gitlab-config
 
 # See above for 'all' - just running 'make' should locally build
 default:
@@ -134,9 +134,10 @@ start: docker-compose-up
 
 stop: docker-compose-clean docker-network-clean
 
-get-gitlab-config:
+get-gitlab-config: 
 	mkdir -p dev/gitlab-config; \
-	git clone -b develop ssh://git@gitlab.kbase.lbl.gov/devops/kbase_ui_config.git dev/gitlab-config
+	# git clone -b develop ssh://git@gitlab.kbase.us/devops/kbase_ui_config.git dev/gitlab-config
+	git clone -b develop https://gitlab.kbase.us/devops/kbase_ui_config.git dev/gitlab-config
 
 clean-gitlab-config:
 	rm -rf dev/gitlab-config

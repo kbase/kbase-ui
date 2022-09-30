@@ -1,3 +1,27 @@
+/**
+ * RESTish exceptions
+ */
+
+export class RESTHTTPError extends Error {
+    statusCode: number;
+    constructor({ message, statusCode }: { message: string, statusCode: number }) {
+        super(message);
+        this.statusCode = statusCode;
+    }
+
+    toJSON() {
+        return {
+            statusCode: this.statusCode,
+            message: this.message
+        }
+    }
+}
+
+
+/**
+ * Cross ref citation typing (wip)
+ */
+
 export interface CrossRefAffiliation {
 
 }
@@ -156,23 +180,37 @@ export type CrossRefResponse = CrossRefResponseWork | CrossRefResponseError;
 export default class CrossRefClient {
     async getCitation(doi: string) {
         console.log('lookin up ', doi);
-        try {
-            const response = await fetch(`https://api.crossref.org/works/${doi}?mailto=eapearson@lbl.gov`, {
-                method: 'GET'
-                // headers: {
-                //     // 'Accept': 'application/vnd.crossref-api-message+json',
-                //     'User-Agent': 'KBase/1.0 (https://kbase.us; mailto:eapearson@lbl.gov)'
-                // }
-            });
-            const data = await response.json() as unknown as CrossRefResponse;
-            if (data.status === 'ok' && data['message-type'] === 'work') {
-                return data.message;
+
+        const response = await (async () => {
+            try {
+                return fetch(`https://api.crossref.org/works/${doi}?mailto=eapearson@lbl.gov`, {
+                    method: 'GET'
+                    // headers: {
+                    //     // 'Accept': 'application/vnd.crossref-api-message+json',
+                    //     'User-Agent': 'KBase/1.0 (https://kbase.us; mailto:eapearson@lbl.gov)'
+                    // }
+                });
+
+            } catch (ex) {
+                console.error('ERROR fetching doi', ex);
+                throw new Error('Error fetching citation');
             }
-            // TODO: handle errors if ever returned??
-            throw new Error('DOI is not a citation');
-        } catch (ex) {
-            console.error('ERROR fetching doi', ex);
-            throw new Error('Error fetching citation');
+        })();
+
+
+        const responseText = await response.text();
+        if (response.status !== 200) {
+            throw new RESTHTTPError({
+                statusCode: response.status,
+                message: responseText
+            });
         }
+
+        const data = JSON.parse(responseText) as unknown as CrossRefResponse;
+        if (data.status === 'ok' && data['message-type'] === 'work') {
+            return data.message;
+        }
+        // TODO: handle errors if ever returned??
+        throw new Error('DOI is not a citation');
     }
 }

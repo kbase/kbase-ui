@@ -1,15 +1,21 @@
 import { Citation } from 'apps/ORCIDLink/Model';
+import AlertMessage from 'components/AlertMessage';
 import Empty from 'components/Empty';
+import ErrorMessage from 'components/ErrorMessage';
+import Loading from 'components/Loading';
 import Well from 'components/Well';
+import { AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Button, Col, Form, Row, Stack } from 'react-bootstrap';
-import CrossRefCitationView from './CrossRefCitationView';
+import { GetCitationProcess } from './CitationFormController';
+import CrossRefCitationView from './CrossRefCitationView/View';
 import { CrossRefCitation } from './CrossRefClient';
 
 export interface CitationFormProps {
     getCitation: (doi: string) => Promise<void>
     onSelect: (citation: Citation) => void;
-    citation: CrossRefCitation | null;
+    // citation: CrossRefCitation | null;
+    citationProcess: GetCitationProcess;
 }
 
 interface CitationFormState {
@@ -48,10 +54,21 @@ export default class CitationForm extends Component<CitationFormProps, CitationF
     }
 
     renderCitation() {
-        if (this.props.citation === null) {
-            return <Empty message="Search for a citation by DOI..." />
+        switch (this.props.citationProcess.status) {
+            case AsyncProcessStatus.NONE:
+                return <AlertMessage type="info">Please enter a DOI above to look up the corresponding citation</AlertMessage>
+            case AsyncProcessStatus.PENDING:
+                return <Loading message="Looking up citation..." />
+            case AsyncProcessStatus.ERROR:
+                return <ErrorMessage message={this.props.citationProcess.error.message} />
+            case AsyncProcessStatus.SUCCESS:
+                return <CrossRefCitationView citation={this.props.citationProcess.value} />
         }
-        return <CrossRefCitationView citation={this.props.citation} />
+
+        // if (this.props.citation === null) {
+        //     return <Empty message="Search for a citation by DOI..." />
+        // }
+        // return <CrossRefCitationView citation={this.props.citation} />
     }
 
     createCitation() {

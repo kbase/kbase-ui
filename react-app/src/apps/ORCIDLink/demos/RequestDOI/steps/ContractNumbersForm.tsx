@@ -16,19 +16,64 @@ export interface ContractNumbersFormProps {
 }
 
 interface ContractNumbersFormState {
-
+    doeContractNumber: string;
+    otherContractNumber: string;
 }
 
 export default class ContractNumbersForm extends Component<ContractNumbersFormProps, ContractNumbersFormState>{
 
-    renderDOEForm() {
+    // renderDOEForm() {
+    //     const rows = (() => {
+    //         if (this.props.contractNumbers.doe.length === 0) {
+    //             return <Empty message="No DOE contract numbers" />
+    //         }
+    //         return this.props.contractNumbers.doe.map((contractNumber, index) => {
+    //             return <Row>
+    //                 <Col>
 
+    //                 </Col>
+    //                 <Col>
+    //                     <Form.Group as={Row} >
+    //                         <Col>
+    //                             {contractNumber}
+    //                         </Col>
+    //                         <Col md="auto">
+    //                             <Button variant="danger"
+    //                                 onClick={() => this.props.removeDOEContractNumber(index)}><span className="fa fa-trash" /></Button>
+    //                         </Col>
+    //                     </Form.Group>
+    //                 </Col>
+    //             </Row>
+    //         })
+    //     })();
+
+    //     return <Stack gap={2}>
+    //         <Row>
+    //             <Col>
+    //                 {rows}
+    //             </Col>
+    //             <Col>
+    //                 <FormControl type="text"
+    //                     onKeyPress={(e) => {
+    //                         if (e.key === 'Enter') {
+    //                             this.props.addDOEContractNumber();
+    //                         }
+    //                     }}
+    //                     onInput={(e) => { this.props.updateDOEContractNumber(e.currentTarget.value) }} />
+    //                 <Button variant="primary" className="w-auto" onClick={() => this.props.addDOEContractNumber()}><span className="fa fa-plus" /> Add</Button>
+    //             </Col>
+    //         </Row>
+
+    //     </Stack>
+    // }
+
+    renderDOEForm() {
         const rows = (() => {
             if (this.props.contractNumbers.doe.length === 0) {
                 return <Empty message="No DOE contract numbers" />
             }
             return this.props.contractNumbers.doe.map((contractNumber, index) => {
-                return <Row>
+                return <Row key={index}>
                     <Col>
                         <Form.Group as={Row} >
                             <Col>
@@ -51,7 +96,6 @@ export default class ContractNumbersForm extends Component<ContractNumbersFormPr
             })
         })();
 
-
         return <Stack gap={2}>
             {rows}
             <Row style={{ justifyContent: 'center' }} >
@@ -67,7 +111,7 @@ export default class ContractNumbersForm extends Component<ContractNumbersFormPr
                 return <Empty message="No non-DOE contract numbers" />
             }
             return this.props.contractNumbers.other.map((contractNumber, index) => {
-                return <Row>
+                return <Row key={index}>
                     <Col>
                         <Form.Group as={Row} >
                             <Col>

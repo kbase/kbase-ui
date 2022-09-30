@@ -1,6 +1,6 @@
 import RotatedTable, { RotatedTableRow } from 'components/RotatedTable';
 import { Component } from 'react';
-import { CrossRefCitation } from './CrossRefClient';
+import { CrossRefCitation } from '../CrossRefClient';
 
 
 export interface CrossRefCitationViewProps {
@@ -72,6 +72,8 @@ export default class CrossRefCitationView extends Component<CrossRefCitationView
                 return `${this.props.citation.volume}: ${this.props.citation.page}`;
             case 'report':
                 return null;
+            case 'component':
+
             default:
                 return this.props.citation.page
         }

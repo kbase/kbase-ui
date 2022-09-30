@@ -1,11 +1,13 @@
 import { Citation } from 'apps/ORCIDLink/Model';
+import AlertMessage from 'components/AlertMessage';
+import { plural } from 'components/common';
 import Empty from 'components/Empty';
 import Well from 'components/Well';
 import { Component, ReactNode } from 'react';
-import { Stack, Row, Col, Button, Tabs, Tab, Nav } from 'react-bootstrap';
+import { Stack, Row, Col, Button, Tabs, Tab, Nav, Alert } from 'react-bootstrap';
 import CitationForm from './CitationFormController';
 import styles from './Citations.module.css';
-import CrossRefCitationView from './CrossRefCitationController';
+import CrossRefCitationView from './CrossRefCitationView/Controller';
 
 export interface NarrativeCitationsProps {
     citations: Array<Citation>;
@@ -219,10 +221,29 @@ export default class NarrativeCitations extends Component<NarrativeCitationsProp
     //     </Accordion>
     // }
 
+    renderWarnings() {
+        const missingDOICount = this.state.citations.filter((citation) => {
+            return !citation.doi;
+        }).length;
+
+        if (missingDOICount > 0) {
+            return <Row>
+                <Col md={12}>
+                    <AlertMessage type="warning">
+                        <p>{missingDOICount} {plural(missingDOICount, 'citation', 'citations')} do not have an associated DOI.</p>
+                        <p style={{ marginBottom: '0' }}>Citations without a DOI cannot be included in your DOI record.</p>
+                    </AlertMessage>
+                </Col>
+            </Row>
+        }
+    }
+
 
     render() {
         return <Well style={{ padding: '1em', marginBottom: '1em' }}>
             <Stack gap={2}>
+                {this.renderWarnings()}
+
                 <Row>
                     {this.renderCitations()}
                 </Row>

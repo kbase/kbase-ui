@@ -402,7 +402,6 @@ export class ORCIDLinkServiceClient extends MultiServiceClient {
     }
 
     async saveDOIApplication(doiForm: DOIFormUpdate): Promise<DOIForm> {
-        console.log('saving?', toJSON(doiForm))
         return await this.put<DOIForm>(`${SAVE_DOI_APPLICATION_PATH}`, toJSON(doiForm))
     }
 

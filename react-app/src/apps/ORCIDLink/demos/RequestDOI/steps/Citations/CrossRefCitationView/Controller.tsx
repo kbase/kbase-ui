@@ -5,9 +5,9 @@ import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
-import CrossRefCitationView from './CrossRefCitationView';
-import CrossRefClient, { CrossRefCitation } from './CrossRefClient';
-import DataCiteView from './DataCiteView';
+import CrossRefCitationView from './View';
+import CrossRefClient, { CrossRefCitation } from '../CrossRefClient';
+import DataCiteView from './View';
 
 export interface CrossRefCitationControllerProps {
     doi: string;

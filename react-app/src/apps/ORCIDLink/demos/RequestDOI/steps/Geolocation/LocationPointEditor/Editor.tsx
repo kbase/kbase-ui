@@ -17,15 +17,15 @@ export default class Editor extends Component<EditorProps, EditorState>{
     renderEditor() {
         return <Stack gap={2}>
             <Row>
-                <Col md={2}>Place name</Col>
+                <Col style={{ flex: '0 0 7em' }}>Place name</Col>
                 <Col><FormControl type="text" onChange={(e) => { this.props.onUpdatePlaceName(e.currentTarget.value); }} /></Col>
             </Row>
             <Row>
-                <Col md={2}>Latitude</Col>
+                <Col style={{ flex: '0 0 7em' }}>Latitude</Col>
                 <Col><FormControl type="text" onChange={(e) => { this.props.onUpdateLongitude(e.currentTarget.value); }} /></Col>
             </Row>
             <Row>
-                <Col md={2}>Longitude</Col>
+                <Col style={{ flex: '0 0 7em' }}>Longitude</Col>
                 <Col><FormControl type="text" onChange={(e) => { this.props.onUpdateLatitude(e.currentTarget.value); }} /></Col>
             </Row>
         </Stack>

@@ -1,4 +1,5 @@
 import { Citation } from 'apps/ORCIDLink/Model';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import CitationForm from './CitationForm';
 import CrossRefClient, { CrossRefCitation } from './CrossRefClient';
@@ -6,6 +7,12 @@ import CrossRefClient, { CrossRefCitation } from './CrossRefClient';
 export type CrossRefResponseStatus = 'ok' | 'error';
 
 
+/**
+ * This models the response from the CrossRef API
+ * 
+ * TODO: This is probably a generic structure, which can be used
+ * across the API, should we ever make other calls here.
+ */
 export interface CrossRefResponseBase {
     status: CrossRefResponseStatus;
 }
@@ -21,6 +28,13 @@ export interface CrossRefResponseWork extends CrossRefResponseOKBase {
     'message': CrossRefCitation;
 }
 
+/**
+ * Async model for getCitation.
+ */
+
+export type GetCitationProcess = AsyncProcess<CrossRefCitation, { message: string }>
+
+
 // TODO: sort out error handling.
 // Actually ... is there an error response? It looks like status code + text. Hmm..
 export interface CrossRefResponseError extends CrossRefResponseBase {
@@ -35,20 +49,45 @@ export interface CitationFormControllerProps {
 }
 
 interface CitationFormControllerState {
-    citation: CrossRefCitation | null;
+    // citation: CrossRefCitation | null;
+    getCitationProcess: GetCitationProcess
 }
 
 export default class CitationFormController extends Component<CitationFormControllerProps, CitationFormControllerState> {
     constructor(props: CitationFormControllerProps) {
         super(props);
         this.state = {
-            citation: null
+            getCitationProcess: {
+                status: AsyncProcessStatus.NONE
+            }
         }
     }
     async getCitation(doi: string) {
         const client = new CrossRefClient();
-        const citation = await client.getCitation(doi);
-        this.setState({ citation });
+        this.setState({
+            getCitationProcess: {
+                status: AsyncProcessStatus.PENDING
+            }
+        });
+        try {
+            const citation = await client.getCitation(doi);
+            this.setState({
+                getCitationProcess: {
+                    status: AsyncProcessStatus.SUCCESS,
+                    value: citation
+                }
+            })
+        } catch (ex) {
+            this.setState({
+                getCitationProcess: {
+                    status: AsyncProcessStatus.ERROR,
+                    error: {
+                        message: ex instanceof Error ? ex.message : 'Unknown Error'
+                    }
+                }
+            });
+        }
+        // this.setState({ citation });
         // console.log('lookin up ', doi);
         // try {
         //     const response = await fetch(`https://api.crossref.org/works/${doi}`, {
@@ -68,6 +107,6 @@ export default class CitationFormController extends Component<CitationFormContro
     }
 
     render() {
-        return <CitationForm getCitation={this.getCitation.bind(this)} citation={this.state.citation} onSelect={this.props.addCitation} />
+        return <CitationForm getCitation={this.getCitation.bind(this)} citationProcess={this.state.getCitationProcess} onSelect={this.props.addCitation} />
     }
 }

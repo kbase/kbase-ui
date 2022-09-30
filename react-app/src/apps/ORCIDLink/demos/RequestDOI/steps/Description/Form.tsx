@@ -15,15 +15,13 @@ export interface DescriptionFormProps {
 
 interface DescriptionFormState {
     keyword: string;
-    abstract: string;
 }
 
 export default class DescriptionForm extends Component<DescriptionFormProps, DescriptionFormState> {
     constructor(props: DescriptionFormProps) {
         super(props);
         this.state = {
-            keyword: '',
-            abstract: ''
+            keyword: ''
         }
     }
     renderKeywords() {
@@ -59,7 +57,6 @@ export default class DescriptionForm extends Component<DescriptionFormProps, Des
     }
     onAbstractChanged(value: string) {
         this.props.setAbstract(value);
-        this.setState({ abstract: value });
     }
     render() {
         return <Stack gap={2} style={{ marginBottom: '1em' }
@@ -90,14 +87,13 @@ export default class DescriptionForm extends Component<DescriptionFormProps, Des
                             </Row>
                         </Form>
                     </Col>
-
                 </Row>
             </Container>
             <Row className="g-0">
                 <h3>Abstract</h3>
                 <Col md={12}>
                     <FormControl as="textarea"
-                        value={this.state.abstract}
+                        value={this.props.description.abstract}
                         onChange={(e) => this.onAbstractChanged(e.currentTarget.value)}
                         rows={10}
                         style={{ maxWidth: '50em' }} />

@@ -5,6 +5,7 @@ import DescriptionForm from './Form';
 
 export interface DescriptionControllerProps {
     model: Model;
+    description?: Description;
     setTitle: (title: string) => void;
     onDone: (description: Description) => void;
 }
@@ -18,19 +19,19 @@ export default class DescriptionController extends Component<DescriptionControll
     constructor(props: DescriptionControllerProps) {
         super(props);
         this.state = {
-            description: {
+            description: this.props.description || {
                 keywords: [],
                 abstract: ''
             }
         }
     }
     componentDidMount() {
-
         this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 7: Description');
     }
     addKeyword(keyword: string) {
         const keywords = this.state.description.keywords.slice();
         keywords.push(keyword);
+        keywords.sort();
         this.setState({
             description: {
                 ...this.state.description,
