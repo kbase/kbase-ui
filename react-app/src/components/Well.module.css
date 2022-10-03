@@ -39,4 +39,32 @@
     flex: 0 0 auto;
     border-top: 1px solid rgba(200, 200, 200, 0.4);
     padding: 1em;
+    display: flex;
+    flex-direction: row;
+}
+
+.variantNone {}
+
+/*
+Colors from ... https: //getbootstrap.com/docs/5.0/utilities/colors/
+*/
+
+.variantPrimary {
+    border-color: #0d6efd;
+}
+
+.variantInfo {
+    border-color: #0dcaf0;
+}
+
+.variantWarning {
+    border-color: #ffc107;
+}
+
+.variantDanger {
+    border-color: #dc3545;
+}
+
+.variantSuccess {
+    border-color: #198754;
 }

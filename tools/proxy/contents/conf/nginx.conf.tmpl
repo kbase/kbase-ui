@@ -287,17 +287,12 @@ http {
         # and Module is the dynamic service module name.
 
         {{ if .Env.dynamic_service_proxies }}
-        # OH REALLY? {{ .Env.dynamic_service_proxies }}
         {{ range splitList " " .Env.dynamic_service_proxies }}
 
         # note that the elements of the list must match the service path used in the ui call,
         # and also the hostname assigned to the docker container.
         # SO this means that probably service entries which are more complicated than simple strings
         #    without punctuation will work, but if they contain a / or something, maybe not.
-
-        #
-        # HMM: {{ . }}
-        #
 
         location ~ ^/dynserv/[^.]+[.]{{ . }}.*$ {
             {{ if $.Env.deploy_ui_hostname }}

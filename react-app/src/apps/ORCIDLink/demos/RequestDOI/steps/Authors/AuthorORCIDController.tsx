@@ -5,7 +5,7 @@ import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Button, ButtonGroup, ButtonToolbar, Row, Stack } from 'react-bootstrap';
-import { FieldState, FieldStatus } from '../common';
+import { FieldState, FieldStatus } from '../../common';
 import AuthorForm from './AuthorForm';
 
 
@@ -803,7 +803,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     // Renderers
 
     renderLoading() {
-        return <Loading message="Loading ORCID Interstitial Page ..." />;
+        return <Loading message="Loading ..." />;
     }
 
     renderError({ message }: { message: string }) {

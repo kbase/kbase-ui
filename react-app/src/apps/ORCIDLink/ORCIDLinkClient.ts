@@ -1,7 +1,7 @@
 import { ObjectInfo, WorkspaceInfo } from "lib/kb_lib/comm/coreServices/Workspace";
 import { toJSON } from "lib/kb_lib/jsonLike";
 import { MultiServiceClient } from "./DynamicServiceClient";
-import { LinkingSessionInfo, LinkRecord } from "./Model";
+import { CitationSource, LinkingSessionInfo, LinkRecord } from "./Model";
 
 
 const GET_WORK_PATH = 'work';
@@ -15,11 +15,13 @@ const GET_PROFILE_PATH = 'profile';
 const IS_LINKED_PATH = 'is_linked';
 const GET_LINK_PATH = 'link';
 
-const CREATE_LINKING_SESSION_PATH = 'create-linking-session';
+const LINKING_SESSIONS_PATH = 'linking-sessions';
 const START_LINKING_SESSION_PATH = 'start-linking-session';
 const FINISH_LINKING_SESSION_PATH = 'finish-linking-session';
-const CANCEL_LINKING_SESSION_PATH = 'cancel-linking-session';
-const GET_LINKING_SESSION_INFO_PATH = 'get-linking-session-info';
+// const CREATE_LINKING_SESSION_PATH = 'create-linking-session';
+// const START_LINKING_SESSION_PATH = 'start-linking-session';
+// const DELETE_LINKING_SESSION_PATH = 'linking-session';
+// const GET_LINKING_SESSION_PATH = 'linking-session';
 
 
 const LINK_PATH = 'link';
@@ -238,8 +240,15 @@ export interface ReviewAndSubmitParams {
 
 // In the end, all we can use for citations are
 // the DOI.
+
+export interface CitationResult {
+    doi: string;
+    citation: string;
+    source: CitationSource;
+}
+
 export interface CitationResults {
-    citations: Array<string>
+    citations: Array<CitationResult>
 }
 
 export interface NarrativeInfo {
@@ -359,10 +368,6 @@ export class ORCIDLinkServiceClient extends MultiServiceClient {
         return await this.delete<LinkRecord | null>(`${REVOKE_PATH}`)
     }
 
-    async createLinkingSession(): Promise<CreateLinkingSessionResult> {
-        return await this.post<CreateLinkingSessionResult>(`${CREATE_LINKING_SESSION_PATH}`)
-    }
-
     async getWork(putCode: string): Promise<Publication> {
         return await this.get<Publication>(`${GET_WORK_PATH}/${putCode}`)
     }
@@ -405,17 +410,25 @@ export class ORCIDLinkServiceClient extends MultiServiceClient {
         return await this.put<DOIForm>(`${SAVE_DOI_APPLICATION_PATH}`, toJSON(doiForm))
     }
 
-    async getLinkingSessionInfo(sessionId: string): Promise<LinkingSessionInfo> {
-        return await this.get<LinkingSessionInfo>(`${GET_LINKING_SESSION_INFO_PATH}/${sessionId}`)
+    // Linking Sessions
+
+    async createLinkingSession(): Promise<CreateLinkingSessionResult> {
+        return await this.post<CreateLinkingSessionResult>(`${LINKING_SESSIONS_PATH}`)
     }
+
+    async getLinkingSession(sessionId: string): Promise<LinkingSessionInfo> {
+        return await this.get<LinkingSessionInfo>(`${LINKING_SESSIONS_PATH}/${sessionId}`)
+    }
+
+    async deletelLinkingSession(token: string): Promise<void> {
+        return await this.delete<void>(`${LINKING_SESSIONS_PATH}/${token}`);
+    }
+
+    // Not REST?
 
     async finishLink(sessionId: string): Promise<void> {
         return await this.post<void>(FINISH_LINKING_SESSION_PATH, {
             session_id: sessionId
         });
-    }
-
-    async cancelLink(token: string): Promise<void> {
-        return await this.delete<void>(`${CANCEL_LINKING_SESSION_PATH}/${token}`);
     }
 }

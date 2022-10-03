@@ -1,5 +1,6 @@
+import Well from "components/Well";
 import { Component } from "react";
-import { Button, Col, Row, Stack } from "react-bootstrap";
+import { Button, ButtonGroup, ButtonToolbar, Col, Row, Stack } from "react-bootstrap";
 import { RevokeState, RevokeStatus } from "./Controller";
 
 export interface ConfirmRevokeProps {
@@ -35,20 +36,38 @@ export default class ConfirmRevoke extends Component<ConfirmRevokeProps, Confirm
 
     renderRevoked() {
         this.props.setTitle('ORCID® Link - Revoke - Successfully Revoked Link')
-        return <div className="well" style={{ maxWidth: '60em', margin: '0 auto' }}>
-            <div className="well-header">
-                Success!
-            </div>
-            <div className="well-body">
-                The ORCID Link has been successfully removed.
-            </div>
-            <div className="well-footer" style={{ justifyContent: 'center' }}>
-                <Button variant="primary" onClick={this.props.cancel}>
-                    <span className="fa fa-mail-reply" /> Done
-                </Button>
-            </div>
+        // return <div className="well" style={{ maxWidth: '60em', margin: '0 auto' }}>
+        //     <div className="well-header">
+        //         Success!
+        //     </div>
+        //     <div className="well-body">
+        //         The ORCID Link has been successfully removed.
+        //     </div>
+        //     <div className="well-footer" style={{ justifyContent: 'center' }}>
+        //         <Button variant="primary" onClick={this.props.cancel}>
+        //             <span className="fa fa-mail-reply" /> Done
+        //         </Button>
+        //     </div>
 
-        </div>
+        // </div>
+
+        return <Well variant="success" style={{ maxWidth: '60em', margin: '0 auto' }}>
+            <Well.Header>
+                Success!
+            </Well.Header>
+            <Well.Body>
+                <p>
+                    The ORCID Link has been successfully removed.
+                </p>
+            </Well.Body>
+            <Well.Footer style={{ justifyContent: 'center' }}>
+                <ButtonToolbar>
+                    <Button variant="primary" onClick={this.props.cancel}>
+                        <span className="fa fa-mail-reply" /> Done
+                    </Button>
+                </ButtonToolbar>
+            </Well.Footer>
+        </Well>
     }
 
     renderLinked() {
@@ -56,26 +75,27 @@ export default class ConfirmRevoke extends Component<ConfirmRevokeProps, Confirm
         return <Stack>
             <Row>
                 <Col>
-                    <div className="well">
-                        <div className="well-header">
+                    <Well variant="danger">
+                        <Well.Header>
                             Confirm Removal of ORCID Link
-                        </div>
-                        <div className="well-body">
+                        </Well.Header>
+                        <Well.Body>
                             <p>
                                 Sure you want to revoke this ORCID Link?
                             </p>
-                        </div>
-                        <div className="well-footer" style={{ justifyContent: 'center' }}>
-                            <Button variant="danger" className="me-2" onClick={this.props.revokeLink}>
-                                <span className="fa fa-lg fa-trash" /> Revoke ORCID® Link
-                            </Button>
+                        </Well.Body>
+                        <Well.Footer style={{ justifyContent: 'center' }}>
+                            <ButtonToolbar>
+                                <Button variant="danger" className="me-2" onClick={this.props.revokeLink}>
+                                    <span className="fa fa-lg fa-trash" /> Revoke ORCID® Link
+                                </Button>
 
-
-                            <Button variant="primary" onClick={this.props.cancel}>
-                                <span className="fa fa-lg fa-ban" /> Cancel
-                            </Button>
-                        </div>
-                    </div>
+                                <Button variant="primary" onClick={this.props.cancel}>
+                                    <span className="fa fa-lg fa-ban" /> Cancel
+                                </Button>
+                            </ButtonToolbar>
+                        </Well.Footer>
+                    </Well>
                 </Col>
                 <Col>
                     <h3>

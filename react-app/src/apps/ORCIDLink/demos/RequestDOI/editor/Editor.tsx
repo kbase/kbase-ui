@@ -8,8 +8,9 @@ import {
 import { JSONObject } from 'lib/json';
 import { Component } from 'react';
 import { Alert, Button, Col, Row, Stack } from 'react-bootstrap';
-import AuthorsStep from '../steps/AuthorsStep';
-import CitationsStep from '../steps/Citations/CitationsController';
+import AuthorsStep from '../steps/Authors/AuthorsStep';
+import CitationsStep from '../steps/Citations/CitationsEditorController';
+import CitationsViewController from '../steps/Citations/CitationsViewController';
 import ContractNumbersFormController from '../steps/ContractNumbersFormController';
 import DescriptionController from '../steps/Description/Controller';
 import GeolocationController from '../steps/Geolocation/GeolocationController';
@@ -322,6 +323,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                                         }
                                 }
                             })();
+                            console.log('huh?', citations)
                             this.syncViewState([
                                 this.state.doiForm.steps[0],
                                 {
@@ -346,7 +348,6 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                                     ...this.state.doiForm.steps[7],
                                 }
                             ])
-
                         }}
                     />
                 </div>
@@ -398,7 +399,10 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                     />
                 </div>
             case StepStatus.COMPLETE:
-                return this.renderStepDoneTitle(stepNumber, title);
+                return <div>
+                    {this.renderStepDoneTitle(2, 'Citations')}
+                    <CitationsViewController model={this.props.model} citations={step.value.citations} />
+                </div>
         }
     }
 

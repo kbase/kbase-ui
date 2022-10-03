@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { Col, Form, Row, Stack } from 'react-bootstrap';
-import { FieldStatus } from '../common';
+import { FieldStatus } from '../../common';
 import { Fields } from './AuthorORCIDController';
 
 export interface AuthorFormProps {

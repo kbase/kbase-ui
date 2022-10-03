@@ -5,6 +5,7 @@ import { Accordion, Button, Col, Row, Stack } from 'react-bootstrap';
 import { ReturnLink } from '../Model';
 import orcidSignIn from '../images/ORCID-sign-in.png';
 import AccordionItem from 'react-bootstrap/esm/AccordionItem';
+import Well from 'components/Well';
 
 export interface CreateLinkProps {
     returnLink?: ReturnLink;
@@ -26,12 +27,12 @@ export default class CreateLink extends Component<CreateLinkProps> {
     renderLinkStart() {
         return <div className={styles.main}>
             <div className={styles.row}>
-                <div className="well" style={{ maxWidth: '60em', margin: '0 auto' }}>
-                    <div className="well-header">
+                <Well variant="primary" style={{ maxWidth: '60em', margin: '0 auto' }}>
+                    <Well.Header>
                         Create Link to ORCID®
-                    </div>
+                    </Well.Header>
 
-                    <div className="well-body">
+                    <Well.Body>
                         <p>You do not currently have a link from your KBase account to an ORCID® account.</p>
 
                         <p>When clicking the button below, you will be redirected to ORCID®, where you may
@@ -44,8 +45,8 @@ export default class CreateLink extends Component<CreateLinkProps> {
                         </p>
 
                         {this.renderReturnURL()}
-                    </div>
-                    <div className="well-footer">
+                    </Well.Body>
+                    <Well.Footer>
                         <Stack direction="horizontal" gap={3} className="justify-content-center" style={{ flex: '1 1 0' }}>
                             <Button variant="primary" onClick={this.props.start}>
                                 <span className="fa fa-lg fa-plus" /> Start ORCID® Link process...
@@ -54,9 +55,8 @@ export default class CreateLink extends Component<CreateLinkProps> {
                                 <span className="fa fa-lg fa-mail-reply" /> Cancel
                             </Button>
                         </Stack>
-                    </div>
-
-                </div>
+                    </Well.Footer>
+                </Well>
             </div>
         </div >;
     }

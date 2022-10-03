@@ -2,21 +2,23 @@ import { Citation } from 'apps/ORCIDLink/Model';
 import AlertMessage from 'components/AlertMessage';
 import { plural } from 'components/common';
 import Empty from 'components/Empty';
+import FlexGrid from 'components/FlexGrid';
 import Well from 'components/Well';
 import { Component, ReactNode } from 'react';
-import { Stack, Row, Col, Button, Tabs, Tab, Nav, Alert } from 'react-bootstrap';
+import { Stack, Row, Col, Button, Tabs, Tab, Nav } from 'react-bootstrap';
 import CitationForm from './CitationFormController';
-import styles from './Citations.module.css';
+import styles from './CitationsEditor.module.css';
 import CrossRefCitationView from './CrossRefCitationView/Controller';
 
-export interface NarrativeCitationsProps {
+export interface CitationsEditorProps {
     citations: Array<Citation>;
-    // onUpdate: (citations: Array<Citation>) => void;
+    addCitation: (citation: Citation) => void;
+    deleteCitation: (index: number) => void;
     onDone: () => void;
 }
 
-interface NarrativeCitationsState {
-    citations: Array<Citation>;
+interface CitationsEditorState {
+    // citations: Array<Citation>;
 }
 
 function ifEmpty(value: string | null | undefined, defaultValue: string = 'n/a') {
@@ -33,8 +35,8 @@ function when(value: string | null | undefined, trueValue: ReactNode, falseValue
     return falseValue;
 }
 
-export default class NarrativeCitations extends Component<NarrativeCitationsProps, NarrativeCitationsState> {
-    constructor(props: NarrativeCitationsProps) {
+export default class CitationsEditor extends Component<CitationsEditorProps, CitationsEditorState> {
+    constructor(props: CitationsEditorProps) {
         super(props);
         this.state = {
             citations: props.citations
@@ -44,19 +46,10 @@ export default class NarrativeCitations extends Component<NarrativeCitationsProp
     // Actions
 
     addCitation(citation: Citation) {
-        this.setState({
-            citations: this.state.citations.concat([citation])
-        });
-    }
-
-    renderCitationx(citation: Citation) {
-        if (!citation.doi) {
-            return citation.citation;
-        }
-        return <Tabs defaultActiveKey="citation" variant="tabs">
-            <Tab title="Citation" eventKey="citation">{citation.citation}</Tab>
-            <Tab title="Cross Ref" eventKey="fancy"><CrossRefCitationView doi={citation.doi} /></Tab>
-        </Tabs>
+        // this.setState({
+        //     citations: this.state.citations.concat([citation])
+        // });
+        this.props.addCitation(citation);
     }
 
     renderCitation(citation: Citation) {
@@ -90,30 +83,67 @@ export default class NarrativeCitations extends Component<NarrativeCitationsProp
         </Tab.Container>
     }
 
+    renderDeleteButton(citation: Citation, index: number) {
+        if (citation.source !== 'manual') {
+            return;
+        }
+        return <Button variant="outline-danger" style={{ border: 'none' }} onClick={() => { this.props.deleteCitation(index) }}>
+            <span className="fa fa-trash" />
+        </Button>
+    }
+
     // Renderers
     renderCitations() {
-        const citations = this.state.citations;
+        const citations = this.props.citations;
         if (citations.length === 0) {
             return <Empty message="No citations" />
         }
         const rows = citations.map((citation, index) => {
-            return <Row key={index} style={{ borderBottom: '1px solid rgba(200, 200, 200, 0.5)' }}>
-                <Col style={{ flex: '0 0 1.5em' }}>{when(citation.doi, <span className="fa fa-check text-success" />, <span className="fa fa-ban text-warning" />)}</Col>
-                <Col md={3}>{ifEmpty(citation.doi, 'n/a - cannot be sent to OSTI')}</Col>
-                <Col md={7}>{this.renderCitation(citation)}</Col>
-                <Col md={1}>{citation.source}</Col>
-            </Row>
+            return <FlexGrid.Row key={index} style={{ borderBottom: '1px solid rgba(200, 200, 200, 0.5)', padding: '0.5em 0' }}>
+                <FlexGrid.Col style={{ flex: '0 0 1.5em' }}>{when(citation.doi, <span className="fa fa-check text-success" />, <span className="fa fa-ban text-warning" />)}</FlexGrid.Col>
+                <FlexGrid.Col style={{ flex: '1 1 0' }}>{ifEmpty(citation.doi, 'n/a - cannot be sent to OSTI')}</FlexGrid.Col>
+                <FlexGrid.Col style={{ flex: '3 1 0' }}>{this.renderCitation(citation)}</FlexGrid.Col>
+                <FlexGrid.Col style={{ flex: '0 0 4em' }}>{citation.source}</FlexGrid.Col>
+                <FlexGrid.Col style={{ flex: '0 0 3em' }}>{this.renderDeleteButton(citation, index)}</FlexGrid.Col>
+            </FlexGrid.Row>
         });
-        return <Stack gap={2}>
-            <Row className={styles.header} style={{ borderBottom: '1px dashed rgb(200, 200, 200)' }}>
-                <Col style={{ flex: '0 0 1.5em' }}></Col>
-                <Col md={7}>Citation</Col>
-                <Col md={3}>DOI</Col>
-                <Col md={1}>Source</Col>
-            </Row>
+        return <FlexGrid>
+            <FlexGrid.Row style={{ borderBottom: '1px dashed rgb(200, 200, 200)' }}>
+                <FlexGrid.Col style={{ flex: '0 0 1.5em' }}></FlexGrid.Col>
+                <FlexGrid.Col style={{ flex: '1 1 0' }}>Citation</FlexGrid.Col>
+                <FlexGrid.Col style={{ flex: '3 1 0' }}>DOI</FlexGrid.Col>
+                <FlexGrid.Col style={{ flex: '0 0 4em' }}>Source</FlexGrid.Col>
+                <FlexGrid.Col style={{ flex: '0 0 3em' }}></FlexGrid.Col>
+            </FlexGrid.Row>
             {rows}
-        </Stack>;
+        </FlexGrid>;
     }
+
+    // renderCitations() {
+    //     const citations = this.props.citations;
+    //     if (citations.length === 0) {
+    //         return <Empty message="No citations" />
+    //     }
+    //     const rows = citations.map((citation, index) => {
+    //         return <Row key={index} style={{ borderBottom: '1px solid rgba(200, 200, 200, 0.5)' }}>
+    //             <Col style={{ flex: '0 0 1.5em' }}>{when(citation.doi, <span className="fa fa-check text-success" />, <span className="fa fa-ban text-warning" />)}</Col>
+    //             <Col style={{ flex: '1 1 0' }}>{ifEmpty(citation.doi, 'n/a - cannot be sent to OSTI')}</Col>
+    //             <Col style={{ flex: '3 1 0' }}>{this.renderCitation(citation)}</Col>
+    //             <Col style={{ flex: '0 0 4em' }}>{citation.source}</Col>
+    //             <Col style={{ flex: '0 0 2em' }}>{this.renderDeleteButton(citation, index)}</Col>
+    //         </Row>
+    //     });
+    //     return <Stack gap={2}>
+    //         <Row className={styles.header} style={{ borderBottom: '1px dashed rgb(200, 200, 200)' }}>
+    //             <Col style={{ flex: '0 0 1.5em' }}></Col>
+    //             <Col style={{ flex: '1 1 0' }}>Citation</Col>
+    //             <Col style={{ flex: '3 1 0' }}>DOI</Col>
+    //             <Col style={{ flex: '0 0 4em' }}>Source</Col>
+    //             <Col style={{ flex: '0 0 2em' }}></Col>
+    //         </Row>
+    //         {rows}
+    //     </Stack>;
+    // }
 
     // renderAppTagCitations(appCitations: Array<AppCitations>, tagTitle: string) {
     //     const citations = (() => {
@@ -222,7 +252,7 @@ export default class NarrativeCitations extends Component<NarrativeCitationsProp
     // }
 
     renderWarnings() {
-        const missingDOICount = this.state.citations.filter((citation) => {
+        const missingDOICount = this.props.citations.filter((citation) => {
             return !citation.doi;
         }).length;
 
@@ -237,7 +267,6 @@ export default class NarrativeCitations extends Component<NarrativeCitationsProp
             </Row>
         }
     }
-
 
     render() {
         return <Well style={{ padding: '1em', marginBottom: '1em' }}>

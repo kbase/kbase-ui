@@ -1,11 +1,10 @@
-import { Citation, Citations, Model, NarrativeAppCitations } from 'apps/ORCIDLink/Model';
-import { CitationResults, MinimalNarrativeInfo } from 'apps/ORCIDLink/ORCIDLinkClient';
+import { Citation, Model } from 'apps/ORCIDLink/Model';
+import { CitationResult, CitationResults, MinimalNarrativeInfo } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
-import NarrativeCitations from './Citations';
-// import CitationsForm from './CitationsForm';
+import CitationsEditor from './CitationsEditor';
 
 export interface CitationsControllerProps {
     model: Model;
@@ -16,7 +15,6 @@ export interface CitationsControllerProps {
 
 export interface CitationState {
     citations: Array<Citation>;
-    // manualCitations: Array<Citation>;
 }
 
 export type DataState = AsyncProcess<CitationState, { message: string }>
@@ -55,13 +53,7 @@ export default class CitationsController extends Component<CitationsControllerPr
             });
         });
         try {
-
-            // Get first N narratives.
-            // N is ...??
-
             const citations = await this.props.model.getNarrativeCitations(this.props.narrativeInfo);
-
-
             this.setState({
                 dataState: {
                     status: AsyncProcessStatus.SUCCESS,
@@ -93,49 +85,37 @@ export default class CitationsController extends Component<CitationsControllerPr
         }
     }
 
-    // async selectNarrative(narrativeId: string): Promise<void> {
-    //     if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
-    //         return;
-    //     }
+    // Actions
 
-    //     const selectedNarrative = this.state.dataState.value.narratives.filter(({ objectInfo: { version }, workspaceInfo: { id } }) => {
-    //         return narrativeId === `${id}/${version}`
-    //     })[0]!
+    addCitation(citation: Citation) {
+        if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
+            return;
+        }
+        this.setState({
+            dataState: {
+                ...this.state.dataState,
+                value: {
+                    citations: this.state.dataState.value.citations.concat([citation])
+                }
+            }
+        })
+    }
 
-    //     this.setState({
-    //         dataState: {
-    //             ...this.state.dataState,
-    //             value: {
-    //                 ...this.state.dataState.value,
-    //                 selectedNarrative
-    //             }
-    //         }
-    //     })
-    // }
-
-
-    // async onImportToForm() {
-    //     if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
-    //         return;
-    //     }
-    //     if (this.state.dataState.value.canImportFromORCID) {
-    //         await this.importFromORCID();
-    //     }
-    //     await this.importFromNarrative();
-    // }
-
-    // onNarrativeCitationsUpdate(citations: Array<Citation>) {
-    //     if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
-    //         return;
-    //     }
-    //     this.setState({
-    //         dataState: {
-    //             ...this.state.dataState,
-    //             value: citations
-    //         }
-    //     });
-    // }
-
+    deleteCitation(indexToRemove: number) {
+        if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
+            return;
+        }
+        this.setState({
+            dataState: {
+                ...this.state.dataState,
+                value: {
+                    citations: this.state.dataState.value.citations.filter((citation, index) => {
+                        return indexToRemove !== index;
+                    })
+                }
+            }
+        })
+    }
 
     // Renderers
 
@@ -148,31 +128,21 @@ export default class CitationsController extends Component<CitationsControllerPr
     }
 
     renderSuccess({ citations }: CitationState) {
-        const doiCitations: Array<string> = [];
-        // for (const tag of ['release', 'beta', 'dev'] as unknown as Array<keyof NarrativeAppCitations>) {
-        //     for (const appCitations of citations.narrativeAppCitations[tag]) {
-        //         for (const { doi } of appCitations.citations) {
-        //             if (doi) {
-        //                 doiCitations.push(doi);
-        //             }
-        //         }
 
-        //     }
-        // }
-        // for (const { doi } of citations.markdownCitations) {
-        //     if (doi) {
-        //         doiCitations.push(doi);
-        //     }
-        // }
-        // for (const { doi } of citations.manualCitations) {
-        //     if (doi) {
-        //         doiCitations.push(doi);
-        //     }
-        // }
-        return <NarrativeCitations
+        const citationResults: Array<CitationResult> = [];
+
+        for (const { citation, source, doi } of citations) {
+            if (doi) {
+                citationResults.push(({ citation, source, doi }));
+            }
+        }
+
+        return <CitationsEditor
             citations={citations}
             // onUpdate={this.onCitationsUpdate.bind(this)}
-            onDone={() => { this.props.onDone({ citations: doiCitations }) }}
+            addCitation={this.addCitation.bind(this)}
+            deleteCitation={this.deleteCitation.bind(this)}
+            onDone={() => { this.props.onDone({ citations: citationResults }) }}
         />;
     }
 

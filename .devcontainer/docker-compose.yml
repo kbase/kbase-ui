@@ -44,6 +44,10 @@ services:
     environment:
       # - PORT=80
       - DEPLOY_ENV=${DEPLOY_ENV:-ci}
+    # Required for a devcontainer -- keeps the container running.
+    # Don't worry, our main interaction with the container is through the 
+    # VSC terminal, which for a devcontainer opens a shell within the
+    # container.
     command: /bin/sh -c "while sleep 1000; do :; done"
   kbase-ui-deploy:
     image: nginx:1.21.6-alpine

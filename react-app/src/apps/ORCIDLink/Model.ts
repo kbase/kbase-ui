@@ -729,7 +729,7 @@ export class Model {
     }
 
     async fetchLinkingSessionInfo(sessionId: string) {
-        return this.orcidLinkClient.getLinkingSessionInfo(sessionId);
+        return this.orcidLinkClient.getLinkingSession(sessionId);
     }
 
     async confirmLink(token: string) {
@@ -737,6 +737,6 @@ export class Model {
     }
 
     async cancelLink(token: string) {
-        return this.orcidLinkClient.cancelLink(token);
+        return this.orcidLinkClient.deletelLinkingSession(token);
     }
 }

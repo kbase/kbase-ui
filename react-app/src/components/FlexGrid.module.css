@@ -1,0 +1,31 @@
+.grid {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.col {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0.1em;
+    margin: 0 0.5em;
+}
+
+.col:first-child {
+    margin-left: 0;
+}
+
+.col:last-child {
+    margin-right: 0;
+}
+
+.row.-header .col {
+    font-weight: bold;
+    color: rgba(150, 150, 150, 1)
+}

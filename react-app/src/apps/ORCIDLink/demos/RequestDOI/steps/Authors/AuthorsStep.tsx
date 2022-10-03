@@ -3,7 +3,7 @@ import { Author } from 'apps/ORCIDLink/ORCIDLinkClient';
 import Well from 'components/Well';
 import { Component } from 'react';
 import { Button, Col, Form, Row, Stack } from 'react-bootstrap';
-import { FieldState, FieldStatus } from '../common';
+import { FieldState, FieldStatus } from '../../common';
 import PrimaryAuthor from './AuthorORCIDController';
 
 export interface AuthorsStepProps {

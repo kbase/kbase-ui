@@ -5,6 +5,7 @@ import { Alert, Button, Col, Row, Stack } from 'react-bootstrap';
 import styles from './Continue.module.css';
 import AlertMessage from 'components/AlertMessage';
 import { ORCID_URL } from '../constants';
+import Well from 'components/Well';
 
 export interface ContinueProps {
     linkingSessionInfo: LinkingSessionInfo;
@@ -16,8 +17,8 @@ export interface ContinueProps {
 export default class Continue extends Component<ContinueProps> {
     renderORCIDUserRecord() {
         const { orcid_auth: { orcid, scope }, created_at, expires_at } = this.props.linkingSessionInfo;
-        return <div className="well" style={{ marginBottom: '1em' }}>
-            <div className="well-body">
+        return <Well style={{ marginBottom: '1em' }}>
+            <Well.Body>
                 <div className="flex-table">
                     <div className="flex-row">
                         <div className={`flex-col ${styles['-col1']}`}>
@@ -41,14 +42,14 @@ export default class Continue extends Component<ContinueProps> {
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </Well.Body>
+        </Well>
     }
 
     renderRequestedScopes() {
         const { orcid_auth: { orcid, scope }, created_at, expires_at } = this.props.linkingSessionInfo;
-        return <div className="well" style={{ marginBottom: '1em' }}>
-            <div className="well-body">
+        return <Well style={{ marginBottom: '1em' }}>
+            <Well.Body>
                 <div className="flex-table">
                     <div className="flex-row">
                         <div className={`flex-col`} style={{ flex: '0 0 5em' }}>
@@ -59,8 +60,8 @@ export default class Continue extends Component<ContinueProps> {
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </Well.Body>
+        </Well>
     }
 
     renderReturnURL() {
@@ -73,19 +74,18 @@ export default class Continue extends Component<ContinueProps> {
     }
 
     renderConfirmDialog() {
-        return <div className="well">
-            <div className="well-header">
+        return <Well variant="primary">
+            <Well.Header>
                 Confirm Link to ORCID®
-            </div>
-            <div className="well-body">
+            </Well.Header>
+            <Well.Body>
                 <p>
                     By linking the ORCID® account above you will be granting KBase the ability to interact with
                     that account on your behalf. You may revoke this at any time.
                 </p>
-
                 {this.renderReturnURL()}
-            </div>
-            <div className="well-footer">
+            </Well.Body>
+            <Well.Footer>
                 <Stack direction="horizontal" gap={3} className="justify-content-center" style={{ flex: '1 1 0' }}>
                     <Button variant="primary" onClick={this.props.confirmLink}>
                         <span className="fa fa-lg fa-plus" /> Create ORCID® Link
@@ -94,8 +94,8 @@ export default class Continue extends Component<ContinueProps> {
                         <span className="fa fa-lg fa-mail-reply" /> Cancel
                     </Button>
                 </Stack>
-            </div>
-        </div>
+            </Well.Footer>
+        </Well>
     }
 
     renderInfo() {
@@ -107,7 +107,8 @@ export default class Continue extends Component<ContinueProps> {
             <p>You may follow the <b>ORCID® Account ID</b> link below to inspect additional information about the account.</p>
 
             {this.renderORCIDUserRecord()}
-            <h4>Scopes being granted to KBase</h4>
+
+            <h4 style={{ marginTop: '1em' }}>Scopes being granted to KBase</h4>
 
             <p>KBase is requesting the "scopes" below to view or manipulate your account on your behalf. A scope is a set
                 of permissions to access your ORCID® account.
