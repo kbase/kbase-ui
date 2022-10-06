@@ -11,7 +11,7 @@ import {
     RoutingLocation,
 } from "./router";
 import { Receiver, Runtime, Service, SimpleMap } from "../../lib/types";
-import { initEuropaRoutes } from "./europa";
+import { initEuropa } from "./europa";
 
 type RouteHandler = RoutedRequest;
 
@@ -72,7 +72,7 @@ export class RouteService extends Service<RouteServiceConfig> {
         this.currentRouteHandler = null;
         this.receivers = [];
         this.eventListeners = [];
-        initEuropaRoutes(this.runtime);
+        initEuropa(this.runtime);
     }
 
     doRoute() {
