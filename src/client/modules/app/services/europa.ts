@@ -20,6 +20,19 @@ export const initEuropa = (runtime: Runtime) => {
             );
         }
     });
+    runtime.receive('session', 'loggedin', () => {
+        if (window.parent) {
+            window.parent.postMessage(
+                {
+                    source: 'kbase-ui.session.loggedin',
+                    payload: {
+                        token: runtime.service('session').getAuthToken(),
+                    },
+                },
+                europaTargetOrigin
+            );
+        }
+    });
     window.addEventListener('message', (message) => {
         if (message.source !== window.parent) return;
         if (
