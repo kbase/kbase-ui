@@ -41,6 +41,7 @@ define([
             return html`
             <form method="post"
                   ref=${this.ref}
+                  target="_top"
                   id=${formID}
                   action=${action}
                   style=${{display: 'hidden'}}
