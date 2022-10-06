@@ -649,7 +649,6 @@ export class Auth2Session {
     setSessionCookie(token: string, expiration: number) {
         const sessionCookie = new Cookie(this.cookieName, token)
             .setPath('/')
-            .setDomain('ci-europa.kbase.us')
             .setSecure(true);
 
         sessionCookie.setExpires(new Date(expiration).toUTCString());
