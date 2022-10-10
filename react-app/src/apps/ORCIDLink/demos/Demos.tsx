@@ -9,7 +9,7 @@ import styles from './Demos.module.css';
 import HomeController from './home/Controller';
 import InterstitialPage1 from './Interstitial/page1/Controller';
 import PreFillFormController from './PreFillForm/PreFillFormController';
-import PushPublication from './PushPublication/Controller';
+import PushWork from './PushWork/Controller';
 import RequestDOI from './RequestDOI/Controller';
 import RequestDOIEditor from './RequestDOI/editor/EditorController';
 
@@ -59,7 +59,7 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                 </AuthContext.Consumer>
 
             }),
-            new Route('orcidlink/demos/push-publication', { authenticationRequired: true }, (props: RouteProps) => {
+            new Route('orcidlink/demos/push-work', { authenticationRequired: true }, (props: RouteProps) => {
                 return <AuthContext.Consumer>
                     {(authValue) => {
                         if (authValue.status !== AsyncProcessStatus.SUCCESS) {
@@ -69,7 +69,7 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                             return null;
                         }
                         const token = props.params.get('token')!;
-                        return <PushPublication {...this.props} auth={authValue.value} />;
+                        return <PushWork {...this.props} auth={authValue.value} />;
                         // return <Link {...this.props} auth={authValue.value} />;
                     }}
                 </AuthContext.Consumer>

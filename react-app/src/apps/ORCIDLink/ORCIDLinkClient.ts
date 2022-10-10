@@ -4,11 +4,7 @@ import { MultiServiceClient } from "./DynamicServiceClient";
 import { CitationSource, LinkingSessionInfo, LinkRecord } from "./Model";
 
 
-const GET_WORK_PATH = 'work';
-const SAVE_WORK_PATH = 'work';
-const CREATE_WORK_PATH = 'work';
-const DELETE_WORK_PATH = 'delete_work';
-
+const WORKS_PATH = 'works';
 
 
 const GET_PROFILE_PATH = 'profile';
@@ -25,7 +21,6 @@ const FINISH_LINKING_SESSION_PATH = 'finish-linking-session';
 
 
 const LINK_PATH = 'link';
-const REVOKE_PATH = 'revoke';
 // const GET_NAME_PATH = 'name';
 
 const CREATE_DOI_APPLICATION_PATH = 'demos/doi_application';
@@ -51,22 +46,22 @@ export interface ExternalId {
     relationship: string;
 }
 
-export interface Publication {
-    putCode: string;
-    createdAt: number;
-    updatedAt: number;
-    source: string;
-    title: string;
-    journal: string;
-    date: string;
-    publicationType: string;
-    url: string;
-    // citation
-    citationType: string;
-    citation: string;
-    citationDescription: string;
-    externalIds: Array<ExternalId>
-}
+// export interface Publication {
+//     putCode: string;
+//     createdAt: number;
+//     updatedAt: number;
+//     source: string;
+//     title: string;
+//     journal: string;
+//     date: string;
+//     publicationType: string;
+//     url: string;
+//     // citation
+//     citationType: string;
+//     citation: string;
+//     citationDescription: string;
+//     externalIds: Array<ExternalId>
+// }
 
 export interface ORCIDProfile {
     // TODO: split into profile and info? E.g. id in info, profile info in profile...
@@ -75,7 +70,7 @@ export interface ORCIDProfile {
     lastName: string;
     bio: string;
     affiliations: Array<Affiliation>
-    publications: Array<Publication>
+    works: Array<Work>
     emailAddresses: Array<string>
 }
 
@@ -85,16 +80,23 @@ export interface CreateLinkingSessionResult {
     session_id: string
 }
 
-export interface Work {
+export interface NewWork {
     title: string;
     journal: string;
     date: string;
-    publicationType: string;
+    workType: string;
     url: string;
     externalIds: Array<ExternalId>
 }
 
-export interface WorkUpdate extends Work {
+export interface Work extends NewWork {
+    putCode: string;
+    createdAt: number;
+    updatedAt: number;
+    source: string;
+}
+
+export interface WorkUpdate extends NewWork {
     putCode: string;
 }
 
@@ -344,8 +346,9 @@ export interface DOIFormUpdate {
     steps: STEPS3
 }
 
-export interface CreateWorkResult {
-    put_code: string;
+
+export interface DeleteWorkResult {
+    ok: true
 }
 
 
@@ -365,23 +368,25 @@ export class ORCIDLinkServiceClient extends MultiServiceClient {
     }
 
     async deleteLink(): Promise<LinkRecord | null> {
-        return await this.delete<LinkRecord | null>(`${REVOKE_PATH}`)
+        return await this.delete<LinkRecord | null>(`${LINK_PATH}`)
     }
 
-    async getWork(putCode: string): Promise<Publication> {
-        return await this.get<Publication>(`${GET_WORK_PATH}/${putCode}`)
+    // ORICD Account works
+
+    async getWork(putCode: string): Promise<Work> {
+        return await this.get<Work>(`${WORKS_PATH}/${putCode}`)
     }
 
-    async saveWork(work: WorkUpdate): Promise<Publication> {
-        return await this.put<Publication>(`${SAVE_WORK_PATH}`, toJSON(work))
+    async saveWork(work: WorkUpdate): Promise<Work> {
+        return await this.put<Work>(`${WORKS_PATH}`, toJSON(work))
     }
 
-    async createWork(work: Work): Promise<CreateWorkResult> {
-        return await this.post<CreateWorkResult>(`${CREATE_WORK_PATH}`, toJSON(work))
+    async createWork(work: NewWork): Promise<Work> {
+        return await this.post<Work>(`${WORKS_PATH}`, toJSON(work))
     }
 
-    async deleteWork(putCode: string): Promise<void> {
-        await this.delete<void>(`${DELETE_WORK_PATH}/${putCode}`);
+    async deleteWork(putCode: string): Promise<DeleteWorkResult> {
+        return await this.delete<DeleteWorkResult>(`${WORKS_PATH}/${putCode}`);
     }
 
     // async getName(): Promise<GetNameResult> {
@@ -396,11 +401,9 @@ export class ORCIDLinkServiceClient extends MultiServiceClient {
         return await this.delete<void>(`${DELETE_DOI_APPLICATION_PATH}/${formId}`)
     }
 
-
     async getDOIApplications(): Promise<Array<DOIForm>> {
         return await this.get<Array<DOIForm>>(GET_DOI_APPLICATIONS_PATH)
     }
-
 
     async createDOIApplication(doiForm: InitialDOIForm): Promise<DOIForm> {
         return await this.post<DOIForm>(`${CREATE_DOI_APPLICATION_PATH}`, toJSON(doiForm))

@@ -6,8 +6,12 @@ import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
 import { SCOPE } from "./constants";
-import { EditablePublication } from "./demos/PushPublication/PushPublicationModel";
-import { DOIForm, DOIFormUpdate, GetNameResult, InitialDOIForm, MinimalNarrativeInfo, NarrativeInfo, ORCIDLinkServiceClient, ORCIDProfile, Publication, Work } from "./ORCIDLinkClient";
+import { EditableWork } from "./demos/PushWork/PushWorksModel";
+import {
+    DeleteWorkResult, DOIForm, DOIFormUpdate, GetNameResult,
+    InitialDOIForm, MinimalNarrativeInfo, NarrativeInfo, NewWork,
+    ORCIDLinkServiceClient, ORCIDProfile, Work
+} from "./ORCIDLinkClient";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
 
@@ -255,26 +259,23 @@ export class Model {
     }
 
 
-    async getWork(putCode: string): Promise<Publication> {
+    async getWork(putCode: string): Promise<Work> {
         return this.orcidLinkClient.getWork(putCode);
     }
 
-    async createWork(work: EditablePublication): Promise<Publication> {
-        const temp: Work = {
+    async createWork(work: EditableWork): Promise<Work> {
+        const temp: NewWork = {
             title: work.title.value,
             date: work.date.value,
-            publicationType: work.publicationType.value,
+            workType: work.workType.value,
             journal: work.journal.value,
             url: work.url.value,
             externalIds: work.externalIds.value
         };
-
-        const { put_code } = await this.orcidLinkClient.createWork(temp);
-
-        return this.orcidLinkClient.getWork(put_code);
+        return this.orcidLinkClient.createWork(temp);
     }
 
-    async deleteWork(putCode: string): Promise<void> {
+    async deleteWork(putCode: string): Promise<DeleteWorkResult> {
         return this.orcidLinkClient.deleteWork(putCode);
     }
 

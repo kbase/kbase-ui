@@ -1,15 +1,27 @@
 import { workExternalIdentifierTypes, workRelationshipIdentifiers } from 'apps/ORCIDLink/data';
-import { Publication } from 'apps/ORCIDLink/ORCIDLinkClient';
+import { Work } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import workTypesRaw from '../../../data/workTypes2.json';
-import { EditablePublication, initialEditablePublication } from '../PushPublicationModel';
-import WorkForm from './EditPublication';
+import { EditableWork, PushWorksModel } from '../PushWorksModel';
+import WorkForm from './EditWork';
 
-// Work types
-// TODO: move to external file.
+
+export interface ControllerProps {
+    model: PushWorksModel;
+    putCode: string;
+    setTitle: (title: string) => void;
+    updateWork: (work: EditableWork) => Promise<void>;
+    onClose: () => void;
+}
+
+// export enum LinkStatus {
+//     NONE = 'NONE',
+//     LINKED = 'LINKED'
+// }
+
 
 export interface WorkType {
     category: string;
@@ -17,18 +29,6 @@ export interface WorkType {
     label: string;
     description: string;
 }
-
-export interface WorkTypeCategory {
-    value: string;
-    label: string;
-}
-
-export interface WorkTypes {
-    categories: Array<WorkTypeCategory>;
-    values: Array<WorkType>;
-}
-
-
 export interface WorkTypeCategory2 {
     category: string;
     label: string;
@@ -39,25 +39,13 @@ export type WorkTypes2 = Array<WorkTypeCategory2>
 
 const workTypes = workTypesRaw as unknown as WorkTypes2;
 
-// Component
-
-export interface ControllerProps {
-    setTitle: (title: string) => void;
-    createPublication: (publication: EditablePublication) => Promise<void>;
-    onClose: () => void;
-}
-
-// export enum LinkStatus {
-//     NONE = 'NONE',
-//     LINKED = 'LINKED'
-// }
-
 export type GetWorkResult = {
-    result: Publication
+    result: Work
 };
 
+
 export interface DataState {
-    work: EditablePublication
+    work: EditableWork
 }
 
 
@@ -68,8 +56,10 @@ interface ControllerState {
 }
 
 export default class Controller extends Component<ControllerProps, ControllerState> {
+    model: PushWorksModel;
     constructor(props: ControllerProps) {
         super(props);
+        this.model = props.model;
         this.state = {
             dataState: {
                 status: AsyncProcessStatus.NONE
@@ -77,66 +67,69 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         }
     }
 
+    // Component Lifecycle
+
     componentDidMount() {
         // this.props.setTitle('ORCID® Link Demo - Pre Fill a Form from Profile')
         this.loadData();
     }
 
+    componentDidUpdate(prevProps: ControllerProps, prevState: ControllerState) {
+        if (prevProps.putCode !== this.props.putCode) {
+            this.loadData();
+        }
+    }
+
     // Model interaction
 
-
-
-    // async syncWork(): Promise<void> {
-    //     const work = await this.model.getEditableWork(this.props.putCode);
-    //     this.setState({
-    //         dataState: {
-    //             status: AsyncProcessStatus.SUCCESS,
-    //             value: { work }
-    //         }
-    //     });
-    // }
-
-    async loadData() {
+    async syncWork(): Promise<void> {
+        const work = await this.model.getEditableWork(this.props.putCode);
         this.setState({
             dataState: {
                 status: AsyncProcessStatus.SUCCESS,
-                value: {
-                    work: initialEditablePublication()
-                }
+                value: { work }
             }
-        })
-        // await new Promise((resolve) => {
-        //     this.setState({
-        //         dataState: {
-        //             status: AsyncProcessStatus.PENDING
-        //         }
-        //     }, () => {
-        //         resolve(null);
-        //     });
-        // });
-        // try {
-        //     await this.syncWork();
-        // } catch (ex) {
-        //     if (ex instanceof Error) {
-        //         this.setState({
-        //             dataState: {
-        //                 status: AsyncProcessStatus.ERROR,
-        //                 error: {
-        //                     message: ex.message
-        //                 }
-        //             }
-        //         });
-        //     } else {
-        //         this.setState({
-        //             dataState: {
-        //                 status: AsyncProcessStatus.ERROR,
-        //                 error: {
-        //                     message: `Unknown error: ${String(ex)}`
-        //                 }
-        //             }
-        //         });
-        //     }
-        // }
+        });
+    }
+
+    async loadData() {
+        await new Promise((resolve) => {
+            this.setState({
+                dataState: {
+                    status: AsyncProcessStatus.PENDING
+                }
+            }, () => {
+                resolve(null);
+            });
+        });
+        try {
+            await this.syncWork();
+        } catch (ex) {
+            console.error(ex);
+            if (ex instanceof Error) {
+                this.setState({
+                    dataState: {
+                        status: AsyncProcessStatus.ERROR,
+                        error: {
+                            message: ex.message
+                        }
+                    }
+                });
+            } else {
+                this.setState({
+                    dataState: {
+                        status: AsyncProcessStatus.ERROR,
+                        error: {
+                            message: `Unknown error: ${String(ex)}`
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    async onDelete(putCode: string) {
+
     }
 
     // Renderers
@@ -151,11 +144,11 @@ export default class Controller extends Component<ControllerProps, ControllerSta
 
     renderSuccess(dataState: DataState) {
         return <WorkForm
-            publication={dataState.work}
-            workTypes={workTypes}
+            work={dataState.work}
             workExternalIdentifierTypes={workExternalIdentifierTypes}
             workRelationshipIdentifiers={workRelationshipIdentifiers}
-            onSave={this.props.createPublication}
+            updateWork={this.props.updateWork}
+            workTypes={workTypes}
             onClose={this.props.onClose} />
     }
 

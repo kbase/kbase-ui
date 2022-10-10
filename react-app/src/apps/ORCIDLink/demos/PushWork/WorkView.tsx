@@ -1,12 +1,12 @@
-import { Publication } from "apps/ORCIDLink/ORCIDLinkClient";
+import { Work } from "apps/ORCIDLink/ORCIDLinkClient";
 import { Component } from "react";
-import styles from './PublicationView.module.css';
+import styles from './WorkView.module.css';
 
-export interface PublicationViewProps {
-    publication: Publication;
+export interface WorkViewProps {
+    work: Work;
 }
 
-interface PublicationViewState {
+interface WorkViewState {
 }
 
 
@@ -39,9 +39,9 @@ const SECTION_BODY_STYLE: React.CSSProperties = {
 };
 
 
-export default class PublicationView extends Component<PublicationViewProps, PublicationViewState> {
+export default class WorkView extends Component<WorkViewProps, WorkViewState> {
     renderExternalIds() {
-        const rows = this.props.publication.externalIds.map(({ type, url, value }, index) => {
+        const rows = this.props.work.externalIds.map(({ type, url, value }, index) => {
             return <div className="flex-row " key={index}>
                 <div className="flex-col">
                     {type}
@@ -77,7 +77,7 @@ export default class PublicationView extends Component<PublicationViewProps, Pub
                     Put Code
                 </div>
                 <div className="flex-col">
-                    {this.props.publication.putCode}
+                    {this.props.work.putCode}
                 </div>
             </div>
             <div className="flex-row">
@@ -85,7 +85,7 @@ export default class PublicationView extends Component<PublicationViewProps, Pub
                     Source
                 </div>
                 <div className="flex-col">
-                    {this.props.publication.source}
+                    {this.props.work.source}
                 </div>
             </div>
             <div className="flex-row">
@@ -93,7 +93,7 @@ export default class PublicationView extends Component<PublicationViewProps, Pub
                     Created
                 </div>
                 <div className="flex-col">
-                    {Intl.DateTimeFormat('en-US').format(this.props.publication.createdAt)}
+                    {Intl.DateTimeFormat('en-US').format(this.props.work.createdAt)}
                 </div>
             </div>
         </div>;
@@ -104,10 +104,10 @@ export default class PublicationView extends Component<PublicationViewProps, Pub
             <div className="flex-table">
                 <div className="flex-row">
                     <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >
-                        Publication Type
+                        Work Type
                     </div>
                     <div className="flex-col">
-                        {this.props.publication.publicationType}
+                        {this.props.work.workType}
                     </div>
                 </div>
                 <div className="flex-row">
@@ -115,7 +115,7 @@ export default class PublicationView extends Component<PublicationViewProps, Pub
                         Title
                     </div>
                     <div className="flex-col">
-                        {this.props.publication.title}
+                        {this.props.work.title}
                     </div>
                 </div>
                 <div className="flex-row">
@@ -123,7 +123,7 @@ export default class PublicationView extends Component<PublicationViewProps, Pub
                         Journal
                     </div>
                     <div className="flex-col">
-                        {this.props.publication.journal || 'n/a'}
+                        {this.props.work.journal || 'n/a'}
                     </div>
                 </div>
                 <div className="flex-row">
@@ -131,7 +131,7 @@ export default class PublicationView extends Component<PublicationViewProps, Pub
                         Date
                     </div>
                     <div className="flex-col">
-                        {this.props.publication.date}
+                        {this.props.work.date}
                     </div>
                 </div>
                 <div className="flex-row">
@@ -139,7 +139,7 @@ export default class PublicationView extends Component<PublicationViewProps, Pub
                         URL
                     </div>
                     <div className="flex-col">
-                        {this.props.publication.url}
+                        {this.props.work.url}
                     </div>
                 </div>
                 <div className="flex-row" style={SECTION_HEADER_STYLE}>

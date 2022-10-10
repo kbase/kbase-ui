@@ -4,6 +4,7 @@ import { Config } from '../../types/config';
 import ConfigEditor from './ConfigEditor';
 import Main from './Main';
 import './index.css';
+import Features from './FeaturesController';
 
 export interface DeveloperProps {
     tab?: string;
@@ -11,7 +12,7 @@ export interface DeveloperProps {
     setTitle: (title: string) => void;
 }
 
-interface DeveloperState {}
+interface DeveloperState { }
 
 export default class Developer extends Component<
     DeveloperProps,
@@ -24,7 +25,7 @@ export default class Developer extends Component<
     // TODO: convert to bootstrap tabs??
     renderTabs() {
         return (
-            <Tabs variant="tabs" defaultActiveKey="main">
+            <Tabs variant="tabs" defaultActiveKey="main" mountOnEnter>
                 <Tab eventKey="main" title="Main">
                     <Main setTitle={this.props.setTitle} />
                 </Tab>
@@ -33,6 +34,10 @@ export default class Developer extends Component<
                         setTitle={this.props.setTitle}
                         config={this.props.config}
                     />
+                </Tab>
+                <Tab eventKey="features" title="Features">
+                    <Features
+                        setTitle={this.props.setTitle} />
                 </Tab>
             </Tabs>
         );

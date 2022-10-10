@@ -6,8 +6,8 @@ import { AuthenticationStateAuthenticated } from 'contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Config } from 'types/config';
-import PushPublicationForm from './PushPublicationForm';
-import { EditablePublication, PushPublicationModel } from './PushPublicationModel';
+import PushWorkForm from './PushWorkForm';
+import { EditableWork, PushWorksModel } from './PushWorksModel';
 
 
 export interface PreFillFormControllerProps {
@@ -32,11 +32,11 @@ interface PreFillFormControllerState {
 }
 
 export default class PreFillFormController extends Component<PreFillFormControllerProps, PreFillFormControllerState> {
-    pushPublicationModel: PushPublicationModel
+    pushWorkModel: PushWorksModel
     model: Model;
     constructor(props: PreFillFormControllerProps) {
         super(props);
-        this.pushPublicationModel = new PushPublicationModel({
+        this.pushWorkModel = new PushWorksModel({
             config: this.props.config,
             auth: this.props.auth
         });
@@ -52,7 +52,7 @@ export default class PreFillFormController extends Component<PreFillFormControll
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link Demo - Push DOI Publication to ORCID Account')
+        this.props.setTitle('ORCID® Link Demo - Push DOI Works to ORCID Account')
         this.loadData();
     }
 
@@ -105,14 +105,14 @@ export default class PreFillFormController extends Component<PreFillFormControll
 
     // Actions
 
-    async deletePublication(putCodeToDelete: string) {
+    async deleteWork(putCodeToDelete: string) {
         if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
             return;
         }
 
         try {
             await this.model.deleteWork(putCodeToDelete)
-            const publications = this.state.dataState.value.profile.publications.filter(({ putCode }) => {
+            const works = this.state.dataState.value.profile.works.filter(({ putCode }) => {
                 return putCode !== putCodeToDelete;
             });
             this.setState({
@@ -122,7 +122,7 @@ export default class PreFillFormController extends Component<PreFillFormControll
                         ...this.state.dataState.value,
                         profile: {
                             ...this.state.dataState.value.profile,
-                            publications
+                            works
                         }
                     }
                 }
@@ -130,21 +130,20 @@ export default class PreFillFormController extends Component<PreFillFormControll
         } catch (ex) {
             console.error('Well, that didn\'t work!', ex);
         }
-
     }
 
-    async savePublication(updatedPublication: EditablePublication) {
+    async updateWork(work: EditableWork) {
         if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
             return;
         }
 
-        const updatedWork = await this.pushPublicationModel.saveWork(updatedPublication);
+        const updatedWork = await this.pushWorkModel.saveWork(work);
 
-        const publications = this.state.dataState.value.profile.publications.map((publication) => {
-            if (publication.putCode === updatedPublication.putCode.value) {
+        const works = this.state.dataState.value.profile.works.map((work) => {
+            if (work.putCode === updatedWork.putCode) {
                 return updatedWork;
             }
-            return publication;
+            return work;
         });
         this.setState({
             dataState: {
@@ -153,25 +152,20 @@ export default class PreFillFormController extends Component<PreFillFormControll
                     ...this.state.dataState.value,
                     profile: {
                         ...this.state.dataState.value.profile,
-                        publications
+                        works
                     }
                 }
             }
         })
     }
 
-    async createPublication(newPublication: EditablePublication) {
+    async createWork(work: EditableWork) {
         if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
             return;
         }
-        const updatedWork = await this.model.createWork(newPublication);
+        const newWork = await this.model.createWork(work);
 
-        const publications = {
-            ...this.state.dataState.value.profile.publications,
-            updatedWork
-        }
-
-        console.log('creating?', newPublication, updatedWork, publications);
+        const works = this.state.dataState.value.profile.works.concat([newWork]);
 
         this.setState({
             dataState: {
@@ -180,7 +174,7 @@ export default class PreFillFormController extends Component<PreFillFormControll
                     ...this.state.dataState.value,
                     profile: {
                         ...this.state.dataState.value.profile,
-                        publications
+                        works
                     }
                 }
             }
@@ -198,14 +192,14 @@ export default class PreFillFormController extends Component<PreFillFormControll
     }
 
     renderSuccess(dataState: DataState) {
-        return <PushPublicationForm
-            model={this.pushPublicationModel}
+        return <PushWorkForm
+            model={this.pushWorkModel}
             profile={dataState.profile}
             syncProfile={this.syncProfile.bind(this)}
             setTitle={this.props.setTitle}
-            createPublication={this.createPublication.bind(this)}
-            updatePublication={this.savePublication.bind(this)}
-            deletePublication={this.deletePublication.bind(this)} />
+            createWork={this.createWork.bind(this)}
+            updateWork={this.updateWork.bind(this)}
+            deleteWork={this.deleteWork.bind(this)} />
     }
 
     render() {

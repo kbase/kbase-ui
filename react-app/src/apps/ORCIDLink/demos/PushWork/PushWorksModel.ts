@@ -7,7 +7,7 @@
 // import { Config } from "types/config";
 
 import { Model } from "apps/ORCIDLink/Model";
-import { ExternalId, ORCIDLinkServiceClient, Publication, Work, WorkUpdate } from "apps/ORCIDLink/ORCIDLinkClient";
+import { DeleteWorkResult, ExternalId, NewWork, ORCIDLinkServiceClient, Work, WorkUpdate } from "apps/ORCIDLink/ORCIDLinkClient";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { Config } from "types/config";
 
@@ -57,9 +57,9 @@ export interface EditableExternalId {
 
 // export type EditableExternalIds = EditState<Array<EditableExternalId>, Array<ExternalId>>
 
-export interface EditablePublication {
+export interface EditableWork {
     putCode: EditState<string, string>
-    publicationType: EditState<string, string>
+    workType: EditState<string, string>
     title: EditState<string, string>
     date: EditState<string, string>
     journal: EditState<string, string>
@@ -170,40 +170,43 @@ export function editableExternalIdsToExternalIds(editableExternalIds: Array<Edit
     });
 }
 
-export function editablePublicationToWork(editablePublication: EditablePublication): WorkUpdate {
-    const {
-        putCode: {
-            value: putCode
-        },
-        publicationType: {
-            value: publicationType
-        },
-        title: {
-            value: title
-        },
-        date: {
-            value: date
-        },
-        journal: {
-            value: journal
-        },
-        url: {
-            value: url
-        },
-        externalIds: {
-            value: externalIds
-        }
+// export function editableWorkToWork(editableWork: EditableWork): Work {
+//     const {
+//         putCode: {
+//             value: putCode
+//         },
+//         workType: {
+//             value: workType
+//         },
+//         title: {
+//             value: title
+//         },
+//         date: {
+//             value: date
+//         },
+//         journal: {
+//             value: journal
+//         },
+//         url: {
+//             value: url
+//         },
+//         externalIds: {
+//             value: externalIds
+//         },
+//         createdAt: {
+//             value: createdAt
+//         }
 
-    } = editablePublication;
+//     } = editableWork;
 
-    return {
-        putCode, publicationType, title, date, journal, url,
-        externalIds
-    }
-}
+//     return {
+//         putCode, workType, title, date, journal, url,
+//         externalIds
+//     }
+// }
 
-export function publicationToEditablePublication(publication: Publication): EditablePublication {
-    const { putCode, publicationType, title, date, journal, url, externalIds } = publication;
+export function workToEditableWork(work: Work): EditableWork {
+    const { putCode, workType, title, date, journal, url, externalIds } = work;
     const editableExternalIds = externalIds.map((externalId) => {
         return externalIdToEditableExternalId(externalId);
     });
@@ -216,13 +219,13 @@ export function publicationToEditablePublication(publication: Publication): Edit
             editValue: putCode,
             value: putCode
         },
-        publicationType: {
+        workType: {
             status: EditStatus.INITIAL,
             validationState: {
                 status: ValidationStatus.VALID,
             },
-            editValue: publicationType,
-            value: publicationType
+            editValue: workType,
+            value: workType
         },
         title: {
             status: EditStatus.INITIAL,
@@ -263,17 +266,11 @@ export function publicationToEditablePublication(publication: Publication): Edit
             },
             editValue: editableExternalIds,
             value: externalIds
-        },
-        // publicationType,
-        // title,
-        // date,
-        // journal: journal || '',
-        // url: url || '',
-        // url: externalIds || []
+        }
     }
 }
 
-export function initialEditablePublication(): EditablePublication {
+export function initialEditableWork(): EditableWork {
     return {
         putCode: {
             status: EditStatus.INITIAL,
@@ -283,7 +280,7 @@ export function initialEditablePublication(): EditablePublication {
             editValue: '',
             value: ''
         },
-        publicationType: {
+        workType: {
             status: EditStatus.INITIAL,
             validationState: {
                 status: ValidationStatus.VALID,
@@ -330,17 +327,11 @@ export function initialEditablePublication(): EditablePublication {
             },
             editValue: [],
             value: []
-        },
-        // publicationType,
-        // title,
-        // date,
-        // journal: journal || '',
-        // url: url || '',
-        // url: externalIds || []
+        }
     }
 }
 
-export class PushPublicationModel {
+export class PushWorksModel {
     config: Config;
     auth: AuthenticationStateAuthenticated;
     model: Model
@@ -362,12 +353,12 @@ export class PushPublicationModel {
     }
 
 
-    async saveWork(work: EditablePublication): Promise<Publication> {
+    async saveWork(work: EditableWork): Promise<Work> {
         const temp: WorkUpdate = {
             putCode: work.putCode.value,
             title: work.title.value,
             date: work.date.value,
-            publicationType: work.publicationType.value,
+            workType: work.workType.value,
             journal: work.journal.value,
             url: work.url.value,
             externalIds: work.externalIds.value
@@ -377,32 +368,25 @@ export class PushPublicationModel {
         return this.orcidLinkClient.saveWork(temp);
     }
 
-    async createWork(work: EditablePublication): Promise<Publication> {
-        const temp: Work = {
+    async createWork(work: EditableWork): Promise<Work> {
+        const temp: NewWork = {
             title: work.title.value,
             date: work.date.value,
-            publicationType: work.publicationType.value,
+            workType: work.workType.value,
             journal: work.journal.value,
             url: work.url.value,
             externalIds: work.externalIds.value
         };
 
-        const result = await this.orcidLinkClient.createWork(temp);
-
-        return this.orcidLinkClient.getWork(result.put_code);
+        return await this.orcidLinkClient.createWork(temp);
     }
 
-    async deleteWork(putCode: string): Promise<void> {
+    async deleteWork(putCode: string): Promise<DeleteWorkResult> {
         return this.orcidLinkClient.deleteWork(putCode);
     }
 
-
-
-    async getEditableWork(putCode: string): Promise<EditablePublication> {
+    async getEditableWork(putCode: string): Promise<EditableWork> {
         const work = await this.orcidLinkClient.getWork(putCode);
-        return publicationToEditablePublication(work);
+        return workToEditableWork(work);
     }
-
-
-
 }

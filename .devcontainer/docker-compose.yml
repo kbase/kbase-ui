@@ -54,6 +54,7 @@ services:
     container_name: kbase-ui-deploy
     volumes:
       - ../build:/usr/share/nginx/html
+      # - /Users/erikpearson/Work/KBase/2022/UIP-7/kbase-ui-plugin-auth2-client/dist/plugin:/usr/share/nginx/html/plugins/auth2-client
     networks:
       - kbase-dev
     ports:

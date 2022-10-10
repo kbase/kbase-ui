@@ -6,7 +6,7 @@ import { Option, Options } from "./reactSelectTypes";
 
 
 import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";
-import { EditableExternalId, externalIdToEditableExternalId } from "./PushPublicationModel";
+import { EditableExternalId, externalIdToEditableExternalId } from "./PushWorksModel";
 
 export interface EditExternalIdentifiersProps {
     workExternalIdentifierTypes: WorkExternalIdentifierTypes;

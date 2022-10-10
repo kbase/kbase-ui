@@ -1,26 +1,26 @@
 import { renderORCIDIcon } from "apps/ORCIDLink/common";
 import { ORCID_URL } from "apps/ORCIDLink/constants";
-import { ORCIDProfile, Publication } from "apps/ORCIDLink/ORCIDLinkClient";
+import { ORCIDProfile, Work } from "apps/ORCIDLink/ORCIDLinkClient";
 import AlertMessage from "components/AlertMessage";
 import ErrorAlert from "components/ErrorAlert";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
 import { Accordion, Alert, Button } from "react-bootstrap";
-import AddNewPublication from "./Add/Controller";
-import DeletePublication from "./DeletePublication";
-import EditPublication from "./Edit/Controller";
-import styles from './PushPublicationForm.module.css';
-import { EditablePublication, PushPublicationModel } from "./PushPublicationModel";
-import ViewPublication from "./ViewPublication";
+import AddNewWork from "./Add/Controller";
+import DeleteWork from "./Delete/Controller";
+import EditWork from "./Edit/Controller";
+import styles from './PushWorkForm.module.css';
+import { EditableWork, PushWorksModel } from "./PushWorksModel";
+import ViewWork from "./ViewWork";
 
-export interface PushPublicationFormProps {
+export interface PushWorkFormProps {
     profile: ORCIDProfile;
-    model: PushPublicationModel;
+    model: PushWorksModel;
     syncProfile: () => Promise<void>;
-    deletePublication: (putCode: string) => Promise<void>
+    deleteWork: (putCode: string) => Promise<void>
     setTitle: (title: string) => void;
-    createPublication: (publication: EditablePublication) => Promise<void>;
-    updatePublication: (publication: EditablePublication) => Promise<void>;
+    createWork: (work: EditableWork) => Promise<void>;
+    updateWork: (work: EditableWork) => Promise<void>;
 }
 
 // Deletion State
@@ -64,7 +64,7 @@ export enum EditAreaType {
     VIEW = 'VIEW'
 }
 
-export interface NewPublication {
+export interface NewWork {
     title: string
 }
 
@@ -78,23 +78,22 @@ export interface EditAreaNone extends EditAreaBase {
 
 export interface EditAreaNew extends EditAreaBase {
     type: EditAreaType.NEW,
-    publication: NewPublication;
+    work: NewWork;
 }
 
 export interface EditAreaUpdate extends EditAreaBase {
     type: EditAreaType.UPDATE,
-    publication: Publication;
+    work: Work;
 }
 
 export interface EditAreaDelete extends EditAreaBase {
     type: EditAreaType.DELETE,
-    deletionState: DeletionState<Publication, { message: string }>
-    // publication: Publication;
+    deletionState: DeletionState<Work, { message: string }>
 }
 
 export interface EditAreaView extends EditAreaBase {
     type: EditAreaType.VIEW,
-    publication: Publication;
+    work: Work;
 }
 
 export type EditArea =
@@ -104,7 +103,7 @@ export type EditArea =
     EditAreaDelete |
     EditAreaView;
 
-interface PushPublicationFormState {
+interface PushWorkFormState {
     profile: ORCIDProfile;
 
     // Editing
@@ -115,11 +114,11 @@ interface PushPublicationFormState {
     lastName: string;
     name: string;
     bio: string;
-    publications: Array<Publication>;
+    works: Array<Work>;
 }
 
-export default class PushPublicationForm extends Component<PushPublicationFormProps, PushPublicationFormState> {
-    constructor(props: PushPublicationFormProps) {
+export default class PushWorkForm extends Component<PushWorkFormProps, PushWorkFormState> {
+    constructor(props: PushWorkFormProps) {
         super(props);
         const initialState = this.stateFromProps()
         this.state = {
@@ -137,11 +136,11 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
             lastName: this.props.profile.lastName,
             name: this.props.profile.firstName + ' ' + this.props.profile.lastName,
             bio: this.props.profile.bio,
-            publications: this.props.profile.publications,
+            works: this.props.profile.works,
         };
     }
 
-    componentDidUpdate(prevProps: PushPublicationFormProps, prevState: PushPublicationFormState) {
+    componentDidUpdate(prevProps: PushWorkFormProps, prevState: PushWorkFormState) {
         if (!isEqual(prevState.profile, this.props.profile)) {
             this.setState(this.stateFromProps());
         }
@@ -184,7 +183,7 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
             lastName: '',
             name: '',
             bio: '',
-            publications: []
+            works: []
         })
     }
 
@@ -192,44 +191,32 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
         this.props.syncProfile();
     }
 
-    onDelete(publicationIndex: number) {
+    onDelete(workIndex: number) {
         this.setState({
             editArea: {
                 type: EditAreaType.DELETE,
                 deletionState: {
                     status: DeletionStatus.PENDING,
-                    value: this.props.profile.publications[publicationIndex]
+                    value: this.props.profile.works[workIndex]
                 }
             }
         })
     }
 
-    onEdit(publicationIndex: number) {
+    onEdit(workIndex: number) {
         this.setState({
             editArea: {
                 type: EditAreaType.UPDATE,
-                publication: this.props.profile.publications[publicationIndex]
+                work: this.props.profile.works[workIndex]
             }
         })
-        // this.setState({
-        //     editArea: {
-        //         type: EditAreaType.NONE
-        //     }
-        // }, () => {
-        //     this.setState({
-        //         editArea: {
-        //             type: EditAreaType.UPDATE,
-        //             publication: this.props.profile.publications[publicationIndex]
-        //         }
-        //     })
-        // });
     }
 
-    onView(publicationIndex: number) {
+    onView(workIndex: number) {
         this.setState({
             editArea: {
                 type: EditAreaType.VIEW,
-                publication: this.props.profile.publications[publicationIndex]
+                work: this.props.profile.works[workIndex]
             }
         })
     }
@@ -238,15 +225,15 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
         this.setState({
             editArea: {
                 type: EditAreaType.NEW,
-                publication: {
+                work: {
                     title: ''
                 }
             }
         })
     }
 
-    renderPublications() {
-        const rows = this.state.publications.map(({ putCode, createdAt, updatedAt, title, date, journal, publicationType, source, url }, index) => {
+    renderWorks() {
+        const rows = this.state.works.map(({ putCode, title, date, journal, workType, url, source }, index) => {
             const canEdit = (source === 'KBase CI');
             const button = (() => {
                 if (source === 'KBase CI') {
@@ -255,7 +242,7 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
                         <Button variant="danger" onClick={() => { this.onDelete(index); }} ><span className="fa fa-trash" /></Button>
                     </div>;
                 }
-                return <Button variant="secondary" onClick={() => { this.onView(index); }} title="This publication may only be viewed at KBase, since it was not created through KBase."><span className="fa fa-eye" /></Button>
+                return <Button variant="secondary" onClick={() => { this.onView(index); }} title="This work may only be viewed at KBase, since it was not created through KBase."><span className="fa fa-eye" /></Button>
             })();
             return <tr key={index}>
                 <td>{title}</td>
@@ -293,7 +280,7 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
     renderIntro() {
         return <div>
             <h2>
-                DEMO: Push Publication to ORCID Activity Record
+                DEMO: Push Work to ORCID Activity Record
             </h2>
             <p>
                 <Button variant="secondary" href="/#orcidlink/demos"><span className="fa fa-mail-reply" /> Back</Button>
@@ -310,16 +297,16 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
                     <Accordion.Body>
                         <ul>
                             <li>
-                                Click the <b>Add Publication</b> button to add a publication (work) to your ORCID profile
+                                Click the <b>Add Work</b> button to add a work to your ORCID profile
                             </li>
                             <li>
-                                Click the <b>Edit</b> button to edit the given publication
+                                Click the <b>Edit</b> button to edit the given work
                             </li>
                             <li>
-                                Click the <b>View</b> button to view the given publication
+                                Click the <b>View</b> button to view the given work
                             </li>
                             <li>
-                                View {this.renderORCIDLink("your profile")} to confirm that publications are the same as here
+                                View {this.renderORCIDLink("your profile")} to confirm that works are the same as here
                             </li>
                         </ul>
                     </Accordion.Body>
@@ -330,7 +317,7 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
                     </Accordion.Header>
                     <Accordion.Body>
                         <p>
-                            Only publications (works) created by this app are editable by it. Those created
+                            Only workds created by this app are editable by it. Those created
                             by other means, such as directly on the ORCID site, are not.
                         </p>
                         <p>
@@ -344,32 +331,32 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
 
     renderEditAreaNone() {
         return <Alert variant="info">
-            This area reserved for adding, editing, and deleting a Publication
+            This area reserved for adding, editing, and deleting a Work
         </Alert>
     }
 
     renderEditAreaNew(editArea: EditAreaNew) {
-        return <AddNewPublication
+        return <AddNewWork
             setTitle={this.props.setTitle}
-            createPublication={this.props.createPublication}
+            createWork={this.props.createWork}
             onClose={this.onDone.bind(this)} />
     }
 
-    async onSave(update: EditablePublication) {
+    async onSave(update: EditableWork) {
 
     }
 
     async onDelete2(putCode: string) {
-        this.props.deletePublication(putCode);
+        this.props.deleteWork(putCode);
     }
 
     renderEditAreaUpdate(editArea: EditAreaUpdate) {
-        return <EditPublication
+        return <EditWork
             model={this.props.model}
             onClose={this.onDone.bind(this)}
             setTitle={this.props.setTitle}
-            updatePublication={this.props.updatePublication}
-            putCode={editArea.publication.putCode} />
+            updateWork={this.props.updateWork}
+            putCode={editArea.work.putCode} />
     }
 
     onConfirmDelete() {
@@ -388,38 +375,6 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
         })
     }
 
-    // async deletePublication(publication: Publication) {
-    //     if (this.state.editArea.type !== EditAreaType.DELETE) {
-    //         return;
-    //     }
-    //     try {
-
-    //         await this.props.deletePublication(publication.putCode);
-    //         this.setState({
-    //             editArea: {
-    //                 ...this.state.editArea,
-    //                 deletionState: {
-    //                     status: DeletionStatus.SUCCESS
-    //                 }
-    //             }
-    //         })
-    //     } catch (ex) {
-    //         if (ex instanceof Error) {
-    //             this.setState({
-    //                 editArea: {
-    //                     ...this.state.editArea,
-    //                     deletionState: {
-    //                         status: DeletionStatus.ERROR,
-    //                         error: {
-    //                             message: ex.message
-    //                         }
-    //                     }
-    //                 }
-    //             })
-    //         }
-    //     }
-    // }
-
     onDone() {
         this.setState({
             editArea: {
@@ -428,26 +383,34 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
         })
     }
 
+    onDeleted() {
+        // refresh...
+        this.props.syncProfile();
+    }
+
     renderEditAreaDelete(editArea: EditAreaDelete) {
         const deletionState = editArea.deletionState;
         switch (deletionState.status) {
             case DeletionStatus.PENDING:
-                return <DeletePublication publication={deletionState.value}
-                    onDeleteConfirm={() => this.props.deletePublication(deletionState.value.putCode)}
-                    onCancel={() => this.closeEditArea()}
+                return <DeleteWork
+                    work={deletionState.value}
+                    model={this.props.model}
+                    // onDeleteConfirm={() => this.props.deleteWork(deletionState.value.putCode)}
+                    onDeleted={this.onDeleted.bind(this)}
+                    onCanceled={() => this.closeEditArea()}
                 />
             case DeletionStatus.SUCCESS:
                 return <div>
-                    <AlertMessage type="success">Successfully removed this publication from your ORCID record</AlertMessage>
+                    <AlertMessage type="success">Successfully removed this work from your ORCID record</AlertMessage>
                     <Button variant="primary" onClick={this.onDone.bind(this)}>Done</Button>
                 </div>
             case DeletionStatus.ERROR:
-                return <ErrorAlert message={`Error removing this publication from your ORCID record: ${deletionState.error.message}`} />
+                return <ErrorAlert message={`Error removing this work from your ORCID record: ${deletionState.error.message}`} />
         }
     }
 
     renderEditAreaView(editArea: EditAreaView) {
-        return <ViewPublication publication={editArea.publication} onCancel={this.closeEditArea.bind(this)} />
+        return <ViewWork work={editArea.work} onCancel={this.closeEditArea.bind(this)} />
     }
 
     renderEditArea() {
@@ -466,17 +429,17 @@ export default class PushPublicationForm extends Component<PushPublicationFormPr
     }
 
     render() {
-        // <h4>Add Publication</h4>
+        // <h4>Add Work</h4>
         // { this.renderForm() }
         return <div className={`${styles.main} flex-table`}>
             <div className="flex-row">
                 <div className="flex-col">
                     {this.renderIntro()}
-                    <h4 style={{ marginTop: '2em' }}>Publications</h4>
+                    <h4 style={{ marginTop: '2em' }}>Works</h4>
                     <div className="button-toolbar">
-                        <Button variant="primary" onClick={() => { this.onAdd(); }} ><span className="fa fa-plus-circle" /> Add Publication</Button>
+                        <Button variant="primary" onClick={() => { this.onAdd(); }} ><span className="fa fa-plus-circle" /> Add Work</Button>
                     </div>
-                    {this.renderPublications()}
+                    {this.renderWorks()}
                 </div>
                 <div className="flex-col">
                     {this.renderEditArea()}

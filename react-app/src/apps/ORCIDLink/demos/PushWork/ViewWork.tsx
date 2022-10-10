@@ -1,26 +1,26 @@
-import { Publication } from "apps/ORCIDLink/ORCIDLinkClient";
+import { Work } from "apps/ORCIDLink/ORCIDLinkClient";
 import { Component } from "react";
 import { Button } from "react-bootstrap";
-import PublicationView from "./PublicationView";
+import WorkView from "./WorkView";
 
-export interface ViewPublicationProps {
-    publication: Publication;
+export interface ViewWorkProps {
+    work: Work;
     onCancel: () => void;
 }
 
-interface ViewPublicationState {
+interface ViewWorkState {
 
 }
 
-export default class ViewPublication extends Component<ViewPublicationProps, ViewPublicationState> {
+export default class ViewWork extends Component<ViewWorkProps, ViewWorkState> {
     render() {
         return <div className="well">
             <div className="well-header">
-                View Publication
+                View Work
             </div>
 
             <div className="well-body">
-                <PublicationView publication={this.props.publication} />
+                <WorkView work={this.props.work} />
             </div>
 
             <div className="well-footer" style={{ justifyContent: 'center' }}>

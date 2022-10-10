@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { render } from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import * as uuid from 'uuid';
 import { AuthenticationState, AuthenticationStatus } from '../contexts/Auth';
 import { WindowChannel, WindowChannelInit } from '../lib/kb_lib/windowChannel';
@@ -420,7 +420,8 @@ export default class IFrameController extends Component<IFrameControllerProps,
             action,
             params,
         };
-        render(<AutoPostForm {...props} />, donorNode);
+        const root = ReactDOM.createRoot(donorNode);
+        root.render(<AutoPostForm {...props} />);
     }
 
     getAuthInfo() {

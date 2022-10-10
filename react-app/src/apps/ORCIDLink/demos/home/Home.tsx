@@ -53,7 +53,6 @@ export default class View extends Component<ViewProps> {
     }
 
     renderDemoLinks() {
-
         const linkData = [{
             url: "#orcidlink/demos/interstitial1",
             label: 'Linking via Interstitial Page',
@@ -70,8 +69,8 @@ export default class View extends Component<ViewProps> {
             requiresLink: false,
             description: []
         }, {
-            url: "#orcidlink/demos/push-publication",
-            label: 'Push Publication to ORCID',
+            url: "#orcidlink/demos/push-work",
+            label: 'Push Work to ORCID',
             requiresLink: true,
             description: []
         }];
@@ -79,7 +78,7 @@ export default class View extends Component<ViewProps> {
             if (requiresLink && this.props.link === null) {
                 return null;
             }
-            return <Accordion.Item eventKey="0">
+            return <Accordion.Item eventKey="0" key={index}>
                 <Accordion.Header>
                     <a href={url}>{label}</a>
                 </Accordion.Header>
@@ -119,11 +118,11 @@ export default class View extends Component<ViewProps> {
                 </Accordion.Item>
                 <Accordion.Item eventKey="2">
                     <Accordion.Header>
-                        <a href="#orcidlink/demos/push-publication">Push Publication to ORCID</a>
+                        <a href="#orcidlink/demos/push-work">Push Work to ORCID</a>
                     </Accordion.Header>
                     <Accordion.Body>
                         <p>
-                            This is a demonstration of how to manually add, edit, and delete publications
+                            This is a demonstration of how to manually add, edit, and delete works
                             from one's ORCID account.
                         </p>
                     </Accordion.Body>
@@ -142,8 +141,8 @@ export default class View extends Component<ViewProps> {
             label: 'Request DOI Form',
             requiresLink: false
         }, {
-            url: "#orcidlink/demos/push-publication",
-            label: 'Push Publication to ORCID',
+            url: "#orcidlink/demos/push-work",
+            label: 'Push WOrks to ORCID',
             requiresLink: true
         }];
         const menu = linkData.map(({ url, label, requiresLink }, index) => {
@@ -197,7 +196,7 @@ export default class View extends Component<ViewProps> {
         return <div>
             <Nav >
                 <Nav.Link href="https://github.com/kbaseIncubator/kbase-credit-engine-docs" target="_blank" rel="noreferrer"><span className="fa fa-file-o" /> Docs</Nav.Link>
-                <Nav.Link href="#orcidlink" target="_blank" rel="noreferrer"><span className="fa fa-home" /> ORCID® Link Home</Nav.Link>
+                <Nav.Link href="#orcidlink" ><span className="fa fa-home" /> ORCID® Link Home</Nav.Link>
             </Nav>
         </div>
     }
@@ -206,7 +205,7 @@ export default class View extends Component<ViewProps> {
         return <div>
             <ListGroup variant="pill">
                 <ListGroup.Item action active={false} href="https://github.com/kbaseIncubator/kbase-credit-engine-docs" target="_blank" rel="noreferrer"><span className="fa fa-file-o" /> Docs</ListGroup.Item>
-                <ListGroup.Item action active={false} href="#orcidlink" target="_blank" rel="noreferrer"><span className="fa fa-home" /> ORCID® Link Home</ListGroup.Item>
+                <ListGroup.Item action active={false} href="#orcidlink" ><span className="fa fa-home" /> ORCID® Link Home</ListGroup.Item>
             </ListGroup>
         </div>
     }

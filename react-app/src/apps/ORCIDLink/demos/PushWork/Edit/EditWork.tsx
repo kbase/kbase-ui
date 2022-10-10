@@ -4,11 +4,14 @@ import { Component } from "react";
 import { Button, Form, Stack } from "react-bootstrap";
 import Select, { SingleValue } from 'react-select';
 import EditExternalIdentifiers from "../EditExternalIdentifiers";
-import { EditableExternalId, editableExternalIdsToExternalIds, EditablePublication, EditStatus, initialEditableExternalId, ValidationStatus } from "../PushPublicationModel";
+import {
+    EditableExternalId, editableExternalIdsToExternalIds, EditableWork,
+    EditStatus, initialEditableExternalId, ValidationStatus
+} from "../PushWorksModel";
 import { Option, OptionsGroups } from "../reactSelectTypes";
 import { ROW_HEADER } from "../styles";
 import { WorkTypes2 } from "./Controller";
-import styles from './EditPublication.module.css';
+import styles from './EditWork.module.css';
 
 const SECTION_HEADER_STYLE = {
     fontWeight: 'bold',
@@ -28,48 +31,36 @@ const SECTION_BODY_STYLE = {
     paddingLeft: '0.5em'
 };
 
-export interface EditPublicationProps {
-    publication: EditablePublication;
-    // onSave: (publication: Publication) => Promise<void>;
-
+export interface EditWorkProps {
+    work: EditableWork;
     workTypes: WorkTypes2;
     workExternalIdentifierTypes: WorkExternalIdentifierTypes;
     workRelationshipIdentifiers: WorkRelationshipIdentifiers;
     onClose: () => void;
-    updatePublication: (update: EditablePublication) => Promise<void>;
+    updateWork: (update: EditableWork) => Promise<void>;
 }
 
-interface EditPublicationState {
-    editState: EditablePublication
+interface EditWorkState {
+    editState: EditableWork
 }
 
-export default class EditPublication extends Component<EditPublicationProps, EditPublicationState> {
+export default class EditWork extends Component<EditWorkProps, EditWorkState> {
 
-    constructor(props: EditPublicationProps) {
+    constructor(props: EditWorkProps) {
         super(props);
         this.state = {
-            editState: props.publication
+            editState: props.work
         }
     }
 
-    componentDidUpdate(prevProps: EditPublicationProps, prevState: EditPublicationState) {
-        // const editable = this.publicationToEditablePublication(this.props.publication);
-        if (!isEqual(prevProps.publication, this.props.publication)) {
+    componentDidUpdate(prevProps: EditWorkProps, prevState: EditWorkState) {
+        // const editable = this.publicationToEditableWork(this.props.publication);
+        if (!isEqual(prevProps.work, this.props.work)) {
             this.setState({
-                editState: this.props.publication
+                editState: this.props.work
             })
         }
     }
-
-    // publicationToEditablePublication(publication: Publication): EditablePublication {
-    //     const { putCode, publicationType, title, date, journal, url, citationType, externalIds } = publication;
-    //     return {
-    //         putCode,
-    //         publicationType, title, date, journal: journal || '', url: url || '',
-    //         citationType: citationType || '',
-    //         externalIds: externalIds || []
-    //     }
-    // }
 
     changeTitle(title: string) {
         this.setState({
@@ -119,41 +110,41 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
         })
     }
 
-    changePublicationType(publicationType: string) {
+    changeWorkType(workType: string) {
         this.setState({
             editState: {
                 ...this.state.editState,
-                publicationType: {
+                workType: {
                     status: EditStatus.EDITED,
                     validationState: {
                         status: ValidationStatus.VALID
                     },
-                    editValue: publicationType,
-                    value: publicationType
+                    editValue: workType,
+                    value: workType
                 }
             }
         })
     }
 
-    handlePublicationTypeChange(option: SingleValue<Option<string>>): void {
+    handleWorkTypeChange(option: SingleValue<Option<string>>): void {
         if (option === null) {
             // This should not be possible since we do not allow an empty
             // option, but if it is, we would use "natural order", I suppose.
             return;
         }
-        const publicationType = option.value;
+        const workType = option.value;
 
         this.setState({
             ...this.state,
             editState: {
                 ...this.state.editState,
-                publicationType: {
+                workType: {
                     status: EditStatus.EDITED,
                     validationState: {
                         status: ValidationStatus.VALID,
                     },
-                    editValue: publicationType,
-                    value: publicationType
+                    editValue: workType,
+                    value: workType
                 }
             }
         })
@@ -313,7 +304,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
         const update = this.state.editState;
 
         // Call the props function
-        this.props.updatePublication(update);
+        this.props.updateWork(update);
     }
 
     renderExternalIds() {
@@ -339,7 +330,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
         />
     }
 
-    getPublicationTypeOptions2(): OptionsGroups<string> {
+    getWorkTypeOptions2(): OptionsGroups<string> {
         return this.props.workTypes.map(({ category, label, values }) => {
             return {
                 label,
@@ -350,11 +341,11 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
         });
     }
 
-    renderPublicationTypeField() {
+    renderWorkTypeField() {
         const editValue = (() => {
-            for (const { options } of this.getPublicationTypeOptions2()) {
+            for (const { options } of this.getWorkTypeOptions2()) {
                 for (const { value, label } of options) {
-                    if (value === this.state.editState.publicationType.editValue) {
+                    if (value === this.state.editState.workType.editValue) {
                         return { value, label }
                     }
                 }
@@ -364,8 +355,8 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
         return <Select<Option<string>>
             isSearchable={true}
             value={editValue}
-            onChange={this.handlePublicationTypeChange.bind(this)}
-            options={this.getPublicationTypeOptions2()}
+            onChange={this.handleWorkTypeChange.bind(this)}
+            options={this.getWorkTypeOptions2()}
         />;
     }
 
@@ -374,10 +365,10 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
             <div className="flex-table">
                 <div className="flex-row">
                     <div className="flex-col" style={ROW_HEADER} >
-                        Publication Type
+                        Work Type
                     </div>
                     <div className="flex-col">
-                        {this.renderPublicationTypeField()}
+                        {this.renderWorkTypeField()}
 
                     </div>
                 </div>
@@ -441,7 +432,7 @@ export default class EditPublication extends Component<EditPublicationProps, Edi
     render() {
         return <div className="well">
             <div className="well-header">
-                Edit Publication Record
+                Edit Work Record
             </div>
             <div className="well-body">
                 {this.renderForm()}

@@ -1,14 +1,14 @@
 import { Component } from "react";
 import { Button, Form } from "react-bootstrap";
-import styles from './PushPublicationForm.module.css';
+import styles from './PushWorkForm.module.css';
 
-export interface AddNewPublicationProps {
+export interface AddNewWorkProps {
     onCancel: () => void;
 }
 
-interface AddNewPublicationState {
+interface AddNewWorkState {
     editState: {
-        publicationType: string;
+        workType: string;
         title: string;
         date: string;
         journal: string;
@@ -16,13 +16,13 @@ interface AddNewPublicationState {
 }
 
 
-export default class AddNewPublication extends Component<AddNewPublicationProps, AddNewPublicationState> {
+export default class AddNewWork extends Component<AddNewWorkProps, AddNewWorkState> {
 
-    constructor(props: AddNewPublicationProps) {
+    constructor(props: AddNewWorkProps) {
         super(props);
         this.state = {
             editState: {
-                publicationType: '',
+                workType: '',
                 title: '',
                 date: '',
                 journal: ''
@@ -60,12 +60,12 @@ export default class AddNewPublication extends Component<AddNewPublicationProps,
         })
     }
 
-    changePublicationType(publicationType: string) {
+    changeWorkType(workType: string) {
         this.setState({
             ...this.state,
             editState: {
                 ...this.state.editState,
-                publicationType
+                workType
             }
         })
     }
@@ -74,11 +74,11 @@ export default class AddNewPublication extends Component<AddNewPublicationProps,
             <div className="flex-table">
                 <div className="flex-row">
                     <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >
-                        Publication Type
+                        Work Type
                     </div>
                     <div className="flex-col">
-                        <input type="text" className="form-control" value={this.state.editState.publicationType}
-                            onInput={(e) => { this.changePublicationType(e.currentTarget.value) }} />
+                        <input type="text" className="form-control" value={this.state.editState.workType}
+                            onInput={(e) => { this.changeWorkType(e.currentTarget.value) }} />
                     </div>
                 </div>
                 <div className="flex-row">
@@ -101,7 +101,7 @@ export default class AddNewPublication extends Component<AddNewPublicationProps,
                 </div>
                 <div className="flex-row">
                     <div className="flex-col" style={{ flex: '0 0 10em', fontWeight: 'bold', color: 'rgba(150, 150, 150)' }} >
-                        Publication (Journal)
+                        Work (Journal)
                     </div>
                     <div className="flex-col">
                         <input type="text" className="form-control" value={this.state.editState.journal}
