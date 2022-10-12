@@ -393,7 +393,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                     <About {...this.props} {...props} />
                 );
             }),
-            new Route('developer', { authenticationRequired: true, rolesRequired: ['DevToken'] }, (props: RouteProps) => {
+            new Route('developer', { authenticationRequired: false, rolesRequired: ['DevToken'] }, (props: RouteProps) => {
                 return (
                     <Developer {...this.props} />
                 );
