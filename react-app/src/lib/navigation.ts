@@ -132,6 +132,6 @@ export function changeHash2(
     } else {
         window.history.pushState(null, '', url);
     }
-    // window.history.go();
-    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    window.history.go();
+    // window.dispatchEvent(new HashChangeEvent('hashchange'));
 }
