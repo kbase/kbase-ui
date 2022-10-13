@@ -336,7 +336,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
         this.channel.on('ui-auth-navigate', async (message) => {
             const {
                 nextRequest,
-                tokenInfo: { token },
+                tokenInfo: { token, expires },
             } = message;
             try {
                 // Set the auth
@@ -344,7 +344,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                     case AuthenticationStatus.NONE:
                         return;
                     case AuthenticationStatus.UNAUTHENTICATED:
-                        await this.props.authState.login(token);
+                        await this.props.authState.login(token, expires);
                         break;
                     case AuthenticationStatus.AUTHENTICATED:
                         await this.props.authState.logout();

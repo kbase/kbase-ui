@@ -1,21 +1,8 @@
-import { CookieManager, Cookie } from './Cookie';
 import {
-    Auth2,
-    LoginOptions,
-    LoginCreateOptions,
-    LinkOptions,
-    UnlinkOptions,
-    TokenInfo,
-    LoginPick,
-    CreateTokenInput,
-    NewTokenInfo,
-    UserSearchInput,
-    PutMeInput,
-    RootInfo,
-    Account,
-    Role,
+    Account, Auth2, CreateTokenInput, LinkOptions, LoginCreateOptions, LoginOptions, LoginPick, NewTokenInfo, PutMeInput, Role, RootInfo, TokenInfo, UnlinkOptions, UserSearchInput
 } from './Auth2';
 import { AuthError } from './Auth2Error';
+import { Cookie, CookieManager } from './Cookie';
 import { uniqueId } from './Utils';
 
 const SESSION_MONITORING_INTERVAL = 1000;
@@ -641,6 +628,8 @@ export class Auth2Session {
     // COOKIES
 
     setSessionCookie(token: string, expiration: number) {
+
+        console.log('[setSessionCookie]', token, expiration);
         const sessionCookie = new Cookie(this.cookieName, token)
             .setPath('/')
             .setSecure(true);
@@ -666,6 +655,7 @@ export class Auth2Session {
     }
 
     removeSessionCookie(): void {
+        console.log('[removeSessionCookie]');
         // Remove host-based cookie.
         this.cookieManager.removeItem(
             new Cookie(this.cookieName, '').setPath('/')

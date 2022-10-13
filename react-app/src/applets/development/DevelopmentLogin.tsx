@@ -75,7 +75,7 @@ export default class DevelopmentLogin extends Component<
     }
 
     setToken(token: string) {
-        this.props.authState.login(token);
+        this.props.authState.login(token, 0);
     }
 
     renderLoginStatus() {

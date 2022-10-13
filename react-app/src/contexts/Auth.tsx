@@ -67,7 +67,7 @@ export interface AuthenticationStateAuthenticated
 export interface AuthenticationStateUnauthenticated
     extends AuthenticationStatusBase {
     status: AuthenticationStatus.UNAUTHENTICATED;
-    login: (token: string) => Promise<void>;
+    login: (token: string, expires: number) => Promise<void>;
 }
 
 export type AuthenticationState =
@@ -581,11 +581,15 @@ export default class AuthWrapper extends React.Component<
         }
     }
 
-    async login(token: string) {
-        Cookie.set(this.props.config.services.Auth2.cookieName, token, {
+    async login(token: string, expires: number) {
+        const cookieAttributes: Cookie.CookieAttributes = {
             path: '/',
-            sameSite: 'strict',
-        });
+            sameSite: 'strict'
+        };
+        if (expires) {
+            cookieAttributes.expires = new Date(expires);
+        }
+        Cookie.set(this.props.config.services.Auth2.cookieName, token, cookieAttributes);
         await this.syncTokenInfo();
     }
 
