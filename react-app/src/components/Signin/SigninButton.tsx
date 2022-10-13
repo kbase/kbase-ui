@@ -1,6 +1,5 @@
-import {UserProfile} from '@kbase/ui-lib/lib/comm/coreServices/UserProfile';
-import {Component} from 'react';
-import { NextRequest } from '../AuthProblem';
+import { NextRequest } from 'lib/NextRequest';
+import { Component } from 'react';
 import styles from './SigninButton.module.css';
 
 export interface SigninProps {
@@ -39,7 +38,8 @@ export default class Signin extends Component<SigninProps, SigninState> {
         url.pathname = '';
         url.hash = '#login';
 
-        const nextRequest = this.props.nextRequest || this.makeNextRequstFromHere();
+        const nextRequest = this.props.nextRequest; //  || this.makeNextRequstFromHere();
+
         if (nextRequest) {
             for (const [key, value] of nextRequest.toSearchParams()) {
                 url.searchParams.set(key, value);
@@ -64,7 +64,7 @@ export default class Signin extends Component<SigninProps, SigninState> {
                 </span>
             );
 
-        } 
+        }
         return (
             <a
                 className={classList.join(' ')}

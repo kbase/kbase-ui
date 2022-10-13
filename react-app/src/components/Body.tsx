@@ -22,6 +22,8 @@ import styles from './Body.module.css';
 import ErrorMessage from './ErrorMessage';
 import Loading from './Loading';
 import { RouteProps, Router } from './Router2';
+import { changePath } from 'lib/navigation';
+import { changeHash2 } from 'lib/navigation';
 
 export interface BodyProps {
     config: Config;
@@ -38,25 +40,6 @@ export default class Body extends Component<BodyProps, BodyState> {
         super(props);
 
         this.routes = [
-            // Plugins
-            // new Route('^(appcatalog)$', (props: RouteProps) => {
-            //     return (
-            //         <PluginWrapper2
-            //             {...props}
-            //             {...this.props}
-            //             name="catalog"
-            //             view="appsBrowser"
-            //         />
-            //     );
-            // }),
-            // new Route('^(catalog|appcatalog)$', (props: RouteProps) => {
-            //     return (
-            //         <Catalog
-            //             {...props}
-            //             {...this.props}
-            //         />
-            //     );
-            // }),
             new Route('orcidlink/demos/*', { authenticationRequired: false }, (props: RouteProps) => {
                 return (
                     <ORCIDLinkDemos
@@ -301,82 +284,6 @@ export default class Body extends Component<BodyProps, BodyState> {
                     syncHash={false} />
             }),
 
-            // <Route
-            //                     path="/search"
-            //                     render={(props) => {
-            //                         return (
-            //                             <PluginWrapper
-            //                                 {...props}
-            //                                 name="data-search"
-            //                                 view="search"
-            //                                 {...this.props}
-            //                             />
-            //                         );
-            //                     }}
-            //                 />
-            //                 <Route
-            //                     path="/jgi-search"
-            //                     render={(props) => {
-            //                         return (
-            //                             <PluginWrapper
-            //                                 {...props}
-            //                                 name="jgi-search"
-            //                                 view="search"
-            //                                 {...this.props}
-            //                             />
-            //                         );
-            //                     }}
-            //                 />
-
-            // Redirects
-            new Route('^(dashboard|narratives)$', { authenticationRequired: true }, (props: RouteProps) => {
-                window.location.pathname = '/narratives';
-                return <Loading message="Loading Navigator..." />
-            }),
-
-            //                 <Route
-            //                     path="/(auth2|account|signup)"
-            //                     render={(props) => {
-            //                         return <Auth {...props} {...this.props} />;
-            //                     }}
-            //                 />
-
-            // new Route('user/:username?', (props: RouteProps) => {
-            //     return <PluginWrapper2
-            //         {...props}
-            //         {...this.props}
-            //         name="react-profile-view
-
-
-            //         view="user-profile"
-            //     />
-            // }),
-            //                 <Route
-            //                     path="/people/:username?"
-            //                     render={(props) => {
-            //                         return (
-            //                             <PluginWrapper
-            //                                 {...props}
-            //                                 name="react-profile-view"
-            //                                 view="user-profile"
-            //                                 {...this.props}
-            //                             />
-            //                         );
-            //                     }}
-            //                 />
-            //                 <Route
-            //                     path="/user/:username?"
-            //                     render={(props) => {
-            //                         return (
-            //                             <PluginWrapper
-            //                                 {...props}
-            //                                 name="react-profile-view"
-            //                                 view="user-profile"
-            //                                 {...this.props}
-            //                             />
-            //                         );
-            //                     }}
-            //                 />
             // Internal Apps
             new Route('navigator', { authenticationRequired: true }, (props: RouteProps) => {
                 return (
@@ -428,19 +335,29 @@ export default class Body extends Component<BodyProps, BodyState> {
                 );
             }),
 
+            // Redirects
+            new Route('^(dashboard|narratives)$', { authenticationRequired: true }, (props: RouteProps) => {
+                changePath('narratives', { replace: true });
+                return <Loading message="Loading Narratives Navigator..." />
+            }),
+
+            new Route('', { authenticationRequired: false }, (props: RouteProps) => {
+                changeHash2('narratives', { replace: true });
+                return <Loading message="Loading Narratives Navigator..." />
+            }),
 
             // Empty route
-            new Route('', { authenticationRequired: false }, (props: RouteProps) => {
-                switch (this.props.config.ui.defaults.path.type) {
-                    case "path":
-                        window.location.pathname = this.props.config.ui.defaults.path.value;
-                        break;
-                    case "hash":
-                        window.location.hash = this.props.config.ui.defaults.path.value;
-                }
+            // new Route('', { authenticationRequired: false }, (props: RouteProps) => {
+            //     switch (this.props.config.ui.defaults.path.type) {
+            //         case "path":
+            //             window.location.pathname = this.props.config.ui.defaults.path.value;
+            //             break;
+            //         case "hash":
+            //             window.location.hash = this.props.config.ui.defaults.path.value;
+            //     }
 
-                return <div>Redirecting...</div>;
-            }),
+            //     return <div>Redirecting...</div>;
+            // }),
 
             // Not found route
             // new Route('*', (props: RouteProps) => {

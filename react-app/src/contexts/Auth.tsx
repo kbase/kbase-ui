@@ -16,8 +16,9 @@ import { JSONRPC11Exception } from '../lib/kb_lib/comm/JSONRPC11/JSONRPC11';
 import * as Cookie from 'es-cookie';
 import { Config } from '../types/config';
 import { AuthError } from '../lib/kb_lib/Auth2Error';
-import { changeHash2 } from '../apps/Navigator/utils/navigation';
+import { changeHash2 } from 'lib/navigation';
 import { Monitor } from '../lib/Monitor';
+import { HashPath } from './RouterContext';
 
 /**
  * Holds the current authentication information
@@ -389,11 +390,51 @@ export default class AuthWrapper extends React.Component<
         });
     }
 
+    fromURL(): HashPath | null {
+        // ?source=authorization&nextrequest=%7B%22realPath%22%3A%22%2F%22%2C%22path%22%3A%5B%22feeds%22%5D%2C%22original%22%3A%22feeds%22%2C%22query%22%3A%7B%7D%7D#login
+        const url = new URL(window.location.href);
+        const nextRequest = url.searchParams.get('nextrequest');
+        if (!nextRequest) {
+            return null;
+        }
+
+        try {
+            const {
+                realPath, path, original, query
+            } = JSON.parse(nextRequest);
+
+            if (typeof realPath === 'string' &&
+                (path instanceof Array && path.every((element) => {
+                    return typeof element === 'string'
+                })) &&
+                typeof original === 'string' &&
+                (query instanceof {}.constructor && Object.entries(query).every(([key, value]) => {
+                    return typeof key === 'string' && typeof value === 'string'
+                }))) {
+
+                // TODO: the query should be a plain object; see Router2
+                const searchParams: URLSearchParams = new URL('https://example.com').searchParams;
+                for (const [key, value] of Object.entries(query)) {
+                    searchParams.set(key, value);
+                }
+                return {
+                    realPath, path, query: searchParams, hash: path.join('/')
+                }
+            }
+            console.warn('It looks like an invalid nextrequest: ', nextRequest, JSON.parse(nextRequest));
+            return null;
+        } catch (ex) {
+            console.error('Invalid nextRequest will not parse', nextRequest, ex);
+            return null;
+        }
+    }
+
     async checkAuth() {
         const token = BrowserAuth.getToken();
 
         if (token === null) {
-            await this.asyncSetState({ authState: this.unauthenticatedState() });
+            // await this.asyncSetState({ authState: this.unauthenticatedState() });
+            // This is the stable state -- was unauthenticated, still is!
             return;
         }
 
@@ -406,6 +447,7 @@ export default class AuthWrapper extends React.Component<
             const account = await auth.getMe(token);
             if (tokenInfo === null) {
                 await this.asyncSetState({ authState: this.unauthenticatedState() });
+                // TODO: should be configurable
                 changeHash2('auth2/signedout');
             } else {
                 const userProfile = await this.fetchUserProfile(
@@ -428,7 +470,18 @@ export default class AuthWrapper extends React.Component<
                         },
                     },
                 });
-                changeHash2('navigator');
+                // TODO: should be configured default view.
+
+                // If we are sitting on the login view, with a nextrequest, we should honor it.
+                const url = new URL(window.location.href);
+                if (url.hash === '#login') {
+                    const nextRequest = this.fromURL();
+                    if (nextRequest) {
+                        changeHash2(nextRequest.hash);
+                        return;
+                    }
+                }
+                changeHash2('dashboard');
             }
         } catch (ex) {
             if (ex instanceof JSONRPC11Exception) {

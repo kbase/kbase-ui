@@ -14,7 +14,7 @@ import { SearchState, SearchStatus } from '../../context/DataModel';
 import Loading from '../../../../components/Loading';
 import { AsyncProcessStatus } from '../../../../lib/AsyncProcess';
 import ErrorMessage from '../../../../components/ErrorMessage';
-import { updateHistory } from '../../utils/navigation';
+import { updateHistory } from 'lib/navigation';
 import styles from './NarrativeListing.module.css';
 
 const ROW_HEIGHT = 64;
@@ -75,7 +75,7 @@ export default class NarrativeListing extends Component<
                             if (
                                 value !== null &&
                                 value.selectedNarrative.status ===
-                                    AsyncProcessStatus.SUCCESS
+                                AsyncProcessStatus.SUCCESS
                             ) {
                                 return (
                                     value.selectedNarrative.value.narrativeDoc

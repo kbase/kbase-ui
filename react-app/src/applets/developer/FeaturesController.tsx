@@ -50,7 +50,6 @@ export default class FeaturesController extends Component<FeaturesControllerProp
             const status = cookieFeatures.includes(feature.id) ? 'enabled' : 'disabled';
             return { ...feature, status };
         });
-        console.log('features', features);
         this.setState({
             features
         });

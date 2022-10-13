@@ -11,7 +11,7 @@ import { Config } from '../types/config';
 import { Params } from './Plugin';
 import { Alert } from 'react-bootstrap';
 import { isEqual } from '../lib/kb_lib/Utils';
-import { changeHash2 } from '../apps/Navigator/utils/navigation';
+import { changeHash2 } from 'lib/navigation';
 
 import styles from './IFrameController.module.css';
 

@@ -6,7 +6,7 @@ import CategoryMenu from './CategoryMenu';
 import { SearchInput } from '../SearchInput';
 import SortControl from './SortControl';
 import IconSpinner from '../IconSpinner';
-import { updateHistory } from '../../utils/navigation';
+import { updateHistory } from 'lib/navigation';
 import './NarrativeList.css';
 
 import { NavigatorContext } from '../../context/NavigatorContext';
@@ -26,7 +26,7 @@ interface NarrativeListProps {
     refresh: () => void;
 }
 
-interface NarrativeListState {}
+interface NarrativeListState { }
 
 // Like SearchOptions but all optional
 // TODO: may be able to use a TS helper for this...

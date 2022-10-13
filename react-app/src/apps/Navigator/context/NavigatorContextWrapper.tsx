@@ -261,7 +261,6 @@ export default class NavigatorContextWrapper extends Component<
                 //     })
                 //     .slice(-1)[0];
                 // if (lastSuchItem) {
-                //     console.log(
                 //         'hmm',
                 //         queue.filter((item) => {
                 //             return item.id === 're-search';

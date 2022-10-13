@@ -1,37 +1,9 @@
-import {Component} from 'react';
-import { HashPath } from '../../contexts/RouterContext';
+import { NextRequest } from 'lib/NextRequest';
+import { HashPath } from 'contexts/RouterContext';
+import { Component } from 'react';
 import HelpLinks from '../HelpLinks';
-import SigninButton from '../Signin/SigninButton';
 import './AuthProblem.css';
 
-
-export class NextRequest {
-    source: string;
-    hashPath: HashPath;
-    constructor(source: string, hashPath: HashPath) {
-        this.source = source; 
-        this.hashPath = hashPath;
-    }
-
-    toJSON() {
-        return {
-            realPath: this.hashPath.realPath,
-            path: this.hashPath.path,
-            original: this.hashPath.hash,
-            query: this.hashPath.query
-        }
-    }
-
-    toSearchParams (): URLSearchParams {
-        const url = new URL(window.location.href);
-        url.pathname = '';
-        // url.hash = '#/login';
-        const params = url.searchParams;
-        params.set('source', 'authorization');
-        params.set('nextrequest', JSON.stringify(this.toJSON()));
-        return params;
-    }
-}
 
 export interface AuthProblemProps {
     // config: Config;
@@ -53,11 +25,10 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
     redirectToLogin() {
         const nextRequest: NextRequest = new NextRequest('authorization', this.props.hashPath);
 
-
         const url = new URL(window.location.href);
         url.pathname = '';
         url.hash = '#login';
-        
+
         for (const [key, value] of nextRequest.toSearchParams()) {
             url.searchParams.set(key, value);
         }
@@ -67,11 +38,10 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
     renderAuthProblem() {
         const nextRequest: NextRequest = new NextRequest('authorization', this.props.hashPath);
 
-
         const url = new URL(window.location.href);
         url.pathname = '';
         url.hash = '#login';
-        
+
         for (const [key, value] of nextRequest.toSearchParams()) {
             url.searchParams.set(key, value);
         }
@@ -80,16 +50,16 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
             <div className="AuthProblem" >
                 <div className="AuthProblem-graphic">
                     {/* <img src={flapjack} alt="The Flapjack"/> */}
-                    <span className="fa fa-lock" style={{fontSize: '600%'}}/>
+                    <span className="fa fa-lock" style={{ fontSize: '600%' }} />
                 </div>
                 <div className="AuthProblem-content">
-                    <div className="AuthProblem-header" style={{flex: '1 1 0px'}}>
+                    <div className="AuthProblem-header" style={{ flex: '1 1 0px' }}>
                         <p>
                             Authentication Required
                         </p>
-                        
+
                     </div>
-                    <div className="AuthProblem-message"style={{flex: '1 1 0px'}}>
+                    <div className="AuthProblem-message" style={{ flex: '1 1 0px' }}>
                         <p>
                             Sorry, the resource <em>"{this.props.hashPath.hash}"</em> requires that you be logged into KBase.
                         </p>
@@ -105,7 +75,7 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
         );
     }
 
-   
+
     render() {
         // return <div style={{margin: '0 10px'}}>{this.renderAuthProblem()}</div>;
         this.redirectToLogin();

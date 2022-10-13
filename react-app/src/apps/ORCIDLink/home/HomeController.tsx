@@ -5,7 +5,7 @@ import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Config } from 'types/config';
 
-import { changeHash2 } from 'apps/Navigator/utils/navigation';
+import { changeHash2 } from 'lib/navigation';
 import { Model, ReturnLink } from '../Model';
 import View from './View';
 

@@ -1,7 +1,7 @@
 import { Component, createRef } from 'react';
 import { MenuItem, MenuItemExternal, MenuItemInternal } from '../../types/menu';
 import { Nav } from 'react-bootstrap';
-import { changeHash2 } from '../../apps/Navigator/utils/navigation';
+import { changeHash2 } from 'lib/navigation';
 import './SidebarMenu.css';
 import styles from './SidebarMenu.module.css';
 

@@ -1,5 +1,5 @@
 import { sanitize } from 'dompurify';
-import {Component} from 'react';
+import { Component } from 'react';
 import { AsyncProcess, AsyncProcessStatus } from '../../../lib/AsyncProcess';
 import ConnectionMonitor from '../../../lib/ConnectionMonitor';
 import styles from './ConnectionStatus.module.css'
@@ -15,8 +15,8 @@ export interface Measure {
 export interface ConnectionStats {
     lastCheck: number;
     stats: Array<{
-            size: number,
-            measure: Measure
+        size: number,
+        measure: Measure
     }>
     // ping: Measure
     // speed1k: Measure
@@ -24,7 +24,7 @@ export interface ConnectionStats {
 }
 
 interface ConnectionStatusState {
-   connectionStats: AsyncProcess<ConnectionStats, string>;
+    connectionStats: AsyncProcess<ConnectionStats, string>;
 }
 
 interface Config {
@@ -48,10 +48,10 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
         this.configs = [{
             color: 'black',
             size: 0
-        },{
+        }, {
             color: 'red',
             size: 1
-        },{
+        }, {
             color: 'blue',
             size: 10000
         }, {
@@ -70,12 +70,13 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
 
     async measure(url: string) {
         const start = Date.now();
-        const response = await fetch(url, {cache: 'no-store', headers: {
-            'Accept-Encoding': 'identity;q=0',
-            'Cache-Control': 'no-cache, no-transform'
-        } });
-        console.log(response);
-        return Date.now() - start; 
+        const response = await fetch(url, {
+            cache: 'no-store', headers: {
+                'Accept-Encoding': 'identity;q=0',
+                'Cache-Control': 'no-cache, no-transform'
+            }
+        });
+        return Date.now() - start;
     }
 
     async pause(time: number) {
@@ -92,29 +93,27 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
 
             /* Fetch base case */
             const base = await this.measure(`/__ping__`);
-            console.log('pause');
             await this.pause(1000);
 
             /* Fetch various file sizes */
             const results = [];
-            for (const {size} of this.configs) {
+            for (const { size } of this.configs) {
                 const path = (() => {
                     if (size == 0) {
                         return '/__ping__';
                     }
                     if (size >= 1000) {
-                        return  `/data/__perf__/${size/1000}k.txt`
+                        return `/data/__perf__/${size / 1000}k.txt`
                     }
                     return `/data/__perf__/${size}b.txt`
                 })();
-                
-                const pingElapsed =  await this.measure(path);
-                console.log('pause');
+
+                const pingElapsed = await this.measure(path);
                 results.push(pingElapsed);
             }
 
             // const [latency, speed] = results.reduce(([latency, speed], result) => {
-                
+
             // }, [0, 0]);
 
             if (this.state.connectionStats.status !== AsyncProcessStatus.SUCCESS) {
@@ -127,7 +126,7 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
                                 return {
                                     size: this.configs[index].size,
                                     measure: {
-                                        measure, 
+                                        measure,
                                         totalMeasure: measure
                                     }
                                 }
@@ -148,7 +147,7 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
                                 return {
                                     size: this.configs[index].size,
                                     measure: {
-                                        measure, 
+                                        measure,
                                         totalMeasure: x.stats[index].measure.totalMeasure + measure
                                     }
                                 }
@@ -174,7 +173,7 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
             })
         }
     }
-    
+
     componentDidMount() {
         this.setState({
             connectionStats: {
@@ -190,7 +189,7 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
     }
 
     formatBytesPerSecond(value: number) {
-        return `${Intl.NumberFormat('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1}).format(value)} b/s`;
+        return `${Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value)} b/s`;
     }
 
     renderPing(ping: Measure) {
@@ -200,7 +199,7 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
         // {speed.measure} ms ---
         // {this.formatBytesPerSecond(rate)} ---
         return <span>
-            {Intl.NumberFormat('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1}).format(ping.totalMeasure / this.pingCount)} ms avg
+            {Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(ping.totalMeasure / this.pingCount)} ms avg
         </span>
     }
 
@@ -221,11 +220,11 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
         if (size < 1000) {
             return `${this.niceNumber(size)}b`;
         } else if (size < 1000000) {
-            return `${this.niceNumber(size/1000)}K`;
+            return `${this.niceNumber(size / 1000)}K`;
         } else if (size < 1000000000) {
-            return `${this.niceNumber(size/1000000)}M`;
+            return `${this.niceNumber(size / 1000000)}M`;
         } else {
-            return `${this.niceNumber(size/1000000000)}G`;
+            return `${this.niceNumber(size / 1000000000)}G`;
         }
     }
 
@@ -235,27 +234,27 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
         // const averageRate =  (1000 * this.pingCount)  / (speed.totalMeasure / 1000);
         // {speed.measure} ms ---
         // {this.formatBytesPerSecond(rate)} ---
-        const downloadTime = ping.totalMeasure/this.pingCount - base;
+        const downloadTime = ping.totalMeasure / this.pingCount - base;
         // rate is bytes / sec; size is already bytes, downloadTime is ms
-        const rate = size / (downloadTime/1000);
+        const rate = size / (downloadTime / 1000);
         return <span>
-            {Intl.NumberFormat('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1}).format(downloadTime)}ms  ~ 
+            {Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(downloadTime)}ms  ~
             {this.renderSize(rate)}/s
         </span>
     }
 
     niceNumber(value: number) {
-        return Intl.NumberFormat('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1}).format(value);
+        return Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value);
     }
 
     renderSpeed(speed: Measure) {
         // rate is bytes / sec
-        const rate =  1000 / (speed.measure / 1000);
-        const averageRate =  (1000 * this.pingCount)  / (speed.totalMeasure / 1000);
+        const rate = 1000 / (speed.measure / 1000);
+        const averageRate = (1000 * this.pingCount) / (speed.totalMeasure / 1000);
         // {speed.measure} ms ---
         // {this.formatBytesPerSecond(rate)} ---
         return <span>
-            {this.formatBytesPerSecond(averageRate)} avg   
+            {this.formatBytesPerSecond(averageRate)} avg
         </span>
     }
 
@@ -273,19 +272,19 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
                 return;
             case AsyncProcessStatus.ERROR:
                 return <div>{this.state.connectionStats.error}</div>
-            case AsyncProcessStatus.SUCCESS: 
+            case AsyncProcessStatus.SUCCESS:
                 const stats = this.state.connectionStats.value.stats;
                 const ping = stats[0].measure.totalMeasure / this.pingCount;
                 const overhead = stats[1].measure.totalMeasure / this.pingCount - ping;
 
-                const content = stats.slice(2).map(({size, measure}, index) => {
-                    return <span style={{color: this.configs[index + 1].color, margin: '0 1em'}} key={index + 1}>
+                const content = stats.slice(2).map(({ size, measure }, index) => {
+                    return <span style={{ color: this.configs[index + 1].color, margin: '0 1em' }} key={index + 1}>
                         {this.renderSize(size)} = {this.renderPing2(ping + overhead, size, measure)}
                     </span>;
                 });
                 return <div>
-                    [{this.pingCount}] P {this.niceNumber(ping)}ms: 
-                    OH {this.niceNumber(overhead)}ms: 
+                    [{this.pingCount}] P {this.niceNumber(ping)}ms:
+                    OH {this.niceNumber(overhead)}ms:
                     {content}
                 </div>
         }

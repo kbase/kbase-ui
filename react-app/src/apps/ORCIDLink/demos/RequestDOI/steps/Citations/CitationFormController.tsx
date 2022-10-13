@@ -88,7 +88,6 @@ export default class CitationFormController extends Component<CitationFormContro
             });
         }
         // this.setState({ citation });
-        // console.log('lookin up ', doi);
         // try {
         //     const response = await fetch(`https://api.crossref.org/works/${doi}`, {
         //         method: 'GET',

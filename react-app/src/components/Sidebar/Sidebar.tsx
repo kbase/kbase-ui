@@ -9,16 +9,6 @@ import { FeedsBadgeWrapper } from '../SidebarMenu/FeedsBadgeWrapper';
 
 
 const menu: Array<MenuItem> = [
-    // {
-    //     "name": "navigator",
-    //     "label": "Navigator",
-    //     "type": "internal",
-    //     "tooltip": "Narrative Navigator - browse and search Narratives",
-    //     "path": "navigator",
-    //     "newWindow": false,
-    //     "icon": "compass",
-    //     "requiresAuth": true
-    // },
     {
         "name": "narratives",
         "label": "Narratives",

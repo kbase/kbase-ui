@@ -53,7 +53,6 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
     }
 
     renderState() {
-        console.log('linked?', this.props.orcidProfile);
         if (this.props.orcidProfile) {
             return this.renderIsLinked(this.props.orcidProfile);
         }

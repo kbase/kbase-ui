@@ -455,7 +455,6 @@ export class Model {
                                 if (m) {
                                     // Sometimes a DOI is followed by punctuation; strip it off.
                                     const fixed = /(.*?)[.,;:]*$/.exec(m[1]);
-                                    console.log('boo', fixed);
                                     if (fixed) {
                                         return fixed[1];
                                     }

@@ -16,6 +16,14 @@ export type RouterState = AsyncProcess<RouterInfo, ErrorInfo>;
 
 // Route stuff
 
+export function searchParamsToObject(searchParams: URLSearchParams) {
+    const object: { [key: string]: string } = {};
+    for (const [key, value] of searchParams.entries()) {
+        object[key] = value;
+    }
+    return object;
+}
+
 export interface HashPath {
     hash: string;
     path: Array<string>;

@@ -26,13 +26,6 @@ export default class App extends Component<AppProps, AppState> {
                             case AsyncProcessStatus.NONE:
                             case AsyncProcessStatus.PENDING:
                                 return;
-                            // return (
-                            //     <Loading
-                            //         message="Loading Config..."
-                            //         size="large"
-                            //         type="block"
-                            //     />
-                            // );
                             case AsyncProcessStatus.ERROR:
                                 return <ErrorMessage message={configValue.error} />;
                             case AsyncProcessStatus.SUCCESS:
@@ -46,13 +39,6 @@ export default class App extends Component<AppProps, AppState> {
                                                     case AsyncProcessStatus.NONE:
                                                     case AsyncProcessStatus.PENDING:
                                                         return;
-                                                    // return (
-                                                    //     <Loading
-                                                    //         message="Loading Auth..."
-                                                    //         size="large"
-                                                    //         type="block"
-                                                    //     />
-                                                    // );
                                                     case AsyncProcessStatus.ERROR:
                                                         return (
                                                             <div>

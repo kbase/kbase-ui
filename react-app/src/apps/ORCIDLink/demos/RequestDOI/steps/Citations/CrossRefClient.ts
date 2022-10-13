@@ -179,7 +179,6 @@ export type CrossRefResponse = CrossRefResponseWork | CrossRefResponseError;
 
 export default class CrossRefClient {
     async getCitation(doi: string) {
-        console.log('lookin up ', doi);
 
         const response = await (async () => {
             try {

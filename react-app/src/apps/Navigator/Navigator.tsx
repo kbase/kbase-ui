@@ -10,7 +10,7 @@ import { SearchOptions } from './utils/NarrativeSearch';
 import ErrorBoundary from './ErrorBoundary';
 import NavigatorContextWrapper from './context/NavigatorContextWrapper';
 import { DetailOptions } from './context/DataModel';
-import { changeHash2 } from './utils/navigation';
+import { changeHash2 } from 'lib/navigation';
 
 // Styles
 import './bootstrapOverrides.css';

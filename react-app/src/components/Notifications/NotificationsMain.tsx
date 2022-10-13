@@ -196,8 +196,6 @@ export default class NotificationsMain extends Component<NotificationsMainProps,
 
     //     summary[notification.type] -= 1;
 
-    //     console.log('summary?', summary);
-
     //     this.setState({
     //         notifications,
     //         summary,

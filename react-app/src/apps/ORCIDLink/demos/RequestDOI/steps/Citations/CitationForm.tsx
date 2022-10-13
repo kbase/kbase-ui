@@ -81,7 +81,6 @@ export default class CitationForm extends Component<CitationFormProps, CitationF
             source: 'manual',
             doi: this.state.doi
         }
-        console.log('adding...', citation);
         this.props.onSelect(citation);
     }
 

@@ -7,7 +7,7 @@ import { AuthInfo } from '../../../../contexts/Auth';
 import { Config } from '../../../../types/config';
 import NarrativeHeader from './NarrativeHeader';
 import { Tab, Tabs } from 'react-bootstrap';
-import { updateHistory } from '../../utils/navigation';
+import { updateHistory } from 'lib/navigation';
 import './NarrativeDetails.css';
 
 interface Props {

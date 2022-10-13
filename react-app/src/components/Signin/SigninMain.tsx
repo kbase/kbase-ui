@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { changeHash2 } from '../../apps/Navigator/utils/navigation';
+import { changeHash2 } from 'lib/navigation';
 import { AuthenticationState, AuthenticationStatus } from '../../contexts/Auth';
 // import { Auth2Session } from '../../lib/kb_lib/Auth2Session';
 import { Config } from '../../types/config';

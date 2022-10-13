@@ -57,7 +57,6 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
         const stepIndex = stepNumber - 1;
         const step = this.state.doiForm.steps[stepIndex];
         const steps = this.state.doiForm.steps;
-        console.log('jump', stepIndex, step);
         switch (step.status) {
             case StepStatus.NONE:
                 // TODO
@@ -323,7 +322,6 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                                         }
                                 }
                             })();
-                            console.log('huh?', citations)
                             this.syncViewState([
                                 this.state.doiForm.steps[0],
                                 {
@@ -830,7 +828,6 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                     />
                 </div>
             case StepStatus.EDITING:
-                console.log('wtf', step.value.description);
                 return <div>
                     {this.renderStepTitle(stepNumber, title)}
                     <DescriptionController
