@@ -1,6 +1,7 @@
 import { ObjectInfo, WorkspaceInfo } from "lib/kb_lib/comm/coreServices/Workspace";
 import { toJSON } from "lib/kb_lib/jsonLike";
-import { MultiServiceClient } from "./DynamicServiceClient";
+// import { CSLMetadata } from "../demos/RequestDOI/steps/Citations/DOIOrgClient";
+import { MultiServiceClient, SearchParams2 } from "./DynamicServiceClient";
 import { CitationSource, LinkingSessionInfo, LinkRecord } from "./Model";
 
 
@@ -28,6 +29,12 @@ const SAVE_DOI_APPLICATION_PATH = 'demos/doi_application';
 const GET_DOI_APPLICATION_PATH = 'demos/doi_application';
 const DELETE_DOI_APPLICATION_PATH = 'demos/doi_application';
 const GET_DOI_APPLICATIONS_PATH = 'demos/doi_applications';
+
+const JOURNALS_FIND_PATH = 'journals/find';
+const JOURNALS_ABBREVIAIONS_PATH = 'journals/abbreviations';
+
+const DOI_METADATA = 'doi/metadata';
+const DOI_CITATION = 'doi/citation';
 
 // ORCID User Profile (our version)
 
@@ -318,19 +325,39 @@ export type StepState<P, R> =
     StepStateEditing<P, R>;
 
 
-export type STEPS3 = [
-    StepState<null, NarrativeSelectionResult>,
-    StepState<null, CitationResults>,
-    StepState<null, ORCIDLinkResult>,
-    StepState<{ narrativeTitle: string }, { title: string, author: Author }>,
-    StepState<null, ContractNumbersResults>,
-    StepState<null, GeolocationDataResults>,
-    StepState<null, DescriptionResults>,
-    StepState<ReviewAndSubmitParams, ReviewAndSubmitData>
-]
+// export type STEPS3 = [
+//     StepState<null, NarrativeSelectionResult>,
+//     StepState<null, CitationResults>,
+//     StepState<null, ORCIDLinkResult>,
+//     StepState<{ narrativeTitle: string }, { title: string, author: Author }>,
+//     StepState<null, ContractNumbersResults>,
+//     StepState<null, GeolocationDataResults>,
+//     StepState<null, DescriptionResults>,
+//     StepState<ReviewAndSubmitParams, ReviewAndSubmitData>
+// ]
+
+export type NarrativeSection = StepState<null, NarrativeSelectionResult>;
+export type CitationsSection = StepState<null, CitationResults>;
+export type ORCIDLinkSection = StepState<null, ORCIDLinkResult>;
+export type AuthorsSection = StepState<{ narrativeTitle: string }, { title: string, author: Author }>;
+export type ContractsSection = StepState<null, ContractNumbersResults>;
+export type GeolocationSection = StepState<null, GeolocationDataResults>;
+export type DescriptionSection = StepState<null, DescriptionResults>;
+export type ReviewAndSubmitSection = StepState<ReviewAndSubmitParams, ReviewAndSubmitData>;
+
+export interface DOIFormSections {
+    narrative: NarrativeSection;
+    citations: CitationsSection;
+    orcidLink: ORCIDLinkSection;
+    authors: AuthorsSection;
+    contracts: ContractsSection;
+    geolocation: GeolocationSection
+    description: DescriptionSection
+    reviewAndSubmit: ReviewAndSubmitSection;
+}
 
 export interface InitialDOIForm {
-    steps: STEPS3
+    sections: DOIFormSections;
 }
 
 export interface DOIForm {
@@ -338,12 +365,12 @@ export interface DOIForm {
     owner: string;
     created_at: number;
     updated_at: number;
-    steps: STEPS3
+    sections: DOIFormSections
 }
 
 export interface DOIFormUpdate {
     form_id: string;
-    steps: STEPS3
+    sections: DOIFormSections
 }
 
 
@@ -351,6 +378,18 @@ export interface DeleteWorkResult {
     ok: true
 }
 
+export interface JournalAbbreviation {
+    title: string;
+    abbreviation: string
+}
+
+export interface GetDOICitationResult {
+    citation: string;
+}
+
+// export interface GetDOIMetadata {
+//     metadata: CSLMetadata
+// }
 
 export class ORCIDLinkServiceClient extends MultiServiceClient {
     module = 'ORCIDLink';
@@ -433,5 +472,36 @@ export class ORCIDLinkServiceClient extends MultiServiceClient {
         return await this.post<void>(FINISH_LINKING_SESSION_PATH, {
             session_id: sessionId
         });
+    }
+
+    // DOI metadata and citation, proxying essentially to doi.org
+
+    async getDOICitation(doi: string): Promise<GetDOICitationResult> {
+        return await this.get<GetDOICitationResult>(DOI_CITATION, {
+            doi
+        });
+    }
+
+    // async getDOIMetadata(doi: string): Promise<CSLMetadata> {
+    //     return await this.get<CSLMetadata>(DOI_CITATION, {
+    //         doi
+    //     });
+    // }
+
+
+    // Journals
+
+    async getJournalAbbreviation(title: string): Promise<Array<JournalAbbreviation>> {
+        return await this.get<Array<JournalAbbreviation>>(JOURNALS_FIND_PATH, {
+            title
+        });
+    }
+
+
+    async getJournalAbbreviations(titles: Array<string>): Promise<Array<JournalAbbreviation>> {
+        const titleParams: SearchParams2 = titles.map((title) => {
+            return ['title', title];
+        })
+        return await this.get2<Array<JournalAbbreviation>>(JOURNALS_ABBREVIAIONS_PATH, titleParams);
     }
 }

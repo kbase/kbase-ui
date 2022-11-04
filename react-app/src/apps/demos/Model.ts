@@ -5,14 +5,13 @@ import Workspace, { objectInfoToObject, workspaceInfoToObject } from "lib/kb_lib
 import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
-import { EditableWork } from "../demos/PushWork/PushWorksModel";
-// import { CSLMetadata } from "../demos/RequestDOI/steps/Citations/DOIOrgClient";
-import { SCOPE } from "./constants";
 import {
     DeleteWorkResult, DOIForm, DOIFormUpdate, GetNameResult,
     InitialDOIForm, MinimalNarrativeInfo, NarrativeInfo, NewWork,
     ORCIDLinkServiceClient, ORCIDProfile, Work
-} from "./ORCIDLinkClient";
+} from "../ORCIDLink/ORCIDLinkClient";
+import { EditableWork } from "./PushWork/PushWorksModel";
+// import { CSLMetadata } from "./RequestDOI/steps/Citations/DOIOrgClient";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
 
@@ -47,48 +46,6 @@ export interface LinkingSessionInfo {
 export interface ReturnLink {
     url: string;
     label: string;
-}
-
-// ORCID Link step
-
-const SCOPE_USER = 'KBase';
-
-export const SCOPE_HELP: { [K in SCOPE]: { label: string, orcid: { label: string, tooltip: string }, help: Array<string> } } = {
-    'openid': {
-        label: 'Open ID',
-        orcid: {
-            label: `Allow ${SCOPE_USER} to get your ORCID® iD.`,
-            tooltip: `Allow ${SCOPE_USER} to get your 16-character ORCID® ID and read information on your ORCID® record you have marked as public.`
-        },
-        help: [
-            'KBase uses this when you sign in to KBase via ORCID®'
-        ]
-    },
-    '/read-limited': {
-        label: 'Read Limited',
-        orcid: {
-            label: `Allow ${SCOPE_USER} to read your information with visibility set to Trusted Organizations.`,
-            tooltip: `Allow ${SCOPE_USER} to read any information from your record you have marked as \
-            limited access. ${SCOPE_USER} cannot read information you have marked as private.`
-        },
-        help: [
-            'KBase uses this to pre-fill certain forms with information in your ORCID® profile'
-        ]
-    },
-    '/activities/update': {
-        label: 'Update Activities',
-        orcid: {
-            label: `Allow ${SCOPE_USER} to add/update your research activities (works, affiliations, etc).`,
-            tooltip: `Allow ${SCOPE_USER} to add information about your research activites \
-            (for example, works, affiliations) that is stored in the ${SCOPE_USER} system(s) to your \
-            ORCID record. ${SCOPE_USER} will also be able to update this and any other information \
-            ${SCOPE_USER} have added, but will not be able to edit information added by you or \
-            any other trusted organization.`
-        },
-        help: [
-            'KBase uses this to assist you in linking published Narratives to your ORCID® account.'
-        ]
-    }
 }
 
 export type GetProfileResult = {
@@ -529,189 +486,6 @@ export class Model {
         return citations;
     }
 
-    // async getNarrativeCitations(narrativeInfo: MinimalNarrativeInfo): Promise<{
-    //     narrativeAppCitations: NarrativeAppCitations,
-    //     markdownCitations: Array<Citation>
-    // }> {
-    //     // get apps from narrative
-    //     const client = new GenericClient({
-    //         module: 'Workspace',
-    //         url: this.config.services.Workspace.url,
-    //         timeout: 1000,
-    //         token: this.auth.authInfo.token
-    //     });
-
-    //     // Sorry, untyped for now...
-    //     const [result] = await client.callFunc<JSONArrayOf<JSONObject>, JSONArrayOf<JSONObject>>('get_objects2', [
-    //         {
-    //             "objects": [
-    //                 {
-    //                     "ref": narrativeInfo.ref,
-    //                     "included": [
-    //                         "cells/[*]/cell_type",
-    //                         "cells/[*]/metadata/kbase/appCell/app/id",
-    //                         "cells/[*]/metadata/kbase/appCell/app/tag",
-    //                         "cells/[*]/metadata/kbase/appCell/app/version",
-    //                         "cells/[*]/metadata/kbase/appCell/app/gitCommitHash",
-    //                         "cells/[*]/source"
-    //                     ]
-    //                 }
-    //             ]
-
-    //         }
-    //     ]);
-
-    //     const cells = (digJSON(result, ['data', 0, 'data', 'cells']) as Array<any>).map((cell) => {
-    //         switch (cell['cell_type']) {
-    //             case 'code':
-    //                 if ('appCell' in cell['metadata']['kbase']) {
-    //                     return {
-    //                         type: 'app',
-    //                         id: cell['metadata']['kbase']['appCell']['app']['id'],
-    //                         tag: cell['metadata']['kbase']['appCell']['app']['tag'],
-    //                         version: cell['metadata']['kbase']['appCell']['app']['version'],
-    //                         gitCommitHash: cell['metadata']['kbase']['appCell']['app']['gitCommitHash']
-    //                     }
-    //                 }
-    //                 break;
-    //             case 'markdown':
-    //                 return {
-    //                     type: 'markdown',
-    //                     content: cell['source']
-    //                 }
-    //         }
-    //         return null;
-    //     })
-    //         .filter((cell) => {
-    //             return cell !== null;
-    //         }) as Array<Cell>;
-
-
-    //     // Get app citations.
-
-
-    //     /*
-    //         Not sure this is worth it, but mirror the static narrative behavior.
-    //         By the time the narrative is published, it is possible that a release or beta
-    //         app will have been updated, so there is not a great reason to be precise about
-    //         fetching by the tag, rather than the most released.
-    //         Much better would be to be able to get method info via the git commit hash,
-    //         or the actual version (if version bumps are really enforced, not sure about that)
-    //     */
-    //     // Get all the tags in all the app cells.
-    //     // collect unique app ids across all app cells.
-
-    //     const apps: Array<CellApp> = [];
-    //     for (const cell of cells) {
-    //         if (cell.type === 'app') {
-    //             apps.push(cell);
-    //         }
-    //     }
-
-    //     const tags = apps.reduce<{ [k: string]: Set<string> }>((tags, cell) => {
-    //         if (cell.tag in tags) {
-    //             tags[cell.tag].add(cell.id);
-    //         } else {
-    //             tags[cell.tag] = new Set();
-    //             tags[cell.tag].add(cell.id);
-    //         }
-    //         return tags;
-    //     }, {});
-
-    //     const nms = new GenericClient({
-    //         module: 'NarrativeMethodStore',
-    //         url: this.config.services.NarrativeMethodStore.url,
-    //         timeout: 1000,
-    //         token: this.auth.authInfo.token
-    //     });
-
-    //     const narrativeAppCitations: NarrativeAppCitations = {
-    //         release: [],
-    //         beta: [],
-    //         dev: []
-    //     };
-
-    //     const appTags: Array<keyof NarrativeAppCitations> = ['release', 'beta', 'dev']
-    //     for (const tag of appTags) {
-    //         if (tag in tags) {
-
-    //             const ids = Array.from(tags[tag]);
-    //             const appsInfo = await nms.callFunc('get_method_full_info', [{
-    //                 ids,
-    //                 tag
-    //             }]);
-    //             const appPublications = (appsInfo[0] as unknown as JSONArray).map((appInfo) => {
-    //                 if (!isJSONObject(appInfo)) {
-    //                     throw new Error('Not an object');
-    //                 }
-    //                 const citations = (() => {
-    //                     const publications = appInfo['publications'];
-    //                     if (publications instanceof Array) {
-    //                         return publications.map<Citation>((publication) => {
-    //                             if (!isJSONObject(publication)) {
-    //                                 throw new Error('Publication not object!')
-    //                             }
-    //                             const { display_text: text, link } = publication;
-    //                             const m = /doi:([\S]+)/.exec(text as string);
-    //                             const doi = m ? m[1] : null;
-    //                             return {
-    //                                 citation: (text as unknown as string).trim() as string,
-    //                                 link: link as string,
-    //                                 doi: doi as string | null
-    //                             }
-    //                         });
-    //                     } else {
-    //                         return [];
-    //                     }
-    //                 })();
-    //                 return {
-    //                     id: appInfo['id'] as string,
-    //                     title: appInfo['name'] as string,
-    //                     citations
-    //                 };
-    //             });
-    //             narrativeAppCitations[tag] = appPublications;
-    //         }
-    //     }
-
-    //     // extract dois from markdown cells
-
-    //     // extract dois from app publications
-    //     const markdownCitations: Array<Citation> = [];
-    //     for (const cell of cells) {
-    //         if (cell.type === 'markdown') {
-    //             const mardownLines = (cell.content as string).split(/(?:(?:\n\n)|(?:  \n)|(?:\n\s*[-*]\s*))/)
-    //                 .filter((line) => {
-    //                     return (line.trim().length > 0);
-    //                 });
-    //             if (mardownLines[0].match(/references/i)) {
-    //                 mardownLines.slice(1).forEach((line) => {
-    //                     // remove any leading - or * if a list.
-    //                     const citation = (() => {
-    //                         const m = line.match(/^\s*[-*]*\s*(.*)$/);
-    //                         if (m) {
-    //                             return m[m.length - 1]
-    //                         }
-    //                         return line;
-    //                     })();
-    //                     const doi = (() => {
-    //                         const m = citation.match(/doi:\s*(\S+)/)
-    //                         if (m) {
-    //                             return m[1];
-    //                         }
-    //                         return null;
-    //                     })();
-    //                     markdownCitations.push({
-    //                         citation,
-    //                         doi
-    //                     });
-    //                 });
-    //             }
-    //         }
-    //     }
-
-    //     return { narrativeAppCitations, markdownCitations };
-    // }
 
     async createDOIForm(doiForm: InitialDOIForm): Promise<DOIForm> {
         return this.orcidLinkClient.createDOIApplication(doiForm);
@@ -735,14 +509,6 @@ export class Model {
 
     async fetchLinkingSessionInfo(sessionId: string) {
         return this.orcidLinkClient.getLinkingSession(sessionId);
-    }
-
-    async confirmLink(token: string) {
-        return this.orcidLinkClient.finishLink(token);
-    }
-
-    async cancelLink(token: string) {
-        return this.orcidLinkClient.deletelLinkingSession(token);
     }
 
     // async getDOIMetadata(doi: string) {

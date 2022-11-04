@@ -1,3 +1,4 @@
+import ErrorBoundary from 'components/ErrorBoundary';
 import { AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { RouteProps, Router } from '../../components/Router2';
@@ -151,7 +152,9 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
         ]
 
         return <div style={{ flex: '1 1 0', display: 'flex', flexDirection: 'column', overflowY: 'auto', margin: '0 1em' }}>
-            <Router routes={routes} hashPath={this.props.hashPath} />
+            <ErrorBoundary>
+                <Router routes={routes} hashPath={this.props.hashPath} />
+            </ErrorBoundary>
         </div>
     }
 }

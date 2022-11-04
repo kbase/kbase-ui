@@ -1,8 +1,6 @@
-import { Component, CSSProperties, ReactElement, ReactNode } from 'react';
+import { Component, CSSProperties, ReactNode } from 'react';
 import styles from './RotatedTable.module.css';
 
-// string | JSX.Element | (() => JSX.Element) | undefined;
-// string | JSX.Element | Array<JSX.Element> | (() => RotatedTableColumnValue) | undefined;
 export type RotatedTableColumnValue = ReactNode | (() => ReactNode);
 
 export type RotatedTableRow = [string, RotatedTableColumnValue];

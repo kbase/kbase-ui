@@ -87,7 +87,7 @@ export default class Well extends Component<WellProps, WellState> {
                     return styles.variantSuccess;
             }
         })();
-        return <div className={`${styles.well} ${variantStyle}`}>
+        return <div className={`${styles.well} ${variantStyle}`} style={this.props.style}>
             {this.props.children}
         </div>
     }

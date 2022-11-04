@@ -1,9 +1,9 @@
 import { Component } from 'react';
 import { Button } from 'react-bootstrap';
+import { renderORCIDIcon, renderScope } from '../common';
+import { ORCID_URL } from '../constants';
 import { LinkInfo } from './LinkController';
 import styles from './ViewLink.module.css';
-import { ORCID_URL } from '../constants';
-import { renderORCIDIcon, renderScope } from '../common';
 
 
 export interface StartProps {
@@ -82,16 +82,19 @@ export default class ViewLink extends Component<StartProps> {
                     <h3>Demos</h3>
                     <ul>
                         <li>
-                            <a href="/#orcidlink/demos/prefill-form">Pre-Fill Form</a>
+                            <a href="/#demos/prefill-form">Pre-Fill Form</a>
                         </li>
                         <li>
-                            <a href="/#orcidlink/demos/push-publication">Push Publication</a>
+                            <a href="/#demos/push-publication">Push Publication</a>
                         </li>
                         <li>
-                            <a href="/#orcidlink/demos/interstitial1">Linked via Interstitial Page</a>
+                            <a href="/#demos/interstitial1">Linked via Interstitial Page</a>
                         </li>
                         <li>
-                            <a href="/#orcidlink/demos/doi">Request DOI Form</a>
+                            <a href="/#demos/doi">Request DOI Form</a>
+                        </li>
+                        <li>
+                            <a href="/#demos/crossref">Samples of DOI Citations for Review</a>
                         </li>
                     </ul>
                 </div>

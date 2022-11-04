@@ -1,5 +1,5 @@
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import { Component } from 'react';
+import { Component, PropsWithChildren } from 'react';
 import styles from './Loading.styles';
 
 export type Size = 'small' | 'normal' | 'large';
@@ -7,7 +7,7 @@ export type Type = 'inline' | 'block';
 
 export const DEFAULT_PAUSE = 500;
 
-export interface LoadingProps {
+export interface LoadingProps extends PropsWithChildren {
     size?: Size;
     type?: Type;
     message?: string;
@@ -39,15 +39,16 @@ export default class Loading extends Component<LoadingProps, LoadingState> {
     }
 
     renderMessage() {
-        if (!this.props.message) {
-            return null;
+        if (this.props.message) {
+            return <>
+                {' '}
+                <span style={styles.LoadingMessage}>
+                    {this.props.message}
+                </span>
+            </>;
         }
-        return <>
-            {' '}
-            <span style={styles.LoadingMessage}>
-                {this.props.message}
-            </span>
-        </>;
+        return this.props.children;
+
     }
     renderLoading() {
         const spinner = (() => {
@@ -80,7 +81,6 @@ export default class Loading extends Component<LoadingProps, LoadingState> {
             );
         }
     }
-
 
     render() {
         switch (this.state.status) {

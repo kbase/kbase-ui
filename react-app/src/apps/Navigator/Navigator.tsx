@@ -1,21 +1,21 @@
+import { changeHash2 } from 'lib/navigation';
 import React from 'react';
+import ErrorBoundary from '../../components/ErrorBoundary';
 import {
     AuthenticationState,
     AuthenticationStatus,
-    AuthInfo,
+    AuthInfo
 } from '../../contexts/Auth';
 import { Config } from '../../types/config';
 import Main from './components/Main';
-import { SearchOptions } from './utils/NarrativeSearch';
-import ErrorBoundary from './ErrorBoundary';
-import NavigatorContextWrapper from './context/NavigatorContextWrapper';
 import { DetailOptions } from './context/DataModel';
-import { changeHash2 } from 'lib/navigation';
+import NavigatorContextWrapper from './context/NavigatorContextWrapper';
+import { SearchOptions } from './utils/NarrativeSearch';
 
 // Styles
+import { RouteProps } from '../../components/Router2';
 import './bootstrapOverrides.css';
 import styles from './Navigator.module.css';
-import { RouteProps } from '../../components/Router2';
 
 const DEFAULT_CATEGORY = 'own';
 

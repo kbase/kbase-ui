@@ -11,9 +11,10 @@ import Organizations from '../apps/Organizations';
 import { AuthenticationState, AuthenticationStatus } from '../contexts/Auth';
 import { Config } from '../types/config';
 
+import { changeHash2, changePath } from 'lib/navigation';
+import ORCIDLinkDemos from '../apps/demos/Demos';
 import NarrativeManagerNew from '../apps/NarrativeManager/New';
 import NarrativeManagerStart from '../apps/NarrativeManager/Start';
-import ORCIDLinkDemos from '../apps/ORCIDLink/demos/Demos';
 import ORCIDLink from '../apps/ORCIDLink/ORCIDLink';
 import RouterWrapper, { RouterContext } from '../contexts/RouterContext';
 import { AsyncProcessStatus } from '../lib/AsyncProcess2';
@@ -22,8 +23,6 @@ import styles from './Body.module.css';
 import ErrorMessage from './ErrorMessage';
 import Loading from './Loading';
 import { RouteProps, Router } from './Router2';
-import { changePath } from 'lib/navigation';
-import { changeHash2 } from 'lib/navigation';
 
 export interface BodyProps {
     config: Config;
@@ -40,7 +39,7 @@ export default class Body extends Component<BodyProps, BodyState> {
         super(props);
 
         this.routes = [
-            new Route('orcidlink/demos/*', { authenticationRequired: false }, (props: RouteProps) => {
+            new Route('demos/*', { authenticationRequired: false }, (props: RouteProps) => {
                 return (
                     <ORCIDLinkDemos
                         {...props}

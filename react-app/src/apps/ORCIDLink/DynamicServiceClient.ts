@@ -1,4 +1,4 @@
-import { JSONValue } from 'lib/json';
+import { JSONObject, JSONValue } from 'lib/json';
 import Cache from 'lib/kb_lib/comm/Cache';
 import {
     ServiceStatus, ServiceWizardClient
@@ -31,6 +31,12 @@ export interface ServiceClientParams {
     token?: string;
 }
 
+export interface SearchParams {
+    [key: string]: string
+}
+
+export type SearchParams2 = Array<[string, string]>
+
 /*
  * arg is:
  * url - service wizard url
@@ -44,39 +50,49 @@ export interface ServiceClientParams {
 
 export interface ServiceErrorResponse {
     code: string,
-    message: string
+    message: string,
+    data?: JSONObject
 }
 
-export interface FastAPIErrorResponse extends ServiceErrorResponse {
-    data: {
-        'response-code': number,
-        'developer-message': string,
-        'user-message': string,
-        'error-code': number,
-        'more-info': string
-    };
-}
+// export interface FastAPIErrorResponse extends ServiceErrorResponse {
+//     data: {
+//         'response-code': number,
+//         'developer-message': string,
+//         'user-message': string,
+//         'error-code': number,
+//         'more-info': string
+//     };
+// }
 
-export interface InternalServerErrorResponse extends ServiceErrorResponse {
-    data: {
-        responseText: string
+// export interface InternalServerErrorResponse extends ServiceErrorResponse {
+// }
+
+// export intr
+
+// export class FastAPIError extends Error {
+//     data: FastAPIErrorResponse;
+//     constructor(message: string, data: FastAPIErrorResponse) {
+//         super(message);
+//         this.data = data;
+//     }
+// }
+
+export class ServiceError extends Error {
+    code: string;
+    data?: JSONObject;
+    constructor(response: ServiceErrorResponse) {
+        super(response.message);
+        this.code = response.code;
+        this.data = response.data;
     }
 }
 
-export class FastAPIError extends Error {
-    data: FastAPIErrorResponse;
-    constructor(message: string, data: FastAPIErrorResponse) {
-        super(message);
-        this.data = data;
-    }
+export class InternalServerError extends ServiceError {
+
 }
 
-export class InternalServerError extends Error {
-    data: InternalServerErrorResponse;
-    constructor(message: string, data: InternalServerErrorResponse) {
-        super(message);
-        this.data = data;
-    }
+export class ClientError extends ServiceError {
+
 }
 
 
@@ -98,28 +114,39 @@ export abstract class ServiceClientBase {
     private async handleResponse<T>(response: Response): Promise<T> {
 
         const rawResult = await response.text();
-        try {
-            const result = JSON.parse(rawResult);
-            if (response.status === 500) {
-                const errorResult = result as unknown as InternalServerErrorResponse;
-                throw new InternalServerError(errorResult.message, errorResult);
-            } else if (response.status !== 200) {
-                // TODO: real RestException
-                const errorResult = result as unknown as FastAPIErrorResponse;
-                throw new FastAPIError(errorResult.message, errorResult);
+        const result = (() => {
+            try {
+                // TODO: align this with how we are designing the ORCID Link Service
+                // The response can either be:
+                // 200 with the expected JSON value
+                // 4xx with the JSON response: code, message, data?
+                // 500 with the JSON response: code, message, data, where
+                // data contains at least exception, traceback
+                // It should always contain a JSON response.
+                return JSON.parse(rawResult);
+            } catch (ex) {
+                if (ex instanceof Error) {
+                    throw new Error('Error parsing JSON: ' + ex.message);
+                }
+                throw new Error('Error parsing JSON: Unknown Error');
             }
+        })();
 
-            return result as unknown as T;
-        } catch (ex) {
-            if (ex instanceof Error) {
-                throw new Error('Error parsing JSON: ' + ex.message);
-            }
-            throw new Error('Error parsing JSON: Unknown Error');
+        if (response.status === 500) {
+            const errorResult = result as unknown as ServiceErrorResponse;
+            throw new InternalServerError(errorResult);
+        } else if (response.status >= 400) {
+            // TODO: real RestException
+            const errorResult = result as unknown as ServiceErrorResponse;
+            throw new ClientError(errorResult);
         }
+
+        return result as unknown as T;
     }
 
     protected async get<ReturnType>(
         path: string,
+        data?: SearchParams
     ): Promise<ReturnType> {
         const url = await this.getUrl();
 
@@ -131,8 +158,51 @@ export abstract class ServiceClientBase {
             headers.append('Authorization', this.token);
         }
 
-        const requestURL = `${url}/${path}`;
-        const response = await fetch(requestURL, {
+        const requestURL = (() => {
+            const theURL = new URL(`${url}/${path}`);
+            if (data) {
+                for (const [key, value] of Object.entries(data)) {
+                    theURL.searchParams.set(key, value);
+                }
+            }
+            return theURL;
+        })();
+
+        // const requestURL = `${url}/${path}`;
+        const response = await fetch(requestURL.toString(), {
+            method: 'GET',
+            headers
+        });
+
+        return this.handleResponse<ReturnType>(response);
+    }
+
+    protected async get2<ReturnType>(
+        path: string,
+        data?: SearchParams2
+    ): Promise<ReturnType> {
+        const url = await this.getUrl();
+
+        const headers = new Headers({
+            accept: 'application/json'
+        });
+
+        if (this.token) {
+            headers.append('Authorization', this.token);
+        }
+
+        const requestURL = (() => {
+            const theURL = new URL(`${url}/${path}`);
+            if (data) {
+                for (const [key, value] of data) {
+                    theURL.searchParams.append(key, value);
+                }
+            }
+            return theURL;
+        })();
+
+        // const requestURL = `${url}/${path}`;
+        const response = await fetch(requestURL.toString(), {
             method: 'GET',
             headers
         });
