@@ -10,7 +10,7 @@ export interface NarrativeProps {
     onSelect: () => void;
 }
 
-interface NarrativeState {}
+interface NarrativeState { }
 
 export default class Narrative extends React.Component<
     NarrativeProps,
@@ -24,15 +24,31 @@ export default class Narrative extends React.Component<
             narrative_title,
             timestamp,
             creator,
+
         } = this.props.narrative;
+
         const title = (() => {
             if (narrative_title.trim().length === 0) {
                 return '** EMPTY TITLE **';
             }
             return narrative_title;
         })();
+
         // I need this until I figure out what's in item
         const upa = `${access_group}/${obj_id}/${version}`;
+
+        // Permission
+        // const permission = (() => {
+        //     this.props.narrative.
+        // })
+
+        // Public icon
+        const publicPrivateIcon = (() => {
+            if (this.props.narrative.is_public) {
+                return 'globe';
+            }
+            return 'lock';
+        })();
 
         // Action to select an item to view details
         const classList = ['Narrative'];
@@ -47,7 +63,7 @@ export default class Narrative extends React.Component<
                 onClick={() => this.props.onSelect()}
             >
                 <div className="-title" title={title}>
-                    {title}
+                    {title} (<span className={`fa fa-${publicPrivateIcon}`} />)
                 </div>
                 <div className="-subtitle">
                     Updated {niceRelativeTime(new Date(timestamp))} by {creator}

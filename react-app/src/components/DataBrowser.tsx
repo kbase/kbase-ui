@@ -1,4 +1,4 @@
-import { Component, RefObject, createRef, CSSProperties } from 'react';
+import { Component, createRef, CSSProperties, RefObject } from 'react';
 import KBResizeObserver from '../lib/KBResizeObserver';
 import styles from './DataBrowser.module.css';
 
@@ -15,7 +15,7 @@ function outerDimensions(el: Element) {
 export interface ColumnDef<T> {
     id: string;
     label: string;
-    style: CSSProperties;
+    style?: CSSProperties;
     render: (row: T) => JSX.Element;
     // sort?: (state: SortState, dataSource: Array<T>) => Array<T>;
     sorter?: (a: T, b: T) => number;
@@ -62,6 +62,38 @@ interface DataBrowsereState<T> {
 }
 
 export type SortDirection = 1 | -1;
+
+export function optionalStringComparator(a?: string, b?: string) {
+    if (typeof a !== 'undefined') {
+        if (typeof b !== 'undefined') {
+            return a.localeCompare(b);
+        } else {
+            return 0;
+        }
+    } else {
+        if (typeof b !== 'undefined') {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
+}
+
+export function nullableStringComparator(a: string | null, b: string | null) {
+    if (a === null) {
+        if (b === null) {
+            return 0;
+        } else {
+            return -1;
+        }
+    } else {
+        if (b === null) {
+            return 1;
+        } else {
+            return a.localeCompare(b);
+        }
+    }
+}
 
 export default class DataBrowser<T> extends Component<
     DataBrowserProps<T>,
@@ -227,7 +259,7 @@ export default class DataBrowser<T> extends Component<
                         style={style || {}}
                         key={column.def.id}
                     >
-                        <div className={styles.headerColTitle}>{label}</div>
+                        <div className={styles.headerTitle}>{label}</div>
                     </div>
                 );
             }

@@ -1,4 +1,4 @@
-import { Component, RefObject, createRef, CSSProperties } from 'react';
+import { Component, createRef, CSSProperties, RefObject } from 'react';
 import KBResizeObserver from '../lib/KBResizeObserver';
 
 function outerDimensions(el: Element) {
@@ -32,7 +32,7 @@ export interface DataTableProps {
     onClick: (values: Array<any>) => void;
 }
 
-interface DataTableState {}
+interface DataTableState { }
 
 export default class DataTable extends Component<
     DataTableProps,

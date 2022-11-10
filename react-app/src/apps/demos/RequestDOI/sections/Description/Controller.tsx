@@ -1,0 +1,71 @@
+import { Description } from "apps/ORCIDLink/ORCIDLinkClient";
+import { Component } from "react";
+import { Model } from "../../Model";
+import DescriptionForm from './Form';
+
+export interface DescriptionControllerProps {
+    model: Model;
+    description?: Description;
+    setTitle: (title: string) => void;
+    onDone: (description: Description) => void;
+}
+
+
+interface DescriptionControllerState {
+    description: Description;
+}
+
+export default class DescriptionController extends Component<DescriptionControllerProps, DescriptionControllerState> {
+    constructor(props: DescriptionControllerProps) {
+        super(props);
+        this.state = {
+            description: this.props.description || {
+                keywords: [],
+                abstract: ''
+            }
+        }
+    }
+    componentDidMount() {
+        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 7: Description');
+    }
+    addKeyword(keyword: string) {
+        const keywords = this.state.description.keywords.slice();
+        keywords.push(keyword);
+        keywords.sort();
+        this.setState({
+            description: {
+                ...this.state.description,
+                keywords
+            }
+        })
+    }
+
+    removeKeyword(position: number) {
+        const keywords = this.state.description.keywords.slice();
+        keywords.splice(position, 1);
+        this.setState({
+            description: {
+                ...this.state.description,
+                keywords
+            }
+        })
+    }
+
+    setAbstract(abstract: string) {
+        this.setState({
+            description: {
+                ...this.state.description,
+                abstract
+            }
+        });
+    }
+
+    render() {
+        return <DescriptionForm
+            description={this.state.description}
+            addKeyword={this.addKeyword.bind(this)}
+            removeKeyword={this.removeKeyword.bind(this)}
+            setAbstract={this.setAbstract.bind(this)}
+            onDone={() => { this.props.onDone(this.state.description) }} />
+    }
+}

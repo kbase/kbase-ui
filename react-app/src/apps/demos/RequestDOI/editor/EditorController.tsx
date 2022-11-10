@@ -1,4 +1,3 @@
-import { Model } from 'apps/ORCIDLink/Model';
 import { DOIForm, DOIFormUpdate, ORCIDProfile } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
@@ -7,6 +6,7 @@ import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { JSONObject } from 'lib/json';
 import { Component } from 'react';
 import { Config } from 'types/config';
+import { Model } from '../Model';
 import Editor from './Editor';
 
 

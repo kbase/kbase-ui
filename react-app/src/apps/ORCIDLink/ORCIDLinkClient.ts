@@ -1,3 +1,4 @@
+import { ImportableAuthor } from "apps/demos/RequestDOI/sections/AuthorsImport/AuthorsImportSectionController";
 import { ObjectInfo, WorkspaceInfo } from "lib/kb_lib/comm/coreServices/Workspace";
 import { toJSON } from "lib/kb_lib/jsonLike";
 // import { CSLMetadata } from "../demos/RequestDOI/steps/Citations/DOIOrgClient";
@@ -201,11 +202,11 @@ export type ContributorType = string;
 
 export interface OSTIAuthor {
     first_name: string,
-    middle_name: string;
+    middle_name?: string;
     last_name: string;
-    affiliation_name: string;
+    affiliation_name?: string;
     private_email: string;
-    orcid_id: string;
+    orcid_id?: string;
     contributor_type: ContributorType;
 }
 
@@ -273,17 +274,21 @@ export interface MinimalNarrativeInfo {
     workspaceId: number;
     objectId: number;
     version: number;
-    ref: string,
-    title: string
+    ref: string;
+    title: string;
+    owner: string;
 }
 
+
+// see: https://www.osti.gov/elink/241-6api.jsp#record-model-creators
 export interface Author {
     firstName: string;
-    middleName: string;
+    middleName?: string;
     lastName: string;
     emailAddress: string;
-    orcidId: string;
-    institution: string;
+    orcidId?: string;
+    institution?: string;
+    contributorType: ContributorType;
 }
 
 export enum StepStatus {
@@ -336,10 +341,19 @@ export type StepState<P, R> =
 //     StepState<ReviewAndSubmitParams, ReviewAndSubmitData>
 // ]
 
+export interface AuthorsSectionParams {
+    authors: Array<ImportableAuthor>
+}
+
+export interface AuthorsSectionResult {
+    authors: Array<Author>
+}
+
 export type NarrativeSection = StepState<null, NarrativeSelectionResult>;
-export type CitationsSection = StepState<null, CitationResults>;
+export type CitationsSection = StepState<{ narrativeInfo: MinimalNarrativeInfo }, CitationResults>;
 export type ORCIDLinkSection = StepState<null, ORCIDLinkResult>;
-export type AuthorsSection = StepState<{ narrativeTitle: string }, { title: string, author: Author }>;
+export type AuthorsImportSection = StepState<{ narrativeInfo: MinimalNarrativeInfo }, { authors: Array<ImportableAuthor> }>;
+export type AuthorsSection = StepState<AuthorsSectionParams, AuthorsSectionResult>;
 export type ContractsSection = StepState<null, ContractNumbersResults>;
 export type GeolocationSection = StepState<null, GeolocationDataResults>;
 export type DescriptionSection = StepState<null, DescriptionResults>;
@@ -349,6 +363,7 @@ export interface DOIFormSections {
     narrative: NarrativeSection;
     citations: CitationsSection;
     orcidLink: ORCIDLinkSection;
+    authorsImport: AuthorsImportSection;
     authors: AuthorsSection;
     contracts: ContractsSection;
     geolocation: GeolocationSection

@@ -1,16 +1,13 @@
+import { DOIForm, DOIFormUpdate, GetNameResult, InitialDOIForm, MinimalNarrativeInfo, NarrativeInfo, ORCIDLinkServiceClient, ORCIDProfile } from "apps/ORCIDLink/ORCIDLinkClient";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
+import { NarrativeService } from "lib/clients/NarrativeService";
 import { digJSON, isJSONObject, JSONArray, JSONArrayOf, JSONObject } from "lib/json";
+import UserProfileClient from "lib/kb_lib/comm/coreServices/UserProfile";
+import Workspace, { objectInfoToObject, workspaceInfoToObject } from "lib/kb_lib/comm/coreServices/Workspace";
 import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
-import {
-    DeleteWorkResult, DOIForm, DOIFormUpdate, GetNameResult,
-    InitialDOIForm, MinimalNarrativeInfo, NewWork,
-    ORCIDLinkServiceClient, ORCIDProfile, Work
-} from "../ORCIDLink/ORCIDLinkClient";
-import { EditableWork } from "./PushWork/PushWorksModel";
-// import { CSLMetadata } from "./RequestDOI/steps/Citations/DOIOrgClient";
-// import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
+
 
 
 const START_LINKING_SESSION_PATH = 'start-linking-session';
@@ -147,6 +144,21 @@ export interface JournalAbbreviationsMap {
     [title: string]: Array<string>
 }
 
+
+// Get Narrative Sharing
+
+export type NarrativePermission = 'none' | 'view' | 'edit' | 'admin' | 'owner';
+
+export interface NarrativeShareUser {
+    username: string;
+    firstName?: string;
+    middleName?: string;
+    lastName?: string;
+    institution?: string;
+    permission: NarrativePermission
+}
+
+
 // MODEL
 
 export class Model {
@@ -191,52 +203,41 @@ export class Model {
         return this.orcidLinkClient.getLink();
     }
 
-    async deleteLink() {
-        return this.orcidLinkClient.deleteLink();
+    async fetchNarratives({ from, to }: { from: number, to: number }): Promise<Array<NarrativeInfo>> {
+        const client = new NarrativeService({
+            url: this.config.services.ServiceWizard.url,
+            timeout: 1000,
+            token: this.auth.authInfo.token
+        });
+        const result = await client.list_narratives({ type: 'mine' })
+
+        return result.narratives
+            .map(({ nar, ws }) => {
+                const objectInfo = objectInfoToObject(nar);
+                const workspaceInfo = workspaceInfoToObject(ws);
+                return { objectInfo, workspaceInfo };
+            })
+            .filter(({ objectInfo, workspaceInfo }) => {
+                return (workspaceInfo.globalread === 'r');
+            })
+            .sort((a, b) => {
+                return -(a.objectInfo.saveDate.localeCompare(b.objectInfo.saveDate));
+            });
     }
 
-    /**
-     * Begins the ORCID linking journey by redirecting to the ORCIDLink service "/start" 
-     * endpoint, optionally carrying a "return link" and/or "skip prompt" flag.
-     * @param returnLink An object containing a link and label property
-     * @param skipPrompt A boolean flag indicating whether to prompt to confirm linking afterwards
-     */
-    async startLink({ returnLink, skipPrompt }: { returnLink?: ReturnLink, skipPrompt?: boolean }) {
-        const baseURL = await this.serviceURL();
+    async fetchNarrative(workspaceId: number, objectId: number, version: number): Promise<NarrativeInfo> {
+        const client = new Workspace({
+            url: this.config.services.Workspace.url,
+            timeout: 1000,
+            token: this.auth.authInfo.token
+        });
+        const objectInfos = await client.get_object_info3({ objects: [{ objid: objectId, wsid: workspaceId, ver: version }] });
+        const objectInfo = objectInfos.infos[0];
+        const workspaceInfo = await client.get_workspace_info({ id: workspaceId });
 
-        const { session_id: sessionId } = await this.orcidLinkClient.createLinkingSession();
-
-        // Then redirect the browser to start the oauth process
-        const startURL = new URL(`${baseURL}/${START_LINKING_SESSION_PATH}`);
-        startURL.searchParams.set('session_id', sessionId);
-        if (returnLink) {
-            startURL.searchParams.set('return_link', JSON.stringify(returnLink));
-        }
-        if (skipPrompt) {
-            startURL.searchParams.set('skip_prompt', 'true');
-        }
-        window.open(startURL, '_parent');
-    }
-
-
-    async getWork(putCode: string): Promise<Work> {
-        return this.orcidLinkClient.getWork(putCode);
-    }
-
-    async createWork(work: EditableWork): Promise<Work> {
-        const temp: NewWork = {
-            title: work.title.value,
-            date: work.date.value,
-            workType: work.workType.value,
-            journal: work.journal.value,
-            url: work.url.value,
-            externalIds: work.externalIds.value
+        return {
+            objectInfo, workspaceInfo
         };
-        return this.orcidLinkClient.createWork(temp);
-    }
-
-    async deleteWork(putCode: string): Promise<DeleteWorkResult> {
-        return this.orcidLinkClient.deleteWork(putCode);
     }
 
     async getName(): Promise<GetNameResult> {
@@ -478,6 +479,59 @@ export class Model {
 
     async getDOICitation(doi: string) {
         return this.orcidLinkClient.getDOICitation(doi);
+    }
+
+    async getNarrativeSharingUsers({ workspaceId, owner }: MinimalNarrativeInfo): Promise<Array<NarrativeShareUser>> {
+        const client = new Workspace({
+            url: this.config.services.Workspace.url,
+            timeout: 1000,
+            token: this.auth.authInfo.token
+        });
+        const { perms: [permissions] } = await client.get_permissions_mass({ workspaces: [{ id: workspaceId }] });
+
+        const usernames = Object.entries(permissions)
+            .map(([username, permission]) => {
+                return { username, permission };
+            })
+            .filter(({ username }) => {
+                return username !== '*';
+            });
+
+        const userProfileService = new UserProfileClient({
+            url: this.config.services.UserProfile.url,
+            timeout: 1000
+        });
+        const userProfiles = await userProfileService.get_user_profile(usernames.map(({ username }) => username));
+
+        const sharingUsers: Array<NarrativeShareUser> = usernames.map(({ username, permission }, index) => {
+            const { user: { realname }, profile: { userdata: { organization } } } = userProfiles[index];
+            const [firstName, middleName, lastName] = (() => {
+                const match = /^(\S+) (?:(.+) )?(?:(\S+)(?:\s*))$/.exec(realname);
+                if (match === null) {
+                    return ['', '', ''];
+                }
+                return match.slice(1);
+            })();
+            const permissionLabel = (() => {
+                if (username === owner) {
+                    return 'owner';
+                }
+                switch (permission) {
+                    case 'r': return 'view';
+                    case 'w': return 'edit';
+                    case 'a': return 'admin';
+                    case 'n': return 'none';
+                }
+            })();
+            return {
+                username,
+                firstName, middleName, lastName,
+                institution: organization,
+                permission: permissionLabel
+            };
+        });
+
+        return sharingUsers;
     }
 
     // async getJournalAbbreviations(citations: Array<CSLMetadata>) {

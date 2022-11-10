@@ -115,6 +115,9 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                 orcidLink: {
                     status: StepStatus.NONE,
                 },
+                authorsImport: {
+                    status: StepStatus.NONE,
+                },
                 authors: {
                     status: StepStatus.NONE,
                 },

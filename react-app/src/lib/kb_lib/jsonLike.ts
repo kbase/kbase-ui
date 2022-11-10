@@ -2,7 +2,7 @@ import {
     JSONArray,
     JSONObject,
     JSONScalarValue,
-    JSONValue,
+    JSONValue
 } from '@kbase/ui-lib/lib/json';
 
 export type JSONLikeValue =
@@ -17,7 +17,7 @@ export interface JSONLikeObjectOf<T extends JSONLikeValue> {
 
 export type JSONLikeObject = JSONLikeObjectOf<JSONLikeValue>;
 
-export interface JSONLikeArrayOf<T extends JSONLikeValue> extends Array<T> {}
+export interface JSONLikeArrayOf<T extends JSONLikeValue> extends Array<T> { }
 
 export type JSONLikeArray = JSONLikeArrayOf<JSONLikeValue>;
 
@@ -78,7 +78,7 @@ export function toJSON(like: unknown): JSONValue {
             } else {
                 const x: JSONObject = {};
                 for (const [k, v] of Object.entries(like)) {
-                    if (typeof k !== 'undefined') {
+                    if (typeof v !== 'undefined') {
                         x[k] = toJSON(v);
                     }
                 }

@@ -1,32 +1,27 @@
-
-
-import { OSTISubmission, StepStatus } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
-import { Model } from '../Model';
-import Submission from './Submission';
+import { Citation, Model } from '../../Model';
+import CitationsView from './CitationsView';
 
-
-
-export interface SubmissionControllerProps {
+export interface CitationsViewControllerProps {
     model: Model;
-    submissionId: string;
+    citations: Array<Citation>
 }
 
-export interface SubmissionControllerDataState {
-    submission: OSTISubmission;
+export interface CitationState {
+    citations: Array<Citation>
 }
 
-export type DataState = AsyncProcess<SubmissionControllerDataState, { message: string }>
+export type DataState = AsyncProcess<CitationState, { message: string }>
 
-interface SubmissionControllerState {
+interface CitationsViewControllerState {
     dataState: DataState
 }
 
-export default class SubmissionController extends Component<SubmissionControllerProps, SubmissionControllerState> {
-    constructor(props: SubmissionControllerProps) {
+export default class CitationsViewController extends Component<CitationsViewControllerProps, CitationsViewControllerState> {
+    constructor(props: CitationsViewControllerProps) {
         super(props);
 
         this.state = {
@@ -53,22 +48,12 @@ export default class SubmissionController extends Component<SubmissionController
             });
         });
         try {
-
-            // Get first N narratives.
-            // N is ...??
-
-            // const narrativeCitations = await this.props.model.getNarrativeCitations(this.props.narrativeObjectRef);
-            const submission = await this.props.model.getDOIForm(this.props.submissionId);
-
-            if (submission.sections.reviewAndSubmit.status !== StepStatus.COMPLETE) {
-                throw new Error('Sorry, incomplete submission form, cannot view');
-            }
-
+            // const citations = await this.props.model.getNarrativeCitations(this.props.narrativeInfo);
             this.setState({
                 dataState: {
                     status: AsyncProcessStatus.SUCCESS,
                     value: {
-                        submission: submission.sections.reviewAndSubmit.value.submission
+                        citations: this.props.citations
                     }
                 }
             });
@@ -106,10 +91,10 @@ export default class SubmissionController extends Component<SubmissionController
         return <ErrorAlert message={message} />
     }
 
-    renderSuccess({ submission }: SubmissionControllerDataState) {
-        return <Submission
-            submission={submission}
-
+    renderSuccess({ citations }: CitationState) {
+        const doiCitations: Array<string> = [];
+        return <CitationsView
+            citations={citations}
         />;
     }
 

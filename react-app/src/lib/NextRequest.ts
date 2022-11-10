@@ -1,5 +1,3 @@
-
-
 import { HashPath } from 'contexts/RouterContext';
 
 export class NextRequest {
@@ -61,7 +59,6 @@ export class NextRequest {
     toSearchParams(): URLSearchParams {
         const url = new URL(window.location.href);
         url.pathname = '';
-        // url.hash = '#/login';
         const params = url.searchParams;
         params.set('source', 'authorization');
         params.set('nextrequest', JSON.stringify(this.toJSON()));

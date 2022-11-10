@@ -1,5 +1,5 @@
-import { NextRequest } from 'lib/NextRequest';
 import { HashPath } from 'contexts/RouterContext';
+import { NextRequest } from 'lib/NextRequest';
 import { Component } from 'react';
 import HelpLinks from '../HelpLinks';
 import './AuthProblem.css';
@@ -36,7 +36,7 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
     }
 
     renderAuthProblem() {
-        const nextRequest: NextRequest = new NextRequest('authorization', this.props.hashPath);
+        const nextRequest = new NextRequest('authorization', this.props.hashPath);
 
         const url = new URL(window.location.href);
         url.pathname = '';

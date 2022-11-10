@@ -1,6 +1,6 @@
-import { Model } from 'apps/ORCIDLink/Model';
 import {
     Author,
+    AuthorsImportSection,
     AuthorsSection,
     CitationResults, CitationsSection, ContractNumbers, ContractsSection, Description, DescriptionSection, DOIForm, DOIFormSections, GeolocationData,
     GeolocationSection,
@@ -9,18 +9,21 @@ import {
     StepStatus
 } from 'apps/ORCIDLink/ORCIDLinkClient';
 import { JSONObject } from 'lib/json';
+import { toJSON } from 'lib/kb_lib/jsonLike';
 import { Component } from 'react';
 import { Alert, Button, Col, Row, Stack } from 'react-bootstrap';
-import AuthorsStep from '../steps/Authors/AuthorsStep';
-import CitationsSectionEditor from '../steps/Citations/CitationsEditorController';
-import CitationsViewController from '../steps/Citations/CitationsViewController';
-import ContractNumbersFormController from '../steps/ContractNumbersFormController';
-import DescriptionController from '../steps/Description/Controller';
-import GeolocationController from '../steps/Geolocation/GeolocationController';
-import ORCIDLink from '../steps/ORCIDLinkController';
-import ReviewAndSubmitController from '../steps/ReviewAndSubmitController';
-import SelectNarrativeController from '../steps/SelectNarrative/EditorController';
-import SelectNarrativeViewController from '../steps/SelectNarrative/ViewerController';
+import { Model } from '../Model';
+import AuthorsStep from '../sections/Authors/AuthorsSectionController';
+import AuthorsImportSectionController, { ImportableAuthor } from '../sections/AuthorsImport/AuthorsImportSectionController';
+import CitationsSectionEditor from '../sections/Citations/CitationsEditorController';
+import CitationsViewController from '../sections/Citations/CitationsViewController';
+import ContractNumbersFormController from '../sections/ContractNumbersFormController';
+import DescriptionController from '../sections/Description/Controller';
+import GeolocationController from '../sections/Geolocation/GeolocationController';
+import ORCIDLink from '../sections/ORCIDLinkController';
+import ReviewAndSubmitController from '../sections/ReviewAndSubmitController';
+import SelectNarrativeController from '../sections/SelectNarrative/EditorController';
+import SelectNarrativeViewController from '../sections/SelectNarrative/ViewerController';
 import SubmissionController from '../submission/Controller';
 import styles from './Editor.module.css';
 import { ORCIDLinkState } from './EditorController';
@@ -112,7 +115,9 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
         try {
             this.props.model.saveDOIForm({
                 form_id: this.state.doiForm.form_id,
-                sections
+                // TODO: improve typing of toJSON? It should always return an object of the 
+                // same shape, but with undefined fields removed, and throwing errors if not JSON compatible.
+                sections: toJSON(sections) as unknown as DOIFormSections
             });
         } catch (ex) {
             console.error('Could not save form state!', ex);
@@ -137,18 +142,27 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                         editMode="edit"
                         setTitle={this.props.setTitle}
                         onDone={(narrativeInfo: NarrativeInfo) => {
+                            const minimalNarrativeInfo: MinimalNarrativeInfo = {
+                                workspaceId: narrativeInfo.workspaceInfo.id,
+                                objectId: narrativeInfo.objectInfo.id,
+                                version: narrativeInfo.objectInfo.version,
+                                ref: narrativeInfo.objectInfo.ref,
+                                title: narrativeInfo.workspaceInfo.metadata['narrative_nice_name'],
+                                owner: narrativeInfo.workspaceInfo.owner
+                            }
+
                             const citations: CitationsSection = (() => {
                                 const nextStep = this.state.doiForm.sections.citations;
                                 switch (nextStep.status) {
                                     case StepStatus.NONE:
                                         return {
                                             status: StepStatus.INCOMPLETE,
-                                            params: null
+                                            params: { narrativeInfo: minimalNarrativeInfo }
                                         };
                                     case StepStatus.INCOMPLETE:
                                         return {
                                             status: StepStatus.INCOMPLETE,
-                                            params: section.params
+                                            params: nextStep.params
                                         };
                                     case StepStatus.COMPLETE:
                                         return {
@@ -166,13 +180,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                                 }
                             })();
 
-                            const minimalNarrativeInfo: MinimalNarrativeInfo = {
-                                workspaceId: narrativeInfo.workspaceInfo.id,
-                                objectId: narrativeInfo.objectInfo.id,
-                                version: narrativeInfo.objectInfo.version,
-                                ref: narrativeInfo.objectInfo.ref,
-                                title: narrativeInfo.workspaceInfo.metadata['narrative_nice_name']
-                            }
+                            console.log('OK', minimalNarrativeInfo);
 
                             this.syncViewState({
                                 ...this.state.doiForm.sections,
@@ -193,19 +201,25 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                         editMode="edit"
                         setTitle={this.props.setTitle}
                         selectedNarrative={section.value.narrativeInfo}
-                        onDone={({ objectInfo: { wsid: workspaceId, id: objectId, version, ref }, workspaceInfo: { metadata } }: NarrativeInfo) => {
+                        onDone={({ objectInfo: { wsid: workspaceId, id: objectId, version, ref }, workspaceInfo: { metadata, owner } }: NarrativeInfo) => {
+                            const narrativeInfo: MinimalNarrativeInfo = {
+                                workspaceId, objectId, version, ref,
+                                title: metadata['narrative_nice_name'],
+                                owner
+                            };
+
                             const citations: CitationsSection = (() => {
                                 const nextStep = this.state.doiForm.sections.citations;
                                 switch (nextStep.status) {
                                     case StepStatus.NONE:
                                         return {
                                             status: StepStatus.INCOMPLETE,
-                                            params: null
+                                            params: { narrativeInfo }
                                         };
                                     case StepStatus.INCOMPLETE:
                                         return {
                                             status: StepStatus.INCOMPLETE,
-                                            params: section.params
+                                            params: nextStep.params
                                         };
                                     case StepStatus.COMPLETE:
                                         return {
@@ -223,10 +237,6 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                                 }
                             })();
 
-                            const narrativeInfo: MinimalNarrativeInfo = {
-                                workspaceId, objectId, version, ref,
-                                title: metadata['narrative_nice_name']
-                            };
 
                             this.syncViewState({
                                 ...this.state.doiForm.sections,
@@ -288,17 +298,18 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
         switch (section.status) {
             case StepStatus.NONE:
                 return this.renderStepPendingTitle(stepNumber, title);
-            case StepStatus.INCOMPLETE:
+            case StepStatus.INCOMPLETE: {
                 // should never be true, but need for type narrowing.
-                if (this.state.doiForm.sections.narrative.status !== StepStatus.COMPLETE) {
-                    return;
-                }
+                // if (this.state.doiForm.sections.narrative.status !== StepStatus.COMPLETE) {
+                //     return;
+                // }
+                // const params = section.params;
                 return <div>
-                    {this.renderStepTitle(stepNumber, `${title} "${this.state.doiForm.sections.narrative.value.narrativeInfo.title}"`)}
+                    {this.renderStepTitle(stepNumber, `${title} "${section.params.narrativeInfo.title}"`)}
                     <CitationsSectionEditor
                         model={this.props.model}
                         setTitle={this.props.setTitle}
-                        narrativeInfo={this.state.doiForm.sections.narrative.value.narrativeInfo}
+                        narrativeInfo={section.params.narrativeInfo}
                         onUpdate={(citations: CitationResults) => {
                             this.syncViewState({
                                 ...this.state.doiForm.sections,
@@ -354,17 +365,20 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                         }}
                     />
                 </div>
-            case StepStatus.EDITING:
+            }
+            case StepStatus.EDITING: {
                 // should never be true, but need for type narrowing.
-                if (this.state.doiForm.sections.narrative.status !== StepStatus.COMPLETE) {
-                    return;
-                }
+                // if (this.state.doiForm.sections.narrative.status !== StepStatus.COMPLETE) {
+                //     return;
+                // }
+                // const params = section.params;
+                // console.log('params (editing)', params);
                 return <div>
                     {this.renderStepTitle(stepNumber, title)}
                     <CitationsSectionEditor
                         model={this.props.model}
                         setTitle={this.props.setTitle}
-                        narrativeInfo={this.state.doiForm.sections.narrative.value.narrativeInfo}
+                        narrativeInfo={section.params.narrativeInfo}
                         onUpdate={(citations: CitationResults) => {
                             this.syncViewState({
                                 ...this.state.doiForm.sections,
@@ -379,19 +393,63 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                             if (section.status !== StepStatus.EDITING) {
                                 // should never get here... this is just for 
                                 // type narrowing.
-                                throw new Error('Invalid state - expected EDITING');
+                                throw new Error('Invalid state - expected INCOMPLETE');
                             }
+                            const orcidLink: ORCIDLinkSection = (() => {
+                                const nextStep = this.state.doiForm.sections.orcidLink;
+                                switch (nextStep.status) {
+                                    case StepStatus.NONE:
+                                        return {
+                                            status: StepStatus.INCOMPLETE,
+                                            params: null
+                                        };
+                                    case StepStatus.INCOMPLETE:
+                                        return {
+                                            status: StepStatus.INCOMPLETE,
+                                            params: nextStep.params,
+                                        };
+                                    case StepStatus.COMPLETE:
+                                        return {
+                                            status: StepStatus.INCOMPLETE,
+                                            params: nextStep.params,
+                                            value: nextStep.value
+                                        }
+                                    case StepStatus.EDITING:
+                                        return {
+                                            status: StepStatus.EDITING,
+                                            params: nextStep.params,
+                                            value: nextStep.value
+                                        }
+                                }
+                            })();
                             this.syncViewState({
                                 ...this.state.doiForm.sections,
                                 citations: {
                                     status: StepStatus.COMPLETE,
                                     params: section.params,
                                     value: citations
-                                }
+                                },
+                                orcidLink
                             })
                         }}
+                    // onDone={(citations: CitationResults) => {
+                    //     if (section.status !== StepStatus.EDITING) {
+                    //         // should never get here... this is just for 
+                    //         // type narrowing.
+                    //         throw new Error('Invalid state - expected EDITING');
+                    //     }
+                    //     this.syncViewState({
+                    //         ...this.state.doiForm.sections,
+                    //         citations: {
+                    //             status: StepStatus.COMPLETE,
+                    //             params: section.params,
+                    //             value: citations
+                    //         }
+                    //     })
+                    // }}
                     />
                 </div>
+            }
             case StepStatus.COMPLETE:
                 return <div>
                     {this.renderStepDoneTitle(2, 'Citations')}
@@ -418,20 +476,22 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                             if (this.state.doiForm.sections.narrative.status !== StepStatus.COMPLETE) {
                                 return;
                             }
-                            const authors: AuthorsSection = (() => {
-                                const nextSection = this.state.doiForm.sections.authors;
+                            const authorsImport: AuthorsImportSection = (() => {
+                                const nextSection = this.state.doiForm.sections.authorsImport;
                                 switch (nextSection.status) {
                                     case StepStatus.NONE:
                                         return {
                                             status: StepStatus.INCOMPLETE,
                                             params: {
-                                                narrativeTitle: this.state.doiForm.sections.narrative.value.narrativeInfo.title
+                                                narrativeInfo: this.state.doiForm.sections.narrative.value.narrativeInfo
                                             }
                                         };
                                     case StepStatus.INCOMPLETE:
                                         return {
                                             status: StepStatus.INCOMPLETE,
-                                            params: nextSection.params,
+                                            params: {
+                                                narrativeInfo: this.state.doiForm.sections.narrative.value.narrativeInfo
+                                            }
                                         };
                                     case StepStatus.COMPLETE:
                                         return {
@@ -454,7 +514,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                                     params: null,
                                     value: { orcidLink: { orcidId } }
                                 },
-                                authors
+                                authorsImport
                             })
                         }} />
                 </div>
@@ -463,8 +523,71 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
         }
     }
 
-    renderAuthorsStep(section: AuthorsSection) {
+    renderAuthorsImportStep(section: AuthorsImportSection) {
         const stepNumber = 4;
+        const title = 'Import authors from Narrative';
+        switch (section.status) {
+            case StepStatus.NONE:
+                return this.renderStepPendingTitle(stepNumber, title);
+            case StepStatus.INCOMPLETE:
+                return <div>
+                    {this.renderStepTitle(stepNumber, title)}
+                    <AuthorsImportSectionController
+                        model={this.props.model}
+                        setTitle={this.props.setTitle}
+                        authors={[]}
+                        narrativeInfo={section.params.narrativeInfo}
+                        onDone={(importableAuthors: Array<ImportableAuthor>) => {
+                            const authors: AuthorsSection = (() => {
+                                if (section.status !== StepStatus.INCOMPLETE) {
+                                    // should never get here... this is just for 
+                                    // type narrowing.
+                                    throw new Error('Invalid state - expected INCOMPLETE');
+                                }
+                                const nextSection = this.state.doiForm.sections.authors;
+                                switch (nextSection.status) {
+                                    case StepStatus.NONE:
+                                        return {
+                                            status: StepStatus.INCOMPLETE,
+                                            params: { authors: importableAuthors }
+                                        };
+                                    case StepStatus.INCOMPLETE:
+                                        return {
+                                            status: StepStatus.INCOMPLETE,
+                                            params: nextSection.params,
+                                        };
+                                    case StepStatus.COMPLETE:
+                                        return {
+                                            status: StepStatus.INCOMPLETE,
+                                            params: nextSection.params,
+                                            value: nextSection.value
+                                        }
+                                    case StepStatus.EDITING:
+                                        return {
+                                            status: StepStatus.EDITING,
+                                            params: nextSection.params,
+                                            value: nextSection.value
+                                        }
+                                }
+                            })();
+                            this.syncViewState({
+                                ...this.state.doiForm.sections,
+                                authorsImport: {
+                                    status: StepStatus.COMPLETE,
+                                    params: section.params,
+                                    value: { authors: importableAuthors }
+                                },
+                                authors
+                            })
+                        }}
+                    />
+                </div>
+            case StepStatus.COMPLETE:
+                return this.renderStepDoneTitle(stepNumber, title);
+        }
+    }
+    renderAuthorsStep(section: AuthorsSection) {
+        const stepNumber = 5;
         const title = 'Primary and Other Authors';
         switch (section.status) {
             case StepStatus.NONE:
@@ -475,8 +598,8 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                     <AuthorsStep
                         model={this.props.model}
                         setTitle={this.props.setTitle}
-                        narrativeTitle={section.params.narrativeTitle}
-                        onDone={(title: string, author: Author) => {
+                        authors={section.params.authors}
+                        onDone={(authors: Array<Author>) => {
                             const contracts: ContractsSection = (() => {
                                 if (section.status !== StepStatus.INCOMPLETE) {
                                     // should never get here... this is just for 
@@ -514,7 +637,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                                 authors: {
                                     status: StepStatus.COMPLETE,
                                     params: section.params,
-                                    value: { title, author }
+                                    value: { authors }
                                 },
                                 contracts
                             })
@@ -526,9 +649,8 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
         }
     }
 
-
     renderContractNumbersStep(section: ContractsSection) {
-        const stepNumber = 5;
+        const stepNumber = 6;
         const title = 'Contract Numbers';
         switch (section.status) {
             case StepStatus.NONE:
@@ -591,7 +713,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
     }
 
     renderGeolocationStep(section: GeolocationSection) {
-        const stepNumber = 6;
+        const stepNumber = 7;
         const title = 'Geolocation';
         switch (section.status) {
             case StepStatus.NONE:
@@ -657,7 +779,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
     }
 
     renderDescriptionStep(section: DescriptionSection) {
-        const stepNumber = 7;
+        const stepNumber = 8;
         const title = 'Description';
         switch (section.status) {
             case StepStatus.NONE:
@@ -689,17 +811,17 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                                     title: narrative.value.narrativeInfo.title,
                                     publication_date: 'foo', // TODO: get this from narrative, 
                                     contract_nos: contracts.value.contractNumbers.doe.join('; '),
-                                    authors: [
-                                        {
-                                            first_name: authors.value.author.firstName,
-                                            middle_name: authors.value.author.middleName,
-                                            last_name: authors.value.author.lastName,
-                                            affiliation_name: authors.value.author.institution,
-                                            private_email: authors.value.author.emailAddress,
-                                            orcid_id: authors.value.author.orcidId,
+                                    authors: authors.value.authors.map(({ firstName, middleName, lastName, institution, emailAddress, orcidId }) => {
+                                        return {
+                                            first_name: firstName,
+                                            middle_name: middleName,
+                                            last_name: lastName,
+                                            affiliation_name: institution,
+                                            private_email: emailAddress,
+                                            orcid_id: orcidId,
                                             contributor_type: 'ProjectLeader' // TODO: make this controlled, at least from the form
                                         }
-                                    ],
+                                    }),
                                     site_url: this.staticNarrativeLink(
                                         narrative.value.narrativeInfo.workspaceId,
                                         narrative.value.narrativeInfo.version
@@ -817,7 +939,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
     }
 
     renderReviewAndSubmitStep(section: ReviewAndSubmitSection) {
-        const stepNumber = 8;
+        const stepNumber = 9;
         const title = 'Review and Submit';
         // This step is a bit special, as it only becomes unlocked when the 
         // prior steps are COMPLETE.
@@ -827,11 +949,12 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
         // Finally, the review and submit depends on EVERYTHING being complete :)
         //
         // But for now, let us just hack this together.
-        const { narrative, citations, orcidLink, authors, contracts, geolocation, description } = this.state.doiForm.sections;
+        const { narrative, citations, orcidLink, authorsImport, authors, contracts, geolocation, description } = this.state.doiForm.sections;
         const enable = (
             narrative.status === StepStatus.COMPLETE &&
             citations.status === StepStatus.COMPLETE &&
             orcidLink.status === StepStatus.COMPLETE &&
+            authorsImport.status === StepStatus.COMPLETE &&
             authors.status === StepStatus.COMPLETE &&
             contracts.status === StepStatus.COMPLETE &&
             geolocation.status === StepStatus.COMPLETE &&
@@ -855,17 +978,20 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                     title: narrative.value.narrativeInfo.title,
                     publication_date: 'foo', // TODO: get this from narrative, 
                     contract_nos: contracts.value.contractNumbers.doe.join('; '),
-                    authors: [
-                        {
-                            first_name: authors.value.author.firstName,
-                            middle_name: authors.value.author.middleName,
-                            last_name: authors.value.author.lastName,
-                            affiliation_name: authors.value.author.institution,
-                            private_email: authors.value.author.emailAddress,
-                            orcid_id: authors.value.author.orcidId,
-                            contributor_type: 'ProjectLeader' // TODO: make this controlled, at least from the form
+                    authors: authors.value.authors.map(({
+                        firstName, middleName, lastName, institution, emailAddress, orcidId,
+                        contributorType
+                    }) => {
+                        return {
+                            first_name: firstName,
+                            middle_name: middleName,
+                            last_name: lastName,
+                            affiliation_name: institution,
+                            private_email: emailAddress,
+                            orcid_id: orcidId,
+                            contributor_type: contributorType
                         }
-                    ],
+                    }),
                     site_url: this.staticNarrativeLink(
                         narrative.value.narrativeInfo.workspaceId,
                         narrative.value.narrativeInfo.version
@@ -920,6 +1046,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
             narrative,
             citations,
             orcidLink,
+            authorsImport,
             authors,
             contracts,
             geolocation,
@@ -949,6 +1076,11 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                     <Row className="g-0">
                         <Col>
                             {this.renderORCIDLinkSection(orcidLink)}
+                        </Col>
+                    </Row>
+                    <Row className="g-0">
+                        <Col>
+                            {this.renderAuthorsImportStep(authorsImport)}
                         </Col>
                     </Row>
                     <Row className="g-0">

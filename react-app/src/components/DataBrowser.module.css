@@ -10,8 +10,9 @@
     flex: 0 0 auto;
     display: flex;
     flex-direction: row;
-    font-weight: bold;
-    color: gray;
+    /* font-weight: bold; */
+    /* color: gray; */
+    color: rgba(125, 125, 125);
     /* border-top: 1px solid rgba(200, 200, 200, 0.5); */
     border-bottom: 2px solid rgba(200, 200, 200, 0.5);
     /* Force scrollbar so it aligns w/body*/
@@ -47,6 +48,8 @@
     overflow-x: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    /* font-weight: bold; */
+
 }
 
 .headerSortIndicator {

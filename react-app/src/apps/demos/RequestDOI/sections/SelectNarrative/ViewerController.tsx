@@ -1,34 +1,29 @@
-
-
-import { OSTISubmission, StepStatus } from 'apps/ORCIDLink/ORCIDLinkClient';
+import { MinimalNarrativeInfo, NarrativeInfo } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
-import { Model } from '../Model';
-import Submission from './Submission';
+import { Model } from '../../Model';
+import Viewer from './Viewer';
 
-
-
-export interface SubmissionControllerProps {
+export interface SelectNarrativeControllerProps {
     model: Model;
-    submissionId: string;
+    selectedNarrative: MinimalNarrativeInfo;
 }
 
-export interface SubmissionControllerDataState {
-    submission: OSTISubmission;
+export interface NarrativeSelection {
+    selectedNarrative: NarrativeInfo | null;
 }
 
-export type DataState = AsyncProcess<SubmissionControllerDataState, { message: string }>
+export type DataState = AsyncProcess<NarrativeSelection, { message: string }>
 
-interface SubmissionControllerState {
+interface SelectNarrativeControllerState {
     dataState: DataState
 }
 
-export default class SubmissionController extends Component<SubmissionControllerProps, SubmissionControllerState> {
-    constructor(props: SubmissionControllerProps) {
+export default class SelectNarrativeViewController extends Component<SelectNarrativeControllerProps, SelectNarrativeControllerState> {
+    constructor(props: SelectNarrativeControllerProps) {
         super(props);
-
         this.state = {
             dataState: {
                 status: AsyncProcessStatus.NONE
@@ -53,22 +48,22 @@ export default class SubmissionController extends Component<SubmissionController
             });
         });
         try {
-
-            // Get first N narratives.
-            // N is ...??
-
-            // const narrativeCitations = await this.props.model.getNarrativeCitations(this.props.narrativeObjectRef);
-            const submission = await this.props.model.getDOIForm(this.props.submissionId);
-
-            if (submission.sections.reviewAndSubmit.status !== StepStatus.COMPLETE) {
-                throw new Error('Sorry, incomplete submission form, cannot view');
-            }
+            const selectedNarrative = await (async () => {
+                if (!this.props.selectedNarrative) {
+                    return null;
+                }
+                return this.props.model.fetchNarrative(
+                    this.props.selectedNarrative.workspaceId,
+                    this.props.selectedNarrative.objectId,
+                    this.props.selectedNarrative.version
+                );
+            })();
 
             this.setState({
                 dataState: {
                     status: AsyncProcessStatus.SUCCESS,
                     value: {
-                        submission: submission.sections.reviewAndSubmit.value.submission
+                        selectedNarrative
                     }
                 }
             });
@@ -95,7 +90,6 @@ export default class SubmissionController extends Component<SubmissionController
         }
     }
 
-
     // Renderers
 
     renderLoading() {
@@ -106,10 +100,9 @@ export default class SubmissionController extends Component<SubmissionController
         return <ErrorAlert message={message} />
     }
 
-    renderSuccess({ submission }: SubmissionControllerDataState) {
-        return <Submission
-            submission={submission}
-
+    renderSuccess(narrativeSelection: NarrativeSelection) {
+        return <Viewer
+            selectedNarrative={narrativeSelection.selectedNarrative}
         />;
     }
 
