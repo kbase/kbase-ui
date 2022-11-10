@@ -3,7 +3,7 @@
 plugins:
     - name: auth2-client
       globalName: kbase-ui-plugin-auth2-client
-      version: 3.2.2
+      version: 3.2.4
       source:
           github:
               account: kbase
