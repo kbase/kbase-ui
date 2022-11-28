@@ -17,6 +17,8 @@ export interface SubmissionControllerProps {
 
 export interface SubmissionControllerDataState {
     submission: OSTISubmission;
+    // TODO: just for now -- need to use the DOI request id to get the request status...
+    requestId: string;
 }
 
 export type DataState = AsyncProcess<SubmissionControllerDataState, { message: string }>
@@ -68,7 +70,8 @@ export default class SubmissionController extends Component<SubmissionController
                 dataState: {
                     status: AsyncProcessStatus.SUCCESS,
                     value: {
-                        submission: submission.sections.reviewAndSubmit.value.submission
+                        submission: submission.sections.reviewAndSubmit.params.submission,
+                        requestId: submission.sections.reviewAndSubmit.value.requestId
                     }
                 }
             });
@@ -106,10 +109,10 @@ export default class SubmissionController extends Component<SubmissionController
         return <ErrorAlert message={message} />
     }
 
-    renderSuccess({ submission }: SubmissionControllerDataState) {
+    renderSuccess({ submission, requestId }: SubmissionControllerDataState) {
         return <Submission
             submission={submission}
-
+            requestId={requestId}
         />;
     }
 

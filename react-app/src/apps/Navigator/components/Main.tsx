@@ -1,11 +1,11 @@
 import { Component } from 'react';
 
 // Components
-import NarrativeList from './NarrativeList/NarrativeList';
 import { AuthInfo } from '../../../contexts/Auth';
 import { RuntimeContext } from '../../../contexts/RuntimeContext';
 import { NavigatorContext } from '../context/NavigatorContext';
 import styles from './Main.module.css';
+import NarrativeList from './NarrativeList/NarrativeList';
 
 export interface MainProps {
     authInfo: AuthInfo;
@@ -29,6 +29,7 @@ export default class Main extends Component<MainProps> {
                                     }
                                     return (
                                         <NarrativeList
+                                            emptyMessage='No Narratives found'
                                             categoryChange={value.setCategory}
                                             queryChange={value.setQuery}
                                             sortChange={value.setSort}

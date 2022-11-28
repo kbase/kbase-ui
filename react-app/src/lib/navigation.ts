@@ -109,10 +109,6 @@ export function changeHash2(
     })();
 
     if (search) {
-        // for (const key of url.searchParams.keys()) {
-        //     url.searchParams.delete(key);
-        // }
-
         for (const [key, value] of Object.entries(search)) {
             if (!value) {
                 url.searchParams.delete(key);
@@ -132,6 +128,6 @@ export function changeHash2(
     } else {
         window.history.pushState(null, '', url);
     }
-    window.history.go();
-    // window.dispatchEvent(new HashChangeEvent('hashchange'));
+    // window.history.go();
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
 }

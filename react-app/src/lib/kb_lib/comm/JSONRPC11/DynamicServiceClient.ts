@@ -1,10 +1,9 @@
+import { JSONArray } from '@kbase/ui-lib/lib/json';
+import Cache from '../Cache';
 import {
-    ServiceWizardClient,
-    ServiceStatus,
+    ServiceStatus, ServiceWizardClient
 } from '../coreServices/ServiceWizard';
 import { ServiceClient, ServiceClientParams } from './ServiceClient';
-import Cache from '../Cache';
-import { JSONArray } from '@kbase/ui-lib/lib/json';
 
 const ITEM_LIFETIME = 1800000;
 const MONITORING_FREQUENCY = 60000;
@@ -108,19 +107,6 @@ export abstract class DynamicServiceClient extends ServiceClient {
         return moduleInfo;
     }
 
-    // private async syncModule()
-
-    // async callFunc<P, T>(funcName: string, params: P): Promise<T> {
-    //     const moduleInfo = await this.lookupModule();
-    //     const client = new ServiceClient({
-    //         module: moduleInfo.module_name,
-    //         url: moduleInfo.url,
-    //         token: this.token
-    //     });
-
-    //     return await client.callFunc<P, T>(funcName, params);
-    // }
-
     async callFunc<ParamType extends JSONArray, ReturnType extends JSONArray>(
         funcName: string,
         params: ParamType
@@ -128,6 +114,7 @@ export abstract class DynamicServiceClient extends ServiceClient {
         await this.lookupModule();
         return super.callFunc(funcName, params);
     }
+
     async callFuncEmptyResult<ParamType extends JSONArray>(
         funcName: string,
         params: ParamType

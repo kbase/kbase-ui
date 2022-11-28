@@ -401,7 +401,7 @@ export default class PushWorkForm extends Component<PushWorkFormProps, PushWorkF
                 />
             case DeletionStatus.SUCCESS:
                 return <div>
-                    <AlertMessage type="success">Successfully removed this work from your ORCID record</AlertMessage>
+                    <AlertMessage variant="success">Successfully removed this work from your ORCID record</AlertMessage>
                     <Button variant="primary" onClick={this.onDone.bind(this)}>Done</Button>
                 </div>
             case DeletionStatus.ERROR:

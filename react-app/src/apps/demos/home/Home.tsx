@@ -53,47 +53,54 @@ export default class View extends Component<ViewProps> {
     }
 
     renderDemoLinks() {
-        const linkData = [{
-            url: "#demos/interstitial1",
-            label: 'Linking via Interstitial Page',
-            requiresLink: false,
-            description: [
-                <p>Sometimes a user tool either requires or can utilize the ORCID Link. After a quick call to the
-                    ORCID Link service to determine if the user does have a link, if it is determined that the user
-                    does not have a link, the tool may offer the user the option of creating a link on the fly.
-                    The ORCID Link tool will return the browser to wherever the initial tool specifies.</p>
-            ]
-        }, {
-            url: "#demos/doi",
-            label: 'Request DOI Form',
-            requiresLink: false,
-            description: []
-        }, {
-            url: "#demos/push-work",
-            label: 'Push Work to ORCID',
-            requiresLink: true,
-            description: []
-        }];
-        const items = linkData.map(({ url, label, requiresLink, description }, index) => {
-            if (requiresLink && this.props.link === null) {
-                return null;
-            }
-            return <Accordion.Item eventKey="0" key={index}>
-                <Accordion.Header>
-                    <a href={url}>{label}</a>
-                </Accordion.Header>
-                <Accordion.Body>
-                    {description.map((content) => {
-                        return <p>{content}</p>
-                    })}
-                </Accordion.Body>
-            </Accordion.Item>
-        })
+        // const linkData = [{
+        //     url: "#demos/interstitial1",
+        //     label: 'Linking via Interstitial Page',
+        //     requiresLink: false,
+        //     description: [
+        //         <p>Sometimes a user tool either requires or can utilize the ORCID Link. After a quick call to the
+        //             ORCID Link service to determine if the user does have a link, if it is determined that the user
+        //             does not have a link, the tool may offer the user the option of creating a link on the fly.
+        //             The ORCID Link tool will return the browser to wherever the initial tool specifies.</p>
+        //     ]
+        // }, {
+        //     url: "#demos/doi",
+        //     label: 'Request DOI Form',
+        //     requiresLink: false,
+        //     description: []
+        // },
+        // {
+        //     url: "#demos/doiadmin",
+        //     label: 'DOI Form and Request Admin',
+        //     requiresLink: false,
+        //     description: []
+        // },
+        // {
+        //     url: "#demos/push-work",
+        //     label: 'Push Work to ORCID',
+        //     requiresLink: true,
+        //     description: []
+        // }];
+        // const items = linkData.map(({ url, label, requiresLink, description }, index) => {
+        //     if (requiresLink && this.props.link === null) {
+        //         return null;
+        //     }
+        //     return <Accordion.Item eventKey="0" key={index}>
+        //         <Accordion.Header>
+        //             <a href={url}>{label}</a>
+        //         </Accordion.Header>
+        //         <Accordion.Body>
+        //             {description.map((content) => {
+        //                 return <p>{content}</p>
+        //             })}
+        //         </Accordion.Body>
+        //     </Accordion.Item>
+        // })
         return <div style={{ marginTop: '1em' }}>
             const items =
             <h3>Demos</h3>
             <Accordion>
-                <Accordion.Item eventKey="0">
+                <Accordion.Item eventKey="interstitial">
                     <Accordion.Header>
                         <a href="#demos/interstitial1">Linking via Interstitial Page</a>
                     </Accordion.Header>
@@ -106,9 +113,9 @@ export default class View extends Component<ViewProps> {
                         </p>
                     </Accordion.Body>
                 </Accordion.Item>
-                <Accordion.Item eventKey="1">
+                <Accordion.Item eventKey="doiforms">
                     <Accordion.Header>
-                        <a href="#demos/doi">Request DOI Form</a>
+                        <a href="#demos/doi">DOI Request Form</a>
                     </Accordion.Header>
                     <Accordion.Body>
                         <p>
@@ -116,7 +123,17 @@ export default class View extends Component<ViewProps> {
                         </p>
                     </Accordion.Body>
                 </Accordion.Item>
-                <Accordion.Item eventKey="2">
+                <Accordion.Item eventKey="doiadmin">
+                    <Accordion.Header>
+                        <a href="#demos/doiadmin">DOI Form and Request ADMIN</a>
+                    </Accordion.Header>
+                    <Accordion.Body>
+                        <p>
+                            Admin tools for DOI Forms and Requests
+                        </p>
+                    </Accordion.Body>
+                </Accordion.Item>
+                <Accordion.Item eventKey="pushwork">
                     <Accordion.Header>
                         <a href="#demos/push-work">Push Work to ORCID</a>
                     </Accordion.Header>

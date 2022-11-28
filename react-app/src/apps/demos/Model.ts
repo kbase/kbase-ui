@@ -5,10 +5,11 @@ import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
 import {
     DeleteWorkResult, DOIForm, DOIFormUpdate, GetNameResult,
-    InitialDOIForm, MinimalNarrativeInfo, NewWork,
+    InitialDOIForm, NewWork,
     ORCIDLinkServiceClient, ORCIDProfile, Work
 } from "../ORCIDLink/ORCIDLinkClient";
 import { EditableWork } from "./PushWork/PushWorksModel";
+import { StaticNarrativeSummary } from "./RequestDOI/Model";
 // import { CSLMetadata } from "./RequestDOI/steps/Citations/DOIOrgClient";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
@@ -244,7 +245,7 @@ export class Model {
         return { lastName, firstName };
     }
 
-    async getNarrativeCitations(narrativeInfo: MinimalNarrativeInfo): Promise<Array<Citation>> {
+    async getNarrativeCitations(staticNarrative: StaticNarrativeSummary): Promise<Array<Citation>> {
         // get apps from narrative
         const client = new GenericClient({
             module: 'Workspace',
@@ -258,7 +259,7 @@ export class Model {
             {
                 "objects": [
                     {
-                        "ref": narrativeInfo.ref,
+                        "ref": staticNarrative.ref,
                         "included": [
                             "cells/[*]/cell_type",
                             "cells/[*]/metadata/kbase/appCell/app/id",

@@ -117,26 +117,10 @@ export default class ORCIDLinkController extends Component<ORCIDLinkControllerPr
         return url;
     }
 
-    // renderLinkingLink(step: number) {
-    //     const linkingURL = new URL(`${this.props.baseURL}/#orcidlink/link`);
-    //     const process = {
-    //         step,
-    //         time: Date.now()
-    //     };
-    //     const returnURL = new URL(`${this.props.baseURL}#demos/interstitial1`);
-    //     returnURL.searchParams.set('process', JSON.stringify(process));
-    //     const returnLink = {
-    //         url: returnURL.toString(),
-    //         label: `Some Process, step ${step}`
-    //     }
-    //     linkingURL.searchParams.set('return_link', JSON.stringify(returnLink));
-    //     return <a href={`${linkingURL.toString()}`}>Click here to link your KBase account to your ORCID account <i>(go to step {step})</i></a>
-    // }
-
     // Renderers
 
     renderLoading() {
-        return <Loading message="Loading your public narratives ..." />;
+        return <Loading message="Loading your ORCID Id ..." />;
     }
 
     renderError({ message }: { message: string }) {

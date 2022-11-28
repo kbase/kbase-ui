@@ -4,10 +4,10 @@ import { Feeds } from '../lib/clients/Feeds';
 import { Monitor } from '../lib/Monitor';
 
 import { Config } from '../types/config';
-import {  AuthInfo } from './Auth';
+import { AuthInfo } from './Auth';
 
 export interface FeedsInfo {
-    count: number; 
+    count: number;
 }
 
 export type FeedsState = AsyncProcess<FeedsInfo, string>;
@@ -38,7 +38,7 @@ export class FeedsWrapper extends React.Component<FeedsWrapperProps, FeedsWrappe
             callback: () => {
                 return this.fetchFeedsState();
             },
-            interval: 10000
+            interval: props.config.ui.services.feeds.pollInterval
         });
     }
 

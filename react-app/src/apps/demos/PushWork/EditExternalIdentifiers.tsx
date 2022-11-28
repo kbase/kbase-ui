@@ -2,7 +2,7 @@ import Empty from "components/Empty";
 import { Component } from "react";
 import { Button } from "react-bootstrap";
 import Select from 'react-select';
-import { Option, Options } from "./reactSelectTypes";
+import { Option, Options } from "../../../lib/reactSelectTypes";
 
 
 import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";

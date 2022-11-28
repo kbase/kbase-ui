@@ -23,7 +23,7 @@ export interface newNarrativeParams {
     markdown: string;
 }
 
-type NarrativeManagerNewState = AsyncProcess<{workspaceID: number}, string>
+type NarrativeManagerNewState = AsyncProcess<{ workspaceID: number }, string>
 
 export default class NarrativeManagerNew extends Component<
     NarrativeManagerNewProps,
@@ -45,7 +45,7 @@ export default class NarrativeManagerNew extends Component<
             const workspaceID = await this.createNewNarrative()
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
-                value: {workspaceID},
+                value: { workspaceID },
             });
         } catch (ex) {
             this.setState({
@@ -106,17 +106,17 @@ export default class NarrativeManagerNew extends Component<
 
         newNarrativeParams.includeIntroCell = 1;
 
-        const info =  await narrativeServiceClient.create_new_narrative(newNarrativeParams);
+        const info = await narrativeServiceClient.create_new_narrative(newNarrativeParams);
         return info.narrativeInfo.wsid;
     }
 
     render() {
         switch (this.state.status) {
-        case AsyncProcessStatus.NONE:
-        case AsyncProcessStatus.PENDING:
-            return <NarrativeLoading message="Creating and opening a new narrative..." detectSlow={true}/>
-        case  AsyncProcessStatus.ERROR:
-            return <ErrorView title="Error">
+            case AsyncProcessStatus.NONE:
+            case AsyncProcessStatus.PENDING:
+                return <NarrativeLoading message="Creating and opening a new narrative..." detectSlow={true} config={this.props.config} />
+            case AsyncProcessStatus.ERROR:
+                return <ErrorView title="Error">
                     <p>
                         Sorry, there was an error creating or opening a new narrative:
                     </p>
@@ -124,8 +124,8 @@ export default class NarrativeManagerNew extends Component<
                         ${this.state.error}
                     </p>
                 </ErrorView>
-        case AsyncProcessStatus.SUCCESS:
-            return <OpenNarrative workspaceID={this.state.value.workspaceID} />
+            case AsyncProcessStatus.SUCCESS:
+                return <OpenNarrative workspaceID={this.state.value.workspaceID} />
         }
     }
 }

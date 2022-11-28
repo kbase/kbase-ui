@@ -1,11 +1,10 @@
-import { NarrativeInfo } from 'apps/ORCIDLink/ORCIDLinkClient';
 import RotatedTable, { RotatedTableRow } from 'components/RotatedTable';
-import Well from 'components/Well';
 import { Component } from 'react';
-import { Stack } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import { StaticNarrativeSummary } from '../../Model';
 
 export interface NarrativeInfoViewerProps {
-    narrative: NarrativeInfo;
+    narrative: StaticNarrativeSummary;
 }
 
 interface NarrativeInfoViewerState {
@@ -13,20 +12,23 @@ interface NarrativeInfoViewerState {
 
 export default class NarrativeInfoViewer extends Component<NarrativeInfoViewerProps, NarrativeInfoViewerState> {
     render() {
-        const { objectInfo: { wsid, version, name }, workspaceInfo: { metadata } } = this.props.narrative;
+        const { workspaceId, version, title, owner, staticNarrativeSavedAt } = this.props.narrative;
 
-        const title = metadata['narrative_nice_name'];
         const rows: Array<RotatedTableRow> = [
-            ['Ref', () => {
-                return <a href={`${document.location.origin}/narrative/${wsid}`} target="_blank">{wsid} (v{version})</a>
+            ['Narrative', () => {
+                return <div>
+                    {workspaceId} (v{version})
+                    {' '}
+                    <Button variant="outline-info" size="sm" href={`${document.location.origin}/narrative/${workspaceId}`} target="_blank">Open Narrative</Button>
+                    {' '}
+                    <Button variant="outline-info" size="sm" href={`${document.location.origin}/sn/${workspaceId}`} target="_blank">Open Static Narrative</Button>
+                </div>
             }],
-            ['Name', name],
-            ['Title', title]
+
+            ['Title', title],
+            ['Published', Intl.DateTimeFormat('en-US', {}).format(staticNarrativeSavedAt)],
+            ['Owner', owner]
         ];
-        return <Well style={{ padding: '1em' }}>
-            <Stack gap={2}>
-                <RotatedTable rows={rows} styles={{ col1: { flex: '0 0 4em' } }} />
-            </Stack>
-        </Well>
+        return <RotatedTable rows={rows} styles={{ col1: { flex: '0 0 8em' } }} />;
     }
 }

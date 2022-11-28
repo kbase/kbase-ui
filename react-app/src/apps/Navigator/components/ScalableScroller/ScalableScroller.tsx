@@ -1,12 +1,12 @@
 import { Component, createRef, ReactElement, RefObject } from 'react';
+import AlertMessage from '../../../../components/AlertMessage';
 import Loading from '../../../../components/Loading';
-import MessageAlert from '../../../../components/AlertMessage';
 import {
     DataProviderState,
     DataProviderStateFetched,
     DataProviderStateRefetching,
     DataProviderStatus,
-    Row,
+    Row
 } from './DataProviderState';
 import ResizeObserver from './ResizeObserver';
 import styles from './ScalableScroller.module.css';
@@ -104,6 +104,7 @@ export interface FetchResult<T> {
 
 export interface ScalableScrollerProps<T> {
     rowHeight: number;
+    emptyMessage: string;
     onRowRangeChanged: (from: number, to: number) => void;
     renderRow: (item: T) => ReactElement;
     dataProviderState: DataProviderState<T>;
@@ -159,15 +160,15 @@ export default class ScalableScroller<T> extends Component<
                 this.props.dataProviderState.value;
             if (
                 prevProps.dataProviderState.status ===
-                    DataProviderStatus.FETCHED ||
+                DataProviderStatus.FETCHED ||
                 prevProps.dataProviderState.status ===
-                    DataProviderStatus.REFETCHING
+                DataProviderStatus.REFETCHING
             ) {
                 if (
                     filterCount !==
-                        prevProps.dataProviderState.value.filterCount ||
+                    prevProps.dataProviderState.value.filterCount ||
                     totalCount !==
-                        prevProps.dataProviderState.value.totalCount ||
+                    prevProps.dataProviderState.value.totalCount ||
                     from !== prevProps.dataProviderState.value.from ||
                     to !== prevProps.dataProviderState.value.to
                 ) {
@@ -302,7 +303,7 @@ export default class ScalableScroller<T> extends Component<
     }
 
     fetchedNotFound() {
-        return <MessageAlert message="No Narratives found" type="warning" />;
+        return <AlertMessage message={this.props.emptyMessage} variant="warning" />;
     }
 
     renderScroller() {

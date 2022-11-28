@@ -1,19 +1,45 @@
-.Empty {
+.main {
     border: 1px solid rgb(200 200 200);
-    border-radius: 1em;
-    padding: 1em;
-    /* margin: 1em; */
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
+.normalSize {
+    border-radius: 1em;
+    padding: 1em;
+}
+
+.compactSize {
+    padding: 0.5em;
+    border-radius: 0.5em;
+}
+
+.inlineSize {
+    padding: 0.25em;
+    padding-left: 0;
+    border: none;
+}
+
 .icon {
     flex: 0 0 auto;
+}
+
+.iconNormal {
     font-size: 110%;
+}
+
+.iconCompact {
+    font-size: 90%;
+}
+
+.iconInline {
+    font-size: 65%;
 }
 
 .message {
     flex: 1 1 0;
     margin-left: 0.5em;
+    font-style: italic;
+    color: rgb(100, 100, 100);
 }

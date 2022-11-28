@@ -1,17 +1,17 @@
 import { Component } from 'react';
-import PermSearch from './PermSearch';
-import { UserPerms } from './Definitions';
-import ShareUser from './ShareUser';
 import { AuthService } from '../../../../utils/AuthService';
+import { UserPerms } from './Definitions';
+import PermSearch from './PermSearch';
+import ShareUser from './ShareUser';
 
-import { ControlMenuItemProps } from '../ToolMenu';
-import Loading from '../../../../../../components/Loading';
-import GlobalPerms from './GlobalPerms';
-import GenericClient from '../../../../../../lib/kb_lib/comm/JSONRPC11/GenericClient';
-import MessageAlert from '../../../../../../components/AlertMessage';
+import WorkspaceClient from 'lib/kb_lib/comm/coreServices/Workspace';
 import React from 'react';
 import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
-import WorkspaceClient from 'lib/kb_lib/comm/coreServices/Workspace';
+import AlertMessage from '../../../../../../components/AlertMessage';
+import Loading from '../../../../../../components/Loading';
+import GenericClient from '../../../../../../lib/kb_lib/comm/JSONRPC11/GenericClient';
+import { ControlMenuItemProps } from '../ToolMenu';
+import GlobalPerms from './GlobalPerms';
 
 interface State {
     isLoading: boolean;
@@ -219,8 +219,8 @@ export default class SharingItem extends Component<
     renderSharedUsers() {
         if (this.state.perms.allUserPerms.length === 0) {
             return (
-                <MessageAlert
-                    type="info"
+                <AlertMessage
+                    variant="info"
                     message="This Narrative is not shared with any users"
                 />
             );

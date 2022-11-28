@@ -3,12 +3,12 @@ import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
 import { Button, Form, Stack } from "react-bootstrap";
 import Select, { SingleValue } from 'react-select';
+import { Option, Options, OptionsGroups } from "../../../../lib/reactSelectTypes";
 import EditExternalIdentifiers from "../EditExternalIdentifiers";
 import {
     EditableExternalId, editableExternalIdsToExternalIds,
     EditableWork, EditStatus, ValidationStatus
 } from "../PushWorksModel";
-import { Option, Options, OptionsGroups } from "../reactSelectTypes";
 import { ROW_HEADER, SECTION_BODY_STYLE, SECTION_HEADER_STYLE } from "../styles";
 import { WorkTypes2 } from "./Controller";
 import styles from './Editor.module.css';

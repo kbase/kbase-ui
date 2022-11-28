@@ -37,3 +37,7 @@ export type FieldState<R, T> =
     FieldStateInitial<R, T> |
     FieldStateValid<R, T> |
     FieldStateInvalid<R>;
+
+export function isNotNull<T>(some: T | null): some is T {
+    return (some !== null)
+}

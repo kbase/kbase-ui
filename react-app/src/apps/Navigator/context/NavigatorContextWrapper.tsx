@@ -11,15 +11,15 @@ import { NarrativeSearchDoc } from '../utils/NarrativeModel';
 import {
     NarrativeSearch,
     SearchOptions,
-    SearchParams,
+    SearchParams
 } from '../utils/NarrativeSearch';
 // import ActionQueue from './ActionQueue';
-import { DataModel, SearchStatus, DetailOptions } from './DataModel';
+import { DataModel, DetailOptions, SearchStatus } from './DataModel';
 import MessageQueue, { Queue } from './MessageQueue';
 import {
     NarrativeSelectedBy,
     NavigatorContext,
-    NavigatorContextState,
+    NavigatorContextState
 } from './NavigatorContext';
 
 const BUFFER_INTERVAL = 200;

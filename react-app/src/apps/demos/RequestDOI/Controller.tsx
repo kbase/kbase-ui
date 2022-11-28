@@ -1,5 +1,5 @@
-import { Model } from 'apps/ORCIDLink/Model';
-import { DOIForm, InitialDOIForm, StepStatus } from 'apps/ORCIDLink/ORCIDLinkClient';
+import { Model } from 'apps/demos/RequestDOI/Model';
+import { DOIForm, DOIFormStatus, InitialDOIForm, StepStatus } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
@@ -104,10 +104,14 @@ export default class Controller extends Component<ControllerProps, ControllerSta
 
     async createForm() {
         const initialDOIForm: InitialDOIForm = {
+            status: DOIFormStatus.INCOMPLETE,
             sections: {
                 narrative: {
                     status: StepStatus.INCOMPLETE,
                     params: null
+                },
+                citationsImport: {
+                    status: StepStatus.NONE
                 },
                 citations: {
                     status: StepStatus.NONE,
@@ -124,9 +128,9 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                 contracts: {
                     status: StepStatus.NONE,
                 },
-                geolocation: {
-                    status: StepStatus.NONE,
-                },
+                // geolocation: {
+                //     status: StepStatus.NONE,
+                // },
                 description: {
                     status: StepStatus.NONE,
                 },

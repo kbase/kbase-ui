@@ -2,7 +2,7 @@ import {
     JSONObject,
     JSONObjectOf,
     JSONValue,
-    objectToJSONObject,
+    objectToJSONObject
 } from '@kbase/ui-lib/lib/json';
 import { JSONLikeArrayOf, JSONLikeObject, toJSON } from '../../jsonLike';
 import { ServiceClient } from '../JSONRPC11/ServiceClient';
@@ -27,11 +27,13 @@ export interface ObjectIdentity extends JSONLikeObject {
     ref?: string;
 }
 
-export interface WorkspaceIdentity {
+export interface WorkspaceIdentity extends JSONLikeObject {
     workspace?: string;
     id?: number;
 }
 
+// TODO: either improve or get rid of JSONLikeObject usage ... it allows any key through! 
+// That sort of messes up strict typing in the IDE and compiler ...
 export interface ObjectSpecification extends JSONLikeObject {
     workspace?: string;
     wsid?: number;
@@ -263,7 +265,7 @@ export interface GetObjects2Result extends JSONLikeObject {
 // get permissions mass
 
 export interface GetPermissionsMassParams extends JSONLikeObject {
-    workspaces: Array<ObjectIdentity>;
+    workspaces: Array<WorkspaceIdentity>;
 }
 
 export type Perm = 'a' | 'w' | 'r' | 'n';

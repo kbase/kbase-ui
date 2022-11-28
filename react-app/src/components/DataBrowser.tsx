@@ -1,4 +1,4 @@
-import { Component, createRef, CSSProperties, RefObject } from 'react';
+import { Component, createRef, CSSProperties, ReactNode, RefObject } from 'react';
 import KBResizeObserver from '../lib/KBResizeObserver';
 import styles from './DataBrowser.module.css';
 
@@ -16,10 +16,12 @@ export interface ColumnDef<T> {
     id: string;
     label: string;
     style?: CSSProperties;
-    render: (row: T) => JSX.Element;
+    render: (row: T) => ReactNode;
     // sort?: (state: SortState, dataSource: Array<T>) => Array<T>;
     sorter?: (a: T, b: T) => number;
 }
+
+export type Columns<T> = Array<ColumnDef<T>>
 
 export enum SortState {
     NONE = 'NONE',
@@ -44,7 +46,7 @@ export interface DataBrowserProps<T> {
         header: number;
         row: number;
     };
-    columns: Array<ColumnDef<T>>;
+    columns: Columns<T>;
     dataSource: Array<T>;
     onClick?: (values: T) => void;
 }
@@ -129,6 +131,19 @@ export default class DataBrowser<T> extends Component<
                 };
             }),
         };
+    }
+
+    componentDidUpdate(prevProps: DataBrowserProps<T>) {
+        if (prevProps.dataSource !== this.props.dataSource) {
+            this.setState({
+                rows: this.props.dataSource.map((row: T, index: number) => {
+                    return {
+                        rowNumber: index,
+                        data: row,
+                    };
+                })
+            })
+        }
     }
 
     componentDidMount() {
@@ -334,6 +349,7 @@ export default class DataBrowser<T> extends Component<
                     style={style}
                     role="row"
                     key={index}
+                    onClick={() => this.onRowClick(values.data)}
                 >
                     {row}
                 </div>

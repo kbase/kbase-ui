@@ -1,11 +1,11 @@
-import { Component } from 'react';
-import { ReturnLink, LinkingSessionInfo } from '../Model';
-import { renderORCIDIcon, renderScope } from '../common';
-import { Alert, Button, Col, Row, Stack } from 'react-bootstrap';
-import styles from './Continue.module.css';
 import AlertMessage from 'components/AlertMessage';
-import { ORCID_URL } from '../constants';
 import Well from 'components/Well';
+import { Component } from 'react';
+import { Button, Col, Row, Stack } from 'react-bootstrap';
+import { renderORCIDIcon, renderScope } from '../common';
+import { ORCID_URL } from '../constants';
+import { LinkingSessionInfo, ReturnLink } from '../Model';
+import styles from './Continue.module.css';
 
 export interface ContinueProps {
     linkingSessionInfo: LinkingSessionInfo;
@@ -68,7 +68,7 @@ export default class Continue extends Component<ContinueProps> {
         if (!this.props.returnLink) {
             return;
         }
-        return <AlertMessage type="info" style={{ marginTop: '1em' }} title="After Linking...">
+        return <AlertMessage variant="info" style={{ marginTop: '1em' }} title="After Linking...">
             After creating the link, your browser will be returned to <b>{this.props.returnLink.label}</b>.
         </AlertMessage>;
     }

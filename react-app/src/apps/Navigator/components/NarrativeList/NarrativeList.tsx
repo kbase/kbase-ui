@@ -1,25 +1,26 @@
 import { Component } from 'react';
 
 // Components
-import NarrativeDetailsWrapper from '../NarrativeDetails/NarrativeDetailsWrapper';
-import CategoryMenu from './CategoryMenu';
-import { SearchInput } from '../SearchInput';
-import SortControl from './SortControl';
-import IconSpinner from '../IconSpinner';
 import { updateHistory } from 'lib/navigation';
+import IconSpinner from '../IconSpinner';
+import NarrativeDetailsWrapper from '../NarrativeDetails/NarrativeDetailsWrapper';
+import { SearchInput } from '../SearchInput';
+import CategoryMenu from './CategoryMenu';
 import './NarrativeList.css';
+import SortControl from './SortControl';
 
-import { NavigatorContext } from '../../context/NavigatorContext';
-import NarrativeListing from '../NarrativeListing/NarrativeListing';
+import ErrorMessage from '../../../../components/ErrorMessage';
 import {
     SearchState,
     SearchStateError,
-    SearchStatus,
+    SearchStatus
 } from '../../context/DataModel';
-import ErrorMessage from '../../../../components/ErrorMessage';
+import { NavigatorContext } from '../../context/NavigatorContext';
+import NarrativeListing from '../NarrativeListing/NarrativeListing';
 
 interface NarrativeListProps {
     searchState: SearchState;
+    emptyMessage: string
     queryChange: (query: string) => void;
     sortChange: (query: string) => void;
     categoryChange: (category: string) => void;
@@ -113,6 +114,7 @@ export default class NarrativeList extends Component<
                 {(value) => {
                     return (
                         <NarrativeListing
+                            emptyMessage={this.props.emptyMessage}
                             onRowRange={value?.setRange!}
                             searchState={value?.searchState!}
                         />

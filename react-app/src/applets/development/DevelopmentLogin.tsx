@@ -1,7 +1,7 @@
 import { Component } from 'react';
+import AlertMessage from '../../components/AlertMessage';
 import ErrorAlert from '../../components/ErrorAlert';
 import Loading from '../../components/Loading';
-import MessageAlert from '../../components/AlertMessage';
 import { AuthenticationStateUnauthenticated } from '../../contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from '../../lib/AsyncProcess';
 import { Auth2 } from '../../lib/kb_lib/Auth2';
@@ -83,7 +83,7 @@ export default class DevelopmentLogin extends Component<
         switch (loginState.status) {
             case AsyncProcessStatus.NONE:
                 return (
-                    <MessageAlert message="Login is available" type="info" />
+                    <AlertMessage message="Login is available" variant="info" />
                 );
             case AsyncProcessStatus.PENDING:
                 return (
@@ -98,9 +98,9 @@ export default class DevelopmentLogin extends Component<
             case AsyncProcessStatus.SUCCESS:
                 return (
                     <div>
-                        <MessageAlert
+                        <AlertMessage
                             message={`Valid token for "${loginState.value.realname}" (${loginState.value.username})`}
-                            type="success"
+                            variant="success"
                         />
                         <div style={{ textAlign: 'center' }}>
                             <button

@@ -12,6 +12,7 @@ import HomeController from './home/Controller';
 import InterstitialPage1 from './Interstitial/page1/Controller';
 import PreFillFormController from './PreFillForm/PreFillFormController';
 import PushWork from './PushWork/Controller';
+import DOIRequestAdminController from './RequestDOI/admin/Controller';
 import RequestDOI from './RequestDOI/Controller';
 import RequestDOIEditor from './RequestDOI/editor/EditorController';
 
@@ -153,6 +154,36 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                             return;
                         })();
                         return <RequestDOIEditor {...this.props} auth={authValue.value} process={process} formId={formId!} />;
+                    }}
+                </AuthContext.Consumer>
+
+            }),
+
+            new Route('demos/doiadmin', { authenticationRequired: true }, (props: RouteProps) => {
+                return <AuthContext.Consumer>
+                    {(authValue) => {
+                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
+                            return null;
+                        }
+                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
+                            return null;
+                        }
+                        const process = (() => {
+                            const params = props.params;
+                            if (params.has('process')) {
+                                return JSON.parse(props.params.get('process')!) as JSONObject
+                            }
+                            return;
+                        })();
+
+                        const formId = (() => {
+                            const params = props.params;
+                            if (params.has('formId')) {
+                                return props.params.get('formId')!;
+                            }
+                            return;
+                        })();
+                        return <DOIRequestAdminController {...this.props} auth={authValue.value} process={process} formId={formId} />;
                     }}
                 </AuthContext.Consumer>
 

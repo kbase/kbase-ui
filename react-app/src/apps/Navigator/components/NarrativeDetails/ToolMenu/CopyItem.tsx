@@ -1,7 +1,4 @@
 import React, { Component, createRef, RefObject } from 'react';
-import { ControlMenuItemProps } from './ToolMenu';
-import { NarrativeService } from '../../../../../lib/clients/NarrativeService';
-import Loading from '../../../../../components/Loading';
 import {
     Alert,
     Button,
@@ -9,10 +6,13 @@ import {
     Container,
     Form,
     Modal,
-    Row,
+    Row
 } from 'react-bootstrap';
-import MessageAlert from '../../../../../components/AlertMessage';
+import AlertMessage from '../../../../../components/AlertMessage';
 import ErrorMessage from '../../../../../components/ErrorMessage';
+import Loading from '../../../../../components/Loading';
+import { NarrativeService } from '../../../../../lib/clients/NarrativeService';
+import { ControlMenuItemProps } from './ToolMenu';
 
 export enum CopyStatus {
     NONE = 'NONE',
@@ -143,7 +143,7 @@ export default class CopyItem extends Component<
 
     renderCopied(state: CopyStateCopied) {
         return this.renderModal(
-            <MessageAlert type="success">
+            <AlertMessage variant="success">
                 <p>
                     Successfully copied this narrative, giving it the name{' '}
                     <b>{state.newName}</b>
@@ -152,7 +152,7 @@ export default class CopyItem extends Component<
                     Refresh the search results to see the new Narrative; it may
                     take a few seconds for the change to propagate.
                 </p>
-            </MessageAlert>
+            </AlertMessage>
         );
     }
 

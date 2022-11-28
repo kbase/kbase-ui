@@ -3,6 +3,7 @@ import Cache from 'lib/kb_lib/comm/Cache';
 import {
     ServiceStatus, ServiceWizardClient
 } from 'lib/kb_lib/comm/coreServices/ServiceWizard';
+import { toJSON } from 'lib/kb_lib/jsonLike';
 
 const ITEM_LIFETIME = 1800000;
 const MONITORING_FREQUENCY = 60000;
@@ -287,7 +288,38 @@ export abstract class ServiceClientBase {
 
         return this.handleResponse<ReturnType>(response);
     }
+
+    protected async post2<ParamType, ReturnType>(
+        path: string,
+        data?: ParamType
+    ): Promise<ReturnType> {
+        const url = await this.getUrl();
+
+        const headers = new Headers({
+            'content-type': 'application/json',
+            accept: 'application/json'
+        });
+
+        if (this.token) {
+            headers.append('Authorization', this.token);
+        }
+
+        const requestURL = `${url}/${path}`;
+
+        const options: RequestInit = {
+            method: 'POST',
+            headers
+        };
+        if (typeof data !== 'undefined') {
+            options.body = JSON.stringify(toJSON(data));
+        }
+
+        const response = await fetch(requestURL, options);
+
+        return this.handleResponse<ReturnType>(response);
+    }
 }
+
 
 export abstract class ServiceClient extends ServiceClientBase {
     async getUrl(): Promise<string> {

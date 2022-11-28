@@ -1,11 +1,10 @@
 import { Component } from "react";
-
-const SLOW_TIME = 3000;
-const VERY_SLOW_TIME = 10000;
+import { Config } from "types/config";
 
 export interface NarrativeLoadingProps {
     detectSlow?: boolean;
     message: string;
+    config: Config
 }
 
 enum NarrativeLoadingStatus {
@@ -45,7 +44,7 @@ export default class NarrativeLoading extends Component<NarrativeLoadingProps, N
                 status: NarrativeLoadingStatus.SLOW,
             });
             this.startWatchingVerySlow();
-        }, SLOW_TIME);
+        }, this.props.config.ui.apps.NarrativeManager.loadingTimers.slow);
     }
 
     startWatchingVerySlow() {
@@ -54,7 +53,7 @@ export default class NarrativeLoading extends Component<NarrativeLoadingProps, N
                 status: NarrativeLoadingStatus.VERY_SLOW,
             });
             this.startWatchingVerySlow();
-        }, VERY_SLOW_TIME);
+        }, this.props.config.ui.apps.NarrativeManager.loadingTimers.verySlow);
     }
 
     stopWatching() {
@@ -65,29 +64,29 @@ export default class NarrativeLoading extends Component<NarrativeLoadingProps, N
 
     renderLoadingMessage() {
         return <div className="-message">
-                <span className="fa fa-2x fa-spinner fa-pulse"></span>
-                {' '}
-                {this.props.message}
-            </div>
+            <span className="fa fa-2x fa-spinner fa-pulse"></span>
+            {' '}
+            {this.props.message}
+        </div>
     }
 
     render() {
         const message = (() => {
             switch (this.state.status) {
-            case NarrativeLoadingStatus.NONE:
-                return this.renderLoadingMessage();
-            case NarrativeLoadingStatus.SLOW:
-                return  <div>
-                    {this.renderLoadingMessage()}
-                    <p className="text text-warning" style={{marginTop: '1em'}}>
-                        <span className="fa fa-exclamation-triangle"></span>
-                        This process is taking longer than expected. Still trying...
-                    </p>
-                </div>;
-            case NarrativeLoadingStatus.VERY_SLOW:
-                return <div>
+                case NarrativeLoadingStatus.NONE:
+                    return this.renderLoadingMessage();
+                case NarrativeLoadingStatus.SLOW:
+                    return <div>
                         {this.renderLoadingMessage()}
-                        <p className="text text-danger" style={{marginTop: '1em'}}>
+                        <p className="text text-warning" style={{ marginTop: '1em' }}>
+                            <span className="fa fa-exclamation-triangle"></span>
+                            This process is taking longer than expected. Still trying...
+                        </p>
+                    </div>;
+                case NarrativeLoadingStatus.VERY_SLOW:
+                    return <div>
+                        {this.renderLoadingMessage()}
+                        <p className="text text-danger" style={{ marginTop: '1em' }}>
                             <span className="fa fa-exclamation-triangle"></span>
                             This process is taking <b>much</b> longer than expected. Still trying...
                         </p>
@@ -95,7 +94,7 @@ export default class NarrativeLoading extends Component<NarrativeLoadingProps, N
             }
         })();
 
-        return  <div className="well NarrativeLoading" style={{width: '50%', margin: '0 auto'}}>
+        return <div className="well NarrativeLoading" style={{ width: '50%', margin: '0 auto' }}>
             <div className="well-body">
                 {message}
             </div>

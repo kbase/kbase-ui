@@ -1,23 +1,23 @@
 import UserProfileClient, {
-    UserProfile,
+    UserProfile
 } from '@kbase/ui-lib/lib/comm/coreServices/UserProfile';
 import React, { PropsWithChildren } from 'react';
 import {
     AsyncProcess,
     AsyncProcessError,
     AsyncProcessStatus,
-    AsyncProcessSuccess,
+    AsyncProcessSuccess
 } from '../lib/AsyncProcess';
 
 import { BrowserAuth } from '../lib/BrowserAuth';
-import { Account, TokenInfo, Auth2 } from '../lib/kb_lib/Auth2';
+import { Account, Auth2, TokenInfo } from '../lib/kb_lib/Auth2';
 
-import { JSONRPC11Exception } from '../lib/kb_lib/comm/JSONRPC11/JSONRPC11';
 import * as Cookie from 'es-cookie';
-import { Config } from '../types/config';
-import { AuthError } from '../lib/kb_lib/Auth2Error';
 import { changeHash2 } from 'lib/navigation';
+import { AuthError } from '../lib/kb_lib/Auth2Error';
+import { JSONRPC11Exception } from '../lib/kb_lib/comm/JSONRPC11/JSONRPC11';
 import { Monitor } from '../lib/Monitor';
+import { Config } from '../types/config';
 import { HashPath } from './RouterContext';
 
 /**
@@ -129,13 +129,13 @@ export default class AuthWrapper extends React.Component<
             callback: () => {
                 return this.checkTokenChange();
             },
-            interval: this.props.config.ui.constants.tokenCookieChangeDetectionInterval
+            interval: this.props.config.ui.services.session.cookieChangeDetectionInterval
         });
         this.tokenValidationMonitor = new Monitor({
             callback: () => {
                 return this.checkTokenValidity();
             },
-            interval: this.props.config.ui.constants.tokenValidationInterval
+            interval: this.props.config.ui.services.session.tokenValidationInterval
         });
     }
 
@@ -297,7 +297,6 @@ export default class AuthWrapper extends React.Component<
                 console.error('UNKNOWN ERROR', ex);
             }
         }
-
     }
 
     async syncTokenInfo() {

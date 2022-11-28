@@ -1,7 +1,7 @@
 import { Component } from 'react';
+import AlertMessage from '../../components/AlertMessage';
 import ErrorAlert from '../../components/ErrorAlert';
 import Loading from '../../components/Loading';
-import MessageAlert from '../../components/AlertMessage';
 import { AuthenticationStateAuthenticated } from '../../contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from '../../lib/AsyncProcess';
 import { Config } from '../../types/config';
@@ -75,7 +75,7 @@ export default class DevelopmentLogout extends Component<
             case AsyncProcessStatus.NONE:
                 return (
                     <div style={{ marginTop: '10px' }}>
-                        <MessageAlert message="Ready to logout" type="info" />
+                        <AlertMessage message="Ready to logout" variant="info" />
                     </div>
                 );
             case AsyncProcessStatus.PENDING:
@@ -91,9 +91,9 @@ export default class DevelopmentLogout extends Component<
             case AsyncProcessStatus.SUCCESS:
                 return (
                     <div>
-                        <MessageAlert
+                        <AlertMessage
                             message="Successfully logged out"
-                            type="success"
+                            variant="success"
                         />
                     </div>
                 );

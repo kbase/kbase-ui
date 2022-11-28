@@ -17,6 +17,14 @@
         }
     },
     "ui": {
+        "apps": {
+            "NarrativeManager": {
+                "loadingTimers": {
+                    "slow": 3000,
+                    "verySlow": 10000
+                }
+            }
+        },
         "services": {
             "connection": {
                 "name": "Connection"
@@ -41,13 +49,16 @@
                         "enabled": {{ default "false" .Env.ui_backupCookie_enabled }}
                     }
                 },
-                "loginWidget": "kb_login_signin"
+                "loginWidget": "kb_login_signin",
+                "cookieChangeDetectionInterval": 1000,
+                "tokenValidationInterval": 300000
             },
             "userprofile": {
                 "name": "User Profile"
             },
             "feeds": {
-                "name": "Feeds"
+                "name": "Feeds",
+                "pollInterval": 10000
             }
         },
         "urls": {
@@ -162,7 +173,7 @@
                 "hard": 5000
             },
             "tokenCookieChangeDetectionInterval": 1000,
-            "tokenValidationInterval": 10000
+            "tokenValidationInterval": 300000
         },
         "menus": {
             "hamburger": {
@@ -230,6 +241,7 @@
                             "name": "developer",
                             "type": "internal",
                             "path": "developer",
+                            "requiresAuth": true,
                             "allowedRoles": [
                                 "DevToken"
                             ],
@@ -255,10 +267,7 @@
                             "path": "navigator",
                             "newWindow": false,
                             "icon": "compass",
-                            "requiresAuth": true,
-                            "allowedRoles": [
-                                "DevToken"
-                            ]
+                            "requiresAuth": true
                         },
                         {
                             "name": "orcidlink",

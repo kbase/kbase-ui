@@ -1,12 +1,17 @@
-import { DOIForm, DOIFormUpdate, GetNameResult, InitialDOIForm, MinimalNarrativeInfo, NarrativeInfo, ORCIDLinkServiceClient, ORCIDProfile } from "apps/ORCIDLink/ORCIDLinkClient";
+import {
+    AdminGetDOIRequestsResult,
+    DOIForm, DOIFormUpdate, GetNameResult, InitialDOIForm,
+    NarrativeInfo, ORCIDLinkServiceClient, ORCIDProfile, OSTISubmission
+} from "apps/ORCIDLink/ORCIDLinkClient";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
-import { NarrativeService } from "lib/clients/NarrativeService";
+import { GetStaticNarrativeInfoParams, StaticNarrative } from "lib/clients/StaticNarrative";
 import { digJSON, isJSONObject, JSONArray, JSONArrayOf, JSONObject } from "lib/json";
-import UserProfileClient from "lib/kb_lib/comm/coreServices/UserProfile";
-import Workspace, { objectInfoToObject, workspaceInfoToObject } from "lib/kb_lib/comm/coreServices/Workspace";
+import UserProfileClient, { UserProfile } from "lib/kb_lib/comm/coreServices/UserProfile";
+import Workspace, { ObjectInfo, ObjectSpecification, UserPerm, WorkspaceIdentity, WorkspaceInfo } from "lib/kb_lib/comm/coreServices/Workspace";
 import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
+import { isNotNull } from "./common";
 
 
 
@@ -89,7 +94,7 @@ export interface AppPublications {
 export type CitationSource = 'app' | 'markdown' | 'manual';
 
 
-export type Citation = {
+export type ImportableCitation = {
     citation: string,
     source: CitationSource,
     url?: string,
@@ -99,7 +104,7 @@ export type Citation = {
 export interface AppCitations {
     id: string;
     title: string;
-    citations: Array<Citation>;
+    citations: Array<ImportableCitation>;
 }
 
 export interface NarrativeAppCitations {
@@ -110,8 +115,8 @@ export interface NarrativeAppCitations {
 
 export interface Citations {
     narrativeAppCitations: NarrativeAppCitations
-    markdownCitations: Array<Citation>
-    manualCitations: Array<Citation>
+    markdownCitations: Array<ImportableCitation>
+    manualCitations: Array<ImportableCitation>
 }
 
 
@@ -156,8 +161,21 @@ export interface NarrativeShareUser {
     lastName?: string;
     institution?: string;
     permission: NarrativePermission
+    userProfile: UserProfile
 }
 
+// Narratives
+
+export interface StaticNarrativeSummary {
+    title: string;
+    workspaceId: number;
+    objectId: number;
+    version: number;
+    ref: string;
+    staticNarrativeSavedAt: number
+    narrativeSavedAt: number;
+    owner: string;
+}
 
 // MODEL
 
@@ -203,26 +221,151 @@ export class Model {
         return this.orcidLinkClient.getLink();
     }
 
-    async fetchNarratives({ from, to }: { from: number, to: number }): Promise<Array<NarrativeInfo>> {
-        const client = new NarrativeService({
+    async fetchNarratives(): Promise<Array<StaticNarrativeSummary>> {
+        const staticNarrativesService = new StaticNarrative({
             url: this.config.services.ServiceWizard.url,
             timeout: 1000,
             token: this.auth.authInfo.token
-        });
-        const result = await client.list_narratives({ type: 'mine' })
+        })
+        const workspaceClient = new Workspace({
+            url: this.config.services.Workspace.url,
+            timeout: 1000,
+            token: this.auth.authInfo.token
+        })
+        // const narrativeServiceClient = new NarrativeService({
+        //     url: this.config.services.ServiceWizard.url,
+        //     timeout: 1000,
+        //     token: this.auth.authInfo.token
+        // });
+        const staticNarrativeList = await staticNarrativesService.list_static_narratives();
 
-        return result.narratives
-            .map(({ nar, ws }) => {
-                const objectInfo = objectInfoToObject(nar);
-                const workspaceInfo = workspaceInfoToObject(ws);
-                return { objectInfo, workspaceInfo };
+        // THe api only returns the most recent static narrative, so we just extract the workspce ids 
+        // (which unfortunately are returned as strings from list_static_narratives).
+        const staticNarrativesToGet: Array<GetStaticNarrativeInfoParams> = Object.keys(staticNarrativeList).map((workspaceId) => {
+            return {
+                ws_id: parseInt(workspaceId)!
+            }
+        });
+
+        // Object.entries(staticNarrativeList).forEach(([workspaceId, versions]) => {
+        //     versions.forEach(({ ws_id, narrative_version, url }) => {
+        //         staticNarrativesToGet.push({
+        //             ws_id: parseInt(ws_id)!, narrative_version: parseInt(narrative_version)!
+        //         })
+        //     })
+        // })
+
+        const staticNarratives0 = await Promise.all(staticNarrativesToGet.map(async (param) => {
+            try {
+                return await staticNarrativesService.get_static_narrative_info(param);
+            } catch (ex) {
+                // TODO: detect if this is a permissions error
+                // that _should_ never happen, but does if a narrative is made private
+                // after it is published!
+                return null;
+            }
+        }));
+
+        const staticNarratives = staticNarratives0.filter(isNotNull);
+
+        // TODO: refactor to use filter or filter ish.
+        // NB .filter itself does not currently do type narrowing, need to explore
+        // const staticNarratives: Array<StaticNarrativeInfo> = [];
+        // for (const staticNarrative of staticNarratives0) {
+        //     if (staticNarrative !== null) {
+        //         staticNarratives.push(staticNarrative);
+        //     }
+        // }
+
+        const narrativesToGet: Array<ObjectSpecification> = staticNarratives.map(({ ws_id, version, narrative_id }) => {
+            return {
+                wsid: ws_id, objid: narrative_id, ver: version
+            };
+        });
+
+        const workspaceNumbersToGet: Set<number> = new Set();
+        staticNarratives.forEach(({ ws_id }) => {
+            workspaceNumbersToGet.add(ws_id as number);
+        });
+
+        const workspacesToGet: Array<WorkspaceIdentity> = Array.from(workspaceNumbersToGet.values()).map((id) => {
+            return { id }
+        });
+
+        const narrativeInfos = await workspaceClient.get_object_info3({ objects: narrativesToGet, includeMetadata: 1, ignoreErrors: 1 });
+
+        const workspaceInfos = (await Promise.all((workspacesToGet).map((wsIdentity) => {
+            try {
+                return workspaceClient.get_workspace_info(wsIdentity);
+            } catch (ex) {
+                return null;
+            }
+        }))).filter(isNotNull);
+
+        const allPermissions = await workspaceClient.get_permissions_mass({
+            workspaces: workspaceInfos.map(({ id }) => {
+                return { id }
             })
-            .filter(({ objectInfo, workspaceInfo }) => {
-                return (workspaceInfo.globalread === 'r');
+        });
+
+        const workspacesMap: Map<number, { info: WorkspaceInfo, permissions: UserPerm }> = workspaceInfos
+            .reduce((workspacesMap, workspaceInfo, index) => {
+                const permissions = allPermissions.perms[index];
+                workspacesMap.set(workspaceInfo.id, {
+                    info: workspaceInfo,
+                    permissions
+                });
+                return workspacesMap;
+            }, new Map());
+
+
+        const staticNarrativeSummary: Array<StaticNarrativeSummary> = staticNarratives
+            .filter(({ ws_id }, index) => {
+                const workspace = workspacesMap.get(ws_id)!;
+                const username = this.auth.authInfo.account.user;
+
+                // Just owner
+                // return workspace.info.owner === this.auth.authInfo.account.user;
+
+                // Any admin
+                return username in workspace.permissions && ['a', 'w'].includes(workspace.permissions[username]);
             })
-            .sort((a, b) => {
-                return -(a.objectInfo.saveDate.localeCompare(b.objectInfo.saveDate));
-            });
+            .map(({ ws_id, narrative_id, version, narr_saved, static_saved }, index) => {
+                const narrativeInfo: ObjectInfo = narrativeInfos.infos[index];
+
+                if (narrativeInfo === null) {
+                    return null;
+                }
+
+                const workspace = workspacesMap.get(ws_id)!;
+
+                return {
+                    workspaceId: ws_id, objectId: narrative_id, version,
+                    ref: `${ws_id}/${narrative_id}/${version}`,
+                    title: workspace.info.metadata['narrative_nice_name'],
+                    narrativeSavedAt: narr_saved, staticNarrativeSavedAt: static_saved,
+                    owner: workspace.info.owner
+                };
+            })
+            .filter(isNotNull);
+
+        return staticNarrativeSummary;
+        // NB above. TS is not smart enough to determine that the test for item being null excludes that
+        // type from the result.
+
+
+        // return result.narratives
+        //     .map(({ nar, ws }) => {
+        //         const objectInfo = objectInfoToObject(nar);
+        //         const workspaceInfo = workspaceInfoToObject(ws);
+        //         return { objectInfo, workspaceInfo };
+        //     })
+        //     .filter(({ objectInfo, workspaceInfo }) => {
+        //         return (workspaceInfo.globalread === 'r');
+        //     })
+        //     .sort((a, b) => {
+        //         return -(a.objectInfo.saveDate.localeCompare(b.objectInfo.saveDate));
+        //     });
     }
 
     async fetchNarrative(workspaceId: number, objectId: number, version: number): Promise<NarrativeInfo> {
@@ -245,7 +388,7 @@ export class Model {
         return { lastName, firstName };
     }
 
-    async getNarrativeCitations(narrativeInfo: MinimalNarrativeInfo): Promise<Array<Citation>> {
+    async getNarrativeCitations(staticNarrative: StaticNarrativeSummary): Promise<Array<ImportableCitation>> {
         // get apps from narrative
         const client = new GenericClient({
             module: 'Workspace',
@@ -259,7 +402,7 @@ export class Model {
             {
                 "objects": [
                     {
-                        "ref": narrativeInfo.ref,
+                        "ref": staticNarrative.ref,
                         "included": [
                             "cells/[*]/cell_type",
                             "cells/[*]/metadata/kbase/appCell/app/id",
@@ -352,7 +495,7 @@ export class Model {
         };
 
 
-        const citations: Array<Citation> = [];
+        const citations: Array<ImportableCitation> = [];
         const appTags = ['release', 'beta', 'dev'];
         for (const tag of appTags) {
             if (tag in tags) {
@@ -473,6 +616,14 @@ export class Model {
         return this.orcidLinkClient.getLinkingSession(sessionId);
     }
 
+    async getDOIApplicationsAdmin(): Promise<Array<DOIForm>> {
+        return this.orcidLinkClient.adminGetDOIApplications();
+    }
+
+    async getDOIRequestsAdmin(): Promise<Array<AdminGetDOIRequestsResult>> {
+        return this.orcidLinkClient.adminGetDOIRequests();
+    }
+
     // async getDOIMetadata(doi: string) {
     //     return this.orcidLinkClient.getDOIMetadata(doi);
     // }
@@ -481,7 +632,7 @@ export class Model {
         return this.orcidLinkClient.getDOICitation(doi);
     }
 
-    async getNarrativeSharingUsers({ workspaceId, owner }: MinimalNarrativeInfo): Promise<Array<NarrativeShareUser>> {
+    async getNarrativeSharingUsers({ workspaceId, owner }: StaticNarrativeSummary): Promise<Array<NarrativeShareUser>> {
         const client = new Workspace({
             url: this.config.services.Workspace.url,
             timeout: 1000,
@@ -504,9 +655,10 @@ export class Model {
         const userProfiles = await userProfileService.get_user_profile(usernames.map(({ username }) => username));
 
         const sharingUsers: Array<NarrativeShareUser> = usernames.map(({ username, permission }, index) => {
-            const { user: { realname }, profile: { userdata: { organization } } } = userProfiles[index];
+            // const { user: { realname }, profile: { userdata: { organization } } } = userProfiles[index];
+            const userProfile = userProfiles[index];
             const [firstName, middleName, lastName] = (() => {
-                const match = /^(\S+) (?:(.+) )?(?:(\S+)(?:\s*))$/.exec(realname);
+                const match = /^(\S+) (?:(.+) )?(?:(\S+)(?:\s*))$/.exec(userProfile.user.realname);
                 if (match === null) {
                     return ['', '', ''];
                 }
@@ -526,8 +678,9 @@ export class Model {
             return {
                 username,
                 firstName, middleName, lastName,
-                institution: organization,
-                permission: permissionLabel
+                institution: userProfile.profile.userdata.organization,
+                permission: permissionLabel,
+                userProfile
             };
         });
 
@@ -555,4 +708,9 @@ export class Model {
     //         return journalAbbreviations;
     //     }, {});
     // }
+
+    async submitDOIRequest(form_id: string, submission: OSTISubmission) {
+        const result = await this.orcidLinkClient.submitDOIRequest({ form_id, submission });
+        return result;
+    }
 }

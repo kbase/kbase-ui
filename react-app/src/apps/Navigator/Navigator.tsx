@@ -173,13 +173,9 @@ export default class Navigator extends React.Component<
         switch (authState.status) {
             case AuthenticationStatus.NONE:
             case AuthenticationStatus.UNAUTHENTICATED:
-                // pushHistory('login');
                 // TODO: add the next route to this navigation.
                 changeHash2('login');
                 return null;
-            // return (
-            //     <ErrorMessage message="The Navigator requires authentication" />
-            // );
             case AuthenticationStatus.AUTHENTICATED:
                 return this.renderNav(authState.authInfo);
         }

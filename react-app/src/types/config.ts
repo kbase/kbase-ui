@@ -151,6 +151,14 @@ export interface DeployConfig {
         basePath: string;
     };
     ui: {
+        apps: {
+            NarrativeManager: {
+                loadingTimers: {
+                    slow: number;
+                    verySlow: number;
+                }
+            }
+        }
         services: {
             connection: UIServiceConfig;
             coreService: UIServiceConfig;
@@ -167,9 +175,13 @@ export interface DeployConfig {
                     };
                 };
                 loginWidget: string;
+                cookieChangeDetectionInterval: number;
+                tokenValidationInterval: number;
             };
             userprofile: UIServiceConfig;
-            feeds: UIServiceConfig;
+            feeds: UIServiceConfig & {
+                pollInterval: number
+            };
         };
         urls: {
             marketing: LinkInfo;
@@ -206,8 +218,6 @@ export interface DeployConfig {
                 slow: number;
                 hard: number;
             };
-            tokenCookieChangeDetectionInterval: number;
-            tokenValidationInterval: number;
         };
         menus: {
             hamburger: HamburgerMenuDefintion;

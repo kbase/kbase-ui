@@ -1,20 +1,18 @@
+import { updateHistory } from 'lib/navigation';
 import { Component } from 'react';
-import { NarrativeSearchDoc } from '../../utils/NarrativeModel';
-import Narrative from '../NarrativeList/Narrative';
-import ScalableScroller from '../ScalableScroller/ScalableScroller';
-import {
-    Row,
-    DataProviderStatus,
-    DataProviderState,
-} from '../ScalableScroller/DataProviderState';
-import IconSpinner from '../IconSpinner';
-import { NavigatorContext } from '../../context/NavigatorContext';
-import AsyncQueue from '../NarrativeList/AsyncQueue';
-import { SearchState, SearchStatus } from '../../context/DataModel';
+import ErrorMessage from '../../../../components/ErrorMessage';
 import Loading from '../../../../components/Loading';
 import { AsyncProcessStatus } from '../../../../lib/AsyncProcess';
-import ErrorMessage from '../../../../components/ErrorMessage';
-import { updateHistory } from 'lib/navigation';
+import { SearchState, SearchStatus } from '../../context/DataModel';
+import { NavigatorContext } from '../../context/NavigatorContext';
+import { NarrativeSearchDoc } from '../../utils/NarrativeModel';
+import IconSpinner from '../IconSpinner';
+import AsyncQueue from '../NarrativeList/AsyncQueue';
+import Narrative from '../NarrativeList/Narrative';
+import {
+    DataProviderState, DataProviderStatus, Row
+} from '../ScalableScroller/DataProviderState';
+import ScalableScroller from '../ScalableScroller/ScalableScroller';
 import styles from './NarrativeListing.module.css';
 
 const ROW_HEIGHT = 64;
@@ -33,6 +31,7 @@ const ROW_HEIGHT = 64;
 
 interface NarrativeListingProps {
     onRowRange: (from: number, to: number) => void;
+    emptyMessage: string;
     // dataVersion: string;
     searchState: SearchState;
 }
@@ -200,6 +199,7 @@ export default class NarrativeListing extends Component<
                 return (
                     <ScalableScroller<NarrativeSearchDoc>
                         rowHeight={ROW_HEIGHT}
+                        emptyMessage={this.props.emptyMessage}
                         renderRow={this.renderRow.bind(this)}
                         onRowRangeChanged={(from: number, to: number) => {
                             this.props.onRowRange(from, to);
@@ -215,6 +215,7 @@ export default class NarrativeListing extends Component<
                 return (
                     <ScalableScroller<NarrativeSearchDoc>
                         rowHeight={ROW_HEIGHT}
+                        emptyMessage={this.props.emptyMessage}
                         renderRow={this.renderRow.bind(this)}
                         onRowRangeChanged={this.props.onRowRange}
                         dataProviderState={{
@@ -232,6 +233,7 @@ export default class NarrativeListing extends Component<
                 return (
                     <ScalableScroller<NarrativeSearchDoc>
                         rowHeight={ROW_HEIGHT}
+                        emptyMessage={this.props.emptyMessage}
                         renderRow={this.renderRow.bind(this)}
                         onRowRangeChanged={this.props.onRowRange}
                         dataProviderState={{
@@ -281,6 +283,7 @@ export default class NarrativeListing extends Component<
                     <ScalableScroller<NarrativeSearchDoc>
                         rowHeight={ROW_HEIGHT}
                         renderRow={this.renderRow.bind(this)}
+                        emptyMessage={this.props.emptyMessage}
                         onRowRangeChanged={this.props.onRowRange}
                         dataProviderState={{
                             status: DataProviderStatus.REFETCHING,

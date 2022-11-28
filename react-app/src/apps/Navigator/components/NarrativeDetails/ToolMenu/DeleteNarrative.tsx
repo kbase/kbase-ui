@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
+import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
+import AlertMessage from '../../../../../components/AlertMessage';
+import Loading from '../../../../../components/Loading';
+import GenericClient from '../../../../../lib/kb_lib/comm/JSONRPC11/GenericClient';
 import NarrativeModel from '../../../utils/NarrativeModel';
 import { ControlMenuItemProps } from './ToolMenu';
-import Loading from '../../../../../components/Loading';
-import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
-import GenericClient from '../../../../../lib/kb_lib/comm/JSONRPC11/GenericClient';
-import MessageAlert from '../../../../../components/AlertMessage';
 
 export enum DeleteNarrativeStatus {
     NONE = 'NONE',
@@ -217,13 +217,13 @@ export default class DeleteNarrative extends Component<
         return this.renderModal(
             <Row>
                 <Col>
-                    <MessageAlert type="success">
+                    <AlertMessage variant="success">
                         <p>The Narrative has been successfully deleted.</p>
                         <p>
                             It may take several seconds for this to be reflected
                             in the Navigator.
                         </p>
-                    </MessageAlert>
+                    </AlertMessage>
                 </Col>
             </Row>,
             <Button onClick={this.props.cancelFn} variant="secondary">
@@ -255,8 +255,8 @@ export default class DeleteNarrative extends Component<
                                     Deleting a Narrative will permanently remove
                                     it and all its data.
                                 </p>
-                                <MessageAlert
-                                    type="warning"
+                                <AlertMessage
+                                    variant="warning"
                                     message="This action cannot be undone!"
                                 />
                             </Col>

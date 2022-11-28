@@ -17,6 +17,7 @@ export abstract class ServiceClient {
         this.timeout = timeout;
         this.token = token;
     }
+
     async callFunc<ParamType extends JSONArray, ReturnType extends JSONArray>(
         funcName: string,
         params: ParamType
@@ -37,6 +38,7 @@ export abstract class ServiceClient {
 
         return result as unknown as ReturnType;
     }
+
     async callFuncEmptyResult<ParamType extends JSONArray>(
         funcName: string,
         params: ParamType

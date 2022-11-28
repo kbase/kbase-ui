@@ -1,4 +1,4 @@
-import GenericClient from '@kbase/ui-lib/lib/lib/comm/JSONRPC11/GenericClient';
+import GenericClient from "@kbase/ui-lib/lib/comm/JSONRPC11/GenericClient";
 
 export interface UserProfile {
     user: {

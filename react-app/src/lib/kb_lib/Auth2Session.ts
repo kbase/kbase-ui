@@ -628,8 +628,6 @@ export class Auth2Session {
     // COOKIES
 
     setSessionCookie(token: string, expiration: number) {
-
-        console.log('[setSessionCookie]', token, expiration);
         const sessionCookie = new Cookie(this.cookieName, token)
             .setPath('/')
             .setSecure(true);
@@ -655,7 +653,6 @@ export class Auth2Session {
     }
 
     removeSessionCookie(): void {
-        console.log('[removeSessionCookie]');
         // Remove host-based cookie.
         this.cookieManager.removeItem(
             new Cookie(this.cookieName, '').setPath('/')

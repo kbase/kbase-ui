@@ -1,9 +1,9 @@
 import React, { PropsWithChildren } from 'react';
+import * as uuid from 'uuid';
+import { ConnectionStatus, PingStatKind, PingStats } from '../lib/ConnectionStatus';
 import { Messenger, SubscriptionRef } from '../lib/messenger';
 import { Config } from '../types/config';
 import { AuthenticationState } from './Auth';
-import * as uuid from 'uuid';
-import { ConnectionStatus, PingStatKind, PingStats } from '../lib/ConnectionStatus';
 
 
 export interface NotificationsSummary {
@@ -49,19 +49,6 @@ export interface NotificationState {
     summary: NotificationsSummary
 }
 
-
-/**
- * Holds the current config information
- */
-// export interface RuntimeInfo {
-//     title: string;
-//     setTitle: (title: string) => void;
-//     config: Config;
-//     authState: AuthenticationState;
-// }
-
-// export type RuntimeState = SyncProcess<RuntimeInfo>
-
 export interface RuntimeState {
     title: string;
     setTitle: (title: string) => void;
@@ -73,36 +60,6 @@ export interface RuntimeState {
     removeNotification: (n: Notification) => void;
     pingStats: PingStats
 }
-
-
-// const demoNotificationState: NotificationState = {
-//     notifications: [
-
-//         {
-//             kind: NotificationKind.NORMAL,
-//             type: 'info',
-//             id: '123',
-//             icon: 'flask',
-//             description: 'test notification',
-//             message: 'hello, i am a notification'
-
-//         },
-//         {
-//             kind: NotificationKind.NORMAL,
-//             type: 'error',
-//             id: '1234',
-//             icon: 'ban',
-//             description: 'error notification',
-//             message: 'hello, i am a notification'
-
-//         }
-//     ], summary: {
-//         info: 1,
-//         success: 2,
-//         warning: 3,
-//         error: 4,
-//     }
-// }
 
 const AUTODISMISSER_INTERVAL = 1000;
 
@@ -162,20 +119,6 @@ type RuntimeWrapperState = {
     notificationState: NotificationState;
     pingStats: PingStats;
 };
-
-// export interface RuntimeDB {
-//     title: string;
-// }
-//
-// const db = new Observed<RuntimeDB>({
-//     title: '',
-// });
-//
-// export function setTitle(title: string) {
-//     db.setValue({
-//         title,
-//     });
-// }
 
 const $GlobalMessageBus = new Messenger();
 
@@ -262,28 +205,6 @@ export default class RuntimeWrapper extends React.Component<
                 }
             }
         }));
-
-        // this.connectionStatus.start();
-
-        // window.setTimeout(() => {
-        //     $GlobalMessageBus.send({
-        //         channel: 'notification',
-        //         message: 'notify',
-        //         payload: {
-        //             type: 'info',
-        //             message: 'Well, hello',
-        //             autodismiss: 3000
-        //         }
-        //     });
-        //     // this.addNotification({
-        //     //     kind: NotificationKind.AUTODISMISS,
-        //     //     type: 'info',
-        //     //     id: uuid.v4(),
-        //     //     message: 'Well, hello',
-        //     //     dismissAfter: 3000,
-        //     //     startedAt: Date.now()
-        //     // })
-        // }, 1000);
     }
 
     setTitle(title: string): void {
@@ -335,14 +256,20 @@ export default class RuntimeWrapper extends React.Component<
 
     removeNotifications(notificationsToRemove: Array<Notification>) {
         const { summary, notifications: existingNotifications } = this.state.notificationState;
+
+        // Filter out notifications which we want to remove - in case this is
+        // hard to follow, we filter out a notification if we find it in the 
+        // list of notifications to remove.
         const notifications = existingNotifications.filter(({ id }) => {
             return (!(notificationsToRemove.find((notificationToRemove) => {
                 return notificationToRemove.id === id;
             })));
         });
-        existingNotifications.forEach((notificationToRemove) => {
+
+        // THen we decrement the summary counter for each notification to remove.
+        notificationsToRemove.forEach((notificationToRemove) => {
             summary[notificationToRemove.type] -= 1;
-        })
+        });
 
         this.setState({
             notificationState: {

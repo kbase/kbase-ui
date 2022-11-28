@@ -1,23 +1,21 @@
-import { Component } from 'react';
-import OrganizationsClient, {
-    GroupInfo,
-    GroupIdentity,
-} from '../../../utils/OrganizationsClient';
-import NarrativeModel from '../../../utils/NarrativeModel';
-import OrgSelect from './OrgSelect';
-import Model, { LinkOrgResult } from './Model';
+import React, { Component } from 'react';
+import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
+import AlertMessage from '../../../../../components/AlertMessage';
+import ErrorMessage from '../../../../../components/ErrorMessage';
+import Loading from '../../../../../components/Loading';
 import {
     AsyncProcess,
     AsyncProcessError,
     AsyncProcessStatus,
-    AsyncProcessSuccess,
+    AsyncProcessSuccess
 } from '../../../../../lib/AsyncProcess';
+import NarrativeModel from '../../../utils/NarrativeModel';
+import OrganizationsClient, {
+    GroupIdentity, GroupInfo
+} from '../../../utils/OrganizationsClient';
+import Model, { LinkOrgResult } from './Model';
+import OrgSelect from './OrgSelect';
 import { ControlMenuItemProps } from './ToolMenu';
-import Loading from '../../../../../components/Loading';
-import MessageAlert from '../../../../../components/AlertMessage';
-import ErrorMessage from '../../../../../components/ErrorMessage';
-import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
-import React from 'react';
 
 interface LinkOrgState {
     perm: string;
@@ -203,7 +201,7 @@ export default class LinkOrgItem extends Component<
     }
 
     renderWarningMessage(message: string) {
-        return <MessageAlert type="warning" message={message} />;
+        return <AlertMessage variant="warning" message={message} />;
     }
 
     renderLinkError(linkProcess: AsyncProcessError<string>) {

@@ -1,17 +1,16 @@
-import { Component } from 'react';
-import NarrativeModel from '../../../utils/NarrativeModel';
-import { NarrativeService } from '../../../../../lib/clients/NarrativeService';
-import { ControlMenuItemProps } from './ToolMenu';
+import React, { Component } from 'react';
+import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
+import AlertMessage from '../../../../../components/AlertMessage';
+import ErrorMessage from '../../../../../components/ErrorMessage';
+import Loading from '../../../../../components/Loading';
 import {
     AsyncProcess,
-    AsyncProcessStatus,
+    AsyncProcessStatus
 } from '../../../../../lib/AsyncProcess';
-import Loading from '../../../../../components/Loading';
+import { NarrativeService } from '../../../../../lib/clients/NarrativeService';
+import NarrativeModel from '../../../utils/NarrativeModel';
 import RenameForm from './RenameForm';
-import MessageAlert from '../../../../../components/AlertMessage';
-import ErrorMessage from '../../../../../components/ErrorMessage';
-import React from 'react';
-import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
+import { ControlMenuItemProps } from './ToolMenu';
 
 export interface RenameSuccess {
     newName: string;
@@ -142,7 +141,7 @@ export default class RenameItem extends Component<
 
     renderRenameSuccess({ newName }: RenameSuccess) {
         return this.renderModal(
-            <MessageAlert type="success">
+            <AlertMessage variant="success">
                 <p>
                     Successfully renamed narrative to <b>{newName}</b>.
                 </p>
@@ -150,7 +149,7 @@ export default class RenameItem extends Component<
                     Refresh the search results to see the new Narrative; it may
                     take a few seconds for the change to propagate.
                 </p>
-            </MessageAlert>
+            </AlertMessage>
         );
     }
 

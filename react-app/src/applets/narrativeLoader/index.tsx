@@ -1,12 +1,12 @@
 import { Component } from 'react';
-import { Config } from '../../types/config';
 import { AuthenticationState } from '../../contexts/Auth';
+import { Config } from '../../types/config';
 // import { RouteComponentProps } from 'react-router';
-import ErrorMessage from '../../components/ErrorMessage';
+import { Alert, ProgressBar } from 'react-bootstrap';
 import AlertMessage from '../../components/AlertMessage';
+import ErrorMessage from '../../components/ErrorMessage';
 import Loading from '../../components/Loading';
 import { RouteProps } from '../../components/Router2';
-import { Alert, ProgressBar } from 'react-bootstrap';
 
 const MAX_TRIES = 20;
 const TIMEOUT = 60000;
@@ -151,7 +151,7 @@ export default class NarrativeLoader extends Component<
             });
             return;
         }
-        
+
         if (!/^[1-9][0-9]*$/.test(narrativeIdRaw)) {
             this.setState({
                 loadState: {
@@ -215,7 +215,7 @@ export default class NarrativeLoader extends Component<
                             narrativeId
                         },
                     });
-                   
+
                     return;
                 }
             }
@@ -234,39 +234,39 @@ export default class NarrativeLoader extends Component<
             });
         } catch (ex) {
             if (ex)
-            if (ex instanceof LoadingError) {
-                this.setState({
-                    loadState: {
-                        status: LoadStatus.ERROR,
-                        title: "Error waiting for Narrative to start",
-                        message: ex.message
-                    }
-                });
-            } else if (ex instanceof TimeoutError) {
-                this.setState({
-                    loadState: {
-                        status: LoadStatus.ERROR,
-                        title: "Error waiting for Narrative to start",
-                        message: ex.message
-                    }
-                });
-            } else if (ex instanceof Error) {
-                this.setState({
-                    loadState: {
-                        status: LoadStatus.ERROR,
-                        title: "Error waiting for Narrative to start",
-                        message: ex.message
-                    }
-                });
-            } else {
-                this.setState({
-                    loadState: {
-                        status: LoadStatus.ERROR,
-                        title: 'Unknown Error',
-                        message: 'An unknown error occurred waiting for the Narrative to start'
-                    },
-                });
-            }
+                if (ex instanceof LoadingError) {
+                    this.setState({
+                        loadState: {
+                            status: LoadStatus.ERROR,
+                            title: "Error waiting for Narrative to start",
+                            message: ex.message
+                        }
+                    });
+                } else if (ex instanceof TimeoutError) {
+                    this.setState({
+                        loadState: {
+                            status: LoadStatus.ERROR,
+                            title: "Error waiting for Narrative to start",
+                            message: ex.message
+                        }
+                    });
+                } else if (ex instanceof Error) {
+                    this.setState({
+                        loadState: {
+                            status: LoadStatus.ERROR,
+                            title: "Error waiting for Narrative to start",
+                            message: ex.message
+                        }
+                    });
+                } else {
+                    this.setState({
+                        loadState: {
+                            status: LoadStatus.ERROR,
+                            title: 'Unknown Error',
+                            message: 'An unknown error occurred waiting for the Narrative to start'
+                        },
+                    });
+                }
         }
     }
     checkNarrative(url: string) {
@@ -372,7 +372,7 @@ export default class NarrativeLoader extends Component<
             document.location.href = url.toString();
         }, SLIGHT_DELAY_BEFORE_REDIRECT)
 
-        return <AlertMessage type="success" message="Redirecting to Narrative..."  style={{width: "50%", margin: "0 auto"}} />;
+        return <AlertMessage variant="success" message="Redirecting to Narrative..." style={{ width: "50%", margin: "0 auto" }} />;
     }
 
 
@@ -382,21 +382,21 @@ export default class NarrativeLoader extends Component<
                 return <Loading message="Loading..." />;
             case LoadStatus.POKING:
                 return (
-                    <Alert itemType="info" style={{width: "50%", margin: "0 auto"}}>
+                    <Alert itemType="info" style={{ width: "50%", margin: "0 auto" }}>
                         <p>Starting a new Narrative session for you.</p>
                         <p>Please wait.</p>
-                        <p>{this.state.loadState.tries} {this.state.loadState.tries === 1 ? "try" : "tries" } out of {MAX_TRIES}</p>
-                        <ProgressBar now={100 * this.state.loadState.tries/MAX_TRIES} label="Waiting for Narrative session..."  />
+                        <p>{this.state.loadState.tries} {this.state.loadState.tries === 1 ? "try" : "tries"} out of {MAX_TRIES}</p>
+                        <ProgressBar now={100 * this.state.loadState.tries / MAX_TRIES} label="Waiting for Narrative session..." />
                     </Alert>
                 );
             case LoadStatus.OK:
                 return this.renderOK(this.state.loadState);
             case LoadStatus.ERROR:
-                return <ErrorMessage title={this.state.loadState.title} message={this.state.loadState.message} style={{width: "50%", margin: "0 auto"}} />;
+                return <ErrorMessage title={this.state.loadState.title} message={this.state.loadState.message} style={{ width: "50%", margin: "0 auto" }} />;
             case LoadStatus.STRUCK_OUT:
-                return <ErrorMessage message={'Struck Out :('} style={{width: "50%", margin: "0 auto"}}/>;
+                return <ErrorMessage message={'Struck Out :('} style={{ width: "50%", margin: "0 auto" }} />;
             case LoadStatus.TIMED_OUT:
-                return <ErrorMessage message={'Timed Out :('}  style={{width: "50%", margin: "0 auto"}}/>;
+                return <ErrorMessage message={'Timed Out :('} style={{ width: "50%", margin: "0 auto" }} />;
         }
     }
     render() {

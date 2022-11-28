@@ -1,11 +1,10 @@
 import AlertMessage from 'components/AlertMessage';
-import styles from './CreateLink.module.css';
+import Well from 'components/Well';
 import { Component } from 'react';
 import { Accordion, Button, Col, Row, Stack } from 'react-bootstrap';
-import { ReturnLink } from '../Model';
 import orcidSignIn from '../images/ORCID-sign-in.png';
-import AccordionItem from 'react-bootstrap/esm/AccordionItem';
-import Well from 'components/Well';
+import { ReturnLink } from '../Model';
+import styles from './CreateLink.module.css';
 
 export interface CreateLinkProps {
     returnLink?: ReturnLink;
@@ -19,7 +18,7 @@ export default class CreateLink extends Component<CreateLinkProps> {
         if (!this.props.returnLink) {
             return;
         }
-        return <AlertMessage type="info" style={{ marginTop: '1em' }} title="After Linking...">
+        return <AlertMessage variant="info" style={{ marginTop: '1em' }} title="After Linking...">
             After creating the link, your browser will be returned to <b>{this.props.returnLink.label}</b>.
         </AlertMessage>;
     }

@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
 
-export function ifEmpty(value: string | null | undefined, defaultValue: string = 'n/a') {
+export function ifEmpty(value: string | null | undefined, defaultValue: string) {
     if (value) {
         return value;
     }
-    return <span style={{ fontStyle: 'italic', color: 'rgba(100, 100, 100, 1)' }} >{defaultValue}</span>;
+    return na(defaultValue)
 }
 
 export function when(value: string | null | undefined, trueValue: ReactNode, falseValue: ReactNode) {
@@ -12,4 +12,8 @@ export function when(value: string | null | undefined, trueValue: ReactNode, fal
         return trueValue;
     }
     return falseValue;
+}
+
+export function na(symbol: string = "∅") {
+    return <span style={{ fontStyle: 'italic', color: 'rgba(100, 100, 100, 1)' }}>{symbol}</span>;
 }

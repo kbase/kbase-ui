@@ -3,27 +3,33 @@ import styles from './AlertMessage.module.css';
 
 export type AlertMessageProps = PropsWithChildren<{
     title?: string;
-    type: 'error' | 'info' | 'warning' | 'success';
+    icon?: string;
+    variant: 'error' | 'danger' | 'info' | 'warning' | 'success' | 'secondary';
     message?: string;
     style?: React.CSSProperties;
+    className?: string;
     render?: () => JSX.Element;
 }>;
 
 export default class AlertMessage extends Component<AlertMessageProps> {
-    renderIcon() {
-        switch (this.props.type) {
+    iconClass() {
+        switch (this.props.variant) {
+            case 'danger':
             case 'error':
-                return 'fa-exclamation-triangle';
+                return 'exclamation-triangle';
             case 'warning':
-                return 'fa-exclamation-triangle';
+                return 'exclamation-triangle';
             case 'info':
-                return 'fa-info-circle';
+                return 'info-circle';
             case 'success':
-                return 'fa-check';
+                return 'check';
+            case 'secondary':
+                return null
         }
     }
     renderAlertTypeClass() {
-        switch (this.props.type) {
+        switch (this.props.variant) {
+            case 'danger':
             case 'error':
                 return 'danger';
             case 'warning':
@@ -32,10 +38,13 @@ export default class AlertMessage extends Component<AlertMessageProps> {
                 return 'info';
             case 'success':
                 return 'success';
+            case 'secondary':
+                return 'secondary';
         }
     }
     defaultTitle() {
-        switch (this.props.type) {
+        switch (this.props.variant) {
+            case 'danger':
             case 'error':
                 return 'Error!';
             case 'warning':
@@ -44,13 +53,21 @@ export default class AlertMessage extends Component<AlertMessageProps> {
                 return 'Info';
             case 'success':
                 return 'Success';
+            case 'secondary':
+                return '';
         }
     }
     renderTitle() {
         const title = this.props.title || this.defaultTitle();
+        const className = (() => {
+            const iconClass = this.props.icon || this.iconClass();
+            if (iconClass) {
+                return `fa fa-${iconClass}`
+            }
+        })();
         return (
             <div className="alert-title">
-                <span className={`fa ${this.renderIcon()}`} />
+                <span className={className} />
                 {title}
             </div>
         );
@@ -64,7 +81,7 @@ export default class AlertMessage extends Component<AlertMessageProps> {
         })();
         return (
             <div
-                className={`alert alert-${this.renderAlertTypeClass()} ${styles.AlertMessage}`}
+                className={`alert alert-${this.renderAlertTypeClass()} ${styles.AlertMessage} ${this.props.className}`}
                 style={this.props.style}
             >
                 {this.renderTitle()}

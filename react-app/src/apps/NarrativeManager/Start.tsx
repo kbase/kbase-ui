@@ -27,7 +27,7 @@ export interface newNarrativeParams {
     markdown: string;
 }
 
-type NarrativeManagerStartState = AsyncProcess<{workspaceID: number}, string>
+type NarrativeManagerStartState = AsyncProcess<{ workspaceID: number }, string>
 
 export default class NarrativeManagerStart extends Component<
     NarrativeManagerStartProps,
@@ -49,7 +49,7 @@ export default class NarrativeManagerStart extends Component<
             const workspaceID = await this.startOrCreateNewNarrative()
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
-                value: {workspaceID},
+                value: { workspaceID },
             });
         } catch (ex) {
             this.setState({
@@ -62,7 +62,7 @@ export default class NarrativeManagerStart extends Component<
 
     async startOrCreateNewNarrative(): Promise<number> {
         const narrativeManager = new NarrativeManager({
-            auth: this.props.authInfo, 
+            auth: this.props.authInfo,
             config: this.props.config
         })
         const narrative = await narrativeManager.getMostRecentNarrative();
@@ -83,17 +83,17 @@ export default class NarrativeManagerStart extends Component<
             url: this.props.config.services.ServiceWizard.url
         });
 
-        const info =  await narrativeServiceClient.create_new_narrative({});
+        const info = await narrativeServiceClient.create_new_narrative({});
         return info.narrativeInfo.wsid;
     }
 
     render() {
         switch (this.state.status) {
-        case AsyncProcessStatus.NONE:
-        case AsyncProcessStatus.PENDING:
-            return <NarrativeLoading message="Opening an existing or new narrative..." detectSlow={true}/>
-        case  AsyncProcessStatus.ERROR:
-            return <ErrorView title="Error">
+            case AsyncProcessStatus.NONE:
+            case AsyncProcessStatus.PENDING:
+                return <NarrativeLoading message="Opening an existing or new narrative..." detectSlow={true} config={this.props.config} />
+            case AsyncProcessStatus.ERROR:
+                return <ErrorView title="Error">
                     <p>
                         Sorry, there was an error creating or opening a narrative:
                     </p>
@@ -101,8 +101,8 @@ export default class NarrativeManagerStart extends Component<
                         ${this.state.error}
                     </p>
                 </ErrorView>
-        case AsyncProcessStatus.SUCCESS:
-            return <OpenNarrative workspaceID={this.state.value.workspaceID} />
+            case AsyncProcessStatus.SUCCESS:
+                return <OpenNarrative workspaceID={this.state.value.workspaceID} />
         }
     }
 }
