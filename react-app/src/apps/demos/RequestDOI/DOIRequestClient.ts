@@ -1,102 +1,32 @@
 import { StaticNarrativeSummary } from "apps/demos/RequestDOI/Model";
 import { ImportableAuthor } from "apps/demos/RequestDOI/sections/AuthorsImport/editor/AuthorsImportSectionController";
+import { MultiServiceClient } from "apps/ORCIDLink/DynamicServiceClient";
+import { ORCIDLinkResult } from "apps/ORCIDLink/ORCIDLinkClient";
 import { ObjectInfo, WorkspaceInfo } from "lib/kb_lib/comm/coreServices/Workspace";
 import { toJSON } from "lib/kb_lib/jsonLike";
-import { MultiServiceClient } from "./DynamicServiceClient";
-import { CitationSource, LinkingSessionInfo, LinkRecord } from "./Model";
+
+import { CitationSource } from "./Model";
 
 
 const WORKS_PATH = 'works';
 
 
-const GET_PROFILE_PATH = 'profile';
-const IS_LINKED_PATH = 'is_linked';
-const GET_LINK_PATH = 'link';
+const DOI_FORMS_PATH = 'forms/forms';
 
-const LINKING_SESSIONS_PATH = 'linking-sessions';
-const START_LINKING_SESSION_PATH = 'start-linking-session';
-const FINISH_LINKING_SESSION_PATH = 'finish-linking-session';
+const ADMIN_GET_DOI_APPLICATIONS_PATH = 'forms/admin/forms';
+const ADMIN_GET_DOI_REQUESTS_PATH = 'forms/admin/requests';
 
-const LINK_PATH = 'link';
+const DOI_METADATA = 'doi/metadata';
+const DOI_CITATION = 'doi/citation';
 
-// ORCID User Profile (our version)
+const SUBMIT_DOI_REQUEST_PATH = 'osti_requests'
 
-
-export interface Affiliation {
-    name: string;
-    role: string;
-    startYear: string;
-    endYear: string | null;
-}
-
-
-export interface ORCIDProfile {
-    // TODO: split into profile and info? E.g. id in info, profile info in profile...
-    orcidId: string;
-    firstName: string;
-    lastName: string;
-    bio: string;
-    affiliations: Array<Affiliation>
-    works: Array<Work>
-    emailAddresses: Array<string>
-}
-
-// 
-
-export interface CreateLinkingSessionResult {
-    session_id: string
-}
-
-// ORCID User Profile (our version)
-export interface ExternalId {
-    type: string;
-    value: string;
-    url: string;
-    relationship: string;
-}
-
-export interface NewWork {
-    title: string;
-    journal: string;
-    date: string;
-    workType: string;
-    url: string;
-    externalIds: Array<ExternalId>
-}
-
-export interface Work extends NewWork {
-    putCode: string;
-    createdAt: number;
-    updatedAt: number;
-    source: string;
-}
-
-export interface WorkUpdate extends NewWork {
-    putCode: string;
-}
-
-export interface Work extends NewWork {
-    putCode: string;
-    createdAt: number;
-    updatedAt: number;
-    source: string;
-}
-
-export interface WorkUpdate extends NewWork {
-    putCode: string;
-}
 
 export interface GetNameResult {
     firstName: string;
     lastName: string;
 }
 
-
-export interface ORCIDLinkResult {
-    orcidLink: {
-        orcidId: string | null
-    }
-}
 
 // DOI FORM
 
@@ -514,66 +444,77 @@ export interface AdminGetDOIRequestsResult {
 //     metadata: CSLMetadata
 // }
 
-export class ORCIDLinkServiceClient extends MultiServiceClient {
-    module = 'ORCIDLink';
+export class DOIRequestServiceClient extends MultiServiceClient {
+    module = 'DOIRequest';
 
-    async getProfile(): Promise<ORCIDProfile> {
-        return await this.get<ORCIDProfile>(`${GET_PROFILE_PATH}`)
+
+    // async getName(): Promise<GetNameResult> {
+    //     return await this.get<GetNameResult>(`${GET_NAME_PATH}`)
+    // }
+
+    async getDOIApplication(formId: string): Promise<DOIForm> {
+        return await this.get<DOIForm>(`${DOI_FORMS_PATH}/${formId}`)
     }
 
-    async isLinked(): Promise<boolean> {
-        return this.get<boolean>(`${GET_LINK_PATH}`)
+    async deleteDOIApplication(formId: string): Promise<void> {
+        return await this.delete<void>(`${DOI_FORMS_PATH}/${formId}`)
     }
 
-    async getLink(): Promise<LinkRecord | null> {
-        return await this.get<LinkRecord | null>(`${GET_LINK_PATH}`)
+    async getDOIApplications(): Promise<Array<DOIForm>> {
+        return await this.get<Array<DOIForm>>(DOI_FORMS_PATH)
     }
 
-    async deleteLink(): Promise<LinkRecord | null> {
-        return await this.delete<LinkRecord | null>(`${LINK_PATH}`)
+    async createDOIApplication(doiForm: InitialDOIForm): Promise<DOIForm> {
+        return await this.post<DOIForm>(`${DOI_FORMS_PATH}`, toJSON(doiForm))
     }
 
-    // ORICD Account works
-
-    async getWork(putCode: string): Promise<Work> {
-        return await this.get<Work>(`${WORKS_PATH}/${putCode}`)
+    async saveDOIApplication(doiForm: DOIFormUpdate): Promise<DOIForm> {
+        return await this.put<DOIForm>(`${DOI_FORMS_PATH}`, toJSON(doiForm))
     }
 
-    async saveWork(work: WorkUpdate): Promise<Work> {
-        return await this.put<Work>(`${WORKS_PATH}`, toJSON(work))
+    // DOI Request Admin
+
+    async adminGetDOIApplications(): Promise<Array<DOIForm>> {
+        return await this.get<Array<DOIForm>>(ADMIN_GET_DOI_APPLICATIONS_PATH)
     }
 
-    async createWork(work: NewWork): Promise<Work> {
-        return await this.post<Work>(`${WORKS_PATH}`, toJSON(work))
+    async adminGetDOIRequests(): Promise<Array<AdminGetDOIRequestsResult>> {
+        return await this.get<Array<AdminGetDOIRequestsResult>>(ADMIN_GET_DOI_REQUESTS_PATH)
     }
 
-    async deleteWork(putCode: string): Promise<DeleteWorkResult> {
-        return await this.delete<DeleteWorkResult>(`${WORKS_PATH}/${putCode}`);
-    }
+    // DOI metadata and citation, proxying essentially to doi.org
 
-
-    // Linking Sessions
-
-    async createLinkingSession(): Promise<CreateLinkingSessionResult> {
-        return await this.post<CreateLinkingSessionResult>(`${LINKING_SESSIONS_PATH}`)
-    }
-
-    async getLinkingSession(sessionId: string): Promise<LinkingSessionInfo> {
-        return await this.get<LinkingSessionInfo>(`${LINKING_SESSIONS_PATH}/${sessionId}`)
-    }
-
-    async deletelLinkingSession(token: string): Promise<void> {
-        return await this.delete<void>(`${LINKING_SESSIONS_PATH}/${token}`);
-    }
-
-    // Not REST?
-
-    async finishLink(sessionId: string): Promise<void> {
-        return await this.post<void>(FINISH_LINKING_SESSION_PATH, {
-            session_id: sessionId
+    async getDOICitation(doi: string): Promise<GetDOICitationResult> {
+        return await this.get<GetDOICitationResult>(DOI_CITATION, {
+            doi
         });
     }
 
+    // async getDOIMetadata(doi: string): Promise<CSLMetadata> {
+    //     return await this.get<CSLMetadata>(DOI_CITATION, {
+    //         doi
+    //     });
+    // }
 
+
+    // Journals
+
+    // async getJournalAbbreviation(title: string): Promise<Array<JournalAbbreviation>> {
+    //     return await this.get<Array<JournalAbbreviation>>(JOURNALS_FIND_PATH, {
+    //         title
+    //     });
+    // }
+
+
+    // async getJournalAbbreviations(titles: Array<string>): Promise<Array<JournalAbbreviation>> {
+    //     const titleParams: SearchParams2 = titles.map((title) => {
+    //         return ['title', title];
+    //     })
+    //     return await this.get2<Array<JournalAbbreviation>>(JOURNALS_ABBREVIAIONS_PATH, titleParams);
+    // }
+
+    // OSTI DOI Submission
+    async submitDOIRequest(params: SubmitDOIRequestParams) {
+        return await this.post2<SubmitDOIRequestParams, SubmitDOIRequestResult>(SUBMIT_DOI_REQUEST_PATH, params);
+    }
 }
-

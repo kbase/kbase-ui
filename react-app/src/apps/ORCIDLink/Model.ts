@@ -337,7 +337,7 @@ export class Model {
         return this.orcidLinkClient.deletelLinkingSession(token);
     }
 
-    async getDOICitation(doi: string) {
-        return this.orcidLinkClient.getDOICitation(doi);
-    }
+    // async getDOICitation(doi: string) {
+    //     return this.orcidLinkClient.getDOICitation(doi);
+    // }
 }

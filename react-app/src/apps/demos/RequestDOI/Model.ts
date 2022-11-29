@@ -12,6 +12,7 @@ import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
 import { isNotNull } from "./common";
+import { DOIRequestServiceClient } from "./DOIRequestClient";
 
 
 
@@ -183,11 +184,18 @@ export class Model {
     config: Config;
     auth: AuthenticationStateAuthenticated;
     orcidLinkClient: ORCIDLinkServiceClient;
+    doiRequestClient: DOIRequestServiceClient;
 
     constructor({ config, auth }: { config: Config, auth: AuthenticationStateAuthenticated }) {
         this.config = config;
         this.auth = auth;
         this.orcidLinkClient = new ORCIDLinkServiceClient({
+            isDynamicService: true,
+            url: this.config.services.ServiceWizard.url,
+            timeout: 1000,
+            token: auth.authInfo.token
+        });
+        this.doiRequestClient = new DOIRequestServiceClient({
             isDynamicService: true,
             url: this.config.services.ServiceWizard.url,
             timeout: 1000,
@@ -593,35 +601,35 @@ export class Model {
 
 
     async createDOIForm(doiForm: InitialDOIForm): Promise<DOIForm> {
-        return this.orcidLinkClient.createDOIApplication(doiForm);
+        return this.doiRequestClient.createDOIApplication(doiForm);
     }
 
     async saveDOIForm(doiForm: DOIFormUpdate): Promise<DOIForm> {
-        return this.orcidLinkClient.saveDOIApplication(doiForm);
+        return this.doiRequestClient.saveDOIApplication(doiForm);
     }
 
     async getDOIForm(formId: string): Promise<DOIForm> {
-        return this.orcidLinkClient.getDOIApplication(formId);
+        return this.doiRequestClient.getDOIApplication(formId);
     }
 
     async deleteDOIForm(formId: string): Promise<void> {
-        return this.orcidLinkClient.deleteDOIApplication(formId);
+        return this.doiRequestClient.deleteDOIApplication(formId);
     }
 
     async getDOIForms(): Promise<Array<DOIForm>> {
-        return this.orcidLinkClient.getDOIApplications();
+        return this.doiRequestClient.getDOIApplications();
     }
 
-    async fetchLinkingSessionInfo(sessionId: string) {
-        return this.orcidLinkClient.getLinkingSession(sessionId);
-    }
+    // async fetchLinkingSessionInfo(sessionId: string) {
+    //     return this.doiRequestClient.getLinkingSession(sessionId);
+    // }
 
     async getDOIApplicationsAdmin(): Promise<Array<DOIForm>> {
-        return this.orcidLinkClient.adminGetDOIApplications();
+        return this.doiRequestClient.adminGetDOIApplications();
     }
 
     async getDOIRequestsAdmin(): Promise<Array<AdminGetDOIRequestsResult>> {
-        return this.orcidLinkClient.adminGetDOIRequests();
+        return this.doiRequestClient.adminGetDOIRequests();
     }
 
     // async getDOIMetadata(doi: string) {
@@ -629,7 +637,7 @@ export class Model {
     // }
 
     async getDOICitation(doi: string) {
-        return this.orcidLinkClient.getDOICitation(doi);
+        return this.doiRequestClient.getDOICitation(doi);
     }
 
     async getNarrativeSharingUsers({ workspaceId, owner }: StaticNarrativeSummary): Promise<Array<NarrativeShareUser>> {
@@ -710,7 +718,7 @@ export class Model {
     // }
 
     async submitDOIRequest(form_id: string, submission: OSTISubmission) {
-        const result = await this.orcidLinkClient.submitDOIRequest({ form_id, submission });
+        const result = await this.doiRequestClient.submitDOIRequest({ form_id, submission });
         return result;
     }
 }
