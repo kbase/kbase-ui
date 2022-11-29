@@ -1,5 +1,5 @@
-import { OSTISubmission, ReviewAndSubmitResult } from "apps/ORCIDLink/ORCIDLinkClient";
 import { Component } from "react";
+import { OSTISubmission, ReviewAndSubmitResult } from "../../DOIRequestClient";
 import { Model } from "../../Model";
 import ReviewAndSubmitForm from './ReviewAndSubmitForm';
 

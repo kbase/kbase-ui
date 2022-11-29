@@ -1,5 +1,5 @@
-import { Citation } from 'apps/ORCIDLink/ORCIDLinkClient';
 import { Component } from 'react';
+import { Citation } from "../../../DOIRequestClient";
 
 export interface CitationViewProps {
     citation: Citation;

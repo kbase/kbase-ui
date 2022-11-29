@@ -1,6 +1,4 @@
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
-import { NarrativeService } from "lib/clients/NarrativeService";
-import Workspace, { objectInfoToObject, workspaceInfoToObject } from "lib/kb_lib/comm/coreServices/Workspace";
 import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
@@ -8,7 +6,7 @@ import { EditableWork } from "../demos/PushWork/PushWorksModel";
 // import { CSLMetadata } from "../demos/RequestDOI/steps/Citations/DOIOrgClient";
 import { SCOPE } from "./constants";
 import {
-    DeleteWorkResult, GetNameResult, NarrativeInfo, NewWork,
+    DeleteWorkResult, GetNameResult, NewWork,
     ORCIDLinkServiceClient, ORCIDProfile, Work
 } from "./ORCIDLinkClient";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
@@ -282,42 +280,6 @@ export class Model {
         return this.orcidLinkClient.deleteWork(putCode);
     }
 
-    async fetchNarratives({ from, to }: { from: number, to: number }): Promise<Array<NarrativeInfo>> {
-        const client = new NarrativeService({
-            url: this.config.services.ServiceWizard.url,
-            timeout: 1000,
-            token: this.auth.authInfo.token
-        });
-        const result = await client.list_narratives({ type: 'mine' })
-
-        return result.narratives
-            .map(({ nar, ws }) => {
-                const objectInfo = objectInfoToObject(nar);
-                const workspaceInfo = workspaceInfoToObject(ws);
-                return { objectInfo, workspaceInfo };
-            })
-            .filter(({ objectInfo, workspaceInfo }) => {
-                return (workspaceInfo.globalread === 'r');
-            })
-            .sort((a, b) => {
-                return -(a.objectInfo.saveDate.localeCompare(b.objectInfo.saveDate));
-            });
-    }
-
-    async fetchNarrative(workspaceId: number, objectId: number, version: number): Promise<NarrativeInfo> {
-        const client = new Workspace({
-            url: this.config.services.Workspace.url,
-            timeout: 1000,
-            token: this.auth.authInfo.token
-        });
-        const objectInfos = await client.get_object_info3({ objects: [{ objid: objectId, wsid: workspaceId, ver: version }] });
-        const objectInfo = objectInfos.infos[0];
-        const workspaceInfo = await client.get_workspace_info({ id: workspaceId });
-
-        return {
-            objectInfo, workspaceInfo
-        };
-    }
 
     async getName(): Promise<GetNameResult> {
         const { lastName, firstName } = await this.orcidLinkClient.getProfile();

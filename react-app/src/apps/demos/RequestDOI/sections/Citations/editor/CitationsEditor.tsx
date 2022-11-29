@@ -1,10 +1,10 @@
 // import { Citation } from 'apps/ORCIDLink/Model';
-import { Citation } from 'apps/ORCIDLink/ORCIDLinkClient';
 import Empty from 'components/Empty';
 import FlexGrid from 'components/FlexGrid';
 import Well from 'components/Well';
 import { Component } from 'react';
 import { Button, Col, Row, Stack } from 'react-bootstrap';
+import { Citation } from "../../../DOIRequestClient";
 import { Model } from '../../../Model';
 import { ifEmpty, when } from '../../../utils';
 import { ManualCitationFormController } from './ManualCitations/Controller';

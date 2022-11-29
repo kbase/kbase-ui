@@ -1,6 +1,6 @@
-import { LocationPoint, LocationType } from "apps/ORCIDLink/ORCIDLinkClient";
 import { Component } from "react";
 import { FieldState, FieldStatus } from "../../../common";
+import { LocationPoint, LocationType } from "../../../DOIRequestClient";
 import {
     Model
 } from "../../../Model";

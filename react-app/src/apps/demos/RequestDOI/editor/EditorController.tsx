@@ -1,4 +1,4 @@
-import { DOIForm, DOIFormUpdate, ORCIDProfile } from 'apps/ORCIDLink/ORCIDLinkClient';
+import { ORCIDProfile } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
@@ -6,6 +6,7 @@ import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { JSONObject } from 'lib/json';
 import { Component } from 'react';
 import { Config } from 'types/config';
+import { DOIForm, DOIFormUpdate } from '../DOIRequestClient';
 import { Model } from '../Model';
 import Editor from './Editor';
 

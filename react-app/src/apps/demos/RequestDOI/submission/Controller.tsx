@@ -1,10 +1,8 @@
-
-
-import { OSTISubmission, StepStatus } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
+import { OSTISubmission, StepStatus } from '../DOIRequestClient';
 import { Model } from '../Model';
 import Submission from './Submission';
 

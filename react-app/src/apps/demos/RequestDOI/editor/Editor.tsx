@@ -1,3 +1,8 @@
+import AlertMessage from 'components/AlertMessage';
+import { JSONObject } from 'lib/json';
+import { toJSON } from 'lib/kb_lib/jsonLike';
+import { Component } from 'react';
+import { Button, Col, Row, Stack } from 'react-bootstrap';
 import {
     Author,
     AuthorsImportSection,
@@ -7,12 +12,7 @@ import {
     DescriptionSection, DOIForm, DOIFormSections, DOIFormStatus, NarrativeSection, ORCIDLinkSection, OSTISubmission, ReviewAndSubmitResult,
     ReviewAndSubmitSection,
     StepStatus
-} from 'apps/ORCIDLink/ORCIDLinkClient';
-import AlertMessage from 'components/AlertMessage';
-import { JSONObject } from 'lib/json';
-import { toJSON } from 'lib/kb_lib/jsonLike';
-import { Component } from 'react';
-import { Button, Col, Row, Stack } from 'react-bootstrap';
+} from "../DOIRequestClient";
 import { Model, StaticNarrativeSummary } from '../Model';
 import AuthorsStep from '../sections/Authors/editor/AuthorsSectionController';
 import AuthorsView from '../sections/Authors/viewer/AuthorsView';

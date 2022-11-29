@@ -1,7 +1,7 @@
-import { OSTIAuthor, OSTIRelatedIdentifier, OSTISubmission } from "apps/ORCIDLink/ORCIDLinkClient";
 import PropTable from "components/PropTable";
 import { Component } from "react";
 import { Button, Row, Stack, Table } from "react-bootstrap";
+import { OSTIAuthor, OSTIRelatedIdentifier, OSTISubmission } from "../../DOIRequestClient";
 import styles from './ReviewAndSubmitForm.module.css';
 
 export interface ReviewAndSubmitFormProps {

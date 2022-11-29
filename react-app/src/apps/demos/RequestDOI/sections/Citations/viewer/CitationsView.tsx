@@ -1,4 +1,3 @@
-import { Citation } from 'apps/ORCIDLink/ORCIDLinkClient';
 import AlertMessage from 'components/AlertMessage';
 import { plural } from 'components/common';
 import DataBrowser, { ColumnDef } from 'components/DataBrowser';
@@ -6,6 +5,7 @@ import Empty from 'components/Empty';
 import FlexGrid from 'components/FlexGrid';
 import { Component } from 'react';
 import { Accordion, Col, OverlayTrigger, Row } from 'react-bootstrap';
+import { Citation } from "../../../DOIRequestClient";
 import { ifEmpty, when } from '../../../utils';
 import CitationView from './CitationView';
 

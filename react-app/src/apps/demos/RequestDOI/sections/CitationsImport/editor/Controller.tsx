@@ -1,8 +1,8 @@
-import { Citation, CitationImportResults } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
+import { Citation, CitationImportResults } from "../../../DOIRequestClient";
 import { ImportableCitation, Model, StaticNarrativeSummary } from '../../../Model';
 import CitationsImportEditor from './Editor';
 

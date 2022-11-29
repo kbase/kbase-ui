@@ -1,5 +1,4 @@
 import { Model } from 'apps/demos/RequestDOI/Model';
-import { AdminGetDOIRequestsResult, DOIForm } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
@@ -7,6 +6,7 @@ import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { JSONObject } from 'lib/json';
 import { Component } from 'react';
 import { Config } from 'types/config';
+import { AdminGetDOIRequestsResult, DOIForm } from "../DOIRequestClient";
 import Home from './Home';
 
 // import CreateForm from './Home';

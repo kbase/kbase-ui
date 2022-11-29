@@ -1,8 +1,9 @@
-import { OSTISubmission } from "apps/ORCIDLink/ORCIDLinkClient";
+
 import PresentableJSON from "components/PresentableJSON";
 import Well from "components/Well";
 import { JSONValue } from "lib/json";
 import { Component } from "react";
+import { OSTISubmission } from "../DOIRequestClient";
 
 export interface SubmissionProps {
     submission: OSTISubmission;

@@ -1,7 +1,5 @@
 import {
-    AdminGetDOIRequestsResult,
-    DOIForm, DOIFormUpdate, GetNameResult, InitialDOIForm,
-    NarrativeInfo, ORCIDLinkServiceClient, ORCIDProfile, OSTISubmission
+    GetNameResult, ORCIDLinkServiceClient, ORCIDProfile
 } from "apps/ORCIDLink/ORCIDLinkClient";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { GetStaticNarrativeInfoParams, StaticNarrative } from "lib/clients/StaticNarrative";
@@ -12,7 +10,7 @@ import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
 import { isNotNull } from "./common";
-import { DOIRequestServiceClient } from "./DOIRequestClient";
+import { AdminGetDOIRequestsResult, DOIForm, DOIFormUpdate, DOIRequestServiceClient, InitialDOIForm, NarrativeInfo, OSTISubmission } from "./DOIRequestClient";
 
 
 

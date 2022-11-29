@@ -1,8 +1,8 @@
-import { Author } from "apps/ORCIDLink/ORCIDLinkClient";
 import { pluralize } from "components/common";
 import DataBrowser, { Columns, optionalStringComparator } from "components/DataBrowser";
 import { Component } from "react";
 import { Accordion, Col, Row, Stack } from "react-bootstrap";
+import { Author } from "../../../DOIRequestClient";
 
 export interface AuthorsViewProps {
     authors: Array<Author>;

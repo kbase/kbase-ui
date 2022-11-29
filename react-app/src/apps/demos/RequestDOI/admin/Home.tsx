@@ -1,7 +1,7 @@
-import { AdminGetDOIRequestsResult, DOIForm, StepStatus } from 'apps/ORCIDLink/ORCIDLinkClient';
 import Empty from 'components/Empty';
 import { Component } from 'react';
 import { Button, ButtonGroup, Col, Row, Stack } from 'react-bootstrap';
+import { AdminGetDOIRequestsResult, DOIForm, StepStatus } from "../DOIRequestClient";
 import { na } from '../utils';
 
 export interface DOIRequestAdminProps {

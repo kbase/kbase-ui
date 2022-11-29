@@ -1,7 +1,7 @@
-import { DOIForm } from 'apps/ORCIDLink/ORCIDLinkClient';
 import Empty from 'components/Empty';
 import { Component } from 'react';
 import { Button, ButtonGroup, Col, Row, Stack } from 'react-bootstrap';
+import { DOIForm } from './DOIRequestClient';
 
 export interface CreateFormProps {
     createForm: () => void;

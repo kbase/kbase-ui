@@ -4,8 +4,8 @@ import Well from "components/Well";
 import { Component } from "react";
 import { Button, Col, Form, Row, Stack, Table } from "react-bootstrap";
 
-import { GeolocationData, Location, LocationBoundingBox, LocationPoint, LocationType } from "apps/ORCIDLink/ORCIDLinkClient";
 import Empty from "components/Empty";
+import { GeolocationData, Location, LocationBoundingBox, LocationPoint, LocationType } from "../../DOIRequestClient";
 import BoundingBoxEditor from './BoundingBox/Controller';
 import LocationPointEditor from './LocationPointEditor/Controller';
 

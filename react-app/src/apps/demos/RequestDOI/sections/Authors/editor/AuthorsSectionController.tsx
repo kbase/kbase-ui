@@ -1,7 +1,7 @@
 import { Model } from 'apps/demos/RequestDOI/Model';
-import { Author } from 'apps/ORCIDLink/ORCIDLinkClient';
 import { uniqueId } from 'lib/kb_lib/Utils';
 import { Component } from 'react';
+import { Author } from "../../../DOIRequestClient";
 import { ImportableAuthor } from '../../AuthorsImport/editor/AuthorsImportSectionController';
 import {
     ContributorTypeField, EmailAddressField, FirstNameField,

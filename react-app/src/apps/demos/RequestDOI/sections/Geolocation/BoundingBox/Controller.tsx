@@ -1,6 +1,6 @@
-import { LocationBoundingBox, LocationType } from "apps/ORCIDLink/ORCIDLinkClient";
 import { Component } from "react";
 import { FieldState, FieldStatus } from "../../../common";
+import { LocationBoundingBox, LocationType } from "../../../DOIRequestClient";
 import { Model } from "../../../Model";
 import Editor from './Editor';
 

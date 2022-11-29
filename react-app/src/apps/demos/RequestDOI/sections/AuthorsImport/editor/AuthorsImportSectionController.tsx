@@ -1,10 +1,10 @@
 
 import { UserProfile } from '@kbase/ui-lib/lib/comm/coreServices/UserProfile';
-import { Author } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
+import { Author } from "../../../DOIRequestClient";
 import { Model, NarrativePermission, StaticNarrativeSummary } from '../../../Model';
 import AuthorsImportSection from './AuthorsImportSection';
 

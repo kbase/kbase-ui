@@ -1,9 +1,9 @@
-import { Description } from "apps/ORCIDLink/ORCIDLinkClient";
 import Empty from "components/Empty";
 import RotatedTable, { RotatedTableRow } from "components/RotatedTable";
 import Well from "components/Well";
 import { Component } from "react";
 import { Accordion, Col, Container, Row } from "react-bootstrap";
+import { Description } from "../../../DOIRequestClient";
 import styles from './Viewer.module.css';
 
 export interface DescriptionViewProps {

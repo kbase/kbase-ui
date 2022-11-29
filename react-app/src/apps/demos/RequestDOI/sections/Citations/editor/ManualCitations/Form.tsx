@@ -1,4 +1,3 @@
-import { Citation } from 'apps/ORCIDLink/ORCIDLinkClient';
 import AlertMessage from 'components/AlertMessage';
 import ErrorMessage from 'components/ErrorMessage';
 import Loading from 'components/Loading';
@@ -6,6 +5,7 @@ import Well from 'components/Well';
 import { AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Button, Col, Form, Row, Stack } from 'react-bootstrap';
+import { Citation } from "../../../../DOIRequestClient";
 import { GetCitationProcess } from './Controller';
 
 export interface CitationFormProps {

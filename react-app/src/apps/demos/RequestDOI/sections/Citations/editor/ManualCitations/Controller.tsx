@@ -1,6 +1,6 @@
-import { Citation } from 'apps/ORCIDLink/ORCIDLinkClient';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
+import { Citation } from "../../../../DOIRequestClient";
 import { Model } from '../../../../Model';
 import CitationForm from './Form';
 

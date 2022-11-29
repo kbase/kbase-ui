@@ -1,5 +1,5 @@
-import { Description } from "apps/ORCIDLink/ORCIDLinkClient";
 import { Component } from "react";
+import { Description } from "../../../DOIRequestClient";
 import { Model } from "../../../Model";
 import { AbstractField, KeywordField, KeywordsField, ResearchOrganizationField, TitleField } from "./Fields";
 import DescriptionForm from './Form';

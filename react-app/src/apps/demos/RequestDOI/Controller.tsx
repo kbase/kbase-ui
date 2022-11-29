@@ -1,5 +1,4 @@
 import { Model } from 'apps/demos/RequestDOI/Model';
-import { DOIForm, DOIFormStatus, InitialDOIForm, StepStatus } from 'apps/ORCIDLink/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
@@ -7,6 +6,7 @@ import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { JSONObject } from 'lib/json';
 import { Component } from 'react';
 import { Config } from 'types/config';
+import { DOIForm, DOIFormStatus, InitialDOIForm, StepStatus } from './DOIRequestClient';
 import CreateForm from './Home';
 // import EditorController from './EditorController';
 

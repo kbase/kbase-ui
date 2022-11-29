@@ -1,9 +1,9 @@
-import { ContractNumbers } from "apps/ORCIDLink/ORCIDLinkClient";
 import { pluralize } from "components/common";
 import Empty from "components/Empty";
 import Well from "components/Well";
 import { Component } from "react";
 import { Accordion, Col, Form, Row, Stack } from "react-bootstrap";
+import { ContractNumbers } from "../../../DOIRequestClient";
 
 export interface ContractNumbersViewProps {
     contractNumbers: ContractNumbers;
