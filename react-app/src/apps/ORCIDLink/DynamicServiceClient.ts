@@ -51,6 +51,7 @@ export type SearchParams2 = Array<[string, string]>
 
 export interface ServiceErrorResponse {
     code: string,
+    title?: string,
     message: string,
     data?: JSONObject
 }
@@ -80,9 +81,11 @@ export interface ServiceErrorResponse {
 
 export class ServiceError extends Error {
     code: string;
+    title?: string;
     data?: JSONObject;
     constructor(response: ServiceErrorResponse) {
         super(response.message);
+        this.title = response.title;
         this.code = response.code;
         this.data = response.data;
     }

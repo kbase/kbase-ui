@@ -1,4 +1,4 @@
-import React, { Component, PropsWithChildren } from "react";
+import React, { Children, Component, PropsWithChildren } from "react";
 import styles from './Well.module.css';
 
 // export type WellProps = PropsWithChildren<{
@@ -9,11 +9,19 @@ import styles from './Well.module.css';
 
 export class HeaderProps {
     style?: React.CSSProperties
+    variant?: Variant;
 }
 
 export class Header extends Component<PropsWithChildren<HeaderProps>> {
     render() {
-        return <div className={styles.header} style={this.props.style}>
+        const classes = [styles.header];
+
+        if (this.props.variant) {
+            classes.push(`text-${this.props.variant}`);
+        }
+
+
+        return <div className={classes.join(" ")} style={this.props.style}>
             {this.props.children}
         </div>
     }
@@ -24,6 +32,7 @@ export class Header extends Component<PropsWithChildren<HeaderProps>> {
 
 export class BodyProps {
     style?: React.CSSProperties
+    variant?: Variant;
 }
 
 export class Body extends Component<PropsWithChildren<BodyProps>> {
@@ -39,6 +48,7 @@ export class Body extends Component<PropsWithChildren<BodyProps>> {
 
 export class FooterProps {
     style?: React.CSSProperties
+    variant?: Variant;
 }
 
 export class Footer extends Component<PropsWithChildren<FooterProps>> {
@@ -69,6 +79,25 @@ export default class Well extends Component<WellProps, WellState> {
     static Body = Body;
     static Footer = Footer;
 
+    renderChildren() {
+        if (typeof this.props.children === "undefined") {
+            return;
+        }
+        return Children.map(this.props.children, (child) => {
+            console.log("rendering child ...");
+            if (React.isValidElement(child)) {
+                const props = { ...this.props }
+                if ('children' in child.props) {
+                    props.children = child.props.children;
+                } else {
+                    delete props.children;
+                }
+                return React.cloneElement(child, props);
+            }
+            return child;
+        });
+    }
+
     render() {
         const variantStyle = (() => {
             if (!this.props.variant) {
@@ -88,8 +117,7 @@ export default class Well extends Component<WellProps, WellState> {
             }
         })();
         return <div className={`${styles.well} ${variantStyle}`} style={this.props.style}>
-            {this.props.children}
+            {this.renderChildren()}
         </div>
     }
 }
-

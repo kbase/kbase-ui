@@ -5,6 +5,7 @@ import styles from './ErrorView.styles';
 import PresentableJSON from './PresentableJSON';
 
 export interface ErrorInfo {
+    code?: string;
     message: string;
     description: Array<string>;
     info?: JSONValue;
@@ -77,6 +78,11 @@ export default class ErrorView extends Component<ErrorViewProps> {
             return <div key={index}>{paragraph}</div>;
         });
     }
+    renderCode() {
+        if (this.props.errorInfo && this.props.errorInfo.code) {
+            return <div style={styles.Code}>{this.props.errorInfo.code}</div>
+        }
+    }
     renderBody() {
         if (this.props.render) {
             return this.props.render();
@@ -86,6 +92,7 @@ export default class ErrorView extends Component<ErrorViewProps> {
         }
         return (
             <div>
+                {this.renderCode()}
                 <div style={styles.Description}>
                     {this.renderDescription(this.props.errorInfo.description)}
                 </div>

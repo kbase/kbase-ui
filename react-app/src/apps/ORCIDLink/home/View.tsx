@@ -81,7 +81,7 @@ export default class View extends Component<ViewProps> {
                     want to <a href="https://sandbox.orcid.org/trusted-parties" target="_blank" rel="noreferrer">revoke the permissions granted to KBase at ORCID®</a> as well.</p>
             </div>
             <div className="well-footer" style={{ justifyContent: 'center' }}>
-                <Button variant="danger" onClick={this.props.revoke}>
+                <Button variant="outline-danger" onClick={this.props.revoke}>
                     <span className="fa fa-lg fa-trash" /> Revoke Link to ORCID® …
                 </Button>
             </div>

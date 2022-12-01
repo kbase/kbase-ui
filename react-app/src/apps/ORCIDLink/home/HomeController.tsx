@@ -1,11 +1,12 @@
-import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Config } from 'types/config';
 
+import StandardErrorView, { StandardError } from 'components/StandardErrorView';
 import { changeHash2 } from 'lib/navigation';
+import { ServiceError } from '../DynamicServiceClient';
 import { Model, ReturnLink } from '../Model';
 import View from './View';
 
@@ -38,7 +39,7 @@ export interface GetNameResult {
 export type RevokeResult = null;
 
 
-export type LinkState = AsyncProcess<{ link: LinkInfo | null }, { message: string }>
+export type LinkState = AsyncProcess<{ link: LinkInfo | null }, StandardError>
 
 interface HomeControllerState {
     linkState: LinkState
@@ -137,12 +138,28 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
                 }
             });
         } catch (ex) {
-            if (ex instanceof Error) {
+           
+            if (ex instanceof ServiceError) {
+                console.log("error", ex, ex.data)
                 this.setState({
                     linkState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: ex.message
+                            code: ex.code,
+                            message: ex.message,
+                            title: ex.title || 'Error',
+                            data: ex.data
+                        }
+                    }
+                });
+            } else if (ex instanceof Error) {
+                this.setState({
+                    linkState: {
+                        status: AsyncProcessStatus.ERROR,
+                        error: {
+                            code: 'error',
+                            message: ex.message,
+                            title: 'Error'
                         }
                     }
                 });
@@ -151,7 +168,9 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
                     linkState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: `Unknown error: ${String(ex)}`
+                            code: 'unknown',
+                            message: `Unknown error: ${String(ex)}`,
+                            title: 'Error'
                         }
                     }
                 });
@@ -163,8 +182,8 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
         return <Loading />;
     }
 
-    renderError({ message }: { message: string }) {
-        return <ErrorAlert message={message} />
+    renderError(error: StandardError) {
+        return <StandardErrorView error={error}/>
     }
 
     renderSuccess({ link }: { link: LinkInfo | null }) {

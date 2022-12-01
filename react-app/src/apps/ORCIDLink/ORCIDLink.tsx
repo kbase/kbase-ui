@@ -144,7 +144,11 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
             }),
 
             new Route('orcidlink/error', { authenticationRequired: true }, (props: RouteProps) => {
-                return <Error />;
+                return <Error
+                    code={props.hashPath.query.get("code")!}
+                    title={props.hashPath.query.get("title")!}
+                    message={props.hashPath.query.get("message")!}
+                />;
             }),
             new Route('orcidlink/help', { authenticationRequired: true }, (props: RouteProps) => {
                 return <Help />;

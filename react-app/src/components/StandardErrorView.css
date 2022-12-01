@@ -1,0 +1,12 @@
+.StandardErrorView {
+    margin: 0 auto;
+}
+
+.StandardErrorView .alert-title {
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.StandardErrorView .fa {
+    margin-right: 0.5em;
+}

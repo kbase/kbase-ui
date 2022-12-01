@@ -78,7 +78,7 @@ export default class SelectNarrative extends Component<SelectNarrativeProps, Sel
                 <Col md={12}>
                     <Row style={{ justifyContent: 'center' }} className="g-0">
                         <Button variant="primary" className="w-auto" onClick={this.props.onDone}>
-                            Close
+                            Done
                         </Button>
                     </Row>
                 </Col>
