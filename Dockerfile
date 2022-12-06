@@ -1,4 +1,4 @@
-FROM alpine:3.16
+FROM alpine:3.17
 
 RUN apk upgrade --update-cache --available && \
     apk add --update --no-cache bash ca-certificates nginx bash && \
@@ -7,7 +7,7 @@ RUN apk upgrade --update-cache --available && \
 WORKDIR /kb
 
 # This version uses master; otherwise functionally equivalent other than style.
-RUN version=v0.15.1 && \
+RUN version=v0.16.5 && \
     wget -O - https://github.com/powerman/dockerize/releases/download/${version}/dockerize-`uname -s`-`uname -m` | install /dev/stdin /usr/local/bin/dockerize
 
 # These ARGs values are passed in via the docker build command

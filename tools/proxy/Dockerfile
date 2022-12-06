@@ -1,4 +1,4 @@
-FROM alpine:3.15
+FROM alpine:3.17
 # Container designed to serve up static KBase UI contents
 
 # These ARGs values are passed in via the docker build command
@@ -8,7 +8,7 @@ ARG BRANCH=develop
 ARG TAG
 
 # used for processing the config file templates
-RUN version=v0.15.1 && \
+RUN version=v0.16.5 && \
     wget -O - https://github.com/powerman/dockerize/releases/download/${version}/dockerize-`uname -s`-`uname -m` | install /dev/stdin /usr/local/bin/dockerize
 #
 #ENV DOCKERIZE_VERSION v0.6.1

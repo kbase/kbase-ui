@@ -50,7 +50,7 @@ services:
     # container.
     command: /bin/sh -c "while sleep 1000; do :; done"
   kbase-ui-deploy:
-    image: nginx:1.21.6-alpine
+    image: nginx:1.23.2-alpine
     container_name: kbase-ui-deploy
     volumes:
       - ../build:/usr/share/nginx/html
