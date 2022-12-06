@@ -457,7 +457,7 @@ export class DOIRequestServiceClient extends MultiServiceClient {
     }
 
     async deleteDOIApplication(formId: string): Promise<void> {
-        return await this.delete<void>(`${DOI_FORMS_PATH}/${formId}`)
+        return await this.delete(`${DOI_FORMS_PATH}/${formId}`)
     }
 
     async getDOIApplications(): Promise<Array<DOIForm>> {

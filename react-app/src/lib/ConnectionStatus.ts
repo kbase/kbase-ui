@@ -12,7 +12,7 @@ class AsyncLoop {
         this.timeout = null;
     }
 
-     async start() {
+    async start() {
         if (this.running) {
             return;
         }
@@ -33,7 +33,7 @@ class AsyncLoop {
                     return 'Unknown error';
                 })
                 console.error('Error in AsyncLoop:', message);
-            } 
+            }
             if (this.running) {
                 this.timeout = window.setTimeout(() => {
                     if (this.running) {
@@ -42,7 +42,7 @@ class AsyncLoop {
                 }, FREQUENCY);
             }
         });
-        
+
         loop();
     }
 
@@ -64,7 +64,7 @@ export interface Measure {
 
 export enum PingStatType {
     SUCCESS = 'SUCCESS',
-    ERROR= 'ERROR'
+    ERROR = 'ERROR'
 }
 
 export enum PingStatKind {
@@ -103,7 +103,7 @@ interface ConnectionStatusState {
     pingStats: PingStats;
 }
 
-export class ConnectionStatus  {
+export class ConnectionStatus {
     state: ConnectionStatusState;
     onPing: (stats: PingStats) => void;
     instanceID: string;
@@ -123,11 +123,13 @@ export class ConnectionStatus  {
 
     async measure(url: string) {
         const start = Date.now();
-        const response = await fetch(url, {cache: 'no-store', headers: {
-            'Accept-Encoding': 'identity;q=0',
-            'Cache-Control': 'no-cache, no-transform'
-        } });
-        return Date.now() - start; 
+        const response = await fetch(url, {
+            cache: 'no-store', headers: {
+                'Accept-Encoding': 'identity;q=0',
+                'Cache-Control': 'no-cache, no-transform'
+            }
+        });
+        return Date.now() - start;
     }
 
     async ping() {

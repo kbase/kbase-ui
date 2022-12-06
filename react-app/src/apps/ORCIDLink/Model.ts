@@ -6,8 +6,8 @@ import { EditableWork } from "../demos/PushWork/PushWorksModel";
 // import { CSLMetadata } from "../demos/RequestDOI/steps/Citations/DOIOrgClient";
 import { SCOPE } from "./constants";
 import {
-    DeleteWorkResult, GetNameResult, NewWork,
-    ORCIDLinkServiceClient, ORCIDProfile, Work
+    GetNameResult, NewWork,
+    ORCIDLinkServiceClient, ORCIDProfile, ReturnLink, Work
 } from "./ORCIDLinkClient";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
@@ -40,10 +40,6 @@ export interface LinkingSessionInfo {
 }
 
 
-export interface ReturnLink {
-    url: string;
-    label: string;
-}
 
 // ORCID Link step
 
@@ -228,7 +224,11 @@ export class Model {
         return this.orcidLinkClient.isLinked();
     }
 
-    async getLink(): Promise<LinkRecord | null> {
+    async getDocURL(): Promise<string> {
+        return this.orcidLinkClient.getDocURL();
+    }
+
+    async getLink(): Promise<LinkRecord> {
         return this.orcidLinkClient.getLink();
     }
 
@@ -243,20 +243,10 @@ export class Model {
      * @param skipPrompt A boolean flag indicating whether to prompt to confirm linking afterwards
      */
     async startLink({ returnLink, skipPrompt }: { returnLink?: ReturnLink, skipPrompt?: boolean }) {
-        const baseURL = await this.serviceURL();
-
         const { session_id: sessionId } = await this.orcidLinkClient.createLinkingSession();
 
         // Then redirect the browser to start the oauth process
-        const startURL = new URL(`${baseURL}/${START_LINKING_SESSION_PATH}`);
-        startURL.searchParams.set('session_id', sessionId);
-        if (returnLink) {
-            startURL.searchParams.set('return_link', JSON.stringify(returnLink));
-        }
-        if (skipPrompt) {
-            startURL.searchParams.set('skip_prompt', 'true');
-        }
-        window.open(startURL, '_parent');
+        this.orcidLinkClient.startLinkingSession(sessionId, returnLink, skipPrompt)
     }
 
 
@@ -276,7 +266,7 @@ export class Model {
         return this.orcidLinkClient.createWork(temp);
     }
 
-    async deleteWork(putCode: string): Promise<DeleteWorkResult> {
+    async deleteWork(putCode: string): Promise<void> {
         return this.orcidLinkClient.deleteWork(putCode);
     }
 

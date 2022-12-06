@@ -7,7 +7,7 @@
 // import { Config } from "types/config";
 
 import { Model } from "apps/ORCIDLink/Model";
-import { DeleteWorkResult, ExternalId, NewWork, ORCIDLinkServiceClient, Work, WorkUpdate } from "apps/ORCIDLink/ORCIDLinkClient";
+import { ExternalId, NewWork, ORCIDLinkServiceClient, Work, WorkUpdate } from "apps/ORCIDLink/ORCIDLinkClient";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { Config } from "types/config";
 
@@ -381,7 +381,7 @@ export class PushWorksModel {
         return await this.orcidLinkClient.createWork(temp);
     }
 
-    async deleteWork(putCode: string): Promise<DeleteWorkResult> {
+    async deleteWork(putCode: string): Promise<void> {
         return this.orcidLinkClient.deleteWork(putCode);
     }
 

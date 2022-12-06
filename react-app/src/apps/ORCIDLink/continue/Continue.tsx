@@ -4,7 +4,8 @@ import { Component } from 'react';
 import { Button, Col, Row, Stack } from 'react-bootstrap';
 import { renderORCIDIcon, renderScope } from '../common';
 import { ORCID_URL } from '../constants';
-import { LinkingSessionInfo, ReturnLink } from '../Model';
+import { LinkingSessionInfo } from '../Model';
+import { ReturnLink } from '../ORCIDLinkClient';
 import styles from './Continue.module.css';
 
 export interface ContinueProps {

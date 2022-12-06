@@ -1,12 +1,8 @@
 import {
-    JSONObject,
-    JSONObjectOf,
-    JSONValue,
-    objectToJSONObject,
+    JSONValue
 } from '@kbase/ui-lib/lib/json';
-import { JSONLikeArrayOf, JSONLikeObject, toJSON } from '../../jsonLike';
+import { JSONLikeObject, toJSON } from '../../jsonLike';
 import { ServiceClient } from '../JSONRPC11/ServiceClient';
-import { EpochTimeMS, Mapping, SDKBoolean } from '../types';
 
 // Get Method Brief Info
 

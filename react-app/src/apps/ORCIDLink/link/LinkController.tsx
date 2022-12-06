@@ -5,7 +5,8 @@ import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Config } from 'types/config';
 
-import { Model, ReturnLink } from '../Model';
+import { Model } from '../Model';
+import { ReturnLink } from '../ORCIDLinkClient';
 import CreateLink from './CreateLink';
 import ViewLink from './ViewLink';
 
@@ -62,12 +63,12 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     async fetchLink(): Promise<LinkInfo | null> {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
 
-        const link = await model.getLink();
-
-
-        if (link === null) {
+        const isLinked = await model.isLinked();
+        if (!isLinked) {
             return null;
         }
+
+        const link = await model.getLink();
 
         const {
             created_at,

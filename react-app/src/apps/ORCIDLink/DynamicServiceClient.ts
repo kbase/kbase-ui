@@ -113,10 +113,9 @@ export abstract class ServiceClientBase {
         this.timeout = params.timeout;
     }
 
-    protected abstract getUrl(): Promise<string>;
+    protected abstract getURL(): Promise<string>;
 
     private async handleResponse<T>(response: Response): Promise<T> {
-
         const rawResult = await response.text();
         const result = (() => {
             try {
@@ -148,11 +147,44 @@ export abstract class ServiceClientBase {
         return result as unknown as T;
     }
 
+    private async handleEmptyResponse(response: Response): Promise<void> {
+        // const rawResult = await response.text();
+        // const result = (() => {
+        //     try {
+        //         // TODO: align this with how we are designing the ORCID Link Service
+        //         // The response can either be:
+        //         // 200 with the expected JSON value
+        //         // 4xx with the JSON response: code, message, data?
+        //         // 500 with the JSON response: code, message, data, where
+        //         // data contains at least exception, traceback
+        //         // It should always contain a JSON response.
+        //         return JSON.parse(rawResult);
+        //     } catch (ex) {
+        //         if (ex instanceof Error) {
+        //             throw new Error('Error parsing JSON: ' + ex.message);
+        //         }
+        //         throw new Error('Error parsing JSON: Unknown Error');
+        //     }
+        // })();
+
+        if (response.status !== 204) {
+            const result = await response.json();
+            if (response.status === 500) {
+                const errorResult = result as unknown as ServiceErrorResponse;
+                throw new InternalServerError(errorResult);
+            } else if (response.status >= 400) {
+                // TODO: real RestException
+                const errorResult = result as unknown as ServiceErrorResponse;
+                throw new ClientError(errorResult);
+            }
+        }
+    }
+
     protected async get<ReturnType>(
         path: string,
         data?: SearchParams
     ): Promise<ReturnType> {
-        const url = await this.getUrl();
+        const url = await this.getURL();
 
         const headers = new Headers({
             accept: 'application/json'
@@ -172,7 +204,6 @@ export abstract class ServiceClientBase {
             return theURL;
         })();
 
-        // const requestURL = `${url}/${path}`;
         const response = await fetch(requestURL.toString(), {
             method: 'GET',
             headers
@@ -185,7 +216,7 @@ export abstract class ServiceClientBase {
         path: string,
         data?: SearchParams2
     ): Promise<ReturnType> {
-        const url = await this.getUrl();
+        const url = await this.getURL();
 
         const headers = new Headers({
             accept: 'application/json'
@@ -214,10 +245,10 @@ export abstract class ServiceClientBase {
         return this.handleResponse<ReturnType>(response);
     }
 
-    protected async delete<ReturnType>(
+    protected async delete(
         path: string,
-    ): Promise<ReturnType> {
-        const url = await this.getUrl();
+    ): Promise<void> {
+        const url = await this.getURL();
 
         const headers = new Headers({
             accept: 'application/json'
@@ -233,14 +264,16 @@ export abstract class ServiceClientBase {
             headers
         });
 
-        return this.handleResponse<ReturnType>(response);
+        // TODO: check response status code. Should be 204, otherwise throw error.
+
+        return this.handleEmptyResponse(response);
     }
 
     protected async put<ReturnType>(
         path: string,
         data: JSONValue
     ): Promise<ReturnType> {
-        const url = await this.getUrl();
+        const url = await this.getURL();
 
         const headers = new Headers({
             'content-type': 'application/json',
@@ -266,7 +299,7 @@ export abstract class ServiceClientBase {
         path: string,
         data?: JSONValue
     ): Promise<ReturnType> {
-        const url = await this.getUrl();
+        const url = await this.getURL();
 
         const headers = new Headers({
             'content-type': 'application/json',
@@ -296,7 +329,7 @@ export abstract class ServiceClientBase {
         path: string,
         data?: ParamType
     ): Promise<ReturnType> {
-        const url = await this.getUrl();
+        const url = await this.getURL();
 
         const headers = new Headers({
             'content-type': 'application/json',
@@ -325,7 +358,7 @@ export abstract class ServiceClientBase {
 
 
 export abstract class ServiceClient extends ServiceClientBase {
-    async getUrl(): Promise<string> {
+    async getURL(): Promise<string> {
         return this.url;
     }
 }
@@ -372,7 +405,7 @@ export abstract class DynamicServiceClient extends ServiceClientBase {
     // }
 
     // TODO: Promise<any> -> Promise<ServiceStatusResult>
-    protected async getUrl(): Promise<string> {
+    protected async getURL(): Promise<string> {
         const moduleInfo = await this.getCached(
             async (): Promise<ServiceStatus> => {
                 const client = new ServiceWizardClient({
@@ -464,7 +497,7 @@ export abstract class MultiServiceClient extends ServiceClientBase {
     // }
 
     // TODO: Promise<any> -> Promise<ServiceStatusResult>
-    protected async getUrl(): Promise<string> {
+    async getURL(): Promise<string> {
         if (this.isDynamicService) {
             const moduleInfo = await this.getCached(
                 async (): Promise<ServiceStatus> => {

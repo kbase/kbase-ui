@@ -6,14 +6,10 @@ import { LinkingSessionInfo, LinkRecord } from "./Model";
 const WORKS_PATH = 'works';
 
 
-const GET_PROFILE_PATH = 'profile';
-const IS_LINKED_PATH = 'is_linked';
+const GET_PROFILE_PATH = 'orcid/profile';
 const GET_LINK_PATH = 'link';
 
 const LINKING_SESSIONS_PATH = 'linking-sessions';
-const START_LINKING_SESSION_PATH = 'start-linking-session';
-const FINISH_LINKING_SESSION_PATH = 'finish-linking-session';
-
 const LINK_PATH = 'link';
 
 // ORCID User Profile (our version)
@@ -109,6 +105,10 @@ export interface GetDOICitationResult {
     citation: string;
 }
 
+export interface ReturnLink {
+    url: string;
+    label: string;
+}
 // export interface GetDOIMetadata {
 //     metadata: CSLMetadata
 // }
@@ -121,15 +121,20 @@ export class ORCIDLinkServiceClient extends MultiServiceClient {
     }
 
     async isLinked(): Promise<boolean> {
-        return this.get<boolean>(`${GET_LINK_PATH}`)
+        return this.get<boolean>(`${GET_LINK_PATH}/is_linked`)
     }
 
-    async getLink(): Promise<LinkRecord | null> {
-        return await this.get<LinkRecord | null>(`${GET_LINK_PATH}`)
+    async getDocURL(): Promise<string> {
+        const url = await this.getURL();
+        return `${url}/docs`;
     }
 
-    async deleteLink(): Promise<LinkRecord | null> {
-        return await this.delete<LinkRecord | null>(`${LINK_PATH}`)
+    async getLink(): Promise<LinkRecord> {
+        return await this.get<LinkRecord>(`${GET_LINK_PATH}`)
+    }
+
+    async deleteLink(): Promise<void> {
+        return await this.delete(`${LINK_PATH}`)
     }
 
     // ORICD Account works
@@ -146,10 +151,9 @@ export class ORCIDLinkServiceClient extends MultiServiceClient {
         return await this.post<Work>(`${WORKS_PATH}`, toJSON(work))
     }
 
-    async deleteWork(putCode: string): Promise<DeleteWorkResult> {
-        return await this.delete<DeleteWorkResult>(`${WORKS_PATH}/${putCode}`);
+    async deleteWork(putCode: string): Promise<void> {
+        return await this.delete(`${WORKS_PATH}/${putCode}`);
     }
-
 
     // Linking Sessions
 
@@ -157,20 +161,31 @@ export class ORCIDLinkServiceClient extends MultiServiceClient {
         return await this.post<CreateLinkingSessionResult>(`${LINKING_SESSIONS_PATH}`)
     }
 
+    async startLinkingSession(sessionId: string, returnLink?: ReturnLink, skipPrompt?: boolean): Promise<void> {
+        const baseURL = await this.getURL();
+        const startURL = new URL(`${baseURL}/${LINKING_SESSIONS_PATH}/${sessionId}/start`);
+        // startURL.searchParams.set('session_id', sessionId);
+        if (returnLink) {
+            startURL.searchParams.set('return_link', JSON.stringify(returnLink));
+        }
+        if (skipPrompt) {
+            startURL.searchParams.set('skip_prompt', 'true');
+        }
+        window.open(startURL, '_parent');
+    }
+
     async getLinkingSession(sessionId: string): Promise<LinkingSessionInfo> {
         return await this.get<LinkingSessionInfo>(`${LINKING_SESSIONS_PATH}/${sessionId}`)
     }
 
     async deletelLinkingSession(token: string): Promise<void> {
-        return await this.delete<void>(`${LINKING_SESSIONS_PATH}/${token}`);
+        return await this.delete(`${LINKING_SESSIONS_PATH}/${token}`);
     }
 
     // Not REST?
 
     async finishLink(sessionId: string): Promise<void> {
-        return await this.post<void>(FINISH_LINKING_SESSION_PATH, {
-            session_id: sessionId
-        });
+        return await this.post<void>(`${LINKING_SESSIONS_PATH}/${sessionId}/finish`);
     }
 
 

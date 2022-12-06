@@ -5,7 +5,8 @@ import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Config } from 'types/config';
 
-import { Model, ReturnLink } from '../../ORCIDLink/Model';
+import { Model } from '../../ORCIDLink/Model';
+import { ReturnLink } from '../RequestDOI/Model';
 import Demos from './Home';
 
 export interface HomeControllerProps {

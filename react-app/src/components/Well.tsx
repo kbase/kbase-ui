@@ -84,9 +84,8 @@ export default class Well extends Component<WellProps, WellState> {
             return;
         }
         return Children.map(this.props.children, (child) => {
-            console.log("rendering child ...");
             if (React.isValidElement(child)) {
-                const props = { ...this.props }
+                const props: WellProps = { variant: this.props.variant }
                 if ('children' in child.props) {
                     props.children = child.props.children;
                 } else {

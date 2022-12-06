@@ -3,7 +3,8 @@ import Well from 'components/Well';
 import { Component } from 'react';
 import { Accordion, Button, Col, Row, Stack } from 'react-bootstrap';
 import orcidSignIn from '../images/ORCID-sign-in.png';
-import { ReturnLink } from '../Model';
+import { ReturnLink } from '../ORCIDLinkClient';
+
 import styles from './CreateLink.module.css';
 
 export interface CreateLinkProps {
@@ -26,7 +27,7 @@ export default class CreateLink extends Component<CreateLinkProps> {
     renderLinkStart() {
         return <div className={styles.main}>
             <div className={styles.row}>
-                <Well variant="primary" style={{ maxWidth: '60em', margin: '0 auto' }}>
+                <Well variant="primary">
                     <Well.Header>
                         Create Link to ORCID®
                     </Well.Header>
@@ -34,7 +35,8 @@ export default class CreateLink extends Component<CreateLinkProps> {
                     <Well.Body>
                         <p>You do not currently have a link from your KBase account to an ORCID® account.</p>
 
-                        <p>When clicking the button below, you will be redirected to ORCID®, where you may
+                        <p>
+                            When clicking the button below, you will be redirected to ORCID®, where you may
                             sign in to your ORCID® account and grant permission to KBase to access certain
                             aspects of your ORCID® account.
                         </p>

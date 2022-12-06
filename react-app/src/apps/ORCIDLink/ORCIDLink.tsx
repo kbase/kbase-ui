@@ -10,7 +10,7 @@ import Error from './Error';
 import Help from './Help';
 import HomeController from './home/HomeController';
 import Link from './link/LinkController';
-import { ReturnLink } from './Model';
+import { ReturnLink } from './ORCIDLinkClient';
 import ConfirmRevoke from './revoke/Controller';
 
 export interface ORCIDLinkProps extends RouteProps {

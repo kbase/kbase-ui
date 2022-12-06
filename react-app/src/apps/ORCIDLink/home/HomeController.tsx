@@ -7,7 +7,8 @@ import { Config } from 'types/config';
 import StandardErrorView, { StandardError } from 'components/StandardErrorView';
 import { changeHash2 } from 'lib/navigation';
 import { ServiceError } from '../DynamicServiceClient';
-import { Model, ReturnLink } from '../Model';
+import { Model } from '../Model';
+import { ReturnLink } from '../ORCIDLinkClient';
 import View from './View';
 
 export interface HomeControllerProps {
@@ -39,7 +40,7 @@ export interface GetNameResult {
 export type RevokeResult = null;
 
 
-export type LinkState = AsyncProcess<{ link: LinkInfo | null }, StandardError>
+export type LinkState = AsyncProcess<{ link: LinkInfo | null, url: string }, StandardError>
 
 interface HomeControllerState {
     linkState: LinkState
@@ -63,11 +64,13 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     async fetchLink(): Promise<LinkInfo | null> {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
 
-        const link = await model.getLink();
+        const isLinked = await model.isLinked();
 
-        if (link === null) {
+        if (!isLinked) {
             return null;
         }
+
+        const link = await model.getLink();
 
         const {
             created_at,
@@ -88,6 +91,13 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
             scope
         }
     }
+
+    async getURL(): Promise<string> {
+        const model = new Model({ config: this.props.config, auth: this.props.auth });
+
+        return model.getDocURL();
+    }
+
 
     async revokeLink() {
         changeHash2('orcidlink/revoke');
@@ -131,14 +141,14 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
         });
         try {
             const value = await this.fetchLink();
+            const url = await this.getURL();
             this.setState({
                 linkState: {
                     status: AsyncProcessStatus.SUCCESS,
-                    value: { link: value }
+                    value: { link: value, url }
                 }
             });
         } catch (ex) {
-           
             if (ex instanceof ServiceError) {
                 console.log("error", ex, ex.data)
                 this.setState({
@@ -186,8 +196,11 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
         return <StandardErrorView error={error}/>
     }
 
-    renderSuccess({ link }: { link: LinkInfo | null }) {
-        return <View link={link} revoke={this.revokeLink.bind(this)} />
+    renderSuccess({ link, url }: { link: LinkInfo | null, url: string }) {
+        const isDeveloper = !!this.props.auth.authInfo.account.roles.find((role) => {
+            return role.id === 'DevToken'
+        });
+        return <View link={link} revoke={this.revokeLink.bind(this)} isDeveloper={isDeveloper} docURL={url} />
         // if (link === null) {
         //     return <Unlinked start={this.startLink.bind(this)} returnLink={this.props.returnLink} skipPrompt={this.props.skipPrompt} />;
         // }

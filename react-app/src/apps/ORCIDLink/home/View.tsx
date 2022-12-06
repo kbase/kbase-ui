@@ -6,6 +6,8 @@ import styles from './View.module.css';
 
 export interface ViewProps {
     link: LinkInfo | null;
+    isDeveloper: boolean;
+    docURL: string;
     revoke: () => void
 }
 
@@ -58,7 +60,22 @@ export default class View extends Component<ViewProps> {
                 </li>
 
             </ul>
+
+            {this.renderDev()}
         </div>
+
+    }
+
+    renderDev() {
+        if (!this.props.isDeveloper) {
+            return;
+        }
+        return <div>
+            <h3>For Developers</h3>
+            <ul>
+                <li><a href={this.props.docURL} target="_blank" rel="noreferrer">ORCIDLink API Documentation</a></li>
+            </ul>
+        </div>;
     }
 
     renderLinkInfo(link: LinkInfo) {
