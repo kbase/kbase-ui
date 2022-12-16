@@ -336,13 +336,15 @@ export default class Body extends Component<BodyProps, BodyState> {
 
             // Redirects
             new Route('^(dashboard|narratives)$', { authenticationRequired: true }, (props: RouteProps) => {
+                console.log('redirecting to /narratives...');
                 changePath('narratives', { replace: true });
-                return <Loading message="Loading Narratives Navigator..." />
+                return <Loading message="Loading Narratives Navigator 2..." />
             }),
 
             new Route('', { authenticationRequired: false }, (props: RouteProps) => {
+                console.log('redirecting to #narratives...')
                 changeHash2('narratives', { replace: true });
-                return <Loading message="Loading Narratives Navigator..." />
+                return <Loading message="Loading Narratives Navigator 1..." />
             }),
 
             // Empty route

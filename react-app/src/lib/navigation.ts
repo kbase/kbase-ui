@@ -41,10 +41,13 @@ export function changePath(
 
     if (replace) {
         window.history.replaceState(null, '', url);
+        console.log('replace state', url.toString())
     } else {
         window.history.pushState(null, '', url);
     }
+    console.log('going...');
     window.history.go();
+    console.log('gone!');
 }
 
 export function updateHistory(key: string, value: string | null) {
@@ -125,6 +128,7 @@ export function changeHash2(
 
     if (replace) {
         window.history.replaceState(null, '', url);
+        console.log('replacing state', url.toString());
     } else {
         window.history.pushState(null, '', url);
     }
