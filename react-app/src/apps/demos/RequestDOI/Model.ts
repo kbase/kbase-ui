@@ -1,6 +1,6 @@
 import {
     GetNameResult, ORCIDLinkServiceClient, ORCIDProfile
-} from "apps/ORCIDLink/ORCIDLinkClient";
+} from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { GetStaticNarrativeInfoParams, StaticNarrative } from "lib/clients/StaticNarrative";
 import { digJSON, isJSONObject, JSONArray, JSONArrayOf, JSONObject } from "lib/json";

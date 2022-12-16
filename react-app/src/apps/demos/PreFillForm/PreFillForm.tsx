@@ -1,6 +1,6 @@
 import { renderORCIDIcon } from "apps/ORCIDLink/common";
-import { ORCID_URL } from "apps/ORCIDLink/constants";
-import { ORCIDProfile } from "apps/ORCIDLink/ORCIDLinkClient";
+import { ORCID_URL } from "apps/ORCIDLink/lib/constants";
+import { ORCIDProfile } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
 import { Button, Form } from "react-bootstrap";

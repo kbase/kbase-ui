@@ -1,5 +1,5 @@
-import { Model } from 'apps/ORCIDLink/Model';
-import { ORCIDProfile } from 'apps/ORCIDLink/ORCIDLinkClient';
+import { Model } from 'apps/ORCIDLink/lib/Model';
+import { ORCIDProfile } from 'apps/ORCIDLink/lib/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';

@@ -3,9 +3,9 @@ import Well from 'components/Well';
 import { Component } from 'react';
 import { Button, Col, Row, Stack } from 'react-bootstrap';
 import { renderORCIDIcon, renderScope } from '../common';
-import { ORCID_URL } from '../constants';
-import { LinkingSessionInfo } from '../Model';
-import { ReturnLink } from '../ORCIDLinkClient';
+import { ORCID_URL } from '../lib/constants';
+import { LinkingSessionInfo } from '../lib/Model';
+import { ReturnLink } from '../lib/ORCIDLinkClient';
 import styles from './Continue.module.css';
 
 export interface ContinueProps {

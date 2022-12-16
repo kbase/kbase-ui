@@ -3,8 +3,10 @@ import { RouteProps, Router } from 'components/Router2';
 import { AuthContext, AuthenticationState, AuthenticationStatus } from 'contexts/Auth';
 import { AsyncProcessStatus } from 'lib/AsyncProcess';
 import { JSONObject } from 'lib/json';
+import WorkspaceClient from 'lib/kb_lib/comm/coreServices/Workspace';
 import { Route } from 'lib/Route';
 import { Component } from 'react';
+import { Button } from 'react-bootstrap';
 import { Config } from 'types/config';
 // import CrossRefCitationsController from './CrossRef/Selector';
 import styles from './Demos.module.css';
@@ -45,6 +47,46 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
 
             }),
 
+            new Route('demos/download', { authenticationRequired: true}, (props: RouteProps) => {
+                return <AuthContext.Consumer>
+                    {(authValue) => {
+                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
+                            return null;
+                        }
+                        const value = authValue.value;
+                        if (value.status !== AuthenticationStatus.AUTHENTICATED) {
+                            return null;
+                        }
+                        const ref = props.params.get('ref');
+                        const downloadIt = () => {
+                            // const token = props.params.get('token')!;
+                            // return <PreFillFormController {...this.props} auth={authValue.value} />;
+                            // return <Link {...this.props} auth={authValue.value} />;
+                            
+                            // get the object.
+                            const runner = async () => {
+                                const client = new WorkspaceClient({
+                                    url: this.props.config.services.Workspace.url,
+                                    timeout: 10000,
+                                    token: value.authInfo.token
+                                });
+                                const { data } = await client.get_objects2({ objects: [{ ref }] })
+                                const objBlob = new Blob([JSON.stringify(data[0])])
+                                const a = document.createElement('a');
+                                a.href = window.URL.createObjectURL(objBlob);
+                                a.download = data[0].info[1] + ".json";
+                                a.click();
+                            }
+
+                            runner();
+                        }
+
+                        return <p>Would you like to <Button onClick={downloadIt}>Download {ref}?</Button> </p>
+
+                        // download it.
+                    }}
+                </AuthContext.Consumer>
+            }),
 
             new Route('demos/prefill-form', { authenticationRequired: true }, (props: RouteProps) => {
                 return <AuthContext.Consumer>

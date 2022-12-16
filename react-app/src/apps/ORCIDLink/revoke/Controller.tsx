@@ -6,7 +6,7 @@ import { Component } from 'react';
 import { Config } from 'types/config';
 
 import { changeHash2 } from 'lib/navigation';
-import { Model, ORCIDLinkInfo } from '../Model';
+import { Model, ORCIDLinkInfo } from '../lib/Model';
 import ConfirmRevoke from './ConfirmRevoke';
 
 export interface ControllerProps {
@@ -164,7 +164,7 @@ export default class HomeController extends Component<ControllerProps, Controlle
     }
 
     renderLoading() {
-        return <Loading />;
+        return <Loading message="Loading ORCID Link..."/>;
     }
 
     renderError({ message }: { message: string }) {

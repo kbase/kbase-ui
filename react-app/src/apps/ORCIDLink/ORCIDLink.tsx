@@ -9,8 +9,8 @@ import Continue from './continue/ContinueController';
 import Error from './Error';
 import Help from './Help';
 import HomeController from './home/HomeController';
+import { ReturnLink } from './lib/ORCIDLinkClient';
 import Link from './link/LinkController';
-import { ReturnLink } from './ORCIDLinkClient';
 import ConfirmRevoke from './revoke/Controller';
 
 export interface ORCIDLinkProps extends RouteProps {

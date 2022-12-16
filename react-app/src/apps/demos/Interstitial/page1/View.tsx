@@ -1,4 +1,4 @@
-import { ORCID_URL } from 'apps/ORCIDLink/constants';
+import { ORCID_URL } from 'apps/ORCIDLink/lib/constants';
 import { Component } from 'react';
 import { Alert, Button } from 'react-bootstrap';
 import { renderORCIDIcon } from '../../../ORCIDLink/common';

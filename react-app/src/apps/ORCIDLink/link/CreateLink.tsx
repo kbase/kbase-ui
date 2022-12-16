@@ -3,7 +3,7 @@ import Well from 'components/Well';
 import { Component } from 'react';
 import { Accordion, Button, Col, Row, Stack } from 'react-bootstrap';
 import orcidSignIn from '../images/ORCID-sign-in.png';
-import { ReturnLink } from '../ORCIDLinkClient';
+import { ReturnLink } from '../lib/ORCIDLinkClient';
 
 import styles from './CreateLink.module.css';
 

@@ -1,4 +1,4 @@
-import { ORCIDProfile } from 'apps/ORCIDLink/ORCIDLinkClient';
+import { ORCIDProfile } from 'apps/ORCIDLink/lib/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';

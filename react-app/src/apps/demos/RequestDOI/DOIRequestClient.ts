@@ -1,7 +1,7 @@
 import { StaticNarrativeSummary } from "apps/demos/RequestDOI/Model";
 import { ImportableAuthor } from "apps/demos/RequestDOI/sections/AuthorsImport/editor/AuthorsImportSectionController";
-import { MultiServiceClient } from "apps/ORCIDLink/DynamicServiceClient";
-import { ORCIDLinkResult } from "apps/ORCIDLink/ORCIDLinkClient";
+import { MultiServiceClient } from "apps/ORCIDLink/lib/DynamicServiceClient";
+import { ORCIDLinkResult } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import { ObjectInfo, WorkspaceInfo } from "lib/kb_lib/comm/coreServices/Workspace";
 import { toJSON } from "lib/kb_lib/jsonLike";
 

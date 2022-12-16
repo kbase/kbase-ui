@@ -1,11 +1,11 @@
-import { Component } from 'react';
+import { Model } from 'apps/ORCIDLink/lib/Model';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
-import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import View from './View';
-import { Model } from 'apps/ORCIDLink/Model';
-import { Config } from 'types/config';
 import { AuthenticationStateAuthenticated } from 'contexts/Auth';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
+import { Component } from 'react';
+import { Config } from 'types/config';
+import View from './View';
 
 
 export interface ControllerProps {

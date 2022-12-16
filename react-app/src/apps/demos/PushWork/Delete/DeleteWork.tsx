@@ -1,9 +1,9 @@
-import { Work } from "apps/ORCIDLink/ORCIDLinkClient";
+import { Work } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import { Component } from "react";
 import { Button, Form } from "react-bootstrap";
+import { HEADER_STYLE } from "../styles";
 import WorkView from "../WorkView";
 import styles from './DeleteWorkForm.module.css';
-import { HEADER_STYLE } from "../styles";
 
 export interface DeleteWorkProps {
     work: Work;

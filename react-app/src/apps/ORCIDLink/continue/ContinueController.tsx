@@ -4,8 +4,8 @@ import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
 import { Component } from "react";
 import { Config } from "types/config";
-import { LinkingSessionInfo, Model } from "../Model";
-import { ReturnLink } from "../ORCIDLinkClient";
+import { LinkingSessionInfo, Model } from "../lib/Model";
+import { ReturnLink } from "../lib/ORCIDLinkClient";
 import Continue from "./Continue";
 
 export interface ContinueControllerProps {
@@ -90,7 +90,7 @@ export default class ContinueController extends Component<ContinueControllerProp
     }
 
     renderLoading() {
-        return <Loading />;
+        return <Loading  message="Loading ORCID Link..."/>;
     }
 
     renderError({ message }: { message: string }) {

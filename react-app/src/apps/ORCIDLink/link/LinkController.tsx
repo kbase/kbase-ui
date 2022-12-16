@@ -5,8 +5,8 @@ import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Config } from 'types/config';
 
-import { Model } from '../Model';
-import { ReturnLink } from '../ORCIDLinkClient';
+import { Model } from '../lib/Model';
+import { ReturnLink } from '../lib/ORCIDLinkClient';
 import CreateLink from './CreateLink';
 import ViewLink from './ViewLink';
 
@@ -161,7 +161,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     renderLoading() {
-        return <Loading />;
+        return <Loading message="Loading ORCID Link..."/>;
     }
 
     renderError({ message }: { message: string }) {

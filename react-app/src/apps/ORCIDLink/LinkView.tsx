@@ -1,8 +1,8 @@
 import { Component } from 'react';
 import { Col, Row, Stack } from 'react-bootstrap';
 import { renderORCIDIcon, renderScope } from './common';
-import { ORCID_URL } from './constants';
 import { LinkInfo } from './home/HomeController';
+import { ORCID_URL } from './lib/constants';
 
 export interface LinkViewProps {
     link: LinkInfo;

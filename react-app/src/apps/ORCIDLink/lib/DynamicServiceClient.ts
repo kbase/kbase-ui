@@ -271,7 +271,7 @@ export abstract class ServiceClientBase {
 
     protected async put<ReturnType>(
         path: string,
-        data: JSONValue
+        data?: JSONValue
     ): Promise<ReturnType> {
         const url = await this.getURL();
 
@@ -286,11 +286,15 @@ export abstract class ServiceClientBase {
 
         const requestURL = `${url}/${path}`;
 
-        const response = await fetch(requestURL, {
+        const options: RequestInit = {
             method: 'PUT',
-            headers,
-            body: JSON.stringify(data)
-        });
+            headers
+        };
+        if (typeof data !== 'undefined') {
+            options.body = JSON.stringify(data);
+        }
+
+        const response = await fetch(requestURL, options);
 
         return this.handleResponse<ReturnType>(response);
     }

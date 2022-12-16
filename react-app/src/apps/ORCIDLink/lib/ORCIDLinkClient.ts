@@ -185,7 +185,7 @@ export class ORCIDLinkServiceClient extends MultiServiceClient {
     // Not REST?
 
     async finishLink(sessionId: string): Promise<void> {
-        return await this.post<void>(`${LINKING_SESSIONS_PATH}/${sessionId}/finish`);
+        return await this.put<void>(`${LINKING_SESSIONS_PATH}/${sessionId}/finish`);
     }
 
 

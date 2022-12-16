@@ -1,4 +1,4 @@
-import { Citation } from 'apps/ORCIDLink/Model';
+import { Citation } from 'apps/ORCIDLink/lib/Model';
 import AlertMessage from 'components/AlertMessage';
 import { plural } from 'components/common';
 import Empty from 'components/Empty';

@@ -1,4 +1,4 @@
-import { ORCIDProfile } from "apps/ORCIDLink/ORCIDLinkClient";
+import { ORCIDProfile } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import Well from "components/Well";
 import { Component } from "react";
 import { Button, Col, Row } from "react-bootstrap";

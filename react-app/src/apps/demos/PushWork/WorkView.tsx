@@ -1,4 +1,4 @@
-import { Work } from "apps/ORCIDLink/ORCIDLinkClient";
+import { Work } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import { Component } from "react";
 import styles from './WorkView.module.css';
 

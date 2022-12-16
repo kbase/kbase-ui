@@ -6,8 +6,8 @@
 // import { SDKBoolean } from "lib/kb_lib/comm/types";
 // import { Config } from "types/config";
 
-import { Model } from "apps/ORCIDLink/Model";
-import { ExternalId, NewWork, ORCIDLinkServiceClient, Work, WorkUpdate } from "apps/ORCIDLink/ORCIDLinkClient";
+import { Model } from "apps/ORCIDLink/lib/Model";
+import { ExternalId, NewWork, ORCIDLinkServiceClient, Work, WorkUpdate } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { Config } from "types/config";
 

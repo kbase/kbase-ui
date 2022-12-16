@@ -6,9 +6,9 @@ import { Config } from 'types/config';
 
 import StandardErrorView, { StandardError } from 'components/StandardErrorView';
 import { changeHash2 } from 'lib/navigation';
-import { ServiceError } from '../DynamicServiceClient';
-import { Model } from '../Model';
-import { ReturnLink } from '../ORCIDLinkClient';
+import { ServiceError } from '../lib/DynamicServiceClient';
+import { Model } from '../lib/Model';
+import { ReturnLink } from '../lib/ORCIDLinkClient';
 import View from './View';
 
 export interface HomeControllerProps {
@@ -189,7 +189,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     }
 
     renderLoading() {
-        return <Loading />;
+        return <Loading message="Loading ORCID Link..."/>;
     }
 
     renderError(error: StandardError) {

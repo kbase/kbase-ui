@@ -1,5 +1,5 @@
 import { workExternalIdentifierTypes, workRelationshipIdentifiers } from 'apps/ORCIDLink/data';
-import { Work } from 'apps/ORCIDLink/ORCIDLinkClient';
+import { Work } from 'apps/ORCIDLink/lib/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';

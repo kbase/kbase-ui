@@ -5,7 +5,7 @@ import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Config } from 'types/config';
 
-import { Model } from '../../ORCIDLink/Model';
+import { Model } from '../../ORCIDLink/lib/Model';
 import { ReturnLink } from '../RequestDOI/Model';
 import Demos from './Home';
 

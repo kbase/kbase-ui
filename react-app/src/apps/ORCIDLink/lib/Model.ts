@@ -2,7 +2,7 @@ import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
-import { EditableWork } from "../demos/PushWork/PushWorksModel";
+import { EditableWork } from "../../demos/PushWork/PushWorksModel";
 // import { CSLMetadata } from "../demos/RequestDOI/steps/Citations/DOIOrgClient";
 import { SCOPE } from "./constants";
 import {
