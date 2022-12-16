@@ -21,6 +21,7 @@ http {
 	keepalive_timeout 65;
 	types_hash_max_size 2048;
     proxy_headers_hash_bucket_size 256;
+    proxy_ssl_server_name on;
 
 	include /etc/nginx/mime.types;
 	default_type application/octet-stream;
@@ -36,24 +37,24 @@ http {
         keepalive 16;
     }
 
-    upstream services {
-        server {{ .Env.deploy_hostname }}:443;
-        keepalive 16;
-    }
+    # upstream services {
+    #     server {{ .Env.deploy_hostname }};
+    #     keepalive 16;
+    # }
 
-    upstream dynamic_services {
-        server {{ .Env.deploy_hostname }}:443;
-        keepalive 16;
-    }
+    # upstream dynamic_services {
+    #     server {{ .Env.deploy_hostname }};
+    #     keepalive 16;
+    # }
 
     upstream narrative {
         {{ if .Env.local_narrative }}
             server narrative:8888;
         {{ else }}
             {{ if .Env.deploy_ui_hostname }}
-                server {{ .Env.deploy_ui_hostname }}:443;
+                server {{ .Env.deploy_ui_hostname }};
             {{ else }}
-                server {{ .Env.deploy_hostname }}:443;
+                server {{ .Env.deploy_hostname }};
             {{ end }}
         {{ end }}
     }
@@ -63,9 +64,9 @@ http {
             server navigator:5000;
         {{ else }}
             {{ if .Env.deploy_ui_hostname }}
-                server {{ .Env.deploy_ui_hostname }}:443;
+                server {{ .Env.deploy_ui_hostname }};
             {{ else }}
-                server {{ .Env.deploy_hostname }}:443;
+                server {{ .Env.deploy_hostname }};
             {{ end }}
         {{ end }}
     }
@@ -149,22 +150,28 @@ http {
         }
 
         location /ui-assets/ {
-            proxy_pass https://{{ .Env.deploy_ui_hostname }}:443;
+            proxy_pass https://{{ .Env.deploy_ui_hostname }};
             proxy_set_header Connection "";
             client_max_body_size 300M;
         }
 
          location /sn/ {
-            proxy_pass https://{{ .Env.deploy_ui_hostname }}:443;
+            proxy_pass https://{{ .Env.deploy_ui_hostname }};
             proxy_set_header Connection "";
             client_max_body_size 300M;
         }
 
         location /narratives/ {
-            {{ if .Env.local_navigator }}
-                proxy_pass http://navigator/narratives/;
+            # {{ if .Env.local_navigator }}
+            #     proxy_pass http://navigator/narratives/;
+            # {{ else }}
+            #     proxy_pass https://kbase_navigator/narratives/;
+            # {{ end }}
+
+            {{ if .Env.deploy_ui_hostname }}
+                proxy_pass https://{{ .Env.deploy_ui_hostname }}/narratives/;
             {{ else }}
-                proxy_pass https://kbase_navigator/narratives/;
+                proxy_pass https://{{ .Env.deploy_hostname }}/narratives/;
             {{ end }}
 
             access_log /var/log/nginx/navigator.log upstream_log;
@@ -177,10 +184,16 @@ http {
         }
 
          location /navigator/ {
-            {{ if .Env.local_navigator }}
-                proxy_pass http://navigator/narratives/;
+            # {{ if .Env.local_navigator }}
+            #     proxy_pass http://navigator/narratives/;
+            # {{ else }}
+            #     proxy_pass https://kbase_navigator/narratives/;
+            # {{ end }}
+
+             {{ if .Env.deploy_ui_hostname }}
+                proxy_pass https://{{ .Env.deploy_ui_hostname }}/narratives/;
             {{ else }}
-                proxy_pass https://kbase_navigator/narratives/;
+                proxy_pass https://{{ .Env.deploy_hostname }}/narratives/;
             {{ end }}
 
             access_log /var/log/nginx/navigator.log upstream_log;
@@ -277,7 +290,7 @@ http {
             {{ end }}
             proxy_cookie_path /login /services/auth/login;
             proxy_cookie_path /link /services/auth/link;
-            proxy_pass https://services/services;
+            proxy_pass https://{{ .Env.deploy_hostname }}/services;
             proxy_set_header Connection "";
             client_max_body_size 300M;
             proxy_read_timeout 10m;
@@ -323,7 +336,7 @@ http {
             {{ if .Env.deploy_ui_hostname }}
                 include /etc/nginx/cors.conf;
             {{ end }}
-            proxy_pass https://dynamic_services/dynserv;
+            proxy_pass https://{{ .Env.deploy_hostname }}/dynserv;
             proxy_set_header Connection "";
             client_max_body_size 300M;
             proxy_read_timeout 10m;
@@ -355,22 +368,27 @@ http {
         }
 
         location /ui-assets/ {
-            proxy_pass https://{{ .Env.deploy_hostname }}:443;
+            proxy_pass https://{{ .Env.deploy_hostname }};
             proxy_set_header Connection "";
             client_max_body_size 300M;
         }
 
         location /sn/ {
-            proxy_pass https://{{ .Env.deploy_hostname }}:443;
+            proxy_pass https://{{ .Env.deploy_hostname }};
             proxy_set_header Connection "";
             client_max_body_size 300M;
         }
 
         location /narratives/ {
-            {{ if .Env.local_navigator }}
-                proxy_pass http://navigator/narratives/;
+            # {{ if .Env.local_navigator }}
+            #     proxy_pass http://navigator/narratives/;
+            # {{ else }}
+            #     proxy_pass https://kbase_navigator/narratives/;
+            # {{ end }}
+            {{ if .Env.deploy_ui_hostname }}
+                proxy_pass https://{{ .Env.deploy_ui_hostname }}/narratives/;
             {{ else }}
-                proxy_pass https://kbase_navigator/narratives/;
+                proxy_pass https://{{ .Env.deploy_hostname }}/narratives/;
             {{ end }}
 
             access_log /var/log/nginx/navigator.log upstream_log;
