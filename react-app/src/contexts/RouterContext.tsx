@@ -90,28 +90,46 @@ export default class RouterWrapper extends React.Component<
                 }
             }
         }, () => {
-            this.hashListener = () => {
-                const hashPath = this.getHashPath();
-                if (this.state.routerState.status === 'SUCCESS' &&
-                    hashPath === this.state.routerState.value.hashPath) {
-                    return;
-                }
-                this.setState({
-                    routerState: {
-                        status: AsyncProcessStatus.SUCCESS,
-                        value: {
-                            hashPath
-                        }
-                    }
-                });
-            }
-            window.addEventListener('hashchange', this.hashListener);
+            // this.hashListener = () => {
+            //     const hashPath = this.getHashPath();
+            //     if (this.state.routerState.status === 'SUCCESS' &&
+            //         hashPath === this.state.routerState.value.hashPath) {
+            //         return;
+            //     }
+            //     this.setState({
+            //         routerState: {
+            //             status: AsyncProcessStatus.SUCCESS,
+            //             value: {
+            //                 hashPath
+            //             }
+            //         }
+            //     });
+            // }
+            // console.log('hashchange listening...')
+            // window.addEventListener('hashchange', this.hashListener);
         });
+        this.hashListener = () => {
+            const hashPath = this.getHashPath();
+            if (this.state.routerState.status === 'SUCCESS' &&
+                hashPath === this.state.routerState.value.hashPath) {
+                return;
+            }
+            this.setState({
+                routerState: {
+                    status: AsyncProcessStatus.SUCCESS,
+                    value: {
+                        hashPath
+                    }
+                }
+            });
+        }
+        window.addEventListener('hashchange', this.hashListener);
     }
 
     componentWillUnmount() {
         if (this.hashListener !== null) {
             window.removeEventListener('hashchange', this.hashListener);
+            this.hashListener = null;
         }
     }
 

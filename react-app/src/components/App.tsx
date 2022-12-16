@@ -2,7 +2,7 @@ import { Component } from 'react';
 import AuthWrapper, { AuthContext, AuthState } from '../contexts/Auth';
 import ConfigWrapper, {
     ConfigContext,
-    ConfigState,
+    ConfigState
 } from '../contexts/ConfigContext';
 import RuntimeWrapper, { RuntimeContext } from '../contexts/RuntimeContext';
 import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
