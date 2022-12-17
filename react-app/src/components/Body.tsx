@@ -409,7 +409,8 @@ export default class Body extends Component<BodyProps, BodyState> {
                 }
             ),
 
-            // Redirects
+            // Redirect from the traditional #dashboard and the unused but
+            // perhaps unintentially used #narratives, to /narratives.
             new Route(
                 '^(dashboard|narratives)$',
                 { authenticationRequired: true },
@@ -419,30 +420,17 @@ export default class Body extends Component<BodyProps, BodyState> {
                 }
             ),
 
+            /*
+            Empty route, this is the default location when going to the bare origin.
+            */
             new Route('', { authenticationRequired: false }, (props: RouteProps) => {
+                // Direct redirect to /narratives; something is preventing a hashchange then 
+                // pathchange in CI. Does not occur locally, so may be a race condition triggered
+                // by slightly slower connection to CI compared to local.
                 changePath('narratives', { replace: true });
                 // changeHash2('narratives', { replace: true });
                 return <Loading message="Loading Narratives Navigator 1..." />;
             }),
-
-            // Empty route
-            // new Route('', { authenticationRequired: false }, (props: RouteProps) => {
-            //     switch (this.props.config.ui.defaults.path.type) {
-            //         case "path":
-            //             window.location.pathname = this.props.config.ui.defaults.path.value;
-            //             break;
-            //         case "hash":
-            //             window.location.hash = this.props.config.ui.defaults.path.value;
-            //     }
-
-            //     return <div>Redirecting...</div>;
-            // }),
-
-            // Not found route
-            // new Route('*', (props: RouteProps) => {
-            //     window.location.hash = 'navigator';
-            //     return null;
-            // }),
         ];
     }
 
