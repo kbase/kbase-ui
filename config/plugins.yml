@@ -66,10 +66,11 @@ plugins:
               account: kbase
     - name: organizations
       globalName: kbase-ui-plugin-organizations
-      version: 2.2.0
+      version: 2.3.1
       source:
           github:
               account: kbase
+              release: true
     - name: public-search
       globalName: kbase-ui-plugin-public-search
       version: 0.15.8
