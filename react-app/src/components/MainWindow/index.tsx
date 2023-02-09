@@ -19,11 +19,8 @@ export interface MainWindowProps {
     setTitle: (title: string) => void;
 }
 
-interface MainWindowState {
-}
 
-export default class MainWindow extends Component<MainWindowProps,
-    MainWindowState> {
+export default class MainWindow extends Component<MainWindowProps> {
     constructor(props: MainWindowProps) {
         super(props);
         this.state = {
@@ -151,6 +148,9 @@ export default class MainWindow extends Component<MainWindowProps,
                         <div className={styles.content}>
                             <RuntimeContext.Consumer>
                                 {(value) => {
+                                    // Try not to span the Body with runtime state
+                                    // changes.
+
                                     if (value) {
                                         return (
                                             <Body

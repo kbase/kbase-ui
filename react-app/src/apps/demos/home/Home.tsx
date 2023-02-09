@@ -177,9 +177,7 @@ export default class View extends Component<ViewProps> {
             </div>
             <div className="well-body">
                 <p>You do not currently have a link from your KBase account to an ORCID® account.</p>
-
             </div>
-
         </div>
     }
 

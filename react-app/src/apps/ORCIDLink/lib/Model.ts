@@ -16,6 +16,24 @@ const START_LINKING_SESSION_PATH = 'start-linking-session';
 
 // const GET_TEMP_LINK_RECORD_PATH = 'get-temp-link';
 
+/*
+{
+    "kind": "complete",
+    "session_id": "cc40bfdb-de2c-44ef-a449-35292b2d4a90",
+    "username": "eapearson",
+    "created_at": 1675900173092,
+    "expires_at": 1675900773092,
+    "return_link": null,
+    "skip_prompt": "false",
+    "orcid_auth": {
+        "name": "Erik Pearson",
+        "scope": "/read-limited openid /activities/update",
+        "expires_in": 631138518,
+        "orcid": "0000-0003-4997-3076"
+    }
+}
+*/
+
 export interface ORCIDAuth {
     scope: string
     orcid: string;
@@ -32,14 +50,38 @@ export interface LinkResult {
     link: LinkRecord | null;
 }
 
-export interface LinkingSessionInfo {
+export type LinkingSesssionType = 'initial' | 'started' | 'complete';
+
+export interface LinkingSessionBase {
+    kind: LinkingSesssionType;
     session_id: string;
+    username: string;
     created_at: number;
     expires_at: number;
-    orcid_auth: ORCIDAuth;
 }
 
 
+// TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
+export interface LinkingSessionInitial extends LinkingSessionBase {
+    kind: 'initial'
+}
+
+// TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
+export interface LinkingSessionStarted extends LinkingSessionBase {
+    kind: 'started';
+    return_link: string;
+    skip_prompt: boolean;
+}
+
+// TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
+export interface LinkingSessionComplete extends LinkingSessionBase {
+    kind: 'complete'
+    return_link: string;
+    skip_prompt: boolean;
+    orcid_auth: ORCIDAuth;
+}
+
+export type LinkingSession = LinkingSessionInitial | LinkingSessionStarted | LinkingSessionComplete
 
 // ORCID Link step
 
@@ -195,8 +237,7 @@ export class Model {
         this.config = config;
         this.auth = auth;
         this.orcidLinkClient = new ORCIDLinkServiceClient({
-            isDynamicService: true,
-            url: this.config.services.ServiceWizard.url,
+            url: this.config.services.ORCIDLink.url,
             timeout: 1000,
             token: auth.authInfo.token
         });
@@ -277,7 +318,7 @@ export class Model {
     }
 
 
-    async fetchLinkingSessionInfo(sessionId: string) {
+    async fetchLinkingSession(sessionId: string) {
         return this.orcidLinkClient.getLinkingSession(sessionId);
     }
 

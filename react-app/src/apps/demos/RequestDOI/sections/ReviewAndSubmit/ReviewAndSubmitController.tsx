@@ -18,7 +18,7 @@ interface ReviewAndSubmitControllerState {
 
 export default class ReviewAndSubmitController extends Component<ReviewAndSubmitControllerProps, ReviewAndSubmitControllerState> {
     componentDidMount(): void {
-        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 8: Review and Submit');
+        this.props.setTitle('DOI Request Form  - 9. Review and Submit');
     }
 
     async onDone() {

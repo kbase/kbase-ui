@@ -11,7 +11,7 @@ export class TitleField extends StringField {
         if (finalValue.length > 50) {
             return {
                 isValid: false,
-                message: 'Must be no more than 50 characters long'
+                message: `Must be no longer than 50 characters (it is ${finalValue.length}`
             }
         }
 
@@ -29,10 +29,10 @@ export class AbstractField extends StringField {
                 message: 'Must be at least 1 character long'
             }
         }
-        if (finalValue.length > 50) {
+        if (finalValue.length > 1000) {
             return {
                 isValid: false,
-                message: 'Must be no more than 1000 characters long'
+                message: `Must be no longer than 1000 characters (it is ${finalValue.length}`
             }
         }
 
@@ -50,10 +50,10 @@ export class ResearchOrganizationField extends StringField {
                 message: 'Must be at least 1 character long'
             }
         }
-        if (finalValue.length > 50) {
+        if (finalValue.length > 1000) {
             return {
                 isValid: false,
-                message: 'Must be no more than 1000 characters long'
+                message: `Must be no longer than 1000 characters (it is ${finalValue.length}`
             }
         }
 

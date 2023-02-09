@@ -52,18 +52,18 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
     }
 
     renderStepTitle(step: number, title: string) {
-        return <AlertMessage variant="info" style={{ fontWeight: 'bold' }} title={`Step ${step}: ${title}`} icon="square-o" />
+        return <AlertMessage variant="info" style={{ fontWeight: 'bold' }} title={`${step}. ${title}`} icon="square-o" />
     }
 
     renderDisabledStepTitle(step: number, title: string) {
-        return <AlertMessage variant="warning" style={{ fontWeight: 'bold' }} title={`Step ${step}: ${title}`} />
+        return <AlertMessage variant="warning" style={{ fontWeight: 'bold' }} title={`${step}. ${title}`} />
     }
 
     renderStepDoneTitle(step: number, title: string, onEdit?: () => void) {
         return <AlertMessage
             variant="success"
             style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '0' }}
-            title={`Step ${step}: ${title}`
+            title={`${step}. ${title}`
             }
         >
             <div style={{ flex: '1 1 0', display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
@@ -79,7 +79,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
     }
 
     renderStepPendingTitle(step: number, title: string) {
-        return <AlertMessage variant="secondary" title={`Step ${step}: ${title}`} icon="square-o" />
+        return <AlertMessage variant="secondary" title={`${step}. ${title}`} icon="square-o" />
     }
 
     async syncViewState(sections: DOIFormSections) {
@@ -1159,7 +1159,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
     }
 
     renderContractNumbersStep(section: ContractsSection) {
-        const stepNumber = 7;
+        const stepNumber = 8;
         const title = 'Contract Numbers';
         switch (section.status) {
             case StepStatus.NONE:
@@ -1311,7 +1311,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
     }
 
     renderReviewAndSubmitStep(section: ReviewAndSubmitSection) {
-        const stepNumber = 8;
+        const stepNumber = 9;
         const title = 'Review and Submit';
         // This step is a bit special, as it only becomes unlocked when the 
         // prior steps are COMPLETE.
@@ -1460,7 +1460,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
                     </Row>
                     <Row className="g-0">
                         <Col>
-                            {this.renderImportCitationsSection(citationsImport, 6, "Citations from Narrative")}
+                            {this.renderImportCitationsSection(citationsImport, 6, "Import Citations from Narrative")}
                         </Col>
                     </Row>
                     <Row className="g-0">

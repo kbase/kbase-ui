@@ -345,8 +345,7 @@ export class PushWorksModel {
         });
 
         this.orcidLinkClient = new ORCIDLinkServiceClient({
-            isDynamicService: true,
-            url: this.config.services.ServiceWizard.url,
+            url: this.config.services.ORCIDLink.url,
             timeout: 1000,
             token: auth.authInfo.token
         });

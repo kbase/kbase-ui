@@ -588,6 +588,17 @@
             "url": "https://{{ .Env.deploy_hostname }}/services/searchapi2/legacy",
             "name": "Search Engine",
             "type": "jsonrpc"
+        },
+        "ORCIDLink": {
+            "aliases": [],
+            "module": "ORCIDLink",
+            "url": "https://{{ .Env.deploy_hostname }}/services/orcidlink",
+            "name": "ORCID Link",
+            "type": "rest",
+            "version": {
+                "method": "info",
+                "propertyPath": "kbase_sdk_config.module-version"
+            }
         }
     },
     "dynamicServices": {

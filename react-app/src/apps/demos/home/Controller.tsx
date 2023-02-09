@@ -62,11 +62,12 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     async fetchLink(): Promise<LinkInfo | null> {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
 
-        const link = await model.getLink();
-
-        if (link === null) {
+        const isLinked = await model.isLinked();
+        if (!isLinked) {
             return null;
         }
+
+        const link = await model.getLink();
 
         const {
             created_at,

@@ -1,17 +1,17 @@
+import { changeHash2 } from 'lib/navigation';
 import { Component } from 'react';
+import { Alert } from 'react-bootstrap';
 import ReactDOM from 'react-dom/client';
 import * as uuid from 'uuid';
+import ErrorView, { ErrorInfo } from '../components/ErrorView';
 import { AuthenticationState, AuthenticationStatus } from '../contexts/Auth';
+import { isEqual } from '../lib/kb_lib/Utils';
 import { WindowChannel, WindowChannelInit } from '../lib/kb_lib/windowChannel';
 import { Messenger } from '../lib/messenger';
-import AutoPostForm from './AutoPostForm';
-import ErrorView, { ErrorInfo } from '../components/ErrorView';
-import IFrame, { IFrameProps } from './IFrame';
 import { Config } from '../types/config';
+import AutoPostForm from './AutoPostForm';
+import IFrame, { IFrameProps } from './IFrame';
 import { Params } from './Plugin';
-import { Alert } from 'react-bootstrap';
-import { isEqual } from '../lib/kb_lib/Utils';
-import { changeHash2 } from 'lib/navigation';
 
 import styles from './IFrameController.module.css';
 
@@ -364,7 +364,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                         return nextRequest.path.join('/');
                     }
                 })();
-                changeHash2(path || 'dashboard');
+                changeHash2(path || 'dashboard', {cleanNextRequest: true});
             } catch (ex) {
                 // TODO: something
                 console.error('YIKES! Error in auth navigation out.', ex);

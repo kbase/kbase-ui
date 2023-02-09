@@ -1,9 +1,10 @@
-import { CookieConfig } from "../lib/kb_lib/Auth2Session";
 import { Menu } from "./menu";
 
 export interface UIServiceConfig {
     name: string;
 }
+
+
 
 export type CoreServiceType = "rest" | "jsonrpc" | "jsonrpc2";
 
@@ -54,6 +55,8 @@ export type FeedsServiceConfig = RestServiceConfig;
 export type GroupsServiceConfig = RestServiceConfig;
 
 export type RelationEngineServiceConfig = RestServiceConfig;
+
+export type ORCIDLinkServiceConfig = RestServiceConfig;
 
 export type NarrativeJobServiceConfig = JSONRPC11ServiceConfig;
 
@@ -133,6 +136,21 @@ export interface HamburgerMenuDefintion {
     help: Menu;
 }
 
+export interface CookieConfig {
+    name: string;
+    maxAge: number;
+    backup: {
+        name: string;
+        domain: string | null;
+        enabled: boolean;
+    }
+}
+
+// export interface CookieConfig {
+//     name: string;
+//     domain: string | null;
+// }
+
 export interface DeployConfig {
     deploy: {
         id: string;
@@ -165,15 +183,7 @@ export interface DeployConfig {
             instrumentation: UIServiceConfig;
             notification: UIServiceConfig;
             session: UIServiceConfig & {
-                cookie: {
-                    maxAge: number;
-                    name: string;
-                    backup: {
-                        name: string;
-                        domain: string | null;
-                        enabled: boolean;
-                    };
-                };
+                cookie: CookieConfig;
                 loginWidget: string;
                 cookieChangeDetectionInterval: number;
                 tokenValidationInterval: number;
@@ -242,6 +252,7 @@ export interface DeployConfig {
         ServiceWizard: ServiceWizardConfig;
         Workspace: WorkspaceServiceConfig;
         RelationEngine: RelationEngineServiceConfig;
+        ORCIDLink: ORCIDLinkServiceConfig;
         SearchAPI2: SearchAPI2ServiceConfig;
         SearchAPI2Legacy: SearchAPI2LegacyServiceConfig;
         execution_engine2: ExecutionEngineServiceConfig;

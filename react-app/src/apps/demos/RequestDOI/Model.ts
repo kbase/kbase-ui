@@ -34,12 +34,12 @@ export interface LinkResult {
     link: LinkRecord | null;
 }
 
-export interface LinkingSessionInfo {
-    session_id: string;
-    created_at: number;
-    expires_at: number;
-    orcid_auth: ORCIDAuth;
-}
+// export interface LinkingSessionInfo {
+//     session_id: string;
+//     created_at: number;
+//     expires_at: number;
+//     orcid_auth: ORCIDAuth;
+// }
 
 
 export interface ReturnLink {
@@ -188,8 +188,7 @@ export class Model {
         this.config = config;
         this.auth = auth;
         this.orcidLinkClient = new ORCIDLinkServiceClient({
-            isDynamicService: true,
-            url: this.config.services.ServiceWizard.url,
+            url: this.config.services.ORCIDLink.url,
             timeout: 1000,
             token: auth.authInfo.token
         });

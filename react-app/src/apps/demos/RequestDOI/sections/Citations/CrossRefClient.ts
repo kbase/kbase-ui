@@ -185,12 +185,6 @@ export interface CrossRefResponseError extends CrossRefResponseBase {
 
 export type CrossRefResponse = CrossRefResponseWork | CrossRefResponseError;
 
-// const x = [{
-//     "id": "standard-series", "label": "Standard Series"
-// }];
-// x.forEach(({ id, label }) => {
-//     console.log(`${id}, "${label}"`)
-// });
 
 export interface CrossRefWorkList {
     facets: any;

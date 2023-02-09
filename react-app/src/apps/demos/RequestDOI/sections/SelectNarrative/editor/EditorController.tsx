@@ -37,7 +37,7 @@ export default class SelectNarrativeController extends Component<SelectNarrative
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 1: Select Narrative');
+        this.props.setTitle('DOI Request Form  - 1. Select Narrative');
         this.loadData();
     }
 

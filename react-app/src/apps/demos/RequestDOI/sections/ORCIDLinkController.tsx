@@ -36,7 +36,7 @@ export default class ORCIDLinkController extends Component<ORCIDLinkControllerPr
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 2: ORCID Link');
+        this.props.setTitle('DOI Request Form - 3. ORCID Link');
         this.loadData();
     }
 

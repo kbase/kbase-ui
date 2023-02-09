@@ -26,7 +26,6 @@ export default class ContractNumbersForm extends Component<ContractNumbersFormPr
                 return <Empty message="No DOE contract numbers" />
             }
             return this.props.contractNumbers.doe.map(({ autoFocus, value: contractNumber }, index) => {
-                console.log('auto focus?', autoFocus);
                 return <Stack key={index} >
                     <Form.Group as={Row} className="gx-0">
                         <Col>

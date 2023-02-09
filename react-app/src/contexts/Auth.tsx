@@ -9,7 +9,6 @@ import {
     AsyncProcessSuccess
 } from '../lib/AsyncProcess';
 
-import { BrowserAuth } from '../lib/BrowserAuth';
 import { Account, Auth2, TokenInfo } from '../lib/kb_lib/Auth2';
 
 import * as Cookie from 'es-cookie';
@@ -17,7 +16,7 @@ import { changeHash2 } from 'lib/navigation';
 import { AuthError } from '../lib/kb_lib/Auth2Error';
 import { JSONRPC11Exception } from '../lib/kb_lib/comm/JSONRPC11/JSONRPC11';
 import { Monitor } from '../lib/Monitor';
-import { Config } from '../types/config';
+import { Config, CookieConfig } from '../types/config';
 import { HashPath } from './RouterContext';
 
 /**
@@ -117,8 +116,10 @@ export default class AuthWrapper extends React.Component<
 > {
     tokenChangeMonitor: Monitor;
     tokenValidationMonitor: Monitor;
+    config: CookieConfig;
     constructor(props: AuthWrapperProps) {
         super(props);
+        this.config = this.props.config.ui.services.session.cookie;
         this.state = {
             authState: {
                 status: AsyncProcessStatus.NONE,
@@ -171,7 +172,7 @@ export default class AuthWrapper extends React.Component<
                     case AuthenticationStatus.UNAUTHENTICATED:
                         return this.checkAuth();
                     case AuthenticationStatus.AUTHENTICATED: {
-                        const token = BrowserAuth.getToken();
+                        const token = this.getAuthCookie();
                         if (token === null) {
                             // Handles case in which the ui had been logged in, but now there is no token!
                             this.setState({ authState: this.unauthenticatedState() }, () => {
@@ -259,10 +260,10 @@ export default class AuthWrapper extends React.Component<
     }
 
     async ensureValidToken() {
-        const token = BrowserAuth.getToken();
+        const token = this.getAuthCookie();
 
         const removeToken = () => {
-            BrowserAuth.removeToken();
+            this.removeAuthCookie();
             this.setState({
                 authState: this.unauthenticatedState(),
             }, () => {
@@ -270,7 +271,7 @@ export default class AuthWrapper extends React.Component<
             });
         }
 
-        if (token === null) {
+        if (typeof token === 'undefined') {
             this.setState({ authState: this.unauthenticatedState() });
             return;
         }
@@ -300,9 +301,9 @@ export default class AuthWrapper extends React.Component<
     }
 
     async syncTokenInfo() {
-        const token = BrowserAuth.getToken();
+        const token = this.getAuthCookie();
 
-        if (token === null) {
+        if (typeof token === 'undefined') {
             this.setState({ authState: this.unauthenticatedState() });
             return;
         }
@@ -355,13 +356,13 @@ export default class AuthWrapper extends React.Component<
                 // BrowserAuth.removeToken();
                 switch (ex.code) {
                     case '10020':
-                        BrowserAuth.removeToken();
+                        this.removeAuthCookie();
                         this.setState({
                             authState: this.unauthenticatedState(),
                         });
                         break;
                     default:
-                        BrowserAuth.removeToken();
+                        this.removeAuthCookie();
                         this.setState({
                             authState: this.unauthenticatedState(),
                         });
@@ -429,10 +430,9 @@ export default class AuthWrapper extends React.Component<
     }
 
     async checkAuth() {
-        const token = BrowserAuth.getToken();
+        const token = this.getAuthCookie();
 
-        if (token === null) {
-            // await this.asyncSetState({ authState: this.unauthenticatedState() });
+        if (typeof token === 'undefined') {
             // This is the stable state -- was unauthenticated, still is!
             return;
         }
@@ -501,14 +501,14 @@ export default class AuthWrapper extends React.Component<
                 // BrowserAuth.removeToken();
                 switch (ex.code) {
                     case '10020':
-                        BrowserAuth.removeToken();
+                        this.removeAuthCookie();
                         await this.asyncSetState({
                             authState: this.unauthenticatedState(),
                         });
-                        changeHash2('auth2/signedout');
+                        changeHash2('auth2/signedout', );
                         break;
                     default:
-                        BrowserAuth.removeToken();
+                        this.removeAuthCookie();
                         await this.asyncSetState({
                             authState: this.unauthenticatedState(),
                         });
@@ -531,16 +531,27 @@ export default class AuthWrapper extends React.Component<
         }
     }
 
+    getAuthCookie() {
+        return Cookie.get(this.config.name);
+    }
+
+    removeAuthCookie() {
+         const cookieAttributes: Cookie.CookieAttributes = {
+            path: '/'
+        };
+        Cookie.remove(this.config.name, cookieAttributes);
+    }
+
     async logout() {
         // Remove cookie
-        const token = BrowserAuth.getToken();
+        const token = this.getAuthCookie();
 
         // Logout from auth
-        if (token === null) {
+        if (typeof token === 'undefined') {
             return;
         }
 
-        BrowserAuth.removeToken();
+        this.removeAuthCookie();
 
         const auth = new Auth2({
             baseUrl: this.props.config.services.Auth2.url,
@@ -572,8 +583,8 @@ export default class AuthWrapper extends React.Component<
                 this.setState({ authState: this.errorState('Unknown') });
             }
         }
-        const noToken = await BrowserAuth.getToken();
-        if (noToken === null) {
+        const noToken = await this.getAuthCookie();
+        if (typeof noToken === 'undefined') {
             this.setState({ authState: this.unauthenticatedState() });
         } else {
             this.setState({ authState: this.errorState('Could not log out') });
@@ -581,14 +592,33 @@ export default class AuthWrapper extends React.Component<
     }
 
     async login(token: string, expires: number) {
+        // Set the primary auth cookie.
         const cookieAttributes: Cookie.CookieAttributes = {
             path: '/',
-            sameSite: 'strict'
+            sameSite: 'lax'
         };
         if (expires) {
             cookieAttributes.expires = new Date(expires);
         }
-        Cookie.set(this.props.config.services.Auth2.cookieName, token, cookieAttributes);
+        Cookie.set(this.config.name, token, cookieAttributes);
+
+        // Then set the backup cookie.
+        // This cookie is only used by services in prod, since prod services
+        // operate on a different host than the ui.
+        if (this.config.backup.enabled) {
+            const cookieAttributes: Cookie.CookieAttributes = {
+                path: '/',
+                sameSite: 'lax'
+            };
+            if (expires) {
+                cookieAttributes.expires = new Date(expires);
+            }
+            if (this.config.backup.domain) {
+                cookieAttributes.domain = this.config.backup.domain;
+            }
+            Cookie.set(this.config.backup.name, token, cookieAttributes);
+        }
+
         await this.syncTokenInfo();
     }
 

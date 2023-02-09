@@ -46,7 +46,7 @@ export default class DOIRequestAdminController extends Component<DOIRequestAdmin
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link - Demos - DOI Request')
+        this.props.setTitle('DOI Request Form')
         this.loadData();
     }
 

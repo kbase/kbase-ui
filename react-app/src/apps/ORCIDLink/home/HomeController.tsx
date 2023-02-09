@@ -15,7 +15,7 @@ export interface HomeControllerProps {
     config: Config;
     auth: AuthenticationStateAuthenticated;
     returnLink?: ReturnLink;
-    skipPrompt?: boolean;
+    skipPrompt: boolean;
     setTitle: (title: string) => void;
 }
 
@@ -150,7 +150,6 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
             });
         } catch (ex) {
             if (ex instanceof ServiceError) {
-                console.log("error", ex, ex.data)
                 this.setState({
                     linkState: {
                         status: AsyncProcessStatus.ERROR,

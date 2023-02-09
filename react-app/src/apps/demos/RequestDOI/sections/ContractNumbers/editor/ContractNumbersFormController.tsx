@@ -59,7 +59,7 @@ export default class ContractNumbersFormController extends Component<ContractNum
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 5: Contract Numbers');
+        this.props.setTitle('DOI Request Form  - 8. Contract Numbers');
     }
 
     // Actions

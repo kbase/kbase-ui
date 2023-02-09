@@ -74,40 +74,16 @@ export default class RouterWrapper extends React.Component<
         super(props);
         this.state = {
             routerState: {
-                status: AsyncProcessStatus.NONE,
-            },
-        };
-        this.hashListener = null;
-    }
-
-    componentDidMount() {
-        // First time through, seed the navigation context
-        this.setState({
-            routerState: {
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
                     hashPath: this.getHashPath()
                 }
             }
-        }, () => {
-            // this.hashListener = () => {
-            //     const hashPath = this.getHashPath();
-            //     if (this.state.routerState.status === 'SUCCESS' &&
-            //         hashPath === this.state.routerState.value.hashPath) {
-            //         return;
-            //     }
-            //     this.setState({
-            //         routerState: {
-            //             status: AsyncProcessStatus.SUCCESS,
-            //             value: {
-            //                 hashPath
-            //             }
-            //         }
-            //     });
-            // }
-            // console.log('hashchange listening...')
-            // window.addEventListener('hashchange', this.hashListener);
-        });
+        };
+        this.hashListener = null;
+    }
+
+    componentDidMount() {
         this.hashListener = () => {
             const hashPath = this.getHashPath();
             if (this.state.routerState.status === 'SUCCESS' &&

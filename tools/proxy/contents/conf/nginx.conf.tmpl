@@ -137,9 +137,14 @@ http {
 
             include /etc/nginx/cors.conf;
             {{ if .Env.local_narrative }}
-                proxy_pass http://narrative/narrative/;
+                proxy_pass http://narrative/narrative/; 
             {{ else }}
-                proxy_pass https://narrative/narrative/;
+                {{ if .Env.deploy_ui_hostname }}
+                    proxy_pass https://{{ .Env.deploy_ui_hostname }}/narrative/;
+                {{ else }}
+                    proxy_pass https://{{ .Env.deploy_hostname }}/narrative/;
+                {{ end }}
+                # proxy_pass https://narrative/narrative/;
             {{ end }}
 
             proxy_connect_timeout 10s;
@@ -266,12 +271,20 @@ http {
                 client_max_body_size 300M;
             }
         {{ else }}
+            location /services/{{ . }}/ {
+                {{ if $.Env.deploy_ui_hostname }}
+                include /etc/nginx/cors.conf;
+                {{ end }}
+                proxy_pass http://{{ . }}:5000/;
+                proxy_set_header Connection "";
+                client_max_body_size 300M;
+                proxy_read_timeout 10m;
+            }
             location /services/{{ . }} {
                 {{ if $.Env.deploy_ui_hostname }}
                 include /etc/nginx/cors.conf;
                 {{ end }}
-                set $upstream http://{{ . }}:5000;
-                proxy_pass $upstream;
+                proxy_pass http://{{ . }}:5000;
                 proxy_set_header Connection "";
                 client_max_body_size 300M;
                 proxy_read_timeout 10m;
@@ -355,7 +368,12 @@ http {
             {{ if .Env.local_narrative }}
                 proxy_pass http://narrative/narrative/;
             {{ else }}
-                proxy_pass https://narrative/narrative/;
+                {{ if .Env.deploy_ui_hostname }}
+                    proxy_pass https://{{ .Env.deploy_ui_hostname }}/narrative/;
+                {{ else }}
+                    proxy_pass https://{{ .Env.deploy_hostname }}/narrative/;
+                {{ end }}
+                # proxy_pass https://narrative/narrative/;
             {{ end }}
 
             access_log /var/log/nginx/narrative.log upstream_log;

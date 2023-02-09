@@ -19,7 +19,7 @@ interface AppState { }
 export default class App extends Component<AppProps, AppState> {
     render() {
         return (
-            <ConfigWrapper>
+                <ConfigWrapper>
                 <ConfigContext.Consumer>
                     {(configValue: ConfigState) => {
                         switch (configValue.status) {
@@ -62,10 +62,7 @@ export default class App extends Component<AppProps, AppState> {
                                                                     {(
                                                                         value
                                                                     ) => {
-                                                                        if (
-                                                                            value ===
-                                                                            null
-                                                                        ) {
+                                                                        if (value === null) {
                                                                             return;
                                                                         }
                                                                         return (

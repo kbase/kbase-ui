@@ -68,7 +68,7 @@ export default class DescriptionController extends Component<DescriptionControll
         }
     }
     componentDidMount() {
-        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 7: Description');
+        this.props.setTitle('DOI Request Form - 2. Description');
     }
     addKeyword(keyword: string) {
         const keywords = this.state.description.keywords.add(keyword);
@@ -172,7 +172,6 @@ export default class DescriptionController extends Component<DescriptionControll
 
 
     onDone() {
-        console.log('on done...', this.isFormValid(this.state.description));
         if (!this.isFormValid(this.state.description)) {
             return;
         }

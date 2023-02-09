@@ -65,7 +65,7 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
             <Row>
                 <Col md={12}>
                     <Row style={{ justifyContent: 'center' }} >
-                        <Button variant="primary" className="w-auto" onClick={this.props.onDone}>Next <span className="fa fa-hand-o-down" /></Button>
+                        <Button variant="primary" className="w-auto" onClick={this.props.onDone}>Done</Button>
                     </Row>
                 </Col>
             </Row>

@@ -74,17 +74,17 @@ export default class View extends Component<ViewProps, ViewState> {
     }
     renderStepTitle(step: number, title: string) {
         return <Alert variant="info" style={{ fontWeight: 'bold' }}>
-            Step {step}: {title}
+            <span style={{border: '1px solid silver', padding: '0.125em', borderRadius: '0.5em'}}>{step}</span> {title}
         </Alert>
     }
     renderStepDoneTitle(step: number, title: string) {
         return <Alert variant="success">
-            Step {step}: {title}
+            <span style={{border: '1px solid silver', padding: '0.125em', borderRadius: '0.5em'}}>{step}</span> {title}
         </Alert>
     }
     renderStepPendingTitle(step: number, title: string) {
         return <Alert variant="secondary">
-            Step {step}: {title}
+            <span style={{border: '1px solid silver', padding: '0.125em', borderRadius: '0.5em'}}>{step}</span> {title}
         </Alert>
     }
 

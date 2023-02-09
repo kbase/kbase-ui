@@ -4,7 +4,7 @@ import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
 import { Component } from "react";
 import { Config } from "types/config";
-import { LinkingSessionInfo, Model } from "../lib/Model";
+import { LinkingSessionComplete, Model } from "../lib/Model";
 import { ReturnLink } from "../lib/ORCIDLinkClient";
 import Continue from "./Continue";
 
@@ -19,11 +19,11 @@ export interface ContinueControllerProps {
 
 export interface ContinueState {
     token: string;
-    linkingSessionInfo: LinkingSessionInfo
+    linkingSession: LinkingSessionComplete
 }
 
 interface ContinueControllerState {
-    continueState: AsyncProcess<LinkingSessionInfo, { message: string }>
+    continueState: AsyncProcess<LinkingSessionComplete, { message: string }>
 }
 
 export default class ContinueController extends Component<ContinueControllerProps, ContinueControllerState> {
@@ -59,14 +59,26 @@ export default class ContinueController extends Component<ContinueControllerProp
 
         try {
 
-            const linkingSessionInfo = await model.fetchLinkingSessionInfo(this.props.linkingSessionId);
-            this.setState({
-                continueState: {
-                    status: AsyncProcessStatus.SUCCESS,
-                    value: linkingSessionInfo as LinkingSessionInfo
-                }
-            });
+            const linkingSession = await model.fetchLinkingSession(this.props.linkingSessionId);
+            if (linkingSession.kind !== 'complete') {
+                this.setState({
+                    continueState: {
+                        status: AsyncProcessStatus.ERROR,
+                        error: {
+                            message: `Incorrect linking session state, expected "complete", have "${linkingSession.kind}"`
+                        }
+                    }
+                })
+            } else {
+                this.setState({
+                    continueState: {
+                        status: AsyncProcessStatus.SUCCESS,
+                        value: linkingSession
+                    }
+                });
+            }
         } catch (ex) {
+            console.error('ERROR', ex);
             if (ex instanceof Error) {
                 this.setState({
                     continueState: {
@@ -137,9 +149,9 @@ export default class ContinueController extends Component<ContinueControllerProp
         window.open('https://ci.kbase.us/#orcidlink', '_parent');
     }
 
-    renderSuccess(linkingSessionInfo: LinkingSessionInfo) {
+    renderSuccess(linkingSession: LinkingSessionComplete) {
         return <Continue
-            linkingSessionInfo={linkingSessionInfo}
+            linkingSession={linkingSession}
             returnLink={this.props.returnLink}
             confirmLink={this.confirmLink.bind(this)}
             cancelLink={this.cancelLink.bind(this)}

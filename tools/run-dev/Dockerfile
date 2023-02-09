@@ -1,4 +1,4 @@
-FROM node:16-alpine3.15
+FROM node:18-alpine3.15
 
 RUN apk upgrade --update-cache --available && \
     apk add --update --no-cache npm python3 make && \

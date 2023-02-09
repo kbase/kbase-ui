@@ -1,11 +1,12 @@
 import { Role } from "@kbase/ui-lib/lib/Auth";
-import { AuthenticatedRouteProps, RouteProps } from "../components/Router2";
+import { RouteProps } from "../components/Router2";
 import { HashPath } from "../contexts/RouterContext";
 
 export enum RouteSpecElementType {
     REGEXP = "REGEXP",
     PARAM = "PARAM",
-    WILDCARD = "WILDCARD",
+    SOME_OR_NONE = "SOME_OR_NONE",
+    SOME = "SOME"
 }
 
 export interface RouteSpecElementBase {
@@ -17,8 +18,12 @@ export interface RouteSpecElementLiteral extends RouteSpecElementBase {
     regexp: RegExp;
 }
 
-export interface RouteSpecElementWildcard extends RouteSpecElementBase {
-    type: RouteSpecElementType.WILDCARD;
+export interface RouteSpecElementSomeOrNone extends RouteSpecElementBase {
+    type: RouteSpecElementType.SOME_OR_NONE;
+}
+
+export interface RouteSpecElementSome extends RouteSpecElementBase {
+    type: RouteSpecElementType.SOME;
 }
 
 export interface RouteSpecElementParam extends RouteSpecElementBase {
@@ -30,7 +35,8 @@ export interface RouteSpecElementParam extends RouteSpecElementBase {
 export type RouteSpecElement =
     | RouteSpecElementLiteral
     | RouteSpecElementParam
-    | RouteSpecElementWildcard;
+    | RouteSpecElementSomeOrNone
+    | RouteSpecElementSome;
 
 export type RouteSpec = Array<RouteSpecElement>;
 
@@ -79,7 +85,18 @@ export class Route {
                 // The handler is expected to utilize the variable number of
                 // path elements.
                 routeSpec.push({
-                    type: RouteSpecElementType.WILDCARD,
+                    type: RouteSpecElementType.SOME_OR_NONE,
+                });
+                // TODO: could set up to throw if there are more
+                // elements;
+                break;
+            } else if (element === "+") {
+                // The wildcard can only be used as the last element --
+                // it means we match any # of path elements, including none.
+                // The handler is expected to utilize the variable number of
+                // path elements.
+                routeSpec.push({
+                    type: RouteSpecElementType.SOME,
                 });
                 // TODO: could set up to throw if there are more
                 // elements;
@@ -157,17 +174,34 @@ export class Route {
                         params.set(routeElement.name, pathElement);
                     }
                     break;
-                case RouteSpecElementType.WILDCARD:
+                case RouteSpecElementType.SOME:
+
+                    if (typeof pathElement === 'undefined') {
+                        return null;
+                    }
                     for (const pathElement of hashPath.path.slice(index)) {
                         literalPathElements.push(pathElement);
                     }
+                    break;
+                case RouteSpecElementType.SOME_OR_NONE:
+                    // To honor the "none", we consider it a match if 
+                    // there are no more actual path elements.
+
+                    // We have run out of path without a match, so we
+                    // can say this is not a match!
+
+
+                    for (const pathElement of hashPath.path.slice(index)) {
+                        literalPathElements.push(pathElement);
+                    }
+
             }
         }
 
         /*
-                If we get to the end, and there are more hash path elements not covered by the
-                route, consider this a failure to match.
-            */
+            If we get to the end, and there are more hash path elements not covered by the
+            route, consider this a failure to match.
+        */
         if (literalPathElements.length + params.size !== hashPath.path.length) {
             return null;
         }

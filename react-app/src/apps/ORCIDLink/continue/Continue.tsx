@@ -4,12 +4,12 @@ import { Component } from 'react';
 import { Button, Col, Row, Stack } from 'react-bootstrap';
 import { renderORCIDIcon, renderScope } from '../common';
 import { ORCID_URL } from '../lib/constants';
-import { LinkingSessionInfo } from '../lib/Model';
+import { LinkingSessionComplete } from '../lib/Model';
 import { ReturnLink } from '../lib/ORCIDLinkClient';
 import styles from './Continue.module.css';
 
 export interface ContinueProps {
-    linkingSessionInfo: LinkingSessionInfo;
+    linkingSession: LinkingSessionComplete;
     returnLink?: ReturnLink;
     confirmLink: () => Promise<void>;
     cancelLink: () => Promise<void>;
@@ -17,7 +17,8 @@ export interface ContinueProps {
 
 export default class Continue extends Component<ContinueProps> {
     renderORCIDUserRecord() {
-        const { orcid_auth: { orcid, scope }, created_at, expires_at } = this.props.linkingSessionInfo;
+
+        const { orcid_auth: { orcid, scope }, created_at, expires_at } = this.props.linkingSession;
         return <Well style={{ marginBottom: '1em' }}>
             <Well.Body>
                 <div className="flex-table">
@@ -39,7 +40,7 @@ export default class Continue extends Component<ContinueProps> {
                             Name on Account
                         </div>
                         <div className="flex-col">
-                            {this.props.linkingSessionInfo.orcid_auth.name}
+                            {this.props.linkingSession.orcid_auth.name}
                         </div>
                     </div>
                 </div>
@@ -48,7 +49,7 @@ export default class Continue extends Component<ContinueProps> {
     }
 
     renderRequestedScopes() {
-        const { orcid_auth: { orcid, scope }, created_at, expires_at } = this.props.linkingSessionInfo;
+        const { orcid_auth: { orcid, scope }, created_at, expires_at } = this.props.linkingSession  ;
         return <Well style={{ marginBottom: '1em' }}>
             <Well.Body>
                 <div className="flex-table">

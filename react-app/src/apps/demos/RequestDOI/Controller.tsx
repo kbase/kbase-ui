@@ -43,7 +43,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link - Demos - DOI Request')
+        this.props.setTitle('DOI Request Form')
         this.loadData();
     }
 

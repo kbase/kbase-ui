@@ -33,7 +33,7 @@ export default class CitationsEditorController extends Component<CitationsEditor
 
     componentDidMount() {
 
-        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Citations');
+        this.props.setTitle('DOI Request Form - 7. Citations');
         // this.loadData();
     }
 

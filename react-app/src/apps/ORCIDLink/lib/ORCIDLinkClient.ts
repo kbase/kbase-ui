@@ -1,9 +1,10 @@
 import { toJSON } from "lib/kb_lib/jsonLike";
-import { MultiServiceClient } from "./DynamicServiceClient";
-import { LinkingSessionInfo, LinkRecord } from "./Model";
+import { ServiceClient } from "./DynamicServiceClient";
+// import { MultiServiceClient } from "./DynamicServiceClient";
+import { LinkingSession, LinkRecord } from "./Model";
 
 
-const WORKS_PATH = 'works';
+const WORKS_PATH = 'orcid/works';
 
 
 const GET_PROFILE_PATH = 'orcid/profile';
@@ -113,7 +114,7 @@ export interface ReturnLink {
 //     metadata: CSLMetadata
 // }
 
-export class ORCIDLinkServiceClient extends MultiServiceClient {
+export class ORCIDLinkServiceClient extends ServiceClient {
     module = 'ORCIDLink';
 
     async getProfile(): Promise<ORCIDProfile> {
@@ -163,19 +164,17 @@ export class ORCIDLinkServiceClient extends MultiServiceClient {
 
     async startLinkingSession(sessionId: string, returnLink?: ReturnLink, skipPrompt?: boolean): Promise<void> {
         const baseURL = await this.getURL();
-        const startURL = new URL(`${baseURL}/${LINKING_SESSIONS_PATH}/${sessionId}/start`);
+        const startURL = new URL(`${baseURL}/${LINKING_SESSIONS_PATH}/${sessionId}/oauth/start`);
         // startURL.searchParams.set('session_id', sessionId);
         if (returnLink) {
             startURL.searchParams.set('return_link', JSON.stringify(returnLink));
         }
-        if (skipPrompt) {
-            startURL.searchParams.set('skip_prompt', 'true');
-        }
+        startURL.searchParams.set('skip_prompt', skipPrompt ? 'true' : 'false')
         window.open(startURL, '_parent');
     }
 
-    async getLinkingSession(sessionId: string): Promise<LinkingSessionInfo> {
-        return await this.get<LinkingSessionInfo>(`${LINKING_SESSIONS_PATH}/${sessionId}`)
+    async getLinkingSession(sessionId: string): Promise<LinkingSession> {
+        return await this.get<LinkingSession>(`${LINKING_SESSIONS_PATH}/${sessionId}`)
     }
 
     async deletelLinkingSession(token: string): Promise<void> {

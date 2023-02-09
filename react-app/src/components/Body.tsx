@@ -361,9 +361,9 @@ export default class Body extends Component<BodyProps, BodyState> {
             new Route('about/*', { authenticationRequired: false }, (props: RouteProps) => {
                 return <About {...this.props} {...props} />;
             }),
-            new Route('about', { authenticationRequired: false }, (props: RouteProps) => {
-                return <About {...this.props} {...props} />;
-            }),
+            // new Route('about', { authenticationRequired: false }, (props: RouteProps) => {
+            //     return <About {...this.props} {...props} />;
+            // }),
             new Route(
                 'developer',
                 { authenticationRequired: false, rolesRequired: ['DevToken'] },
@@ -434,13 +434,20 @@ export default class Body extends Component<BodyProps, BodyState> {
         ];
     }
 
+    shouldComponentUpdate(nextProps: Readonly<BodyProps>, nextState: Readonly<BodyState>, nextContext: any): boolean {
+        if (this.props.authState === nextProps.authState &&
+            this.props.config === nextProps.config) {
+            return false;
+        }    
+        return true;
+    }
+
     render() {
         return (
             <div className={styles.main} data-k-b-testhook-component="body">
                 <RouterWrapper>
                     <RouterContext.Consumer>
                         {(value) => {
-                            console.log('router context consumer...', value)
                             switch (value.status) {
                                 case AsyncProcessStatus.NONE:
                                     return <div />;

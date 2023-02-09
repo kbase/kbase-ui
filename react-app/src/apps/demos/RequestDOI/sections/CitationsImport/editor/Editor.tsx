@@ -95,7 +95,7 @@ export default class CitationsImportEditor extends Component<CitationsImportEdit
     render() {
         return <Well style={{ marginBottom: '1em' }}>
             <Well.Header>
-                Edit Citations
+                Import Citations
             </Well.Header>
             <Well.Body>
                 <Stack gap={2} style={{ padding: '1em' }}>

@@ -23,7 +23,7 @@ export default class GeolocationController extends Component<GeolocationControll
         }
     }
     componentDidMount() {
-        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 6: Geolocation');
+        this.props.setTitle('ORCID® Link  - Demos - DOI Form - 6: Geolocation');
     }
     addLocation(location: Location) {
         this.setState({

@@ -1,11 +1,17 @@
 import Empty from "components/Empty";
 import { Component } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { FieldStatus, StringArrayField } from "../Field";
+
+export interface Names {
+    singular: string;
+    plural: string;
+}
 
 export interface FormStringArrayFieldProps {
     field: StringArrayField;
-    name: string;
+    // name: string;
+    names: Names;
     label: string;
     onAdd: (value: Array<string>) => void;
     onRemove: (index: number) => void;
@@ -82,25 +88,27 @@ export class FormStringArrayField extends Component<FormStringArrayFieldProps, F
                 classes.push('is-invalid')
         }
 
-        return <Row className="g-0">
-            <Col>
-                {this.renderValueList()}
-            </Col>
-            <Col>
-                <Form onSubmit={(e) => {
+        return <Form onSubmit={(e) => {
                     e.preventDefault();
                     this.onAddKeyword();
-                }}>
+        }}>
+            <Stack gap={2}>
+                <div>
                     <Form.Control
                         type="text"
-                        name="keyword"
+                        name={this.props.names.plural}
+                        placeholder={`Enter a new ${this.props.names.singular}`}
                         value={this.state.keyword}
+                        style={{width: '12em'}}
                         className={classes.join(' ')}
                         onInput={(e) => { this.onEditKeyword(e.currentTarget.value) }}
                     />
-                </Form>
-            </Col>
-        </Row>
+                </div>
+                <div>
+                    {this.renderValueList()}
+                </div>
+            </Stack>
+        </Form>
     }
 
 

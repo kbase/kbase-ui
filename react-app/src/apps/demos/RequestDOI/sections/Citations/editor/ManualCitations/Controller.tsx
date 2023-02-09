@@ -46,7 +46,6 @@ export class ManualCitationFormController extends Component<ManualCitationFormCo
                 if (m === null) {
                     return rawCitation.citation;
                 }
-                console.log('em', m);
                 return m[1];
             })();
             if (citation === null) {

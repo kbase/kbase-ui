@@ -165,7 +165,7 @@ export default class DescriptionForm extends Component<DescriptionFormProps, Des
                         label="Abstract" onEdit={this.props.onEditAbstract} />
                     <FormStringArrayField
                         field={this.props.description.keywords}
-                        name="keywords"
+                        names={{ singular: "keyword", plural: "keywords" }}
                         label="Keywords" onAdd={this.props.onAddKeywords} onRemove={this.props.onRemoveKeyword} />
                 </Stack>
             </Well.Body>

@@ -36,7 +36,7 @@ export default class CitationsImportController extends Component<CitationsImport
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link  - Demos - DOI Form - Step 4: Citations');
+        this.props.setTitle('DOI Request Form  - 6. Import Citations');
         this.loadData();
     }
 

@@ -1,9 +1,9 @@
 import { Component } from 'react';
+import PluginWrapper2 from '../components/PluginWrapper/PluginWrapper2';
+import { RouteProps, Router } from '../components/Router2';
 import { AuthenticationState } from '../contexts/Auth';
 import { Route, SimplePluginRouteSpec } from '../lib/Route';
 import { Config } from '../types/config';
-import PluginWrapper2 from '../components/PluginWrapper/PluginWrapper2';
-import { RouteProps, Router } from '../components/Router2';
 
 export interface CatalogProps extends RouteProps {
     config: Config;

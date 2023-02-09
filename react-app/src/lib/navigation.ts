@@ -1,7 +1,8 @@
 
 export interface ChangePathOptions {
     search?: { [key: string]: string },
-    replace?: boolean
+    replace?: boolean,
+    cleanNextRequest?: boolean
 }
 
 export function changePath(
@@ -98,7 +99,7 @@ export function changeHash2(
     const url = new URL(window.location.href);
     // clear any other bits here, like the real path and the
     // query params.
-    for (const key of url.searchParams.keys()) {
+    for (const key of Array.from(url.searchParams.keys())) {
         url.searchParams.delete(key);
     }
     url.hash = (() => {
@@ -111,6 +112,8 @@ export function changeHash2(
     if (search) {
         for (const [key, value] of Object.entries(search)) {
             if (!value) {
+                url.searchParams.delete(key);
+            } else if (options.cleanNextRequest && key === 'nextrequest') {
                 url.searchParams.delete(key);
             } else {
                 url.searchParams.set(key, value);
