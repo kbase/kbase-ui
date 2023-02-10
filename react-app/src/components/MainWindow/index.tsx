@@ -19,7 +19,6 @@ export interface MainWindowProps {
     setTitle: (title: string) => void;
 }
 
-
 export default class MainWindow extends Component<MainWindowProps> {
     constructor(props: MainWindowProps) {
         super(props);
@@ -75,14 +74,15 @@ export default class MainWindow extends Component<MainWindowProps> {
                             if (!value) {
                                 return;
                             }
-                            return <Notifications
-                                notificationState={value.notificationState}
-                                addNotification={value.addNotification}
-                                removeNotification={value.removeNotification}
-                            />
+                            return (
+                                <Notifications
+                                    notificationState={value.notificationState}
+                                    addNotification={value.addNotification}
+                                    removeNotification={value.removeNotification}
+                                />
+                            );
                         }}
                     </RuntimeContext.Consumer>
-
                 </div>
                 {/* <div className={styles.connectionStatus}>
                     <ConnectionStatus />
@@ -134,10 +134,7 @@ export default class MainWindow extends Component<MainWindowProps> {
 
     render() {
         return (
-            <div
-                className={styles.main}
-                data-k-b-testhook-component="mainwindow"
-            >
+            <div className={styles.main} data-k-b-testhook-component="mainwindow">
                 <div className={styles.header}>{this.renderHeader()}</div>
                 <div className={styles.body}>
                     <div className={styles.navArea}>
@@ -155,6 +152,7 @@ export default class MainWindow extends Component<MainWindowProps> {
                                         return (
                                             <Body
                                                 {...this.props}
+                                                pluginsInfo={value.pluginsInfo}
                                                 setTitle={value.setTitle}
                                             />
                                         );

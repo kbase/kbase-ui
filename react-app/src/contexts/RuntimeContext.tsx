@@ -1,23 +1,21 @@
 import React, { PropsWithChildren } from 'react';
+import { PluginInfo } from 'types/info';
 import * as uuid from 'uuid';
 import { ConnectionStatus, PingStatKind, PingStats } from '../lib/ConnectionStatus';
 import { Messenger, SubscriptionRef } from '../lib/messenger';
 import { Config } from '../types/config';
 import { AuthenticationState } from './Auth';
 
-
 export interface NotificationsSummary {
-    info: number,
-    success: number,
-    warning: number,
-    error: number
+    info: number;
+    success: number;
+    warning: number;
+    error: number;
 }
-
-
 
 export enum NotificationKind {
     NORMAL = 'NORMAL',
-    AUTODISMISS = 'AUTODISMISS'
+    AUTODISMISS = 'AUTODISMISS',
 }
 
 export type NotificationType = 'info' | 'success' | 'warning' | 'error';
@@ -32,9 +30,8 @@ export interface NotificationBase {
 }
 
 export interface NotificationNormal extends NotificationBase {
-    kind: NotificationKind.NORMAL
+    kind: NotificationKind.NORMAL;
 }
-
 
 export interface NotificationAutodismiss extends NotificationBase {
     kind: NotificationKind.AUTODISMISS;
@@ -46,7 +43,7 @@ export type Notification = NotificationNormal | NotificationAutodismiss;
 
 export interface NotificationState {
     notifications: Array<Notification>;
-    summary: NotificationsSummary
+    summary: NotificationsSummary;
 }
 
 export interface RuntimeState {
@@ -54,11 +51,12 @@ export interface RuntimeState {
     setTitle: (title: string) => void;
     messenger: Messenger;
     config: Config;
+    pluginsInfo: Array<PluginInfo>;
     authState: AuthenticationState;
     notificationState: NotificationState;
     addNotification: (n: Notification) => void;
     removeNotification: (n: Notification) => void;
-    pingStats: PingStats
+    pingStats: PingStats;
 }
 
 const AUTODISMISSER_INTERVAL = 1000;
@@ -97,7 +95,6 @@ export class AutoDismisser {
     }
 }
 
-
 // Context
 
 /**
@@ -111,6 +108,7 @@ export const RuntimeContext = React.createContext<RuntimeState | null>(null);
 
 export type RuntimeWrapperProps = PropsWithChildren<{
     config: Config;
+    pluginsInfo: Array<PluginInfo>;
     authState: AuthenticationState;
 }>;
 
@@ -156,7 +154,7 @@ export default class RuntimeWrapper extends React.Component<
         });
         this.subscriptions = [];
         this.connectionStatus = new ConnectionStatus({
-            onPing: this.onPing.bind(this)
+            onPing: this.onPing.bind(this),
         });
         this.state = {
             title: '',
@@ -166,45 +164,47 @@ export default class RuntimeWrapper extends React.Component<
                     info: 0,
                     warning: 0,
                     error: 0,
-                    success: 0
-                }
+                    success: 0,
+                },
             },
             pingStats: {
-                kind: PingStatKind.NONE
-            }
+                kind: PingStatKind.NONE,
+            },
         };
     }
 
     onPing(pingStats: PingStats) {
         this.setState({
-            pingStats
+            pingStats,
         });
     }
 
     componentDidMount() {
-        this.subscriptions.push($GlobalMessageBus.receive({
-            channel: 'notification',
-            message: 'notify',
-            handler: async ({ type, message, autodismiss, id }: NotificationMessage) => {
-                if (typeof autodismiss !== 'undefined') {
-                    return this.addNotification({
-                        id: id || uuid.v4(),
-                        type,
-                        message,
-                        kind: NotificationKind.AUTODISMISS,
-                        dismissAfter: autodismiss,
-                        startedAt: Date.now()
-                    });
-                } else {
-                    return this.addNotification({
-                        id: id || uuid.v4(),
-                        type,
-                        message,
-                        kind: NotificationKind.NORMAL,
-                    });
-                }
-            }
-        }));
+        this.subscriptions.push(
+            $GlobalMessageBus.receive({
+                channel: 'notification',
+                message: 'notify',
+                handler: async ({ type, message, autodismiss, id }: NotificationMessage) => {
+                    if (typeof autodismiss !== 'undefined') {
+                        return this.addNotification({
+                            id: id || uuid.v4(),
+                            type,
+                            message,
+                            kind: NotificationKind.AUTODISMISS,
+                            dismissAfter: autodismiss,
+                            startedAt: Date.now(),
+                        });
+                    } else {
+                        return this.addNotification({
+                            id: id || uuid.v4(),
+                            type,
+                            message,
+                            kind: NotificationKind.NORMAL,
+                        });
+                    }
+                },
+            })
+        );
     }
 
     setTitle(title: string): void {
@@ -227,19 +227,22 @@ export default class RuntimeWrapper extends React.Component<
             const notifications = existingNotifications.slice();
             notifications.push(notification);
             summary[notification.type] += 1;
-            this.setState({
-                notificationState: {
-                    ...this.state.notificationState,
-                    notifications,
-                    summary
+            this.setState(
+                {
+                    notificationState: {
+                        ...this.state.notificationState,
+                        notifications,
+                        summary,
+                    },
+                },
+                () => {
+                    if (notification.kind === NotificationKind.AUTODISMISS) {
+                        this.autoDismisser.start();
+                    }
+                    resolve(null);
                 }
-            }, () => {
-                if (notification.kind === NotificationKind.AUTODISMISS) {
-                    this.autoDismisser.start();
-                }
-                resolve(null);
-            });
-        })
+            );
+        });
     }
 
     removeNotification(notification: Notification) {
@@ -249,21 +252,21 @@ export default class RuntimeWrapper extends React.Component<
             notificationState: {
                 ...this.state.notificationState,
                 notifications: notifications.filter(({ id }) => id !== notification.id),
-                summary
-            }
-        })
+                summary,
+            },
+        });
     }
 
     removeNotifications(notificationsToRemove: Array<Notification>) {
         const { summary, notifications: existingNotifications } = this.state.notificationState;
 
         // Filter out notifications which we want to remove - in case this is
-        // hard to follow, we filter out a notification if we find it in the 
+        // hard to follow, we filter out a notification if we find it in the
         // list of notifications to remove.
         const notifications = existingNotifications.filter(({ id }) => {
-            return (!(notificationsToRemove.find((notificationToRemove) => {
+            return !notificationsToRemove.find((notificationToRemove) => {
                 return notificationToRemove.id === id;
-            })));
+            });
         });
 
         // THen we decrement the summary counter for each notification to remove.
@@ -275,9 +278,9 @@ export default class RuntimeWrapper extends React.Component<
             notificationState: {
                 ...this.state.notificationState,
                 notifications,
-                summary
-            }
-        })
+                summary,
+            },
+        });
     }
 
     autodismissRunner(): boolean {
@@ -303,7 +306,6 @@ export default class RuntimeWrapper extends React.Component<
         return autodismissLeft > 0;
     }
 
-
     render() {
         const contextValue: RuntimeState = {
             title: this.state.title,
@@ -311,10 +313,11 @@ export default class RuntimeWrapper extends React.Component<
             messenger: $GlobalMessageBus,
             authState: this.props.authState,
             config: this.props.config,
+            pluginsInfo: this.props.pluginsInfo,
             notificationState: this.state.notificationState,
             addNotification: this.addNotification.bind(this),
             removeNotification: this.removeNotification.bind(this),
-            pingStats: this.state.pingStats
+            pingStats: this.state.pingStats,
         };
         return (
             <RuntimeContext.Provider value={contextValue}>

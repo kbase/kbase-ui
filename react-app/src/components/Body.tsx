@@ -12,6 +12,7 @@ import { AuthenticationState, AuthenticationStatus } from '../contexts/Auth';
 import { Config } from '../types/config';
 
 import { changePath } from 'lib/navigation';
+import { PluginInfo } from 'types/info';
 import ORCIDLinkDemos from '../apps/demos/Demos';
 import NarrativeManagerNew from '../apps/NarrativeManager/New';
 import NarrativeManagerStart from '../apps/NarrativeManager/Start';
@@ -26,6 +27,7 @@ import { RouteProps, Router } from './Router2';
 
 export interface BodyProps {
     config: Config;
+    pluginsInfo: Array<PluginInfo>;
     authState: AuthenticationState;
     setTitle: (title: string) => void;
 }
@@ -51,17 +53,17 @@ export default class Body extends Component<BodyProps, BodyState> {
                     return <Catalog {...props} {...this.props} />;
                 }
             ),
-            new Route('feeds', { authenticationRequired: true }, (props: RouteProps) => {
-                return (
-                    <PluginWrapper2
-                        {...props}
-                        {...this.props}
-                        name="feeds"
-                        view="feeds"
-                        syncHash={false}
-                    />
-                );
-            }),
+            // new Route('feeds', { authenticationRequired: true }, (props: RouteProps) => {
+            //     return (
+            //         <PluginWrapper2
+            //             {...props}
+            //             {...this.props}
+            //             name="feeds"
+            //             view="feeds"
+            //             syncHash={false}
+            //         />
+            //     );
+            // }),
             new Route('jobbrowser', { authenticationRequired: true }, (props: RouteProps) => {
                 return (
                     <PluginWrapper2
@@ -424,7 +426,7 @@ export default class Body extends Component<BodyProps, BodyState> {
             Empty route, this is the default location when going to the bare origin.
             */
             new Route('', { authenticationRequired: false }, (props: RouteProps) => {
-                // Direct redirect to /narratives; something is preventing a hashchange then 
+                // Direct redirect to /narratives; something is preventing a hashchange then
                 // pathchange in CI. Does not occur locally, so may be a race condition triggered
                 // by slightly slower connection to CI compared to local.
                 changePath('narratives', { replace: true });
@@ -432,13 +434,51 @@ export default class Body extends Component<BodyProps, BodyState> {
                 return <Loading message="Loading Narratives Navigator 1..." />;
             }),
         ];
+
+        console.log('plugins!', this.props.pluginsInfo);
+        for (const plugin of this.props.pluginsInfo) {
+            const autoload = plugin.configs.plugin.services.route.autoload || false
+            console.log('plugin!!', plugin.configs.plugin.package.name, plugin.configs.plugin);
+            if (autoload || plugin.configs.plugin.package.name === "feeds") {
+                if (plugin.configs.plugin.services.route.routes) {
+                    for (const routeConfig of plugin.configs.plugin.services.route.routes) {
+                        const path = (() => {
+                            if (routeConfig.path === "{{plugin}}") {
+                                return plugin.configs.plugin.package.name;
+                            }
+                            return routeConfig.path;
+                        })();
+                        const route = new Route(path, {
+                            authenticationRequired: routeConfig.authorization || false
+                        }, (props: RouteProps) => {
+                            return (
+                                <PluginWrapper2
+                                    {...props}
+                                    {...this.props}
+                                    name={plugin.configs.plugin.package.name}
+                                    view={routeConfig.view}
+                                    syncHash={false}
+                                />
+                            );
+                        })
+                        this.routes.push(route);
+                    }
+                }
+            }
+        }
     }
 
-    shouldComponentUpdate(nextProps: Readonly<BodyProps>, nextState: Readonly<BodyState>, nextContext: any): boolean {
-        if (this.props.authState === nextProps.authState &&
-            this.props.config === nextProps.config) {
+    shouldComponentUpdate(
+        nextProps: Readonly<BodyProps>,
+        nextState: Readonly<BodyState>,
+        nextContext: any
+    ): boolean {
+        if (
+            this.props.authState === nextProps.authState &&
+            this.props.config === nextProps.config
+        ) {
             return false;
-        }    
+        }
         return true;
     }
 

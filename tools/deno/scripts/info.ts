@@ -32,13 +32,16 @@ export interface PluginConfig {
         name: string,
         description: string
     },
-    install: {
-        routes: Array<{
-            path: string;
-            view: string;
-            authorization: boolean;
-            reentrant: boolean;
-        }>
+    services: {
+        route: {
+            autoload?: boolean;
+            routes: Array<{
+                path: string;
+                view: string;
+                authorization?: boolean;
+                reentrant?: boolean;
+            }>
+        }
     },
 }
 

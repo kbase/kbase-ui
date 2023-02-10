@@ -1,9 +1,6 @@
 import { Component } from 'react';
 import AuthWrapper, { AuthContext, AuthState } from '../contexts/Auth';
-import ConfigWrapper, {
-    ConfigContext,
-    ConfigState
-} from '../contexts/ConfigContext';
+import ConfigWrapper, { ConfigContext, ConfigState } from '../contexts/ConfigContext';
 import RuntimeWrapper, { RuntimeContext } from '../contexts/RuntimeContext';
 import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
 import { Config } from '../types/config';
@@ -12,14 +9,14 @@ import MainWindow from './MainWindow';
 
 export type AppLoadState = AsyncProcess<Config, string>;
 
-export interface AppProps { }
+export interface AppProps {}
 
-interface AppState { }
+interface AppState {}
 
 export default class App extends Component<AppProps, AppState> {
     render() {
         return (
-                <ConfigWrapper>
+            <ConfigWrapper>
                 <ConfigContext.Consumer>
                     {(configValue: ConfigState) => {
                         switch (configValue.status) {
@@ -30,9 +27,7 @@ export default class App extends Component<AppProps, AppState> {
                                 return <ErrorMessage message={configValue.error} />;
                             case AsyncProcessStatus.SUCCESS:
                                 return (
-                                    <AuthWrapper
-                                        config={configValue.value.config}
-                                    >
+                                    <AuthWrapper config={configValue.value.config}>
                                         <AuthContext.Consumer>
                                             {(value: AuthState) => {
                                                 switch (value.status) {
@@ -49,19 +44,14 @@ export default class App extends Component<AppProps, AppState> {
                                                     case AsyncProcessStatus.SUCCESS:
                                                         return (
                                                             <RuntimeWrapper
-                                                                authState={
-                                                                    value.value
-                                                                }
-                                                                config={
-                                                                    configValue
-                                                                        .value
-                                                                        .config
+                                                                authState={value.value}
+                                                                config={configValue.value.config}
+                                                                pluginsInfo={
+                                                                    configValue.value.pluginsInfo
                                                                 }
                                                             >
                                                                 <RuntimeContext.Consumer>
-                                                                    {(
-                                                                        value
-                                                                    ) => {
+                                                                    {(value) => {
                                                                         if (value === null) {
                                                                             return;
                                                                         }

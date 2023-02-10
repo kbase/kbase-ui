@@ -4,8 +4,6 @@ export interface UIServiceConfig {
     name: string;
 }
 
-
-
 export type CoreServiceType = "rest" | "jsonrpc" | "jsonrpc2";
 
 export interface CoreServiceConfig {

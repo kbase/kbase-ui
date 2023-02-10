@@ -27,18 +27,23 @@ export enum PluginInfoType {
     GITHUB_RELEASE = 'GITHUB_RELEASE'
 }
 
+export interface PluginRoute {
+    path: string;
+    view: string;
+    authorization?: boolean;
+    reentrant?: boolean;
+}
+
 export interface PluginConfig {
     package: {
         name: string,
         description: string
     },
-    install: {
-        routes: Array<{
-            path: string;
-            view: string;
-            authorization: boolean;
-            reentrant: boolean;
-        }>
+    services: {
+        route: {
+            autoload?: boolean;
+            routes: Array<PluginRoute>
+        }
     },
 }
 
