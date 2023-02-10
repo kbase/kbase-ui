@@ -12,11 +12,23 @@
     background-color: rgba(200, 200, 200, 0.3);
 }
 
+.Narrative .-titleArea {
+    display: flex;
+    flex-direction: row;
+    min-width: 0;
+}
+
 .Narrative .-title {
+    flex: 1 1 0;
     font-weight: bold;
     overflow-y: auto;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+.Narrative .-titleicon {
+    flex: 0 0 auto;
+    align-self: flex-end;
 }
 
 .Narrative .-subtitle {

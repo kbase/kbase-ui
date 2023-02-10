@@ -145,7 +145,7 @@ export default class NarrativeList extends Component<
     }
 
     newNarrative() {
-        return null;
+        window.open("/#narrativemanager/new", "_blank")
     }
 
     render() {
