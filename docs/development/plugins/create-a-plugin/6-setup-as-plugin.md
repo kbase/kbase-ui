@@ -154,7 +154,7 @@ So far we have managed to create a simple CRA-based web app, with a few tweaks. 
       export default reducer;
       ```
 
-8. Add integration component to App.tsx
+8. Add integration component to `App.tsx`
 
     Now that redux is set up, including integration into the core kbase-ui integration, we need to add a special integration component to our app to active it.
 

@@ -37,6 +37,7 @@ docker-compose.yml
        type: iframe
      services:
        route:
+         autoload: true
          routes:
            - path: test
              view: test
@@ -168,7 +169,6 @@ docker-compose.yml
     
     async function main() {
         const projectPath = path.normalize(path.join(process.cwd(), '..'))
-    
         await removeDist(projectPath);
         await copyPluginDir(projectPath);
         await copyBuildFiles(projectPath);
