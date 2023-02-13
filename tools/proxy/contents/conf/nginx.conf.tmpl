@@ -297,6 +297,8 @@ http {
      
         # Proxy all service calls, including auth2, to the real CI
         location /services {
+            access_log /var/log/nginx/services_proxy.log upstream_log;
+
             # The cookie path rewriting is just for auth2
             {{ if .Env.deploy_ui_hostname }}
             include /etc/nginx/cors.conf;
