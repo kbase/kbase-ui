@@ -435,10 +435,8 @@ export default class Body extends Component<BodyProps, BodyState> {
             }),
         ];
 
-        console.log('plugins!', this.props.pluginsInfo);
         for (const plugin of this.props.pluginsInfo) {
             const autoload = plugin.configs.plugin.services.route.autoload || false
-            console.log('plugin!!', plugin.configs.plugin.package.name, plugin.configs.plugin);
             if (autoload || plugin.configs.plugin.package.name === "feeds") {
                 if (plugin.configs.plugin.services.route.routes) {
                     for (const routeConfig of plugin.configs.plugin.services.route.routes) {
