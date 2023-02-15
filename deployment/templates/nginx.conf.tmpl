@@ -71,8 +71,8 @@ http {
             allow all;
             # this ensures that a downstream cache service will revalidate.
             add_header Cache-Control 'no-cache';
-            add_header Cache-Control 'no-store';
-            expires 0;
+            # add_header Cache-Control 'no-store';
+            # expires 0;
             add_header X-Frame-Options "SAMEORIGIN" always;
             add_header Content-Security-Policy "frame-ancestors 'self';" always;
 

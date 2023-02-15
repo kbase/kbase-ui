@@ -213,9 +213,9 @@ http {
         location {{ .Env.base_path }} {
             client_max_body_size 300M;
             proxy_pass http://kbase_ui;
-            proxy_set_header Cache-Control 'no-store';
-            proxy_set_header Cache-Control 'no-cache';
-            expires 0;
+            #proxy_set_header Cache-Control 'no-store';
+            #proxy_set_header Cache-Control 'no-cache';
+            #expires 0;
             proxy_set_header Connection "";
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
