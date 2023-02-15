@@ -133,17 +133,6 @@ export default class View extends Component<ViewProps> {
                         </p>
                     </Accordion.Body>
                 </Accordion.Item>
-                <Accordion.Item eventKey="pushwork">
-                    <Accordion.Header>
-                        <a href="#demos/push-work">Push Work to ORCID</a>
-                    </Accordion.Header>
-                    <Accordion.Body>
-                        <p>
-                            This is a demonstration of how to manually add, edit, and delete works
-                            from one's ORCID account.
-                        </p>
-                    </Accordion.Body>
-                </Accordion.Item>
                 <Accordion.Item eventKey="3">
                     <Accordion.Header>
                         <a href="#demos/crossref">View Citation Samples by Type</a>

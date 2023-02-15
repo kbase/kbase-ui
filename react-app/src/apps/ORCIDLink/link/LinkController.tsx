@@ -42,7 +42,8 @@ export type RevokeResult = null;
 export type LinkState = AsyncProcess<{ link: LinkInfo | null }, { message: string }>
 
 interface LinkControllerState {
-    linkState: LinkState
+    linkState: LinkState;
+    started: boolean;
 }
 
 export default class LinkController extends Component<LinkControllerProps, LinkControllerState> {
@@ -51,7 +52,8 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         this.state = {
             linkState: {
                 status: AsyncProcessStatus.NONE
-            }
+            },
+            started: false
         }
     }
 
@@ -107,16 +109,11 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     async startLink() {
+        this.setState({
+            started: true
+        })
         const model = new Model({ config: this.props.config, auth: this.props.auth });
         await model.startLink({ returnLink: this.props.returnLink, skipPrompt: this.props.skipPrompt })
-        // const url = new URL(START_URL);
-        // if (this.props.returnLink) {
-        //     url.searchParams.set('return_link', JSON.stringify(this.props.returnLink));
-        // }
-        // if (this.props.skipPrompt) {
-        //     url.searchParams.set('skip_prompt', 'true');
-        // }
-        // window.open(url, '_parent');
     }
 
     async loadData() {
@@ -174,9 +171,18 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
 
     renderSuccess({ link }: { link: LinkInfo | null }) {
         if (link === null) {
-            return <CreateLink start={this.startLink.bind(this)} goBack={this.goBack.bind(this)} returnLink={this.props.returnLink} skipPrompt={this.props.skipPrompt} />;
+            return <CreateLink
+                start={this.startLink.bind(this)}
+                started={this.state.started}
+                goBack={this.goBack.bind(this)}
+                returnLink={this.props.returnLink}
+                skipPrompt={this.props.skipPrompt}
+            />;
         }
-        return <ViewLink link={link} revoke={this.revokeLink.bind(this)} />;
+        return <ViewLink
+            link={link}
+            revoke={this.revokeLink.bind(this)}
+        />;
     }
 
     render() {

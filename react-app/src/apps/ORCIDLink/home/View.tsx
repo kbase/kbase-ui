@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Col, Row } from 'react-bootstrap';
 import LinkView from '../LinkView';
 import { LinkInfo } from './HomeController';
 import styles from './View.module.css';
@@ -8,6 +8,7 @@ export interface ViewProps {
     link: LinkInfo | null;
     isDeveloper: boolean;
     docURL: string;
+    repoURL: string;
     revoke: () => void
 }
 
@@ -21,7 +22,7 @@ export default class View extends Component<ViewProps> {
             <h3>Revocation</h3>
             <p>You may <b>revoke</b> this link at any time.</p>
             <p>Revoking the link will not alter any of your data stored at KBase or ORCID®. It will simply remove
-                the link to your ORCID® account, preventing KBase from accessing your ORCID® Profile thereafter.
+                the link to your ORCID® account, preventing KBase from accessing your ORCID® profile thereafter.
             </p>
         </div>
     }
@@ -29,24 +30,21 @@ export default class View extends Component<ViewProps> {
     renderIntro() {
         return <div>
             <h2>About</h2>
-
-            <p>The Link to ORCID® gives KBase tools access to your ORCID® account.</p>
-
-            <p>Examples include:</p>
+            <p>An ORCID® Link gives KBase tools access to your ORCID® account while you are logged into KBase.</p>
+            <p>You can only create an ORCID® Link from this page. It will be stored at KBase until you remove it. 
+                (It expires after 20 years, but this is essentially "forever".)
+            </p>
+            <p>Here are some examples of how KBase can use your ORCID® Link:</p>
             <ul>
                 <li>Pre-filling form fields from your ORCID® profile</li>
                 <li>Automatically creating publication records in your ORCID® profile when you publish a KBase Narrative</li>
             </ul>
-
-            <p>Note that this link will only be used when you are signed in to KBase. In addition,
-                any tool which uses the link to ORCID® will inform you that it is using it, and will explain
+            <p>The link will only be used when you are signed in to KBase. In addition,
+                any tool that uses the link will alert you before using it, and will explain
                 how it will use it.
             </p>
-
             {this.renderRevokeMessage()}
-
             <h3>More Information</h3>
-
             <p>
                 For further information about KBase and ORCID please consult the following resources:
             </p>
@@ -54,16 +52,12 @@ export default class View extends Component<ViewProps> {
                 <li>
                     <a href="https://docs.kbase.us" target="_blank" rel="noreferrer">Linking your KBase account to your ORCID account [does not exist yet]</a>
                 </li>
-
                 <li>
                     <a href="https://info.orcid.org/what-is-orcid/" target="_blank" rel="noreferrer"><span className="fa fa-external-link" /> About ORCID</a>
                 </li>
-
             </ul>
-
             {this.renderDev()}
         </div>
-
     }
 
     renderDev() {
@@ -74,6 +68,7 @@ export default class View extends Component<ViewProps> {
             <h3>For Developers</h3>
             <ul>
                 <li><a href={this.props.docURL} target="_blank" rel="noreferrer">ORCIDLink API Documentation</a></li>
+                <li><a href={this.props.repoURL} target="_blank"><code>orcidlink</code> service GitHub repo</a></li>
             </ul>
         </div>;
     }
@@ -91,7 +86,7 @@ export default class View extends Component<ViewProps> {
                 <p>You may <b>revoke</b> this link at any time.</p>
 
                 <p>Revoking the link will not alter any of your data stored at KBase or ORCID®. It will simply remove
-                    the link to your ORCID® account, preventing KBase from accessing your ORCID® Profile thereafter.
+                    the link to your ORCID® account, preventing KBase from accessing your ORCID® profile thereafter.
                 </p>
 
                 <p>Please note that if you wish to revoke this link at KBase, you may also
@@ -115,19 +110,18 @@ export default class View extends Component<ViewProps> {
     renderUnlinked() {
         return <div className="well">
             <div className="well-header">
-                No ORCID® Link
+                Get Your ORCID® Link!
             </div>
             <div className="well-body">
                 <p>You do not currently have a link from your KBase account to an ORCID® account.</p>
 
-                <p>When clicking the button below, you will be redirected to ORCID®, where you may
-                    sign in to your ORCID® account and grant permission to KBase to access certain
-                    aspects of your ORCID® account.
+                <p>
+                    Click the button below to begin the ORCID® Link process.
                 </p>
             </div>
             <div className="well-footer" style={{ justifyContent: 'center' }}>
                 <Button variant="primary" href="/#orcidlink/link">
-                    <span className="fa fa-lg fa-plus" /> Create ORCID® Link …
+                    <span className="fa fa-lg fa-plus" /> Get ORCID® Link …
                 </Button>
             </div>
         </div>
@@ -142,14 +136,14 @@ export default class View extends Component<ViewProps> {
 
     render() {
         return <div className={styles.main}>
-            <div className={styles.row}>
-                <div className={styles.col1}>
+            <Row>
+                <Col>
                     {this.renderIntro()}
-                </div>
-                <div className={styles.col2}>
+                </Col>
+                <Col>
                     {this.renderLinkStatus()}
-                </div>
-            </div>
+                </Col>
+            </Row>
         </div>
     }
 }

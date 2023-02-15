@@ -1,6 +1,6 @@
 import Well from "components/Well";
 import { Component } from "react";
-import { Button, ButtonGroup, ButtonToolbar, Col, Row, Stack } from "react-bootstrap";
+import { Button, ButtonToolbar, Col, Row, Stack } from "react-bootstrap";
 import { RevokeState, RevokeStatus } from "./Controller";
 
 export interface ConfirmRevokeProps {
@@ -11,11 +11,9 @@ export interface ConfirmRevokeProps {
 }
 
 interface ConfirmRevokeState {
-
 }
 
 export default class ConfirmRevoke extends Component<ConfirmRevokeProps, ConfirmRevokeState> {
-
     renderNotLinked() {
         this.props.setTitle('ORCID® Link - Revoke - Not Linked')
         return <div className="well" style={{ maxWidth: '60em', margin: '0 auto' }}>
@@ -36,21 +34,6 @@ export default class ConfirmRevoke extends Component<ConfirmRevokeProps, Confirm
 
     renderRevoked() {
         this.props.setTitle('ORCID® Link - Revoke - Successfully Revoked Link')
-        // return <div className="well" style={{ maxWidth: '60em', margin: '0 auto' }}>
-        //     <div className="well-header">
-        //         Success!
-        //     </div>
-        //     <div className="well-body">
-        //         The ORCID Link has been successfully removed.
-        //     </div>
-        //     <div className="well-footer" style={{ justifyContent: 'center' }}>
-        //         <Button variant="primary" onClick={this.props.cancel}>
-        //             <span className="fa fa-mail-reply" /> Done
-        //         </Button>
-        //     </div>
-
-        // </div>
-
         return <Well variant="success" style={{ maxWidth: '60em', margin: '0 auto' }}>
             <Well.Header>
                 Success!
@@ -91,7 +74,7 @@ export default class ConfirmRevoke extends Component<ConfirmRevokeProps, Confirm
                                 </Button>
 
                                 <Button variant="primary" onClick={this.props.cancel}>
-                                    <span className="fa fa-lg fa-ban" /> Cancel
+                                    <span className="fa fa-lg fa-mail-reply" />  Cancel
                                 </Button>
                             </ButtonToolbar>
                         </Well.Footer>
@@ -101,7 +84,6 @@ export default class ConfirmRevoke extends Component<ConfirmRevokeProps, Confirm
                     <h3>
                         About
                     </h3>
-
                     <p>
                         Here you may revoke, or remove, your ORCID Link.
                     </p>
@@ -114,14 +96,12 @@ export default class ConfirmRevoke extends Component<ConfirmRevokeProps, Confirm
                     <p>
                         This will NOT affect any data you have imported from ORCID.
                     </p>
-
                     <blockquote>
                         Need to determine and explain how this affects any work records created by KBase.
                     </blockquote>
                 </Col>
             </Row>
         </Stack>
-
     }
 
     render() {
@@ -133,6 +113,5 @@ export default class ConfirmRevoke extends Component<ConfirmRevokeProps, Confirm
             case RevokeStatus.REVOKED:
                 return this.renderRevoked();
         }
-
     }
 }

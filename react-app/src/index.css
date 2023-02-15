@@ -73,7 +73,7 @@ code {
     margin: 0;
 }
 
-.table.table-plain td, 
+.table.table-plain td,
 .table.table-plain th {
     border: none;
 }
@@ -83,6 +83,10 @@ code {
 
 p {
     max-width: 60em;
+}
+
+p:last-child {
+    margin-bottom: 0;
 }
 
 /* Main body area, standard padding and behavior. */
@@ -128,4 +132,10 @@ p {
 .flex-row.-header .flex-col {
     font-weight: bold;
     color: rgba(150, 150, 150, 1)
+}
+
+/* Rando BS fixes */
+
+.fa-spin {
+    -webkit-filter: blur(0);
 }

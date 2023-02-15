@@ -249,7 +249,7 @@
         {
             "category": "other",
             "value": "physical-object",
-            "label": "Phsical Object",
+            "label": "Physical Object",
             "description": "A specimen, sample, or other physical object used for research purposes; an inanimate three-dimensional object or substance. This is only available with API v3.0+&nbsp;"
         },
         {

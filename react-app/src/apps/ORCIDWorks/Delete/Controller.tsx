@@ -1,4 +1,3 @@
-import { PushWorksModel } from 'apps/demos/PushWork/PushWorksModel';
 import { Work } from 'apps/ORCIDLink/lib/ORCIDLinkClient';
 import ErrorMessage from 'components/ErrorMessage';
 import Loading from 'components/Loading';
@@ -6,6 +5,7 @@ import Well from 'components/Well';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Button } from 'react-bootstrap';
+import { PushWorksModel } from '../PushWorksModel';
 import DeleteWork from './DeleteWork';
 
 export interface SimpleError {

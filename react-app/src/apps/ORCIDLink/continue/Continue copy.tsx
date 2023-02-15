@@ -17,6 +17,7 @@ export interface ContinueProps {
 
 export default class Continue extends Component<ContinueProps> {
     renderORCIDUserRecord() {
+
         const { orcid_auth: { orcid, scope }, created_at, expires_at } = this.props.linkingSession;
         return <Well style={{ marginBottom: '1em' }}>
             <Well.Body>
@@ -49,7 +50,20 @@ export default class Continue extends Component<ContinueProps> {
 
     renderRequestedScopes() {
         const { orcid_auth: { orcid, scope }, created_at, expires_at } = this.props.linkingSession  ;
-        return renderScope(scope)
+        return <Well style={{ marginBottom: '1em' }}>
+            <Well.Body>
+                <div className="flex-table">
+                    <div className="flex-row">
+                        <div className={`flex-col`} style={{ flex: '0 0 5em' }}>
+                            Scopes
+                        </div>
+                        <div className={`flex-col`}>
+                            {renderScope(scope)}
+                        </div>
+                    </div>
+                </div>
+            </Well.Body>
+        </Well>
     }
 
     renderReturnURL() {
@@ -86,28 +100,24 @@ export default class Continue extends Component<ContinueProps> {
         </Well>
     }
 
-    renderAccountInfo() {
-        return <div className={styles.section}>
-            <h4>Your ORCID® Account</h4>
+    renderInfo() {
+        return <div>
+            <h4>ORCID® Account</h4>
 
             <p>The following ORCID® account will be linked to this KBase account.</p>
 
             <p>You may follow the <b>ORCID® Account ID</b> link below to inspect additional information about the account.</p>
 
             {this.renderORCIDUserRecord()}
-        </div>
-    }
 
-    renderScopeInfo() {
-        return <div className={styles.section}>
-            <h4>Scopes being granted to KBase</h4>
+            <h4 style={{ marginTop: '1em' }}>Scopes being granted to KBase</h4>
 
-            <p>KBase is requesting the "scopes" below to view or manipulate your ORCID® account. A scope is a set
+            <p>KBase is requesting the "scopes" below to view or manipulate your account on your behalf. A scope is a set
                 of permissions to access your ORCID® account.
             </p>
 
             <p>Note that that interaction with your ORCID® account will only be conducted while you are logged in,
-                in response to direct actions you take, and we will always inform you when this is the case.
+                and in response to direct actions you take.
             </p>
 
             {this.renderRequestedScopes()}
@@ -116,11 +126,12 @@ export default class Continue extends Component<ContinueProps> {
 
     render() {
         return <Stack>
-            <Row className="justify-content-center">
-                <Col style={{maxWidth: '60em'}}>
-                    {this.renderAccountInfo()}
-                    {this.renderScopeInfo()}
+            <Row>
+                <Col>
                     {this.renderConfirmDialog()}
+                </Col>
+                <Col>
+                    {this.renderInfo()}
                 </Col>
             </Row>
         </Stack>

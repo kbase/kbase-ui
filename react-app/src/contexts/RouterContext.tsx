@@ -69,7 +69,8 @@ export default class RouterWrapper extends React.Component<
     RouterWrapperProps,
     RouterWrapperState
 > {
-    hashListener: (() => void) | null;
+    hashListener: ((ev: HashChangeEvent) => void) | null;
+    pageShowListener: ((ev: PageTransitionEvent) => void) | null;
     constructor(props: RouterWrapperProps) {
         super(props);
         this.state = {
@@ -81,10 +82,11 @@ export default class RouterWrapper extends React.Component<
             }
         };
         this.hashListener = null;
+        this.pageShowListener = null;
     }
 
     componentDidMount() {
-        this.hashListener = () => {
+        this.hashListener = (ev: HashChangeEvent) => {
             const hashPath = this.getHashPath();
             if (this.state.routerState.status === 'SUCCESS' &&
                 hashPath === this.state.routerState.value.hashPath) {
@@ -99,13 +101,23 @@ export default class RouterWrapper extends React.Component<
                 }
             });
         }
-        window.addEventListener('hashchange', this.hashListener);
+        window.addEventListener('hashchange', this.hashListener); 
+        this.pageShowListener = (ev: PageTransitionEvent) => {
+            if (ev.persisted) {
+                window.location.reload();
+            }
+        }
+        window.addEventListener('pageshow', this.pageShowListener);
     }
 
     componentWillUnmount() {
         if (this.hashListener !== null) {
             window.removeEventListener('hashchange', this.hashListener);
             this.hashListener = null;
+        }
+        if (this.pageShowListener !== null) {
+            window.removeEventListener('pageshow', this.pageShowListener);
+            this.pageShowListener = null;
         }
     }
 

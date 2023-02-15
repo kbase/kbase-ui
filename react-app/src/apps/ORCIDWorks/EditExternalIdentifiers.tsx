@@ -1,8 +1,8 @@
 import Empty from "components/Empty";
+import { Option, Options } from "lib/reactSelectTypes";
 import { Component } from "react";
 import { Button } from "react-bootstrap";
 import Select from 'react-select';
-import { Option, Options } from "../../../lib/reactSelectTypes";
 
 
 import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";
@@ -37,12 +37,16 @@ export default class EditExternalIdentifiers extends Component<EditExternalIdent
     }
 
     getExternalRelationshipIdentifiers(): Options<string> {
-        return this.props.workRelationshipIdentifiers.map(({ value, label }) => {
-            return {
-                value,
-                label
-            };
-        });
+        return this.props.workRelationshipIdentifiers
+            .map(({ value, label }) => {
+                return {
+                    value,
+                    label
+                };
+            })
+            .sort(({ label: labelA }, { label: labelB }) => {
+                return labelA.localeCompare(labelB);
+             })
     }
 
     handleChangeExternalIdType(type: string, index: number) {
@@ -114,7 +118,7 @@ export default class EditExternalIdentifiers extends Component<EditExternalIdent
         }));
         this.setState({
             externalIds
-        })
+        });
     }
 
     renderTable() {
@@ -130,13 +134,27 @@ export default class EditExternalIdentifiers extends Component<EditExternalIdent
             const currentIdentifierType = identifierTypes.filter(({ value }) => {
                 return (type.value === value);
             })[0];
+            // TODO: ensure that the type select scrolls the current selection into view.
+            // 
+            // const onMenuOpen = () => {
+            //     setTimeout(() => {
+            //     const { focusedOptionRef } = selectRef.current.select;
+            //     console.log(selectRef.current.select);
+            //     focusedOptionRef &&
+            //         focusedOptionRef.scrollIntoView({ behavior: "smooth" });
+            //     }, 1);
+            // };
+            // 
+            // onMenuOpen={() => { } }
             return <div className="flex-row" key={index}>
                 <div className="flex-col">
                     <Select<Option<string>>
                         styles={{ menu: (css) => ({ ...css, width: 'max-content', maxWidth: '20em' }) }}
                         isSearchable={true}
                         defaultValue={currentIdentifierType}
+                        value={currentIdentifierType}
                         onChange={(newValue) => { this.handleChangeExternalIdType(newValue!.value, index) }}
+                        menuShouldScrollIntoView
                         options={this.getExternalIdentifierTypes()}
                     />
                 </div>
@@ -151,6 +169,8 @@ export default class EditExternalIdentifiers extends Component<EditExternalIdent
                         styles={{ menu: (css) => ({ ...css, width: 'max-content', maxWidth: '20em' }) }}
                         isSearchable={true}
                         defaultValue={currentRelationship}
+                        value={currentRelationship}
+                        menuShouldScrollIntoView
                         onChange={(newValue) => { this.changeExternalIdRelationship(newValue!.value, index) }}
                         options={relationships}
                     />

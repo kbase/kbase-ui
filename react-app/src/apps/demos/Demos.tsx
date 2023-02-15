@@ -13,7 +13,6 @@ import styles from './Demos.module.css';
 import HomeController from './home/Controller';
 import InterstitialPage1 from './Interstitial/page1/Controller';
 import PreFillFormController from './PreFillForm/PreFillFormController';
-import PushWork from './PushWork/Controller';
 import DOIRequestAdminController from './RequestDOI/admin/Controller';
 import RequestDOI from './RequestDOI/Controller';
 import RequestDOIEditor from './RequestDOI/editor/EditorController';
@@ -99,22 +98,6 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                         }
                         const token = props.params.get('token')!;
                         return <PreFillFormController {...this.props} auth={authValue.value} />;
-                        // return <Link {...this.props} auth={authValue.value} />;
-                    }}
-                </AuthContext.Consumer>
-
-            }),
-            new Route('demos/push-work', { authenticationRequired: true }, (props: RouteProps) => {
-                return <AuthContext.Consumer>
-                    {(authValue) => {
-                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
-                            return null;
-                        }
-                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
-                            return null;
-                        }
-                        const token = props.params.get('token')!;
-                        return <PushWork {...this.props} auth={authValue.value} />;
                         // return <Link {...this.props} auth={authValue.value} />;
                     }}
                 </AuthContext.Consumer>

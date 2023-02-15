@@ -7,6 +7,14 @@ export function renderORCIDIcon() {
     return <Image src={orcidIcon} style={{ height: '1em', marginRight: '0.25em' }} />
 }
 
+export function renderORCIDLabel() {
+    return `ORCID®`;
+}
+
+export function renderORCIDLinkLabel() {
+    return `ORCID® Link`;
+}
+
 export function renderScope(scopes: string) {
     const rows = scopes.split(/\s+/).map((scope: string, index) => {
         const { label, orcid, help } = SCOPE_HELP[scope as SCOPE];

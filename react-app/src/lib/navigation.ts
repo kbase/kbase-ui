@@ -19,10 +19,6 @@ export function changePath(
     url.hash = '';
 
     if (search) {
-        // for (const key of url.searchParams.keys()) {
-        //     url.searchParams.delete(key);
-        // }
-
         for (const [key, value] of Object.entries(search)) {
             if (!value) {
                 url.searchParams.delete(key);

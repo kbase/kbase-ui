@@ -279,15 +279,6 @@ export default class PushWorkForm extends Component<PushWorkFormProps, PushWorkF
 
     renderIntro() {
         return <div>
-            <h2>
-                DEMO: Push Work to ORCID Activity Record
-            </h2>
-            <p>
-                <Button variant="secondary" href="/#demos"><span className="fa fa-mail-reply" /> Back</Button>
-            </p>
-            <p>
-                This is a demonstration of using form at KBase to push a Narrative publication to ORCID.
-            </p>
 
             <Accordion>
                 <Accordion.Item eventKey="0">
@@ -434,8 +425,6 @@ export default class PushWorkForm extends Component<PushWorkFormProps, PushWorkF
         return <div className={`${styles.main} flex-table`}>
             <div className="flex-row">
                 <div className="flex-col">
-                    {this.renderIntro()}
-                    <h4 style={{ marginTop: '2em' }}>Works</h4>
                     <div className="button-toolbar">
                         <Button variant="primary" onClick={() => { this.onAdd(); }} ><span className="fa fa-plus-circle" /> Add Work</Button>
                     </div>

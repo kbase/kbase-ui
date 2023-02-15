@@ -1,13 +1,16 @@
 import { Component } from 'react';
-import { arraysIntersect } from '../../lib/utils';
-import { Config } from '../../types/config';
-import { Menu, MenuItem } from '../../types/menu';
 import {
     AuthenticationState,
     AuthenticationStateAuthenticated,
-    AuthenticationStatus,
+    AuthenticationStatus
 } from '../../contexts/Auth';
+import { arraysIntersect } from '../../lib/utils';
+import { Config, HamburgerMenuDefintion } from '../../types/config';
+import { Menu, MenuItem } from '../../types/menu';
 import HamburgerMenu from './HamburgerMenuLogo';
+import menuRaw from './menu.json';
+
+const menuDefinition = menuRaw as unknown as HamburgerMenuDefintion;
 
 export interface HamburgerMenuMainProps {
     authState: AuthenticationState;
@@ -20,11 +23,11 @@ export default class HamburgerMenuMain extends Component<
     HamburgerMenuMainProps,
     HamburgerMenuMainState
 > {
-    menu: Menu | null;
+    // menu: Menu | null;
     constructor(props: HamburgerMenuMainProps) {
         super(props);
         // this.menuService = this.props.runtime.service('menu');
-        this.menu = null;
+        // this.menu = null;
 
         this.state = {
             isLoaded: true,
@@ -116,7 +119,7 @@ export default class HamburgerMenuMain extends Component<
             });
         };
 
-        const menuDefinition = this.props.config.ui.menus.hamburger;
+        // const menuDefinition = this.props.config.ui.menus.hamburger;
 
         const menu = {
             narrative: filterMenu(menuDefinition.narrative),
@@ -143,7 +146,7 @@ export default class HamburgerMenuMain extends Component<
             });
         };
 
-        const menuDefinition = this.props.config.ui.menus.hamburger;
+        // const menuDefinition = this.props.config.ui.menus.hamburger;
 
         const menu = {
             narrative: filterMenu(menuDefinition.narrative),

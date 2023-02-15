@@ -17,6 +17,7 @@ import ORCIDLinkDemos from '../apps/demos/Demos';
 import NarrativeManagerNew from '../apps/NarrativeManager/New';
 import NarrativeManagerStart from '../apps/NarrativeManager/Start';
 import ORCIDLink from '../apps/ORCIDLink/ORCIDLink';
+import ORCIDWorks from '../apps/ORCIDWorks/ORCIDWorks';
 import RouterWrapper, { RouterContext } from '../contexts/RouterContext';
 import { AsyncProcessStatus } from '../lib/AsyncProcess2';
 import { Route } from '../lib/Route';
@@ -45,6 +46,9 @@ export default class Body extends Component<BodyProps, BodyState> {
             }),
             new Route('orcidlink/*', { authenticationRequired: false }, (props: RouteProps) => {
                 return <ORCIDLink {...props} {...this.props} />;
+            }),
+             new Route('orcidworks/*', { authenticationRequired: false }, (props: RouteProps) => {
+                return <ORCIDWorks {...props} {...this.props} />;
             }),
             new Route(
                 '^(catalog|appcatalog)$/*',

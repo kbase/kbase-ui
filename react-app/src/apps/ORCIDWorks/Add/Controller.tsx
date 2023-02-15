@@ -1,10 +1,10 @@
 import { workExternalIdentifierTypes, workRelationshipIdentifiers } from 'apps/ORCIDLink/data';
+import workTypesRaw from 'apps/ORCIDLink/data/workTypes2.json';
 import { Work } from 'apps/ORCIDLink/lib/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
-import workTypesRaw from '../../../ORCIDLink/data/workTypes2.json';
 import { EditableWork, initialEditableWork } from '../PushWorksModel';
 import WorkForm from './Editor';
 

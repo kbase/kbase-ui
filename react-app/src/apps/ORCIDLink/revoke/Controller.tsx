@@ -7,7 +7,7 @@ import { Config } from 'types/config';
 
 import { changeHash2 } from 'lib/navigation';
 import { Model, ORCIDLinkInfo } from '../lib/Model';
-import ConfirmRevoke from './ConfirmRevoke';
+import ConfirmRevoke from './View';
 
 export interface ControllerProps {
     config: Config;

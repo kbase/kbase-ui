@@ -1,5 +1,6 @@
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component, PropsWithChildren } from 'react';
+import { Spinner } from 'react-bootstrap';
 import styles from './Loading.styles';
 
 export type Size = 'small' | 'normal' | 'large';
@@ -58,7 +59,8 @@ export default class Loading extends Component<LoadingProps, LoadingState> {
                         <span className="fa fa-sm fa-spinner fa-pulse"></span>
                     );
                 case 'normal':
-                    return <span className="fa fa-spinner fa-pulse"></span>;
+                    return <Spinner animation="border" size="sm"/>
+                    // return <span className="fa fa-spinner fa-pulse margin-bottom"></span>;
                 default:
                     return (
                         <span className="fa fa-2x fa-spinner fa-pulse"></span>

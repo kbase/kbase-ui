@@ -6,9 +6,9 @@ import { Config } from 'types/config';
 
 import StandardErrorView, { StandardError } from 'components/StandardErrorView';
 import { changeHash2 } from 'lib/navigation';
-import { ServiceError } from '../lib/DynamicServiceClient';
 import { Model } from '../lib/Model';
 import { ReturnLink } from '../lib/ORCIDLinkClient';
+import { ServiceError } from '../lib/ServiceClient';
 import View from './View';
 
 export interface HomeControllerProps {
@@ -40,7 +40,7 @@ export interface GetNameResult {
 export type RevokeResult = null;
 
 
-export type LinkState = AsyncProcess<{ link: LinkInfo | null, url: string }, StandardError>
+export type LinkState = AsyncProcess<{ link: LinkInfo | null, url: string, repoURL: string }, StandardError>
 
 interface HomeControllerState {
     linkState: LinkState
@@ -94,39 +94,23 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
 
     async getURL(): Promise<string> {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
-
         return model.getDocURL();
+    }
+
+    async getRepoURL(): Promise<string> {
+        const model = new Model({ config: this.props.config, auth: this.props.auth });
+        const { url } = await model.getGitInfo();
+        return url;
     }
 
 
     async revokeLink() {
         changeHash2('orcidlink/revoke');
-        // const model = new Model({ config: this.props.config, auth: this.props.auth });
-        // await model.deleteLink();
-
-        // this.setState({
-        //     linkState: {
-        //         status: AsyncProcessStatus.SUCCESS,
-        //         value: { link: null }
-        //     }
-        // });
-
-        // // TODO: notification
-
-        // return null;
     }
 
     async startLink() {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
         await model.startLink({ returnLink: this.props.returnLink, skipPrompt: this.props.skipPrompt })
-        // const url = new URL(START_URL);
-        // if (this.props.returnLink) {
-        //     url.searchParams.set('return_link', JSON.stringify(this.props.returnLink));
-        // }
-        // if (this.props.skipPrompt) {
-        //     url.searchParams.set('skip_prompt', 'true');
-        // }
-        // window.open(url, '_parent');
     }
 
     async loadData() {
@@ -142,10 +126,11 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
         try {
             const value = await this.fetchLink();
             const url = await this.getURL();
+            const repoURL = await this.getRepoURL();
             this.setState({
                 linkState: {
                     status: AsyncProcessStatus.SUCCESS,
-                    value: { link: value, url }
+                    value: { link: value, url, repoURL }
                 }
             });
         } catch (ex) {
@@ -195,15 +180,11 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
         return <StandardErrorView error={error}/>
     }
 
-    renderSuccess({ link, url }: { link: LinkInfo | null, url: string }) {
+    renderSuccess({ link, url, repoURL }: { link: LinkInfo | null, url: string, repoURL: string }) {
         const isDeveloper = !!this.props.auth.authInfo.account.roles.find((role) => {
             return role.id === 'DevToken'
         });
-        return <View link={link} revoke={this.revokeLink.bind(this)} isDeveloper={isDeveloper} docURL={url} />
-        // if (link === null) {
-        //     return <Unlinked start={this.startLink.bind(this)} returnLink={this.props.returnLink} skipPrompt={this.props.skipPrompt} />;
-        // }
-        // return <Linked link={link} revoke={this.revokeLink.bind(this)} />;
+        return <View link={link} revoke={this.revokeLink.bind(this)} isDeveloper={isDeveloper} docURL={url} repoURL={repoURL} />
     }
 
     render() {

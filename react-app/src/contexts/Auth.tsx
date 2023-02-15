@@ -173,7 +173,7 @@ export default class AuthWrapper extends React.Component<
                         return this.checkAuth();
                     case AuthenticationStatus.AUTHENTICATED: {
                         const token = this.getAuthCookie();
-                        if (token === null) {
+                          if (typeof token === 'undefined') {
                             // Handles case in which the ui had been logged in, but now there is no token!
                             this.setState({ authState: this.unauthenticatedState() }, () => {
                                 changeHash2('auth2/signedout');
@@ -261,6 +261,10 @@ export default class AuthWrapper extends React.Component<
 
     async ensureValidToken() {
         const token = this.getAuthCookie();
+        if (typeof token === 'undefined') {
+            this.setState({ authState: this.unauthenticatedState() });
+            return;
+        }
 
         const removeToken = () => {
             this.removeAuthCookie();
@@ -269,11 +273,6 @@ export default class AuthWrapper extends React.Component<
             }, () => {
                 changeHash2('auth2/signedout');
             });
-        }
-
-        if (typeof token === 'undefined') {
-            this.setState({ authState: this.unauthenticatedState() });
-            return;
         }
 
         const auth = new Auth2({
@@ -531,7 +530,7 @@ export default class AuthWrapper extends React.Component<
         }
     }
 
-    getAuthCookie() {
+    getAuthCookie(): string | undefined {
         return Cookie.get(this.config.name);
     }
 
@@ -583,7 +582,7 @@ export default class AuthWrapper extends React.Component<
                 this.setState({ authState: this.errorState('Unknown') });
             }
         }
-        const noToken = await this.getAuthCookie();
+        const noToken = this.getAuthCookie();
         if (typeof noToken === 'undefined') {
             this.setState({ authState: this.unauthenticatedState() });
         } else {

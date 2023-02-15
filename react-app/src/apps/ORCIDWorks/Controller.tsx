@@ -52,7 +52,7 @@ export default class PreFillFormController extends Component<PreFillFormControll
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link Demo - Push DOI Works to ORCID Account')
+        this.props.setTitle('ORCID® Works Manager')
         this.loadData();
     }
 

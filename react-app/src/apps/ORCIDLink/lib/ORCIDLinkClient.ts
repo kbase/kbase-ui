@@ -1,5 +1,5 @@
 import { toJSON } from "lib/kb_lib/jsonLike";
-import { ServiceClient } from "./DynamicServiceClient";
+import { ServiceClient } from "./ServiceClient";
 // import { MultiServiceClient } from "./DynamicServiceClient";
 import { LinkingSession, LinkRecord } from "./Model";
 
@@ -110,12 +110,92 @@ export interface ReturnLink {
     url: string;
     label: string;
 }
+
+export interface StatusResponse {
+    status: string;
+    time: number;
+    start_time: number;
+}
+
+export interface ServiceDescription {
+    name: string;
+    title: string;
+    version: string;
+    language: string;
+    description: string;
+}
+
+export interface ServiceConfig {
+    url: string;
+}
+
+export interface Auth2Config extends ServiceConfig {
+    tokenCacheLifetime: number;
+    tokenCacheMaxSize: number;
+}
+
+export interface Config {
+    services: {
+        Auth2: Auth2Config;
+        ORCIDLink: ServiceConfig;
+    }
+    ui: {
+        origin: string;
+    }
+    orcid: {
+        oauthBaseURL: string;
+        apiBaseURL: string;
+        clientId: string;
+        clientSecret: string;
+    }
+    mongo: {
+        host: string;
+        port: number;
+        database: string;
+        username: string;
+        password: string;
+    }
+    module: {
+        serviceRequestTimeout: number
+    }
+}
+
+export interface GitInfo {
+    commit_hash: string;
+    commit_hash_abbreviated: string;
+    author_name: string;
+    committer_name: string;
+    committer_date: string;
+    url: string;
+    branch: string;
+    tag: string | null;
+}
+
+export interface InfoResponse {
+    'service-description': ServiceDescription;
+    config: Config;
+    'git-info': GitInfo
+
+}
+
 // export interface GetDOIMetadata {
 //     metadata: CSLMetadata
 // }
 
 export class ORCIDLinkServiceClient extends ServiceClient {
     module = 'ORCIDLink';
+
+    // General
+
+    async getStatus(): Promise<StatusResponse> {
+        return await this.get<StatusResponse>("status")
+    }
+
+    async getInfo(): Promise<InfoResponse> {
+        return await this.get<InfoResponse>("info")
+    }
+
+    //
 
     async getProfile(): Promise<ORCIDProfile> {
         return await this.get<ORCIDProfile>(`${GET_PROFILE_PATH}`)

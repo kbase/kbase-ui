@@ -1,9 +1,9 @@
 import { WorkExternalIdentifierTypes, WorkRelationshipIdentifiers } from "apps/ORCIDLink/data";
 import { isEqual } from "lib/kb_lib/Utils";
+import { Option, Options, OptionsGroups } from "lib/reactSelectTypes";
 import { Component } from "react";
 import { Button, Form, Stack } from "react-bootstrap";
 import Select, { SingleValue } from 'react-select';
-import { Option, Options, OptionsGroups } from "../../../../lib/reactSelectTypes";
 import EditExternalIdentifiers from "../EditExternalIdentifiers";
 import {
     EditableExternalId, editableExternalIdsToExternalIds,
