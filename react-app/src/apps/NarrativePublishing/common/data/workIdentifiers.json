@@ -1,0 +1,352 @@
+[
+    {
+        "value": "agr",
+        "description": "agr: Agricola",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "ark",
+        "description": "ark: Archival Resource Key Identifier",
+        "resolutionPrefix": "",
+        "caseSensitivity": "true",
+        "primaryUse": "work"
+    },
+    {
+        "value": "arxiv",
+        "description": "arxiv: ArXiv",
+        "resolutionPrefix": "https://arxiv.org/abs/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "asin",
+        "description": "asin: Amazon Standard Identification Number",
+        "resolutionPrefix": "http://www.amazon.com/dp/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "asin-tld",
+        "description": "asin-tld: ASIN top-level domain",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "authenticusid",
+        "description": "authenticusid: AuthenticusID",
+        "resolutionPrefix": "https://www.authenticus.pt/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "bibcode",
+        "description": "Bibcode",
+        "resolutionPrefix": "http://adsabs.harvard.edu/abs/",
+        "caseSensitivity": "true",
+        "primaryUse": "work"
+    },
+    {
+        "value": "cba",
+        "description": "cba: Chinese Biological Abstracts",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "cienciaiul",
+        "description": "cienciaiul: Ciência-IUL Identifier",
+        "resolutionPrefix": "https://ciencia.iscte-iul.pt/id/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "cit",
+        "description": "cit: CiteSeer",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "cstr",
+        "description": "cstr: Science and technology resource identification",
+        "resolutionPrefix": "https://www.cstr.cn/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "ctx",
+        "description": "ctx: CiteExplore submission",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "dnb",
+        "description": "dnb: German National Library identifier",
+        "resolutionPrefix": "https://d-nb.info/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "doi",
+        "description": "doi: Digital object identifier",
+        "resolutionPrefix": "https://doi.org/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "eid",
+        "description": "Scopus Identifier",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "emdb",
+        "description": "emdb: Electron Microscopy Data Bank",
+        "resolutionPrefix": "https://www.ebi.ac.uk/emdb/",
+        "caseSensitivity": "true",
+        "primaryUse": "work"
+    },
+    {
+        "value": "empiar",
+        "description": "empiar: Electron Microscopy Public Image Archive",
+        "resolutionPrefix": "https://www.ebi.ac.uk/empiar/",
+        "caseSensitivity": "true",
+        "primaryUse": "work"
+    },
+    {
+        "value": "ethos",
+        "description": "ethos: EThOS Peristent ID",
+        "resolutionPrefix": "http://ethos.bl.uk/OrderDetails.do?uin=",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "grant_number",
+        "description": "grant number",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "hal",
+        "description": "hal: Hyper Articles en Ligne",
+        "resolutionPrefix": "https://hal.archives-ouvertes.fr/view/resolver/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "handle",
+        "description": "handle: Handle",
+        "resolutionPrefix": "http://hdl.handle.net/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "hir",
+        "description": "hir: NHS Evidence",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "isbn",
+        "description": "isbn: International Standard Book Number",
+        "resolutionPrefix": "https://www.worldcat.org/isbn/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "ismn",
+        "description": "ismn: International Standard Music Number",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "issn",
+        "description": "issn: International Standard Serial Number. Includes print and electronic ISSN.",
+        "resolutionPrefix": "https://portal.issn.org/resource/ISSN/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "jfm",
+        "description": "jfm: Jahrbuch über die Fortschritte der Mathematik",
+        "resolutionPrefix": "http://zbmath.org/?format=complete&amp;q=an%3A",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "jstor",
+        "description": "jstor: JSTOR abstract",
+        "resolutionPrefix": "http://www.jstor.org/stable/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "k10plus",
+        "description": "k10plus: K10Plus",
+        "resolutionPrefix": "https://opac.k10plus.de/DB=2.299/PPNSET?PPN=",
+        "caseSensitivity": "true",
+        "primaryUse": "work"
+    },
+    {
+        "value": "kuid",
+        "description": "kuid: KoreaMed Unique Identifier",
+        "resolutionPrefix": "https://koreamed.org/article/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "lccn",
+        "description": "lccn: Library of Congress Control Number",
+        "resolutionPrefix": "http://lccn.loc.gov/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "lensid",
+        "description": "lensid: Lens ID",
+        "resolutionPrefix": "https://www.lens.org/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "mr",
+        "description": "mr: Mathematical Reviews",
+        "resolutionPrefix": "http://www.ams.org/mathscinet-getitem?mr=",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "oclc",
+        "description": "oclc: Online Computer Library Center",
+        "resolutionPrefix": "http://www.worldcat.org/oclc/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "ol",
+        "description": "ol: Open Library",
+        "resolutionPrefix": "http://openlibrary.org/b/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "osti",
+        "description": "osti: Office of Scientific and Technical Information",
+        "resolutionPrefix": "https://www.osti.gov/biblio/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "other-id",
+        "description": "Other identifier type",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "pat",
+        "description": "Patent number",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "pdb",
+        "description": "pdb: Protein Data Bank identifier",
+        "resolutionPrefix": "http://identifiers.org/pdb/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "pmc",
+        "description": "pmc: PubMed Central article number",
+        "resolutionPrefix": "https://europepmc.org/article/pmc/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "pmid",
+        "description": "pmid: PubMed Unique Identifier",
+        "resolutionPrefix": "https://pubmed.ncbi.nlm.nih.gov/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "ppr",
+        "description": "ppr: Europe PMC Preprint Identifier",
+        "resolutionPrefix": "https://europepmc.org/article/PPR/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "proposal-id",
+        "description": "Proposal ID",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "rfc",
+        "description": "rfc: Request for Comments",
+        "resolutionPrefix": "https://tools.ietf.org/html/",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "rrid",
+        "description": "rrid: Research Resource IDentifier",
+        "resolutionPrefix": "https://identifiers.org/rrid/",
+        "caseSensitivity": "true",
+        "primaryUse": "work"
+    },
+    {
+        "value": "source-work-id",
+        "description": "Non-standard ID from work data source",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "ssrn",
+        "description": "ssrn: Social Science Research Network",
+        "resolutionPrefix": "http://papers.ssrn.com/abstract_id=",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "uri",
+        "description": "uri: URI",
+        "resolutionPrefix": "",
+        "caseSensitivity": "true",
+        "primaryUse": "work"
+    },
+    {
+        "value": "urn",
+        "description": "urn: URN",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "wosuid",
+        "description": "wosuid: Web of Science™ identifier",
+        "resolutionPrefix": "",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    },
+    {
+        "value": "zbl",
+        "description": "zbl: Zentralblatt MATH",
+        "resolutionPrefix": "http://zbmath.org/?format=complete&amp;q=",
+        "caseSensitivity": "false",
+        "primaryUse": "work"
+    }
+]

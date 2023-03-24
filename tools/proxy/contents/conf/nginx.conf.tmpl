@@ -402,6 +402,12 @@ http {
             client_max_body_size 300M;
         }
 
+        location /n/ {
+            proxy_pass https://{{ .Env.deploy_hostname }};
+            proxy_set_header Connection "";
+            client_max_body_size 300M;
+        }
+
         location /narratives/ {
             # {{ if .Env.local_navigator }}
             #     proxy_pass http://navigator/narratives/;

@@ -1,10 +1,10 @@
-import Well from "components/Well";
-import { Component } from "react";
-import { Button, Stack } from "react-bootstrap";
-import { FormStringArrayField } from "../../formFields/FormStringArrayField";
-import { FormStringField } from "../../formFields/FormStringField";
-import { FormTextField } from "../../formFields/FormTextField";
-import { EditableDescription } from "./Controller";
+import Well from 'components/Well';
+import { Component } from 'react';
+import { Button, Stack } from 'react-bootstrap';
+import { FormStringArrayField } from '../../formFields/FormStringArrayField';
+import { FormStringField } from '../../formFields/FormStringField';
+import { FormTextField } from '../../formFields/FormTextField';
+import { EditableDescription } from './Controller';
 
 export interface DescriptionFormProps {
     description: EditableDescription;
@@ -30,8 +30,8 @@ export default class DescriptionForm extends Component<DescriptionFormProps, Des
     constructor(props: DescriptionFormProps) {
         super(props);
         this.state = {
-            keyword: ''
-        }
+            keyword: '',
+        };
     }
     // renderKeywords() {
     //     if (this.props.description.keywords.length === 0) {
@@ -144,39 +144,51 @@ export default class DescriptionForm extends Component<DescriptionFormProps, Des
     // }
 
     render() {
-        return <Well>
-            <Well.Header>
-                Edit Description
-            </Well.Header>
-            <Well.Body>
-                <Stack gap={2} style={{ marginBottom: '1em' }
-                } >
-                    <FormStringField
-                        field={this.props.description.title}
-                        label="Title"
-                        onEdit={this.props.onEditTitle} />
-                    <FormStringField
-                        field={this.props.description.researchOrganization}
-                        label="Research Organization"
-                        onEdit={this.props.onEditReaserchOrganization} />
-                    <FormTextField
-                        field={this.props.description.abstract}
-                        name="abstract"
-                        label="Abstract" onEdit={this.props.onEditAbstract} />
-                    <FormStringArrayField
-                        field={this.props.description.keywords}
-                        names={{ singular: "keyword", plural: "keywords" }}
-                        label="Keywords" onAdd={this.props.onAddKeywords} onRemove={this.props.onRemoveKeyword} />
-                </Stack>
-            </Well.Body>
-            <Well.Footer style={{ justifyContent: 'center' }}>
-                <Button variant="primary" className="w-auto" disabled={!this.props.canComplete} onClick={this.props.onDone}>
-                    Done
-                </Button>
-            </Well.Footer>
-        </Well>
+        return (
+            <Well variant="secondary">
+                <Well.Header>Edit Description</Well.Header>
+                <Well.Body>
+                    <Stack gap={2} style={{ marginBottom: '1em' }}>
+                        <FormStringField
+                            field={this.props.description.title}
+                            label="Title"
+                            onEdit={this.props.onEditTitle}
+                        />
+                        <FormStringField
+                            field={this.props.description.researchOrganization}
+                            label="Research Organization"
+                            onEdit={this.props.onEditReaserchOrganization}
+                        />
+                        <FormTextField
+                            field={this.props.description.abstract}
+                            name="abstract"
+                            label="Abstract"
+                            onEdit={this.props.onEditAbstract}
+                        />
+                        <FormStringArrayField
+                            field={this.props.description.keywords}
+                            names={{ singular: 'keyword', plural: 'keywords' }}
+                            label="Keywords"
+                            onAdd={this.props.onAddKeywords}
+                            onRemove={this.props.onRemoveKeyword}
+                        />
+                    </Stack>
+                </Well.Body>
+                <Well.Footer style={{ justifyContent: 'center' }}>
+                    <Button
+                        variant="primary"
+                        className="w-auto"
+                        disabled={!this.props.canComplete}
+                        onClick={this.props.onDone}
+                    >
+                        Done
+                    </Button>
+                </Well.Footer>
+            </Well>
+        );
 
-        {/* <Row className="g-0">
+        {
+            /* <Row className="g-0">
                 <h3>Title</h3>
                 <Col md={12}>
                     <FormControl
@@ -230,6 +242,7 @@ export default class DescriptionForm extends Component<DescriptionFormProps, Des
                         rows={10}
                         style={{ maxWidth: '50em' }} />
                 </Col>
-            </Row> */}
+            </Row> */
+        }
     }
 }

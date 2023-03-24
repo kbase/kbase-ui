@@ -1,21 +1,16 @@
-.well {
-    border-radius: 1em;
-    border: 3px solid rgba(200, 200, 200, 0.4);
-    display: flex;
-    flex-direction: column;
-}
-
 .header {
     flex: 0 0 auto;
     border-bottom: 1px solid rgba(200, 200, 200, 0.4);
     padding: 1em;
     font-weight: bold;
+    border-radius: 4px 4px 0 0;
     /* color: rgb(150 150 150); */
 }
 
+
 .body {
     flex: 1 1 0;
-    padding: 1em;
+    /* padding: 1em; */
     display: flex;
     flex-direction: column;
     min-height: 0;
@@ -37,13 +32,53 @@
 
 .footer {
     flex: 0 0 auto;
-    border-top: 1px solid rgba(200, 200, 200, 0.4);
+    /* border-top: 1px solid rgba(200, 200, 200, 0.4); */
     padding: 1em;
     display: flex;
     flex-direction: row;
 }
 
 .variantNone {}
+
+/* 
+    Vertical orientation
+*/
+
+.well-vertical {
+    border-radius: 12px;
+    border: 3px solid rgba(200, 200, 200, 0.4);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.footer-vertical {
+    flex: 0 0 auto;
+    /* border-top: 1px solid rgba(200, 200, 200, 0.4); */
+    padding: 1em;
+    display: flex;
+    flex-direction: row;
+}
+
+/*
+    Horizontal orientation
+*/
+
+.well-horizontal {
+    border-radius: 12px;
+    border: 3px solid rgba(200, 200, 200, 0.4);
+    display: flex;
+    flex-direction: row;
+    min-height: 0;
+}
+
+.footer-horizontal {
+    flex: 0 0 auto;
+    /* border-top: 1px solid rgba(200, 200, 200, 0.4); */
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+}
 
 /*
 Colors from ... https: //getbootstrap.com/docs/5.0/utilities/colors/
@@ -62,7 +97,7 @@ Colors from ... https: //getbootstrap.com/docs/5.0/utilities/colors/
 }
 
 .variantDanger {
-    border-color: #dc3545;
+    border-color: #d2717b;
 }
 
 .variantSuccess {

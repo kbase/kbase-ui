@@ -1,4 +1,3 @@
-import { EditableWork } from "apps/ORCIDWorks/PushWorksModel";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { SDKBoolean } from "lib/kb_lib/comm/types";
@@ -6,7 +5,7 @@ import { Config } from "types/config";
 // import { CSLMetadata } from "../demos/RequestDOI/steps/Citations/DOIOrgClient";
 import { SCOPE } from "./constants";
 import {
-    GetNameResult, GitInfo, NewWork,
+    GetNameResult, GitInfo, LinkRecord, ORCIDAuth,
     ORCIDLinkServiceClient, ORCIDProfile, ReturnLink, Work
 } from "./ORCIDLinkClient";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
@@ -34,17 +33,6 @@ const START_LINKING_SESSION_PATH = 'start-linking-session';
 }
 */
 
-export interface ORCIDAuth {
-    scope: string
-    orcid: string;
-    name: string;
-    expires_in: number;
-}
-
-export interface LinkRecord {
-    created_at: number,
-    orcid_auth: ORCIDAuth
-}
 
 export interface LinkResult {
     link: LinkRecord | null;
@@ -169,7 +157,6 @@ export interface AppPublications {
 
 
 export type CitationSource = 'app' | 'markdown' | 'manual';
-
 
 export type Citation = {
     citation: string,
@@ -300,21 +287,26 @@ export class Model {
         return this.orcidLinkClient.getWork(putCode);
     }
 
-    async createWork(work: EditableWork): Promise<Work> {
-        const temp: NewWork = {
-            title: work.title.value,
-            date: work.date.value,
-            workType: work.workType.value,
-            journal: work.journal.value,
-            url: work.url.value,
-            externalIds: work.externalIds.value
-        };
-        return this.orcidLinkClient.createWork(temp);
-    }
+    // async createWork(work: EditableWork): Promise<Work> {
+    //     const temp: NewWork = {
+    //         title: work.title.value,
+    //         date: work.date.value,
+    //         workType: work.workType.value,
+    //         journal: work.journal.value,
+    //         url: work.url.value,
+    //         doi: work.doi.value,
+    //         externalIds: work.externalIds.value,
+    //         citation: work.citation.value,
+    //         shortDescription: work.shortDescription.value,
+    //         selfContributor: work.selfContributor.value,
+    //         otherContributors: work.contributors.value
+    //     };
+    //     return this.orcidLinkClient.createWork(temp);
+    // }
 
-    async deleteWork(putCode: string): Promise<void> {
-        return this.orcidLinkClient.deleteWork(putCode);
-    }
+    // async deleteWork(putCode: string): Promise<void> {
+    //     return this.orcidLinkClient.deleteWork(putCode);
+    // }
 
 
     async getName(): Promise<GetNameResult> {

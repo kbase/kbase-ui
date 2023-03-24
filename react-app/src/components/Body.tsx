@@ -11,13 +11,14 @@ import Organizations from '../apps/Organizations';
 import { AuthenticationState, AuthenticationStatus } from '../contexts/Auth';
 import { Config } from '../types/config';
 
+import NarrativePublishing from 'apps/NarrativePublishing/Controller';
 import { changePath } from 'lib/navigation';
 import { PluginInfo } from 'types/info';
 import ORCIDLinkDemos from '../apps/demos/Demos';
 import NarrativeManagerNew from '../apps/NarrativeManager/New';
 import NarrativeManagerStart from '../apps/NarrativeManager/Start';
 import ORCIDLink from '../apps/ORCIDLink/ORCIDLink';
-import ORCIDWorks from '../apps/ORCIDWorks/ORCIDWorks';
+// import ORCIDWorks from '../apps/ORCIDWorks/ORCIDWorks';
 import RouterWrapper, { RouterContext } from '../contexts/RouterContext';
 import { AsyncProcessStatus } from '../lib/AsyncProcess2';
 import { Route } from '../lib/Route';
@@ -33,7 +34,7 @@ export interface BodyProps {
     setTitle: (title: string) => void;
 }
 
-interface BodyState {}
+interface BodyState { }
 
 export default class Body extends Component<BodyProps, BodyState> {
     routes: Array<Route>;
@@ -47,8 +48,11 @@ export default class Body extends Component<BodyProps, BodyState> {
             new Route('orcidlink/*', { authenticationRequired: false }, (props: RouteProps) => {
                 return <ORCIDLink {...props} {...this.props} />;
             }),
-             new Route('orcidworks/*', { authenticationRequired: false }, (props: RouteProps) => {
-                return <ORCIDWorks {...props} {...this.props} />;
+            // new Route('orcidworks/*', { authenticationRequired: false }, (props: RouteProps) => {
+            //     return <ORCIDWorks {...props} {...this.props} />;
+            // }),
+            new Route('narrativepublishing/*', { authenticationRequired: true }, (props: RouteProps) => {
+                return <NarrativePublishing {...props} {...this.props} />;
             }),
             new Route(
                 '^(catalog|appcatalog)$/*',

@@ -1,0 +1,50 @@
+/* Flex based table */
+
+.table {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.col {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0.1em;
+    margin: 0 0.5em;
+}
+
+.col:first-child {
+    margin-left: 0;
+}
+
+.col:last-child {
+    margin-right: 0;
+}
+
+.row.-header .flex-col {
+    font-weight: bold;
+    color: rgba(150, 150, 150, 1)
+}
+
+.colTitle {
+    font-weight: bold;
+    color: rgba(150, 150, 150);
+    justify-content: center;
+}
+
+.rowHeader {
+    font-weight: bold;
+    /* color: rgba(250, 250, 250, 1); */
+    /* background-color: rgba(125, 125, 125, 1); */
+    /* border-radius: 0.5em; */
+    margin: 2em 0 1em 0;
+    padding: 0.5em;
+    align-items: center;
+}

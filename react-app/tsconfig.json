@@ -23,7 +23,5 @@
     },
     "include": [
         "src",
-        "../_working/FeedsMonitor.ts",
-        "../_attic/Model-unused?.ts"
     ]
 }

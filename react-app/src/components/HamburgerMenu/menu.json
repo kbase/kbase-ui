@@ -110,6 +110,15 @@
                 "requiresAuth": true
             },
             {
+                "name": "narrativepublishing",
+                "label": "Narrative Publishing",
+                "type": "internal",
+                "path": "narrativepublishing",
+                "newWindow": false,
+                "icon": "paper-plane",
+                "requiresAuth": true
+            },
+            {
                 "name": "orcidlinkdemos",
                 "label": "Credit Engine Demos",
                 "type": "internal",

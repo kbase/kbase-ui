@@ -1,20 +1,15 @@
 import { toJSON } from "lib/kb_lib/jsonLike";
 import { ServiceClient } from "./ServiceClient";
 // import { MultiServiceClient } from "./DynamicServiceClient";
-import { LinkingSession, LinkRecord } from "./Model";
-
+import { LinkingSession } from "./Model";
 
 const WORKS_PATH = 'orcid/works';
-
-
 const GET_PROFILE_PATH = 'orcid/profile';
 const GET_LINK_PATH = 'link';
-
 const LINKING_SESSIONS_PATH = 'linking-sessions';
 const LINK_PATH = 'link';
 
 // ORCID User Profile (our version)
-
 
 export interface Affiliation {
     name: string;
@@ -23,12 +18,12 @@ export interface Affiliation {
     endYear: string | null;
 }
 
-
 export interface ORCIDProfile {
     // TODO: split into profile and info? E.g. id in info, profile info in profile...
     orcidId: string;
     firstName: string;
     lastName: string;
+    creditName: string | null;
     bio: string;
     affiliations: Array<Affiliation>
     works: Array<Work>
@@ -49,36 +44,149 @@ export interface ExternalId {
     relationship: string;
 }
 
-export interface NewWork {
+export interface Citation {
+    type: string;
+    value: string;
+}
+
+export interface ContributorORCIDInfo {
+    uri: string;
+    path: string;
+    // host: string | null;
+}
+
+// export interface ContributorAttributes {
+//     'contributor-sequence': string | null
+//     'contributor-role': string
+// }
+
+// export interface Contributor {
+//     'contributor-orcid': ContributorORCID;
+//     'credit-name': string;
+//     'contributor-email': string | null;
+//     'contributor-attributes': ContributorAttributes
+// }
+
+export interface Contributor {
+    orcidId: string | null;
+    name: string;
+    roles: Array<string>
+}
+
+export interface SelfContributor {
+    orcidId: string;
+    name: string;
+    roles: Array<string>
+}
+
+/*
+
+class ORCIDContributorORCIDInfo(ServiceBaseModel):
+    uri: str = Field(...)
+    path: str = Field(...)
+    # omitting host, seems never used
+
+
+ContributorRole = str
+
+
+class ORCIDContributor(ServiceBaseModel):
+    orcidInfo: Optional[ORCIDContributorORCIDInfo] = Field(default=None)
+    name: str = Field(...)
+    # omitting email, as it seems never used
+    roles: List[ContributorRole] = Field(...)
+
+export interface ContributorWrapper {
+    contributor: Array<Contributor>
+}
+*/
+
+
+/*
+
+class ContributorORCID(ServiceBaseModel):
+    uri: Optional[str] = Field(default=None)
+    path: Optional[str] = Field(default=None)
+    host: Optional[str] = Field(default=None)
+
+
+class ContributorAttributes(ServiceBaseModel):
+    # TODO: this does not seem used either (always null), need to look up
+    # the type.
+    contributor_sequence: Optional[str] = Field(
+        default=None, alias="contributor-sequence"
+    )
+    contributor_role: str = Field(alias="contributor-role")
+
+
+class Contributor(ServiceBaseModel):
+    contributor_orcid: ContributorORCID = Field(alias="contributor-orcid")
+    credit_name: StringValue = Field(alias="credit-name")
+    # TODO: email is not exposed in the web ui, so I don't yet know
+    # what the type really is
+    contributor_email: Optional[str] = Field(default=None, alias="contributor-email")
+    contributor_attributes: ContributorAttributes = Field(
+        alias="contributor-attributes"
+    )
+
+
+class ContributorWrapper(ServiceBaseModel):
+    contributor: List[Contributor] = Field(...)
+
+
+class Work(PersistedWorkBase):
+    """
+    These only appear in the call to get a single work record.
+    """
+    short_description: Optional[str] = Field(default=None, alias="short-description")
+    citation: Optional[Citation] = Field(default=None)
+    contributors: Optional[ContributorWrapper] = Field(default=None)
+*/
+
+export interface WorkBase {
     title: string;
     journal: string;
     date: string;
     workType: string;
     url: string;
+    doi: string;
     externalIds: Array<ExternalId>
+    citation: Citation | null;
+    shortDescription: string;
+    selfContributor: SelfContributor;
+    otherContributors: Array<Contributor> | null;
 }
 
-export interface Work extends NewWork {
+export interface NewWork extends WorkBase {
+}
+
+export interface PersistedWork extends WorkBase {
     putCode: string;
+}
+
+export interface WorkUpdate extends PersistedWork {
+
+}
+
+// export interface Work extends NewWork {
+//     putCode: string;
+//     createdAt: number;
+//     updatedAt: number;
+//     source: string;
+// }
+
+// export interface WorkUpdate extends NewWork {
+//     putCode: string;
+// }
+
+
+export interface Work extends PersistedWork {
     createdAt: number;
     updatedAt: number;
     source: string;
 }
 
-export interface WorkUpdate extends NewWork {
-    putCode: string;
-}
 
-export interface Work extends NewWork {
-    putCode: string;
-    createdAt: number;
-    updatedAt: number;
-    source: string;
-}
-
-export interface WorkUpdate extends NewWork {
-    putCode: string;
-}
 
 export interface GetNameResult {
     firstName: string;
@@ -178,6 +286,25 @@ export interface InfoResponse {
 
 }
 
+export type GetWorksResult = Array<{
+    externalIds: Array<ExternalId>;
+    updatedAt: number;
+    works: Array<Work>;
+}>
+
+export interface ORCIDAuth {
+    scope: string
+    orcid: string;
+    name: string;
+    expires_in: number;
+}
+
+export interface LinkRecord {
+    created_at: number,
+    orcid_auth: ORCIDAuth
+}
+
+
 // export interface GetDOIMetadata {
 //     metadata: CSLMetadata
 // }
@@ -224,7 +351,12 @@ export class ORCIDLinkServiceClient extends ServiceClient {
         return await this.get<Work>(`${WORKS_PATH}/${putCode}`)
     }
 
+    async getWorks(): Promise<GetWorksResult> {
+        return await this.get<GetWorksResult>(`${WORKS_PATH}`)
+    }
+
     async saveWork(work: WorkUpdate): Promise<Work> {
+        console.log('saveWork', toJSON(work), work);
         return await this.put<Work>(`${WORKS_PATH}`, toJSON(work))
     }
 
@@ -266,7 +398,5 @@ export class ORCIDLinkServiceClient extends ServiceClient {
     async finishLink(sessionId: string): Promise<void> {
         return await this.put<void>(`${LINKING_SESSIONS_PATH}/${sessionId}/finish`);
     }
-
-
 }
 

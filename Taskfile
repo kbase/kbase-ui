@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#
+# PRIVATE
+#
+
+#
+# _run-dc name command...
+#
+# Runs docker compose with the given docker compose filename suffix with the given command arguments
+#
+function _run-dc {
+  docker compose -f "etc/docker-compose-${1}.yml" --project-directory "${PWD}" --project-name orcidlink run --rm orcidlink "${@:2}"
+}
+
+function _dc-up {
+  docker compose -f "etc/docker-compose-${1}.yml" --project-directory "${PWD}" --project-name orcidlink up
+}
+
+
+function help {
+    echo "$0 <task> <args>"
+    echo "Runs the tasks listed below."
+    echo "To find out more about them, either read the source"
+    echo "for ${0} or the docs located in 'docs/tasks.md'."
+    echo "Tasks:"
+    # Note that this omits private functions - those prefixed with an _
+    compgen -A function | grep -e '^[^_]' | cat -n
+}
+
+TIMEFORMAT="Task completed in %3lR"
+time "${@:-help}"

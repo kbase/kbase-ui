@@ -1,14 +1,19 @@
-import { Model } from "../../Model";
+import { Model } from '../../Model';
 
-import Well from "components/Well";
-import { Component } from "react";
-import { Button, Col, Form, Row, Stack, Table } from "react-bootstrap";
+import Well from 'components/Well';
+import { Component } from 'react';
+import { Button, Col, Form, Row, Stack, Table } from 'react-bootstrap';
 
-import Empty from "components/Empty";
-import { GeolocationData, Location, LocationBoundingBox, LocationPoint, LocationType } from "../../DOIRequestClient";
+import Empty from 'components/Empty';
+import {
+    GeolocationData,
+    Location,
+    LocationBoundingBox,
+    LocationPoint,
+    LocationType,
+} from '../../DOIRequestClient';
 import BoundingBoxEditor from './BoundingBox/Controller';
 import LocationPointEditor from './LocationPointEditor/Controller';
-
 
 export interface GeolocationFormProps {
     geolocationData: GeolocationData;
@@ -20,13 +25,13 @@ export interface GeolocationFormProps {
 
 export enum EditorSelection {
     NONE = 'NONE',
-    SELECTED = 'SELECTED'
+    SELECTED = 'SELECTED',
 }
 
 export enum EditorStatus {
     INITIAL = 'INITIAL',
     VALID = 'VALID',
-    INVALID = 'INVALD'
+    INVALID = 'INVALD',
 }
 
 export interface EditorStateBase {
@@ -34,7 +39,7 @@ export interface EditorStateBase {
 }
 
 export interface EditorStateNone extends EditorStateBase {
-    selection: EditorSelection.NONE
+    selection: EditorSelection.NONE;
 }
 
 export interface EditorStateSelectedBase extends EditorStateBase {
@@ -44,23 +49,22 @@ export interface EditorStateSelectedBase extends EditorStateBase {
 }
 
 export interface EditorStateSelectedInitial extends EditorStateSelectedBase {
-    status: EditorStatus.INITIAL,
+    status: EditorStatus.INITIAL;
 }
 
 export interface EditorStateSelectedValid extends EditorStateSelectedBase {
-    status: EditorStatus.VALID
+    status: EditorStatus.VALID;
 }
 
 export interface EditorStateSelectedInvalid extends EditorStateSelectedBase {
-    status: EditorStatus.INVALID
+    status: EditorStatus.INVALID;
 }
 
 export type EditorState =
-    EditorStateNone |
-    EditorStateSelectedInitial |
-    EditorStateSelectedValid |
-    EditorStateSelectedInvalid;
-
+    | EditorStateNone
+    | EditorStateSelectedInitial
+    | EditorStateSelectedValid
+    | EditorStateSelectedInvalid;
 
 interface GeolocationFormState {
     editor: EditorState;
@@ -122,18 +126,18 @@ interface GeolocationFormState {
 //     LocationPolygonEditor |
 //     LocationBoundingBoxEditor
 
-export default class GeolocationForm extends Component<GeolocationFormProps, GeolocationFormState>{
+export default class GeolocationForm extends Component<GeolocationFormProps, GeolocationFormState> {
     constructor(props: GeolocationFormProps) {
         super(props);
         this.state = {
             editor: {
-                selection: EditorSelection.NONE
-            }
-        }
+                selection: EditorSelection.NONE,
+            },
+        };
     }
     renderLocations() {
         if (this.props.geolocationData.locations.length === 0) {
-            return <Empty message="No locations yet entered" />
+            return <Empty message="No locations yet entered" />;
         }
         const rows = (() => {
             // if (this.props.geolocationData.locations.length === 0) {
@@ -151,38 +155,35 @@ export default class GeolocationForm extends Component<GeolocationFormProps, Geo
                             return 'Bounding Box';
                     }
                 })();
-                return <tr key={index}>
-                    <td>
-                        {location.place}
-                    </td>
-                    <td>
-                        {description}
-                    </td>
-                </tr>
+                return (
+                    <tr key={index}>
+                        <td>{location.place}</td>
+                        <td>{description}</td>
+                    </tr>
+                );
             });
         })();
-        return <Table size="sm">
-            <colgroup>
-                <col />
-                <col style={{ width: '10em' }} />
-            </colgroup>
-            <thead>
-                <tr>
-                    <th>Place</th>
-                    <th>Location Type</th>
-                </tr>
-            </thead>
-            <tbody>
-                {rows}
-            </tbody>
-        </Table>
+        return (
+            <Table size="sm">
+                <colgroup>
+                    <col />
+                    <col style={{ width: '10em' }} />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Place</th>
+                        <th>Location Type</th>
+                    </tr>
+                </thead>
+                <tbody>{rows}</tbody>
+            </Table>
+        );
     }
-
 
     renderEditor() {
         switch (this.state.editor.selection) {
             case EditorSelection.NONE:
-                return <div>Select a location type to invoke the associated editor</div>
+                return <div>Select a location type to invoke the associated editor</div>;
             case EditorSelection.SELECTED:
                 switch (this.state.editor.status) {
                     case EditorStatus.INITIAL:
@@ -190,12 +191,25 @@ export default class GeolocationForm extends Component<GeolocationFormProps, Geo
                     case EditorStatus.VALID:
                         switch (this.state.editor.locationType) {
                             case LocationType.POINT:
-                                return <LocationPointEditor model={this.props.model} onDone={(locationPoint: LocationPoint) => this.props.addLocation(locationPoint)} />
+                                return (
+                                    <LocationPointEditor
+                                        model={this.props.model}
+                                        onDone={(locationPoint: LocationPoint) =>
+                                            this.props.addLocation(locationPoint)
+                                        }
+                                    />
+                                );
                             case LocationType.POLYGON:
-                                return <div>Not supported yet</div>
+                                return <div>Not supported yet</div>;
                             case LocationType.BOUNDING_BOX:
-                                return <BoundingBoxEditor model={this.props.model}
-                                    onDone={(boundingBox: LocationBoundingBox) => this.props.addLocation(boundingBox)} />
+                                return (
+                                    <BoundingBoxEditor
+                                        model={this.props.model}
+                                        onDone={(boundingBox: LocationBoundingBox) =>
+                                            this.props.addLocation(boundingBox)
+                                        }
+                                    />
+                                );
                         }
                 }
         }
@@ -208,8 +222,8 @@ export default class GeolocationForm extends Component<GeolocationFormProps, Geo
                     editor: {
                         selection: EditorSelection.SELECTED,
                         status: EditorStatus.INITIAL,
-                        locationType: LocationType.POINT
-                    }
+                        locationType: LocationType.POINT,
+                    },
                 });
                 break;
             case 'polygon':
@@ -217,8 +231,8 @@ export default class GeolocationForm extends Component<GeolocationFormProps, Geo
                     editor: {
                         selection: EditorSelection.SELECTED,
                         status: EditorStatus.INITIAL,
-                        locationType: LocationType.POLYGON
-                    }
+                        locationType: LocationType.POLYGON,
+                    },
                 });
                 break;
             case 'bounding-box':
@@ -226,63 +240,93 @@ export default class GeolocationForm extends Component<GeolocationFormProps, Geo
                     editor: {
                         selection: EditorSelection.SELECTED,
                         status: EditorStatus.INITIAL,
-                        locationType: LocationType.BOUNDING_BOX
-                    }
+                        locationType: LocationType.BOUNDING_BOX,
+                    },
                 });
                 break;
             default:
                 this.setState({
                     editor: {
                         selection: EditorSelection.NONE,
-                    }
+                    },
                 });
                 break;
         }
     }
 
     renderControls() {
-        return <Stack gap={2} style={{ marginBottom: '1em' }}>
-            <Row>
-                <Col md="auto" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', fontWeight: 'bold', color: 'rgba(150, 150, 150, 1)' }}>
-                    Geolocation Type
-                </Col>
-                <Col>
-                    <Form.Select onChange={(e) => { this.onLocationTypeSelect(e.currentTarget.value); }}>
-                        <option value="">- Select a location type -</option>
-                        <option value="point">Point (Lat + Long)</option>
-                        <option value="polygon">Polygon (multiple Lat + Long)</option>
-                        <option value="bounding-box">Bounding Box (East &amp; West Lat + Long)</option>
-                    </Form.Select>
-                </Col>
-
-            </Row>
-        </Stack>;
+        return (
+            <Stack gap={2} style={{ marginBottom: '1em' }}>
+                <Row>
+                    <Col
+                        md="auto"
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            fontWeight: 'bold',
+                            color: 'rgba(150, 150, 150, 1)',
+                        }}
+                    >
+                        Geolocation Type
+                    </Col>
+                    <Col>
+                        <Form.Select
+                            onChange={(e) => {
+                                this.onLocationTypeSelect(e.currentTarget.value);
+                            }}
+                        >
+                            <option value="">- Select a location type -</option>
+                            <option value="point">Point (Lat + Long)</option>
+                            <option value="polygon">Polygon (multiple Lat + Long)</option>
+                            <option value="bounding-box">
+                                Bounding Box (East &amp; West Lat + Long)
+                            </option>
+                        </Form.Select>
+                    </Col>
+                </Row>
+            </Stack>
+        );
     }
 
     render() {
-        return <Stack gap={2} style={{ marginBottom: '1em' }} >
-            <Row>
-                <Col>
-                    <h3>Locations</h3>
-                    <Well style={{ padding: '0.5em', marginRight: '0.25em' }}>
-                        {this.renderLocations()}
-                    </Well>
-                </Col>
-                <Col>
-                    <h3>Location Editor</h3>
-                    {this.renderControls()}
-                    <Well style={{ padding: '0.5em', marginLeft: '0.25em' }}>
-                        {this.renderEditor()}
-                    </Well>
-                </Col>
-            </Row>
-            <Row>
-                <Col md={12}>
-                    <Row style={{ justifyContent: 'center' }} >
-                        <Button variant="primary" className="w-auto" onClick={this.props.onDone}>Next <span className="fa fa-hand-o-down" /></Button>
-                    </Row>
-                </Col>
-            </Row>
-        </Stack >;
+        return (
+            <Stack gap={2} style={{ marginBottom: '1em' }}>
+                <Row>
+                    <Col>
+                        <h3>Locations</h3>
+                        <Well
+                            style={{ padding: '0.5em', marginRight: '0.25em' }}
+                            variant="secondary"
+                        >
+                            {this.renderLocations()}
+                        </Well>
+                    </Col>
+                    <Col>
+                        <h3>Location Editor</h3>
+                        {this.renderControls()}
+                        <Well
+                            style={{ padding: '0.5em', marginLeft: '0.25em' }}
+                            variant="secondary"
+                        >
+                            {this.renderEditor()}
+                        </Well>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={12}>
+                        <Row style={{ justifyContent: 'center' }}>
+                            <Button
+                                variant="primary"
+                                className="w-auto"
+                                onClick={this.props.onDone}
+                            >
+                                Next <span className="fa fa-hand-o-down" />
+                            </Button>
+                        </Row>
+                    </Col>
+                </Row>
+            </Stack>
+        );
     }
 }

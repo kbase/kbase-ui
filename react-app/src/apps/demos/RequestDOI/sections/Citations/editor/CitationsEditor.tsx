@@ -4,7 +4,7 @@ import FlexGrid from 'components/FlexGrid';
 import Well from 'components/Well';
 import { Component } from 'react';
 import { Button, Col, Row, Stack } from 'react-bootstrap';
-import { Citation } from "../../../DOIRequestClient";
+import { Citation } from '../../../DOIRequestClient';
 import { Model } from '../../../Model';
 import { ifEmpty, when } from '../../../utils';
 import { ManualCitationFormController } from './ManualCitations/Controller';
@@ -24,12 +24,11 @@ interface CitationsEditorState {
     // citations: Array<Citation>;
 }
 
-
 export default class CitationsEditor extends Component<CitationsEditorProps, CitationsEditorState> {
     constructor(props: CitationsEditorProps) {
         super(props);
         this.state = {
-            citations: props.citations
+            citations: props.citations,
         };
     }
 
@@ -50,36 +49,66 @@ export default class CitationsEditor extends Component<CitationsEditorProps, Cit
         if (citation.source !== 'manual') {
             return;
         }
-        return <Button variant="outline-danger" style={{ border: 'none' }} onClick={() => { this.props.deleteCitation(index) }}>
-            <span className="fa fa-trash" />
-        </Button>
+        return (
+            <Button
+                variant="outline-danger"
+                style={{ border: 'none' }}
+                onClick={() => {
+                    this.props.deleteCitation(index);
+                }}
+            >
+                <span className="fa fa-trash" />
+            </Button>
+        );
     }
 
     // Renderers
     renderCitations() {
         const citations = this.props.citations;
         if (citations.length === 0) {
-            return <Empty message="No citations" />
+            return <Empty message="No citations" />;
         }
         const rows = citations.map((citation, index) => {
-            return <FlexGrid.Row key={index} style={{ borderBottom: '1px solid rgba(200, 200, 200, 0.5)', padding: '0.5em 0' }}>
-                <FlexGrid.Col style={{ flex: '0 0 1.5em' }}>{when(citation.doi, <span className="fa fa-check text-success" />, <span className="fa fa-ban text-warning" />)}</FlexGrid.Col>
-                <FlexGrid.Col style={{ flex: '1 1 0' }}>{ifEmpty(citation.doi, 'n/a - cannot be sent to OSTI')}</FlexGrid.Col>
-                <FlexGrid.Col style={{ flex: '3 1 0' }}>{this.renderCitation(citation)}</FlexGrid.Col>
-                <FlexGrid.Col style={{ flex: '0 0 4em' }}>{citation.source}</FlexGrid.Col>
-                <FlexGrid.Col style={{ flex: '0 0 3em' }}>{this.renderDeleteButton(citation, index)}</FlexGrid.Col>
-            </FlexGrid.Row>
+            return (
+                <FlexGrid.Row
+                    key={index}
+                    style={{
+                        borderBottom: '1px solid rgba(200, 200, 200, 0.5)',
+                        padding: '0.5em 0',
+                    }}
+                >
+                    <FlexGrid.Col style={{ flex: '0 0 1.5em' }}>
+                        {when(
+                            citation.doi,
+                            <span className="fa fa-check text-success" />,
+                            <span className="fa fa-ban text-warning" />
+                        )}
+                    </FlexGrid.Col>
+                    <FlexGrid.Col style={{ flex: '1 1 0' }}>
+                        {ifEmpty(citation.doi, 'n/a - cannot be sent to OSTI')}
+                    </FlexGrid.Col>
+                    <FlexGrid.Col style={{ flex: '3 1 0' }}>
+                        {this.renderCitation(citation)}
+                    </FlexGrid.Col>
+                    <FlexGrid.Col style={{ flex: '0 0 4em' }}>{citation.source}</FlexGrid.Col>
+                    <FlexGrid.Col style={{ flex: '0 0 3em' }}>
+                        {this.renderDeleteButton(citation, index)}
+                    </FlexGrid.Col>
+                </FlexGrid.Row>
+            );
         });
-        return <FlexGrid>
-            <FlexGrid.Row style={{ borderBottom: '1px dashed rgb(200, 200, 200)' }}>
-                <FlexGrid.Col style={{ flex: '0 0 1.5em' }}></FlexGrid.Col>
-                <FlexGrid.Col style={{ flex: '1 1 0' }}>Citation</FlexGrid.Col>
-                <FlexGrid.Col style={{ flex: '3 1 0' }}>DOI</FlexGrid.Col>
-                <FlexGrid.Col style={{ flex: '0 0 4em' }}>Source</FlexGrid.Col>
-                <FlexGrid.Col style={{ flex: '0 0 3em' }}></FlexGrid.Col>
-            </FlexGrid.Row>
-            {rows}
-        </FlexGrid>;
+        return (
+            <FlexGrid>
+                <FlexGrid.Row style={{ borderBottom: '1px dashed rgb(200, 200, 200)' }}>
+                    <FlexGrid.Col style={{ flex: '0 0 1.5em' }}></FlexGrid.Col>
+                    <FlexGrid.Col style={{ flex: '1 1 0' }}>Citation</FlexGrid.Col>
+                    <FlexGrid.Col style={{ flex: '3 1 0' }}>DOI</FlexGrid.Col>
+                    <FlexGrid.Col style={{ flex: '0 0 4em' }}>Source</FlexGrid.Col>
+                    <FlexGrid.Col style={{ flex: '0 0 3em' }}></FlexGrid.Col>
+                </FlexGrid.Row>
+                {rows}
+            </FlexGrid>
+        );
     }
 
     // renderWarnings() {
@@ -103,15 +132,14 @@ export default class CitationsEditor extends Component<CitationsEditorProps, Cit
     // }
 
     render() {
-        return <Well style={{ marginBottom: '1em' }}>
-            <Well.Header>
-                Edit Citations
-            </Well.Header>
-            <Well.Body>
-                <Stack gap={2} style={{ padding: '1em' }}>
-                    {/* {this.renderWarnings()} */}
+        return (
+            <Well style={{ marginBottom: '1em' }} variant="secondary">
+                <Well.Header>Edit Citations</Well.Header>
+                <Well.Body>
+                    <Stack gap={2} style={{ padding: '1em' }}>
+                        {/* {this.renderWarnings()} */}
 
-                    {/* <Row>
+                        {/* <Row>
                     <Col md={12}>
                         <AlertMessage variant="info">
                             <p style={{ maxWidth: 'none' }}>
@@ -122,35 +150,42 @@ export default class CitationsEditor extends Component<CitationsEditorProps, Cit
                     </Col>
                 </Row> */}
 
-                    <Row>
-                        <Col md={12}>
-                            {this.renderCitations()}
-                        </Col>
-                    </Row>
-                    <Row style={{ paddingTop: '1em' }}>
-                        <Col md={12}>
-                            <h4>Add Citation</h4>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col md={12}>
-                            <ManualCitationFormController addCitation={this.addCitation.bind(this)} model={this.props.model} />
-                        </Col>
-                    </Row>
-
-                </Stack>
-            </Well.Body>
-            <Well.Footer>
-                <Stack>
-                    <Row>
-                        <Col md={12}>
-                            <Row style={{ justifyContent: 'center' }} >
-                                <Button variant="primary" className="w-auto" onClick={this.props.onDone}>Done</Button>
-                            </Row>
-                        </Col>
-                    </Row>
-                </Stack>
-            </Well.Footer>
-        </Well >
+                        <Row>
+                            <Col md={12}>{this.renderCitations()}</Col>
+                        </Row>
+                        <Row style={{ paddingTop: '1em' }}>
+                            <Col md={12}>
+                                <h4>Add Citation</h4>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md={12}>
+                                <ManualCitationFormController
+                                    addCitation={this.addCitation.bind(this)}
+                                    model={this.props.model}
+                                />
+                            </Col>
+                        </Row>
+                    </Stack>
+                </Well.Body>
+                <Well.Footer>
+                    <Stack>
+                        <Row>
+                            <Col md={12}>
+                                <Row style={{ justifyContent: 'center' }}>
+                                    <Button
+                                        variant="primary"
+                                        className="w-auto"
+                                        onClick={this.props.onDone}
+                                    >
+                                        Done
+                                    </Button>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </Stack>
+                </Well.Footer>
+            </Well>
+        );
     }
 }

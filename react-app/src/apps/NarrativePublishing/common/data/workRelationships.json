@@ -1,0 +1,22 @@
+[
+    {
+        "value": "self",
+        "label": "Self",
+        "description": "The identifier applies to the work itself. For example, a DOI for a book chapter."
+    },
+    {
+        "value": "part-of",
+        "label": "Part of",
+        "description": "The identifier applies to part of a larger work. For example, the ISBN of the book in which the work was published."
+    },
+    {
+        "value": "version-of",
+        "label": "Version of",
+        "description": "The identifier applies to an alternate version of the work. For example, an earlier draft of an article."
+    },
+    {
+        "value": "funded-by",
+        "label": "Funded by",
+        "description": "The identifier applies to the funding for the work."
+    }
+]

@@ -1,0 +1,183 @@
+import { Citation, Work } from "apps/ORCIDLink/lib/ORCIDLinkClient"
+
+export enum ValueStatus {
+    NONE = 'NONE',
+    EMPTY = 'EMPTY',
+    SOME = 'SOME'
+}
+
+export interface ValueBase {
+    status: ValueStatus
+}
+
+export interface ValueNone extends ValueBase {
+    status: ValueStatus.NONE
+}
+
+export interface ValueEmpty extends ValueBase {
+    status: ValueStatus.EMPTY
+}
+
+export interface ValueSome<T> extends ValueBase {
+    status: ValueStatus.SOME
+    value: T
+}
+
+export type Value<T> =
+    ValueNone | ValueEmpty | ValueSome<T>;
+
+export enum Trinary {
+    NONE = "NONE",
+    TRUE = "TRUE",
+    FALSE = "FALSE"
+}
+
+// export interface FieldRules<TConstraint> {
+//     //rules
+//     isRequired: boolean;
+//     constraint: TConstraint;
+//     //state
+//     isRequiredMet: Trinary,
+//     isContraintMet: Trinary
+// }
+
+export enum StorageStatus {
+    NONE = "NONE",
+    CONSISTENT = "CONSISTENT",
+    INCONSISTENT = "INCONSISTENT"
+}
+
+export interface ConstraintStateBase {
+    isConstraintMet: Trinary
+}
+
+export interface ConstraintStateNone extends ConstraintStateBase {
+    isConstraintMet: Trinary.NONE
+}
+
+export interface ConstraintStateTrue extends ConstraintStateBase {
+    isConstraintMet: Trinary.TRUE
+}
+
+export interface ConstraintStateFalse extends ConstraintStateBase {
+    isConstraintMet: Trinary.FALSE
+    message: string
+}
+
+export type ConstraintState =
+    ConstraintStateNone | ConstraintStateTrue | ConstraintStateFalse
+
+export interface FieldBase {
+    // facts
+    isRequired: boolean;
+    //state
+    isTouched: boolean;
+    storageStatus: StorageStatus;
+    isRequiredMet: Trinary,
+    constraintState: ConstraintState
+}
+
+
+export interface Field<TEditValue, TConstraint, TStorageValue> extends FieldBase {
+    // facts
+    constraint?: TConstraint
+    // state
+    editValue: Value<TEditValue>
+    pendingValue: Value<TStorageValue>
+    storageValue: Value<TStorageValue>
+}
+
+// Some implementations
+
+export enum StringConstraintType {
+    LENGTH = "LENGTH",
+    PATTERN = "PATTERN",
+    DOMAIN = "DOMAIN"
+}
+
+export enum NumberRangeType {
+    INCLUSIVE = "INCLUSIVE",
+    EXCLUSIVE = "EXCLISIVE"
+}
+
+export interface NumberRangeLimit {
+    value: number;
+    rangeType: NumberRangeType
+}
+
+// String
+
+export interface StringConstraintBase {
+    type: StringConstraintType
+}
+
+export interface StringConstraintLength extends StringConstraintBase {
+    type: StringConstraintType.LENGTH
+    minLength?: NumberRangeLimit
+    maxLength?: NumberRangeLimit
+}
+
+export interface StringConstraintPattern extends StringConstraintBase {
+    type: StringConstraintType.PATTERN
+    regexp: RegExp;
+}
+
+export interface StringConstraintDomain extends StringConstraintBase {
+    type: StringConstraintType.DOMAIN
+    values: Array<string>
+}
+
+export type StringConstraint =
+    StringConstraintLength | StringConstraintPattern | StringConstraintDomain;
+
+
+export type StringField = Field<string, StringConstraint, string>;
+
+// Number
+
+export interface NumberConstraint {
+    min?: NumberRangeLimit
+    max?: NumberRangeLimit
+}
+
+export type NumberField = Field<number, NumberConstraint, number>
+
+// Array of strings
+
+export interface StringArrayConstraint {
+    stringConstraint?: StringConstraint;
+    minLength?: NumberRangeLimit;
+    maxLength?: NumberRangeLimit;
+}
+
+export type StringArrayField = Field<Array<string>, StringArrayConstraint, Array<string>>
+
+
+// Field Groups!
+
+/**
+ * Discussion.
+ * Editable data (other than the simple case of a single string, number, etc.) is composed
+ * of (possibly nested) structures. Simple "Field"s implement editable atomic data like
+ * strings and numbers, and simple non-atomic data like arrays.
+ * In order to provide editor features for structures, or objects, we need Groups.
+ * Now, an editable object is composed of arbitrary properties, so we cannot 
+ */
+
+export interface CitationGroupFields {
+    type: StringField
+    value: StringField
+}
+
+// export interface CitationFieldGroup<TEditValue, TConstraint, TStorageValue> extends Field <TEditValue, TConstraint, TStorageValue> {
+
+// }
+
+export type CitationFieldGroup = Field<CitationGroupFields, null, Citation>
+
+export interface WorkGroupFields {
+    citation: CitationGroupFields;
+    shortDescription: StringField;
+}
+
+export type WorkFieldGroup = Field<WorkGroupFields, null, Work>

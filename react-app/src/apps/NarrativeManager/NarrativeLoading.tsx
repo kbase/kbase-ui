@@ -1,30 +1,33 @@
-import { Component } from "react";
-import { Config } from "types/config";
+import { Component } from 'react';
+import Spinner from 'react-bootstrap/esm/Spinner';
+import { Config } from 'types/config';
 
 export interface NarrativeLoadingProps {
     detectSlow?: boolean;
     message: string;
-    config: Config
+    config: Config;
 }
 
 enum NarrativeLoadingStatus {
     NONE = 'NONE',
     SLOW = 'SLOW',
     VERY_SLOW = 'VERYSLOW',
-
 }
 
 interface NarrativeLoadingState {
-    status: NarrativeLoadingStatus
+    status: NarrativeLoadingStatus;
 }
 
-export default class NarrativeLoading extends Component<NarrativeLoadingProps, NarrativeLoadingState> {
+export default class NarrativeLoading extends Component<
+    NarrativeLoadingProps,
+    NarrativeLoadingState
+> {
     watchListener: null | number;
     constructor(props: NarrativeLoadingProps) {
         super(props);
         this.watchListener = null;
         this.state = {
-            status: NarrativeLoadingStatus.NONE
+            status: NarrativeLoadingStatus.NONE,
         };
     }
 
@@ -63,11 +66,11 @@ export default class NarrativeLoading extends Component<NarrativeLoadingProps, N
     }
 
     renderLoadingMessage() {
-        return <div className="-message">
-            <span className="fa fa-2x fa-spinner fa-pulse"></span>
-            {' '}
-            {this.props.message}
-        </div>
+        return (
+            <div className="-message">
+                <Spinner /> {this.props.message}
+            </div>
+        );
     }
 
     render() {
@@ -76,28 +79,33 @@ export default class NarrativeLoading extends Component<NarrativeLoadingProps, N
                 case NarrativeLoadingStatus.NONE:
                     return this.renderLoadingMessage();
                 case NarrativeLoadingStatus.SLOW:
-                    return <div>
-                        {this.renderLoadingMessage()}
-                        <p className="text text-warning" style={{ marginTop: '1em' }}>
-                            <span className="fa fa-exclamation-triangle"></span>
-                            This process is taking longer than expected. Still trying...
-                        </p>
-                    </div>;
+                    return (
+                        <div>
+                            {this.renderLoadingMessage()}
+                            <p className="text text-warning" style={{ marginTop: '1em' }}>
+                                <span className="fa fa-exclamation-triangle"></span>
+                                This process is taking longer than expected. Still trying...
+                            </p>
+                        </div>
+                    );
                 case NarrativeLoadingStatus.VERY_SLOW:
-                    return <div>
-                        {this.renderLoadingMessage()}
-                        <p className="text text-danger" style={{ marginTop: '1em' }}>
-                            <span className="fa fa-exclamation-triangle"></span>
-                            This process is taking <b>much</b> longer than expected. Still trying...
-                        </p>
-                    </div>;
+                    return (
+                        <div>
+                            {this.renderLoadingMessage()}
+                            <p className="text text-danger" style={{ marginTop: '1em' }}>
+                                <span className="fa fa-exclamation-triangle"></span>
+                                This process is taking <b>much</b> longer than expected. Still
+                                trying...
+                            </p>
+                        </div>
+                    );
             }
         })();
 
-        return <div className="well NarrativeLoading" style={{ width: '50%', margin: '0 auto' }}>
-            <div className="well-body">
-                {message}
+        return (
+            <div className="well NarrativeLoading" style={{ width: '50%', margin: '0 auto' }}>
+                <div className="well-body">{message}</div>
             </div>
-        </div>
+        );
     }
 }

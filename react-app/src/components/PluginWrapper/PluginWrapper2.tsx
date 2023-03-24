@@ -50,15 +50,12 @@ export default class PluginWrapper extends Component<
         // The original hash path string.
         const originalHash = this.props.hashPath.hash;
 
-        // setTitle(`Loading ${this.props.name}:${this.props.view}...`);
-
         return (
             <RuntimeContext.Consumer>
                 {(value) => {
                     if (value === null) {
                         return null;
                     }
-                    // value.setTitle(`Loading ${this.props.name}:${this.props.view}...`);
                     return (
                         <Plugin
                             setTitle={value.setTitle}

@@ -90,7 +90,7 @@ export interface ObjectInfo {
     typeMajorVersion: string;
     typeMinorVersion: string;
     saveDate: string;
-
+    savedAt: number;
 }
 
 export type WorkspaceInfoRaw = [
@@ -116,6 +116,7 @@ export interface WorkspaceInfo {
     lockstat: string;
     metadata: Metadata;
     modDate: string;
+    modifiedAt: number;
 }
 
 export type Metadata = JSONObjectOf<string>;
@@ -221,7 +222,8 @@ export function workspaceInfoToObject(wsInfo: WorkspaceInfoRaw): WorkspaceInfo {
         globalread: wsInfo[6],
         lockstat: wsInfo[7],
         metadata: wsInfo[8],
-        modDate: new Date(wsInfo[3]).toISOString()
+        modDate: new Date(wsInfo[3]).toISOString(),
+        modifiedAt: new Date(wsInfo[3]).getTime()
     };
 }
 
@@ -246,7 +248,8 @@ export function objectInfoToObject(objInfo: ObjectInfoRaw): ObjectInfo {
         typeName: type[1],
         typeMajorVersion: type[2],
         typeMinorVersion: type[3],
-        saveDate: new Date(objInfo[3]).toISOString()
+        saveDate: new Date(objInfo[3]).toISOString(),
+        savedAt: new Date(objInfo[3]).getTime()
     };
 }
 
@@ -276,6 +279,12 @@ export interface UserPerm {
 
 export interface GetPermissionsMassResult extends JSONLikeObject {
     perms: Array<UserPerm>;
+}
+
+export interface AlterWorkspaceMetadataParams extends JSONLikeObject {
+    wsi: WorkspaceIdentity;
+    new?: Metadata;
+    remove?: Array<string>;
 }
 
 export default class WorkspaceClient extends ServiceClient {
@@ -339,5 +348,12 @@ export default class WorkspaceClient extends ServiceClient {
             [toJSON(params)]
         );
         return object as GetPermissionsMassResult;
+    }
+
+    async alter_workspace_metadata(params: AlterWorkspaceMetadataParams): Promise<void> {
+        await this.callFuncEmptyResult<[JSONValue]>(
+            'alter_workspace_metadata',
+            [toJSON(params)]
+        );
     }
 }

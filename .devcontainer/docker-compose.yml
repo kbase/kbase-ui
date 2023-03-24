@@ -84,9 +84,17 @@ services:
     ports:
       - '80:80'
       - '443:443'
-    dns: 8.8.8.8
-    # note that this is really a docker env file and is relative to the docker-compose file
+    dns: 
+      - 8.8.8.8
+      - 9.9.9.9
+      - 1.1.1.1
+      - 208.67.222.222
+      
+
+    # note that this is really a docker env file and is relative to the docker-compose file 
+    # TODO: I think we may need to use an entrypoint which selects the deploy environment
+    # config (env) file based on the DEPLOY_ENV. Can't 
     
     env_file: 
-      - ../tools/proxy/conf/${DEPLOY_ENV:-ci}.env
+      - ../tools/proxy/conf/appdev.env
       - custom.env

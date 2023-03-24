@@ -1,5 +1,6 @@
 {
     "editor.detectIndentation": false,
+    "editor.quickSuggestionsDelay": 1000,
     "eslint.format.enable": true,
     "eslint.lintTask.enable": true,
     "editor.formatOnSave": true,
@@ -10,10 +11,23 @@
     "plantuml.exportSubFolder": false,
     "plantuml.exportFormat": "png",
     "plantuml.diagramsRoot": "docs/diagrams",
-    "deno.enablePaths": ["./tools/deno"],
+    "deno.enablePaths": [
+        "./tools/deno"
+    ],
     "deno.lint": true,
-    "css.customData": ["./.vscode/custom.css-data.json"],
+    "css.customData": [
+        "./.vscode/custom.css-data.json"
+    ],
     "[markdown]": {
         "editor.formatOnSave": true
-    }
+    },
+    "spellright.language": [
+        "en"
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext",
+        "typescript"
+    ]
 }

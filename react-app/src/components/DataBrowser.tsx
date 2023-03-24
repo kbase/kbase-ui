@@ -15,6 +15,7 @@ function outerDimensions(el: Element) {
 export interface ColumnDef<T> {
     id: string;
     label: string;
+    flex?: string;
     style?: CSSProperties;
     render: (row: T) => ReactNode;
     // sort?: (state: SortState, dataSource: Array<T>) => Array<T>;
@@ -244,19 +245,18 @@ export default class DataBrowser<T> extends Component<
     }
 
     renderHeader() {
-        const style = {
-            height: `{this.props.heights.header}px`,
-        };
+        // const style = ;
         const header = this.state.columns.map((column, index) => {
             const {
-                def: { label, style, sorter },
+                def: { label, flex, sorter },
             } = column;
+            const colStyle: CSSProperties = { flex: `${flex || '1 1 0'}` };
             if (sorter) {
                 return (
                     <div
                         key={column.def.id}
                         className={styles.headerCol}
-                        style={style || {}}
+                        style={colStyle}
                         onClick={() => {
                             this.onHeaderClick(index);
                         }}
@@ -271,7 +271,7 @@ export default class DataBrowser<T> extends Component<
                 return (
                     <div
                         className={styles.headerCol}
-                        style={style || {}}
+                        style={colStyle}
                         key={column.def.id}
                     >
                         <div className={styles.headerTitle}>{label}</div>
@@ -280,7 +280,9 @@ export default class DataBrowser<T> extends Component<
             }
         });
         return (
-            <div className={styles.header} style={style}>
+            <div className={styles.header} style={{
+                height: `{this.props.heights.header}px`,
+            }}>
                 {header}
             </div>
         );
@@ -314,11 +316,14 @@ export default class DataBrowser<T> extends Component<
                 height: `${this.props.heights.row}px`,
             };
 
-            const row = this.state.columns.map((col) => {
+            const row = this.state.columns.map((column) => {
                 // TODO: format value
+                const { id, render, flex, style } = column.def;
+                const widthStyle: CSSProperties = { flex: `${flex || '1 1 0'}` };
+                const colStyle: CSSProperties = style || {};
                 const content = (() => {
                     try {
-                        return col.def.render(values.data);
+                        return render(values.data);
                     } catch (ex) {
                         return (
                             <span className="text-danger">
@@ -329,13 +334,13 @@ export default class DataBrowser<T> extends Component<
                         );
                     }
                 })();
-                const style = col.def.style || {};
+
                 return (
                     <div
-                        key={col.def.id}
+                        key={id}
                         className={styles.col}
-                        style={style}
-                        data-k-b-testhook-cell={col.def.id}
+                        style={{...colStyle, ...widthStyle}}
+                        data-k-b-testhook-cell={id}
                         role="cell"
                     >
                         <div className={styles.colContent}>{content}</div>
