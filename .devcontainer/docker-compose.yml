@@ -96,5 +96,5 @@ services:
     # config (env) file based on the DEPLOY_ENV. Can't 
     
     env_file: 
-      - ../tools/proxy/conf/appdev.env
+      - ../tools/proxy/conf/ci.env
       - custom.env
