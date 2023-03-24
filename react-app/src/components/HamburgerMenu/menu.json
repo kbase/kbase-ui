@@ -101,15 +101,6 @@
                 "requiresAuth": true
             },
             {
-                "name": "orcidworks",
-                "label": "ORCID® Works",
-                "type": "internal",
-                "path": "orcidworks",
-                "newWindow": false,
-                "icon": "paperclip",
-                "requiresAuth": true
-            },
-            {
                 "name": "narrativepublishing",
                 "label": "Narrative Publishing",
                 "type": "internal",
