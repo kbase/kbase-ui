@@ -2,7 +2,7 @@
 // import { WorkspaceInfo } from "@kbase/ui-lib/lib/comm/coreServices/Workspace";
 // import { LinkRecord } from "apps/ORCIDLink/lib/Model";
 import {
-    Citation, Contributor, ExternalId, LinkRecord, NewWork, ORCIDLinkServiceClient,
+    Citation, Contributor, ContributorRole, ExternalId, LinkRecord, NewWork, ORCIDLinkServiceClient,
     ORCIDProfile, SelfContributor, Work, WorkUpdate
 } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
@@ -121,13 +121,13 @@ export interface EditableCitation {
 export type EditableContributor = EditState<{
     orcidId: EditState<string, string>
     name: EditState<string, string>
-    roles: EditState<Array<string>, Array<string>>
+    roles: EditState<Array<ContributorRole>, Array<ContributorRole>>
 }, Contributor>
 
 export type EditableSelfContributor = EditState<{
     orcidId: EditState<string, string>
     name: EditState<string, string>
-    roles: EditState<Array<string>, Array<string>>
+    roles: EditState<Array<ContributorRole>, Array<ContributorRole>>
 }, SelfContributor>
 
 export type EditableContributors = EditState<Array<EditableContributor>, Array<Contributor>>

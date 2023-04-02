@@ -1,22 +1,23 @@
 import { Component } from "react";
 import { Value, ValueStatus } from "../fields/Field";
-import { StringArrayField, StringArrayFieldUtil } from "../fields/StringArrayField";
 
 import MultiSelect from "apps/NarrativePublishing/common/MultiSelect";
+import { ContributorRole } from "apps/ORCIDLink/lib/ORCIDLinkClient";
+import { ContributorRoleArrayField, ContributorRoleArrayFieldUtil } from "../workFields/ContributorRoleArrayField";
 import { OptionType, renderFieldEditStatus, renderFieldValidationIcon, renderFieldValidationMessage } from "./common";
 
-export interface MultiSelectEditorProps {
+export interface MultiSelectEditor2Props {
     debug?: boolean;
-    field: StringArrayField
+    field: ContributorRoleArrayField
     placeholder: string;
     noun: string;
     availableItems: Array<OptionType>;
-    save: (d: StringArrayField) => void;
+    save: (d: ContributorRoleArrayField) => void;
 }
 
-export default class MultiSelectEditor extends Component<MultiSelectEditorProps> {
-    validate(editedValue: Array<string>): StringArrayField {
-        const editValue: Value<Array<string>> = (() => {
+export default class MultiSelectEditor2 extends Component<MultiSelectEditor2Props> {
+    validate(editedValue: Array<ContributorRole>): ContributorRoleArrayField {
+        const editValue: Value<Array<ContributorRole>> = (() => {
             if (editedValue.length === 0) {
                 return {
                     status: ValueStatus.EMPTY
@@ -28,14 +29,15 @@ export default class MultiSelectEditor extends Component<MultiSelectEditorProps>
             }
         })();
 
-        return new StringArrayFieldUtil({
+        return new ContributorRoleArrayFieldUtil({
             ...this.props.field,
             editValue,
         }).evaluate();
     }
 
     changed(editedValue: Array<string>): void {
-        this.props.save(this.validate(editedValue));
+        const editedValue2 = editedValue.map((role) => { return { role } });
+        this.props.save(this.validate(editedValue2));
     }
 
     render() {
@@ -52,7 +54,7 @@ export default class MultiSelectEditor extends Component<MultiSelectEditorProps>
                 {this.props.placeholder}
             </option>
         );
-        const editValue: Array<string> = (() => {
+        const editValue: Array<ContributorRole> = (() => {
             switch (field.editValue.status) {
                 case ValueStatus.NONE:
                     return [];
@@ -60,6 +62,17 @@ export default class MultiSelectEditor extends Component<MultiSelectEditorProps>
                     return [];
                 case ValueStatus.SOME:
                     return field.editValue.value;
+            }
+        })();
+
+        const editValue2: Array<string> = (() => {
+            switch (field.editValue.status) {
+                case ValueStatus.NONE:
+                    return [];
+                case ValueStatus.EMPTY:
+                    return [];
+                case ValueStatus.SOME:
+                    return field.editValue.value.map(({ role }) => role);
             }
         })();
 
@@ -76,7 +89,7 @@ export default class MultiSelectEditor extends Component<MultiSelectEditorProps>
                         noun={this.props.noun}
                         availableItems={this.props.availableItems}
                         onChange={this.changed.bind(this)}
-                        selectedValues={editValue}
+                        selectedValues={editValue2}
                     />
                 </div>
                 {validationMessage}

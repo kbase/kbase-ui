@@ -89,17 +89,17 @@ export class FormStringArrayField extends Component<FormStringArrayFieldProps, F
         }
 
         return <Form onSubmit={(e) => {
-                    e.preventDefault();
-                    this.onAddKeyword();
+            e.preventDefault();
+            this.onAddKeyword();
         }}>
             <Stack gap={2}>
                 <div>
                     <Form.Control
                         type="text"
                         name={this.props.names.plural}
-                        placeholder={`Enter a new ${this.props.names.singular}`}
+                        placeholder={`Enter one or more ${this.props.names.plural}`}
                         value={this.state.keyword}
-                        style={{width: '12em'}}
+                        style={{ width: '20em' }}
                         className={classes.join(' ')}
                         onInput={(e) => { this.onEditKeyword(e.currentTarget.value) }}
                     />

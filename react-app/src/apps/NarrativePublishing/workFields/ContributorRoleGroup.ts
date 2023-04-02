@@ -1,13 +1,13 @@
 import { ConstraintState, Field, Trinary, Value, ValueStatus } from "../fields/Field";
 import { StringField, StringFieldUtil } from "../fields/StringField";
 
-import { Contributor } from "apps/ORCIDLink/lib/ORCIDLinkClient";
-import { ContributorRoleArrayField, ContributorRoleArrayFieldUtil } from "./ContributorRoleArrayField";
+import { Contributor, ContributorRole } from "apps/ORCIDLink/lib/ORCIDLinkClient";
+import { StringArrayField, StringArrayFieldUtil } from "../fields/StringArrayField";
 
 export interface ContributorGroupFields {
     orcidId: StringField;
     name: StringField;
-    roles: ContributorRoleArrayField;
+    roles: StringArrayField;
 }
 
 export type ContributorGroup = Field<ContributorGroupFields, null, Contributor>
@@ -144,7 +144,7 @@ export class ContributorGroupUtil {
                             value: {
                                 name: new StringFieldUtil(editValue.value.name).getPendingValue(),
                                 orcidId: new StringFieldUtil(editValue.value.orcidId).getPendingValue(),
-                                roles: new ContributorRoleArrayFieldUtil(editValue.value.roles).getPendingValue()
+                                roles: new StringArrayFieldUtil(editValue.value.roles).getPendingValue().map((role): ContributorRole => { return { role }; })
                             }
                         }
                 }

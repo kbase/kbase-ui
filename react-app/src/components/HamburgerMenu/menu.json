@@ -119,6 +119,15 @@
                 "requiresAuth": true
             },
             {
+                "name": "componentgallery",
+                "label": "Component Gallery",
+                "type": "internal",
+                "path": "gallery/home",
+                "newWindow": false,
+                "icon": "picture-o",
+                "requiresAuth": false
+            },
+            {
                 "name": "about-services",
                 "type": "internal",
                 "path": "about/services",

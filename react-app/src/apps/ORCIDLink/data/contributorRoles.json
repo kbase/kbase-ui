@@ -1,49 +1,5 @@
 [
     {
-        "value": "author",
-        "label": "Author"
-    },
-    {
-        "value": "assignee",
-        "label": "Assignee"
-    },
-    {
-        "value": "editor",
-        "label": "Editor"
-    },
-    {
-        "value": "chair-or-translator",
-        "label": "Chair or Translator"
-    },
-    {
-        "value": "co-investigator",
-        "label": "Co-Investigator"
-    },
-    {
-        "value": "co-inventor",
-        "label": "Co-Inventor"
-    },
-    {
-        "value": "graduate-student",
-        "label": "Graduate-Student"
-    },
-    {
-        "value": "other-inventor",
-        "label": "Other-Inventor"
-    },
-    {
-        "value": "principal-investigator",
-        "label": "Principal-Investigator"
-    },
-    {
-        "value": "postdoctoral-researcher",
-        "label": "Postdoctoral-Researcher"
-    },
-    {
-        "value": "support-staff",
-        "label": "Support-Staff"
-    },
-    {
         "value": "http://credit.niso.org/contributor-roles/conceptualization/",
         "label": "Conceptualization"
     },

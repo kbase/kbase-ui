@@ -115,6 +115,8 @@ export default class SelectNarrativeController extends Component<SelectNarrative
      * @returns 
      */
     async selectNarrative(narrativeRef: string): Promise<void> {
+
+
         if (this.state.dataState.status !== AsyncProcessStatus.SUCCESS) {
             return;
         }

@@ -1,10 +1,19 @@
 import React, { Component, PropsWithChildren } from 'react';
-import styles from './AlertMessage.module.css';
+import { Alert } from 'react-bootstrap';
+
+// For some reason, react-bootstrap also adds "string" to the union, which pretty much
+// makes Variant useless as a restriction... There is an open ticket, but it has been ope
+// for a couple of years! There may be some reason to have Variant be looser, but c'mon.
+export type Variant =
+    'primary' | 'secondary' | 'success' | 'danger' |
+    'warning' | 'info' | 'dark' | 'light';
 
 export type AlertMessageProps = PropsWithChildren<{
+    showTitle?: boolean;
     title?: string;
+    showIcon?: boolean;
     icon?: string;
-    variant: 'error' | 'danger' | 'info' | 'warning' | 'success' | 'secondary';
+    variant: Variant
     message?: string;
     style?: React.CSSProperties;
     className?: string;
@@ -12,40 +21,38 @@ export type AlertMessageProps = PropsWithChildren<{
 }>;
 
 export default class AlertMessage extends Component<AlertMessageProps> {
-    iconClass() {
-        switch (this.props.variant) {
-            case 'danger':
-            case 'error':
-                return 'exclamation-triangle';
-            case 'warning':
-                return 'exclamation-triangle';
-            case 'info':
-                return 'info-circle';
-            case 'success':
-                return 'check';
-            case 'secondary':
-                return null
+    iconClass(): string | null {
+        console.log('icon?', this.props.variant);
+        if (typeof this.props.showIcon !== 'undefined' && this.props.showIcon !== false) {
+            switch (this.props.variant) {
+                case 'primary':
+                    return null;
+                case 'secondary':
+                    return null
+                case 'success':
+                    return 'check';
+                case 'danger':
+                    return 'exclamation-circle';
+                case 'warning':
+                    return 'exclamation-triangle';
+                case 'info':
+                    return 'info-circle';
+                case 'dark':
+                    return null;
+                case 'light':
+                    return null;
+            }
         }
-    }
-    renderAlertTypeClass() {
-        switch (this.props.variant) {
-            case 'danger':
-            case 'error':
-                return 'danger';
-            case 'warning':
-                return 'warning';
-            case 'info':
-                return 'info';
-            case 'success':
-                return 'success';
-            case 'secondary':
-                return 'secondary';
-        }
+
+        return this.props.icon || null;
+
     }
     defaultTitle() {
+        if (!this.props.showTitle) {
+            return;
+        }
         switch (this.props.variant) {
             case 'danger':
-            case 'error':
                 return 'Error!';
             case 'warning':
                 return 'Warning!';
@@ -53,40 +60,38 @@ export default class AlertMessage extends Component<AlertMessageProps> {
                 return 'Info';
             case 'success':
                 return 'Success';
-            case 'secondary':
-                return '';
+            default:
+                return;
         }
+    }
+    renderIcon() {
+        const iconClass = this.iconClass();
+        if (iconClass === null) {
+            return;
+        }
+        return <span className={`fa fa-${iconClass}`} style={{ marginRight: '0.25em' }} />
     }
     renderTitle() {
         const title = this.props.title || this.defaultTitle();
-        const className = (() => {
-            const iconClass = this.props.icon || this.iconClass();
-            if (iconClass) {
-                return `fa fa-${iconClass}`
-            }
-        })();
-        return (
-            <div className="alert-title">
-                <span className={className} />
-                {title}
-            </div>
-        );
+        if (!title) {
+            return;
+        }
+        return <Alert.Heading>
+            {this.renderIcon()}
+            {title}
+        </Alert.Heading>
     }
     render() {
+        console.log('show icon?', this.props.showIcon);
         const content = (() => {
             if (this.props.render) {
                 return this.props.render();
             }
             return this.props.message || this.props.children;
         })();
-        return (
-            <div
-                className={`alert alert-${this.renderAlertTypeClass()} ${styles.AlertMessage} ${this.props.className}`}
-                style={this.props.style}
-            >
-                {this.renderTitle()}
-                {content}
-            </div>
-        );
+        return <Alert variant={this.props.variant} style={this.props.style}>
+            {this.renderTitle()}
+            {content}
+        </Alert>
     }
 }

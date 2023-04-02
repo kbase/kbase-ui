@@ -14,11 +14,12 @@ import { Config } from '../types/config';
 import NarrativePublishing from 'apps/NarrativePublishing/Controller';
 import { changePath } from 'lib/navigation';
 import { PluginInfo } from 'types/info';
-import ORCIDLinkDemos from '../apps/demos/Demos';
 import NarrativeManagerNew from '../apps/NarrativeManager/New';
 import NarrativeManagerStart from '../apps/NarrativeManager/Start';
 import ORCIDLink from '../apps/ORCIDLink/ORCIDLink';
+import ORCIDLinkDemos from '../apps/demos/Demos';
 // import ORCIDWorks from '../apps/ORCIDWorks/ORCIDWorks';
+import Gallery from 'apps/gallery';
 import RouterWrapper, { RouterContext } from '../contexts/RouterContext';
 import { AsyncProcessStatus } from '../lib/AsyncProcess2';
 import { Route } from '../lib/Route';
@@ -370,6 +371,12 @@ export default class Body extends Component<BodyProps, BodyState> {
             }),
             new Route('about/*', { authenticationRequired: false }, (props: RouteProps) => {
                 return <About {...this.props} {...props} />;
+            }),
+            new Route('gallery', { authenticationRequired: true }, (props: RouteProps) => {
+                return <Gallery {...props} {...this.props} />;
+            }),
+            new Route('gallery/:name', { authenticationRequired: true }, (props: RouteProps) => {
+                return <Gallery {...props} {...this.props} />;
             }),
             // new Route('about', { authenticationRequired: false }, (props: RouteProps) => {
             //     return <About {...this.props} {...props} />;

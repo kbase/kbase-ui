@@ -3,12 +3,12 @@ import contributorRoles from 'apps/ORCIDLink/data/contributorRoles.json';
 import { Component } from 'react';
 import { Stack } from 'react-bootstrap';
 import { ValueStatus } from '../fields/Field';
-import { StringArrayField } from '../fields/StringArrayField';
 import { StringField } from '../fields/StringField';
 import { ContributorGroup, ContributorGroupUtil } from '../workFields/ContributorGroup';
+import { ContributorRoleArrayField } from '../workFields/ContributorRoleArrayField';
 
 import { renderFieldEditStatus, renderFieldValidationIcon, renderFieldValidationMessage } from "./common";
-import MultiSelectEditor from './MultiSelectEditor';
+import MultiSelectEditor2 from './MultiSelectEditor2';
 import StringEditor from './StringEditor';
 
 
@@ -111,7 +111,7 @@ export default class ContributorGroupEditor extends Component<
         if (field.editValue.status !== ValueStatus.SOME) {
             return;
         }
-        const save = (roles: StringArrayField) => {
+        const save = (roles: ContributorRoleArrayField) => {
             const field = this.props.field;
 
             if (field.editValue.status !== ValueStatus.SOME) {
@@ -134,7 +134,7 @@ export default class ContributorGroupEditor extends Component<
             this.changed(newField);
         }
 
-        return <MultiSelectEditor
+        return <MultiSelectEditor2
             debug={this.props.debug}
             field={field.editValue.value.roles}
             noun="Role"

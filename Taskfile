@@ -17,6 +17,52 @@ function _dc-up {
   docker compose -f "etc/docker-compose-${1}.yml" --project-directory "${PWD}" --project-name orcidlink up
 }
 
+function _noop {
+    echo "Not implemented yet"
+}
+
+#
+# PUBLIC
+#
+
+function alias-me {
+    alias run="${PWD}/Taskfile"
+}
+
+#
+# Tasks we need to run prior to commits, etc. 
+#
+
+function test {
+    _noop
+}
+
+function format {
+    _noop
+}
+
+# 
+# Development work support.
+# dev prepares everything to enable local development
+# generate-config prepares the config file for the deploy environment set in ENV
+#
+
+function dev {
+    _noop
+}
+
+function render-templates {
+    env DIR="${PWD}" ENV="${ENV:-ci}" bash tools/dockerize/scripts/render-templates.sh
+}
+
+# Optional dev tooling:
+
+function generate-dev-cert {
+    _noop
+}
+
+
+
 
 function help {
     echo "$0 <task> <args>"

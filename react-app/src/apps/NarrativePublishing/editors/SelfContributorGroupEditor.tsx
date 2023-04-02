@@ -5,10 +5,10 @@ import { SelfContributorGroup, SelfContributorGroupUtil } from '../workFields/Se
 
 import FlexGrid, { FlexCol, FlexRow } from 'apps/NarrativePublishing/common/FlexGrid';
 import { ValueStatus } from '../fields/Field';
-import { StringArrayField } from '../fields/StringArrayField';
 import { StringField } from '../fields/StringField';
+import { ContributorRoleArrayField } from '../workFields/ContributorRoleArrayField';
 import { renderFieldEditStatusClasses, renderFieldValidationIcon, renderFieldValidationMessage, renderHeaderValidationIcon } from "./common";
-import MultiSelectEditor from './MultiSelectEditor';
+import MultiSelectEditor2 from './MultiSelectEditor2';
 import StringEditor from './StringEditor';
 
 
@@ -120,7 +120,7 @@ export default class SelfContributorGroupEditor extends Component<
         if (field.editValue.status !== ValueStatus.SOME) {
             return;
         }
-        const save = (roles: StringArrayField) => {
+        const save = (roles: ContributorRoleArrayField) => {
             const field = this.props.field;
 
             if (field.editValue.status !== ValueStatus.SOME) {
@@ -143,7 +143,7 @@ export default class SelfContributorGroupEditor extends Component<
             this.changed(newField);
         }
 
-        return <MultiSelectEditor
+        return <MultiSelectEditor2
             debug={this.props.debug}
             field={field.editValue.value.roles}
             noun="role"

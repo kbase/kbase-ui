@@ -5,7 +5,10 @@ import Button from 'react-bootstrap/esm/Button';
 import Stack from 'react-bootstrap/esm/Stack';
 import { FlexCol, FlexRow } from '../common/FlexGrid';
 import ScrollingArea from '../common/ScrollingArea';
-import { renderFieldEditStatusClasses, renderFieldValidationIcon, renderFieldValidationMessage, renderHeaderValidationIcon } from '../editors/common';
+import {
+    renderFieldEditStatusClasses, renderFieldValidationIcon,
+    renderFieldValidationMessage, renderHeaderValidationIcon
+} from '../editors/common';
 import WorkEditor from '../editors/WorkEditor';
 import { WorkGroup } from '../workFields/WorkGroup';
 

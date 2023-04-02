@@ -67,16 +67,20 @@ export interface ContributorORCIDInfo {
 //     'contributor-attributes': ContributorAttributes
 // }
 
+export interface ContributorRole {
+    role: string;
+}
+
 export interface Contributor {
     orcidId: string | null;
     name: string;
-    roles: Array<string>
+    roles: Array<ContributorRole>
 }
 
 export interface SelfContributor {
     orcidId: string;
     name: string;
-    roles: Array<string>
+    roles: Array<ContributorRole>
 }
 
 /*

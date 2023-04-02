@@ -1,5 +1,5 @@
 import {
-    Citation, Contributor, ExternalId,
+    Citation, Contributor, ContributorRole, ExternalId,
     LinkRecord, SelfContributor, Work
 } from 'apps/ORCIDLink/lib/ORCIDLinkClient';
 import ErrorAlert from 'components/ErrorAlert';
@@ -13,11 +13,11 @@ import EditWork from './EditWork';
 // import WorkEditor from './editors/WorkEditor';
 // import EditWork from './EditWork-ver2';
 import { NumberRangeType, StorageStatus, Trinary, ValueStatus } from '../fields/Field';
-import { StringArrayField, StringArrayFieldUtil } from '../fields/StringArrayField';
 import { StringConstraintType, StringField, StringFieldUtil } from '../fields/StringField';
 import { URLField, URLFieldUtil } from '../fields/URLFIeld';
 import { CitationGroup, CitationGroupUtil } from '../workFields/CitationGroup';
 import { ContributorGroup, ContributorGroupUtil } from '../workFields/ContributorGroup';
+import { ContributorRoleArrayField, ContributorRoleArrayFieldUtil } from '../workFields/ContributorRoleArrayField';
 import { ExternalIdGroup, ExternalIdGroupUtil } from '../workFields/ExternalIdGroup';
 import { OtherContributorsGroup, OtherContributorsGroupUtil } from '../workFields/OtherContributorsGroup';
 import { OtherExternalIdsGroup, OtherExternalIdsGroupUtil } from '../workFields/OtherExternalIdsGroup';
@@ -198,8 +198,8 @@ function createNameField(value: string): StringField {
     }).evaluate();
 }
 
-function createRolesField(value: Array<string>): StringArrayField {
-    return new StringArrayFieldUtil({
+function createRolesField(value: Array<ContributorRole>): ContributorRoleArrayField {
+    return new ContributorRoleArrayFieldUtil({
         isRequired: true,
         constraint: {
             minLength: {

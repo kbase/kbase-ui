@@ -12,6 +12,7 @@ interface NarrativeInfoViewerState {
 
 export default class NarrativeInfoViewer extends Component<NarrativeInfoViewerProps, NarrativeInfoViewerState> {
     render() {
+        console.log('narrative?', this.props.narrative);
         const { workspaceId, version, title, owner, staticNarrativeSavedAt } = this.props.narrative;
 
         const rows: Array<RotatedTableRow> = [

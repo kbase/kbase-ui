@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import styles from './Empty.module.css';
 
-export interface EmptyProps {
+export interface EmptyProps extends PropsWithChildren {
+    message?: string;
     icon?: string;
-    message: string;
     size?: 'normal' | 'compact' | 'inline'
 }
 
@@ -25,6 +25,12 @@ export default class Empty extends React.Component<EmptyProps> {
                 iconClasses.push(styles.iconInline);
                 break;
         }
+        const message = (() => {
+            if (this.props.message) {
+                return <div className={styles.message}>{this.props.message}</div>
+            }
+            return this.props.children;
+        })();
         return (
             <div className={mainClasses.join(' ')}>
                 <div className={iconClasses.join(' ')}>
@@ -39,7 +45,7 @@ export default class Empty extends React.Component<EmptyProps> {
                         ></i>
                     </span>
                 </div>
-                <div className={styles.message}>{this.props.message}</div>
+                {message}
             </div>
         );
     }

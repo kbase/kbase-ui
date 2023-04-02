@@ -8,8 +8,11 @@ import {
     AuthorsImportSection,
     AuthorsSection,
     CitationImportResults,
-    CitationResults, CitationsImportSection, CitationsSection, ContractNumbers, ContractsSection, Description,
-    DescriptionSection, DOIForm, DOIFormSections, DOIFormStatus, NarrativeSection, ORCIDLinkSection, OSTISubmission, ReviewAndSubmitResult,
+    CitationResults, CitationsImportSection, CitationsSection, ContractNumbers, ContractsSection,
+    DOIForm, DOIFormSections, DOIFormStatus,
+    Description,
+    DescriptionSection,
+    NarrativeSection, ORCIDLinkSection, OSTISubmission, ReviewAndSubmitResult,
     ReviewAndSubmitSection,
     StepStatus
 } from "../DOIRequestClient";
@@ -52,7 +55,7 @@ export default class RequestDOIEditor extends Component<RequestDOIEditorProps, R
     }
 
     renderStepTitle(step: number, title: string) {
-        return <AlertMessage variant="info" style={{ fontWeight: 'bold' }} title={`${step}. ${title}`} icon="square-o" />
+        return <AlertMessage variant="info" style={{ fontWeight: 'bold', marginRight: '0.5em' }} title={`${step}. ${title}`} icon="square-o" />
     }
 
     renderDisabledStepTitle(step: number, title: string) {

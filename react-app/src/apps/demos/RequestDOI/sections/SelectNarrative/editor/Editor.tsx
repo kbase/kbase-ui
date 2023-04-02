@@ -64,9 +64,9 @@ export default class SelectNarrative extends Component<SelectNarrativeProps, Sel
 
         return (
             <Well style={{ padding: '1em' }} variant="primary">
-                <Stack gap={2}>
+                <Well.Body>
                     <NarrativeInfoViewer narrative={this.props.selectedNarrative} />
-                </Stack>
+                </Well.Body>
             </Well>
         );
     }
