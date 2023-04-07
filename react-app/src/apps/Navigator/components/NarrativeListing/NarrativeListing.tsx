@@ -1,3 +1,4 @@
+import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import { updateHistory } from 'lib/navigation';
 import { Component } from 'react';
 import ErrorMessage from '../../../../components/ErrorMessage';
@@ -5,7 +6,6 @@ import Loading from '../../../../components/Loading';
 import { AsyncProcessStatus } from '../../../../lib/AsyncProcess';
 import { SearchState, SearchStatus } from '../../context/DataModel';
 import { NavigatorContext } from '../../context/NavigatorContext';
-import { NarrativeSearchDoc } from '../../utils/NarrativeModel';
 import IconSpinner from '../IconSpinner';
 import AsyncQueue from '../NarrativeList/AsyncQueue';
 import Narrative from '../NarrativeList/Narrative';

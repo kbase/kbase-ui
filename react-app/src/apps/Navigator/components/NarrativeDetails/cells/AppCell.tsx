@@ -1,16 +1,16 @@
-import { Component } from 'react';
-import { AppCellIcon } from '../../Icon';
-import { AuthInfo } from '../../../../../contexts/Auth';
-import { Config } from '../../../../../types/config';
-import { AppCell } from '../../../utils/NarrativeModel';
-import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import { AppCell } from 'lib/clients/NarrativeModel';
+import { marked } from 'marked';
+import { Component } from 'react';
 import { Accordion, Tab, Table, Tabs } from 'react-bootstrap';
+import Empty from '../../../../../components/Empty';
+import RenderJSON from '../../../../../components/RenderJSON';
+import { AuthInfo } from '../../../../../contexts/Auth';
+import { niceElapsed } from '../../../../../lib/time';
+import { Config } from '../../../../../types/config';
+import { AppCellIcon } from '../../Icon';
 import styles from './AppCell.module.css';
 import cellStyles from './cell.module.css';
-import Empty from '../../../../../components/Empty';
-import { niceElapsed } from '../../../../../lib/time';
-import RenderJSON from '../../../../../components/RenderJSON';
 
 interface PreviewCellProps {
     cell: AppCell;

@@ -1,11 +1,11 @@
-import { Component } from 'react';
-import { MarkdownCell } from '../../../utils/NarrativeModel';
-import { marked } from 'marked';
-import styles from './MarkdownCell.module.css';
-import { DefaultIcon } from '../../Icon';
-import { Accordion } from 'react-bootstrap';
-import cellStyles from './cell.module.css';
 import DOMPurify from 'dompurify';
+import { MarkdownCell } from 'lib/clients/NarrativeModel';
+import { marked } from 'marked';
+import { Component } from 'react';
+import { Accordion } from 'react-bootstrap';
+import { DefaultIcon } from '../../Icon';
+import styles from './MarkdownCell.module.css';
+import cellStyles from './cell.module.css';
 
 interface MarkdownCellProps {
     cell: MarkdownCell;
@@ -54,10 +54,10 @@ export default class MarkdownCellView extends Component<MarkdownCellProps> {
                                 <div className={cellStyles.header}>
                                     <div className={cellStyles.title}>
                                         {this.props.cell.metadata.kbase &&
-                                        this.props.cell.metadata.kbase
-                                            .attributes
+                                            this.props.cell.metadata.kbase
+                                                .attributes
                                             ? this.props.cell.metadata.kbase
-                                                  .attributes.title
+                                                .attributes.title
                                             : 'n/a'}
                                     </div>
                                 </div>

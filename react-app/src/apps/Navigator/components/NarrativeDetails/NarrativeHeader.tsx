@@ -1,13 +1,13 @@
+import PropTable from 'components/PropTable';
+import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import React from 'react';
-import UserModel, { UserProfile } from '../../utils/UserModel';
-import { readableDate } from '../../utils/readableDate';
-import { NarrativeSearchDoc } from '../../utils/NarrativeModel';
-import { Config } from '../../../../types/config';
+import ErrorMessage from '../../../../components/ErrorMessage';
+import Loading from '../../../../components/Loading';
 import { AuthInfo } from '../../../../contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from '../../../../lib/AsyncProcess';
-import Loading from '../../../../components/Loading';
-import PropTable from 'components/PropTable';
-import ErrorMessage from '../../../../components/ErrorMessage';
+import { Config } from '../../../../types/config';
+import UserModel, { UserProfile } from '../../utils/UserModel';
+import { readableDate } from '../../utils/readableDate';
 import './NarrativeHeader.css';
 
 export type CellType =
@@ -298,7 +298,7 @@ export default class NarrativeHeader extends React.Component<
                             rows={
                                 [
                                     ['Author', () => {
-                                        return  profileLink(
+                                        return profileLink(
                                             narrativeDoc.creator,
                                             authorName
                                         )
@@ -320,7 +320,7 @@ export default class NarrativeHeader extends React.Component<
                                         narrativeDoc.is_public
                                             ? 'Public'
                                             : 'Private'
-                                            ]
+                                    ]
                                 ]
                             }
                             styles={{
@@ -337,7 +337,7 @@ export default class NarrativeHeader extends React.Component<
                                 },
                             }}
                         />
-                            
+
                     </div>
                     <div className="col-4">
                         <PropTable

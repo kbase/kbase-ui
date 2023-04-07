@@ -1,13 +1,13 @@
+import Empty from 'components/Empty';
+import { OutputObjectCell } from 'lib/clients/NarrativeModel';
 import { Component } from 'react';
 import { Accordion, Table } from 'react-bootstrap';
 import ErrorMessage from '../../../../../components/ErrorMessage';
-import { OutputObjectCell } from '../../../utils/NarrativeModel';
+import RenderJSON from '../../../../../components/RenderJSON';
+import EZTooltip from '../../EZTooltip';
 import { DefaultIcon } from '../../Icon';
 import styles from './OutputObject.module.css';
 import cellStyles from './cell.module.css';
-import EZTooltip from '../../EZTooltip';
-import RenderJSON from '../../../../../components/RenderJSON';
-import Empty from 'components/Empty';
 
 interface OutputObjectCellProps {
     cell: OutputObjectCell;

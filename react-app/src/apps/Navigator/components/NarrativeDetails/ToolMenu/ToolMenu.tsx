@@ -1,15 +1,15 @@
+import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import { Component } from 'react';
-import DeleteNarrative from './DeleteNarrative';
-import CopyItem from './CopyItem';
-import LinkOrgItem from './LinkOrgItem';
-import RenameItem from './RenameItem';
-import SharingItem from './sharing/SharingItem';
-import { NarrativeSearchDoc } from '../../../utils/NarrativeModel';
+import { Dropdown, Modal } from 'react-bootstrap';
 import { AuthInfo } from '../../../../../contexts/Auth';
 import { Config } from '../../../../../types/config';
-import { Dropdown, Modal } from 'react-bootstrap';
-import { UserPermission } from './ToolMenuWrapper';
+import CopyItem from './CopyItem';
+import DeleteNarrative from './DeleteNarrative';
+import LinkOrgItem from './LinkOrgItem';
+import RenameItem from './RenameItem';
 import './ToolMenu.css';
+import { UserPermission } from './ToolMenuWrapper';
+import SharingItem from './sharing/SharingItem';
 
 interface MenuItem {
     title: string;

@@ -1,14 +1,14 @@
+import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
+import { updateHistory } from 'lib/navigation';
 import { Component } from 'react';
-import { NarrativeSearchDoc } from '../../utils/NarrativeModel';
-import ToolMenu from './ToolMenu/ToolMenuWrapper';
-import DataView from './DataView';
-import Preview from './Preview';
+import { Tab, Tabs } from 'react-bootstrap';
 import { AuthInfo } from '../../../../contexts/Auth';
 import { Config } from '../../../../types/config';
-import NarrativeHeader from './NarrativeHeader';
-import { Tab, Tabs } from 'react-bootstrap';
-import { updateHistory } from 'lib/navigation';
+import DataView from './DataView';
 import './NarrativeDetails.css';
+import NarrativeHeader from './NarrativeHeader';
+import Preview from './Preview';
+import ToolMenu from './ToolMenu/ToolMenuWrapper';
 
 interface Props {
     authInfo: AuthInfo;

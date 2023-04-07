@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
+import { JSONObject } from "lib/json";
 import WorkspaceClient from "lib/kb_lib/comm/coreServices/Workspace";
-import { JSONObject } from "../../../lib/json";
 
 /**
  * Interfaces that represent Narrative data returned from the search service.

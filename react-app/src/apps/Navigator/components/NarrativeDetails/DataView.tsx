@@ -1,11 +1,11 @@
-import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
-import { DataObject } from '../../utils/NarrativeModel';
-import { getWSTypeName } from '../../utils/stringUtils';
-import TypeIcon from 'components/TypeIcon/TypeIcon';
-import { Config } from 'types/config';
-import { AuthInfo } from 'contexts/Auth';
 import Empty from 'components/Empty';
+import TypeIcon from 'components/TypeIcon/TypeIcon';
+import { AuthInfo } from 'contexts/Auth';
+import { DataObject } from 'lib/clients/NarrativeModel';
+import React from 'react';
+import { Col, Container, Row } from 'react-bootstrap';
+import { Config } from 'types/config';
+import { getWSTypeName } from '../../utils/stringUtils';
 import './DataView.css';
 
 interface Props {

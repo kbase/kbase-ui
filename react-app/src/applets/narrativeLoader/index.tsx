@@ -170,7 +170,7 @@ export default class NarrativeLoader extends Component<
                 loadState: {
                     status: LoadStatus.POKING,
                     tries: 0,
-                    url: this.urlToCheck(),
+                    url: this.urlToCheck()
                 },
             },
             () => {
@@ -360,7 +360,6 @@ export default class NarrativeLoader extends Component<
     }
 
     renderOK(loadingState: LoadStateOk) {
-
         const url: URL = new URL(window.location.href);
         // Nuke the hash and search
         for (const key of Array.from(url.searchParams.keys())) {
@@ -372,7 +371,11 @@ export default class NarrativeLoader extends Component<
             document.location.href = url.toString();
         }, SLIGHT_DELAY_BEFORE_REDIRECT)
 
-        return <AlertMessage variant="success" message="Redirecting to Narrative..." style={{ width: "50%", margin: "0 auto" }} />;
+        return <AlertMessage
+            variant="success"
+            style={{ width: "50%", margin: "0 auto" }} >
+            Your Narrative service instance has been detected, redirecting to Narrative {loadingState.narrativeId}...
+        </AlertMessage>
     }
 
 

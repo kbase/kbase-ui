@@ -1,6 +1,6 @@
+import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import React from 'react';
 import { AsyncProcess2 } from '../../../lib/AsyncProcess2';
-import { NarrativeSearchDoc } from '../utils/NarrativeModel';
 import { DetailOptions, SearchState } from './DataModel';
 
 export interface NarrativeDetailState {

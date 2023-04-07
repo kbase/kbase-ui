@@ -29,13 +29,46 @@ function alias-me {
     alias run="${PWD}/Taskfile"
 }
 
+function install-plugins {
+	bash tools/deno/scripts/install-plugins.sh
+}
+
+function git-info {
+    bash tools/deno/scripts/git-info.sh
+}
+
+function build-info {
+	bash tools/deno/scripts/build-info.sh
+}
+
+function prepare-build {
+    bash scripts/host/prepare-build.sh
+}
+
+function create-deploy {
+    bash scripts/host/create-deploy.sh
+}
+
+function build {
+    bash scripts/host/build.sh
+}
+
+function test {
+    bash scripts/host/test.sh
+}
+
+function build-kbase-ui {
+    prepare-build
+    git-info
+    build-info
+    build
+    install-plugins
+    create-deploy
+}
+
 #
 # Tasks we need to run prior to commits, etc. 
 #
-
-function test {
-    _noop
-}
 
 function format {
     _noop

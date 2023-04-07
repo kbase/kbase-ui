@@ -1,9 +1,9 @@
+import NarrativeModel from 'lib/clients/NarrativeModel';
 import React, { Component } from 'react';
 import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import AlertMessage from '../../../../../components/AlertMessage';
 import Loading from '../../../../../components/Loading';
 import GenericClient from '../../../../../lib/kb_lib/comm/JSONRPC11/GenericClient';
-import NarrativeModel from '../../../utils/NarrativeModel';
 import { ControlMenuItemProps } from './ToolMenu';
 
 export enum DeleteNarrativeStatus {

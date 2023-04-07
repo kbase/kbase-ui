@@ -1,28 +1,27 @@
-import { Component } from 'react';
 import NarrativeModel, {
     AppCell,
     Cell,
     CodeCell,
     DataObjectCell,
-    NarrativeSearchDoc,
     MarkdownCell,
     NarrativeObject,
+    NarrativeSearchDoc,
     OutputObjectCell,
-} from '../../utils/NarrativeModel';
-import { AuthInfo } from '../../../../contexts/Auth';
-import { Config } from '../../../../types/config';
-import { AsyncProcess } from '../../../../lib/AsyncProcess';
-import { AsyncProcessStatus } from '../../../../lib/AsyncProcess';
-import Loading from '../../../../components/Loading';
-import MarkdownCellView from './cells/MarkdownCell';
-import AppCellView from './cells/AppCell';
-import DataObjectCellView from './cells/DataObjectCell';
-import CodeCellView from './cells/CodeCell';
-import OutputObjectCellVew from './cells/OutputObjectCell';
-import UnrecognizedCellView from './cells/UnrecognizedCell';
-import ErrorMessage from '../../../../components/ErrorMessage';
+} from 'lib/clients/NarrativeModel';
+import { Component } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import Empty from '../../../../components/Empty';
+import ErrorMessage from '../../../../components/ErrorMessage';
+import Loading from '../../../../components/Loading';
+import { AuthInfo } from '../../../../contexts/Auth';
+import { AsyncProcess, AsyncProcessStatus } from '../../../../lib/AsyncProcess';
+import { Config } from '../../../../types/config';
+import AppCellView from './cells/AppCell';
+import CodeCellView from './cells/CodeCell';
+import DataObjectCellView from './cells/DataObjectCell';
+import MarkdownCellView from './cells/MarkdownCell';
+import OutputObjectCellVew from './cells/OutputObjectCell';
+import UnrecognizedCellView from './cells/UnrecognizedCell';
 
 interface Props {
     authInfo: AuthInfo;

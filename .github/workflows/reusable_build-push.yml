@@ -23,7 +23,7 @@ jobs:
               run: echo "::set-output name=date::$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
             - name: Build the app
-              run: make
+              run: ./Taskfile build-kbase-ui
 
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v2

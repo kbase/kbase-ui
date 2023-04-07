@@ -1,15 +1,15 @@
+import { DataObjectCell } from 'lib/clients/NarrativeModel';
 import { Component } from 'react';
+import { Accordion, Button, Tab, Table, Tabs } from 'react-bootstrap';
 import ErrorMessage from '../../../../../components/ErrorMessage';
 import { AuthInfo } from '../../../../../contexts/Auth';
 import { Config } from '../../../../../types/config';
-import { DataObjectCell } from '../../../utils/NarrativeModel';
 import EZTooltip from '../../EZTooltip';
 import { TypeIcon } from '../../Icon';
-import { Accordion, Button, Tab, Table, Tabs } from 'react-bootstrap';
 
+import { niceRelativeTime } from '../../../../../lib/time';
 import styles from './DataObjectCell.module.css';
 import cellStyles from './cell.module.css';
-import { niceRelativeTime } from '../../../../../lib/time';
 
 interface DataObjectCellProps {
     cell: DataObjectCell;

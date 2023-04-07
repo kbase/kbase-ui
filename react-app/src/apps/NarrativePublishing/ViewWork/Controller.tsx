@@ -67,8 +67,6 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         try {
             const workRecord = await this.model.getORCIDWorkRecord(this.props.doi);
 
-            console.log('work record', workRecord);
-
             if (workRecord === null) {
                 this.setState({
                     dataState: {

@@ -1,6 +1,6 @@
+import { CodeCell } from 'lib/clients/NarrativeModel';
 import { Component } from 'react';
 import { Accordion } from 'react-bootstrap';
-import { CodeCell } from '../../../utils/NarrativeModel';
 import { DefaultIcon } from '../../Icon';
 import styles from './CodeCell.module.css';
 import cellStyles from './cell.module.css';

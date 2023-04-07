@@ -2,13 +2,13 @@ import Empty from 'components/Empty';
 import Well from 'components/Well';
 import { Component } from 'react';
 import { Button, ButtonToolbar, Stack } from 'react-bootstrap';
-import FlexGrid, { FlexCol, FlexRow } from '../common/FlexGrid';
 import { createContributorGroup } from '../EditWork2/Controller';
+import FlexGrid, { FlexCol, FlexRow } from '../common/FlexGrid';
 import { ValueStatus } from '../fields/Field';
 import { ContributorGroup } from '../workFields/ContributorGroup';
 import { OtherContributorsGroup, OtherContributorsGroupUtil } from '../workFields/OtherContributorsGroup';
-import { renderFieldEditStatusClasses, renderFieldValidationIcon, renderFieldValidationMessage, renderHeaderValidationIcon } from './common';
 import ContributorGroupEditor from './ContributorGroupEditor';
+import { renderFieldEditStatusClasses, renderFieldValidationIcon, renderFieldValidationMessage, renderHeaderValidationIcon } from './common';
 
 export interface OtherContributorsGroupEditorProps {
     debug?: boolean;
@@ -20,7 +20,6 @@ export default class OtherContributorsGroupEditor extends Component<
     OtherContributorsGroupEditorProps
 > {
     changed(changedGroup: OtherContributorsGroup): void {
-        console.log('changED', changedGroup);
         this.props.save(new OtherContributorsGroupUtil(changedGroup).evaluate());
     }
 

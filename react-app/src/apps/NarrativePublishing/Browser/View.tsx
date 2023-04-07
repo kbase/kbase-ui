@@ -1,12 +1,12 @@
 import { renderORCIDIcon } from 'apps/ORCIDLink/common';
-import { ORCID_URL } from 'apps/ORCIDLink/lib/constants';
 import { LinkRecord } from 'apps/ORCIDLink/lib/ORCIDLinkClient';
+import { ORCID_URL } from 'apps/ORCIDLink/lib/constants';
 import DataBrowser, { ColumnDef } from 'components/DataBrowser';
 import Well from 'components/Well';
 import { Component } from 'react';
-import { Button, Table } from 'react-bootstrap';
-import FlexGrid, { FlexCol, FlexRow } from '../common/FlexGrid';
+import { Button, Col, Row, Table } from 'react-bootstrap';
 import { GetStaticNarrativesResult } from '../Model';
+import FlexGrid, { FlexCol, FlexRow } from '../common/FlexGrid';
 
 export interface BrowserProps {
     staticNarratives: Array<GetStaticNarrativesResult>;
@@ -252,23 +252,45 @@ export default class Browser extends Component<BrowserProps, BrowserState> {
         return (
             <FlexGrid>
                 <FlexRow>
-                    <FlexCol title>
+                    <FlexCol title width="auto">
                         ORCID Account Id
                     </FlexCol>
-                    <FlexCol>
+                    <FlexCol width="auto">
                         <a href={`${ORCID_URL}/${link.orcid_auth.orcid}`} target="_blank" rel="noreferrer">
                             {renderORCIDIcon()}
                             {link.orcid_auth.orcid}
                         </a>
                     </FlexCol>
-                    <FlexCol title>
+                    <FlexCol title width="auto">
                         Name on account
                     </FlexCol>
-                    <FlexCol>
+                    <FlexCol width="auto">
                         {link.orcid_auth.name}
                     </FlexCol>
                 </FlexRow>
             </FlexGrid>
+        );
+    }
+
+    renderORCIDLinkx(link: LinkRecord) {
+        return (
+            <Row>
+                <Col md="auto" className="title">
+                    ORCID Account Id
+                </Col>
+                <Col md="auto">
+                    <a href={`${ORCID_URL}/${link.orcid_auth.orcid}`} target="_blank" rel="noreferrer">
+                        {renderORCIDIcon()}
+                        {link.orcid_auth.orcid}
+                    </a>
+                </Col>
+                <Col md="auto">
+                    Name on account
+                </Col>
+                <Col md="auto">
+                    {link.orcid_auth.name}
+                </Col>
+            </Row>
         );
     }
 
@@ -296,8 +318,7 @@ export default class Browser extends Component<BrowserProps, BrowserState> {
                     ORCID Link
                 </Well.Header>
                 <Well.Body>
-                    <div>ORCID Id</div>
-                    <div>{this.renderORCID()}</div>
+                    {this.renderORCID()}
                 </Well.Body>
             </Well>
         );

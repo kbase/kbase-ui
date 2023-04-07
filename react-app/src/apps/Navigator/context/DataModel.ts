@@ -1,10 +1,10 @@
-import { Row } from '../components/ScalableScroller/DataProviderState';
-import { NarrativeSearchDoc } from '../utils/NarrativeModel';
+import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import {
     NarrativeSearch,
     SearchOptions,
     SearchParams,
-} from '../utils/NarrativeSearch';
+} from 'lib/clients/NarrativeSearch';
+import { Row } from '../components/ScalableScroller/DataProviderState';
 
 export interface DetailOptions {
     narrativeId?: number;
@@ -137,9 +137,8 @@ export class DataModel {
     }
 
     makeSearchQueryKey(searchParams: SearchParams): string {
-        return `category:${searchParams.category};query:${
-            searchParams.query || ''
-        };sort:${searchParams.sort}`;
+        return `category:${searchParams.category};query:${searchParams.query || ''
+            };sort:${searchParams.sort}`;
     }
 
     async searchFromSearchParams(

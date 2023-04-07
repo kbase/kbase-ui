@@ -1,6 +1,6 @@
+import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import React from 'react';
 import { niceRelativeTime } from '../../../../lib/time';
-import { NarrativeSearchDoc } from '../../utils/NarrativeModel';
 import EZTooltip from '../EZTooltip';
 import './Narrative.css';
 
@@ -11,7 +11,7 @@ export interface NarrativeProps {
     onSelect: () => void;
 }
 
-interface NarrativeState {}
+interface NarrativeState { }
 
 export default class Narrative extends React.Component<NarrativeProps, NarrativeState> {
     render() {
@@ -37,7 +37,7 @@ export default class Narrative extends React.Component<NarrativeProps, Narrative
         const [publicPrivateIcon, tooltip] = (() => {
             if (this.props.narrative.is_public) {
                 return [
-                    'globe', 
+                    'globe',
                     'This Narrative is "public" - it may be viewed by any KBase user'
                 ];
             }

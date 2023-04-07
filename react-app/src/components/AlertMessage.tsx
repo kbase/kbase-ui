@@ -22,7 +22,6 @@ export type AlertMessageProps = PropsWithChildren<{
 
 export default class AlertMessage extends Component<AlertMessageProps> {
     iconClass(): string | null {
-        console.log('icon?', this.props.variant);
         if (typeof this.props.showIcon !== 'undefined' && this.props.showIcon !== false) {
             switch (this.props.variant) {
                 case 'primary':
@@ -82,7 +81,6 @@ export default class AlertMessage extends Component<AlertMessageProps> {
         </Alert.Heading>
     }
     render() {
-        console.log('show icon?', this.props.showIcon);
         const content = (() => {
             if (this.props.render) {
                 return this.props.render();

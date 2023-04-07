@@ -1,3 +1,4 @@
+import { SearchOptions } from 'lib/clients/NarrativeSearch';
 import { changeHash2 } from 'lib/navigation';
 import React from 'react';
 import ErrorBoundary from '../../components/ErrorBoundary';
@@ -10,7 +11,6 @@ import { Config } from '../../types/config';
 import Main from './components/Main';
 import { DetailOptions } from './context/DataModel';
 import NavigatorContextWrapper from './context/NavigatorContextWrapper';
-import { SearchOptions } from './utils/NarrativeSearch';
 
 // Styles
 import { RouteProps } from '../../components/Router2';

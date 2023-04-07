@@ -1,3 +1,4 @@
+import NarrativeModel from 'lib/clients/NarrativeModel';
 import React, { Component } from 'react';
 import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import AlertMessage from '../../../../../components/AlertMessage';
@@ -8,7 +9,6 @@ import {
     AsyncProcessStatus
 } from '../../../../../lib/AsyncProcess';
 import { NarrativeService } from '../../../../../lib/clients/NarrativeService';
-import NarrativeModel from '../../../utils/NarrativeModel';
 import RenameForm from './RenameForm';
 import { ControlMenuItemProps } from './ToolMenu';
 

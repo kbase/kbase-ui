@@ -1,6 +1,6 @@
+import { sorts } from 'lib/clients/NarrativeSearch';
 import { Component } from 'react';
 import Select, { SingleValue } from 'react-select';
-import { sorts } from '../../utils/NarrativeSearch';
 
 // TODO: Is it not exported from react-select?
 interface OptionType<T> {

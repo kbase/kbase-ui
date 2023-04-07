@@ -25,7 +25,7 @@ export interface NarrativeInfo {
     publishedVersion: number;
     publishedAt: number;
 }
- 
+
 export interface SimpleError {
     message: string;
 }
@@ -90,7 +90,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                 ws_id: this.props.narrativeId
             });
             const narrativeInfo: NarrativeInfo = {
-                id: workspaceInfo.id, 
+                id: workspaceInfo.id,
                 title: workspaceInfo.metadata['narrative_nice_name'],
                 abstract: 'n/a',
                 createdAt: firstObjectInfo.infos[0].savedAt,
@@ -110,7 +110,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             const message = (() => {
                 if (ex instanceof Error) {
                     return ex.message
-                } 
+                }
                 return 'Unknown';
             })();
             this.setState({
@@ -124,7 +124,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         }
     }
 
-    async saveDOI(doi: string|null, workspaceId: number, version: number) {
+    async saveDOI(doi: string | null, workspaceId: number, version: number) {
         this.setState({
             doiSaveState: {
                 status: AsyncProcessStatus.PENDING
@@ -136,7 +136,6 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                 timeout: this.props.config.ui.constants.clientTimeout,
                 token: this.props.auth.authInfo.token
             });
-            console.log('here', workspaceId, doi, version);
             if (doi === null) {
                 await client.alter_workspace_metadata({
                     wsi: { id: workspaceId },
@@ -160,7 +159,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
             const message = (() => {
                 if (ex instanceof Error) {
                     return ex.message
-                } 
+                }
                 return 'Unknown';
             })();
             this.setState({

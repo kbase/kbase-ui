@@ -11,7 +11,7 @@ jobs:
 
             # Run tests
             - name: Run all tests
-              run: make test
+              run: ./Taskfile test
 
             # # Display a coverage report for inspection in the workflow logs
             # - name: Coverage summary

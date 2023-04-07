@@ -121,7 +121,6 @@ export default class EditExternalIdentifiers extends Component<
                 externalIds,
             },
             () => {
-                console.log('on changed?', this.state.externalIds);
                 this.props.onChanged(this.state.externalIds);
             }
         );
@@ -160,7 +159,7 @@ export default class EditExternalIdentifiers extends Component<
             // const onMenuOpen = () => {
             //     setTimeout(() => {
             //     const { focusedOptionRef } = selectRef.current.select;
-            //     console.log(selectRef.current.select);
+
             //     focusedOptionRef &&
             //         focusedOptionRef.scrollIntoView({ behavior: "smooth" });
             //     }, 1);

@@ -18,7 +18,6 @@ export interface StringFieldProps {
 export default class StringField extends Component<StringFieldProps> {
 
     componentDidMount() {
-        console.log('validate??', this.validate(this.props.editState.editValue));
         // We force a validation and update upon mounting so that we can properly 
         // reflect the initial status.
         this.props.save(this.validate(this.props.editState.editValue));
@@ -60,8 +59,6 @@ export default class StringField extends Component<StringFieldProps> {
             }
         })();
 
-        console.log('ok', status, validationState);
-
         return {
             ...editState,
             status,
@@ -92,8 +89,6 @@ export default class StringField extends Component<StringFieldProps> {
         const editStatusBorder = renderFieldEditStatus(field.status);
         const validationIcon = renderFieldValidationIcon(field.validationState.status);
         const validationMessage = renderFieldValidationMessage(field.validationState);
-
-        console.log('OKAY', field.validationState, field);
 
         return (
             <div>

@@ -5,14 +5,6 @@ import { Col, Form, Stack } from "react-bootstrap";
 import Row from "react-bootstrap/esm/Row";
 import { CollapsibleHelp } from "./CollapsibleHelp";
 
-// function asText(el: JSX.Element): string {
-//     const rootElement = document.createElement('div');
-//     const root = ReactDOM.createRoot(rootElement!);
-//     root.render(el);
-//     console.log('hmm', rootElement.innerHTML);
-//     return rootElement.innerText || '';
-// }
-
 export interface EmptyGalleryProps {
 
 }
@@ -22,9 +14,7 @@ interface EmptyGalleryState {
     childrenText?: string;
 }
 
-// const defaultChildren = <div>
-//     This is a <b>child</b> of the <code>Empty</code> <i>component</i>
-// </div>
+
 
 const defaultChildrenString = 'This is a <b>child</b> of the <code>Empty</code> <i>component</i>';
 

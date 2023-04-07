@@ -6,13 +6,13 @@ import { AsyncProcessStatus } from '../../../lib/AsyncProcess2';
 import { Config } from '../../../types/config';
 import Tasks from '../components/NarrativeList/Tasks';
 
-import { Row } from '../components/ScalableScroller/DataProviderState';
-import { NarrativeSearchDoc } from '../utils/NarrativeModel';
+import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import {
     NarrativeSearch,
     SearchOptions,
     SearchParams
-} from '../utils/NarrativeSearch';
+} from 'lib/clients/NarrativeSearch';
+import { Row } from '../components/ScalableScroller/DataProviderState';
 // import ActionQueue from './ActionQueue';
 import { DataModel, DetailOptions, SearchStatus } from './DataModel';
 import MessageQueue, { Queue } from './MessageQueue';

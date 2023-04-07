@@ -1,4 +1,5 @@
 import GenericClient from '@kbase/ui-lib/lib/comm/JSONRPC11/GenericClient';
+import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import WorkspaceClient from 'lib/kb_lib/comm/coreServices/Workspace';
 import { Component } from 'react';
 import ErrorMessage from '../../../../../components/ErrorMessage';
@@ -8,9 +9,8 @@ import {
     AsyncProcessStatus,
 } from '../../../../../lib/AsyncProcess';
 import { Config } from '../../../../../types/config';
-import { NarrativeSearchDoc } from '../../../utils/NarrativeModel';
-import { PermissionLevel } from './sharing/Definitions';
 import ToolMenu from './ToolMenu';
+import { PermissionLevel } from './sharing/Definitions';
 
 export interface UserPermission {
     permission: PermissionLevel;
