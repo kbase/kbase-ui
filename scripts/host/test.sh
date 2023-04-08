@@ -1,3 +1,3 @@
 cd tools/node
-DIR=`pwd`/../../react-app docker compose run --rm node npm install
-DIR=`pwd`/../../react-app docker compose run --rm node npm run test
+docker compose run --rm node npm install
+docker compose run --rm node npm run test -- --watchAll=false --coverage

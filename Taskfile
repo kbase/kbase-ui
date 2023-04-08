@@ -50,11 +50,11 @@ function create-deploy {
 }
 
 function build {
-    bash scripts/host/build.sh
+    env DIR="${PWD}/react-app" bash scripts/host/build.sh
 }
 
 function test {
-    bash scripts/host/test.sh
+    env DIR="${PWD}/react-app" bash scripts/host/test.sh
 }
 
 function build-kbase-ui {
