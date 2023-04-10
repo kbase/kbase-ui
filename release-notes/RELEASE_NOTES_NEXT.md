@@ -22,7 +22,7 @@ none
 
 ### FIXES
 
-none
+- UFI-39: fix typeahead control for the signup form's organization field
 
 ### MAJOR DEPENDENCY CHANGES
 
