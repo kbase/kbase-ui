@@ -22,8 +22,7 @@ none
 
 ### FIXES
 
-- UFI-39: fix typeahead control for the signup form's organization field
-- UFI-39: tame field validations on slower network connections, e.g. username
+none
 
 ### MAJOR DEPENDENCY CHANGES
 
