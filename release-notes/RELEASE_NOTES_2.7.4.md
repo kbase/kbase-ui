@@ -17,7 +17,7 @@ none
 
 ### IMPROVEMENTS
 
-- allow use agreement policy document to fill entire column [UFI-40]
+- allow use agreement policy document to fill entire column [UFI-41]
 
 ### FIXES
 
