@@ -54,7 +54,7 @@ services:
     container_name: kbase-ui-deploy
     volumes:
       - ../build:/usr/share/nginx/html
-      # - /Users/erikpearson/Work/KBase/2023/UFI-35/kbase-ui-plugin-typeview/dist/plugin:/usr/share/nginx/html/plugins/typeview
+      # - /Users/erikpearson/Work/KBase/2023/UFI-43/kbase-ui-plugin-dataview/dist/plugin:/usr/share/nginx/html/plugins/dataview
       # - /Users/erikpearson/Work/KBase/2022/fix-app-icons/kbase-ui-plugin-organizations/react-app:/usr/share/nginx/html/plugins/organizations
       # - /Users/erikpearson/Work/KBase/2022/UIP-7/kbase-ui-plugin-auth2-client/dist/plugin:/usr/share/nginx/html/plugins/auth2-client
       # - /Users/erikpearson/Work/KBase/2022/UIP-7/kbase-ui-plugin-auth2-client/dist/plugin:/usr/share/nginx/html/plugins/auth2-client
@@ -85,6 +85,7 @@ services:
       - '80:80'
       - '443:443'
     dns: 
+      # TODO: sort this out!
       - 8.8.8.8
       - 9.9.9.9
       - 1.1.1.1

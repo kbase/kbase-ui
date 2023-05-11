@@ -212,12 +212,13 @@ async function generatePluginsManifest(uiConfig: string, source: string, dest: s
 // }
 
 async function main() {
-    if (Deno.args.length !== 2) {
+    if (Deno.args.length < 2) {
         log('Usage: install-plugins.ts <config> <dest>');
         Deno.exit(1);
     }
     const config = Deno.args[0];
     const destinationDir = Deno.args[1];
+    const pluginFilter = Deno.args[2];
     // const here = new URL('', import.meta.url).pathname;
     const downloadDest = `${destinationDir}/download`;
     const installDest = `${destinationDir}/plugins`;

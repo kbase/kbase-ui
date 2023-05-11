@@ -2,7 +2,9 @@ version: '3.6'
 services:
     node:
         working_dir: /app
-        image: node:18-slim
+        build:
+          context: .
+          dockerfile: Dockerfile
         container_name: node-builder
         dns: 8.8.8.8
         volumes:

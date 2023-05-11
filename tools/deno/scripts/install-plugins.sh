@@ -17,6 +17,10 @@ export DENO_SCRIPT="install-plugins.ts"
 export PLUGINS_CONFIG_PATH="/app/config/plugins.yml"
 export PLUGINS_INSTALL_DEST="/app/build"
 
+export PLUGINS_FILTER="${1}"
+
+echo "Installing plugins with filter ${PLUGINS_FILTER}"
+
 # assume we are run from the root of the project.
 cd tools/deno
 
