@@ -1,8 +1,11 @@
-import { OptionType } from "apps/NarrativePublishing/common/lookups";
 import { FieldStatus, StringField } from "formSupport/Field";
 import { Component } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 
+// export interface OptionType {
+//     value: string;
+//     label: string;
+// }
 
 export interface StringOption {
     value: string;
@@ -13,7 +16,7 @@ export interface StringSelectionEditorProps {
     field: StringField;
     label: string;
     placeholder: string;
-    options: Array<OptionType>;
+    options: Array<StringOption>;
     onEdit: (editValue: string) => void;
 }
 

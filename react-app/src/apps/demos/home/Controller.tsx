@@ -6,13 +6,13 @@ import { Component } from 'react';
 import { Config } from 'types/config';
 
 import { Model } from '../../ORCIDLink/lib/Model';
-import { ReturnLink } from '../RequestDOI/Model';
+// import { ReturnLink } from '../RequestDOI/Model';
 import Demos from './Home';
 
 export interface HomeControllerProps {
     config: Config;
     auth: AuthenticationStateAuthenticated;
-    returnLink?: ReturnLink;
+    // returnLink?: ReturnLink;
     skipPrompt?: boolean;
     setTitle: (title: string) => void;
 }

@@ -11,7 +11,6 @@ import Organizations from '../apps/Organizations';
 import { AuthenticationState, AuthenticationStatus } from '../contexts/Auth';
 import { Config } from '../types/config';
 
-import NarrativePublishing from 'apps/NarrativePublishing/Controller';
 import { changePath } from 'lib/navigation';
 import { PluginInfo } from 'types/info';
 import NarrativeManagerNew from '../apps/NarrativeManager/New';
@@ -52,9 +51,9 @@ export default class Body extends Component<BodyProps, BodyState> {
             // new Route('orcidworks/*', { authenticationRequired: false }, (props: RouteProps) => {
             //     return <ORCIDWorks {...props} {...this.props} />;
             // }),
-            new Route('narrativepublishing/*', { authenticationRequired: true }, (props: RouteProps) => {
-                return <NarrativePublishing {...props} {...this.props} />;
-            }),
+            // new Route('narrativepublishing/*', { authenticationRequired: true }, (props: RouteProps) => {
+            //     return <NarrativePublishing {...props} {...this.props} />;
+            // }),
             new Route(
                 '^(catalog|appcatalog)$/*',
                 { authenticationRequired: false },

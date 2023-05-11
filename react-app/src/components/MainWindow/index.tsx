@@ -1,4 +1,3 @@
-import { SimpleError } from 'apps/NarrativePublishing/AddDOI/Controller';
 import ErrorMessage from 'components/ErrorMessage';
 import Loading from 'components/Loading';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
@@ -7,6 +6,10 @@ import { AuthenticationState } from '../../contexts/Auth';
 import { Config } from '../../types/config';
 import MainWindow from './view';
 
+
+export interface SimpleError {
+    message: string;
+}
 export interface ControllerProps {
     authState: AuthenticationState;
     config: Config;
