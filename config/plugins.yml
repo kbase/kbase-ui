@@ -3,7 +3,7 @@
 plugins:
     - name: auth2-client
       globalName: kbase-ui-plugin-auth2-client
-      version: 3.2.9
+      version: 3.2.13
       source:
           github:
               account: kbase
@@ -35,7 +35,7 @@ plugins:
               release: true
     - name: dataview
       globalName: kbase-ui-plugin-dataview
-      version: 4.15.0
+      version: 4.15.3
       source:
           github:
               account: kbase
