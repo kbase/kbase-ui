@@ -17,12 +17,10 @@ class AsyncLoop {
             return;
         }
         this.running = true;
-        let loopCount = 0;
         const loop = (async () => {
             if (!this.running) {
                 return;
             }
-            loopCount++;
             try {
                 await this.callback();
             } catch (ex) {
@@ -123,7 +121,7 @@ export class ConnectionStatus {
 
     async measure(url: string) {
         const start = Date.now();
-        const response = await fetch(url, {
+        await fetch(url, {
             cache: 'no-store', headers: {
                 'Accept-Encoding': 'identity;q=0',
                 'Cache-Control': 'no-cache, no-transform'
@@ -155,7 +153,6 @@ export class ConnectionStatus {
                 }
                 const {
                     successCount, successTotalElapsed,
-                    errorCount, errorTotalElapsed
                 } = this.state.pingStats;
                 return {
                     pingStats: {
@@ -171,12 +168,6 @@ export class ConnectionStatus {
                 };
             })();
         } catch (ex) {
-            const message = (() => {
-                if (ex instanceof Error) {
-                    return ex.message;
-                }
-                return 'Unknown Error';
-            })();
             const elapsed = Date.now() - lastAttemptAt;
             this.state = (() => {
                 if (this.state.pingStats.kind === PingStatKind.NONE) {
@@ -196,7 +187,6 @@ export class ConnectionStatus {
                     };
                 }
                 const {
-                    successCount, successTotalElapsed,
                     errorCount, errorTotalElapsed
                 } = this.state.pingStats;
                 return {

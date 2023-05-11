@@ -31,7 +31,7 @@ export default class View extends Component<ViewProps> {
         return <div>
             <h2>About</h2>
             <p>An ORCID® Link gives KBase tools access to your ORCID® account while you are logged into KBase.</p>
-            <p>You can only create an ORCID® Link from this page. It will be stored at KBase until you remove it. 
+            <p>You can only create an ORCID® Link from this page. It will be stored at KBase until you remove it.
                 (It expires after 20 years, but this is essentially "forever".)
             </p>
             <p>Here are some examples of how KBase can use your ORCID® Link:</p>
@@ -68,7 +68,7 @@ export default class View extends Component<ViewProps> {
             <h3>For Developers</h3>
             <ul>
                 <li><a href={this.props.docURL} target="_blank" rel="noreferrer">ORCIDLink API Documentation</a></li>
-                <li><a href={this.props.repoURL} target="_blank"><code>orcidlink</code> service GitHub repo</a></li>
+                <li><a href={this.props.repoURL} target="_blank" rel="noreferrer"><code>orcidlink</code> service GitHub repo</a></li>
             </ul>
         </div>;
     }

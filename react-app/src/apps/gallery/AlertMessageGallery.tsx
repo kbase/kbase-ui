@@ -177,8 +177,8 @@ export default class AlertMessageGallery extends Component<AlertMessageGalleryPr
                         &lt;AlertMessage variant="info"
                         {this.state.showTitle ? " showTitle" : ""}
                         {this.state.showIcon ? " showIcon" : ""}
-                        {this.state.title ? ` title=\"${this.state.title}\"` : ""}
-                        {this.state.message ? ` title=\"${this.state.message}\"` : ""}
+                        {this.state.title ? ` title="${this.state.title}"` : ""}
+                        {this.state.message ? ` title="${this.state.message}"` : ""}
                         &gt;
                         {this.state.message ? "" : "Whatever you set as children"}
                         &lt;/AlertMessage&gt;

@@ -18,9 +18,7 @@ export interface ContinueProps {
 export default class Continue extends Component<ContinueProps> {
     renderORCIDUserRecord() {
         const {
-            orcid_auth: { orcid, scope },
-            created_at,
-            expires_at,
+            orcid_auth: { orcid }
         } = this.props.linkingSession;
         return (
             <Well style={{ marginBottom: '1em' }} variant="primary">

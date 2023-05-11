@@ -128,5 +128,5 @@ export function changeHash2(
         window.history.pushState(null, '', url);
     }
     // window.history.go();
-    const result = window.dispatchEvent(new HashChangeEvent('hashchange'));
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
 }

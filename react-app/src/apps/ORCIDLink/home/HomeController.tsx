@@ -76,7 +76,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
         const {
             created_at,
             orcid_auth: {
-                expires_in, name, orcid, scope
+                expires_in, orcid, scope
             }
         } = link;
 

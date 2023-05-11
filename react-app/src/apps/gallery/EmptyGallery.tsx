@@ -105,7 +105,7 @@ export default class EmptyGallery extends Component<EmptyGalleryProps, EmptyGall
                 <Well.Body>
                     <code>
                         &lt;Empty
-                        {this.state.message ? ` message=\"${this.state.message}\"` : ""}
+                        {this.state.message ? ` message="${this.state.message}"` : ""}
                         &gt;
                         {this.state.childrenText}
                         &lt;/Empty&gt;

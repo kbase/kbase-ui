@@ -149,9 +149,6 @@ export default class MainWindow extends Component<MainWindowProps> {
     }
 
     render() {
-        // initial implementation of switching off decorator components.
-        const showHeader: boolean = false;
-        const showNavigation: boolean = false;
         return (
             <div className={styles.main} data-k-b-testhook-component="mainwindow">
                 {this.renderHeader()}
