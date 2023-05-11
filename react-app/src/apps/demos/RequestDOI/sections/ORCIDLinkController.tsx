@@ -59,7 +59,6 @@ export default class ORCIDLinkController extends Component<ORCIDLinkControllerPr
 
             const orcidProfile = await (async () => {
                 if (await this.props.model.isLinked()) {
-
                     // const narrativeCitations = await this.props.model.getNarrativeCitations(this.props.narrativeObjectRef);
                     return this.props.model.getProfile();
                 }

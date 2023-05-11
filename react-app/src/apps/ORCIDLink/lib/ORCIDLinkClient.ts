@@ -218,10 +218,36 @@ export interface GetDOICitationResult {
     citation: string;
 }
 
-export interface ReturnLink {
-    url: string;
-    label: string;
+export type ReturnInstructionType = "link" | "window";
+
+export interface ReturnInstructionBase {
+    type: ReturnInstructionType
 }
+
+export interface ReturnInstructionLink extends ReturnInstructionBase {
+    type: 'link'
+    url: string
+    label: string
+}
+
+export interface ReturnInstructionWindow extends ReturnInstructionBase {
+    type: 'window'
+    id: string
+    label: string
+}
+
+export type ReturnInstruction =
+    ReturnInstructionLink |
+    ReturnInstructionWindow;
+
+// export interface ReturnLink {
+//     url: string;
+//     label: string;
+// }
+
+// export interface ReturnFromWindow {
+//     id: string;
+// }
 
 export interface StatusResponse {
     status: string;
@@ -378,13 +404,29 @@ export class ORCIDLinkServiceClient extends ServiceClient {
         return await this.post<CreateLinkingSessionResult>(`${LINKING_SESSIONS_PATH}`)
     }
 
-    async startLinkingSession(sessionId: string, returnLink?: ReturnLink, skipPrompt?: boolean): Promise<void> {
+    async startLinkingSession(sessionId: string, returnInstruction?: ReturnInstruction, skipPrompt?: boolean, uiOptions?: string): Promise<void> {
         const baseURL = await this.getURL();
         const startURL = new URL(`${baseURL}/${LINKING_SESSIONS_PATH}/${sessionId}/oauth/start`);
         // startURL.searchParams.set('session_id', sessionId);
-        if (returnLink) {
-            startURL.searchParams.set('return_link', JSON.stringify(returnLink));
+
+        // Add return link if provided
+        if (returnInstruction) {
+            // TODO: change the url param name to "return_instruction" - but need to update
+            // service for this as well.
+            startURL.searchParams.set('return_link', JSON.stringify(returnInstruction));
         }
+
+        if (uiOptions) {
+            startURL.searchParams.set('ui_options', uiOptions);
+        }
+
+        console.log('ui options?', uiOptions);
+
+        // Add the 'return from window' if provided
+        // if (returnFromWindow) {
+        //     startURL.searchParams.set('return_from_window', JSON.stringify(returnFromWindow));
+        // }
+
         startURL.searchParams.set('skip_prompt', skipPrompt ? 'true' : 'false')
         window.open(startURL, '_parent');
     }

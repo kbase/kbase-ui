@@ -9,7 +9,7 @@ export interface ORCIDLinkProps {
     onStartLink: () => void;
 }
 
-interface ORCIDLinkState {}
+interface ORCIDLinkState { }
 
 export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState> {
     renderIsLinked({ orcidId, firstName, lastName }: ORCIDProfile) {
@@ -70,20 +70,22 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
     render() {
         return (
             <Well style={{ padding: '1em', marginBottom: '1em' }} variant="primary">
-                {this.renderState()}
-                <Row>
-                    <Col md={12}>
-                        <Row style={{ justifyContent: 'center' }}>
-                            <Button
-                                variant="primary"
-                                className="w-auto"
-                                onClick={this.props.onDone}
-                            >
-                                Done
-                            </Button>
-                        </Row>
-                    </Col>
-                </Row>
+                <Well.Body>
+                    {this.renderState()}
+                    <Row>
+                        <Col md={12}>
+                            <Row style={{ justifyContent: 'center' }}>
+                                <Button
+                                    variant="primary"
+                                    className="w-auto"
+                                    onClick={this.props.onDone}
+                                >
+                                    Done
+                                </Button>
+                            </Row>
+                        </Col>
+                    </Row>
+                </Well.Body>
             </Well>
         );
     }

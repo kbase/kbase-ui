@@ -6,15 +6,16 @@ import { Component } from 'react';
 import { Config } from 'types/config';
 
 import { Model } from '../lib/Model';
-import { ReturnLink } from '../lib/ORCIDLinkClient';
+import { ReturnInstruction } from '../lib/ORCIDLinkClient';
 import CreateLink from './CreateLink';
 import ViewLink from './ViewLink';
 
 export interface LinkControllerProps {
     config: Config;
     auth: AuthenticationStateAuthenticated;
-    returnLink?: ReturnLink;
+    returnInstruction?: ReturnInstruction;
     skipPrompt?: boolean;
+    uiOptions?: string;
     setTitle: (title: string) => void;
 }
 
@@ -113,7 +114,11 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
             started: true
         })
         const model = new Model({ config: this.props.config, auth: this.props.auth });
-        await model.startLink({ returnLink: this.props.returnLink, skipPrompt: this.props.skipPrompt })
+        await model.startLink({
+            returnInstruction: this.props.returnInstruction,
+            skipPrompt: this.props.skipPrompt,
+            uiOptions: this.props.uiOptions
+        })
     }
 
     async loadData() {
@@ -158,7 +163,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     renderLoading() {
-        return <Loading message="Loading ORCID Link..."/>;
+        return <Loading message="Loading ORCID Link..." />;
     }
 
     renderError({ message }: { message: string }) {
@@ -175,7 +180,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
                 start={this.startLink.bind(this)}
                 started={this.state.started}
                 goBack={this.goBack.bind(this)}
-                returnLink={this.props.returnLink}
+                returnInstruction={this.props.returnInstruction}
                 skipPrompt={this.props.skipPrompt}
             />;
         }

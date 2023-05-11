@@ -74,17 +74,17 @@ export default class View extends Component<ViewProps, ViewState> {
     }
     renderStepTitle(step: number, title: string) {
         return <Alert variant="info" style={{ fontWeight: 'bold' }}>
-            <span style={{border: '1px solid silver', padding: '0.125em', borderRadius: '0.5em'}}>{step}</span> {title}
+            <span style={{ border: '1px solid silver', padding: '0.125em', borderRadius: '0.5em' }}>{step}</span> {title}
         </Alert>
     }
     renderStepDoneTitle(step: number, title: string) {
         return <Alert variant="success">
-            <span style={{border: '1px solid silver', padding: '0.125em', borderRadius: '0.5em'}}>{step}</span> {title}
+            <span style={{ border: '1px solid silver', padding: '0.125em', borderRadius: '0.5em' }}>{step}</span> {title}
         </Alert>
     }
     renderStepPendingTitle(step: number, title: string) {
         return <Alert variant="secondary">
-            <span style={{border: '1px solid silver', padding: '0.125em', borderRadius: '0.5em'}}>{step}</span> {title}
+            <span style={{ border: '1px solid silver', padding: '0.125em', borderRadius: '0.5em' }}>{step}</span> {title}
         </Alert>
     }
 
@@ -268,6 +268,7 @@ export default class View extends Component<ViewProps, ViewState> {
         const returnURL = new URL(`${this.props.baseURL}#demos/interstitial1`);
         returnURL.searchParams.set('process', JSON.stringify(process));
         const returnLink = {
+            type: 'link',
             url: returnURL.toString(),
             label: `Some Process, step ${step}`
         }

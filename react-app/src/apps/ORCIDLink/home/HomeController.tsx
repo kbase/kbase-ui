@@ -7,14 +7,15 @@ import { Config } from 'types/config';
 import StandardErrorView, { StandardError } from 'components/StandardErrorView';
 import { changeHash2 } from 'lib/navigation';
 import { Model } from '../lib/Model';
-import { ReturnLink } from '../lib/ORCIDLinkClient';
+import { ReturnInstruction } from '../lib/ORCIDLinkClient';
 import { ServiceError } from '../lib/ServiceClient';
 import View from './View';
 
 export interface HomeControllerProps {
     config: Config;
     auth: AuthenticationStateAuthenticated;
-    returnLink?: ReturnLink;
+    returnInstruction?: ReturnInstruction;
+    uiOptions?: string;
     skipPrompt: boolean;
     setTitle: (title: string) => void;
 }
@@ -110,7 +111,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
 
     async startLink() {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
-        await model.startLink({ returnLink: this.props.returnLink, skipPrompt: this.props.skipPrompt })
+        await model.startLink({ returnInstruction: this.props.returnInstruction, skipPrompt: this.props.skipPrompt, uiOptions: this.props.uiOptions })
     }
 
     async loadData() {
@@ -173,11 +174,11 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     }
 
     renderLoading() {
-        return <Loading message="Loading ORCID Link..."/>;
+        return <Loading message="Loading ORCID Link..." />;
     }
 
     renderError(error: StandardError) {
-        return <StandardErrorView error={error}/>
+        return <StandardErrorView error={error} />
     }
 
     renderSuccess({ link, url, repoURL }: { link: LinkInfo | null, url: string, repoURL: string }) {

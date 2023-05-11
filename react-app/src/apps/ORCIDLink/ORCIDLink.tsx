@@ -5,11 +5,11 @@ import { RouteProps, Router } from '../../components/Router2';
 import { AuthContext, AuthenticationState, AuthenticationStatus } from '../../contexts/Auth';
 import { Route } from '../../lib/Route';
 import { Config } from '../../types/config';
-import Continue from './continue/ContinueController';
 import Error from './Error';
 import Help from './Help';
+import Continue from './continue/ContinueController';
 import HomeController from './home/HomeController';
-import { ReturnLink } from './lib/ORCIDLinkClient';
+import { ReturnInstruction } from './lib/ORCIDLinkClient';
 import Link from './link/LinkController';
 import ConfirmRevoke from './revoke/Controller';
 
@@ -35,22 +35,31 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                         if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
                             return null;
                         }
-                        const returnLink = (() => {
-                            const returnLinkRaw = props.params.get('return_link');
-                            if (!returnLinkRaw) {
+                        // const returnLink = (() => {
+                        //     const returnLinkRaw = props.params.get('return_link');
+                        //     if (!returnLinkRaw) {
+                        //         return;
+                        //     }
+                        //     const {
+                        //         url, label
+                        //     } = (JSON.parse(returnLinkRaw) as unknown) as ReturnLink;
+                        //     return { url, label }
+                        // })();
+
+                        const returnInstruction = (() => {
+                            const raw = props.params.get('return_link');
+                            if (!raw) {
                                 return;
                             }
-                            const {
-                                url, label
-                            } = (JSON.parse(returnLinkRaw) as unknown) as ReturnLink;
-                            return { url, label }
-
+                            return JSON.parse(raw) as unknown as ReturnInstruction;
                         })();
+
                         return <HomeController
                             {...this.props}
                             auth={authValue.value}
-                            returnLink={returnLink}
+                            returnInstruction={returnInstruction}
                             skipPrompt={props.params.get('skip_prompt') === 'true'}
+                            uiOptions={props.params.get('ui_options')}
                         />;
                     }}
                 </AuthContext.Consumer>
@@ -69,22 +78,30 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                         if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
                             return null;
                         }
-                        const returnLink = (() => {
-                            const returnLinkRaw = props.params.get('return_link');
-                            if (!returnLinkRaw) {
+                        // const returnLink = (() => {
+                        //     const returnLinkRaw = props.params.get('return_link');
+                        //     if (!returnLinkRaw) {
+                        //         return;
+                        //     }
+                        //     const {
+                        //         url, label
+                        //     } = (JSON.parse(returnLinkRaw) as unknown) as ReturnLink;
+                        //     return { url, label }
+
+                        // })();
+                        const returnInstruction = (() => {
+                            const raw = props.params.get('return_link');
+                            if (!raw) {
                                 return;
                             }
-                            const {
-                                url, label
-                            } = (JSON.parse(returnLinkRaw) as unknown) as ReturnLink;
-                            return { url, label }
-
+                            return (JSON.parse(raw) as unknown) as ReturnInstruction;
                         })();
                         return <Link
                             {...this.props}
                             auth={authValue.value}
-                            returnLink={returnLink}
+                            returnInstruction={returnInstruction}
                             skipPrompt={props.params.get('skip_prompt') === 'true'}
+                            uiOptions={props.params.get('ui_options')}
                         />;
                     }}
                 </AuthContext.Consumer>
@@ -121,20 +138,29 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                             return null;
                         }
                         const linkingSessionId = props.params.get('linkingSessionId')!;
-                        const returnLink = (() => {
-                            const returnLinkRaw = props.params.get('return_link');
-                            if (!returnLinkRaw) {
+                        // const returnLink = (() => {
+                        //     const returnLinkRaw = props.params.get('return_link');
+                        //     if (!returnLinkRaw) {
+                        //         return;
+                        //     }
+                        //     const {
+                        //         url, label
+                        //     } = (JSON.parse(returnLinkRaw) as unknown) as ReturnLink;
+                        //     return { url, label }
+                        // })();
+
+                        const returnInstruction = (() => {
+                            const raw = props.params.get('return_link');
+                            if (!raw) {
                                 return;
                             }
-                            const {
-                                url, label
-                            } = (JSON.parse(returnLinkRaw) as unknown) as ReturnLink;
-                            return { url, label }
-
+                            return (JSON.parse(raw) as unknown) as ReturnInstruction;
                         })();
-                        return <Continue {...this.props} linkingSessionId={linkingSessionId}
+
+                        return <Continue {...this.props}
+                            linkingSessionId={linkingSessionId}
                             auth={authValue.value}
-                            returnLink={returnLink}
+                            returnInstruction={returnInstruction}
                             skipPrompt={props.params.get('skip_prompt') === 'true'}
                         />;
                         // return <Link {...this.props} auth={authValue.value} />;

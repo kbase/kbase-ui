@@ -9,9 +9,9 @@ import MainWindow from './MainWindow';
 
 export type AppLoadState = AsyncProcess<Config, string>;
 
-export interface AppProps {}
+export interface AppProps { }
 
-interface AppState {}
+interface AppState { }
 
 export default class App extends Component<AppProps, AppState> {
     render() {

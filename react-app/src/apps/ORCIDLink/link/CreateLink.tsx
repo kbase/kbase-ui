@@ -4,12 +4,12 @@ import { Component } from 'react';
 import { Accordion, Button, Col, Row, Stack } from 'react-bootstrap';
 import { renderORCIDLabel } from '../common';
 import orcidSignIn from '../images/ORCID-sign-in.png';
-import { ReturnLink } from '../lib/ORCIDLinkClient';
+import { ReturnInstruction } from '../lib/ORCIDLinkClient';
 
 import styles from './CreateLink.module.css';
 
 export interface CreateLinkProps {
-    returnLink?: ReturnLink;
+    returnInstruction?: ReturnInstruction;
     skipPrompt?: boolean;
     started: boolean;
     start: () => void;
@@ -18,11 +18,22 @@ export interface CreateLinkProps {
 
 export default class CreateLink extends Component<CreateLinkProps> {
     renderReturnURL() {
-        if (!this.props.returnLink) {
+        const returnInstruction = this.props.returnInstruction;
+        if (typeof returnInstruction === 'undefined' || returnInstruction.type !== 'link') {
             return;
         }
         return <AlertMessage variant="info" style={{ marginTop: '1em' }} title="After Linking...">
-            After creating the link, your browser will be returned to <b>{this.props.returnLink.label}</b>.
+            After creating the link, your browser will be returned to <b>{returnInstruction.label}</b>.
+        </AlertMessage>;
+    }
+
+    renderReturnFromWindow() {
+        const returnInstruction = this.props.returnInstruction;
+        if (typeof returnInstruction === 'undefined' || returnInstruction.type !== 'window') {
+            return;
+        }
+        return <AlertMessage variant="info" style={{ marginTop: '1em' }} title="After Linking...">
+            After creating the link, this window will be closed, and you should be returned to <b>{returnInstruction.label}</b>.
         </AlertMessage>;
     }
 
@@ -46,7 +57,7 @@ export default class CreateLink extends Component<CreateLinkProps> {
                         <p><i>What if you don't have an {renderORCIDLabel()} Account?</i> Check out the FAQs to the right for an answer.</p>
 
                         <p>
-                            After finishing at {renderORCIDLabel()}, you will be returned to KBase and asked to confirm the link. Once confirmed, the {renderORCIDLabel()} Link 
+                            After finishing at {renderORCIDLabel()}, you will be returned to KBase and asked to confirm the link. Once confirmed, the {renderORCIDLabel()} Link
                             will be added to your account.
                         </p>
 
@@ -55,6 +66,7 @@ export default class CreateLink extends Component<CreateLinkProps> {
                         </p>
 
                         {this.renderReturnURL()}
+                        {this.renderReturnFromWindow()}
                     </Well.Body>
                     <Well.Footer>
                         <Stack direction="horizontal" gap={3} className="justify-content-center" style={{ flex: '1 1 0' }}>
@@ -103,13 +115,13 @@ export default class CreateLink extends Component<CreateLinkProps> {
                         If you already log in with {renderORCIDLabel()}, it may seem odd to need to create a separate {renderORCIDLabel()} Link.
                     </p>
                     <p>
-                        Your {renderORCIDLabel()} sign-in link is only used to obtain your {renderORCIDLabel()} Id during sign-in. This is, in turn, used to 
-                        look up the associated KBase account and, if successful, assign an authentication token to your browser. All that KBase knows about 
+                        Your {renderORCIDLabel()} sign-in link is only used to obtain your {renderORCIDLabel()} Id during sign-in. This is, in turn, used to
+                        look up the associated KBase account and, if successful, assign an authentication token to your browser. All that KBase knows about
                         your {renderORCIDLabel()} account during sign-in is the {renderORCIDLabel()} Id.
                     </p>
                     <p>
                         In contrast, {renderORCIDLabel()} Link provides a long-term "access token", which allows KBase to provide tools for you that
-                        that can access limited aspects of your {renderORCIDLabel()} account. The {renderORCIDLabel()} Link can be added or removed 
+                        that can access limited aspects of your {renderORCIDLabel()} account. The {renderORCIDLabel()} Link can be added or removed
                         at any time without affecting your ability to sign in to KBase through {renderORCIDLabel()}.
                     </p>
                 </Accordion.Body>

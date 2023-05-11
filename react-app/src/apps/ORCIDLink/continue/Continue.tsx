@@ -3,14 +3,14 @@ import Well from 'components/Well';
 import { Component } from 'react';
 import { Button, Col, Row, Stack } from 'react-bootstrap';
 import { renderORCIDIcon, renderScope } from '../common';
-import { ORCID_URL } from '../lib/constants';
 import { LinkingSessionComplete } from '../lib/Model';
-import { ReturnLink } from '../lib/ORCIDLinkClient';
+import { ReturnInstruction } from '../lib/ORCIDLinkClient';
+import { ORCID_URL } from '../lib/constants';
 import styles from './Continue.module.css';
 
 export interface ContinueProps {
     linkingSession: LinkingSessionComplete;
-    returnLink?: ReturnLink;
+    returnInstruction?: ReturnInstruction;
     confirmLink: () => Promise<void>;
     cancelLink: () => Promise<void>;
 }
@@ -58,16 +58,27 @@ export default class Continue extends Component<ContinueProps> {
         return renderScope(scope);
     }
 
-    renderReturnURL() {
-        if (!this.props.returnLink) {
+    renderReturnInstruction() {
+        const returnInstruction = this.props.returnInstruction;
+        if (typeof returnInstruction === 'undefined') {
             return;
         }
-        return (
-            <AlertMessage variant="info" style={{ marginTop: '1em' }} title="After Linking...">
-                After creating the link, your browser will be returned to{' '}
-                <b>{this.props.returnLink.label}</b>.
-            </AlertMessage>
-        );
+        switch (returnInstruction.type) {
+            case 'link':
+                return (
+                    <AlertMessage variant="info" style={{ marginTop: '1em' }} title="After Linking...">
+                        After creating the link, your browser will be returned to{' '}
+                        <b>{returnInstruction.label}</b>.
+                    </AlertMessage>
+                );
+            case 'window':
+                return (
+                    <AlertMessage variant="info" style={{ marginTop: '1em' }} title="After Linking...">
+                        After creating the link, this window will be closed, and you should be returned to{' '}
+                        <b>{returnInstruction.label}</b>.
+                    </AlertMessage>
+                );
+        }
     }
 
     renderConfirmDialog() {
@@ -80,7 +91,7 @@ export default class Continue extends Component<ContinueProps> {
                         to interact with that account on your behalf. You may revoke this at any
                         time.
                     </p>
-                    {this.renderReturnURL()}
+                    {this.renderReturnInstruction()}
                 </Well.Body>
                 <Well.Footer>
                     <Stack

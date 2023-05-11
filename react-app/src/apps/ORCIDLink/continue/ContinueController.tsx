@@ -5,14 +5,14 @@ import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
 import { Component } from "react";
 import { Config } from "types/config";
 import { LinkingSessionComplete, Model } from "../lib/Model";
-import { ReturnLink } from "../lib/ORCIDLinkClient";
+import { ReturnInstruction } from "../lib/ORCIDLinkClient";
 import Continue from "./Continue";
 
 export interface ContinueControllerProps {
     linkingSessionId: string;
     auth: AuthenticationStateAuthenticated;
     config: Config;
-    returnLink?: ReturnLink;
+    returnInstruction?: ReturnInstruction;
     skipPrompt?: boolean;
     setTitle: (title: string) => void;
 }
@@ -102,7 +102,7 @@ export default class ContinueController extends Component<ContinueControllerProp
     }
 
     renderLoading() {
-        return <Loading  message="Loading ORCID Link..."/>;
+        return <Loading message="Loading ORCID Link..." />;
     }
 
     renderError({ message }: { message: string }) {
@@ -124,8 +124,17 @@ export default class ContinueController extends Component<ContinueControllerProp
         // const result = JSON.parse(await response.text());
         // TODO: handle error.
 
-        if (this.props.returnLink) {
-            window.open(this.props.returnLink.url, '_parent');
+        const returnInstruction = this.props.returnInstruction;
+
+        if (typeof returnInstruction !== 'undefined') {
+            switch (returnInstruction.type) {
+                case 'link':
+                    window.open(returnInstruction.url, '_parent');
+                    return;
+                case 'window':
+                    window.opener.postMessage({ id: returnInstruction.id }, window.location.origin);
+            }
+
         } else {
             window.open('https://ci.kbase.us/#orcidlink', '_parent');
         }
@@ -152,7 +161,7 @@ export default class ContinueController extends Component<ContinueControllerProp
     renderSuccess(linkingSession: LinkingSessionComplete) {
         return <Continue
             linkingSession={linkingSession}
-            returnLink={this.props.returnLink}
+            returnInstruction={this.props.returnInstruction}
             confirmLink={this.confirmLink.bind(this)}
             cancelLink={this.cancelLink.bind(this)}
         />;

@@ -1,168 +1,81 @@
+import { SimpleError } from 'apps/NarrativePublishing/AddDOI/Controller';
+import ErrorMessage from 'components/ErrorMessage';
+import Loading from 'components/Loading';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { AuthenticationState } from '../../contexts/Auth';
-import { RuntimeContext } from '../../contexts/RuntimeContext';
 import { Config } from '../../types/config';
-import Body from '../Body';
-import Deployment from '../Deployment';
-import HamburgerMenu from '../HamburgerMenu/HamburgerMenuMain';
-import Sidebar from '../Sidebar/Sidebar';
-import Signin from '../Signin/SigninMain';
-import Title from '../Title';
-// import { Logo } from '../Logo/Logo';
-import Notifications from '../Notifications/NotificationsMain';
-import styles from './style.module.css';
-// import { Ping } from '../Ping';
+import MainWindow from './view';
 
-export interface MainWindowProps {
+export interface ControllerProps {
     authState: AuthenticationState;
     config: Config;
     setTitle: (title: string) => void;
 }
 
-export default class MainWindow extends Component<MainWindowProps> {
-    constructor(props: MainWindowProps) {
+export interface LoadingInfo {
+    // showHeader: boolean;
+    // showNavigation: boolean;
+    hideUI: boolean;
+}
+
+export type LoadingState = AsyncProcess<LoadingInfo, SimpleError>;
+
+interface ControllerState {
+    loadingState: LoadingState
+}
+
+export default class Controller extends Component<ControllerProps, ControllerState> {
+    constructor(props: ControllerProps) {
         super(props);
         this.state = {
-            title: 'Loading...',
-        };
+            loadingState: {
+                status: AsyncProcessStatus.NONE
+            }
+        }
     }
 
-    componentDidUpdate() {
-        // TODO: add hooks for updating system notifications
-        // probably in the system notification components themselves...
+    componentDidMount() {
+        const url = new URL(document.location.toString())
+        const uiOptions = (url.searchParams.get("ui_options") || '').split(',');
+        const hideUI = uiOptions.includes('hide-ui');
+        // const showHeader = !(url.searchParams.get('showHeader') === "false");
+        // const showNavigation = !(url.searchParams.get('showNavigation') === "false");
+        this.setState({
+            loadingState: {
+                status: AsyncProcessStatus.SUCCESS,
+                value: {
+                    // showHeader, showNavigation
+                    hideUI
+                }
+            }
+        });
     }
 
-    // renderSystemAlerts() {
-    //     // if (!this.props.runtime.featureEnabled('system_alert_notification')) {
-    //     //     return;
-    //     // }
-    //     const props = {
-    //         runtime: this.props.runtime
-    //     };
-    //     return html`
-    //         <div className="-cell -alerts">
-    //             <${SystemAlertToggle} ...${props} />
-    //         </div>
-    //     `;
-    // }
-
-    renderHeader() {
-        return (
-            <div className={styles.navbar} style={{ padding: '0' }}>
-                <div className={styles.hamburgerMenu}>
-                    <HamburgerMenu {...this.props} />
-                </div>
-                {/* <div className={styles.cellLogo}>
-                    <Logo {...this.props} />
-                </div> */}
-                <div className={styles.cellTitle}>
-                    <RuntimeContext.Consumer>
-                        {(value) => {
-                            if (value) {
-                                return <Title title={value.title} />;
-                            }
-                        }}
-                    </RuntimeContext.Consumer>
-                </div>
-                {/* <div className="-buttons">
-                    <ButtonBar ...${props} />
-                </div> */}
-                {/* ${this.renderSystemAlertToggle()} */}
-                <div className={styles.cellNotification}>
-                    <RuntimeContext.Consumer>
-                        {(value) => {
-                            if (!value) {
-                                return;
-                            }
-                            return (
-                                <Notifications
-                                    notificationState={value.notificationState}
-                                    addNotification={value.addNotification}
-                                    removeNotification={value.removeNotification}
-                                />
-                            );
-                        }}
-                    </RuntimeContext.Consumer>
-                </div>
-                {/* <div className={styles.connectionStatus}>
-                    <ConnectionStatus />
-                </div> */}
-                {/* <div className={styles.connectionStatus}>
-                    <RuntimeContext.Consumer>
-                        {(value) => {
-                            if (!value) {
-                                return;
-                            }
-                            return <Ping pingStats={value.pingStats} />
-                        }}
-                    </RuntimeContext.Consumer>
-                </div> */}
-                <div className={styles.cellDeployment}>
-                    <Deployment {...this.props} />
-                </div>
-                <div className={styles.cellLogin}>
-                    <Signin {...this.props} />
-                </div>
-            </div>
-        );
+    renderLoading() {
+        return <Loading message="Loading ..." />
     }
 
-    // renderSystemAlertToggle() {
-    //     const props = {
-    //         runtime: this.props.runtime,
-    //         plugin: this.props.plugin,
-    //     };
-    //     if (!this.props.runtime.featureEnabled('system_alert_notification')) {
-    //         return;
-    //     }
-    //     return html`
-    //         <div className="-cell -alerts">
-    //             <${SystemAlertToggle} ...${props} />
-    //         </div>
-    //     `;
-    // }
+    renderError({ message }: SimpleError) {
+        return <ErrorMessage message={message} />
+    }
 
-    // renderSystemAlertBanner() {
-    //     // if (!this.props.runtime.featureEnabled('system_alert_notification')) {
-    //     //     return;
-    //     // }
-    //     const props = {
-    //         runtime: this.props.runtime,
-    //     };
-    //     return html` <${SystemAlertBanner} ...${props} /> `;
-    // }
+    renderSuccess({ hideUI }: LoadingInfo) {
+        return <MainWindow {...this.props}
+            hideUI={hideUI}
+        />
+    }
 
     render() {
-        return (
-            <div className={styles.main} data-k-b-testhook-component="mainwindow">
-                <div className={styles.header}>{this.renderHeader()}</div>
-                <div className={styles.body}>
-                    <div className={styles.navArea}>
-                        <Sidebar {...this.props} />
-                    </div>
-                    <div className={styles.contentArea}>
-                        {/* ${this.renderSystemAlertBanner()} */}
-                        <div className={styles.content}>
-                            <RuntimeContext.Consumer>
-                                {(value) => {
-                                    // Try not to span the Body with runtime state
-                                    // changes.
-
-                                    if (value) {
-                                        return (
-                                            <Body
-                                                {...this.props}
-                                                pluginsInfo={value.pluginsInfo}
-                                                setTitle={value.setTitle}
-                                            />
-                                        );
-                                    }
-                                }}
-                            </RuntimeContext.Consumer>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
+        const loadingState = this.state.loadingState;
+        switch (loadingState.status) {
+            case AsyncProcessStatus.NONE:
+            case AsyncProcessStatus.PENDING:
+                return this.renderLoading()
+            case AsyncProcessStatus.ERROR:
+                return this.renderError(loadingState.error);
+            case AsyncProcessStatus.SUCCESS:
+                return this.renderSuccess(loadingState.value)
+        }
     }
 }

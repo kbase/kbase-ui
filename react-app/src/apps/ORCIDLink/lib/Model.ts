@@ -6,7 +6,7 @@ import { Config } from "types/config";
 import { SCOPE } from "./constants";
 import {
     GetNameResult, GitInfo, LinkRecord, ORCIDAuth,
-    ORCIDLinkServiceClient, ORCIDProfile, ReturnLink, Work
+    ORCIDLinkServiceClient, ORCIDProfile, ReturnInstruction, Work
 } from "./ORCIDLinkClient";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
@@ -275,11 +275,11 @@ export class Model {
      * @param returnLink An object containing a link and label property
      * @param skipPrompt A boolean flag indicating whether to prompt to confirm linking afterwards
      */
-    async startLink({ returnLink, skipPrompt }: { returnLink?: ReturnLink, skipPrompt?: boolean }) {
+    async startLink({ returnInstruction, skipPrompt, uiOptions }: { returnInstruction?: ReturnInstruction, skipPrompt?: boolean, uiOptions?: string }) {
         const { session_id: sessionId } = await this.orcidLinkClient.createLinkingSession();
 
         // Then redirect the browser to start the oauth process
-        this.orcidLinkClient.startLinkingSession(sessionId, returnLink, skipPrompt)
+        this.orcidLinkClient.startLinkingSession(sessionId, returnInstruction, skipPrompt, uiOptions)
     }
 
 
