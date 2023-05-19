@@ -18,7 +18,7 @@ none
 
 ### IMPROVEMENTS
 
-none
+- dataview: improvements to Gnome LP publications and wikipedia wrt unnknown organim [UFI-48]
 
 ### FIXES
 
