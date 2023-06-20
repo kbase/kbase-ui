@@ -1,4 +1,4 @@
-# KBase kbase-ui NEXT Release Notes
+# KBase kbase-ui 2.7.3 Release Notes
 
 This release features small fixes for two signup form fields [UFI-39].
 

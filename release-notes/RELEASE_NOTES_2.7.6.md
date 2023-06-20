@@ -1,4 +1,4 @@
-# KBase kbase-ui NEXT Release Notes
+# KBase kbase-ui 2.7.5`6 Release Notes
 
 Small release with just a dataview Genome Landing Page
 

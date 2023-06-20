@@ -1,4 +1,4 @@
-# KBase kbase-ui NEXT Release Notes
+# KBase kbase-ui 2.7.5 Release Notes
 
 This release brings small bug fixes to the auth2-client and the dataview (landing pages).
 

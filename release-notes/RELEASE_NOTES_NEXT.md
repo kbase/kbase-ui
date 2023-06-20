@@ -1,6 +1,6 @@
 # KBase kbase-ui NEXT Release Notes
 
-This release fixes one issue in the signup form which is exacerbated (i.e. encountered) under slow network conditions.
+none
 
 ## CHANGES
 
@@ -22,7 +22,7 @@ none
 
 ### FIXES
 
-- PTV-1884 - Refactor username lookup in sign-up form to be tolerant of slow or flaky network connections.
+non
 
 ### MAJOR DEPENDENCY CHANGES
 

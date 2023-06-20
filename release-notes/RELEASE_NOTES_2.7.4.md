@@ -1,4 +1,4 @@
-# KBase kbase-ui NEXT Release Notes
+# KBase kbase-ui 2.7.4 Release Notes
 
 Just one UI improvement to the use agreement viewer.
 ## CHANGES
