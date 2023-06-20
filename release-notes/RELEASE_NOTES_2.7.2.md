@@ -1,4 +1,4 @@
-# KBase kbase-ui NEXT Release Notes
+# KBase kbase-ui 2.7.2 Release Notes
 
 This is a very small release which just addresses a potential security issue.
 
