@@ -93,7 +93,7 @@
             fetchUserInfo(token)
                 .then((username) => {
                     pushGTag('js', new Date());
-                    pushGTag('config', 'UA-137652528-1', {
+                    pushGTag('config', 'G-KXZCE6YQFZ', {
                         user_id: username,
                         page_location: document.location.href,
                         page_path: path,
@@ -106,7 +106,7 @@
                 });
         } else {
             pushGTag('js', new Date());
-            pushGTag('config', 'UA-137652528-1', {
+            pushGTag('config', 'G-KXZCE6YQFZ', {
                 Page_location: document.location.href,
                 page_path: path,
                 page_title: document.title

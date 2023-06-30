@@ -1,6 +1,6 @@
 # KBase kbase-ui NEXT Release Notes
 
-none
+This updates the Google Analytics ids to the new GA4 versions.
 
 ## CHANGES
 
@@ -22,7 +22,7 @@ none
 
 ### FIXES
 
-non
+UIP-30 - update Google Analytics ids for kbase-ui
 
 ### MAJOR DEPENDENCY CHANGES
 
