@@ -228,14 +228,8 @@ function main() {
             KBASE_AUTH_INFO_EXPIRES_AT > Date.now() &&
             token === KBASE_AUTH_TOKEN
         ) {
-            console.log('[fetchUsername] auth info', KBASE_AUTH_INFO);
             return KBASE_AUTH_INFO.user;
         }
-        console.log(
-            '[fetchUsername] getting auth',
-            KBASE_AUTH_INFO,
-            KBASE_AUTH_INFO_EXPIRES_AT
-        );
         KBASE_AUTH_TOKEN = token;
         const url = `${getServiceOrigin()}/services/auth/api/V2/me`;
         try {
