@@ -49,7 +49,8 @@ export class Runner {
             log(String(status.code));
             log(String(status.success));
             log(String(status.signal));
-            log(errorOutput);
+            const errorText = new TextDecoder().decode(errorOutput);
+            log(errorText);
             throw new Error('Run failed!');
         }
 
