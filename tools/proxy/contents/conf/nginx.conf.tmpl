@@ -14,17 +14,49 @@ events {
 	worker_connections 1024;
 }
 
+
 http {
 	sendfile on;
 	tcp_nopush on;
 	tcp_nodelay on;
-	keepalive_timeout 65;
 	types_hash_max_size 2048;
     proxy_headers_hash_bucket_size 256;
     proxy_ssl_server_name on;
+    proxy_request_buffering off;
+    proxy_buffering off;
+    proxy_http_version 1.1;
+
+    # In addition to the desired file size limit (in bytes),
+    # we ad  smidgen more, as the multipart/form mime structure 
+    # includes the destPath as one part, the file as another, 
+    # and each has a small header section.
+    # 
+    # In practice, this appears to be about 300 bytes plus 
+    # the value for destPath and the file name.
+    # And the mime boundary size will vary as well.
+    #
+    # So let's call it 1K and then call it a day.
+    # So, the max body size should be MAX_FILE_SIZE + 1000.
+
+    # For testing, use a 1K file size, 1K extra.
+    # Or set as you wish to push boundaries.
+    # client_max_body_size 2000;
+
+    # For production, 5G max file size plus 1KB extra.
+    # client_max_body_size 5000001000;
+
+    keepalive_requests 0;
+	# keepalive_timeout 65;
+    keepalive_timeout 0;
 
 	include /etc/nginx/mime.types;
 	default_type application/octet-stream;
+
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        ''      close;
+    }
+
 
     # Define upstream servers, for convenience.
     upstream kbase_ui {
@@ -99,7 +131,6 @@ http {
     #     ssl_certificate /kb/deployment/ssl/test.crt;
     #     ssl_certificate_key /kb/deployment/ssl/test.key;
     #     ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
-    #     proxy_http_version 1.1;
     #     location /ws/ {
     #         client_max_body_size 300M;
     #         proxy_connect_timeout 10s;
@@ -116,7 +147,11 @@ http {
         ssl_certificate /kb/deployment/ssl/test.crt;
         ssl_certificate_key /kb/deployment/ssl/test.key;
         ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
-        proxy_http_version 1.1;
+
+        location @request_entity_too_large {
+            default_type text/plain;
+            return 413 "Request entity is too large (> 5GB)";
+        }
 
         location /__ping__ {
             default_type "text/html";
@@ -127,7 +162,6 @@ http {
             gzip off;
             gunzip on;
             add_header Cache-Control 'no-cache, no-transform';
-            client_max_body_size 300M;
             proxy_pass http://kbase_ui;
         }
 
@@ -157,13 +191,11 @@ http {
         location /ui-assets/ {
             proxy_pass https://{{ .Env.deploy_ui_hostname }};
             proxy_set_header Connection "";
-            client_max_body_size 300M;
         }
 
          location /sn/ {
             proxy_pass https://{{ .Env.deploy_ui_hostname }};
             proxy_set_header Connection "";
-            client_max_body_size 300M;
         }
 
         location /narratives/ {
@@ -182,7 +214,6 @@ http {
             access_log /var/log/nginx/navigator.log upstream_log;
 
             proxy_set_header Connection "";
-            client_max_body_size 300M;
             proxy_read_timeout 10m;
             proxy_set_header Origin  https://{{ .Env.deploy_ui_hostname }};
             proxy_set_header Host {{ .Env.deploy_ui_hostname }};
@@ -204,21 +235,22 @@ http {
             access_log /var/log/nginx/navigator.log upstream_log;
 
             proxy_set_header Connection "";
-            client_max_body_size 300M;
             proxy_read_timeout 10m;
             proxy_set_header Origin  https://{{ .Env.deploy_ui_hostname }};
             proxy_set_header Host {{ .Env.deploy_ui_hostname }};
         }
 
         location {{ .Env.base_path }} {
-            client_max_body_size 300M;
             proxy_pass http://kbase_ui;
             #proxy_set_header Cache-Control 'no-store';
             #proxy_set_header Cache-Control 'no-cache';
             #expires 0;
-            proxy_set_header Connection "";
+            # proxy_set_header Connection "";
+            # proxy_set_header Upgrade $http_upgrade;
+            # proxy_set_header Connection "upgrade";
+            proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
+            proxy_set_header Connection $connection_upgrade;
         }
     }
 
@@ -232,7 +264,6 @@ http {
     #     ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
     #     proxy_http_version 1.1;
     #     location /ws/ {
-    #         client_max_body_size 300M;
     #         proxy_connect_timeout 10s;
     #         proxy_pass http://kbase_ui/ws/;
     #         proxy_set_header Upgrade $http_upgrade;
@@ -247,7 +278,16 @@ http {
         ssl_certificate /kb/deployment/ssl/test.crt;
         ssl_certificate_key /kb/deployment/ssl/test.key;
         ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
-        proxy_http_version 1.1;
+
+        location @request_entity_too_large {
+            default_type application/json;
+            # return 413 "{\"message\": \"Request entity is too large\", \"responseCode\": 413, \"maxBodySize\": \"5GB\", \"contentLength\": ${content_length}}";
+            return 413 "{\"message\": \"Request entity is too large\", \"responseCode\": 413, \"maxBodySize\": \"2KB\", \"contentLength\": ${content_length}}";
+        }
+
+        keepalive_requests 0;
+        keepalive_timeout 0;
+        proxy_socket_keepalive off;
 
         # Service proxying
         # specified as a list of service modules
@@ -262,16 +302,31 @@ http {
                 {{ end }}
                 proxy_pass http://searchapi2:5000/legacy;
                 proxy_set_header Connection "";
-                client_max_body_size 300M;
             }
-
             location /services/searchapi2/rpc {
                 {{ if $.Env.deploy_ui_hostname }}
                 include /etc/nginx/cors.conf;
                 {{ end }}
                 proxy_pass http://searchapi2:5000/rpc;
                 proxy_set_header Connection "";
-                client_max_body_size 300M;
+            }
+        {{ else if eq . "staging_service" }}
+            location /services/{{ . }}/ {
+
+                # For testing, use a 1K file size, 1K extra.
+                # Or set as you wish to push boundaries.
+                client_max_body_size 2000;
+
+                # For production, 5G max file size plus 1KB extra.
+                # client_max_body_size 5000001000;
+
+                error_page 413 @request_entity_too_large;
+                {{ if $.Env.deploy_ui_hostname }}
+                include /etc/nginx/cors.conf;
+                {{ end }}
+                proxy_pass http://{{ . }}:3000/;
+                proxy_set_header Connection "";
+                proxy_read_timeout 10m;
             }
         {{ else }}
             location /services/{{ . }}/ {
@@ -280,7 +335,6 @@ http {
                 {{ end }}
                 proxy_pass http://{{ . }}:5000/;
                 proxy_set_header Connection "";
-                client_max_body_size 300M;
                 proxy_read_timeout 10m;
             }
             location /services/{{ . }} {
@@ -289,7 +343,6 @@ http {
                 {{ end }}
                 proxy_pass http://{{ . }}:5000;
                 proxy_set_header Connection "";
-                client_max_body_size 300M;
                 proxy_read_timeout 10m;
             }
         {{ end }}
@@ -310,7 +363,6 @@ http {
             proxy_cookie_path /link /services/auth/link;
             proxy_pass https://{{ .Env.deploy_hostname }}/services;
             proxy_set_header Connection "";
-            client_max_body_size 300M;
             proxy_read_timeout 10m;
         }
 
@@ -356,7 +408,6 @@ http {
             {{ end }}
             proxy_pass https://{{ .Env.deploy_hostname }}/dynserv;
             proxy_set_header Connection "";
-            client_max_body_size 300M;
             proxy_read_timeout 10m;
         }
 
@@ -393,19 +444,16 @@ http {
         location /ui-assets/ {
             proxy_pass https://{{ .Env.deploy_hostname }};
             proxy_set_header Connection "";
-            client_max_body_size 300M;
         }
 
         location /sn/ {
             proxy_pass https://{{ .Env.deploy_hostname }};
             proxy_set_header Connection "";
-            client_max_body_size 300M;
         }
 
         location /n/ {
             proxy_pass https://{{ .Env.deploy_hostname }};
             proxy_set_header Connection "";
-            client_max_body_size 300M;
         }
 
         location /narratives/ {
@@ -423,24 +471,25 @@ http {
             access_log /var/log/nginx/navigator.log upstream_log;
 
             proxy_set_header Connection "";
-            client_max_body_size 300M;
             proxy_read_timeout 10m;
             proxy_set_header Origin  https://{{ .Env.deploy_hostname }};
             proxy_set_header Host {{ .Env.deploy_hostname }};
         }
 
-        location /ws/ {
-            proxy_pass http://kbase_ui/ws/;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "Upgrade";
-            proxy_set_header Host {{ .Env.deploy_hostname }};
-        }
+        # location /vite_hms {
+        #     proxy_pass http://{{ .Env.deploy_hostname }}:3001/vite_hms;
+        #     proxy_http_version 1.1;
+        #     proxy_set_header Upgrade $http_upgrade;
+        #     proxy_set_header Connection "Upgrade";
+        #     proxy_set_header Host {{ .Env.deploy_hostname }};
+        # }
 
         location {{ .Env.base_path }} {
             proxy_pass http://kbase_ui;
             proxy_set_header Connection "";
-            client_max_body_size 300M;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
         }
 
         {{ end }}

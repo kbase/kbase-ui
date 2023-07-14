@@ -3,7 +3,7 @@
 plugins:
     - name: auth2-client
       globalName: kbase-ui-plugin-auth2-client
-      version: 3.2.13
+      version: 3.2.14
       source:
           github:
               account: kbase
@@ -35,7 +35,7 @@ plugins:
               release: true
     - name: dataview
       globalName: kbase-ui-plugin-dataview
-      version: 4.15.3
+      version: 4.15.6
       source:
           github:
               account: kbase
@@ -79,10 +79,11 @@ plugins:
               account: kbase
     - name: react-profile-view
       globalName: kbase-ui-plugin-react-profile-view
-      version: 1.3.4
+      version: 2.0.0-alpha.3
       source:
           github:
               account: kbase
+              release: true
     - name: samples
       globalName: kbase-ui-plugin-samples
       version: 1.1.3

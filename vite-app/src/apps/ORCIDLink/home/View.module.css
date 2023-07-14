@@ -1,0 +1,7 @@
+.main {
+    flex: 1 1 0;
+    margin: 0 1em;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}

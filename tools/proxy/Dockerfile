@@ -1,4 +1,4 @@
-FROM alpine:3.17
+FROM alpine:3.18
 # Container designed to serve up static KBase UI contents
 
 # These ARGs values are passed in via the docker build command
