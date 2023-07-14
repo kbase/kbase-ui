@@ -79,7 +79,7 @@ plugins:
               account: kbase
     - name: react-profile-view
       globalName: kbase-ui-plugin-react-profile-view
-      version: 2.0.0-alpha.3
+      version: 2.0.0-alpha.4
       source:
           github:
               account: kbase
