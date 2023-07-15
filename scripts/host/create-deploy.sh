@@ -2,7 +2,7 @@
 rm -rf build/dist
 
 # Copy the react build
-cp -pr vite-app/build build/dist
+cp -pr vite-app/dist build/dist
 
 # Copy the deploy configs into the dist
 cp -pr build/build build/dist/build
