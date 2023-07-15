@@ -28,11 +28,11 @@ export class Runner {
         this.directory = directory;
     }
 
-    async run(cmd: Array<string>) {
+    async run(cmd: Array<string>, throwOnError: boolean = true) {
         const processOptions: Deno.RunOptions = {
             cmd,
             stderr: "piped",
-            stdout: "piped",
+            stdout: "piped"
         };
         processOptions.cwd = this.directory;
         const process = Deno.run(processOptions);
@@ -44,7 +44,7 @@ export class Runner {
         ]);
         // TODO: handle errors:
 
-        if (status.code !== 0) {
+        if (status.code !== 0 && throwOnError) {
             log("Run Failed!");
             log(String(status.code));
             log(String(status.success));
@@ -108,7 +108,7 @@ export class Git {
             "describe",
             "--exact-match",
             "--tags",
-        ]);
+        ], false);
         const tag = rawTag.trim();
         if (/^fatal/.test(tag)) {
             return { tag };
