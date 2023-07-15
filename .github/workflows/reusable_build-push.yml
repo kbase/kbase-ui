@@ -23,6 +23,8 @@ jobs:
               run: echo "::set-output name=date::$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
             - name: Build the app
+              env:
+                  GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
               run: ./Taskfile build-kbase-ui
 
             - name: Set up Docker Buildx
