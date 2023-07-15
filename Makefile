@@ -242,7 +242,3 @@ stop-dev-server:
 start-dev-support-server:
 	sh scripts/host/start-dev-support-server.sh
 
-# Testing
-
-test:
-	@echo Testing yet to be done...

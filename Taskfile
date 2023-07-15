@@ -54,11 +54,11 @@ function create-deploy {
 }
 
 function build {
-    env DIR="${PWD}/react-app" bash scripts/host/build.sh
+    env DIR="${PWD}/vite-app" bash scripts/host/build.sh
 }
 
 function test {
-    env DIR="${PWD}/react-app" bash scripts/host/test.sh
+    env DIR="${PWD}/vite-app" bash scripts/host/test.sh
 }
 
 # 
