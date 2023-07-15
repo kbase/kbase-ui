@@ -86,7 +86,7 @@ export default class RouterWrapper extends React.Component<
     }
 
     componentDidMount() {
-        this.hashListener = (ev: HashChangeEvent) => {
+        this.hashListener = () => {
             const hashPath = this.getHashPath();
             if (this.state.routerState.status === 'SUCCESS' &&
                 hashPath === this.state.routerState.value.hashPath) {
@@ -101,7 +101,7 @@ export default class RouterWrapper extends React.Component<
                 }
             });
         }
-        window.addEventListener('hashchange', this.hashListener); 
+        window.addEventListener('hashchange', this.hashListener);
         this.pageShowListener = (ev: PageTransitionEvent) => {
             if (ev.persisted) {
                 window.location.reload();

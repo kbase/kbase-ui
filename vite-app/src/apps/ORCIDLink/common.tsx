@@ -1,7 +1,7 @@
 import { Accordion, Image } from 'react-bootstrap';
 import orcidIcon from './images/ORCID-iD_icon-vector.svg';
-import { SCOPE } from './lib/constants';
 import { SCOPE_HELP } from './lib/Model';
+import { SCOPE } from './lib/constants';
 
 export function renderORCIDIcon() {
     return <Image src={orcidIcon} style={{ height: '1em', marginRight: '0.25em' }} />
@@ -17,7 +17,7 @@ export function renderORCIDLinkLabel() {
 
 export function renderScope(scopes: string) {
     const rows = scopes.split(/\s+/).map((scope: string, index) => {
-        const { label, orcid, help } = SCOPE_HELP[scope as SCOPE];
+        const { orcid, help } = SCOPE_HELP[scope as SCOPE];
         return <Accordion.Item eventKey={String(index)} style={{ width: '100%' }} key={scope}>
             <Accordion.Header>
                 {orcid.label}

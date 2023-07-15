@@ -46,7 +46,7 @@ function isArray(x: any, p: string, subType: string): boolean {
                 return true;
             }
             return value.every((arrayElement: unknown) => {
-                return typeof arrayElement === 'string';
+                return typeof arrayElement === subType;
             });
         }
     }

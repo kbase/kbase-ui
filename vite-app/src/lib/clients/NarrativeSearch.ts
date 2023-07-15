@@ -207,7 +207,7 @@ export class NarrativeSearch {
     }
 
     async searchSummary({
-        query,
+        // query,
         category,
     }: SearchParams): Promise<SearchSummary> {
         const params: SearchWorkspaceParams = {

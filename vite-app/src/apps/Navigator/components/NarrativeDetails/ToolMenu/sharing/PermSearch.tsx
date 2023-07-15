@@ -1,11 +1,11 @@
+import { Component } from 'react';
+import { Button, Col, Row } from 'react-bootstrap';
 import Select, { MultiValue } from 'react-select';
 import AsyncSelect from 'react-select/async';
-import { Component } from 'react';
-import { PERM_MAPPING } from './Definitions';
-import { AuthService } from '../../../../utils/AuthService';
 import { AuthInfo } from '../../../../../../contexts/Auth';
 import { Config } from '../../../../../../types/config';
-import { Button, Col, Row } from 'react-bootstrap';
+import { AuthService } from '../../../../utils/AuthService';
+import { PERM_MAPPING } from './Definitions';
 
 /* The main user input search bar */
 interface PermSearchProps {
@@ -49,7 +49,7 @@ export default class PermSearch extends Component<
         );
         const users = await auth.searchUsernames(term);
         return Object.entries(users)
-            .filter(([username, realname]) => {
+            .filter(([username]) => {
                 return username !== this.props.currentUsername;
             })
             .map(([username, realname]) => {

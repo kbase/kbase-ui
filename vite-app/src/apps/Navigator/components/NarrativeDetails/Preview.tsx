@@ -3,7 +3,7 @@ import NarrativeModel, {
     Cell,
     CodeCell,
     DataObjectCell,
-    MarkdownCell,
+    // MarkdownCell,
     NarrativeObject,
     NarrativeSearchDoc,
     OutputObjectCell,
@@ -112,15 +112,15 @@ export default class Preview extends Component<Props, State> {
         return <ErrorMessage message={error} />;
     }
 
-    renderAppCell(cell: AppCell) { }
+    // renderAppCell(cell: AppCell) { }
 
-    renderMarkdownCell(cell: MarkdownCell) { }
+    // renderMarkdownCell(cell: MarkdownCell) { }
 
-    renderCodeCell(cell: CodeCell) { }
+    // renderCodeCell(cell: CodeCell) { }
 
-    renderOutputCell(cell: OutputObjectCell) { }
+    // renderOutputCell(cell: OutputObjectCell) { }
 
-    renderDataObjectCell(cell: DataObjectCell) { }
+    // renderDataObjectCell(cell: DataObjectCell) { }
 
     renderCell(cell: Cell) {
         switch (cell.cell_type) {

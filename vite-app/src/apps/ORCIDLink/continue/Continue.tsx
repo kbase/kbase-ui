@@ -55,9 +55,7 @@ export default class Continue extends Component<ContinueProps> {
 
     renderRequestedScopes() {
         const {
-            orcid_auth: { orcid, scope },
-            created_at,
-            expires_at,
+            orcid_auth: { scope },
         } = this.props.linkingSession;
         return renderScope(scope);
     }

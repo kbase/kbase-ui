@@ -1,8 +1,7 @@
-import { sanitize } from 'dompurify';
 import { Component } from 'react';
 import { AsyncProcess, AsyncProcessStatus } from '../../../lib/AsyncProcess';
 import ConnectionMonitor from '../../../lib/ConnectionMonitor';
-import styles from './ConnectionStatus.module.css'
+import styles from './ConnectionStatus.module.css';
 
 export interface ConnectionStatusProps {
 }
@@ -70,7 +69,7 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
 
     async measure(url: string) {
         const start = Date.now();
-        const response = await fetch(url, {
+        await fetch(url, {
             cache: 'no-store', headers: {
                 'Accept-Encoding': 'identity;q=0',
                 'Cache-Control': 'no-cache, no-transform'
@@ -92,7 +91,7 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
             const lastCheck = Date.now();
 
             /* Fetch base case */
-            const base = await this.measure(`/__ping__`);
+            // const base = await this.measure(`/__ping__`);
             await this.pause(1000);
 
             /* Fetch various file sizes */
@@ -249,7 +248,7 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
 
     renderSpeed(speed: Measure) {
         // rate is bytes / sec
-        const rate = 1000 / (speed.measure / 1000);
+        // const rate = 1000 / (speed.measure / 1000);
         const averageRate = (1000 * this.pingCount) / (speed.totalMeasure / 1000);
         // {speed.measure} ms ---
         // {this.formatBytesPerSecond(rate)} ---

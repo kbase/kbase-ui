@@ -383,7 +383,7 @@ export default class Body extends Component<BodyProps, BodyState> {
             new Route(
                 'developer',
                 { authenticationRequired: false, rolesRequired: ['DevToken'] },
-                (props: RouteProps) => {
+                () => {
                     return <Developer {...this.props} />;
                 }
             ),
@@ -430,7 +430,7 @@ export default class Body extends Component<BodyProps, BodyState> {
             new Route(
                 '^(dashboard|narratives)$',
                 { authenticationRequired: true },
-                (props: RouteProps) => {
+                () => {
                     changePath('narratives', { replace: true });
                     return <Loading message="Loading Narratives Navigator 2..." />;
                 }
@@ -439,7 +439,7 @@ export default class Body extends Component<BodyProps, BodyState> {
             /*
             Empty route, this is the default location when going to the bare origin.
             */
-            new Route('', { authenticationRequired: false }, (props: RouteProps) => {
+            new Route('', { authenticationRequired: false }, () => {
                 // Direct redirect to /narratives; something is preventing a hashchange then
                 // pathchange in CI. Does not occur locally, so may be a race condition triggered
                 // by slightly slower connection to CI compared to local.
@@ -481,9 +481,7 @@ export default class Body extends Component<BodyProps, BodyState> {
     }
 
     shouldComponentUpdate(
-        nextProps: Readonly<BodyProps>,
-        nextState: Readonly<BodyState>,
-        nextContext: any
+        nextProps: Readonly<BodyProps>
     ): boolean {
         if (
             this.props.authState === nextProps.authState &&

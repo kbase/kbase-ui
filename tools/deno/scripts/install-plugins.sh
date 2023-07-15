@@ -18,8 +18,10 @@ export PLUGINS_CONFIG_PATH="/app/config/plugins.yml"
 export PLUGINS_INSTALL_DEST="/app/build"
 
 export PLUGINS_FILTER="${1}"
+export GH_TOKEN="${GH_TOKEN:?GH_TOKEN not set}"
 
 echo "Installing plugins with filter ${PLUGINS_FILTER}"
+echo "GH_TOKEN is set"
 
 # assume we are run from the root of the project.
 cd tools/deno
@@ -34,4 +36,4 @@ docker compose \
     --rm \
     deno run \
     --unstable --allow-run --allow-write --allow-read --allow-net \
-    ${DENO_SCRIPT_HOME}/${DENO_SCRIPT} ${PLUGINS_CONFIG_PATH} ${PLUGINS_INSTALL_DEST}
+    ${DENO_SCRIPT_HOME}/${DENO_SCRIPT} ${PLUGINS_CONFIG_PATH} ${PLUGINS_INSTALL_DEST} ${GH_TOKEN}

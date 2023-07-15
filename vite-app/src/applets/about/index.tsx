@@ -1,13 +1,13 @@
 import { Component } from 'react';
 import NotFound from '../../components/NotFound/NotFound';
+import { RouteProps, Router } from '../../components/Router2';
+import { AuthenticationState } from '../../contexts/Auth';
+import { Route } from '../../lib/Route';
 import { Config } from '../../types/config';
 import AboutBuild from './AboutBuild';
 import AboutKBaseUI from './AboutKBaseUI';
 import AboutPlugins from './AboutPlugins';
 import AboutServices from './AboutServices2';
-import { AuthenticationState } from '../../contexts/Auth';
-import { Route } from '../../lib/Route';
-import { RouteProps, Router } from '../../components/Router2';
 import { ConnectionStatus } from './ConnectionStatus/ConnectionStatus';
 
 export interface AboutProps extends RouteProps {
@@ -23,32 +23,32 @@ export default class About extends Component<AboutProps, AboutState> {
     render() {
 
         const routes: Array<Route> = [
-            new Route('about', {authenticationRequired: false}, (props: RouteProps) => {
+            new Route('about', { authenticationRequired: false }, () => {
                 return (
                     <AboutKBaseUI {...this.props} />
                 );
             }),
-            new Route('about/services', {authenticationRequired: false}, (props: RouteProps) => {
+            new Route('about/services', { authenticationRequired: false }, () => {
                 return (
                     <AboutServices {...this.props} />
                 );
             }),
-            new Route('about/build', {authenticationRequired: false}, (props: RouteProps) => {
+            new Route('about/build', { authenticationRequired: false }, () => {
                 return (
                     <AboutBuild {...this.props} />
                 );
             }),
-            new Route('about/plugins', {authenticationRequired: false}, (props: RouteProps) => {
+            new Route('about/plugins', { authenticationRequired: false }, () => {
                 return (
                     <AboutPlugins {...this.props} />
                 );
             }),
-             new Route('about/connection', {authenticationRequired: false}, (props: RouteProps) => {
+            new Route('about/connection', { authenticationRequired: false }, () => {
                 return (
                     <ConnectionStatus {...this.props} />
                 );
             }),
-            new Route('about/*', {authenticationRequired: false}, (props: RouteProps) => {
+            new Route('about/*', { authenticationRequired: false }, (props: RouteProps) => {
                 return (
                     <NotFound
                         {...this.props}

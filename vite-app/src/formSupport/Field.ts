@@ -63,7 +63,7 @@ export interface FieldStateUntransformable<TEdit> extends FieldStateBase {
     message: string
 }
 
-export interface FieldStateInvalid<TEdit, TFinal> extends FieldStateBase {
+export interface FieldStateInvalid<TEdit> extends FieldStateBase {
     status: FieldStatus.INVALID
     editValue: TEdit
     message: string
@@ -78,7 +78,7 @@ export type FieldState<TEdit, TFinal> =
     FieldStateNone |
     FieldStateValid<TEdit, TFinal> |
     FieldStateUntransformable<TEdit> |
-    FieldStateInvalid<TEdit, TFinal> |
+    FieldStateInvalid<TEdit> |
     FieldStateRequiredEmpty<TEdit>;
 
 // Edit State??

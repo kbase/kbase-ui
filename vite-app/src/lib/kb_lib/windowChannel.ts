@@ -161,7 +161,6 @@ export class WindowChannel {
     private awaitingResponses: Map<string, ReplyHandler>;
     private waitingListeners: Map<string, Array<Listener>>;
     private listeners: Map<string, Array<Listener>>;
-    private lastId: number;
     private currentListener: ((message: MessageEvent) => void) | null;
     private running: boolean;
     private readonly stats: Stats;
@@ -182,8 +181,6 @@ export class WindowChannel {
         this.awaitingResponses = new Map<string, Handler>();
         this.waitingListeners = new Map<string, Array<Listener>>();
         this.listeners = new Map<string, Array<Listener>>();
-
-        this.lastId = 0;
 
         this.currentListener = null;
         this.running = false;

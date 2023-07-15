@@ -252,7 +252,7 @@ export default class NavigatorContextWrapper extends Component<
 
         this.messageQueue.register({
             name: 're-searching',
-            task: (payload: JSONObject, queue: Queue<JSONObject>) => {
+            task: (payload: JSONObject, _: Queue<JSONObject>) => {
                 // condense all the requests of this type to 1.
                 let nextQueue: Queue<JSONObject> | null = null;
                 // const lastSuchItem = queue
@@ -312,7 +312,7 @@ export default class NavigatorContextWrapper extends Component<
 
         this.messageQueue.register({
             name: 'searching',
-            task: (payload: JSONObject, queue: Queue<JSONObject>) => {
+            task: (payload: JSONObject, _: Queue<JSONObject>) => {
                 const to = payload['to'] as number;
                 const from = payload['from'] as number;
                 return new Promise((resolve) => {
@@ -356,8 +356,8 @@ export default class NavigatorContextWrapper extends Component<
 
         this.messageQueue.register({
             name: 'search',
-            task: (payload: JSONObject, queue: Queue<JSONObject>) => {
-                return new Promise(async (resolve, reject) => {
+            task: () => {
+                return new Promise(async (resolve) => {
                     switch (
                     this.state.navigatorContextState.searchState.status
                     ) {
@@ -759,7 +759,7 @@ export default class NavigatorContextWrapper extends Component<
 
     async search(searchParams: SearchParams) {
         this.searchTasks.add(() => {
-            return new Promise<void>(async (resolve, reject) => {
+            return new Promise<void>(async (resolve) => {
                 switch (this.state.navigatorContextState.searchState.status) {
                     case SearchStatus.NONE:
                     case SearchStatus.INITIAL:

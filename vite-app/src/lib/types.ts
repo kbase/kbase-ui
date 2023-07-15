@@ -1,4 +1,4 @@
-import { ReactiveDB } from './kb_lib/ReactiveDB';
+// import { ReactiveDB } from './kb_lib/ReactiveDB';
 
 export interface SimpleMap<T> {
     [key: string]: T;
@@ -6,7 +6,7 @@ export interface SimpleMap<T> {
 
 export type Receiver = (payload: any) => void;
 
-type UIService = any;
+// type UIService = any;
 
 // export interface PluginServiceDefinition {
 // }

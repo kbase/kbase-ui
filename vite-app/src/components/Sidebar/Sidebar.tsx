@@ -1,11 +1,11 @@
 import { Component } from 'react';
 import { arraysIntersect } from '../../lib/utils';
 // import { FeedsNotification } from '../../services/feeds';
+import { AuthenticationState, AuthenticationStateAuthenticated, AuthenticationStatus } from '../../contexts/Auth';
 import { Config } from '../../types/config';
 import { MenuItem } from '../../types/menu';
-import { AuthenticationState, AuthenticationStateAuthenticated, AuthenticationStatus } from '../../contexts/Auth';
-import SidebarMenu from '../SidebarMenu/SidebarMenu';
 import { FeedsBadgeWrapper } from '../SidebarMenu/FeedsBadgeWrapper';
+import SidebarMenu from '../SidebarMenu/SidebarMenu';
 
 
 const menu: Array<MenuItem> = [
@@ -79,7 +79,7 @@ const menu: Array<MenuItem> = [
         "label": "Feeds",
         "icon": "bullhorn",
         "requiresAuth": true,
-        "renderBadge": (menuItem: MenuItem) => {
+        "renderBadge": () => {
             return <FeedsBadgeWrapper />;
         }
     }

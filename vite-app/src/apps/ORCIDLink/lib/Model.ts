@@ -14,7 +14,7 @@ import { SCOPE } from "./constants";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
 
 
-const START_LINKING_SESSION_PATH = 'start-linking-session';
+// const START_LINKING_SESSION_PATH = 'start-linking-session';
 
 // const GET_TEMP_LINK_RECORD_PATH = 'get-temp-link';
 

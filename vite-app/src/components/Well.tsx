@@ -240,7 +240,7 @@ export default class Well extends Component<WellProps, WellState> {
         );
     }
 
-    renderFooter(style: CSSProperties, orientation?: Orientation) {
+    renderFooter(style: CSSProperties) {
         const { children } = this.props;
 
         const component = React.Children.toArray(children).filter((child) => {

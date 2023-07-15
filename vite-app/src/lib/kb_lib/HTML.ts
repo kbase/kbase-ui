@@ -108,10 +108,10 @@ export class HTML {
     // eslint-disable-next-line @typescript-eslint/ban-types
     tagMaker(): Function {
         const isHtmlNode = (val: AttribMap | HtmlNode): val is HtmlNode => {
-            return true;
+            return !!val;
         };
         const isAttribMap = (val: AttribMap | HtmlNode): val is AttribMap => {
-            return true;
+            return !!val;
         };
         const notEmpty = (x: undefined | null | string) => {
             if (typeof x === 'undefined' || x === null || x.length === 0) {

@@ -27,7 +27,7 @@ export class StringSelectionEditor extends Component<StringSelectionEditorProps>
 
     getOptionValue(): StringOption | null {
         const currentValue: string = this.props.field.getEditValue();
-        return this.props.options.filter(({ value, label }) => {
+        return this.props.options.filter(({ value }) => {
             return (value === currentValue)
         })[0] || null;
     }

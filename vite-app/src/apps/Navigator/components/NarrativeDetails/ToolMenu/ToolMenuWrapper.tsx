@@ -1,4 +1,3 @@
-import GenericClient from '@kbase/ui-lib/lib/comm/JSONRPC11/GenericClient';
 import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import WorkspaceClient from 'lib/kb_lib/comm/coreServices/Workspace';
 import { Component } from 'react';
@@ -32,16 +31,8 @@ export default class ToolMenUWrapper extends Component<
     ToolMenuWrapperProps,
     ToolMenuWrapperState
 > {
-    private workspaceClient: GenericClient;
-
     constructor(props: ToolMenuWrapperProps) {
         super(props);
-        this.workspaceClient = new GenericClient({
-            module: 'Workspace',
-            url: this.props.config.services.Workspace.url,
-            timeout: 1000,
-            token: this.props.authInfo.token,
-        });
         this.state = {
             status: AsyncProcessStatus.NONE,
         };

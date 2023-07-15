@@ -30,11 +30,11 @@ function alias-me {
 }
 
 function install-plugins {
-	bash tools/deno/scripts/install-plugins.sh
+	bash tools/deno/scripts/install-plugins.sh "${GH_TOKEN:?GH_TOKEN is required}"
 }
 
 function install-plugin {
-	bash tools/deno/scripts/install-plugin.sh "${1}"
+	bash tools/deno/scripts/install-plugin.sh "${GH_TOKEN:?GH_TOKEN is required}" "${1}" 
 }
 
 function git-info {
@@ -55,6 +55,10 @@ function create-deploy {
 
 function build {
     env DIR="${PWD}/vite-app" bash scripts/host/build.sh
+}
+
+function shell {
+    env DIR="${PWD}" bash scripts/host/shell.sh
 }
 
 function test {

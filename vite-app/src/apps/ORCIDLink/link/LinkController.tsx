@@ -80,7 +80,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         const {
             created_at,
             orcid_auth: {
-                expires_in, name, orcid, scope
+                expires_in, orcid, scope
             }
         } = link;
 

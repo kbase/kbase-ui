@@ -188,7 +188,7 @@ export interface ProvenanceAction extends JSONLikeObject {
     intermediate_outgoing: Array<string>;
     external_data: Array<ExternalDataUnit>;
     subactions: Array<SubAction>;
-    custom: Mapping<string, string>;
+    custom: Mapping<string>;
     description: string;
 }
 
@@ -204,7 +204,7 @@ export interface ObjectData extends JSONLikeObject {
     refs: Array<ObjectRef>;
     copied: ObjectRef;
     copy_source_inaccessible: SDKBoolean;
-    extracted_ids: Mapping<IDType, Array<string>>;
+    extracted_ids: Mapping<Array<string>>;
     handle_error: string;
     handle_stacktrace: string;
 }

@@ -57,7 +57,7 @@ export class Observed<T> {
         const promise = new Promise<T>((resolve) => {
             resolver = resolve;
         });
-        const listener = (value: T, oldValue?: T) => {
+        const listener = (value: T) => {
             resolver(value);
         };
         this.listeners.push({

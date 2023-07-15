@@ -69,13 +69,13 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         // NB developMode not implemented yet, so always defaults
         // to the gitCommitHash
 
-        return 'foo';
+        // return 'foo';
 
-        // if (developMode) {
-        //     return String(new Date().getTime());
-        // } else {
-        //     return buildInfo.git.hash.abbreviated;
-        // }
+        if (developMode) {
+            return String(new Date().getTime());
+        } else {
+            return buildInfo.git.commitHash;
+        }
     }
 
     cacheBuster() {

@@ -109,7 +109,7 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
             }), /**
              * This route handles requests to link.
              */
-            new Route('orcidlink/revoke', { authenticationRequired: true }, (props: RouteProps) => {
+            new Route('orcidlink/revoke', { authenticationRequired: true }, () => {
                 // TODO: need to make route support authenticated and unauthenticated invocations
                 return <AuthContext.Consumer>
                     {(authValue) => {
@@ -176,7 +176,7 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                     message={props.hashPath.query.get("message")!}
                 />;
             }),
-            new Route('orcidlink/help', { authenticationRequired: true }, (props: RouteProps) => {
+            new Route('orcidlink/help', { authenticationRequired: true }, () => {
                 return <Help />;
             })
         ]

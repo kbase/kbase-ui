@@ -158,11 +158,11 @@ function isTypeOf(object: JSONObject, name: string, type: string) {
     return typeof object[name] === type;
 }
 
-function validateProfileUpdate(possible: unknown): asserts possible is UserProfileUpdate {
-    if (!isJSONObject(possible)) {
-        throw new Error("User profile update is not an object");
-    }
-}
+// function validateProfileUpdate(possible: unknown): asserts possible is UserProfileUpdate {
+//     if (!isJSONObject(possible)) {
+//         throw new Error("User profile update is not an object");
+//     }
+// }
 
 // Complete cheat?
 // But any json like is also a json object, but we do need to remove

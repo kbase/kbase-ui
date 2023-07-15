@@ -28,45 +28,34 @@ export class Runner {
         this.directory = directory;
     }
 
-    async run(cmd: Array<string>, throwOnError: boolean = true) {
-        const processOptions: Deno.RunOptions = {
-            cmd,
+    async run(cmd: string, args: Array<string>, throwOnError: boolean = true) {
+        const commandOptions: Deno.CommandOptions = {
             stderr: "piped",
-            stdout: "piped"
+            stdout: "piped",
+            args,
+            cwd: this.directory
         };
-        processOptions.cwd = this.directory;
-        const process = Deno.run(processOptions);
-        const decoder = new TextDecoder();
-        const [status, output, errorOutput] = await Promise.all([
-            process.status(),
-            process.output(),
-            process.stderrOutput(),
-        ]);
-        // TODO: handle errors:
-
-        if (status.code !== 0 && throwOnError) {
-            log("Run Failed!");
-            log(String(status.code));
-            log(String(status.success));
-            log(String(status.signal));
-            const errorText = new TextDecoder().decode(errorOutput);
-            log(errorText);
-            throw new Error('Run failed!');
+        // commandOptions.cwd = this.directory;
+        // console.log('[run] CWD is ' + this.directory)
+        // console.log('[run] cmd is ', cmd);
+        const command = new Deno.Command(cmd, commandOptions);
+        try {
+            const { code, stdout, stderr } = await command.output();
+            if (code !== 0 && throwOnError) {
+                log("Run Failed!");
+                log(String(code));
+                // log(String(status.success));
+                // log(String(status.signal));
+                const errorText = new TextDecoder().decode(stderr);
+                log(errorText);
+                throw new Error('Run failed!');
+            }
+            return new TextDecoder().decode(stdout);
+            // TODO: handle errors:
+        } catch (ex) {
+            console.error('[run] error', ex);
+            throw new Error(`[run] Error running command ${cmd}: ${ex.message}`)
         }
-
-
-        // log("Error?");
-        // log(decoder.decode(errorOutput));
-
-        // log("Result?");
-        // log(decoder.decode(output));
-
-        return decoder.decode(output);
-        // return {
-        //   status,
-        //   output: decoder.decode(output),
-        //   error: decoder.decode(errorOutput)
-        // }
     }
 }
 
@@ -103,8 +92,7 @@ export class Git {
         this.runner = new Runner(directory);
     }
     async gitTag(): Promise<{ tag?: string; version?: string }> {
-        const rawTag = await this.runner.run([
-            "git",
+        const rawTag = await this.runner.run('git', [
             "describe",
             "--exact-match",
             "--tags",
@@ -126,8 +114,7 @@ export class Git {
     }
 
     async clone(url: string, name: string, branch: string) {
-        const cmd = [
-            "git",
+        const args = [
             "clone",
             //   "--quiet",
             "--depth",
@@ -137,14 +124,12 @@ export class Git {
             url,
             `${this.directory}/${name}`,
         ];
-        console.log('cloning', cmd);
-        return this.runner.run(cmd);
+        return this.runner.run('git', args);
     }
 
     async getInfo(): Promise<GitInfo> {
         log("make mounted directory 'safe' for git", "common.ts:GitInfo.getInfo()");
-        await this.runner.run([
-            "git",
+        await this.runner.run('git', [
             "config",
             "--global",
             "--add",
@@ -153,8 +138,7 @@ export class Git {
         ]);
 
         log("getting hash, author, committer...", "common.ts:GitInfo.getInfo()");
-        const showOutput = await this.runner.run([
-            "git",
+        const showOutput = await this.runner.run('git', [
             "show",
             "--format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d",
             "--name-status",
@@ -169,14 +153,14 @@ export class Git {
         ] = showOutput.split("\n").slice(0, 6);
 
         log("Getting subject", "common.ts:GitInfo.getInfo()");
-        const subject = await this.runner.run(["git", "log", "-1", "--pretty=%s"]);
+        const subject = await this.runner.run('git', ["log", "-1", "--pretty=%s"]);
 
         log("Getting notes", "common.ts:GitInfo.getInfo()");
-        const notes = await this.runner.run(["git", "log", "-1", "--pretty=%N"]);
+        const notes = await this.runner.run('git', ["log", "-1", "--pretty=%N"]);
 
         log("Getting origin url", "common.ts:GitInfo.getInfo()");
         let originURL =
-            (await this.runner.run(["git", "config", "--get", "remote.origin.url"]))
+            (await this.runner.run('git', ["config", "--get", "remote.origin.url"]))
                 .trim();
 
         if (originURL.endsWith(".git")) {
@@ -189,7 +173,7 @@ export class Git {
 
         log("Getting branch", "common.ts:GitInfo.getInfo()");
         const branch =
-            (await this.runner.run(["git", "rev-parse", "--abbrev-ref", "HEAD"]))
+            (await this.runner.run('git', ["rev-parse", "--abbrev-ref", "HEAD"]))
                 .trim();
 
         log("Getting tag", "common.ts:GitInfo.getInfo()");

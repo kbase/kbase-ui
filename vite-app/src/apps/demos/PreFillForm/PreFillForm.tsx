@@ -1,6 +1,6 @@
 import { renderORCIDIcon } from "apps/ORCIDLink/common";
-import { ORCID_URL } from "apps/ORCIDLink/lib/constants";
 import { ORCIDProfile } from "apps/ORCIDLink/lib/ORCIDLinkClient";
+import { ORCID_URL } from "apps/ORCIDLink/lib/constants";
 import { isEqual } from "lib/kb_lib/Utils";
 import { Component } from "react";
 import { Button, Form } from "react-bootstrap";
@@ -33,7 +33,7 @@ export default class PreFillForm extends Component<PreFillFormProps, PreFillForm
         };
     }
 
-    componentDidUpdate(prevProps: PreFillFormProps, prevState: PreFillFormState) {
+    componentDidUpdate(_: PreFillFormProps, prevState: PreFillFormState) {
         if (!isEqual(prevState.profile, this.props.profile)) {
             this.setState(this.stateFromProps());
         }

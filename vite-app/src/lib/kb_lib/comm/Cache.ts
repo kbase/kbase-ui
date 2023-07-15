@@ -98,17 +98,17 @@ export default class Cache<T> {
         return elapsed > this.cacheLifetime;
     }
 
-    private getItem(id: string) {
-        if (this.cache.get(id) === undefined) {
-            return null;
-        }
-        const cached = this.cache.get(id);
-        if (this.isExpired(cached)) {
-            this.cache.delete(id);
-            return;
-        }
-        return cached;
-    }
+    // private getItem(id: string) {
+    //     if (this.cache.get(id) === undefined) {
+    //         return null;
+    //     }
+    //     const cached = this.cache.get(id);
+    //     if (this.isExpired(cached)) {
+    //         this.cache.delete(id);
+    //         return;
+    //     }
+    //     return cached;
+    // }
 
     /**
      * Wait for a reserved item associated with id to become available, and then 

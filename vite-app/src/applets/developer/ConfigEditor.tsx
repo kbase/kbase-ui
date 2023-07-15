@@ -1,3 +1,4 @@
+import { Component } from 'react';
 import {
     isJSONArray,
     isJSONObject,
@@ -5,7 +6,6 @@ import {
     JSONObject,
     JSONValue,
 } from '../../lib/json';
-import { Component } from 'react';
 import { Config } from '../../types/config';
 import './ConfigEditor.css';
 
@@ -16,7 +16,7 @@ export interface ConfigEditorProps {
     config: Config;
 }
 
-interface ConfigEditorState {}
+interface ConfigEditorState { }
 
 export default class ConfigEditor extends Component<
     ConfigEditorProps,
@@ -33,7 +33,7 @@ export default class ConfigEditor extends Component<
                         <input
                             value={value}
                             className="form-control"
-                            onInput={(ev) => {
+                            onInput={() => {
                                 // TODO: create setConfig runtime function
                                 // this.props.runtime.setConfig(path, ev.target.value);
                             }}
@@ -71,7 +71,7 @@ export default class ConfigEditor extends Component<
             </div>
         );
     }
-    renderJSONNull(value: null, path: Path) {
+    renderJSONNull(_: null, path: Path) {
         return (
             <div>
                 <div>

@@ -24,7 +24,7 @@ interface ORCIDLinkState {
 export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState> {
     render() {
         const routes = [
-            new Route('demos', { authenticationRequired: true }, (props: RouteProps) => {
+            new Route('demos', { authenticationRequired: true }, () => {
                 // TODO: need to make route support authenticated and unauthenticated invocations
                 return <AuthContext.Consumer>
                     {(authValue) => {
@@ -34,7 +34,6 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                         if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
                             return null;
                         }
-                        const token = props.params.get('token')!;
                         return <HomeController {...this.props} auth={authValue.value} />;
                     }}
                 </AuthContext.Consumer>
@@ -78,7 +77,7 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                 </AuthContext.Consumer>
             }),
 
-            new Route('demos/prefill-form', { authenticationRequired: true }, (props: RouteProps) => {
+            new Route('demos/prefill-form', { authenticationRequired: true }, () => {
                 return <AuthContext.Consumer>
                     {(authValue) => {
                         if (authValue.status !== AsyncProcessStatus.SUCCESS) {
@@ -87,7 +86,6 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                         if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
                             return null;
                         }
-                        const token = props.params.get('token')!;
                         return <PreFillFormController {...this.props} auth={authValue.value} />;
                     }}
                 </AuthContext.Consumer>

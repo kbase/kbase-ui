@@ -23,7 +23,7 @@ export default class View extends Component<ViewProps, ViewState> {
         this.setTitleFromProps();
     }
 
-    componentDidUpdate(prevProps: Readonly<ViewProps>, prevState: Readonly<ViewState>, snapshot?: any): void {
+    componentDidUpdate(): void {
         this.setTitleFromProps();
     }
 

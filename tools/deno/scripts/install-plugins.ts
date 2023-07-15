@@ -52,7 +52,7 @@ async function fetchPlugins(config: string, dest: string) {
     }
 }
 
-async function fetchPluginsReleaseDist(config: string, dest: string) {
+async function fetchPluginsReleaseDist(config: string, dest: string, ghToken: string) {
     const pluginsRaw = await Deno.readTextFile(config);
     const pluginsConfig = parse(pluginsRaw) as unknown as PluginsConfig;
     for (const pluginConfig of pluginsConfig.plugins) {
@@ -69,7 +69,8 @@ async function fetchPluginsReleaseDist(config: string, dest: string) {
                 pluginConfig.source.github.account,
                 pluginConfig.name,
                 dest,
-                tag
+                tag,
+                ghToken
             );
         } catch (ex) {
             console.log('error', ex);
@@ -79,14 +80,20 @@ async function fetchPluginsReleaseDist(config: string, dest: string) {
     }
 }
 
-async function fetchReleaseDist(gitAccount: string, pluginName: string, dest: string, tag: string) {
+async function fetchReleaseDist(gitAccount: string, pluginName: string, dest: string, tag: string, ghToken: string) {
     const releaseURL = `https://api.github.com/repos/${gitAccount}/kbase-ui-plugin-${pluginName}/releases/tags/${tag}`
     // TODO: github token
     const headers = {
         Accept: 'application/vnd.github+json',
-        Authorization: 'Bearer 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'
+        Authorization: `Bearer ${ghToken}`
     }
+    console.log('AUTH', ghToken);
     const response = await fetch(releaseURL, { headers });
+
+    if (response.status !== 200) {
+        throw new Error(`[fetchReleaseDist] error response ${response.status}: ${response.statusText}`);
+    }
+
     const release = (await response.json()) as { assets: Array<{ name: string, url: string }> }
 
     if (!release) {
@@ -262,13 +269,15 @@ async function generatePluginsManifest(uiConfig: string, source: string, dest: s
 // }
 
 async function main() {
-    if (Deno.args.length < 2) {
+    if (Deno.args.length < 3) {
+        log(`Incorrect number of args ${Deno.args.length}`)
         log('Usage: install-plugins.ts <config> <dest>');
         Deno.exit(1);
     }
     const config = Deno.args[0];
     const destinationDir = Deno.args[1];
-    const pluginFilter = Deno.args[2];
+    // const pluginFilter = Deno.args[2];
+    const ghToken = Deno.args[2];
     // const here = new URL('', import.meta.url).pathname;
     const downloadDest = `${destinationDir}/download`;
     const installDest = `${destinationDir}/plugins`;
@@ -284,7 +293,7 @@ async function main() {
 
 
     await fetchPlugins(config, downloadDest);
-    await fetchPluginsReleaseDist(config, downloadDest);
+    await fetchPluginsReleaseDist(config, downloadDest, ghToken);
     await unpackPlugins(downloadDest, installDest);
     await generatePluginsManifest(config, downloadDest, installDest);
     await deleteDirectory(downloadDest);

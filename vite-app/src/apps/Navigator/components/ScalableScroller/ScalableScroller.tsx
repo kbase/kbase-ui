@@ -88,13 +88,13 @@ export interface UIStateNone extends UIStateBase {
     status: UIStatus.NONE;
 }
 
-export interface UIStateMeasured<T> extends UIStateBase {
+export interface UIStateMeasured extends UIStateBase {
     status: UIStatus.MEASURED;
     firstRow: number;
     lastRow: number;
 }
 
-export type UIState<T> = UIStateNone | UIStateMeasured<T>;
+export type UIState = UIStateNone | UIStateMeasured;
 
 export interface FetchResult<T> {
     rows: Array<Row<T>>;
@@ -109,13 +109,13 @@ export interface ScalableScrollerProps<T> {
     renderRow: (item: T) => ReactElement;
     dataProviderState: DataProviderState<T>;
 }
-interface ScalableScrollerState<T> {
-    uiState: UIState<T>;
+interface ScalableScrollerState {
+    uiState: UIState;
 }
 
 export default class ScalableScroller<T> extends Component<
     ScalableScrollerProps<T>,
-    ScalableScrollerState<T>
+    ScalableScrollerState
 > {
     bodyRef: RefObject<HTMLDivElement>;
     scrollTimer: number | null;

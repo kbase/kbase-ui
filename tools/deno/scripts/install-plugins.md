@@ -8,7 +8,7 @@ It should be run through the Deno cli located in `tools/deno-cli`.
 E.g.
 
 ```bash
-HOST_APP_DIR=`PWD` docker compose run --rm deno run --unstable --allow-run --allow-write --allow-read /app/scripts/deno/install-plugins.ts /app/config/plugins.yml /app/build/app/modules/plugins
+GH_TOKEN=TTT HOST_APP_DIR=`PWD` docker compose run --rm deno run --unstable --allow-run --allow-write --allow-read /app/scripts/deno/install-plugins.ts /app/config/plugins.yml /app/build/app/modules/plugins
 ```
 
 A rather long command line. Let's break it down!
