@@ -58,3 +58,6 @@ start.log
 
 # A handy directory for staching non-commitable working files
 /_todo
+
+# More dev
+LOCAL_ONLY_README.md
