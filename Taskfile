@@ -95,7 +95,6 @@ function format {
     _noop
 }
 
-
 function render-templates {
     env DIR="${PWD}" ENV="${ENV:-ci}" bash tools/dockerize/scripts/render-templates.sh
 }
@@ -105,9 +104,6 @@ function render-templates {
 function generate-dev-cert {
     _noop
 }
-
-
-
 
 function help {
     echo "$0 <task> <args>"
