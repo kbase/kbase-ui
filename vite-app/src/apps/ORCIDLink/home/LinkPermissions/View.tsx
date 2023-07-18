@@ -21,8 +21,8 @@ export default class PermissionsView extends Component<PermissionsViewProps> {
     render() {
         return <Form>
             <Well variant="primary">
-                <Well.Header>
-                    <span className="fa fa-cog" /> Permissions
+                <Well.Header icon="cog">
+                    Permissions
                 </Well.Header>
                 <Well.Body>
                     <Container fluid>
