@@ -158,7 +158,7 @@ docker-compose-override:
 	@echo "> Issuing: $(cmd)"
 	$(cmd)
 
-docker-compose-up: docker-network docker-compose-override
+docker-compose-up: docker-compose-override
 	@:$(call check_defined, config, "the kbase-ui build config: defaults to 'dev'")
 	@:$(call check_defined, env, "the runtime (deploy) environment: defaults to 'dev'")
 	@echo "> Building and running docker image for development"
