@@ -22,7 +22,7 @@ none
 
 ### FIXES
 
-none
+- UFI-58: Fix and improve Google Analytics integration support
 
 ### MAJOR DEPENDENCY CHANGES
 
