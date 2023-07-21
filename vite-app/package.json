@@ -24,7 +24,7 @@
         "uuid": "9.0.0"
     },
     "devDependencies": {
-        "@testing-library/jest-dom": "5.16.5",
+        "@testing-library/jest-dom": "5.17.0",
         "@testing-library/react": "14.0.0",
         "@testing-library/user-event": "14.4.3",
         "@kbase/ui-lib": "0.7.1",
@@ -43,9 +43,9 @@
         "eslint-plugin-react-refresh": "0.4.3",
         "jsdom": "22.1.0",
         "typescript": "5.1.6",
-        "vite": "4.4.4",
+        "vite": "4.4.5",
         "vitest": "0.33.0",
-        "sass": "1.63.6",
+        "sass": "1.64.0",
         "prettier": "3.0.0",
         "vite-tsconfig-paths": "4.2.0"
     }
