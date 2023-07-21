@@ -152,13 +152,8 @@ export class Git {
             committerDateEpoch,
         ] = showOutput.split("\n").slice(0, 6);
 
-        log("Getting subject", "common.ts:GitInfo.getInfo()");
         const subject = await this.runner.run('git', ["log", "-1", "--pretty=%s"]);
-
-        log("Getting notes", "common.ts:GitInfo.getInfo()");
         const notes = await this.runner.run('git', ["log", "-1", "--pretty=%N"]);
-
-        log("Getting origin url", "common.ts:GitInfo.getInfo()");
         let originURL =
             (await this.runner.run('git', ["config", "--get", "remote.origin.url"]))
                 .trim();
@@ -170,13 +165,9 @@ export class Git {
         const url = new URL(originURL);
         const path = url.pathname;
         const [_ignore, account, repoName] = path.split("/");
-
-        log("Getting branch", "common.ts:GitInfo.getInfo()");
         const branch =
             (await this.runner.run('git', ["rev-parse", "--abbrev-ref", "HEAD"]))
                 .trim();
-
-        log("Getting tag", "common.ts:GitInfo.getInfo()");
         const { tag, version } = await this.gitTag();
 
         return {
