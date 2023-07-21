@@ -218,7 +218,6 @@ async function generatePluginsManifest(uiConfig: string, source: string, dest: s
         try {
             console.log('about to read', configFileName);
             const raw = Deno.readFileSync(configFileName);
-            console.log('got raw');
             pluginConfigRaw = new TextDecoder().decode(raw);
         } catch (ex) {
             console.error('ERROR reading config file', configFileName);
