@@ -18,7 +18,8 @@ none
 
 ### IMPROVEMENTS
 
-none
+UFI-60: signup form improvements - better required-field indicators to reduce confusion, better
+control over organization lookup.
 
 ### FIXES
 
