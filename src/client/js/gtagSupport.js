@@ -63,7 +63,6 @@ function main() {
     const PROD_UI_ORIGIN = 'https://narrative.kbase.us';
     const PROD_SERVICE_ORIGIN = 'https://kbase.us';
     const GOOGLE_GTAG = 'G-KXZCE6YQFZ';
-    const GOOGLE_AD_TAG = 'AW-753507180';
 
     // The sending of the page hit is delayed until the page title stops change for the duration
     // set here.
@@ -428,9 +427,6 @@ function main() {
         setState(WAITING);
         pushGTag('js', new Date());
         pushGTag('config', GOOGLE_GTAG, {
-            send_page_view: false,
-        });
-        pushGTag('config', GOOGLE_AD_TAG, {
             send_page_view: false,
         });
     }
