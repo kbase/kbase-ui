@@ -20,6 +20,7 @@ export default class StandardErrorView extends Component<StandardErrorViewProps>
     renderTitle() {
         return this.props.error.title || 'Error!';
     }
+
     renderMessage() {
         return (
             <p>
@@ -27,6 +28,7 @@ export default class StandardErrorView extends Component<StandardErrorViewProps>
             </p>
         );
     }
+
     renderData() {
         if (typeof this.props.error.data === 'undefined') {
             return;
