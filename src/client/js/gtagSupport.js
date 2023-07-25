@@ -71,9 +71,8 @@ function main() {
 
     // Keep the auth token cached for up to 10 minutes.
     const KBASE_AUTH_TOKEN_TTL = 600000;
-    let KBASE_AUTH_INFO_EXPIRES_AT = null;
-    let KBASE_AUTH_INFO = null;
-    let KBASE_AUTH_TOKEN = null;
+
+    let KBASE_AUTH_STATE = null;
 
     /**
      * GTag processing states.
@@ -87,6 +86,10 @@ function main() {
     const PENDING = 'PENDING';
     const SEND_NOW = 'SEND_NOW';
     const SENDING = 'SENDING';
+    let GTAG_STATE = WAITING;
+
+    // Simply ensures that the data layer exists.
+    window.dataLayer = window.dataLayer || [];
 
     /**
      * Sets a new status value, which should be one of WAITING, PENDING, SEND_NOW, or SENDING.
@@ -160,7 +163,8 @@ function main() {
      */
     function pushGTag() {
         //developers.google.com/tag-platform/tag-manager/datalayer
-        https: window.dataLayer.push(arguments);
+        console.log('[pushGTag] ', arguments);
+        window.dataLayer.push(arguments);
     }
 
     /**
@@ -224,13 +228,13 @@ function main() {
      */
     async function fetchAuth(token) {
         if (
-            KBASE_AUTH_INFO !== null &&
-            KBASE_AUTH_INFO_EXPIRES_AT > Date.now() &&
-            token === KBASE_AUTH_TOKEN
+            KBASE_AUTH_STATE !== null &&
+            KBASE_AUTH_STATE.expiresAt > Date.now() &&
+            token === KBASE_AUTH_STATE.token
         ) {
-            return KBASE_AUTH_INFO.user;
+            console.log('[fetchAuth] cached', KBASE_AUTH_STATE);
+            return KBASE_AUTH_STATE.tokenInfo;
         }
-        KBASE_AUTH_TOKEN = token;
         const url = `${getServiceOrigin()}/services/auth/api/V2/me`;
         try {
             const response = await fetch(url, {
@@ -248,9 +252,12 @@ function main() {
                 );
                 return null;
             }
-            KBASE_AUTH_INFO = await response.json();
-            KBASE_AUTH_INFO_EXPIRES_AT = Date.now() + KBASE_AUTH_TOKEN_TTL;
-            return KBASE_AUTH_INFO;
+            KBASE_AUTH_STATE = {
+                expiresAt: Date.now() + KBASE_AUTH_TOKEN_TTL,
+                token,
+                tokenInfo: await response.json(),
+            };
+            return KBASE_AUTH_STATE.tokenInfo;
         } catch (error) {
             console.error(
                 '[gtagSupport] error occurred in call to auth service',
@@ -272,6 +279,7 @@ function main() {
     async function getAuth() {
         const token = getToken();
         if (token) {
+            console.log('[getAuth]', token);
             try {
                 const auth = fetchAuth(token);
                 if (auth) {
@@ -281,8 +289,7 @@ function main() {
                 console.error('[gtagSupport] Error fetching username', ex);
             }
         }
-        KBASE_AUTH_INFO = null;
-        KBASE_AUTH_TOKEN = null;
+        KBASE_AUTH_STATE = null;
         return null;
     }
 
@@ -412,11 +419,7 @@ function main() {
      *  Send a ping to GA whenever the history state changes, i.e., url navigation
      */
     window.onpopstate = async () => {
-        // window.dataLayer.push(function () {
-        //     this.reset();
-        // });
         await sendPendingGTag();
-
         sendGTagAfterTitleSettles();
     };
 
