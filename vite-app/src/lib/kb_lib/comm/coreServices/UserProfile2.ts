@@ -140,6 +140,17 @@ export interface UserProfileUpdate extends JSONLikeObject {
     }
 }
 
+function coerce(value: unknown, from: string, to: string) {
+    switch (typeof value) {
+        case 'string':
+            switch (to) {
+                case 'int':
+                    return parseInt(from);
+            }
+    }
+    throw new Error(`Unsupported coersion from ${from} to ${to}`)
+}
+
 
 interface AssertTypeOfOptions {
     optional?: boolean;
@@ -173,14 +184,31 @@ function jsonLikeToJSON(jsonLike: JSONLikeObject): JSONObject {
 
 
 // TODO: incomplete
-function validateProfile(possibleProfile: unknown): asserts possibleProfile is UserProfile {
+function validateProfile(possibleProfile: unknown): UserProfile {
     if (!isJSONObject(possibleProfile)) {
         throw new Error("User profile is not an object");
     }
 
+    // The top level "user" property
+    // This should never be wrong, but we are just trying to be complete here, partly
+    // as an exercise in thorough type validation.
+
     if (!hasOwnProperty(possibleProfile, 'user')) {
         throw new Error('User profile missing "user" property');
     }
+
+    const user = possibleProfile.user;
+
+    if (!isJSONObject(user)) {
+        throw new Error('User profile "user" property must be an object');
+    }
+
+    assertTypeOf(user, 'username', 'string');
+    assertTypeOf(user, 'realname', 'string');
+
+    // The top level "profile" property is where everything else is. It has no definition
+    // in the UserProfile service, so the only thing that assures it's correct structure
+    // is the code that creates it, that edits it, and here.
 
     if (!hasOwnProperty(possibleProfile, "profile")) {
         throw new Error('User profile missing "profile" property');
@@ -191,6 +219,8 @@ function validateProfile(possibleProfile: unknown): asserts possibleProfile is U
     if (!isJSONObject(profile)) {
         throw new Error('User profile "profile" is not an object');
     }
+
+    // Userdata is where what we think of as the user profile resides.
 
     if (!hasOwnProperty(profile, "userdata")) {
         throw new Error('User profile missing "userdata" property');
@@ -205,16 +235,25 @@ function validateProfile(possibleProfile: unknown): asserts possibleProfile is U
         if (!isJSONArray(affiliations)) {
             throw new Error('User profile "affiliations" is not an array');
         }
+
         const fixedAffiliations = affiliations
             .map((affiliation) => {
                 if (!isJSONObject(affiliation)) {
                     throw new Error('User profile "affiliation" is not an object');
                 }
                 // Check fields.
+
                 assertTypeOf(affiliation, "title", "string");
                 assertTypeOf(affiliation, "organization", "string");
+
+                affiliation.started = coerce(affiliation.started, 'string', 'int');
                 assertTypeOf(affiliation, "started", "number");
-                assertTypeOf(affiliation, "ended", "number", { optional: true });
+
+                if (typeof affiliation.ended !== 'undefined') {
+                    affiliation.ended = coerce(affiliation.ended, 'string', 'int');
+                    assertTypeOf(affiliation, "ended", "number");
+                }
+
 
                 // if (!isTypeOf(affiliation, "started", "number")) {
                 //     const possibleStarted = affiliation["started"];
@@ -269,12 +308,17 @@ function validateProfile(possibleProfile: unknown): asserts possibleProfile is U
                 return affiliation === null ? false : true;
             });
         userdata.affiliations = fixedAffiliations;
+
+        // More to DO!
     }
 
     // if (hasOwnProperty(profile, "preferences"))
     // TODO: more assertions
 
     // return (possibleProfile as unknown) as UserProfile;
+    // TODO: avoid this! we should create a user profile out of the "parts" we have validated
+    // and potentially "fixed" above.
+    return possibleProfile as UserProfile;
 }
 
 // Client implementation
@@ -302,12 +346,9 @@ export default class UserProfileClient extends ServiceClient {
             JSONArrayOf<JSONArrayOf<JSONObject>>
         >('get_user_profile', [params]);
 
-        const finalResult = result.map((possibleUserProfile) => {
-            validateProfile(possibleUserProfile);
-            return possibleUserProfile;
+        return result.map((possibleUserProfile) => {
+            return validateProfile(possibleUserProfile);
         })
-
-        return finalResult;
     }
 
     async update_user_profile(
