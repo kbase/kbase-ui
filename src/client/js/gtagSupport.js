@@ -163,7 +163,6 @@ function main() {
      */
     function pushGTag() {
         //developers.google.com/tag-platform/tag-manager/datalayer
-        console.log('[pushGTag] ', arguments);
         window.dataLayer.push(arguments);
     }
 
@@ -232,7 +231,6 @@ function main() {
             KBASE_AUTH_STATE.expiresAt > Date.now() &&
             token === KBASE_AUTH_STATE.token
         ) {
-            console.log('[fetchAuth] cached', KBASE_AUTH_STATE);
             return KBASE_AUTH_STATE.tokenInfo;
         }
         const url = `${getServiceOrigin()}/services/auth/api/V2/me`;
@@ -279,7 +277,6 @@ function main() {
     async function getAuth() {
         const token = getToken();
         if (token) {
-            console.log('[getAuth]', token);
             try {
                 const auth = fetchAuth(token);
                 if (auth) {
