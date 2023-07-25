@@ -87,6 +87,10 @@ function main() {
     const PENDING = 'PENDING';
     const SEND_NOW = 'SEND_NOW';
     const SENDING = 'SENDING';
+    let GTAG_STATE = WAITING;
+
+     // Simply ensures that the data layer exists.
+     window.dataLayer = window.dataLayer || [];
 
     /**
      * Sets a new status value, which should be one of WAITING, PENDING, SEND_NOW, or SENDING.
@@ -160,7 +164,7 @@ function main() {
      */
     function pushGTag() {
         //developers.google.com/tag-platform/tag-manager/datalayer
-        https: window.dataLayer.push(arguments);
+        window.dataLayer.push(arguments);
     }
 
     /**
