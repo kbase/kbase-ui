@@ -291,10 +291,22 @@ export default class ContinueController extends Component<ContinueControllerProp
 
     async cancelLink() {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
-        await model.cancelLink(this.props.linkingSessionId);
+        try {
+            await model.cancelLink(this.props.linkingSessionId);
+        } catch (ex) {
+            // Ignore the error, it probably means that we are on this page inadvertently
+            // or after some harmless error that prevented redirect.
+            const message = (() => {
+                if (ex instanceof Error) {
+                    return ex.message;
+                }
+                return "Unknown error";
+            })
+            console.warn(`Linking session could not be canceled: ${message}`)
+        }
 
         // TODO: handle error.
-        window.open('https://ci.kbase.us/#orcidlink', '_parent');
+        window.open('/#orcidlink', '_parent');
     }
 
     renderSuccess(linkingSession: LinkingSessionComplete) {

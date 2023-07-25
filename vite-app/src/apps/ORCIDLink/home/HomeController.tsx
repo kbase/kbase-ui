@@ -5,7 +5,9 @@ import { Component } from 'react';
 import { Config } from 'types/config';
 
 import StandardErrorView, { StandardError } from 'components/StandardErrorView';
+import Well from 'components/Well';
 import { changeHash2 } from 'lib/navigation';
+import { Button } from 'react-bootstrap';
 import { Model } from '../lib/Model';
 import { ReturnInstruction } from '../lib/ORCIDLinkClient';
 import { ServiceError } from '../lib/ServiceClient';
@@ -114,6 +116,56 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
         await model.startLink({ returnInstruction: this.props.returnInstruction, skipPrompt: this.props.skipPrompt, uiOptions: this.props.uiOptions })
     }
 
+    async removeLink() {
+        const model = new Model({ config: this.props.config, auth: this.props.auth });
+        try {
+            await model.deleteLink();
+            // changeHash2('orcidlink');
+            this.loadData();
+        } catch (ex) {
+            this.handleError(ex);
+        }
+    }
+
+    handleError(ex: unknown) {
+        if (ex instanceof ServiceError) {
+            this.setState({
+                linkState: {
+                    status: AsyncProcessStatus.ERROR,
+                    error: {
+                        code: ex.code,
+                        message: ex.message,
+                        title: ex.title || 'Error',
+                        data: ex.data
+                    }
+                }
+            });
+
+        } else if (ex instanceof Error) {
+            this.setState({
+                linkState: {
+                    status: AsyncProcessStatus.ERROR,
+                    error: {
+                        code: 'error',
+                        message: ex.message,
+                        title: 'Error'
+                    }
+                }
+            });
+        } else {
+            this.setState({
+                linkState: {
+                    status: AsyncProcessStatus.ERROR,
+                    error: {
+                        code: 'unknown',
+                        message: `Unknown error: ${String(ex)}`,
+                        title: 'Error'
+                    }
+                }
+            });
+        }
+    }
+
     async loadData() {
         await new Promise((resolve) => {
             this.setState({
@@ -125,9 +177,15 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
             });
         });
         try {
+            // The user's ORCID Link
             const value = await this.fetchLink();
+
+            // Link to the ORCID Link API Docs
             const url = await this.getURL();
+
+            // Link to the ORCID Link repo
             const repoURL = await this.getRepoURL();
+
             this.setState({
                 linkState: {
                     status: AsyncProcessStatus.SUCCESS,
@@ -135,41 +193,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
                 }
             });
         } catch (ex) {
-            if (ex instanceof ServiceError) {
-                this.setState({
-                    linkState: {
-                        status: AsyncProcessStatus.ERROR,
-                        error: {
-                            code: ex.code,
-                            message: ex.message,
-                            title: ex.title || 'Error',
-                            data: ex.data
-                        }
-                    }
-                });
-            } else if (ex instanceof Error) {
-                this.setState({
-                    linkState: {
-                        status: AsyncProcessStatus.ERROR,
-                        error: {
-                            code: 'error',
-                            message: ex.message,
-                            title: 'Error'
-                        }
-                    }
-                });
-            } else {
-                this.setState({
-                    linkState: {
-                        status: AsyncProcessStatus.ERROR,
-                        error: {
-                            code: 'unknown',
-                            message: `Unknown error: ${String(ex)}`,
-                            title: 'Error'
-                        }
-                    }
-                });
-            }
+            this.handleError(ex);
         }
     }
 
@@ -178,7 +202,37 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     }
 
     renderError(error: StandardError) {
-        return <StandardErrorView error={error} />
+        switch (error.code) {
+            case 'orcidInvalidToken':
+                return <Well variant="danger">
+                    <Well.Header>
+                        Error
+                    </Well.Header>
+                    <Well.Body>
+                        <p>It appears that your ORCID Account is no longer authorized for KBase
+                            access. You may have inadvertently removed permission for KBase, or
+                            perhaps you don't wish KBase to have access to your ORCID Account.
+                        </p>
+                        <p>
+                            In any case, the first action you should take to remove this error
+                            message is to remove your ORCID Link. After this, you may create new
+                            ORCID Link.
+                        </p>
+                    </Well.Body>
+                    <Well.Footer>
+                        <Button variant="danger"
+                            onClick={this.removeLink.bind(this)} >
+                            <span
+                                className="fa fa-trash fa-lg"
+                                style={{ marginRight: '0.25rem' }}
+                            /> Remove ORCID Link
+                        </Button>
+                    </Well.Footer>
+                </Well>
+            default:
+                return <StandardErrorView error={error} />
+        }
+
     }
 
     renderSuccess({ link, url, repoURL }: { link: LinkInfo | null, url: string, repoURL: string }) {
