@@ -22,7 +22,7 @@ none
 
 ### FIXES
 
-UFI-60: fix signup error if id provider email is empty or null
+none
 
 ### MAJOR DEPENDENCY CHANGES
 
