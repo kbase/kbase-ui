@@ -22,7 +22,7 @@ none
 
 ### FIXES
 
-none
+UFI-60: fix failing organization field in unknown circumstances
 
 ### MAJOR DEPENDENCY CHANGES
 
