@@ -18,7 +18,7 @@ none
 
 ### IMPROVEMENTS
 
-none
+- UFI-63: update favicon with latest desgin (as used on marketing & doc site)
 
 ### FIXES
 
