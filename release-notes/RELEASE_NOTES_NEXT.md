@@ -19,6 +19,7 @@ none
 ### IMPROVEMENTS
 
 - UFI-63: update favicon with latest desgin (as used on marketing & doc site)
+- UFI-64: fix signup cancellation button
 
 ### FIXES
 
