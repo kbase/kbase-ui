@@ -270,14 +270,14 @@ async function generatePluginsManifest(uiConfig: string, source: string, dest: s
 async function main() {
     if (Deno.args.length < 3) {
         log(`Incorrect number of args ${Deno.args.length}`)
-        log('Usage: install-plugins.ts <config> <dest>');
+        log('Usage: install-plugins.ts <config> <dest> <ghtoken>');
         Deno.exit(1);
     }
     const config = Deno.args[0];
     const destinationDir = Deno.args[1];
-    // const pluginFilter = Deno.args[2];
     const ghToken = Deno.args[2];
-    // const here = new URL('', import.meta.url).pathname;
+
+
     const downloadDest = `${destinationDir}/download`;
     const installDest = `${destinationDir}/plugins`;
 
