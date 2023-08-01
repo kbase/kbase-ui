@@ -140,34 +140,42 @@ export interface UserProfileUpdate extends JSONLikeObject {
     }
 }
 
-function coerce(value: unknown, from: string, to: string) {
+function coerceToInt(value: unknown, acceptableTypes: Array<string>): number {
+    if (!acceptableTypes.includes(typeof value)) {
+        throw new Error(`Expected type in (${acceptableTypes.join(', ')}), got "${typeof value}"`)
+    }
+
     switch (typeof value) {
         case 'string':
-            switch (to) {
-                case 'int':
-                    return parseInt(from);
-            }
+            return parseInt(value, 10);
+        case 'number':
+            return value;
+        default:
+            throw new Error(`Unsupported coercion from ${typeof value}`)
     }
-    throw new Error(`Unsupported coersion from ${from} to ${to}`)
-}
 
+}
 
 interface AssertTypeOfOptions {
     optional?: boolean;
+    nullable?: boolean;
 }
 
-function assertTypeOf(object: JSONObject, name: string, type: string, optional: AssertTypeOfOptions = {}) {
-    if (!isTypeOf(object, name, type)) {
-        if (isTypeOf(object, name, 'undefined') && optional) {
-            return;
+function assertTypeOf(object: JSONObject, name: string, types: Array<string>, options: AssertTypeOfOptions = {}) {
+    if (options.optional) {
+        types.push('undefined');
+    }
+    const value = object[name];
+    if (!types.includes(typeof value)) {
+        if (!options.nullable || value !== null) {
+            throw new Error(`Property "${name}" is not of the expected types "${types.join(', ')}"`);
         }
-        throw new Error(`Property "${name}" is not of the expected type "${type}"`);
     }
 }
 
-function isTypeOf(object: JSONObject, name: string, type: string) {
-    return typeof object[name] === type;
-}
+// function isTypeOf(object: JSONObject, name: string, type: string) {
+//     return typeof object[name] === type;
+// }
 
 // function validateProfileUpdate(possible: unknown): asserts possible is UserProfileUpdate {
 //     if (!isJSONObject(possible)) {
@@ -203,8 +211,8 @@ function validateProfile(possibleProfile: unknown): UserProfile {
         throw new Error('User profile "user" property must be an object');
     }
 
-    assertTypeOf(user, 'username', 'string');
-    assertTypeOf(user, 'realname', 'string');
+    assertTypeOf(user, 'username', ['string']);
+    assertTypeOf(user, 'realname', ['string']);
 
     // The top level "profile" property is where everything else is. It has no definition
     // in the UserProfile service, so the only thing that assures it's correct structure
@@ -243,15 +251,16 @@ function validateProfile(possibleProfile: unknown): UserProfile {
                 }
                 // Check fields.
 
-                assertTypeOf(affiliation, "title", "string");
-                assertTypeOf(affiliation, "organization", "string");
+                assertTypeOf(affiliation, "title", ["string"]);
+                assertTypeOf(affiliation, "organization", ["string"]);
 
-                affiliation.started = coerce(affiliation.started, 'string', 'int');
-                assertTypeOf(affiliation, "started", "number");
+                assertTypeOf(affiliation, "started", ["string", "number"]);
+                affiliation.started = coerceToInt(affiliation.started, ['string', 'number']);
 
-                if (typeof affiliation.ended !== 'undefined') {
-                    affiliation.ended = coerce(affiliation.ended, 'string', 'int');
-                    assertTypeOf(affiliation, "ended", "number");
+
+                assertTypeOf(affiliation, "started", ["string", "number"], { optional: true, nullable: true });
+                if (typeof affiliation.ended !== 'undefined' && affiliation.ended !== null) {
+                    affiliation.ended = coerceToInt(affiliation.ended, ['string', 'number']);
                 }
 
 
