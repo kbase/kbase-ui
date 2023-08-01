@@ -1,7 +1,6 @@
 FROM alpine:3.18.2
 
-# TODO: pin versions
-RUN apk update --update-cache --available && \
+RUN apk upgrade --update-cache --available && \
     apk add --update --no-cache bash ca-certificates nginx bash && \
     mkdir -p /kb
 
