@@ -127,11 +127,17 @@ export class JSONRPCClient {
         }
 
         // TODO: timeout, cancellation
+        const controller = new AbortController();
+        const timeoutTimer = window.setTimeout(() => {
+            controller.abort();
+        }, timeout)
         const response = await fetch(this.url, {
             method: 'POST',
             body: JSON.stringify(payload),
             headers,
+            signal: controller.signal
         });
+        clearTimeout(timeoutTimer);
 
         const result = await (async () => {
             const responseText = await response.text();
