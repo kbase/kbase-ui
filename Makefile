@@ -130,10 +130,6 @@ docker-network-clean:
 	# @:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
 	bash tools/docker/clean-docker-network.sh
 
-start: docker-compose-up
-
-stop: docker-compose-clean docker-network-clean
-
 get-gitlab-config: 
 	mkdir -p dev/gitlab-config; \
 	# git clone -b develop ssh://git@gitlab.kbase.us/devops/kbase_ui_config.git dev/gitlab-config
