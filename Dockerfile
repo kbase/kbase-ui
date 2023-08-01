@@ -1,7 +1,8 @@
-FROM alpine:3.18
+FROM alpine:3.18.2
 
-RUN apk upgrade --update-cache --available && \
-    apk add --update --no-cache bash ca-certificates nginx bash && \
+# TODO: pin versions
+RUN apk update --update-cache --available && \
+    apk add --update --no-cache bash=5.2.15-r5 ca-certificates=20230506-r0 nginx=1.24.0-r6 bash=5.2.15-r5 && \
     mkdir -p /kb
 
 WORKDIR /kb
