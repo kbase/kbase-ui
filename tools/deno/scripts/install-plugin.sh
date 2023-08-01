@@ -11,13 +11,13 @@ export HOST_APP_DIR=${PWD}
 export DENO_SCRIPT_HOME="/app/tools/deno/scripts"
 
 # The script we are running
-export DENO_SCRIPT="install-plugins.ts"
+export DENO_SCRIPT="install-plugin.ts"
 
 # Arguments for the script
 export PLUGINS_CONFIG_PATH="/app/config/plugins.yml"
 export PLUGINS_INSTALL_DEST="/app/build"
 
-export PLUGINS_FILTER="${1}"
+export PLUGINS_FILTER="${2}"
 
 echo "Installing plugins with filter ${PLUGINS_FILTER}"
 
@@ -37,4 +37,4 @@ docker compose \
     --rm \
     deno run \
     --unstable --allow-run --allow-write --allow-read --allow-net \
-    ${DENO_SCRIPT_HOME}/${DENO_SCRIPT} ${PLUGINS_CONFIG_PATH} ${PLUGINS_INSTALL_DEST} ${1} ${GH_TOKEN}
+    ${DENO_SCRIPT_HOME}/${DENO_SCRIPT} ${PLUGINS_CONFIG_PATH} ${PLUGINS_INSTALL_DEST} ${GH_TOKEN} ${1}
