@@ -2,7 +2,7 @@ FROM alpine:3.18.2
 
 # TODO: pin versions
 RUN apk update --update-cache --available && \
-    apk add --update --no-cache bash=5.2.15-r5 ca-certificates=20230506-r0 nginx=1.24.0-r6 bash=5.2.15-r5 && \
+    apk add --update --no-cache bash ca-certificates nginx bash && \
     mkdir -p /kb
 
 WORKDIR /kb
