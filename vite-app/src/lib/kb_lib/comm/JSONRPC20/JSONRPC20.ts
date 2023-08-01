@@ -106,7 +106,6 @@ export class JSONRPCClient {
         }
 
         // TODO: timeout, cancellation
-        console.warn('TODO', timeout);
         const response = await fetch(this.url, {
             method: 'POST',
             body: JSON.stringify(payload),
