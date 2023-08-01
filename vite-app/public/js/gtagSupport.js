@@ -89,8 +89,8 @@ function main() {
     const SENDING = 'SENDING';
     let GTAG_STATE = WAITING;
 
-     // Simply ensures that the data layer exists.
-     window.dataLayer = window.dataLayer || [];
+    // Simply ensures that the data layer exists.
+    window.dataLayer = window.dataLayer || [];
 
     /**
      * Sets a new status value, which should be one of WAITING, PENDING, SEND_NOW, or SENDING.
@@ -129,7 +129,7 @@ function main() {
                 }
                 window.setTimeout(() => {
                     if (isState(status)) {
-                        loop;
+                        loop();
                     }
                     resolve();
                 }, 100);
@@ -246,20 +246,14 @@ function main() {
                 },
             });
             if (response.status !== 200) {
-                console.warn(
-                    '[gtagSupport] bad auth response, user not available',
-                    response
-                );
+                console.warn('[gtagSupport] bad auth response, user not available', response);
                 return null;
             }
             KBASE_AUTH_INFO = await response.json();
             KBASE_AUTH_INFO_EXPIRES_AT = Date.now() + KBASE_AUTH_TOKEN_TTL;
             return KBASE_AUTH_INFO;
         } catch (error) {
-            console.error(
-                '[gtagSupport] error occurred in call to auth service',
-                error
-            );
+            console.error('[gtagSupport] error occurred in call to auth service', error);
             return null;
         }
     }
@@ -416,11 +410,7 @@ function main() {
      *  Send a ping to GA whenever the history state changes, i.e., url navigation
      */
     window.onpopstate = async () => {
-        // window.dataLayer.push(function () {
-        //     this.reset();
-        // });
         await sendPendingGTag();
-
         sendGTagAfterTitleSettles();
     };
 
