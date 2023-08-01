@@ -122,7 +122,7 @@ export default class View extends Component<ViewProps> {
     }
 
     renderUnlinked() {
-        return <Well variant="primary">
+        return <Well variant="primary" className="mb-3">
             <Well.Header>
                 Create Your ORCID® Link!
             </Well.Header>

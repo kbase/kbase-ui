@@ -83,8 +83,8 @@ export default class View extends Component<ViewProps, ViewState> {
 
     renderAbout() {
         return <Well variant="info">
-            <Well.Header>
-                <span className="fa fa-sticky-note-o" /> Note
+            <Well.Header icon="sticky-note-o">
+                Note
             </Well.Header>
             <Well.Body>
                 <p>
