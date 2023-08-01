@@ -1,4 +1,5 @@
 import LinkView from 'apps/ORCIDLink/LinkView';
+import Well from 'components/Well';
 import { Component } from 'react';
 import { Accordion, Col, ListGroup, Nav, Row, Stack } from 'react-bootstrap';
 import { LinkInfo } from './Controller';
@@ -160,14 +161,14 @@ export default class View extends Component<ViewProps> {
     }
 
     renderUnlinked() {
-        return <div className="well">
-            <div className="well-header">
-                Not linked
-            </div>
-            <div className="well-body">
+        return <Well variant="info">
+            <Well.Header>
+                Not Linked
+            </Well.Header>
+            <Well.Body>
                 <p>You do not currently have a link from your KBase account to an ORCID® account.</p>
-            </div>
-        </div>
+            </Well.Body>
+        </Well>
     }
 
     renderLinkStatus() {

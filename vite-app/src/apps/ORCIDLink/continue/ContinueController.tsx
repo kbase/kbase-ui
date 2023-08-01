@@ -251,12 +251,14 @@ export default class ContinueController extends Component<ContinueControllerProp
                         window.open(returnInstruction.url, '_parent');
                         return;
                     case 'window': {
-                        const { id, origin } = returnInstruction
+                        const { id, origin } = returnInstruction;
                         window.opener.postMessage({ id }, origin);
                     }
                 }
 
             } else {
+                // TODO: what is this use case? Is it real?
+                // TODO: get from config, this is for rapid dev.
                 window.open('https://ci.kbase.us/#orcidlink', '_parent');
             }
             this.setState({

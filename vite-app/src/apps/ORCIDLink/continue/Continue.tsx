@@ -104,7 +104,7 @@ export default class Continue extends Component<ContinueProps> {
 
     renderConfirmDialog() {
         return (
-            <Well variant="primary">
+            <Well variant="primary" style={{ marginBottom: "1rem" }}>
                 <Well.Header>Confirm Link to ORCID®</Well.Header>
                 <Well.Body>
                     {this.renderPendingProgress()}

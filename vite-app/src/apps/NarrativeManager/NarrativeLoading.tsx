@@ -1,3 +1,4 @@
+import Well, { Variant } from 'components/Well';
 import { Component } from 'react';
 import Spinner from 'react-bootstrap/esm/Spinner';
 import { Config } from 'types/config';
@@ -74,22 +75,23 @@ export default class NarrativeLoading extends Component<
     }
 
     render() {
-        const message = (() => {
+        const [message, variant] = ((): [JSX.Element, Variant] => {
             switch (this.state.status) {
                 case NarrativeLoadingStatus.NONE:
-                    return this.renderLoadingMessage();
+                    return [this.renderLoadingMessage(), "info"];
                 case NarrativeLoadingStatus.SLOW:
-                    return (
+                    return [
                         <div>
                             {this.renderLoadingMessage()}
                             <p className="text text-warning" style={{ marginTop: '1em' }}>
                                 <span className="fa fa-exclamation-triangle"></span>
                                 This process is taking longer than expected. Still trying...
                             </p>
-                        </div>
-                    );
+                        </div>,
+                        "warning"
+                    ];
                 case NarrativeLoadingStatus.VERY_SLOW:
-                    return (
+                    return [
                         <div>
                             {this.renderLoadingMessage()}
                             <p className="text text-danger" style={{ marginTop: '1em' }}>
@@ -97,15 +99,18 @@ export default class NarrativeLoading extends Component<
                                 This process is taking <b>much</b> longer than expected. Still
                                 trying...
                             </p>
-                        </div>
-                    );
+                        </div>,
+                        "warning"
+                    ];
             }
         })();
 
         return (
-            <div className="well NarrativeLoading" style={{ width: '50%', margin: '0 auto' }}>
-                <div className="well-body">{message}</div>
-            </div>
+            <Well variant={variant} style={{ width: '50%', margin: '0 auto' }}>
+                <Well.Body>
+                    {message}
+                </Well.Body>
+            </Well>
         );
     }
 }
