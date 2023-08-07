@@ -1,0 +1,177 @@
+/* Tweak antd tab styles to allow for full flex height of content */
+
+.FullHeight-tabs.ant-tabs {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.FullHeight-tabs .ant-tabs-content {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.FullHeight-tabs .ant-tabs-content-holder {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* WTF yuck! ant design sets the flex direction within tab content to row, for some reason. 
+   No direct method to override?
+*/
+
+.FullHeight-tabs.ant-tabs .ant-tabs-top-content.ant-tabs-content-animated {
+    flex-direction: column;
+}
+
+.FullHeight-tabs .ant-tabs-tabpane.ant-tabs-tabpane-active {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.FullHeight-tabs.ant-tabs .ant-tabs-nav .ant-tabs-tab-active {
+    font-weight: normal;
+}
+
+.FullHeight-tabCount {
+    color: rgba(200, 200, 200, 1);
+}
+
+.FullHeight-tabPaneHeader {
+    font-weight: bold;
+    color: rgba(150, 150, 150, 1);
+    border-bottom: 2px rgba(150, 150, 150, 0.5) solid;
+}
+
+.FullHeight-tabs.ant-tabs .ant-tabs-small-bar .ant-tabs-tab {
+    padding: 4px;
+    margin-right: 10px;
+}
+
+.FullHeight-tabs.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab:not(.ant-tabs-tab-active) {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+/* .FullHeight-tabs.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab-active {
+    border-color: inherit;
+} */
+
+
+.FullHeight-tabPaneToolbar {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.KBaseAntdOverride-remove-table-border .ant-table-small {
+    border: none;
+    border-radius: none;
+}
+
+/* Coerce antd table to scroll */
+
+.ScrollingFlexTable.ant-table-wrapper {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-container {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+
+.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-container>.ant-table-header {
+    flex: 0 0 auto;
+}
+
+.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-container>.ant-table-body {
+    flex: 1 1 0px;
+    overflow-y: auto;
+}
+
+
+.AntTable-FullHeight.ant-table-wrapper,
+.AntTable-FullHeight.ant-table-wrapper>.ant-spin-nested-loading,
+.AntTable-FullHeight.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container,
+.AntTable-FullHeight.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table,
+.AntTable-FullHeight.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-container {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.AntTable-FullHeight.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-container>.ant-table-header {
+    overflow: unset !important;
+}
+
+
+
+.InfoTable.UserMetadata>div>div:nth-child(1) {
+    flex: 0 0 20em;
+}
+
+.InfoTable.UserMetadata>div>div:nth-child(2) {
+    flex: 0 0 20em;
+    color: gray;
+    font-style: italic;
+}
+
+.InfoTable.ControlledMetadata>div>div:nth-child(1) {
+    flex: 0 0 20em;
+}
+
+/* .InfoTable.ControlledMetadata>div>div:nth-child(2) {
+    flex: 0 0 20em;
+    color: gray;
+    font-style: italic;
+} */
+
+.InfoTable.TemplateMetadata>div>div:nth-child(1) {
+    flex: 0 0 20em;
+    text-align: left;
+}
+
+.InfoTable.TemplateMetadata>div>div:nth-child(2) {
+    flex: 0 0 10em;
+    text-align: left;
+}
+
+.InfoTable.TemplateMetadata>div>div:nth-child(3) {
+    /* flex: 0 0 20em; */
+    flex: 1 1 0px;
+    text-align: left;
+}
