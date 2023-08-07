@@ -175,3 +175,32 @@
     flex: 1 1 0px;
     text-align: left;
 }
+
+.antd-btn {
+    display: inline-flex;
+}
+
+
+/* Helps tame antd buttons ... should not be necessary */
+
+.ButtonBar {
+    display: flex;
+    flex-direction: row;
+}
+
+.ButtonBar-button {
+    flex: 0 0 auto;
+}
+
+.ButtonBar-text {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.ButtonBar .ant-btn {
+    display: inline-flex;
+    align-items: center;
+}

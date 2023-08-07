@@ -158,3 +158,32 @@ p:last-child {
 .fa-spin {
     -webkit-filter: blur(0);
 }
+
+
+.PropertyTable {
+    border-collapse: collapse;
+}
+
+.PropertyTable th,
+.PropertyTable td {
+    text-align: left;
+    padding: 4px;
+    vertical-align: top;
+}
+
+.PropertyTable th {
+    color: rgba(0, 0, 0, 0.3);
+    font-style: italic;
+}
+
+.PropertyTable.-row-borders th {
+    border-bottom: 1px solid rgba(200, 200, 200, 0.5);
+}
+
+.PrettyList {
+    list-style: none;
+    list-style: disc;
+    margin: 0;
+    margin-left: 0.5rem;
+    padding-left: 0.5rem;
+}

@@ -486,6 +486,7 @@ function ProfileViewer(props: ProfileProps) {
             <Button
                 icon={<EditOutlined />}
                 type="primary"
+                // style={{ display: 'inline-flex', alignItems: 'center' }}
                 onClick={enableEditing}>
                 Edit Profile
             </Button>
