@@ -1,4 +1,4 @@
-import react from '@vitejs/plugin-react-swc';
+import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 import { defineConfig } from 'vitest/config';
@@ -9,10 +9,14 @@ export default defineConfig({
     plugins: [react(), tsconfigPaths()],
     base: './',
     build: {
-        commonjsOptions: { include: [] },
+        commonjsOptions: {
+            include: ['node_modules/**'],
+            // esmExternals: true,
+            // requireReturnsDefault: 'namespace',
+        },
     },
     optimizeDeps: {
-        disabled: false,
+        disabled: 'build'
     },
     // resolve: {
     //     alias: {
