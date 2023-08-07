@@ -1,7 +1,7 @@
 import UserProfileClient, {
     UserProfile
 } from '@kbase/ui-lib/lib/comm/coreServices/UserProfile';
-import React, { PropsWithChildren } from 'react';
+import { Component, PropsWithChildren, createContext } from 'react';
 import {
     AsyncProcess,
     AsyncProcessError,
@@ -13,9 +13,9 @@ import { Account, Auth2, TokenInfo } from '../lib/kb_lib/Auth2';
 
 import * as Cookie from 'es-cookie';
 import { changeHash2 } from 'lib/navigation';
+import { Monitor } from '../lib/Monitor';
 import { AuthError } from '../lib/kb_lib/Auth2Error';
 import { JSONRPC11Exception } from '../lib/kb_lib/comm/JSONRPC11/JSONRPC11';
-import { Monitor } from '../lib/Monitor';
 import { Config, CookieConfig } from '../types/config';
 import { HashPath } from './RouterContext';
 
@@ -83,7 +83,7 @@ export type AuthState = AsyncProcess<AuthenticationState, string>;
  * throughout the app.
  */
 
-export const AuthContext = React.createContext<AuthState>({
+export const AuthContext = createContext<AuthState>({
     status: AsyncProcessStatus.NONE,
 });
 
@@ -110,7 +110,7 @@ interface AuthWrapperState {
  * determining the auth state (because we may need to call the auth service),
  * which includes any errors encountered.
  */
-export default class AuthWrapper extends React.Component<
+export default class AuthWrapper extends Component<
     AuthWrapperProps,
     AuthWrapperState
 > {
@@ -173,7 +173,7 @@ export default class AuthWrapper extends React.Component<
                         return this.checkAuth();
                     case AuthenticationStatus.AUTHENTICATED: {
                         const token = this.getAuthCookie();
-                          if (typeof token === 'undefined') {
+                        if (typeof token === 'undefined') {
                             // Handles case in which the ui had been logged in, but now there is no token!
                             this.setState({ authState: this.unauthenticatedState() }, () => {
                                 changeHash2('auth2/signedout');
@@ -504,7 +504,7 @@ export default class AuthWrapper extends React.Component<
                         await this.asyncSetState({
                             authState: this.unauthenticatedState(),
                         });
-                        changeHash2('auth2/signedout', );
+                        changeHash2('auth2/signedout',);
                         break;
                     default:
                         this.removeAuthCookie();
@@ -535,7 +535,7 @@ export default class AuthWrapper extends React.Component<
     }
 
     removeAuthCookie() {
-         const cookieAttributes: Cookie.CookieAttributes = {
+        const cookieAttributes: Cookie.CookieAttributes = {
             path: '/'
         };
         Cookie.remove(this.config.name, cookieAttributes);
