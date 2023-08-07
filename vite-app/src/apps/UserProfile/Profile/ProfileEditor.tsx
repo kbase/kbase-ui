@@ -1,6 +1,6 @@
 import {
     CloseOutlined, DeleteOutlined,
-    ExclamationOutlined, LinkOutlined, PlusOutlined, SaveOutlined
+    LinkOutlined, PlusOutlined, SaveOutlined
 } from '@ant-design/icons';
 import {
     Alert,
@@ -10,7 +10,6 @@ import {
     Form,
     Image,
     Input,
-    List,
     Modal,
     Radio,
     Row,
@@ -761,23 +760,23 @@ function Profile(props: ProfileProps) {
 
 
     function renderControls() {
-        const warnings = (() => {
-            if (props.profileView.warnings.length > 0) {
-                const showWarnings = () => {
-                    Modal.warning({
-                        title: 'Warnings',
-                        content: <List bordered dataSource={props.profileView.warnings}
-                            renderItem={(warning) => {
-                                return <List.Item>{warning}</List.Item>
-                            }} />
-                    })
-                }
-                return <Button type="dashed"
-                    icon={<ExclamationOutlined />}
-                    onClick={showWarnings}
-                >Warnings</Button>
-            }
-        })();
+        // const warnings = (() => {
+        //     if (props.profileView.warnings.length > 0) {
+        //         const showWarnings = () => {
+        //             Modal.warning({
+        //                 title: 'Warnings',
+        //                 content: <List bordered dataSource={props.profileView.warnings}
+        //                     renderItem={(warning) => {
+        //                         return <List.Item>{warning}</List.Item>
+        //                     }} />
+        //             })
+        //         }
+        //         return <Button type="dashed"
+        //             icon={<ExclamationOutlined />}
+        //             onClick={showWarnings}
+        //         >Warnings</Button>
+        //     }
+        // })();
 
         const button = <Space wrap>
             <Button
